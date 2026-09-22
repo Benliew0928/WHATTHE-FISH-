@@ -11,7 +11,7 @@ namespace SportsPrototype {
   public Athlete LocalAthlete;public bool Exploring {get;private set;}
   public GameObject athletePrefab; Athlete offline; Canvas canvas;RectTransform safe,page;Font font;Sprite rounded;Text status,roster,fps;float rosterTimer;string screen="home",appliedWorld="";bool lastExploring; InputField code;
   readonly Color ink=LocalProfile.Hex("173834"),mint=LocalProfile.Hex("BFEBCB"),cream=LocalProfile.Hex("FFF9E9");
-  void Awake(){Instance=this;Application.targetFrameRate=30;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
+  void Awake(){Instance=this;Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
   void Start(){
    font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");rounded=MakeRound();
    canvas=new GameObject("Mobile UI",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;

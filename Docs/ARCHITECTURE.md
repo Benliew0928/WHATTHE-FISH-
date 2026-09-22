@@ -32,7 +32,7 @@ Standard pitch: 68 × 105 metres. Four covered stands use repeated seats, terrac
 
 The athlete uses one small rig, three looping actions, one collision capsule and two hair silhouettes (classic cap or cap plus tuft). Appearance never changes collision size. Collider meshes exist only on walkable/structural stadium surfaces. First-person view hides head renderers. Third/elevated camera casts against the stadium layer to avoid walls.
 
-URP uses a directional light, ambient fill, restricted shadow distance, 2× MSAA and a 30 FPS frame target. Device FPS and thermal behaviour are measured requirements, not guaranteed by those settings. No audience, crowd audio, downloaded media or custom mesh uploads are included.
+URP uses a directional light, ambient fill, restricted shadow distance, 2× MSAA and a 30 FPS mobile / 60 FPS desktop frame target. Device FPS and thermal behaviour are measured requirements, not guaranteed by those settings. No audience, crowd audio, downloaded media or custom mesh uploads are included.
 
 ## Next milestones
 

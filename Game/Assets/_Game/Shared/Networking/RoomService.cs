@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Services.Core;
+using Unity.Services.Core.Environments;
 using Unity.Services.Authentication;
 using Unity.Services.Multiplayer;
 using UnityEngine;
@@ -19,7 +20,14 @@ namespace SportsPrototype {
   bool leaving;
   async Task Initialize(){
    if(string.IsNullOrEmpty(Application.cloudProjectId))throw new InvalidOperationException("Online rooms need a linked Unity cloud project. Offline Explore is ready to use. See Docs/SETUP.md.");
-   if(UnityServices.State!=ServicesInitializationState.Initialized)await UnityServices.InitializeAsync();
+   if(UnityServices.State!=ServicesInitializationState.Initialized){
+    var options=new InitializationOptions().SetEnvironmentName("production");
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-authProfile");
+    if(i>=0&&i+1<args.Length)options.SetProfile(args[i+1]);
+#endif
+    await UnityServices.InitializeAsync(options);
+   }
    if(!AuthenticationService.Instance.IsSignedIn)await AuthenticationService.Instance.SignInAnonymouslyAsync();
   }
   public async Task Create(){await Run(async()=>{

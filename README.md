@@ -13,7 +13,7 @@ Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`
 - `Tools/Blender/` — deterministic asset generator and audit tool.
 - `Tools/Build/` — build/environment scripts.
 - `Builds/WindowsFinal/` — latest development Windows player (launch `SportsPrototype.exe`). Other Windows build folders contain earlier review builds.
-- `Builds/Android/` — Android output location when Android support is installed.
+- `Builds/Android/SportsPrototype.apk` — Android development APK, 52.1 MB, ARM64, Android 8.0 or newer.
 - `Docs/SETUP.md` — toolchain, cloud linking and running on a phone.
 - `Docs/ARCHITECTURE.md` — code boundaries and future gameplay.
 - `Docs/VERIFICATION.md` — measured checks and remaining access requirements.
@@ -23,5 +23,7 @@ Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`
 Landscape: left thumb stick moves; push it fully to run. Drag on the right to look. Tap **Camera** to cycle first person, third person and elevated views. On Windows: WASD, Shift, right mouse drag, C. Escape returns to the menu/waiting room. A guest leaving the pitch leaves the room; the host can return everyone to the waiting room.
 
 The room system uses Unity Multiplayer Services sessions, Relay, Unity Transport and Netcode for GameObjects. Offline exploration requires no Unity account or internet connection. Online rooms require your cloud project to be linked and services enabled.
+
+The new SportsPrototype cloud project is linked, and internet create/join has been exercised through Relay. Read `Docs/VERIFICATION.md` for the test coverage and phone checks still pending. Launch the Windows executable normally, without diagnostic arguments, for interactive play.
 
 This milestone is exploration, appearance customisation and networking infrastructure. Football ball physics, scoring, bots, basketball and golf gameplay are future work.

@@ -12,7 +12,7 @@ Use Unity Hub → Add project from disk → select `C:\UMPSA\Game`. Let package 
 
 ## Android toolchain
 
-Unity Hub → Installs → 6000.3.20f1 → Manage → Add modules → Android Build Support, Android SDK & NDK Tools, OpenJDK. Approve the Windows administrator prompt yourself. The initial automatic attempt was cancelled by Windows at elevation; the official Android support download is cached in `Tools/Downloads`.
+Android Build Support and the bundled SDK, NDK r27c, CMake and OpenJDK 17 are installed under this editor. Official downloads are cached in `Tools/Downloads`. `Tools/Build/Install-Android.ps1` installs the versions declared in the editor's `modules.json`; it requires administrator rights for Program Files.
 
 Unity Preferences → External Tools should use the installed Unity SDK/NDK/JDK. Build Settings/Build Profiles → Android. The project uses IL2CPP, ARM64, minimum API 26, landscape, package ID `com.umpsa.sportsprototype`. The identifier is a development placeholder; choose your publishing ID before release.
 
@@ -28,7 +28,9 @@ Connect a phone with USB debugging enabled and accept its debugging prompt. Run 
 4. On one device choose Football → Create internet room. Share its session code. On another internet connection enter the code and join. All players must mark ready before the host starts.
 5. A room supports one host plus nine guests. The SDK maintains the session/lobby connection; Relay carries NGO traffic. Host departure ends this prototype's room. Host migration is intentionally disabled at the application layer.
 
-No cloud project has been silently substituted from an unrelated existing project. Until linked, online actions show a setup message and offline exploration stays usable. Check your own dashboard's service allowances and billing settings before extended public testing; no paid plan or third-party API purchase is configured by this project.
+The project is linked to the newly created **SportsPrototype** cloud project `633e314c-46d1-4b48-bbbc-2dc5f6fb653c`, for a general audience. Its Authentication/Lobby/Relay services have passed real create/join tests. The current runtime uses its default `production` environment while separate development environment setup is pending dashboard access. This is a new prototype project, not an unrelated existing project. Offline exploration stays usable independently of cloud services. No paid plan or third-party API purchase is configured by this project.
+
+`Tools/Build/Test-CloudRooms.ps1` exercises real services with separate anonymous test profiles. It creates temporary rooms, tests ten-player capacity and two-room isolation, and writes evidence under `Builds/CloudQA-*`. Test processes exit automatically. This uses service quota and should only be run when needed. Local transport-only testing is available through `Test-LocalRooms.ps1`.
 
 ## Rebuild art and scene
 

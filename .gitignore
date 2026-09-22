@@ -4,6 +4,7 @@ Game/[Oo]bj/
 Game/[Ll]ogs/
 Game/[Uu]serSettings/
 Game/.vs/
+Game/.utmp/
 Builds/
 *.csproj
 *.sln

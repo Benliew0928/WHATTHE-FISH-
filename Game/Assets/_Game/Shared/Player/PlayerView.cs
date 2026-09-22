@@ -4,13 +4,13 @@ using UnityEngine.EventSystems;
 namespace SportsPrototype {
  public sealed class PlayerView:MonoBehaviour,IPlayerCommandSource {
   public static Vector2 LookDelta; public static PlayerView Instance; public Athlete target; public TouchPad stick; public int mode; public float yaw=0,pitch=16; public bool active; Camera cam;
-  void Awake(){Instance=this;cam=GetComponent<Camera>();mode=PlayerPrefs.GetInt("camera",1);}
+  void Awake(){Instance=this;cam=GetComponent<Camera>();mode=Mathf.Clamp(PlayerPrefs.GetInt("camera",1),0,2);}
   public void Switch(){mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
   public PlayerCommand ReadCommand(){
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    if(DevelopmentProbe.Driving)return new PlayerCommand{move=Vector2.up,heading=DevelopmentProbe.Heading,sprint=false};
 #endif
-   var v=stick?stick.value:Vector2.zero;v+=new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));return new PlayerCommand{move=Vector2.ClampMagnitude(v,1),heading=yaw,sprint=Input.GetKey(KeyCode.LeftShift)||v.magnitude>.8f};}
+   var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));return new PlayerCommand{move=Vector2.ClampMagnitude(v,1),heading=yaw,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f};}
   void LateUpdate(){
    if(!active||!target)return;
    if(Input.GetKeyDown(KeyCode.C))Switch();

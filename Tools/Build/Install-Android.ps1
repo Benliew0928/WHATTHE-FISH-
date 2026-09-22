@@ -31,7 +31,7 @@ foreach ($m in $selected) {
         continue
     }
     $dest = $m.destination.Replace('{UNITY_PATH}', $editorRoot)
-    if ($m.id -eq 'cmake-3.22.1') { $dest = "$editorRoot/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmake" }
+    if ($m.id -eq 'cmake-3.22.1') { $dest = "$editorRoot/Editor/Data/PlaybackEngines/AndroidPlayer/SDK/cmake/3.22.1" }
     New-Item -ItemType Directory -Force -Path $dest | Out-Null
     & tar -xf $file -C $dest
     if ($LASTEXITCODE -ne 0) { throw "Extraction failed: $($m.id)" }
