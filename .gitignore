@@ -1,0 +1,16 @@
+Game/[Ll]ibrary/
+Game/[Tt]emp/
+Game/[Oo]bj/
+Game/[Ll]ogs/
+Game/[Uu]serSettings/
+Game/.vs/
+Builds/
+*.csproj
+*.sln
+*.blend1
+*.blend2
+*.keystore
+*.jks
+.env*
+Tools/Downloads/
+Game/Assets/Resources/PerformanceTestRun*.json*

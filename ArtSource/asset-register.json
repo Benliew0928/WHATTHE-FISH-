@@ -1,0 +1,10 @@
+{
+  "Stadium.fbx": "Football/Stadium.blend",
+  "Athlete.fbx": "Shared/Characters/Athlete.blend",
+  "generator": "Tools/Blender/build_assets.py",
+  "units": "metres",
+  "pitch_metres": [
+    68,
+    105
+  ]
+}
