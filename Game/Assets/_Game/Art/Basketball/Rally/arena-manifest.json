@@ -1,0 +1,1077 @@
+{
+  "name": "Rally Court",
+  "source": "Arena_Rally.blend",
+  "units": "metres",
+  "court_metres": [
+    15.24,
+    28.6512
+  ],
+  "rim_height": 3.048,
+  "rim_inner_diameter": 0.4572,
+  "seats": 1296,
+  "modules": {
+    "Court": {
+      "file": "Court.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 6,
+      "triangles_lod0": 8520,
+      "triangles_lod1": 8520
+    },
+    "CenterEmblem": {
+      "file": "CenterEmblem.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 3,
+      "triangles_lod0": 612,
+      "triangles_lod1": 612
+    },
+    "Hoop": {
+      "file": "Hoop.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Rim centre projected onto floor; hoop faces -Y",
+      "meshes": 16,
+      "triangles_lod0": 6827,
+      "triangles_lod1": 6827
+    },
+    "Stadium": {
+      "file": "Stadium.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 24,
+      "triangles_lod0": 102816,
+      "triangles_lod1": 102816
+    },
+    "LowerSeating": {
+      "file": "LowerSeating.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 48,
+      "triangles_lod0": 164160,
+      "triangles_lod1": 8640
+    },
+    "UpperSeating": {
+      "file": "UpperSeating.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 48,
+      "triangles_lod0": 131328,
+      "triangles_lod1": 6912
+    },
+    "Railings": {
+      "file": "Railings.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 24,
+      "triangles_lod0": 38976,
+      "triangles_lod1": 38976
+    },
+    "PerimeterPads": {
+      "file": "PerimeterPads.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 24,
+      "triangles_lod0": 6624,
+      "triangles_lod1": 6624
+    },
+    "Banners": {
+      "file": "Banners.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 36,
+      "triangles_lod0": 13344,
+      "triangles_lod1": 13344
+    },
+    "LightingRig": {
+      "file": "LightingRig.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 25,
+      "triangles_lod0": 40176,
+      "triangles_lod1": 40176
+    },
+    "Ceiling": {
+      "file": "Ceiling.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 24,
+      "triangles_lod0": 5568,
+      "triangles_lod1": 5568
+    },
+    "Scoreboard": {
+      "file": "Scoreboard.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 6,
+      "triangles_lod0": 2272,
+      "triangles_lod1": 2272
+    },
+    "CourtsideFurniture": {
+      "file": "CourtsideFurniture.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ],
+      "pivot_description": "Court centre at floor height",
+      "meshes": 11,
+      "triangles_lod0": 5105,
+      "triangles_lod1": 5105
+    }
+  },
+  "materials": {
+    "Rally_Court_Lines": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9686274571326211,
+        0.9058823457184864
+      ],
+      "roughness": 0.36000001430511475,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Court_Apron": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.41999998688697815,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Court_EdgeTrim": {
+      "color_srgb": [
+        0.12941176462688633,
+        0.3372549076749593,
+        0.3999999974259806
+      ],
+      "roughness": 0.550000011920929,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Court_Maple": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9999999999999999,
+        0.9999999999999999
+      ],
+      "roughness": 0.30000001192092896,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_HoneyMaple_BaseColor.png",
+      "roughness_map": "Rally_HoneyMaple_Roughness.png"
+    },
+    "Rally_Court_KeyPaint": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.3199999928474426,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CenterEmblem_Disk": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.3499999940395355,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CenterEmblem_Sunburst": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CenterEmblem_Outline": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9686274571326211,
+        0.9058823457184864
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Padding": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.47999998927116394,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Piping": {
+      "color_srgb": [
+        0.2666666665577025,
+        0.7686274688548268,
+        0.7960784172519764
+      ],
+      "roughness": 0.41999998688697815,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_BoardShell": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9450980405985859,
+        0.8352941034599863
+      ],
+      "roughness": 0.3499999940395355,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_BoardInset": {
+      "color_srgb": [
+        0.6705882353400836,
+        0.8470588297034736,
+        0.8705882473779099
+      ],
+      "roughness": 0.25,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Target": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Rim": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.4431372552234721,
+        0.23529411386590443
+      ],
+      "roughness": 0.30000001192092896,
+      "metallic": 0.30000001192092896,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Mechanism": {
+      "color_srgb": [
+        0.14901960944706816,
+        0.23529411386590443,
+        0.34901960363193113
+      ],
+      "roughness": 0.5,
+      "metallic": 0.20000000298023224,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Net": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9686274571326211,
+        0.9058823457184864
+      ],
+      "roughness": 0.800000011920929,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_WovenFabric.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Badge": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Hoop_Screen": {
+      "color_srgb": [
+        0.07450980202544943,
+        0.16470588370866646,
+        0.2431372587187131
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_Hoop_ClockDigits": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.699999988079071,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_Stadium_Shell": {
+      "color_srgb": [
+        0.14901960944706816,
+        0.23529411386590443,
+        0.34901960363193113
+      ],
+      "roughness": 0.7200000286102295,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Stadium_WallPanels": {
+      "color_srgb": [
+        0.2823529375806644,
+        0.4117647060192946,
+        0.5058823548119645
+      ],
+      "roughness": 0.6499999761581421,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Stadium_Balcony": {
+      "color_srgb": [
+        0.3960784288835877,
+        0.34901960363193113,
+        0.6352941230233906
+      ],
+      "roughness": 0.5799999833106995,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Stadium_ArchTrim": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9450980405985859,
+        0.8352941034599863
+      ],
+      "roughness": 0.6499999761581421,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Stadium_Terraces": {
+      "color_srgb": [
+        0.4666666610951076,
+        0.5490196119891921,
+        0.623529419466394
+      ],
+      "roughness": 0.75,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Stadium_Columns": {
+      "color_srgb": [
+        0.12941176462688633,
+        0.3372549076749593,
+        0.3999999974259806
+      ],
+      "roughness": 0.550000011920929,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Stadium_Bands": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.550000011920929,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_Seats_Aqua": {
+      "color_srgb": [
+        0.2666666665577025,
+        0.7686274688548268,
+        0.7960784172519764
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_Seats_Coral": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_Seats_Lavender": {
+      "color_srgb": [
+        0.5529411756436519,
+        0.4745098086737521,
+        0.788235302081043
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_Seats_Gold": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_Seats_Lime": {
+      "color_srgb": [
+        0.6745098023570764,
+        0.8078431437011544,
+        0.3843137309686392
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_Seats_Teal": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LowerSeating_SeatMounts": {
+      "color_srgb": [
+        0.12941176462688633,
+        0.3372549076749593,
+        0.3999999974259806
+      ],
+      "roughness": 0.6600000262260437,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_Seats_Aqua": {
+      "color_srgb": [
+        0.2666666665577025,
+        0.7686274688548268,
+        0.7960784172519764
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_Seats_Coral": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_Seats_Lavender": {
+      "color_srgb": [
+        0.5529411756436519,
+        0.4745098086737521,
+        0.788235302081043
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_Seats_Gold": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_Seats_Lime": {
+      "color_srgb": [
+        0.6745098023570764,
+        0.8078431437011544,
+        0.3843137309686392
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_Seats_Teal": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.4300000071525574,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_UpperSeating_SeatMounts": {
+      "color_srgb": [
+        0.12941176462688633,
+        0.3372549076749593,
+        0.3999999974259806
+      ],
+      "roughness": 0.6600000262260437,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Railings_Enamel": {
+      "color_srgb": [
+        0.2666666665577025,
+        0.7686274688548268,
+        0.7960784172519764
+      ],
+      "roughness": 0.41999998688697815,
+      "metallic": 0.15000000596046448,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Railings_Uprights": {
+      "color_srgb": [
+        0.12941176462688633,
+        0.3372549076749593,
+        0.3999999974259806
+      ],
+      "roughness": 0.5,
+      "metallic": 0.10000000149011612,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_PerimeterPads_Cushion_Teal": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.5799999833106995,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_PerimeterPads_Cushion_Coral": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.5799999833106995,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_PerimeterPads_Cushion_Lavender": {
+      "color_srgb": [
+        0.5529411756436519,
+        0.4745098086737521,
+        0.788235302081043
+      ],
+      "roughness": 0.5799999833106995,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_PerimeterPads_Cushion_Gold": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.5799999833106995,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_PerimeterPads_Seams": {
+      "color_srgb": [
+        1.0,
+        0.9450980392156862,
+        0.8352941176470589
+      ],
+      "roughness": 0.55,
+      "metallic": 0,
+      "emission": 0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Banners_Teal": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_WovenFabric.png",
+      "roughness_map": null
+    },
+    "Rally_Banners_Coral": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_WovenFabric.png",
+      "roughness_map": null
+    },
+    "Rally_Banners_Lavender": {
+      "color_srgb": [
+        0.5529411756436519,
+        0.4745098086737521,
+        0.788235302081043
+      ],
+      "roughness": 0.8600000143051147,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_WovenFabric.png",
+      "roughness_map": null
+    },
+    "Rally_Banners_Print": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.800000011920929,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_WovenFabric.png",
+      "roughness_map": null
+    },
+    "Rally_Banners_LightPrint": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9450980405985859,
+        0.8352941034599863
+      ],
+      "roughness": 0.800000011920929,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_WovenFabric.png",
+      "roughness_map": null
+    },
+    "Rally_Banners_Rods": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.5,
+      "metallic": 0.25,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LightingRig_Truss": {
+      "color_srgb": [
+        0.2823529375806644,
+        0.4117647060192946,
+        0.5058823548119645
+      ],
+      "roughness": 0.4699999988079071,
+      "metallic": 0.3499999940395355,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LightingRig_Housing": {
+      "color_srgb": [
+        0.14901960944706816,
+        0.23529411386590443,
+        0.34901960363193113
+      ],
+      "roughness": 0.47999998927116394,
+      "metallic": 0.20000000298023224,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LightingRig_Bezels": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.41999998688697815,
+      "metallic": 0.30000001192092896,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_LightingRig_Lenses": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9686274571326211,
+        0.9058823457184864
+      ],
+      "roughness": 0.30000001192092896,
+      "metallic": 0.0,
+      "emission": 4.0,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_Ceiling_AcousticPanels": {
+      "color_srgb": [
+        0.14901960944706816,
+        0.23529411386590443,
+        0.34901960363193113
+      ],
+      "roughness": 0.8999999761581421,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Ceiling_PanelRibs": {
+      "color_srgb": [
+        0.2823529375806644,
+        0.4117647060192946,
+        0.5058823548119645
+      ],
+      "roughness": 0.6499999761581421,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Ceiling_InsetPanels": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.7799999713897705,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Ceiling_SkylightFrame": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9450980405985859,
+        0.8352941034599863
+      ],
+      "roughness": 0.5799999833106995,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Scoreboard_Display": {
+      "color_srgb": [
+        0.07450980202544943,
+        0.16470588370866646,
+        0.2431372587187131
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_Scoreboard_Casing": {
+      "color_srgb": [
+        0.12941176462688633,
+        0.3372549076749593,
+        0.3999999974259806
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Scoreboard_Edge": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9450980405985859,
+        0.8352941034599863
+      ],
+      "roughness": 0.41999998688697815,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Scoreboard_Accent": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.47999998927116394,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_Scoreboard_Digits": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.6000000238418579,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_Scoreboard_Labels": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9686274571326211,
+        0.9058823457184864
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emission": 0.25,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_CourtsideFurniture_Upholstery": {
+      "color_srgb": [
+        0.1254901962314727,
+        0.6156862845381498,
+        0.6627450888283748
+      ],
+      "roughness": 0.5199999809265137,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CourtsideFurniture_VisitorUpholstery": {
+      "color_srgb": [
+        0.9372549016159725,
+        0.5019607851929684,
+        0.4627451046217797
+      ],
+      "roughness": 0.5199999809265137,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CourtsideFurniture_Frames": {
+      "color_srgb": [
+        0.9999999999999999,
+        0.9450980405985859,
+        0.8352941034599863
+      ],
+      "roughness": 0.5199999809265137,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CourtsideFurniture_Equipment": {
+      "color_srgb": [
+        0.14901960944706816,
+        0.23529411386590443,
+        0.34901960363193113
+      ],
+      "roughness": 0.5600000023841858,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    },
+    "Rally_CourtsideFurniture_Screens": {
+      "color_srgb": [
+        0.6705882353400836,
+        0.8470588297034736,
+        0.8705882473779099
+      ],
+      "roughness": 0.4000000059604645,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": null,
+      "roughness_map": null
+    },
+    "Rally_CourtsideFurniture_Accent": {
+      "color_srgb": [
+        0.9607843051483974,
+        0.7647058762018639,
+        0.3372549076749593
+      ],
+      "roughness": 0.5,
+      "metallic": 0.0,
+      "emission": 0.0,
+      "base_map": "Rally_PaintedSurface.png",
+      "roughness_map": null
+    }
+  },
+  "coordinate_system": "Blender X width, Y length, Z up; FBX -Z forward, Y up. Unity maps (x,y,z) to (-x,z,-y).",
+  "placements": {
+    "Hoop_North": {
+      "module": "Hoop",
+      "blender_position": [
+        0,
+        12.7254,
+        0
+      ],
+      "rotation_z_degrees": 0
+    },
+    "Hoop_South": {
+      "module": "Hoop",
+      "blender_position": [
+        0,
+        -12.7254,
+        0
+      ],
+      "rotation_z_degrees": 180
+    }
+  },
+  "notes": [
+    "Review cameras/lights are not exported.",
+    "Court top is z=0; markings are layered 3\u201321 mm above.",
+    "Seat LODs must not be rendered simultaneously.",
+    "Scoreboard digits are decorative replaceable meshes, not game logic.",
+    "Textures are original deterministic authored maps; reference image is not projected onto geometry.",
+    "Android performance requires device profiling."
+  ]
+}

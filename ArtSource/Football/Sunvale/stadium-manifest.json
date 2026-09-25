@@ -1,0 +1,134 @@
+{
+  "name": "Sunvale Football Club",
+  "source": "Stadium_Sunvale.blend",
+  "units": "metres",
+  "pitch": [
+    68,
+    105
+  ],
+  "bays": 32,
+  "seats": 3072,
+  "materials": 1,
+  "atlas": [
+    1024,
+    512
+  ],
+  "modules": {
+    "Stadium": {
+      "meshes": 128,
+      "triangles_lod0": 351968,
+      "triangles_lod1_seats": 36864,
+      "file": "Stadium.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Banners": {
+      "meshes": 16,
+      "triangles_lod0": 800,
+      "triangles_lod1_seats": 0,
+      "file": "Banners.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Landscape": {
+      "meshes": 8,
+      "triangles_lod0": 18432,
+      "triangles_lod1_seats": 0,
+      "file": "Landscape.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Perimeter": {
+      "meshes": 8,
+      "triangles_lod0": 7680,
+      "triangles_lod1_seats": 0,
+      "file": "Perimeter.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Floodlights": {
+      "meshes": 4,
+      "triangles_lod0": 7984,
+      "triangles_lod1_seats": 0,
+      "file": "Floodlights.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Scoreboard": {
+      "meshes": 5,
+      "triangles_lod0": 1395,
+      "triangles_lod1_seats": 0,
+      "file": "Scoreboard.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Dugouts": {
+      "meshes": 2,
+      "triangles_lod0": 1680,
+      "triangles_lod1_seats": 0,
+      "file": "Dugouts.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Lawn": {
+      "meshes": 3,
+      "triangles_lod0": 1906,
+      "triangles_lod1_seats": 0,
+      "file": "Lawn.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "Goal": {
+      "meshes": 2,
+      "triangles_lod0": 2008,
+      "triangles_lod1_seats": 0,
+      "file": "Goal.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    },
+    "CornerFlags": {
+      "meshes": 2,
+      "triangles_lod0": 352,
+      "triangles_lod1_seats": 0,
+      "file": "CornerFlags.fbx",
+      "pivot": [
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "coordinate_system": "Blender X width, Y length, Z up; FBX -Z forward / Y up",
+  "notes": [
+    "Prototype stadium is preserved.",
+    "Unity performance requires device profiling.",
+    "Review lights and cameras are excluded from all exports."
+  ]
+}

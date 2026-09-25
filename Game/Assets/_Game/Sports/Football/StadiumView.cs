@@ -2,8 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace SportsPrototype {
- public sealed class StadiumView:MonoBehaviour {
-  public Text title,subtitle; public void Apply(StadiumAppearance a){
+ public class StadiumView:MonoBehaviour {
+  public Text title,subtitle; public virtual void Apply(StadiumAppearance a){
    a.Clamp();foreach(var r in GetComponentsInChildren<Renderer>(true)){
     if(r.name.StartsWith("Flags")){r.gameObject.SetActive(a.flags);continue;}
     foreach(var m in r.materials){if(m.name.StartsWith("Seat")||m.name.StartsWith("Trim"))m.color=LocalProfile.Teams[a.palette];}

@@ -16,3 +16,26 @@ MonoBehaviour:
   displayName: Football
   available: 1
   maxPlayers: 10
+  environmentPrefab: {fileID: 1166421589932882903, guid: 12b2af12f4b92ed4ab613b03ff89ef9f, type: 3}
+  spawnPositions:
+  - {x: -4, y: 1, z: -8}
+  - {x: -2, y: 1, z: -8}
+  - {x: 0, y: 1, z: -8}
+  - {x: 2, y: 1, z: -8}
+  - {x: 4, y: 1, z: -8}
+  - {x: -4, y: 1, z: -11}
+  - {x: -2, y: 1, z: -11}
+  - {x: 0, y: 1, z: -11}
+  - {x: 2, y: 1, z: -11}
+  - {x: 4, y: 1, z: -11}
+  menuCamera: {x: 87, y: 64, z: -103}
+  menuFocus: {x: 0, y: 0, z: 4}
+  elevatedDistance: 19
+  farClip: 450
+  fogStart: 180
+  fogEnd: 430
+  ambientColor: {r: 0.48, g: 0.58, b: 0.7, a: 1}
+  backgroundColor: {r: 0.36078432, g: 0.67058825, b: 0.92156863, a: 1}
+  lightRotation: {x: 56, y: -35, z: 0}
+  lightIntensity: 1.25
+  indoor: 0

@@ -1,0 +1,1889 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &477063784656301681
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8655445123361949027}
+  - component: {fileID: 6843526936384646453}
+  m_Layer: 0
+  m_Name: Seat_Bay_00
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8655445123361949027
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477063784656301681}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6843526936384646453
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 477063784656301681}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -17.400002, y: 5.7025, z: 11.047932}
+  m_Size: 3.3399982
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5179432717717924740}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4095387634552847155}
+  m_Enabled: 1
+--- !u!1 &508122383333416397
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1260646818868590111}
+  - component: {fileID: 3401371521436009598}
+  m_Layer: 0
+  m_Name: Seat_Bay_02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1260646818868590111
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508122383333416397}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &3401371521436009598
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508122383333416397}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -17.400002, y: 5.702499, z: 1.2396749}
+  m_Size: 3.3399994
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5124079143913976950}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2902303019739185368}
+  m_Enabled: 1
+--- !u!1 &933851247923991210
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6816514429696386817}
+  - component: {fileID: 401485443061943096}
+  m_Layer: 0
+  m_Name: Seat_Bay_11
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6816514429696386817
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933851247923991210}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &401485443061943096
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 933851247923991210}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 16.304777, y: 5.7024965, z: -18.041824}
+  m_Size: 6.6102266
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6351821159649313077}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8896489375626170553}
+  m_Enabled: 1
+--- !u!1 &1043426842820387185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7955666321740697138}
+  - component: {fileID: 4305026481020590569}
+  m_Layer: 0
+  m_Name: Seat_Bay_15
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7955666321740697138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043426842820387185}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &4305026481020590569
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1043426842820387185}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 17.400002, y: 5.702499, z: 3.6644516}
+  m_Size: 3.3399982
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7310103900117171483}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 516322715610938066}
+  m_Enabled: 1
+--- !u!1 &1976177997317283727
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1878232004765540374}
+  - component: {fileID: 7213455796807060159}
+  m_Layer: 0
+  m_Name: Seat_Bay_13
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1878232004765540374
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1976177997317283727}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &7213455796807060159
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1976177997317283727}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 17.400002, y: 5.702498, z: -6.1438046}
+  m_Size: 3.3399992
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7460969052281464442}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6613705447945053999}
+  m_Enabled: 1
+--- !u!1 &2376498065865872789
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2191303095655366527}
+  - component: {fileID: 5467534140721023873}
+  m_Layer: 0
+  m_Name: Seat_Bay_21
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2191303095655366527
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2376498065865872789}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &5467534140721023873
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2376498065865872789}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -3.6644533, y: 5.7025013, z: 24.399992}
+  m_Size: 3.3399997
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 2841313122523789601}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8443394747761275625}
+  m_Enabled: 1
+--- !u!1 &3063793340208597427
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2562682644747108675}
+  - component: {fileID: 2631176634795757255}
+  m_Layer: 0
+  m_Name: Seat_Bay_16
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2562682644747108675
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3063793340208597427}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &2631176634795757255
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3063793340208597427}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 17.400002, y: 5.7025, z: 8.568581}
+  m_Size: 3.3399997
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3637390808754451050}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 1465745298348653331}
+  m_Enabled: 1
+--- !u!1 &3448192121075727937
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 9131530413732797903}
+  - component: {fileID: 4187675570046405450}
+  m_Layer: 0
+  m_Name: Seat_Bay_05
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &9131530413732797903
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3448192121075727937}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &4187675570046405450
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3448192121075727937}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -17.241577, y: 5.702497, z: -14.32364}
+  m_Size: 5.0418606
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 1323059135079404224}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6666203212841542830}
+  m_Enabled: 1
+--- !u!1 &3910223932740474517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 24820223895342500}
+  - component: {fileID: 2148807152282319657}
+  m_Layer: 0
+  m_Name: Seat_Bay_12
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &24820223895342500
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3910223932740474517}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &2148807152282319657
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3910223932740474517}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 17.400002, y: 5.7024975, z: -11.047934}
+  m_Size: 3.3399982
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5198052110825174228}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6710983544137980572}
+  m_Enabled: 1
+--- !u!1 &4591116795824405206
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1687229022869713595}
+  - component: {fileID: 7655546921623787270}
+  m_Layer: 0
+  m_Name: Seat_Bay_14
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1687229022869713595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4591116795824405206}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &7655546921623787270
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4591116795824405206}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 17.400002, y: 5.7024984, z: -1.2396762}
+  m_Size: 3.3399992
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 1090169988228318018}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7639827886102661393}
+  m_Enabled: 1
+--- !u!1 &4644465797685420182
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1516945205797720651}
+  - component: {fileID: 4931977701398382238}
+  m_Layer: 0
+  m_Name: Seat_Bay_03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1516945205797720651
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4644465797685420182}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &4931977701398382238
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4644465797685420182}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -17.400002, y: 5.7024984, z: -3.664453}
+  m_Size: 3.3399982
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3485429530591613344}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4477527523623362059}
+  m_Enabled: 1
+--- !u!1 &4746826848049795185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7318163740133777829}
+  - component: {fileID: 4296044597266766550}
+  m_Layer: 0
+  m_Name: Seat_Bay_20
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7318163740133777829
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4746826848049795185}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &4296044597266766550
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4746826848049795185}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 1.2396759, y: 5.7025013, z: 24.399992}
+  m_Size: 3.34
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 359265404423484931}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8925922935773221901}
+  m_Enabled: 1
+--- !u!1 &5485653746269252225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5813411705092953304}
+  - component: {fileID: 6118855792441793938}
+  m_Layer: 0
+  m_Name: Seat_Bay_04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5813411705092953304
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485653746269252225}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6118855792441793938
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5485653746269252225}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -17.400002, y: 5.7024975, z: -8.568582}
+  m_Size: 3.3400002
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 184316868129723324}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7319226155596000790}
+  m_Enabled: 1
+--- !u!1 &5767989781172370830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 32127214232113176}
+  - component: {fileID: 5183801416832215633}
+  m_Layer: 0
+  m_Name: Seat_Bay_06
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &32127214232113176
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5767989781172370830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &5183801416832215633
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5767989781172370830}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -14.018125, y: 5.702496, z: -21.41045}
+  m_Size: 6.2687244
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5735839261911530459}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3425783809588374117}
+  m_Enabled: 1
+--- !u!1 &5957542083216837690
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7936721212428249041}
+  - component: {fileID: 6738538974312246184}
+  m_Layer: 0
+  m_Name: Seat_Bay_17
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7936721212428249041
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5957542083216837690}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6738538974312246184
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5957542083216837690}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 17.241577, y: 5.7025003, z: 14.323639}
+  m_Size: 5.0418625
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7700724969353791753}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5495846976671398418}
+  m_Enabled: 1
+--- !u!1 &7224741549696952863
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4756799006376404093}
+  - component: {fileID: 2144507489798189638}
+  m_Layer: 0
+  m_Name: Seat_Bay_18
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4756799006376404093
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224741549696952863}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &2144507489798189638
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7224741549696952863}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 14.018125, y: 5.7025013, z: 21.41045}
+  m_Size: 6.2687244
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 5375802860929319501}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7578107888093563141}
+  m_Enabled: 1
+--- !u!1 &7317242476152631482
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4446846646016842611}
+  - component: {fileID: 6339817542083386323}
+  m_Layer: 0
+  m_Name: Seat_Bay_07
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4446846646016842611
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7317242476152631482}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &6339817542083386323
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7317242476152631482}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -6.8304205, y: 5.7024956, z: -24.301537}
+  m_Size: 4.71323
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4384142938910991849}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 1005445153600247210}
+  m_Enabled: 1
+--- !u!1 &7362602026747192830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8374650059183532480}
+  - component: {fileID: 2938699659622232759}
+  m_Layer: 0
+  m_Name: Seat_Bay_09
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8374650059183532480
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7362602026747192830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &2938699659622232759
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7362602026747192830}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 3.6644533, y: 5.7024956, z: -24.399992}
+  m_Size: 3.3399997
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6358353780651447434}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6265915892767382741}
+  m_Enabled: 1
+--- !u!1 &7581942903355311335
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 813267365155377958}
+  - component: {fileID: 4455368968456364953}
+  m_Layer: 0
+  m_Name: Seat_Bay_23
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &813267365155377958
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581942903355311335}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &4455368968456364953
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7581942903355311335}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -16.304777, y: 5.702501, z: 18.041822}
+  m_Size: 6.6102257
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 8249352174935940155}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3500032059830117849}
+  m_Enabled: 1
+--- !u!1 &8110911616901808220
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 610776143124279192}
+  - component: {fileID: 382620313181364400}
+  m_Layer: 0
+  m_Name: Seat_Bay_10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &610776143124279192
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8110911616901808220}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &382620313181364400
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8110911616901808220}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 10.425272, y: 5.702496, z: -23.52663}
+  m_Size: 6.5872974
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4266740755882332821}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 1571529418296132010}
+  m_Enabled: 1
+--- !u!1 &8436319835764611618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7317450618364172196}
+  - component: {fileID: 781081965441563482}
+  m_Layer: 0
+  m_Name: Seat_Bay_19
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7317450618364172196
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8436319835764611618}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &781081965441563482
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8436319835764611618}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 6.8304205, y: 5.7025013, z: 24.301537}
+  m_Size: 4.71323
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4940089817235532836}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 9074610870236739308}
+  m_Enabled: 1
+--- !u!1 &8604450754173634754
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7700929624927000890}
+  - component: {fileID: 8100803078836771117}
+  m_Layer: 0
+  m_Name: Seat_Bay_08
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7700929624927000890
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8604450754173634754}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &8100803078836771117
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8604450754173634754}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -1.2396759, y: 5.7024956, z: -24.399992}
+  m_Size: 3.34
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 4760675578504636154}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6456670149783834028}
+  m_Enabled: 1
+--- !u!1 &8670785746243641920
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 565795641241758746}
+  - component: {fileID: 984738678059581451}
+  m_Layer: 0
+  m_Name: Seat_Bay_22
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &565795641241758746
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8670785746243641920}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &984738678059581451
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8670785746243641920}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -10.425272, y: 5.7025013, z: 23.52663}
+  m_Size: 6.5872974
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 7763688547180100501}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6626817328712497294}
+  m_Enabled: 1
+--- !u!1 &8978276632787592874
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5091901190070002498}
+  - component: {fileID: 3771366057272946340}
+  m_Layer: 0
+  m_Name: Seat_Bay_01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5091901190070002498
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8978276632787592874}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7085248058969240250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!205 &3771366057272946340
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8978276632787592874}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: -17.400002, y: 5.7024994, z: 6.143803}
+  m_Size: 3.3399992
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.1
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 6397705452817099843}
+  - screenRelativeHeight: 0.005
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 3380764321243279405}
+  m_Enabled: 1
+--- !u!1001 &7339005848475030865
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8933950686919011715, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8267750210655856177, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -7815667011235793040, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -6217327837554221744, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5984075873669000356, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5699638977992340619, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5309999800582485597, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5246429867555647134, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5230636565693532502, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -5147386972894708508, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -4436479586867835014, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -4024567629641886723, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3535411494749734697, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3527698587242888151, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3206573767688735301, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2819049330397381778, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2525711543951048153, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -2200037204172595780, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -1848840445497843437, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -1746406051605050708, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -1455602907912684679, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -1136911797604461114, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -858754004856545688, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 57622941518260403, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 672082353752185609, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Name
+      value: UpperSeating
+      objectReference: {fileID: 0}
+    - target: {fileID: 1965159249675907705, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2259917411866955064, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2523106875795531708, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3088350629479316429, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3230363301908799586, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 3325517150636555150, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4543731234651349468, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4644210860111663207, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4812303004675482957, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 4904526269576999901, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5320356709774746140, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5395020062208481862, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5468291895546138778, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 5541396087508741715, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6053541436593063872, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6403267452129473601, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6769770275551819837, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7146340379733271438, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7289698153484345175, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7328231523265785461, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7854295551719771108, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9117624401218471391, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 9122188143321477502, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 4742473837712756890, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+    m_RemovedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8655445123361949027}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5091901190070002498}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1260646818868590111}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1516945205797720651}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5813411705092953304}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9131530413732797903}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 32127214232113176}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4446846646016842611}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7700929624927000890}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8374650059183532480}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 610776143124279192}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6816514429696386817}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 24820223895342500}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1878232004765540374}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1687229022869713595}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7955666321740697138}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2562682644747108675}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7936721212428249041}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 4756799006376404093}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7317450618364172196}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7318163740133777829}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2191303095655366527}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 565795641241758746}
+    - targetCorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 813267365155377958}
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+--- !u!23 &184316868129723324 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7446616052032751341, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &359265404423484931 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7000070551492485970, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &516322715610938066 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2093265452692525181, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1005445153600247210 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7506776985279217915, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1090169988228318018 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 7708030864427996691, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1323059135079404224 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -611062754846963823, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1465745298348653331 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1040826868512887230, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &1571529418296132010 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -1146637510017788677, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2841313122523789601 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4415992927370482576, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &2902303019739185368 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3630341279050148471, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3380764321243279405 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3804554514546334340, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3425783809588374117 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3867546624254083276, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3485429530591613344 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6163133614949106929, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3500032059830117849 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6146285882970828936, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &3637390808754451050 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6315165174093981499, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4095387634552847155 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2518392120745464222, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4266740755882332821 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6840933693378398148, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4384142938910991849 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -2806032662080393032, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4477527523623362059 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6627677285082499930, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4760675578504636154 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2866598166994301867, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4940089817235532836 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2402630185813244277, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5124079143913976950 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6717963018717322969, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5179432717717924740 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2465835635211157205, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5198052110825174228 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5910321169903754875, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5375802860929319501 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5817574471717431524, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5495846976671398418 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -6225019931978010813, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &5735839261911530459 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3044619733646700170, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6265915892767382741 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3687431738553895300, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6351821159649313077 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4755993210811362204, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6358353780651447434 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4459702708653490651, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6397705452817099843 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4823260810310551278, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6456670149783834028 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4880827061597005571, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6613705447945053999 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4750742357345111426, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6626817328712497294 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -4742767941419668001, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6666203212841542830 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5090617410375732737, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &6710983544137980572 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4105964637441773517, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &7085248058969240250 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7310103900117171483 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -9175004334466783158, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7319226155596000790 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 20969368788826951, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7460969052281464442 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 167703276302971691, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7578107888093563141 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8290077884438455212, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7639827886102661393 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 1143769252941765696, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7700724969353791753 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8140508800528540584, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7763688547180100501 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8185490823590285628, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8249352174935940155 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7520179082219665046, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8443394747761275625 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -8001326268728744008, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8896489375626170553 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7012158371652287000, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8925922935773221901 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7059852625179049636, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &9074610870236739308 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -7478758869586041923, guid: dabdcc284e906a145a632d5a93cdbfe2, type: 3}
+  m_PrefabInstance: {fileID: 7339005848475030865}
+  m_PrefabAsset: {fileID: 0}

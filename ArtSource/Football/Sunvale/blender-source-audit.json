@@ -1,0 +1,12 @@
+{
+  "roof_shells": 32,
+  "mesh_objects": 180,
+  "invalid_coordinates": 0,
+  "invalid_uvs": 0,
+  "roof_boundary_edges": 0,
+  "letter_front_facing": true,
+  "packed_texture": true,
+  "pitch_base_separation_metres": 0.01999999253451823,
+  "lod0_bays": 32,
+  "lod1_bays": 32
+}

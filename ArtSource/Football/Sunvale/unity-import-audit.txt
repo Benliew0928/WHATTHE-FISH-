@@ -1,0 +1,11 @@
+Sunvale Unity import audit
+Mesh renderers: 180
+Materials: 1, URP/Lit, shared painted atlas
+All-near triangles: 396213
+All-far triangles: 224181
+Seat LOD groups: 32
+Pitch bounds: Center: (0.00, -0.01, 0.00), Extents: (34.00, 0.01, 52.50)
+Assembly bounds: Center: (0.00, 13.07, 0.00), Extents: (65.76, 13.48, 84.76)
+Goals: 2; 7.32 x 2.44 m internal opening
+Colliders: 11
+Runtime performance has not been profiled on Android.

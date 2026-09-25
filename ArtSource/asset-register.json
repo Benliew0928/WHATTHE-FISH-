@@ -1,10 +1,52 @@
 {
-  "Stadium.fbx": "Football/Stadium.blend",
-  "Athlete.fbx": "Shared/Characters/Athlete.blend",
-  "generator": "Tools/Blender/build_assets.py",
   "units": "metres",
   "pitch_metres": [
     68,
     105
-  ]
+  ],
+  "court_metres": [
+    15.24,
+    28.6512
+  ],
+  "GolfIsland.fbx": "Golf/Tidebloom/Island_Tidebloom.blend",
+  "golf_generator": "Tools/Blender/build_golf.py",
+  "island_metres": [
+    394.33,
+    383.87
+  ],
+  "RainbowSprinter.fbx": "Shared/Characters/RainbowSprinter.blend",
+  "RainbowSprinter-source.zip": "Shared/Characters/Meshy/RainbowSprinter-source.zip",
+  "character_generator": "Tools/Blender/export_rainbow_sprinter.py",
+  "RainbowSprinterRun.fbx": "Shared/Characters/RainbowSprinter.blend",
+  "RainbowSprinterIdle.fbx": "Shared/Characters/RainbowSprinterAnimation.blend",
+  "character_animation_tool": "Tools/Blender/animate_rainbow_sprinter.py",
+  "character_animation_guide": "Docs/VisualDirection/IDLE-AUTHORING.md",
+  "RainbowSprinterTurn_Left_90.fbx": "Shared/Characters/RainbowSprinterTurns.blend",
+  "RainbowSprinterTurn_Left_180.fbx": "Shared/Characters/RainbowSprinterTurns.blend",
+  "RainbowSprinterTurn_Right_90.fbx": "Shared/Characters/RainbowSprinterTurns.blend",
+  "RainbowSprinterTurn_Right_180.fbx": "Shared/Characters/RainbowSprinterTurns.blend",
+  "character_turn_tool": "Tools/Blender/turn_rainbow_sprinter.py",
+  "character_turn_guide": "Docs/VisualDirection/TURN-AUTHORING.md",
+  "RainbowSprinterSlide_Tackle.fbx": "Shared/Characters/RainbowSprinterFootball.blend",
+  "RainbowSprinterTackle_Hit.fbx": "Shared/Characters/RainbowSprinterFootball.blend",
+  "character_football_tool": "Tools/Blender/tackle_rainbow_sprinter.py",
+  "character_football_guide": "Docs/VisualDirection/TACKLE-AUTHORING.md",
+  "football_refined_source": "Football/Sunvale/Stadium_Sunvale.blend",
+  "football_refined_generator": "Tools/Blender/build_football_stadium.py",
+  "football_refined_manifest": "Football/Sunvale/stadium-manifest.json",
+  "football_refined_exports": "Game/Assets/_Game/Art/Football/Sunvale/",
+  "football_refined_prefab": "Game/Assets/_Game/Prefabs/Football/Sunvale/SunvaleStadium.prefab",
+  "football_refined_status": "Integrated into Bootstrap, FootballEnvironment and the WindowsFinal player",
+  "basketball_refined_source": "Basketball/Rally/Arena_Rally.blend",
+  "basketball_refined_generator": "Tools/Blender/build_rally_arena.py",
+  "basketball_refined_exporter": "Tools/Blender/export_rally_arena.py",
+  "basketball_refined_manifest": "Basketball/Rally/arena-manifest.json",
+  "basketball_refined_exports": "Game/Assets/_Game/Art/Basketball/Rally/",
+  "basketball_refined_prefab": "Game/Assets/_Game/Prefabs/Basketball/Rally/RallyArena.prefab",
+  "basketball_refined_review": "Game/Assets/_Game/Scenes/RallyArenaReview.unity",
+  "basketball_refined_status": "Integrated into Bootstrap, BasketballEnvironment and the WindowsFinal player",
+  "golf_refined_source": "Golf/Tidebloom/Island_Tidebloom.blend",
+  "golf_refined_manifest": "Golf/Tidebloom/island-manifest.json",
+  "golf_refined_exports": "Game/Assets/_Game/Art/Golf/Tidebloom/",
+  "legacy_archive": "Legacy/archive-manifest.json"
 }

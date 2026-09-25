@@ -11,9 +11,9 @@ using Unity.Services.Multiplayer;
 using UnityEngine;
 
 namespace SportsPrototype {
- public interface IRoomService { Task Create(); Task Join(string code); Task Leave(); }
+ public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed class RoomService:MonoBehaviour,IRoomService {
-  public ISession Session {get;private set;} public bool busy; public bool LocalTest; public string Error {get;private set;} public event Action Changed;
+  public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   public bool Host=>Connected&&NetworkManager.Singleton.IsHost;
   public string Code=>Session?.Code??(LocalTest?"LOCAL TEST":"—");
@@ -30,9 +30,9 @@ namespace SportsPrototype {
    }
    if(!AuthenticationService.Instance.IsSignedIn)await AuthenticationService.Instance.SignInAnonymouslyAsync();
   }
-  public async Task Create(){await Run(async()=>{
+  public async Task Create(SportId sport=SportId.Football){if(Connected)return;AppRoot.Instance.SelectSport(sport);Sport=sport;await Run(async()=>{
    await Initialize();
-   Session=await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions{MaxPlayers=10,IsPrivate=true,Name="Football • "+LocalProfile.Stadium.title}.WithRelayNetwork());
+   Session=await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions{MaxPlayers=10,IsPrivate=true,Name=Sport+" • "+LocalProfile.ForSport(Sport).title}.WithRelayNetwork());
    Bind();
   });}
   public async Task Join(string code){await Run(async()=>{
@@ -54,12 +54,12 @@ namespace SportsPrototype {
     bool full=n.ConnectedClients.Count>=10;bool running=NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value;
     response.Approved=!full&&!running;response.CreatePlayerObject=response.Approved;
     response.Reason=full?"This room is full (10 players).":running?"Exploration has started. Ask the host to return to the waiting room.":"";
-    response.Position=new Vector3((n.ConnectedClients.Count%5-2)*2,1,-8-(n.ConnectedClients.Count/5)*3);response.Rotation=Quaternion.identity;
+    response.Position=AppRoot.Instance.environments.Definition(Sport).Spawn(n.ConnectedClients.Count);response.Rotation=Quaternion.identity;
    };
    n.OnClientDisconnectCallback+=id=>{if(!leaving&&(!n.IsServer||id==n.LocalClientId)){string reason=n.DisconnectReason;if(string.IsNullOrEmpty(reason)||reason.StartsWith("[Disconnect"))reason="The connection closed or the host left. You can create a new room or explore offline.";_=ExitWithMessage(reason);}};
   }
   public void StartLocal(bool host,ushort port=7777){
-   LocalTest=true;NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1",port,"127.0.0.1");
+   Sport=AppRoot.Instance.SelectedSport;LocalTest=true;NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData("127.0.0.1",port,"127.0.0.1");
    if(host)NetworkManager.Singleton.StartHost();else NetworkManager.Singleton.StartClient();Changed?.Invoke();
   }
   public async Task Leave(){if(leaving)return;bool wasHost=Host;leaving=true;var session=Session;Session=null;Changed?.Invoke();

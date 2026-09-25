@@ -14,5 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SportsPrototype.SportDefinition
   id: 2
   displayName: Golf
-  available: 0
+  available: 1
   maxPlayers: 10
+  environmentPrefab: {fileID: 5576810707059759999, guid: 0ba7d476827e9f248bd68825f302afa1, type: 3}
+  spawnPositions:
+  - {x: -17, y: 5.883244, z: -146}
+  - {x: -15, y: 5.868885, z: -146}
+  - {x: -13, y: 5.84749, z: -146}
+  - {x: -11, y: 5.819324, z: -146}
+  - {x: -9, y: 5.7847023, z: -146}
+  - {x: -17, y: 5.821958, z: -143}
+  - {x: -15, y: 5.8068357, z: -143}
+  - {x: -13, y: 5.784751, z: -143}
+  - {x: -11, y: 5.755971, z: -143}
+  - {x: -9, y: 5.7208123, z: -143}
+  menuCamera: {x: 295, y: 285, z: -350}
+  menuFocus: {x: -65, y: 0, z: 25}
+  elevatedDistance: 25
+  farClip: 1400
+  fogStart: 700
+  fogEnd: 1300
+  ambientColor: {r: 0.64, g: 0.72, b: 0.78, a: 1}
+  backgroundColor: {r: 0.49803922, g: 0.7764706, b: 0.9372549, a: 1}
+  lightRotation: {x: 48, y: -35, z: 0}
+  lightIntensity: 1.25
+  indoor: 0

@@ -1,0 +1,94 @@
+{
+  "invalid_coordinates": 0,
+  "invalid_uvs": 0,
+  "degenerate_triangles": 0,
+  "missing_materials": 0,
+  "mesh_objects": 311,
+  "visible_triangles": 533155,
+  "hidden_lod_triangles": 15552,
+  "module_count": 13,
+  "court_dimensions": [
+    15.239999771118164,
+    28.651199340820312
+  ],
+  "upward_court_faces": true,
+  "apron_foundation_clearance_metres": 0.10999999910593034,
+  "rim_centers": [
+    [
+      0.0,
+      12.7253999710083,
+      3.0480000972747803
+    ],
+    [
+      0.0,
+      -12.7253999710083,
+      3.0480000972747803
+    ]
+  ],
+  "lod0_bays": 48,
+  "lod1_bays": 48,
+  "packed_maps": [
+    "Rally_HoneyMaple_BaseColor",
+    "Rally_HoneyMaple_MetallicSmoothness",
+    "Rally_HoneyMaple_Roughness",
+    "Rally_PaintedSurface",
+    "Rally_WovenFabric"
+  ],
+  "material_count": 73,
+  "fbx_exports": [
+    {
+      "module": "Court",
+      "bytes": 357804
+    },
+    {
+      "module": "CenterEmblem",
+      "bytes": 42444
+    },
+    {
+      "module": "Hoop",
+      "bytes": 215052
+    },
+    {
+      "module": "Stadium",
+      "bytes": 2068700
+    },
+    {
+      "module": "LowerSeating",
+      "bytes": 2334316
+    },
+    {
+      "module": "UpperSeating",
+      "bytes": 1881644
+    },
+    {
+      "module": "Railings",
+      "bytes": 610108
+    },
+    {
+      "module": "PerimeterPads",
+      "bytes": 184796
+    },
+    {
+      "module": "Banners",
+      "bytes": 393324
+    },
+    {
+      "module": "LightingRig",
+      "bytes": 817404
+    },
+    {
+      "module": "Ceiling",
+      "bytes": 156028
+    },
+    {
+      "module": "Scoreboard",
+      "bytes": 77580
+    },
+    {
+      "module": "CourtsideFurniture",
+      "bytes": 113884
+    }
+  ],
+  "independent_module_materials": true,
+  "inward_banner_prints": true
+}

@@ -6,6 +6,7 @@ Game/[Uu]serSettings/
 Game/.vs/
 Game/.utmp/
 Builds/
+Legacy/
 *.csproj
 *.sln
 *.blend1
@@ -15,3 +16,4 @@ Builds/
 .env*
 Tools/Downloads/
 Game/Assets/Resources/PerformanceTestRun*.json*
+__pycache__/

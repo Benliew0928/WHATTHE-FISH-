@@ -10,9 +10,10 @@
 | Shared/Networking | MPS room lifecycle, Relay setup, capacity/phase approval, NGO players and authoritative movement |
 | Shared/Platform | Reserved for Android/Huawei services; IPlatformGameServices currently has an explicitly unavailable adapter |
 | Sports/Football | Stadium visuals and signage; football gameplay is deferred |
-| Sports/Basketball, Sports/Golf | SportDefinition assets marked unavailable; no placeholder environments |
+| Sports/Basketball | Indoor arena visuals and host-selectable center logo catalog |
+| Sports/Golf | Flat island exploration; fixed appearance and shoreline boundary |
 
-`AppRoot` composes the prototype and owns navigation. `RoomService` is the `IRoomService` implementation. `ISportMode` and `IPlayerCommandSource` provide boundaries for future loaders/rules and bot commands; they are not implementations of the deferred sports. All current players explore one static Football scene. There is no dynamic stadium resizing.
+`AppRoot` composes the prototype and owns navigation. `RoomService` is the `IRoomService` implementation. `ISportMode` and `IPlayerCommandSource` provide boundaries for future loaders/rules and bot commands; they are not implementations of the deferred sports. `SportEnvironmentController` activates exactly one Football/Basketball/Golf root in Bootstrap. Each `SportDefinition` stores its environment prefab, ten spawn positions, menu view, elevated-camera distance, far clip, fog distances and lighting values. There is no dynamic stadium resizing.
 
 ## Network flow
 
@@ -21,7 +22,7 @@
 3. NGO approves connections only while waiting and below ten connected players.
 4. Each owner sends a clamped movement vector, heading and sprint flag at 30 Hz. Only the host simulates CharacterController movement on the fixed timestep. Stale input expires after 0.25 s. Clients receive server NetworkTransform updates and interpolate them. There is no client prediction yet, so high latency can affect responsiveness.
 5. Each player's server-written cosmetic and readiness NetworkVariables update the waiting room and athlete. RPC ownership restricts players to their own avatar.
-6. The host player's server-written stadium preset and phase variables are shared world state. The host locks the MPS session before starting exploration. NGO approval provides a second phase/capacity gate.
+6. The host player's server-written `WorldSport`, stadium preset (including logo ID), and phase variables are shared world state. The host locks the MPS session before starting exploration. NGO approval provides a second phase/capacity gate.
 7. Returning to the waiting room unlocks joining. Explicit host exit deletes the session. Disconnect/session deletion/host replacement returns clients to usable UI. The application does not elect a new gameplay host.
 
 Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work.
@@ -32,13 +33,17 @@ Standard pitch: 68 × 105 metres. Four covered stands use repeated seats, terrac
 
 The athlete uses one small rig, three looping actions, one collision capsule and two hair silhouettes (classic cap or cap plus tuft). Appearance never changes collision size. Collider meshes exist only on walkable/structural stadium surfaces. First-person view hides head renderers. Third/elevated camera casts against the stadium layer to avoid walls.
 
-URP uses a directional light, ambient fill, restricted shadow distance, 2× MSAA and a 30 FPS mobile / 60 FPS desktop frame target. Device FPS and thermal behaviour are measured requirements, not guaranteed by those settings. No audience, crowd audio, downloaded media or custom mesh uploads are included.
+URP uses a directional light, ambient fill, restricted shadow distance, 2× MSAA and a 30 FPS mobile / 60 FPS desktop frame target. Device FPS and thermal behaviour are measured requirements, not guaranteed by those settings. No audience, crowd audio, downloaded media or custom mesh uploads are included. Basketball uses an enclosed Blender arena with merged meshes, simple structural colliders, ambient fill, a shadowless directional light and emissive fixtures. Center logos stay separate from the court markings. The scoreboards are decorative.
+
+Golf uses five Blender meshes: flat grass, sand, coastal edge, shallow sea and open sea. Only grass and sand have walkable colliders. Overlapping shoreline box colliders live on layer 9 (PlayerBoundary); the shared camera casts only against layer 8. Golf sets far clip to 1,400 m and fog to 700–1,300 m. Other environments restore their existing 450 m far clip and 180–430 m fog. Water is static geometry without collision or simulation.
+
+`IRoomService.Create(SportId)` selects the host sport before starting networking; guests adopt the replicated sport without writing their preferences. `AppRoot.SaveStadium` ignores guest mutations. Football retains the `stadium` preference key; basketball uses `basketball`. Both persist compact appearance JSON, and only appearance IDs/text are transmitted. Golf returns a fixed appearance named ISLAND GREENS and cannot write either saved stadium profile. Golf customization is absent from menus. The football tackle update uses NGO protocol version 6 for the separate action snapshot alongside locomotion; earlier builds must not join these rooms. See `Docs/VisualDirection/TACKLE-AUTHORING.md` for owner-authorized action requests, server contact resolution and animation timing. See `Docs/VisualDirection/TURN-AUTHORING.md` for motor phases, turn-only foot placement and authoring/export responsibilities.
 
 ## Next milestones
 
-- Add a sport-loading service and scene/content mapping when the second sport is built.
+- Extend the existing three-sport environment mapping for later venues.
 - Football/basketball rule modules: 1v1–5v5 team assignment, host settings, timed rounds, ball authority, scoring and a bot IPlayerCommandSource.
-- Golf: separate walking/aiming/shot flow and island terrain authored in Blender.
+- Golf: add course layout, holes and a separate aiming/shot flow to the existing flat island.
 - Huawei: implement authentication/game services and achievements/results behind IPlatformGameServices after checking competition and AppGallery requirements. Current builds do **not** claim HMS integration.
 - Improve high-latency movement with input sequencing, client prediction and reconciliation before competitive play.
 - Add accessibility scaling, remappable desktop controls and broader Android aspect-ratio testing.

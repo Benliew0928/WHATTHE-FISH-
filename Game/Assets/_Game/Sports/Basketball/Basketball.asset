@@ -14,5 +14,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SportsPrototype.SportDefinition
   id: 1
   displayName: Basketball
-  available: 0
+  available: 1
   maxPlayers: 10
+  environmentPrefab: {fileID: 6390494283199185885, guid: b09dc0128d8da944fae158b30fa9a03d, type: 3}
+  spawnPositions:
+  - {x: -3, y: 1, z: -4}
+  - {x: -1.5, y: 1, z: -4}
+  - {x: 0, y: 1, z: -4}
+  - {x: 1.5, y: 1, z: -4}
+  - {x: 3, y: 1, z: -4}
+  - {x: -3, y: 1, z: -6}
+  - {x: -1.5, y: 1, z: -6}
+  - {x: 0, y: 1, z: -6}
+  - {x: 1.5, y: 1, z: -6}
+  - {x: 3, y: 1, z: -6}
+  menuCamera: {x: 9, y: 9.5, z: 15}
+  menuFocus: {x: 0, y: 1.2, z: -1}
+  elevatedDistance: 12
+  farClip: 450
+  fogStart: 180
+  fogEnd: 430
+  ambientColor: {r: 0.66, g: 0.69, b: 0.74, a: 1}
+  backgroundColor: {r: 0.13725491, g: 0.22352941, b: 0.3137255, a: 1}
+  lightRotation: {x: 72, y: -25, z: 0}
+  lightIntensity: 1.15
+  indoor: 1

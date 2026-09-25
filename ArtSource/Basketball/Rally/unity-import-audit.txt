@@ -1,0 +1,8 @@
+Rally Unity import audit
+Modules: 13; hoop instances: 2; seat LOD groups: 48
+Independent material assets: 73; mesh renderers including LODs: 311
+All-near triangles: 533155; all-far triangles: 253219
+Court bounds: Center: (0.00, 0.00, 0.00), Extents: (7.62, 0.00, 14.33); rim height: 3.048 m
+Colliders: 7 (floor, padded bases, runoff boundary)
+Decorative net/rim do not have ball-physics colliders. Concourse is visual, not navigable.
+Live basketball scene is unchanged. No target-device performance claim.
