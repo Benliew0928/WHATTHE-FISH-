@@ -9,6 +9,7 @@ namespace WhatTheFish {
  public sealed class AppRoot:MonoBehaviour {
   public static AppRoot Instance; public SportEnvironmentController environments;public StadiumView stadium=>environments.View;public SportId SelectedSport=>environments.Selected;public StadiumAppearance CurrentAppearance=>LocalProfile.ForSport(SelectedSport);public PlayerView view;public RoomService rooms;
   public Athlete LocalAthlete;public bool Exploring {get;private set;}
+  bool SupportsCustomization=>SelectedSport==SportId.Football||SelectedSport==SportId.Basketball;
   public GameObject athletePrefab; Athlete offline; Canvas canvas;RectTransform safe,page;Font font;Sprite rounded;Text status,roster,fps;float rosterTimer;string screen="home",appliedWorld="";bool lastExploring; InputField code;
   readonly Color ink=LocalProfile.Hex("173834"),mint=LocalProfile.Hex("BFEBCB"),cream=LocalProfile.Hex("FFF9E9");
   void Awake(){Instance=this;Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
@@ -45,7 +46,7 @@ namespace WhatTheFish {
   public void EnterOffline(){Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium.Apply(CurrentAppearance);Show("stadium");}
   async void Return(){if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
   void Clear(){PlayerView.LookDelta=Vector2.zero;if(page)Destroy(page.gameObject);page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;}
-  public void Show(string which){if(which=="custom"&&SelectedSport==SportId.Golf)which=rooms.Connected?"room":"sport";if(which=="custom"&&rooms.Connected&&!rooms.Host)which="room";screen=which;Clear();if(which=="stadium"){HUD();return;}
+  public void Show(string which){if(which=="custom"&&!SupportsCustomization)which=rooms.Connected?"room":"sport";if(which=="custom"&&rooms.Connected&&!rooms.Host)which="room";screen=which;Clear();if(which=="stadium"){HUD();return;}
    Panel(page,new Vector2(330,450),new Vector2(590,824),new Color(1,.98f,.93f,.96f));
    Label(page,"WHATTHE FISH?",58,new Vector2(82,822),new Vector2(510,35),16,ink);
    if(which=="home"){
@@ -54,24 +55,25 @@ namespace WhatTheFish {
     Button("Let's play",new Vector2(330,454),()=>Show("sports"),mint);
     Button("Your athlete",new Vector2(330,358),()=>Show("character"),Color.white);
     Button("Settings & controls",new Vector2(330,262),()=>Show("settings"),Color.white);
-    Label(page,"THREE HOME GROUNDS\nA shared place to move, meet and explore.",0,new Vector2(82,128),new Vector2(485,90),21,ink);
+    Label(page,"FOUR HOME GROUNDS\nA shared place to move, meet and explore.",0,new Vector2(82,128),new Vector2(485,90),21,ink);
     Pill(CurrentAppearance.title.ToUpperInvariant(),new Vector2(1300,104),new Vector2(380,65));
    } else if(which=="sports"){
-    Heading("Pick your sport","Three places. Plenty of possibilities.");
+    Heading("Pick your sport","Four places. Plenty of possibilities.");
     Button("Football  /  Explore stadium",new Vector2(330,542),()=>{SelectSport(SportId.Football);Show("sport");},mint);
     Button("Basketball  /  Explore arena",new Vector2(330,440),()=>{SelectSport(SportId.Basketball);Show("sport");},mint);
-    Button("Golf  /  Explore island",new Vector2(330,338),()=>{SelectSport(SportId.Golf);Show("sport");},mint);Back("home");
+    Button("Golf  /  Explore island",new Vector2(330,338),()=>{SelectSport(SportId.Golf);Show("sport");},mint);
+    Button("Fishing  /  Explore lagoon",new Vector2(330,236),()=>{SelectSport(SportId.Fishing);Show("sport");},mint);Back("home");
    } else if(which=="sport"){
-    Heading(SelectedSport.ToString(),SelectedSport switch{SportId.Basketball=>"Your indoor home court. Take a look around.",SportId.Golf=>"An open island. Sea on every side.",_=>"The pitch is yours. Take a look around."});
+    Heading(SelectedSport.ToString(),SelectedSport switch{SportId.Basketball=>"Your indoor home court. Take a look around.",SportId.Golf=>"An open island. Sea on every side.",SportId.Fishing=>"Five decks. One bright tropical lagoon.",_=>"The pitch is yours. Take a look around."});
     Button("Explore offline",new Vector2(330,568),EnterOffline,mint);
     Button("Create internet room",new Vector2(330,468),async()=>{await rooms.Create(SelectedSport);UpdateStatus();},Color.white);
     code=Field("Room code",new Vector2(235,367),new Vector2(305,76),"",12);
     Button("Join",new Vector2(490,367),async()=>{await rooms.Join(code.text);UpdateStatus();},mint,new Vector2(160,76));
-    if(SelectedSport!=SportId.Golf)Button("Stadium customisation",new Vector2(330,267),()=>Show("custom"),Color.white);else Label(page,"420 m of open land.\nAbout one minute to sprint across.",0,new Vector2(82,265),new Vector2(490,100),23,ink);
+    if(SupportsCustomization)Button("Stadium customisation",new Vector2(330,267),()=>Show("custom"),Color.white);else Label(page,SelectedSport==SportId.Fishing?"Explore the island, bridge and five decks.\nFishing gameplay is coming later.":"420 m of open land.\nAbout one minute to sprint across.",0,new Vector2(82,265),new Vector2(490,100),23,ink);
     status=Label(page,"",0,new Vector2(82,160),new Vector2(500,100),19,ink);UpdateStatus();Back("sports");
    } else if(which=="character"){
     offline.gameObject.SetActive(true);Heading("Rainbow Sprinter","Our shared athlete for this art phase.");
-    Label(page,"One bright cartoon look across all three sports.\nOutfit and appearance choices return when the\ncharacter has separate, swappable parts.",0,new Vector2(82,434),new Vector2(510,168),25,ink);
+    Label(page,"One bright cartoon look across all four sports.\nOutfit and appearance choices return when the\ncharacter has separate, swappable parts.",0,new Vector2(82,434),new Vector2(510,168),25,ink);
     Button("Done",new Vector2(330,138),()=>{offline.gameObject.SetActive(!rooms.Connected);Show(rooms.Connected?"room":"home");},Color.white);
    } else if(which=="settings"){
     Heading("Make it comfy","Landscape play · 30 FPS target");
@@ -90,10 +92,10 @@ namespace WhatTheFish {
     Button("Big screen: "+(a.screen==0?"Stadium title":"Team welcome"),new Vector2(330,310),()=>{var s=CurrentAppearance;s.screen=1-s.screen;SaveStadium(s);Show("custom");},Color.white);
     Button("Decorative flags: "+(a.flags?"On":"Off"),new Vector2(330,219),()=>{var s=CurrentAppearance;s.flags=!s.flags;SaveStadium(s);Show("custom");},Color.white);}Back(rooms.Connected?"room":"sport");
    } else if(which=="room"){
-    Heading(SelectedSport+" room","Code: "+rooms.Code+"   /   10 places");
+    Heading(SelectedSport+" room","Code: "+rooms.Code+"   /   "+environments.Current.maxPlayers+" places");
     roster=Label(page,"Waiting for players…",0,new Vector2(82,469),new Vector2(505,330),22,ink);
     Button("Ready / not ready",new Vector2(330,248),()=>{var p=LocalNetwork();if(p)p.ReadyRpc(!p.Ready.Value);},mint);
-    if(rooms.Host){if(SelectedSport==SportId.Golf)Button("Start",new Vector2(330,158),async()=>await rooms.SetExploring(true),mint);else{Button("Start",new Vector2(454,158),async()=>await rooms.SetExploring(true),mint,new Vector2(240,72));Button("Stadium",new Vector2(207,158),()=>Show("custom"),Color.white,new Vector2(240,72));}}
+    if(rooms.Host){if(!SupportsCustomization)Button("Start",new Vector2(330,158),async()=>await rooms.SetExploring(true),mint);else{Button("Start",new Vector2(454,158),async()=>await rooms.SetExploring(true),mint,new Vector2(240,72));Button("Stadium",new Vector2(207,158),()=>Show("custom"),Color.white,new Vector2(240,72));}}
     else Button("Your athlete",new Vector2(330,158),()=>Show("character"),Color.white);
     Button("Leave",new Vector2(143,73),async()=>{await rooms.Leave();Exploring=false;Show("sport");},Color.white,new Vector2(130,48));
     status=Label(page,"",0,new Vector2(292,72),new Vector2(295,80),17,ink);RefreshRoster();UpdateStatus();
@@ -102,13 +104,13 @@ namespace WhatTheFish {
   NetworkAthlete LocalNetwork()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
   void RefreshRoster(){if(!roster)return;var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).OrderBy(p=>p.OwnerClientId).ToArray();roster.text=string.Join("\n",players.Select(p=>{
    return $"{(p.OwnerClientId==0?"HOST":"PLAYER "+p.OwnerClientId)}{(p.IsOwner?" (you)":"")}  ·  Rainbow Sprinter  ·  {(p.Ready.Value?"READY":"choosing…")}";}));}
-  public void SaveStadium(StadiumAppearance a){if(SelectedSport==SportId.Golf||rooms.Connected&&!rooms.Host)return;LocalProfile.SaveSport(SelectedSport,a);stadium.Apply(a);if(rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(a);}
+  public void SaveStadium(StadiumAppearance a){if(!SupportsCustomization||rooms.Connected&&!rooms.Host)return;LocalProfile.SaveSport(SelectedSport,a);stadium.Apply(a);if(rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(a);}
   void Heading(string title,string caption){Label(page,title,0,new Vector2(82,714),new Vector2(510,80),44,ink);Label(page,caption,0,new Vector2(82,643),new Vector2(490,64),22,ink);}
   void Back(string target){Button("← Back",new Vector2(165,91),()=>Show(target),Color.white,new Vector2(165,54));}
   void HUD(){
    var look=Panel(page,new Vector2(1170,480),new Vector2(820,720),new Color(1,1,1,.001f));look.gameObject.AddComponent<TouchPad>().look=true;
    var bg=Panel(page,new Vector2(190,178),new Vector2(176,176),new Color(1,1,1,.25f));var pad=bg.gameObject.AddComponent<TouchPad>();var knob=Panel(bg,Vector2.zero,new Vector2(82,82),cream);knob.anchorMin=knob.anchorMax=new Vector2(.5f,.5f);var circle=MakeCircle();foreach(var r in new[]{bg,knob}){r.GetComponent<Image>().sprite=circle;r.GetComponent<Image>().type=Image.Type.Simple;}pad.knob=knob;view.stick=pad;
-   Button("Camera",new Vector2(1425,155),view.Switch,mint,new Vector2(220,90));Button(rooms.Host?"Return to room":SelectedSport switch{SportId.Basketball=>"Leave court",SportId.Golf=>"Leave island",_=>"Leave pitch"},new Vector2(1418,818),Return,cream,new Vector2(250,62));
+   Button("Camera",new Vector2(1425,155),view.Switch,mint,new Vector2(220,90));Button(rooms.Host?"Return to room":SelectedSport switch{SportId.Basketball=>"Leave court",SportId.Golf=>"Leave island",SportId.Fishing=>"Leave lagoon",_=>"Leave pitch"},new Vector2(1418,818),Return,cream,new Vector2(250,62));
    if(SelectedSport==SportId.Football){
     var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Tackle button";
     var control=rect.gameObject.AddComponent<TackleButton>();control.button=rect.gameObject.AddComponent<Button>();

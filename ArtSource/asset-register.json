@@ -48,5 +48,12 @@
   "golf_refined_source": "Golf/Tidebloom/Island_Tidebloom.blend",
   "golf_refined_manifest": "Golf/Tidebloom/island-manifest.json",
   "golf_refined_exports": "Game/Assets/_Game/Art/Golf/Tidebloom/",
-  "legacy_archive": "Legacy/archive-manifest.json"
+  "legacy_archive": "Legacy/archive-manifest.json",
+  "fishing_source": "Fishing/Lagoon/Island_Lagoon_5P.blend",
+  "fishing_modules": "Fishing/Lagoon/Modules/",
+  "fishing_generator": "Tools/Blender/build_fishing_lagoon.py",
+  "fishing_manifest": "Fishing/Lagoon/lagoon-manifest.json",
+  "fishing_exports": "Game/Assets/_Game/Art/Fishing/Lagoon/",
+  "fishing_prefabs": "Game/Assets/_Game/Prefabs/Fishing/Lagoon/",
+  "fishing_status": "Five-player modular lagoon environment; exploration only"
 }

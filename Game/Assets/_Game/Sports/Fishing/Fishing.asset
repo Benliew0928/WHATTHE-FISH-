@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 253b01208eeda4949a91c6a2514ed669, type: 3}
+  m_Name: Fishing
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.SportDefinition
+  id: 3
+  displayName: Fishing
+  available: 1
+  maxPlayers: 5
+  environmentPrefab: {fileID: 4744382211143379285, guid: 1e9259779792e7f44996cda7a81bf7c8, type: 3}
+  spawnPositions:
+  - {x: 3.91887e-15, y: 1.35, z: -32}
+  - {x: -30.43381, y: 1.35, z: -9.888544}
+  - {x: -18.809128, y: 1.35, z: 25.888544}
+  - {x: 18.809128, y: 1.35, z: 25.888544}
+  - {x: 30.43381, y: 1.35, z: -9.888544}
+  menuCamera: {x: 94, y: 126, z: -152}
+  menuFocus: {x: 0, y: 0, z: 0}
+  elevatedDistance: 18
+  farClip: 1200
+  fogStart: 350
+  fogEnd: 1000
+  ambientColor: {r: 0.64, g: 0.72, b: 0.78, a: 1}
+  backgroundColor: {r: 0.49803922, g: 0.7764706, b: 0.9372549, a: 1}
+  lightRotation: {x: 48, y: -35, z: 0}
+  lightIntensity: 1.25
+  indoor: 0

@@ -1,6 +1,6 @@
 # WHATTHE FISH?
 
-WHATTHE FISH? is an Android-first game with football, basketball, and golf environments.
+WHATTHE FISH? is an Android-first game with football, basketball, golf, and fishing environments.
 
 Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`, then press Play. The football stadium, indoor basketball arena and golf island are Blender assets. The shared athlete is the approved Meshy 6 Lite Rainbow Sprinter, prepared in Blender. There are no spectator NPCs.
 
@@ -24,6 +24,8 @@ Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`
 - `Docs/VisualDirection/RAINBOW-SPRINTER-IMPLEMENTATION.md` — current character asset, runtime behavior and verification.
 
 ## Controls
+
+Fishing environment: launch `Builds/WindowsFinal/WhatTheFish.exe` and choose **Let's play → Fishing → Explore offline**, or use `Builds/WindowsFinal/Explore-Fishing.cmd`. The lagoon has five separate wooden stands, a connected sandy loop and an inlet bridge. This is environment exploration only. The [modular Blender source guide](ArtSource/Fishing/Lagoon/README.md) describes the 16 separate asset modules, source libraries and Unity prefabs prepared for future customization.
 
 Landscape: left thumb stick moves; push it fully to run. Drag on the right to look. Tap **Camera** to cycle first person, third person and elevated views. On Windows: WASD, Shift, right mouse drag, C. Escape returns to the menu/waiting room. A guest leaving an environment leaves the room; the host can return everyone to the waiting room.
 

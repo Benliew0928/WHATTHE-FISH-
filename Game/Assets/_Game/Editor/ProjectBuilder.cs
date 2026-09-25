@@ -18,7 +18,7 @@ public static partial class ProjectBuilder {
  const string Root="Assets/_Game/";
  [MenuItem("WHATTHE FISH?/Rebuild game scene")]
  public static void Setup(){
-  foreach(string dir in new[]{"Resources","Materials","Scenes","Settings","Sports/Football","Sports/Basketball","Sports/Golf","Shared/Platform"})Directory.CreateDirectory(Root+dir);
+  foreach(string dir in new[]{"Resources","Materials","Scenes","Settings","Sports/Football","Sports/Basketball","Sports/Golf","Sports/Fishing","Shared/Platform"})Directory.CreateDirectory(Root+dir);
   AssetDatabase.Refresh();
   foreach(string name in new[]{"GolfIsland"}){
    var importer=AssetImporter.GetAtPath(Root+"Art/"+name+".fbx") as ModelImporter;if(!importer)throw new Exception("Run the Blender asset generator first.");
@@ -147,14 +147,14 @@ public static partial class ProjectBuilder {
   var offlinePrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Resources/OfflineAthlete.prefab");
   athlete.AddComponent<NetworkObject>();var nt=athlete.AddComponent<NetworkTransform>();nt.Interpolate=true;nt.SyncScaleX=nt.SyncScaleY=nt.SyncScaleZ=false;athlete.AddComponent<NetworkAthlete>();
   var playerPrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Resources/NetworkAthlete.prefab");UnityEngine.Object.DestroyImmediate(athlete);
-  var networkGO=new GameObject("Room network");var transport=networkGO.AddComponent<UnityTransport>();var manager=networkGO.AddComponent<NetworkManager>();manager.NetworkConfig=new NetworkConfig{ProtocolVersion=6,NetworkTransport=transport,PlayerPrefab=playerPrefab,TickRate=30,EnableSceneManagement=false,ConnectionApproval=true};manager.NetworkConfig.Prefabs.Add(new NetworkPrefab{Prefab=playerPrefab});
+  var networkGO=new GameObject("Room network");var transport=networkGO.AddComponent<UnityTransport>();var manager=networkGO.AddComponent<NetworkManager>();manager.NetworkConfig=new NetworkConfig{ProtocolVersion=7,NetworkTransport=transport,PlayerPrefab=playerPrefab,TickRate=30,EnableSceneManagement=false,ConnectionApproval=true};manager.NetworkConfig.Prefabs.Add(new NetworkPrefab{Prefab=playerPrefab});
   var appGO=new GameObject("WHATTHE FISH? Application");var rooms=appGO.AddComponent<RoomService>();var app=appGO.AddComponent<AppRoot>();app.rooms=rooms;app.athletePrefab=offlinePrefab;
   var cameraGO=new GameObject("Main Camera");cameraGO.tag="MainCamera";var camera=cameraGO.AddComponent<Camera>();camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=LocalProfile.Hex("BFE2E7");camera.farClipPlane=450;camera.fieldOfView=60;cameraGO.AddComponent<AudioListener>();cameraGO.AddComponent<UniversalAdditionalCameraData>();app.view=cameraGO.AddComponent<PlayerView>();cameraGO.transform.position=new Vector3(87,64,-103);cameraGO.transform.LookAt(Vector3.zero);
   var sunGO=new GameObject("Afternoon sun");var sun=sunGO.AddComponent<Light>();sun.type=LightType.Directional;sun.intensity=1.1f;sun.color=new Color(1,.94f,.85f);sun.shadows=LightShadows.Soft;sun.shadowBias=.08f;sun.shadowNormalBias=.3f;sunGO.transform.rotation=Quaternion.Euler(48,-35,0);RenderSettings.sun=sun;RenderSettings.ambientMode=AmbientMode.Trilight;RenderSettings.ambientSkyColor=new Color(.45f,.55f,.65f);RenderSettings.ambientEquatorColor=new Color(.28f,.35f,.39f);RenderSettings.ambientGroundColor=new Color(.18f,.22f,.18f);RenderSettings.fog=true;RenderSettings.fogColor=camera.backgroundColor;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=180;RenderSettings.fogEndDistance=430;
   RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.58f,.64f,.7f);DynamicGI.UpdateEnvironment();
   var volumeGO=new GameObject("Gentle colour grading");var volume=volumeGO.AddComponent<Volume>();volume.isGlobal=true;var profile=AssetDatabase.LoadAssetAtPath<VolumeProfile>(Root+"Settings/Colour.asset");if(!profile){profile=ScriptableObject.CreateInstance<VolumeProfile>();AssetDatabase.CreateAsset(profile,Root+"Settings/Colour.asset");var tone=profile.Add<Tonemapping>();tone.mode.Override(TonemappingMode.ACES);AssetDatabase.AddObjectToAsset(tone,profile);}volume.sharedProfile=profile;camera.GetComponent<UniversalAdditionalCameraData>().renderPostProcessing=true;
   foreach(SportId id in Enum.GetValues(typeof(SportId))){string path=Root+"Sports/"+id+"/"+id+".asset";var def=AssetDatabase.LoadAssetAtPath<SportDefinition>(path);if(!def){def=ScriptableObject.CreateInstance<SportDefinition>();AssetDatabase.CreateAsset(def,path);}def.id=id;def.displayName=id.ToString();def.available=true;EditorUtility.SetDirty(def);}
-  var basketball=BuildBasketball();var golf=BuildGolf();ConfigureEnvironments(app,stadium,basketball,golf,sun,camera);sv.Apply(LocalProfile.Stadium);EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(),Root+"Scenes/Bootstrap.unity");EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(Root+"Scenes/Bootstrap.unity",true)};AssetDatabase.SaveAssets();
+  var basketball=BuildBasketball();var golf=BuildGolf();var fishing=BuildFishing();ConfigureEnvironments(app,stadium,basketball,golf,fishing,sun,camera);sv.Apply(LocalProfile.Stadium);EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(),Root+"Scenes/Bootstrap.unity");EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(Root+"Scenes/Bootstrap.unity",true)};AssetDatabase.SaveAssets();
   Debug.Log("GAME_SETUP_COMPLETE clips="+string.Join(",",allClips.Select(c=>c.name)));
  }
  static void Transition(AnimatorState a,AnimatorState b,AnimatorConditionMode mode,float threshold,float seconds){var t=a.AddTransition(b);t.hasExitTime=false;t.hasFixedDuration=true;t.duration=seconds;t.interruptionSource=TransitionInterruptionSource.Destination;t.orderedInterruption=false;t.canTransitionToSelf=false;t.AddCondition(mode,threshold,"Speed");}
@@ -183,7 +183,8 @@ public static partial class ProjectBuilder {
  [MenuItem("WHATTHE FISH?/Build Windows testing player")]
  public static void BuildWindows(){
   Setup();Build(BuildTarget.StandaloneWindows64,"../Builds/WindowsFinal/WhatTheFish.exe");
-  File.WriteAllText("../Builds/WindowsFinal/LATEST-BUILD.txt","Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: Sunvale modular stadium\nBasketball: Rally Court modular arena\nGolf: Tidebloom Island, sculpted terrain and tropical art\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
+  File.WriteAllText("../Builds/WindowsFinal/Explore-Fishing.cmd","@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
+  File.WriteAllText("../Builds/WindowsFinal/LATEST-BUILD.txt","Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: Sunvale modular stadium\nBasketball: Rally Court modular arena\nGolf: Tidebloom Island, sculpted terrain and tropical art\nFishing: Lagoon Island, five modular stands; environment exploration only\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}
  public static void SetupAndBuildWindows(){BuildWindows();}

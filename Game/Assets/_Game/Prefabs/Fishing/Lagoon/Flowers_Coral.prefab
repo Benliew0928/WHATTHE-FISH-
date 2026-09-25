@@ -1,0 +1,187 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &5730725651374185130
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 504108885938227245}
+  - component: {fileID: 1154777126297467597}
+  - component: {fileID: 7357087885272005309}
+  m_Layer: 0
+  m_Name: Flowers_Coral
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &504108885938227245
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5730725651374185130}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5564021045467073493}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1154777126297467597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5730725651374185130}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 768d5cefce889e145982dfde42bc8507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.FishingModule
+  moduleType: Flowers_Coral
+  slotId: Flowers_Coral
+  accent: {r: 1, g: 1, b: 1, a: 1}
+--- !u!205 &7357087885272005309
+LODGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5730725651374185130}
+  serializedVersion: 2
+  m_LocalReferencePoint: {x: 0, y: 0.54620934, z: 0}
+  m_Size: 2.0000002
+  m_FadeMode: 0
+  m_AnimateCrossFading: 0
+  m_LastLODIsBillboard: 0
+  m_LODs:
+  - screenRelativeHeight: 0.009
+    fadeTransitionWidth: 0
+    renderers:
+    - renderer: {fileID: 9060783268208794553}
+    - renderer: {fileID: 7381664894029950769}
+    - renderer: {fileID: 390007192960154074}
+    - renderer: {fileID: 4859418317863590491}
+  m_Enabled: 1
+--- !u!1001 &5385714528407366718
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 504108885938227245}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.00000004371139
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8652837023240200155, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: -3471022221980527132, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 68fa097620424ef4d9fefb61f26b2290, type: 2}
+    - target: {fileID: 161925189080668522, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 706495468110657125, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 897e6f90cd1d80045a78dfacbd6cd268, type: 2}
+    - target: {fileID: 919132149155446097, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_Name
+      value: Flowers_Coral
+      objectReference: {fileID: 0}
+    - target: {fileID: 3228262658553791247, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 897e6f90cd1d80045a78dfacbd6cd268, type: 2}
+    - target: {fileID: 3964215182246475655, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 998b4a494f28f7d4bbf16d9d6bc1bbd7, type: 2}
+    - target: {fileID: 6055310761438802746, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8914121502330859747, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+--- !u!23 &390007192960154074 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -3471022221980527132, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+  m_PrefabInstance: {fileID: 5385714528407366718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4859418317863590491 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 706495468110657125, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+  m_PrefabInstance: {fileID: 5385714528407366718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &5564021045467073493 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+  m_PrefabInstance: {fileID: 5385714528407366718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7381664894029950769 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3228262658553791247, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+  m_PrefabInstance: {fileID: 5385714528407366718}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &9060783268208794553 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 3964215182246475655, guid: 2350b5ad370f2694ab2064475b83c487, type: 3}
+  m_PrefabInstance: {fileID: 5385714528407366718}
+  m_PrefabAsset: {fileID: 0}

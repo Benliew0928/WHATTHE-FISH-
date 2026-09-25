@@ -17,6 +17,7 @@ namespace WhatTheFish {
   public bool Connected=>!leaving&&NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   public bool Host=>Connected&&NetworkManager.Singleton.IsHost;
   public string Code=>Session?.Code??(LocalTest?"LOCAL TEST":"—");
+  public int Capacity=>AppRoot.Instance.environments.Definition(Sport).maxPlayers;
   bool leaving;
   async Task Initialize(){
    if(string.IsNullOrEmpty(Application.cloudProjectId))throw new InvalidOperationException("Online rooms need a linked Unity cloud project. Offline Explore is ready to use. See Docs/SETUP.md.");
@@ -32,7 +33,7 @@ namespace WhatTheFish {
   }
   public async Task Create(SportId sport=SportId.Football){if(Connected)return;AppRoot.Instance.SelectSport(sport);Sport=sport;await Run(async()=>{
    await Initialize();
-   Session=await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions{MaxPlayers=10,IsPrivate=true,Name=Sport+" • "+LocalProfile.ForSport(Sport).title}.WithRelayNetwork());
+   Session=await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions{MaxPlayers=Capacity,IsPrivate=true,Name=Sport+" • "+LocalProfile.ForSport(Sport).title}.WithRelayNetwork());
    Bind();
   });}
   public async Task Join(string code){await Run(async()=>{
@@ -51,9 +52,9 @@ namespace WhatTheFish {
   public void SetupNetwork(){
    var n=NetworkManager.Singleton;n.NetworkConfig.ConnectionApproval=true;
    n.ConnectionApprovalCallback=(request,response)=>{
-    bool full=n.ConnectedClients.Count>=10;bool running=NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value;
+    bool full=n.ConnectedClients.Count>=Capacity;bool running=NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value;
     response.Approved=!full&&!running;response.CreatePlayerObject=response.Approved;
-    response.Reason=full?"This room is full (10 players).":running?"Exploration has started. Ask the host to return to the waiting room.":"";
+    response.Reason=full?"This room is full ("+Capacity+" players).":running?"Exploration has started. Ask the host to return to the waiting room.":"";
     response.Position=AppRoot.Instance.environments.Definition(Sport).Spawn(n.ConnectedClients.Count);response.Rotation=Quaternion.identity;
    };
    n.OnClientDisconnectCallback+=id=>{if(!leaving&&(!n.IsServer||id==n.LocalClientId)){string reason=n.DisconnectReason;if(string.IsNullOrEmpty(reason)||reason.StartsWith("[Disconnect"))reason="The connection closed or the host left. You can create a new room or explore offline.";_=ExitWithMessage(reason);}};
