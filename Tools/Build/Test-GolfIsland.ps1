@@ -5,7 +5,7 @@ $out=Join-Path $root ('Builds\GolfTidebloomQA-'+(Get-Date -Format 'yyyyMMdd-HHmm
 New-Item -ItemType Directory -Path $out | Out-Null
 $argsList=@('-batchmode','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-probe','-sport','Golf','-golfAudit','-report',"$out\island.txt",'-exitAfter','24','-logFile',"$out\player.log")
 if($Headless){$argsList+='-nographics'}
-$p=Start-Process -FilePath (Join-Path $root 'Builds\WindowsFinal\SportsPrototype.exe') -ArgumentList $argsList -WindowStyle Hidden -PassThru
+$p=Start-Process -FilePath (Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe') -ArgumentList $argsList -WindowStyle Hidden -PassThru
 $null=$p.Handle
 try {
  if(!$p.WaitForExit(90000)){throw 'Golf audit exceeded 90 seconds'}

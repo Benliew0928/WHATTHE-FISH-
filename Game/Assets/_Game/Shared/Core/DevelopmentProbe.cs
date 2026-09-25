@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
-namespace SportsPrototype {
+namespace WhatTheFish {
  // Explicit command-line opt-in. These checks do not run in normal play.
  public sealed partial class DevelopmentProbe:MonoBehaviour {
   public static bool Driving;public static float Heading;

@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   void Capture(string path){
    if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null)return;

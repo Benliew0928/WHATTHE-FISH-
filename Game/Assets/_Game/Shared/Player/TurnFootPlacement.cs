@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  // Turn-only two-bone IK. Targets use the same footprint schedule as Blender.
  public sealed class TurnFootPlacement:MonoBehaviour {
   [Serializable] public class Leg {

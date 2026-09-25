@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  // Preserve the shared atlas and the stadium's authored seating zones.
  public sealed class SunvaleStadiumView:StadiumView {
   public GameObject[] flagModules;

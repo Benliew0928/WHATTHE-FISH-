@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class SportEnvironmentController:MonoBehaviour {
   public SportDefinition[] definitions;public GameObject[] roots;public Light mainLight;public Camera mainCamera;
   public SportId Selected {get;private set;}=SportId.Football;

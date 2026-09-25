@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class GolfIslandView:StadiumView {
   public Material[] waterMaterials;
   public override void Apply(StadiumAppearance appearance){}

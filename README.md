@@ -1,6 +1,6 @@
-# SportsPrototype
+# WHATTHE FISH?
 
-Android-first, stadium-first student prototype. The working title is temporary.
+WHATTHE FISH? is an Android-first game with football, basketball, and golf environments.
 
 Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`, then press Play. The football stadium, indoor basketball arena and golf island are Blender assets. The shared athlete is the approved Meshy 6 Lite Rainbow Sprinter, prepared in Blender. There are no spectator NPCs.
 
@@ -14,9 +14,9 @@ Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`
 - `ArtSource/Golf/Tidebloom/Island_Tidebloom.blend` — sculpted tropical golf island with striped fairway, five sand bowls, palms, flower gardens, sea arch and waterfall. The placeholder source is archived under `Legacy/ArtSource/Golf/`.
 - `Tools/Blender/` — deterministic asset generator and audit tool.
 - `Tools/Build/` — build/environment scripts.
-- `Builds/WindowsFinal/` — latest development Windows player (launch `SportsPrototype.exe`), including the Sunvale football stadium, Rally basketball arena and Tidebloom golf island. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
+- `Builds/WindowsFinal/` — latest development Windows player (launch `WhatTheFish.exe`), including the Sunvale football stadium, Rally basketball arena and Tidebloom golf island. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
 - `Legacy/` — removable archive of old placeholders, unused materials, backups and superseded builds; see its archive manifest.
-- `Builds/Android/SportsPrototype-release.apk` — current Android test APK, 72.69 MB, ARM64 / Android 8.0+, including all three refined environments.
+- `Builds/Android/WhatTheFish-release.apk` — current Android test APK, 72.69 MB, ARM64 / Android 8.0+, including all three refined environments.
 - `Docs/SETUP.md` — toolchain, cloud linking and running on a phone.
 - `Docs/ARCHITECTURE.md` — code boundaries and future gameplay.
 - `Docs/VERIFICATION.md` — measured checks and remaining access requirements.
@@ -29,7 +29,7 @@ Landscape: left thumb stick moves; push it fully to run. Drag on the right to lo
 
 The room system uses Unity Multiplayer Services sessions, Relay, Unity Transport and Netcode for GameObjects. Offline exploration requires no Unity account or internet connection. Online rooms require your cloud project to be linked and services enabled.
 
-The new SportsPrototype cloud project is linked, and internet create/join has been exercised through Relay. Read `Docs/VERIFICATION.md` for the test coverage and phone checks still pending. Launch the Windows executable normally, without diagnostic arguments, for interactive play.
+The linked Unity cloud project supports internet rooms through Relay; create/join has been tested. Read `Docs/VERIFICATION.md` for the test coverage and phone checks still pending. Launch the Windows executable normally, without diagnostic arguments, for interactive play.
 
 This milestone is exploration, character art and networking infrastructure. The Rainbow Sprinter is one shared look for now; character appearance controls are paused until the model has separate, swappable parts. Football and basketball ball physics, scoring, bots, and golf gameplay are future work. Choose Basketball → Explore offline to walk the court. Arena customization provides four center logos, four accent palettes, a name, and a reset control. Hosts share their selection with guests; custom-image importing is deferred.
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public class StadiumView:MonoBehaviour {
   public Text title,subtitle; public virtual void Apply(StadiumAppearance a){
    a.Clamp();foreach(var r in GetComponentsInChildren<Renderer>(true)){

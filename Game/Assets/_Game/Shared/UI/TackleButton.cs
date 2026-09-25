@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  // Trigger on pointer down, not release; a held finger never repeats a tackle.
  public sealed class TackleButton:MonoBehaviour,IPointerDownHandler {
   public Text label;public Button button;

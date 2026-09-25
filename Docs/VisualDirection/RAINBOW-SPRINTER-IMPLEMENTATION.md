@@ -15,7 +15,7 @@
 - Blender re-import found two skinned LOD meshes, 34 bones and exactly one 41-frame running action. Front still and running renders were reviewed. Unity's import audit sampled the run at multiple times and confirmed stable character bounds.
 - Windows player screenshots confirm a complete still character preview, the run visible in third person, a return to bind pose after stopping, and a clear first-person view. The character is visible in basketball and golf third-person screenshots. Their existing smoke checks passed.
 - A local two-player room reached two connected players, entered exploration, synchronized movement, and returned to the waiting room. Appearance IDs differed in the probe while both players used the same character asset.
-- Windows and Android development builds succeeded. The Android APK at `Builds/Android/SportsPrototype.apk` is **75,989,689 bytes**, below the 100 MB target.
+- Windows and Android development builds succeeded for this milestone. That earlier Android APK was **75,989,689 bytes**, below the 100 MB target; see [the current build size](../BUILD-SIZE.md).
 - `adb devices` found no physical phone. Sustained Android frame rate, thermals, touch behavior and on-device visual quality remain unverified.
 
 ## Next art pass

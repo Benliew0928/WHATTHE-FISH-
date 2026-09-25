@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   IEnumerator IdleAudit(){
    yield return new WaitForSeconds(2);

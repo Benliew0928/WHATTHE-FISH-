@@ -1,7 +1,7 @@
 using System;
 using Unity.Netcode;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public struct FootballSnapshot:INetworkSerializable,IEquatable<FootballSnapshot> {
   public FootballAction action;public double started,cooldownUntil;public uint sequence;
   public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T:IReaderWriter {

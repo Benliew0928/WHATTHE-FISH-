@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $editorRoot = 'C:\Program Files\Unity\Hub\Editor\6000.3.20f1'
-$cacheRoot = 'C:\UMPSA\Tools\Downloads'
+$root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$cacheRoot = Join-Path $root 'Tools\Downloads'
 New-Item -ItemType Directory -Force -Path $cacheRoot | Out-Null
 $modules = Get-Content -LiteralPath "$editorRoot\modules.json" -Raw | ConvertFrom-Json -AsHashtable
 $selected = $modules | Where-Object { $_.id -match '^android|^cmake' }

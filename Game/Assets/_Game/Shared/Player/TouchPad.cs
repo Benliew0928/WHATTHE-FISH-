@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class TouchPad:MonoBehaviour,IPointerDownHandler,IDragHandler,IPointerUpHandler {
   public bool look;public Vector2 value;public RectTransform knob;Vector2 origin;int pointer=int.MinValue;bool trace;
   void Awake(){trace=Debug.isDebugBuild&&Environment.GetCommandLineArgs().Contains("-inputTrace");}

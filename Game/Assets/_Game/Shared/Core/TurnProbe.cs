@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   public static bool TurnCommandActive;public static PlayerCommand TurnCommand;
   bool recordingTurn;int turnFrame;string turnFrames;

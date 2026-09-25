@@ -15,7 +15,7 @@ public static class SunvaleStadiumBuilder {
     const string ScenePath = "Assets/_Game/Scenes/SunvaleStadiumReview.unity";
     static readonly string[] Modules = { "Stadium", "Lawn", "Goal", "Perimeter", "Banners", "Landscape", "Floodlights", "Scoreboard", "CornerFlags", "Dugouts" };
 
-    [MenuItem("Sports/Football/Build Sunvale review assets")]
+    [MenuItem("WHATTHE FISH?/Football/Build Sunvale review assets")]
     public static void Build() {
         // The menu may be used interactively: never discard an unsaved scene.
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;

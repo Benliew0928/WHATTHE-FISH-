@@ -1,7 +1,8 @@
 $ErrorActionPreference='Stop'
-$player='C:\UMPSA\Builds\WindowsFinal\SportsPrototype.exe'
+$root=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$player=Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'
 $runId=Get-Date -Format 'yyyyMMdd-HHmmss'
-$out="C:\UMPSA\Builds\CloudQA-$runId"
+$out=Join-Path $root "Builds\CloudQA-$runId"
 New-Item -ItemType Directory -Path $out | Out-Null
 function Launch-Probe([string]$name,[string]$role,[int]$expected,[int]$seconds){
     Start-Process -FilePath $player -ArgumentList "-batchmode -nographics -job-worker-count 2 -probe $role -authProfile qa$runId$name -expected $expected -report $out\$name.txt -exitAfter $seconds -logFile $out\$name.log" -WindowStyle Hidden -PassThru | Select-Object Id

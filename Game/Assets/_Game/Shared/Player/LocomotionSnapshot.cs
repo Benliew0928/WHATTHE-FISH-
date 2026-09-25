@@ -1,7 +1,7 @@
 using System;
 using Unity.Netcode;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public struct LocomotionSnapshot : INetworkSerializable,IEquatable<LocomotionSnapshot> {
   public LocomotionPhase phase;
   public float speed,angle,startYaw,duration;

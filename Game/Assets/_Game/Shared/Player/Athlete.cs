@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class Athlete : MonoBehaviour {
   public CharacterController capsule; public Transform visual; public bool controlled; public float speed;
   float gravity; Animator animator; SkinnedMeshRenderer[] bodyRenderers;float turnWeight;int turnLayer=-1;FootballTackle football;int footballLayer=-1;float footballWeight;FootballSnapshot receivedFootball,cachedFootball;uint footballSequence=uint.MaxValue;double footballClock,footballReceivedAt;Vector3 visualRest;float groundSlideWeight;

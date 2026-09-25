@@ -1,6 +1,6 @@
 # Tidebloom golf environment — 25 September 2026
 
-The current `Builds/WindowsFinal/SportsPrototype.exe` contains Tidebloom Island. Choose **Golf → Explore offline**, or launch with `-sport Golf -offline`. WASD moves, Shift runs, right mouse drag looks, and C cycles the three cameras.
+The current `Builds/WindowsFinal/WhatTheFish.exe` contains Tidebloom Island. Choose **Golf → Explore offline**, or launch with `-sport Golf -offline`. WASD moves, Shift runs, right mouse drag looks, and C cycles the three cameras.
 
 ## Delivered art
 

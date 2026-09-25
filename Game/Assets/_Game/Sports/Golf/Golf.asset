@@ -11,7 +11,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 253b01208eeda4949a91c6a2514ed669, type: 3}
   m_Name: Golf
-  m_EditorClassIdentifier: Assembly-CSharp::SportsPrototype.SportDefinition
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.SportDefinition
   id: 2
   displayName: Golf
   available: 1

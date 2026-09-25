@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class BasketballArenaView:StadiumView {
   public GameObject[] logoCatalog;
   public bool modularRally;

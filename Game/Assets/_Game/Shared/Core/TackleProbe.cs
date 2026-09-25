@@ -7,7 +7,7 @@ using Unity.Netcode.Components;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   void PlaceAthlete(Athlete a,Vector3 position,float yaw){a.capsule.enabled=false;a.transform.SetPositionAndRotation(position,Quaternion.Euler(0,yaw,0));a.ResetLocomotion();a.capsule.enabled=true;Physics.SyncTransforms();}
   IEnumerator TackleAudit(){

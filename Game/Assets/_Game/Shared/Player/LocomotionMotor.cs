@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public enum LocomotionPhase : byte { Idle, Moving, Braking, Turning, Launching }
 
  // Input owns travel. Facing and animation can never hold or queue movement.

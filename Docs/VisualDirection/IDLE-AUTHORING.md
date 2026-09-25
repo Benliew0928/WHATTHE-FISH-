@@ -21,7 +21,7 @@ To study the supplied run, open the original character source and activate its `
 
 ## Repeatable commands
 
-Run from `C:\UMPSA` in PowerShell with Blender 5.1.2:
+Run from the repository root in PowerShell with Blender 5.1.2:
 
 ```powershell
 $blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'

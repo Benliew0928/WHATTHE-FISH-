@@ -1,8 +1,8 @@
 # Rally Windows integration — 25 September 2026
 
-The WindowsFinal player now uses Rally Court in Basketball. Launch `Builds/WindowsFinal/SportsPrototype.exe`, then choose **Let's play → Basketball → Explore offline**. Use **Stadium customisation** to switch logos, colors or the name.
+The WindowsFinal player now uses Rally Court in Basketball. Launch `Builds/WindowsFinal/WhatTheFish.exe`, then choose **Let's play → Basketball → Explore offline**. Use **Stadium customisation** to switch logos, colors or the name.
 
-The build completed at 09:33:14 UTC / 17:33:14 Malaysia time. `LATEST-BUILD.txt` records the included environments. Unity's launcher executable can retain its original file date; the updated game content is in `SportsPrototype_Data/data.unity3d` and `Managed/Assembly-CSharp.dll`.
+The build completed at 09:33:14 UTC / 17:33:14 Malaysia time. `LATEST-BUILD.txt` records the included environments. Unity's launcher executable can retain its original file date; the updated game content is in `WhatTheFish_Data/data.unity3d` and `Managed/Assembly-CSharp.dll`.
 
 ## Integration
 

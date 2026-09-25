@@ -14,12 +14,12 @@ This is an exploration milestone. There is no ball, shooting, scoring, match tim
 
 | Artifact/check | Result |
 |---|---|
-| Windows development player | Passed build and runtime launch: `Builds/WindowsFinal/SportsPrototype.exe` |
+| Windows development player | Passed build and runtime launch: `Builds/WindowsFinal/WhatTheFish.exe` |
 | Windows output folder | 171,703,253 bytes, approximately 171.7 MB uncompressed |
-| Android development APK | Passed build: `Builds/Android/SportsPrototype.apk` |
+| Android development APK | Passed build for this historical milestone; archived locally |
 | APK size | **53,464,235 bytes / 53.46 MB**, below the 100 MB target |
 | APK signature | `apksigner verify --verbose` passed, v2 signature |
-| Package/version | `com.umpsa.sportsprototype`, version name `0.2.0`, development version code `1` |
+| Package/version | Earlier development identifier, version name `0.2.0`, development version code `1` |
 | Android compatibility | ARM64 only; minimum API 26 / Android 8.0; target API 36 |
 | Network compatibility | NGO protocol 2; all participants must use this new build |
 

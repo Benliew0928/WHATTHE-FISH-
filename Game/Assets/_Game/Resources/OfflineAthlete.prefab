@@ -72,7 +72,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b598c1f52939e542887672740c0b6c2, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SportsPrototype.Athlete
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.Athlete
   capsule: {fileID: 8587167767446482221}
   visual: {fileID: 2522548452682047024}
   controlled: 0
@@ -88,7 +88,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3a07d68b08cc66b469a234d7b04a4920, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SportsPrototype.FootballTackle
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.FootballTackle
 --- !u!114 &6481158643221054622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,7 +100,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 85006bf85038179448858f4b1ed78605, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SportsPrototype.TurnFootPlacement
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.TurnFootPlacement
   hips: {fileID: 6089627547663372559}
   hipOffset: {x: 0.0055310037, y: 0, z: -0.011653483}
   left:

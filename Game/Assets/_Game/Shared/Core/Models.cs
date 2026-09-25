@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public enum SportId { Football, Basketball, Golf }
  [Serializable] public struct SessionConfig { public SportId sport; public int capacity; public bool exploration; public static SessionConfig Default => new SessionConfig { sport=SportId.Football,capacity=10 }; }
  [Serializable] public struct CharacterAppearance { public int skin,hair,outfit,hairstyle; public void Clamp(){ skin=Mathf.Clamp(skin,0,3);hair=Mathf.Clamp(hair,0,3);outfit=Mathf.Clamp(outfit,0,3);hairstyle=Mathf.Clamp(hairstyle,0,1); } }

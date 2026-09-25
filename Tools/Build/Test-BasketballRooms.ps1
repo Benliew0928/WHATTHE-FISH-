@@ -1,7 +1,7 @@
 param([ValidateSet('Local','Cloud')][string]$Transport='Local')
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$player=Join-Path $root 'Builds\WindowsFinal\SportsPrototype.exe'
+$player=Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'
 $runId=Get-Date -Format 'yyyyMMdd-HHmmss'
 $out=Join-Path $root "Builds\BasketballQA-$Transport-$runId"
 New-Item -ItemType Directory -Path $out | Out-Null

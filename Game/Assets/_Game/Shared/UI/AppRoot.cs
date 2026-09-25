@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class AppRoot:MonoBehaviour {
   public static AppRoot Instance; public SportEnvironmentController environments;public StadiumView stadium=>environments.View;public SportId SelectedSport=>environments.Selected;public StadiumAppearance CurrentAppearance=>LocalProfile.ForSport(SelectedSport);public PlayerView view;public RoomService rooms;
   public Athlete LocalAthlete;public bool Exploring {get;private set;}
@@ -47,7 +47,7 @@ namespace SportsPrototype {
   void Clear(){PlayerView.LookDelta=Vector2.zero;if(page)Destroy(page.gameObject);page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;}
   public void Show(string which){if(which=="custom"&&SelectedSport==SportId.Golf)which=rooms.Connected?"room":"sport";if(which=="custom"&&rooms.Connected&&!rooms.Host)which="room";screen=which;Clear();if(which=="stadium"){HUD();return;}
    Panel(page,new Vector2(330,450),new Vector2(590,824),new Color(1,.98f,.93f,.96f));
-   Label(page,"SPORTS CLUB  /  PROTOTYPE",58,new Vector2(82,822),new Vector2(510,35),16,ink);
+   Label(page,"WHATTHE FISH?",58,new Vector2(82,822),new Vector2(510,35),16,ink);
    if(which=="home"){
     Label(page,"Good days.\nGreat games.",0,new Vector2(82,694),new Vector2(510,160),62,ink);
     Label(page,"Your little escape to play and explore.",0,new Vector2(82,575),new Vector2(475,70),25,ink);

@@ -20,7 +20,7 @@ public static class RallyArenaBuilder {
         public float roughness, metallic, emission;
     }
 
-    [MenuItem("Sports/Basketball/Build Rally art library")]
+    [MenuItem("WHATTHE FISH?/Basketball/Build Rally art library")]
     public static void Build() {
         if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         Directory.CreateDirectory(Prefabs);

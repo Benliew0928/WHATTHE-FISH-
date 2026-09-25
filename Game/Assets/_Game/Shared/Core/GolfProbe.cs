@@ -5,7 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   public static bool IslandDriving;public static float IslandHeading;
   void IslandTeleport(Vector3 position){var player=AppRoot.Instance.LocalAthlete;player.capsule.enabled=false;player.transform.position=position;player.capsule.enabled=true;player.ResetLocomotion();Physics.SyncTransforms();}

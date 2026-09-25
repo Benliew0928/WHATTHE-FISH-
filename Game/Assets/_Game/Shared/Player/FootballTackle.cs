@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public enum FootballAction:byte { None, Slide, Hit }
 
  // Simulation is called by Athlete, on the server for network players.

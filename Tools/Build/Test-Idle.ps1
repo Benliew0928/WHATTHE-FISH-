@@ -1,7 +1,7 @@
 param([int]$Port=7794)
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$player=Join-Path $root 'Builds/WindowsFinal/SportsPrototype.exe'
+$player=Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'
 $out=Join-Path $root ('Builds/IdleQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $processes=@()

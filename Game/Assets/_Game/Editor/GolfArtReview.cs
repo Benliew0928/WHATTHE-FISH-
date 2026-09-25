@@ -3,7 +3,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using SportsPrototype;
+using WhatTheFish;
 public static class GolfArtReview {
  public static void Capture(){
   EditorSceneManager.OpenScene("Assets/_Game/Scenes/Bootstrap.unity");

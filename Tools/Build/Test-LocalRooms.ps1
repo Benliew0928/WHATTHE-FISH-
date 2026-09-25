@@ -1,6 +1,7 @@
 $ErrorActionPreference='Stop'
-$player='C:\UMPSA\Builds\WindowsFinal\SportsPrototype.exe'
-$out='C:\UMPSA\Builds\NetworkQA'
+$root=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+$player=Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'
+$out=Join-Path $root 'Builds\NetworkQA'
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 function Launch-Probe([string]$name,[string]$role,[int]$port,[int]$expected,[int]$seconds){
     $report=Join-Path $out "$name.txt"

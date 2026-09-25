@@ -7,8 +7,7 @@ $paths=[Collections.Generic.List[string]]::new()
 foreach($relative in @(
  'ArtSource\Football\Stadium.blend','ArtSource\Basketball\Arena.blend','ArtSource\Golf\Island.blend','ArtSource\Golf\island-dimensions.json',
  'ArtSource\Legacy','Tools\Blender\build_assets.py','Tools\Blender\build_basketball.py','Tools\Blender\inspect_assets.py',
- 'Builds\Windows','Builds\WindowsLatest','Builds\WindowsTest','Builds\BasketballReview',
- 'Builds\Android\SportsPrototype.apk','Builds\Android\SportsPrototype-release.apk','Builds\Android\SportsPrototype_BurstDebugInformation_DoNotShip')){$paths.Add($relative)}
+ 'Builds\Windows','Builds\WindowsLatest','Builds\WindowsTest','Builds\BasketballReview')){$paths.Add($relative)}
 foreach($file in Get-ChildItem -LiteralPath (Join-Path $root 'ArtSource') -Recurse -File | Where-Object {$_.Extension -match '^\.blend[0-9]+$'}){
  if(!$file.FullName.Contains('\ArtSource\Legacy\')){$paths.Add($file.FullName.Substring($root.Length+1))}
 }

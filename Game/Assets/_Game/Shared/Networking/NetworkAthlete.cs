@@ -3,7 +3,7 @@ using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
 
-namespace SportsPrototype {
+namespace WhatTheFish {
  public sealed class NetworkAthlete:NetworkBehaviour {
   public static NetworkAthlete HostPlayer;
   public NetworkVariable<bool> Ready=new(false);

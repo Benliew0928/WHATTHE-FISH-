@@ -66,12 +66,12 @@ Reproduce using `Tools/Build/Test-GolfRooms.ps1 -Transport Local` or `-Transport
 
 | Artifact/check | Result |
 |---|---|
-| Windows player | `Builds/WindowsFinal/SportsPrototype.exe`; built and launched successfully |
+| Windows player | `Builds/WindowsFinal/WhatTheFish.exe`; built and launched successfully |
 | Windows output folder | 171,788,695 bytes, approximately 171.79 MB uncompressed |
-| Android APK | `Builds/Android/SportsPrototype.apk`; built successfully |
+| Android APK | Historical development APK built successfully; archived locally |
 | Actual APK size | **53,550,903 bytes / 53.55 MB**, below 100 MB |
 | APK signature | `apksigner verify --verbose` passed, v2 signature, one signer |
-| Package | `com.umpsa.sportsprototype` |
+| Package | Earlier development identifier; see [BUILD-SIZE.md](BUILD-SIZE.md) for the current package |
 | Version | `0.3.0`, development version code `1` |
 | Android ABI | `arm64-v8a` |
 | Android compatibility | Minimum API 26 / Android 8.0; target API 36 |

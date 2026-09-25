@@ -48,7 +48,7 @@ From the repository root in PowerShell:
 
 Then use **Sports → Football → Build Sunvale review assets** in Unity, or run `SunvaleStadiumBuilder.Build` in batch mode. This creates the module prefabs and isolated review scene. It does not rebuild Bootstrap, replace `FootballEnvironment.prefab`, or alter the sport selector.
 
-To update the playable game, run `Tools/Build/Build.ps1 -Target Windows`. The Windows build command now runs `ProjectBuilder.Setup` first, which assembles Sunvale into Bootstrap and refreshes `FootballEnvironment.prefab`, then overwrites `Builds/WindowsFinal/SportsPrototype.exe` and its companion data. Always launch that path for the latest Windows build. `LATEST-BUILD.txt` beside it records the successful build time; the small Unity launcher executable can retain its original timestamp even when the game data is rebuilt.
+To update the playable game, run `Tools/Build/Build.ps1 -Target Windows`. The Windows build command now runs `ProjectBuilder.Setup` first, which assembles Sunvale into Bootstrap and refreshes `FootballEnvironment.prefab`, then overwrites `Builds/WindowsFinal/WhatTheFish.exe` and its companion data. Always launch that path for the latest Windows build. `LATEST-BUILD.txt` beside it records the successful build time; the small Unity launcher executable can retain its original timestamp even when the game data is rebuilt.
 
 The generator overwrites this Sunvale source and its exports. Keep a separate working copy before making hand edits. For hand-edited modules, export the relevant collection's mesh objects and root empty, using FBX -Z forward / Y up and no cameras or lights. Keep the atlas beside the exports.
 

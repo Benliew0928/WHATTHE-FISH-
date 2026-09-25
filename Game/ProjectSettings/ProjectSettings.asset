@@ -13,7 +13,7 @@ PlayerSettings:
   useOnDemandResources: 0
   accelerometerFrequency: 60
   companyName: UMPSA Student Studio
-  productName: SportsPrototype
+  productName: WHATTHE FISH?
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
   m_SplashScreenBackgroundColor: {r: 0.12156863, g: 0.12156863, b: 0.1254902, a: 1}
@@ -167,7 +167,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.4
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.umpsa.sportsprototype
+    Android: com.umpsa.whatthefish
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -786,7 +786,7 @@ PlayerSettings:
   cloudProjectId: 633e314c-46d1-4b48-bbbc-2dc5f6fb653c
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: SportsPrototype
+  projectName: WHATTHE FISH?
   organizationId: 18968468751290
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

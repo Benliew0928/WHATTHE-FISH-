@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using SportsPrototype;
+using WhatTheFish;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ public static partial class ProjectBuilder {
  static GameObject BuildFootball(){
   const string path=Root+"Prefabs/Football/Sunvale/SunvaleStadium.prefab";
   var source=AssetDatabase.LoadAssetAtPath<GameObject>(path);
-  if(!source)throw new Exception("Missing Sunvale assembly. Run Sports/Football/Build Sunvale review assets first.");
+  if(!source)throw new Exception("Missing Sunvale assembly. Run WHATTHE FISH?/Football/Build Sunvale review assets first.");
   var stadium=(GameObject)PrefabUtility.InstantiatePrefab(source);stadium.name="Football Stadium • Sunvale";
   var meshes=stadium.GetComponentsInChildren<MeshFilter>(true);
   if(!meshes.Any(m=>m.name=="Lawn__Pitch")||stadium.GetComponentsInChildren<LODGroup>(true).Length!=32)

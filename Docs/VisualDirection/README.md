@@ -2,7 +2,7 @@
 
 These four images are **concept targets**, generated with the built-in imagegen tool. They are not screenshots, production textures, 3D assets, or promises of current mobile performance. Keep the existing three-sport prototype as the functional foundation while refining art one asset family at a time.
 
-The football stadium now uses the editable modular [Sunvale asset](../../ArtSource/Football/Sunvale/README.md) in the playable game. It includes the new Blender source, ten module exports, a shared painted atlas, seat LODs and an isolated Unity review scene. [Bowl overview](Stadium/02_Bowl_Overview.png) and [architecture detail](Stadium/03_Architecture_Detail.png) are renders of that actual asset. Build and launch `Builds/WindowsFinal/SportsPrototype.exe` to test the latest integrated version.
+The football stadium now uses the editable modular [Sunvale asset](../../ArtSource/Football/Sunvale/README.md) in the playable game. It includes the new Blender source, ten module exports, a shared painted atlas, seat LODs and an isolated Unity review scene. [Bowl overview](Stadium/02_Bowl_Overview.png) and [architecture detail](Stadium/03_Architecture_Detail.png) are renders of that actual asset. Build and launch `Builds/WindowsFinal/WhatTheFish.exe` to test the latest integrated version.
 
 | Area | Concept |
 | --- | --- |
