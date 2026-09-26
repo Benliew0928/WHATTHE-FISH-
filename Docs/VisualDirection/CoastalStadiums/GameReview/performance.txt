@@ -1,0 +1,2 @@
+Football: 1920x1080 explicit render + GPU synchronization; GPU=NVIDIA GeForce RTX 4050 Laptop GPU; average_ms=5.59; p95_ms=6.42; equivalent_render_fps=179.0; Unity_reserved_MB=316; managed_MB=3; graphics_MB=1049
+Basketball: 1920x1080 explicit render + GPU synchronization; GPU=NVIDIA GeForce RTX 4050 Laptop GPU; average_ms=5.62; p95_ms=6.27; equivalent_render_fps=177.9; Unity_reserved_MB=316; managed_MB=3; graphics_MB=1049

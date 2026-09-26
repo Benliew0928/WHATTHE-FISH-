@@ -1,0 +1,23 @@
+{
+  "Football": {
+    "meshes": 104,
+    "triangles": 3245864,
+    "finite_vertices": true,
+    "valid_uvs": true,
+    "terrain_normals_up": true,
+    "terrain_sectors": 16,
+    "export_present": true
+  },
+  "Basketball": {
+    "meshes": 103,
+    "triangles": 2276460,
+    "finite_vertices": true,
+    "valid_uvs": true,
+    "terrain_normals_up": true,
+    "terrain_sectors": 16,
+    "export_present": true
+  },
+  "packed_textures": 8,
+  "venue_sources_unchanged": true,
+  "errors": []
+}

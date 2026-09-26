@@ -1,0 +1,8 @@
+Normal Windows player; NVIDIA GeForce RTX 4050 Laptop GPU; 1920x1080; vSync off; uncapped; native development=True. 120 warm-up + 600 measured frames per view.
+Football exterior: mean_ms=3.64; p95_ms=4.18; FPS=274.4; rendered_frames=720; Unity_reserved_MB=330; graphics_MB=753; resolution=1920x1080
+Football entrance: mean_ms=5.27; p95_ms=5.91; FPS=189.8; rendered_frames=720; Unity_reserved_MB=330; graphics_MB=753; resolution=1920x1080
+Football playing area: mean_ms=4.23; p95_ms=4.59; FPS=236.2; rendered_frames=720; Unity_reserved_MB=330; graphics_MB=737; resolution=1920x1080
+Basketball exterior: mean_ms=3.60; p95_ms=4.06; FPS=277.6; rendered_frames=720; Unity_reserved_MB=330; graphics_MB=753; resolution=1920x1080
+Basketball entrance: mean_ms=4.27; p95_ms=4.72; FPS=234.3; rendered_frames=720; Unity_reserved_MB=330; graphics_MB=753; resolution=1920x1080
+Basketball playing area: mean_ms=3.66; p95_ms=4.20; FPS=273.5; rendered_frames=720; Unity_reserved_MB=330; graphics_MB=740; resolution=1920x1080
+FRAME_BENCHMARK_COMPLETE

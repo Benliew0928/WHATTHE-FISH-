@@ -25,8 +25,9 @@ namespace WhatTheFish {
    Check(app.environments.roots.Count(r=>r.activeSelf)==1,"ONE_ACTIVE_ENVIRONMENT");
    Check(def.spawnPositions.Distinct().Count()==10,"TEN_DISTINCT_SPAWNS");
    foreach(var spawn in def.spawnPositions)Check(Physics.Raycast(spawn,Vector3.down,2,1<<8),"SPAWN_HAS_FLOOR "+spawn);
-   foreach(var direction in new[]{Vector3.forward,Vector3.back,Vector3.left,Vector3.right})Check(Physics.Raycast(new Vector3(0,1,0),direction,40,1<<8),"ARENA_BOUNDARY "+direction);
-   Check(Physics.Raycast(new Vector3(0,10,0),Vector3.up,10,1<<8),"ENCLOSED_ROOF");
+   var coast=app.stadium.GetComponent<CoastalVenueRoutes>();
+   Check(coast&&coast.entries.Length==4,"FOUR_OPEN_COASTAL_ENTRANCES");
+   Check(!Physics.Raycast(new Vector3(0,10,0),Vector3.up,30,1<<8),"OPEN_SKY");
    var rally=(BasketballArenaView)app.stadium;
    Check(rally.modularRally&&rally.transform.Find("Court")&&rally.transform.Find("Stadium"),"RALLY_MODULAR_ENVIRONMENT");
    Check(rally.GetComponentsInChildren<LODGroup>(true).Length==48,"RALLY_48_SEATING_LODS");
@@ -52,7 +53,7 @@ namespace WhatTheFish {
    yield return new WaitForSeconds(1);Capture(Path.ChangeExtension(output,"roof.png"));
    app.LocalAthlete.capsule.enabled=false;app.LocalAthlete.transform.position=new Vector3(11.15f,.03f,0);app.LocalAthlete.capsule.enabled=true;
    app.view.mode=1;app.view.yaw=-90;app.view.pitch=16;
-   yield return new WaitForSeconds(1);Check(app.view.transform.position.x<11.75f,"THIRD_PERSON_WALL_CLEARANCE");Capture(Path.ChangeExtension(output,"wall-camera.png"));
+   yield return new WaitForSeconds(1);Check(!Physics.CheckSphere(app.view.transform.position,.08f,1<<8,QueryTriggerInteraction.Ignore),"THIRD_PERSON_WALL_CLEARANCE");Capture(Path.ChangeExtension(output,"wall-camera.png"));
    app.EnterOffline();app.view.yaw=0;app.view.pitch=16;
    if(args.Contains("-apronAudit"))yield return ApronRotationAudit();
   }

@@ -1,0 +1,247 @@
+{
+  "materials": [
+    {
+      "name": "Coast_Limestone",
+      "color_srgb": [
+        0.9294117647058824,
+        0.8549019607843137,
+        0.7058823529411765
+      ],
+      "base_map": "Coast_LimestoneWash.png",
+      "normal": "Coast_StoneNormal.png",
+      "roughness": 0.89
+    },
+    {
+      "name": "Coast_StoneShade",
+      "color_srgb": [
+        0.7843137254901961,
+        0.7294117647058823,
+        0.611764705882353
+      ],
+      "base_map": "Coast_LimestoneWash.png",
+      "normal": "Coast_StoneNormal.png",
+      "roughness": 0.9
+    },
+    {
+      "name": "Coast_Moss",
+      "color_srgb": [
+        0.5058823529411764,
+        0.6509803921568628,
+        0.27450980392156865
+      ],
+      "base_map": "Coast_LeafVeins.png",
+      "normal": "Coast_LeafNormal.png",
+      "roughness": 0.9
+    },
+    {
+      "name": "Coast_HoneyTimber",
+      "color_srgb": [
+        0.7372549019607844,
+        0.5294117647058824,
+        0.3254901960784314
+      ],
+      "base_map": "Coast_WoodGrain.png",
+      "normal": "Coast_WoodNormal.png",
+      "roughness": 0.65
+    },
+    {
+      "name": "Coast_LightTimber",
+      "color_srgb": [
+        0.8352941176470589,
+        0.6627450980392157,
+        0.4549019607843137
+      ],
+      "base_map": "Coast_WoodGrain.png",
+      "normal": "Coast_WoodNormal.png",
+      "roughness": 0.7
+    },
+    {
+      "name": "Coast_PalmBark",
+      "color_srgb": [
+        0.6,
+        0.4392156862745098,
+        0.27450980392156865
+      ],
+      "base_map": "Coast_WoodGrain.png",
+      "normal": "Coast_WoodNormal.png",
+      "roughness": 0.92
+    },
+    {
+      "name": "Coast_PalmLeaf",
+      "color_srgb": [
+        0.3058823529411765,
+        0.592156862745098,
+        0.23529411764705882
+      ],
+      "base_map": "Coast_LeafVeins.png",
+      "normal": "Coast_LeafNormal.png",
+      "roughness": 0.72
+    },
+    {
+      "name": "Coast_LeafSun",
+      "color_srgb": [
+        0.5686274509803921,
+        0.7411764705882353,
+        0.28627450980392155
+      ],
+      "base_map": "Coast_LeafVeins.png",
+      "normal": "Coast_LeafNormal.png",
+      "roughness": 0.8
+    },
+    {
+      "name": "Coast_LeafShade",
+      "color_srgb": [
+        0.20392156862745098,
+        0.44313725490196076,
+        0.25882352941176473
+      ],
+      "base_map": "Coast_LeafVeins.png",
+      "normal": "Coast_LeafNormal.png",
+      "roughness": 0.9
+    },
+    {
+      "name": "Coast_Grass",
+      "color_srgb": [
+        0.5137254901960784,
+        0.6666666666666666,
+        0.25098039215686274
+      ],
+      "base_map": "Coast_LeafVeins.png",
+      "normal": "",
+      "roughness": 0.9
+    },
+    {
+      "name": "Coast_Rope",
+      "color_srgb": [
+        0.9058823529411765,
+        0.8196078431372549,
+        0.6274509803921569
+      ],
+      "base_map": "Coast_WoodGrain.png",
+      "normal": "Coast_WoodNormal.png",
+      "roughness": 0.92
+    },
+    {
+      "name": "Coast_Enamel",
+      "color_srgb": [
+        0.19215686274509805,
+        0.615686274509804,
+        0.6078431372549019
+      ],
+      "base_map": "Coast_LimestoneWash.png",
+      "normal": "",
+      "roughness": 0.4
+    },
+    {
+      "name": "Coast_Bolt",
+      "color_srgb": [
+        0.34509803921568627,
+        0.4,
+        0.41568627450980394
+      ],
+      "base_map": "",
+      "normal": "",
+      "roughness": 0.42
+    },
+    {
+      "name": "Coast_CoralFlowers",
+      "color_srgb": [
+        0.9568627450980393,
+        0.5607843137254902,
+        0.5372549019607843
+      ],
+      "base_map": "",
+      "normal": "",
+      "roughness": 0.72
+    },
+    {
+      "name": "Coast_GoldFlowers",
+      "color_srgb": [
+        0.9568627450980393,
+        0.7764705882352941,
+        0.3411764705882353
+      ],
+      "base_map": "",
+      "normal": "",
+      "roughness": 0.72
+    },
+    {
+      "name": "Coast_LilacFlowers",
+      "color_srgb": [
+        0.7137254901960784,
+        0.6039215686274509,
+        0.8666666666666667
+      ],
+      "base_map": "",
+      "normal": "",
+      "roughness": 0.7
+    },
+    {
+      "name": "Coast_Shell",
+      "color_srgb": [
+        0.9725490196078431,
+        0.9137254901960784,
+        0.796078431372549
+      ],
+      "base_map": "Coast_LimestoneWash.png",
+      "normal": "",
+      "roughness": 0.6
+    },
+    {
+      "name": "Coast_Cloud",
+      "color_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "base_map": "",
+      "normal": "",
+      "roughness": 1
+    },
+    {
+      "name": "Football_Terrain",
+      "color_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "base_map": "Football_GroundColor.png",
+      "normal": "",
+      "roughness": 0.92
+    },
+    {
+      "name": "Basketball_Terrain",
+      "color_srgb": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "base_map": "Basketball_GroundColor.png",
+      "normal": "",
+      "roughness": 0.92
+    }
+  ],
+  "islands": [
+    {
+      "sport": "Football",
+      "rx": 132,
+      "ry": 160,
+      "extent": 185,
+      "meshes": 104,
+      "triangles": 3245864,
+      "dockStart": -153.59688565676703
+    },
+    {
+      "sport": "Basketball",
+      "rx": 70,
+      "ry": 83,
+      "extent": 105,
+      "meshes": 103,
+      "triangles": 2276460,
+      "dockStart": -79.67838443444789
+    }
+  ],
+  "detail": "Coast_GroundDetail.png",
+  "detailNormal": "Coast_GroundNormal.png",
+  "scope": "Exterior only; venue sources and prefabs untouched; no traversal added."
+}

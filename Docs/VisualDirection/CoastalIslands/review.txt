@@ -1,0 +1,42 @@
+PASS Football exterior attached
+PASS Football one active world
+PASS Football scenery only, no traversal colliders
+PASS Football original stadium seating retained
+PASS Football sky and distant scenery configured
+PASS Football original spawn floor (-4.00, 1.00, -8.00)
+PASS Football original spawn floor (-2.00, 1.00, -8.00)
+PASS Football original spawn floor (0.00, 1.00, -8.00)
+PASS Football original spawn floor (2.00, 1.00, -8.00)
+PASS Football original spawn floor (4.00, 1.00, -8.00)
+PASS Football original spawn floor (-4.00, 1.00, -11.00)
+PASS Football original spawn floor (-2.00, 1.00, -11.00)
+PASS Football original spawn floor (0.00, 1.00, -11.00)
+PASS Football original spawn floor (2.00, 1.00, -11.00)
+PASS Football original spawn floor (4.00, 1.00, -11.00)
+PASS Football exterior contact shading disabled inside original venue
+PASS Basketball exterior attached
+PASS Basketball one active world
+PASS Basketball scenery only, no traversal colliders
+PASS Basketball original stadium seating retained
+PASS Basketball roof preserved
+PASS Basketball sky and distant scenery configured
+PASS Basketball original spawn floor (-3.00, 1.00, -4.00)
+PASS Basketball original spawn floor (-1.50, 1.00, -4.00)
+PASS Basketball original spawn floor (0.00, 1.00, -4.00)
+PASS Basketball original spawn floor (1.50, 1.00, -4.00)
+PASS Basketball original spawn floor (3.00, 1.00, -4.00)
+PASS Basketball original spawn floor (-3.00, 1.00, -6.00)
+PASS Basketball original spawn floor (-1.50, 1.00, -6.00)
+PASS Basketball original spawn floor (0.00, 1.00, -6.00)
+PASS Basketball original spawn floor (1.50, 1.00, -6.00)
+PASS Basketball original spawn floor (3.00, 1.00, -6.00)
+PASS Basketball exterior contact shading disabled inside original venue
+PASS Switch Golf
+PASS Sky scope Golf
+PASS Switch Fishing
+PASS Sky scope Fishing
+PASS Switch Football
+PASS Sky scope Football
+PASS Switch Basketball
+PASS Sky scope Basketball
+COASTAL_REVIEW_COMPLETE

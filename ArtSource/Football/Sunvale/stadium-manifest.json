@@ -16,7 +16,7 @@
   "modules": {
     "Stadium": {
       "meshes": 128,
-      "triangles_lod0": 351968,
+      "triangles_lod0": 349536,
       "triangles_lod1_seats": 36864,
       "file": "Stadium.fbx",
       "pivot": [
@@ -38,7 +38,7 @@
     },
     "Landscape": {
       "meshes": 8,
-      "triangles_lod0": 18432,
+      "triangles_lod0": 11584,
       "triangles_lod1_seats": 0,
       "file": "Landscape.fbx",
       "pivot": [

@@ -41,3 +41,13 @@ for im in bpy.data.images:
 for folder in (SOURCE,EXPORT):(folder/'arena-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
 (EXPORT/'unity-import.json').write_text(json.dumps({'materials':[dict(name=n,**s) for n,s in manifest['materials'].items()],'modules':list(manifest['modules'])},indent=2)+'\n')
 print('RALLY_EDITED_SOURCE_EXPORTED',flush=True)
+
+# The coastal exterior remains independently editable in the same source file.
+coast=ROOT/'Game/Assets/_Game/Art/CoastalStadiums'
+for name in ('Basketball_Architecture','Basketball_Collision'):
+    root=bpy.data.objects[name];bpy.ops.object.select_all(action='DESELECT');root.select_set(True)
+    for o in root.children:o.hide_set(False);o.select_set(True)
+    bpy.ops.export_scene.fbx(filepath=str(coast/(name+'.fbx')),use_selection=True,object_types={'EMPTY','MESH'},axis_forward='-Z',axis_up='Y',add_leaf_bones=False,bake_anim=False)
+for im in bpy.data.images:
+    if im.name.startswith('Coastal_') and im.size[0]:
+        im.filepath_raw=str(coast/(im.name+'.png'));im.file_format='PNG';im.save()

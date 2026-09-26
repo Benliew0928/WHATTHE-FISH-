@@ -8,11 +8,9 @@
     15.24,
     28.6512
   ],
-  "GolfIsland.fbx": "Golf/Tidebloom/Island_Tidebloom.blend",
-  "golf_generator": "Tools/Blender/build_golf.py",
   "island_metres": [
-    394.33,
-    383.87
+    407.44,
+    398.53
   ],
   "RainbowSprinter.fbx": "Shared/Characters/RainbowSprinter.blend",
   "RainbowSprinter-source.zip": "Shared/Characters/Meshy/RainbowSprinter-source.zip",
@@ -45,15 +43,18 @@
   "basketball_refined_prefab": "Game/Assets/_Game/Prefabs/Basketball/Rally/RallyArena.prefab",
   "basketball_refined_review": "Game/Assets/_Game/Scenes/RallyArenaReview.unity",
   "basketball_refined_status": "Integrated into Bootstrap, BasketballEnvironment and the WindowsFinal player",
-  "golf_refined_source": "Golf/Tidebloom/Island_Tidebloom.blend",
-  "golf_refined_manifest": "Golf/Tidebloom/island-manifest.json",
-  "golf_refined_exports": "Game/Assets/_Game/Art/Golf/Tidebloom/",
   "legacy_archive": "Legacy/archive-manifest.json",
-  "fishing_source": "Fishing/Lagoon/Island_Lagoon_5P.blend",
-  "fishing_modules": "Fishing/Lagoon/Modules/",
-  "fishing_generator": "Tools/Blender/build_fishing_lagoon.py",
-  "fishing_manifest": "Fishing/Lagoon/lagoon-manifest.json",
-  "fishing_exports": "Game/Assets/_Game/Art/Fishing/Lagoon/",
-  "fishing_prefabs": "Game/Assets/_Game/Prefabs/Fishing/Lagoon/",
-  "fishing_status": "Five-player modular lagoon environment; exploration only"
+  "fishing_status": "L2 five-player modular lagoon environment; exploration only",
+  "golf_generator": "Tools/Blender/build_refined_islands.py",
+  "golf_refined_source": "RefinedIslands/Golf_G2.blend",
+  "golf_refined_manifest": "RefinedIslands/Golf_G2-layout.json",
+  "golf_refined_exports": "Game/Assets/_Game/Art/RefinedIslands/Golf/",
+  "fishing_source": "RefinedIslands/Fishing_L2.blend",
+  "fishing_modules": "RefinedIslands/IslandAssetKit.blend",
+  "fishing_generator": "Tools/Blender/build_refined_islands.py",
+  "fishing_manifest": "RefinedIslands/Fishing_L2-layout.json",
+  "fishing_exports": "Game/Assets/_Game/Art/RefinedIslands/Fishing/",
+  "fishing_prefabs": "Game/Assets/_Game/Prefabs/RefinedIslands/",
+  "refined_island_guide": "ArtSource/RefinedIslands/README.md",
+  "refined_island_kit": "RefinedIslands/IslandAssetKit.blend"
 }

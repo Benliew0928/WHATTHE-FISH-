@@ -2,7 +2,15 @@
 
 WHATTHE FISH? is an Android-first game with football, basketball, golf, and fishing environments.
 
-Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`, then press Play. The football stadium, indoor basketball arena and golf island are Blender assets. The shared athlete is the approved Meshy 6 Lite Rainbow Sprinter, prepared in Blender. There are no spectator NPCs.
+The official game logo is the **Pocket Island** design. See the [official logo and usage note](Docs/Branding/README.md).
+
+The Windows player includes the selected F1/B1 **walkable coastal stadiums**: detailed cream-stone entrances, teal and timber trim, sea islands, connected spectator stairs and an open-air basketball arena. See the [actual EXE review gallery](Docs/VisualDirection/CoastalStadiums/index.html) and [implementation and validation notes](Docs/COASTAL-STADIUMS.md).
+
+Golf and fishing now use **G2 Limestone Cove Links** and **L2 Limestone Garden Lagoon**, with detailed coastal materials, vegetation, facilities and walking routes. See the [27-view Windows gallery](Docs/VisualDirection/GolfFishingRefinement/GameReview/index.html) and [delivery evidence](Docs/VisualDirection/GolfFishingRefinement/GameReview/VALIDATION.md).
+
+Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`, then press Play. The football stadium, open-air basketball arena and golf island are Blender assets. The shared athlete is the approved Meshy 6 Lite Rainbow Sprinter, prepared in Blender. There are no spectator NPCs.
+
+For a fresh clone, install Git LFS and run `git lfs pull` before opening the Unity project so Blender masters, FBX models and textures are available. `Builds/` and `Legacy/` are local folders excluded from Git; teammates receive the Unity project and editable resources, then build their own Windows player with `Tools/Build/Build.ps1 -Target Windows`.
 
 ## Where things live
 
@@ -11,10 +19,10 @@ Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`
 - `ArtSource/Shared/Characters/RainbowSprinter.blend` — editable character master with original mesh, two game LODs, rig and supplied run.
 - `ArtSource/Shared/Characters/Meshy/RainbowSprinter-source.zip` — preserved Meshy download and texture provenance.
 - `ArtSource/Basketball/Rally/Arena_Rally.blend` — current modular basketball arena, textured court, rounded hoops, colorful seating, gallery, banners and lighting. The placeholder source is archived under `Legacy/ArtSource/Basketball/`.
-- `ArtSource/Golf/Tidebloom/Island_Tidebloom.blend` — sculpted tropical golf island with striped fairway, five sand bowls, palms, flower gardens, sea arch and waterfall. The placeholder source is archived under `Legacy/ArtSource/Golf/`.
+- `ArtSource/RefinedIslands/` — editable G2 golf and L2 fishing masters, shared asset kit and measured layouts. Superseded golf/fishing sources are preserved in the dated `Legacy/GolfFishing-G2L2-*` batch.
 - `Tools/Blender/` — deterministic asset generator and audit tool.
 - `Tools/Build/` — build/environment scripts.
-- `Builds/WindowsFinal/` — latest development Windows player (launch `WhatTheFish.exe`), including the Sunvale football stadium, Rally basketball arena and Tidebloom golf island. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
+- `Builds/WindowsFinal/` — latest Windows review player (launch `WhatTheFish.exe`), including the approved coastal football/basketball venues and G2/L2 islands. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
 - `Legacy/` — removable archive of old placeholders, unused materials, backups and superseded builds; see its archive manifest.
 - `Builds/Android/WhatTheFish-release.apk` — current Android test APK, 72.69 MB, ARM64 / Android 8.0+, including all three refined environments.
 - `Docs/SETUP.md` — toolchain, cloud linking and running on a phone.
@@ -22,10 +30,11 @@ Open `Game` in Unity **6000.3.20f1**. Open `Assets/_Game/Scenes/Bootstrap.unity`
 - `Docs/VERIFICATION.md` — measured checks and remaining access requirements.
 - `Docs/BUILD-SIZE.md` — measured package sizes and the asset-size budget for future work.
 - `Docs/VisualDirection/RAINBOW-SPRINTER-IMPLEMENTATION.md` — current character asset, runtime behavior and verification.
+- `Docs/Branding/README.md` — official WHATTHE FISH? logo and naming guidance.
 
 ## Controls
 
-Fishing environment: launch `Builds/WindowsFinal/WhatTheFish.exe` and choose **Let's play → Fishing → Explore offline**, or use `Builds/WindowsFinal/Explore-Fishing.cmd`. The lagoon has five separate wooden stands, a connected sandy loop and an inlet bridge. This is environment exploration only. The [modular Blender source guide](ArtSource/Fishing/Lagoon/README.md) describes the 16 separate asset modules, source libraries and Unity prefabs prepared for future customization.
+Fishing environment: launch `Builds/WindowsFinal/WhatTheFish.exe` and choose **Let's play → Fishing → Explore offline**, or use `Builds/WindowsFinal/Explore-Fishing.cmd`. Golf has its own `Explore-Golf.cmd` launcher. The lagoon has five separate coloured decks, a connected shore circuit, inlet bridge and open shelter. This is environment exploration only. The [Blender source guide](ArtSource/RefinedIslands/README.md) describes the current editable masters, shared modules, layouts and Unity assets.
 
 Landscape: left thumb stick moves; push it fully to run. Drag on the right to look. Tap **Camera** to cycle first person, third person and elevated views. On Windows: WASD, Shift, right mouse drag, C. Escape returns to the menu/waiting room. A guest leaving an environment leaves the room; the host can return everyone to the waiting room.
 
@@ -37,4 +46,4 @@ This milestone is exploration, character art and networking infrastructure. The 
 
 Choose Golf → Explore offline to visit ISLAND GREENS. Sprint shore to shore in approximately one minute in either direction. Invisible shoreline boundaries keep players on the island. Golf environment customization and golf gameplay are deferred.
 
-For the current Windows basketball replacement, see `Docs/RALLY-INTEGRATION.md`. Golf milestone results remain in `Docs/GOLF-VERIFICATION.md`; the prior basketball milestone is recorded in `Docs/BASKETBALL-VERIFICATION.md`.
+For the current Windows coastal redesign, see `Docs/COASTAL-STADIUMS.md`. `Docs/RALLY-INTEGRATION.md` records the earlier indoor-arena milestone. Golf milestone results remain in `Docs/GOLF-VERIFICATION.md`; the prior basketball milestone is recorded in `Docs/BASKETBALL-VERIFICATION.md`.

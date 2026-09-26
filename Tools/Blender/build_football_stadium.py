@@ -214,9 +214,9 @@ for bay in range(BAYS):
     mapper=lambda p:p
     part=f'Bay_{bay:02d}_Structure'
     patch(part,s0,s1,-5,18,-.4,-.045,'Limestone')
-    patch(part,s0,s1,0,1.1,3.05,3.35,'Chalk')
+    patch(part,s0+.85,s1-.85,0,1.1,3.05,3.35,'Chalk')
     patch(part,s0,s1,10.4,14.5,7.95,8.25,'Ivory')
-    patch(part,s0,s1,14.0,14.5,0,8.0,'Limestone')
+    # Outer shell is replaced by the open coastal arcade.
     for row in range(8):
         d=1.35+row*1.12;z=3.3+row*.58
         patch(part,s0+.55,s1-.55,d,d+1.12,z-.58,z,'Terrace')
@@ -237,10 +237,10 @@ for bay in range(BAYS):
     for side in (-1,1):
         x=side*(BAY/2-.25)
         cheek=[(x+dx,y,z) for dx in (-.22,.22) for y,z in ((.5,0),(10.5,0),(10.5,8.0),(.5,3.25))]
-        batch(part).add(cheek,[(0,3,2,1),(4,5,6,7),(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)],'Ivory')
+        # The original cheek crossed the stair centreline; the stair is now open.
         for step in range(16):
             box(part,(side*(BAY/2-.23),1.35+step*.56,3.05+step*.29),(.96,.56,.26),'Chalk')
-        beam(part,(side*(BAY/2-.23),1.5,4.0),(side*(BAY/2-.23),10,8.4),.045,'DeepTeal')
+        beam(part,(side*(BAY/2-.85),1.5,4.0),(side*(BAY/2-.85),10,8.4),.045,'DeepTeal')
     # Upper promenade arcade and carved impost blocks.
     arch(part,0,13.6,8.25,BAY-1.15,10.15,lambda x:12.65+3.4*math.sin(PI*(x/BAY+.5))**.72+.035*10.1,.8,'Ivory')
     arch_trim(part,0,13.13,10.15,(BAY-1.15)/2,.28,'Chalk')
@@ -248,8 +248,8 @@ for bay in range(BAYS):
         box(part,(side*(BAY/2-.30),13.6,10.16),(1.18,1.22,.30),'Chalk',.07)
         box(part,(side*(BAY/2-.30),13.6,8.4),(1.20,1.22,.32),'Limestone',.07)
     # Promenade railing between seats and arcade.
-    beam(part,(-BAY/2,11.6,8.9),(BAY/2,11.6,8.9),.07,'Seafoam')
-    for k in range(9):beam(part,(-BAY/2+k*BAY/8,11.6,8.2),(-BAY/2+k*BAY/8,11.6,8.9),.035,'DeepTeal')
+    beam(part,(-BAY/2+.85,11.6,8.9),(BAY/2-.85,11.6,8.9),.07,'Seafoam')
+    for k in range(9):beam(part,(-BAY/2+.85+k*(BAY-1.7)/8,11.6,8.2),(-BAY/2+.85+k*(BAY-1.7)/8,11.6,8.9),.035,'DeepTeal')
     # Barrel-vault canopy with actual thickness; teal outside, cool underside.
     roof=f'Bay_{bay:02d}_Canopy'
     N=16;v=[]
@@ -277,7 +277,7 @@ for bay in range(BAYS):
     for side in (-1,1):
         beam(roof,(side*BAY/2,3.45,12.7),(side*BAY/2,16.5,13.15),.16,'Limestone')
         # Sweeping canopy support forks leave the front view open.
-        beam(part,(side*(BAY/2-.28),11.0,7.9),(side*BAY/2,9.6,12.8),.18,'Ivory')
+        beam(part,(side*(BAY/2-.95),11.0,7.9),(side*BAY/2,9.6,12.8),.18,'Ivory')
         beam(part,(side*BAY/2,9.6,12.8),(side*BAY/2,3.6,12.7),.15,'Ivory')
     # Molded seats, three coordinated tones per zone, kept separate from architecture.
     colors=SEAT_PALETTES[bay//4]
@@ -316,11 +316,7 @@ for bay in range(BAYS):
     if bay%2==0:
         box(part,(0,11.9,8.55),(3.3,1.3,.6),'Limestone',.18)
         for j in range(4):sphere(part,(-1.1+j*.75,11.9,9.04+random.random()*.2),(.85,.70,.75),('Leaf','LeafLight','LeafShade')[j%3])
-    # Trees outside the stadium, individually removable landscape module.
-    if bay%2==1:
-        x=random.uniform(-1,1);d=19.8;h=random.uniform(14,18)
-        beam(part,(x,d,0),(x-.2,d,h*.78),.40,'Bark')
-        for j in range(4):sphere(part,(x+math.sin(j*2)*1.5,d+math.cos(j*2)*1.3,h-j*.8),(3.0,2.8,3.1),('Leaf','LeafLight','LeafShade','Leaf')[j])
+    # Detailed island palms replace the old smooth blob trees.
     # Ivy gathered on piers, not scattered over playable turf.
     if bay%3==0:
         for j in range(8):sphere(part,(-BAY/2+.5+.22*math.sin(j),-.25,3.1-j*.31),(.3,.20,.42),'Leaf' if j%2 else 'LeafShade',8,4)
@@ -330,11 +326,13 @@ for bay in range(BAYS):
     mid=(bay+.5)*BAY;mapper=lambda p,m=mid:path(m+p[0],p[1],p[2])
     # Low cushions preserve the goal sightline and sit outside the runoff.
     c=SEAT_PALETTES[bay//4][0]
-    box(f'Boards_{bay//4:02d}',(0,-1.5,.48),(BAY-.30,.45,.95),'Ivory',.15)
-    for j in (-1,0,1):box(f'Boards_{bay//4:02d}',(j*2.9,-1.75,.49),(2.65,.06,.70),c if j else 'Gold',.025)
+    # Split advertising boards leave the central arcade route open.
+    for side in (-1,1):
+        box(f'Boards_{bay//4:02d}',(side*(BAY/4+.85),-1.5,.48),(BAY/2-1.85,.45,.95),'Ivory',.10)
+        box(f'Boards_{bay//4:02d}',(side*(BAY/4+.85),-1.75,.49),(BAY/2-2.05,.06,.70),c,.02)
 
 module('Floodlights')
-for i,s in enumerate([PERIM*.15,PERIM*.35,PERIM*.65,PERIM*.85]):
+for i,s in enumerate([88+R*PI/4,138+3*R*PI/4,226+5*R*PI/4,276+7*R*PI/4]):
     mapper=lambda p,m=s:path(m+p[0],p[1],p[2]);part=f'Tower_{i:02d}'
     box(part,(0,15.1,.45),(2.3,2.2,.9),'Limestone',.24)
     for x in (-.6,.6):
@@ -434,6 +432,9 @@ for s in (-1,1):
 
 # Write meshes only once after procedural construction.
 objects=[b.finish() for b in batches.values()]
+sys.path.insert(0,str(Path(__file__).parent))
+import coastal_stadium_detail
+coastal_stadium_detail.build(globals(),'Football')
 for o in objects:
     if 'LOD1' in o.name:o.hide_render=True;o.hide_set(True)
     o.data.calc_loop_triangles()

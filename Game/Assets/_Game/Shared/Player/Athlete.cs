@@ -43,7 +43,9 @@ namespace WhatTheFish {
    if(slideContact)football.ResolveContacts(before,transform.position);
    var actual=transform.position-before;actual.y=0;speed=dt>0?actual.magnitude/dt:0;
    transform.rotation=Quaternion.Euler(0,Motor.Yaw,0);
-   if(transform.position.y<-10){capsule.enabled=false;transform.position=new Vector3(0,1,0);capsule.enabled=true;ResetLocomotion();}
+   var island=RefinedIslandEnvironment.Active;
+   float fallLimit=island?island.layout.sea_level-2:(CoastalVenueRoutes.Active?-2.0f:-10f);
+   if(transform.position.y<fallLimit){capsule.enabled=false;transform.position=island?island.layout.safe_return:(CoastalVenueRoutes.Active?CoastalVenueRoutes.Active.safeReturn:new Vector3(0,1,0));capsule.enabled=true;ResetLocomotion();}
    lastPosition=transform.position;
   }
   void Update(){

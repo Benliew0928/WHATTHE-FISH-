@@ -1,0 +1,174 @@
+PASS Golf selected layout
+PASS Golf capacity and distinct spawns
+PASS Golf supported spawn (-17.00, 5.00, -146.00)
+PASS Golf supported spawn (-15.00, 4.99, -146.00)
+PASS Golf supported spawn (-13.00, 4.97, -146.00)
+PASS Golf supported spawn (-11.00, 4.94, -146.00)
+PASS Golf supported spawn (-9.00, 4.90, -146.00)
+PASS Golf supported spawn (-17.00, 4.94, -143.00)
+PASS Golf supported spawn (-15.00, 4.93, -143.00)
+PASS Golf supported spawn (-13.00, 4.90, -143.00)
+PASS Golf supported spawn (-11.00, 4.88, -143.00)
+PASS Golf supported spawn (-9.00, 4.84, -143.00)
+PASS Golf supported materials
+PASS Golf near mid far vegetation and rock LODs
+PASS Golf lighting profile applied
+PASS Golf close-detail shadow bias applied
+PASS Golf five navigable bunkers
+PASS Golf Main fairway outbound
+PASS Golf Main fairway return; actual=(-9.77, 4.88, -146.00)
+PASS Golf Coastal promenade outbound
+PASS Golf Coastal promenade return; actual=(0.00, 8.85, 156.00)
+PASS Golf Pavilion approach outbound
+PASS Golf Pavilion approach return; actual=(-65.00, 4.36, -145.00)
+PASS Golf Practice green outbound
+PASS Golf Practice green return; actual=(-65.02, 4.36, -145.00)
+PASS Golf Cascade viewpoint outbound
+PASS Golf Cascade viewpoint return; actual=(130.00, 5.12, 70.00)
+PASS Golf Bunker 1 crossing outbound
+PASS Golf Bunker 1 crossing return; actual=(-63.60, 2.09, -112.00)
+PASS Golf Bunker 2 crossing outbound
+PASS Golf Bunker 2 crossing return; actual=(14.20, 1.97, -56.00)
+PASS Golf Bunker 3 crossing outbound
+PASS Golf Bunker 3 crossing return; actual=(-63.20, 3.24, 16.00)
+PASS Golf Bunker 4 crossing outbound
+PASS Golf Bunker 4 crossing return; actual=(16.40, 7.19, 74.00)
+PASS Golf Bunker 5 crossing outbound
+PASS Golf Bunker 5 crossing return; actual=(-55.00, 7.28, 127.00)
+PASS Golf shoreline containment 0
+PASS Golf shoreline containment 8
+PASS Golf shoreline containment 16
+PASS Golf shoreline containment 24
+PASS Golf shoreline containment 32
+PASS Golf shoreline containment 40
+PASS Golf shoreline containment 48
+PASS Golf shoreline containment 56
+PASS Golf shoreline containment 64
+PASS Golf shoreline containment 72
+PASS Golf shoreline containment 80
+PASS Golf shoreline containment 88
+PASS Golf shoreline containment 96
+PASS Golf shoreline containment 104
+PASS Golf shoreline containment 112
+PASS Golf shoreline containment 120
+PASS Golf shoreline containment 128
+PASS Golf shoreline containment 136
+PASS Golf shoreline containment 144
+PASS Golf shoreline containment 152
+PASS Golf shoreline containment 160
+PASS Golf shoreline containment 168
+PASS Golf shoreline containment 176
+PASS Golf shoreline containment 184
+PASS Golf shoreline containment 192
+PASS Golf shoreline containment 200
+PASS Golf shoreline containment 208
+PASS Golf shoreline containment 216
+PASS Golf shoreline containment 224
+PASS Golf shoreline containment 232
+PASS Golf shoreline containment 240
+PASS Golf shoreline containment 248
+PASS Golf environment-specific fall recovery
+PASS Golf camera 0 clearance at (-17.00, 5.00, -146.00)
+PASS Golf camera 1 clearance at (-17.00, 5.00, -146.00)
+PASS Golf camera 2 clearance at (-17.00, 5.00, -146.00)
+PASS Golf camera 0 clearance at (-15.00, 4.99, -146.00)
+PASS Golf camera 1 clearance at (-15.00, 4.99, -146.00)
+PASS Golf camera 2 clearance at (-15.00, 4.99, -146.00)
+PASS Golf camera 0 clearance at (-13.00, 4.95, -145.00)
+PASS Golf camera 1 clearance at (-13.00, 4.95, -145.00)
+PASS Golf camera 2 clearance at (-13.00, 4.95, -145.00)
+PASS Golf continuous recorded route with controller; frames=2850
+PASS Fishing selected layout
+PASS Fishing capacity and distinct spawns
+PASS Fishing supported spawn (0.00, 1.35, -32.00)
+PASS Fishing supported spawn (-30.43, 1.35, -9.89)
+PASS Fishing supported spawn (-18.81, 1.35, 25.89)
+PASS Fishing supported spawn (18.81, 1.35, 25.89)
+PASS Fishing supported spawn (30.43, 1.35, -9.89)
+PASS Fishing supported materials
+PASS Fishing near mid far vegetation and rock LODs
+PASS Fishing lighting profile applied
+PASS Fishing close-detail shadow bias applied
+PASS Fishing five stable independent station slots
+PASS Fishing station accent Stand_01
+PASS Fishing station accent Stand_02
+PASS Fishing station accent Stand_03
+PASS Fishing station accent Stand_04
+PASS Fishing station accent Stand_05
+PASS Fishing Station 1 approach outbound
+PASS Fishing Station 1 approach return; actual=(0.00, 1.35, -36.00)
+PASS Fishing Station 2 approach outbound
+PASS Fishing Station 2 approach return; actual=(-34.24, 1.36, -11.12)
+PASS Fishing Station 3 approach outbound
+PASS Fishing Station 3 approach return; actual=(-21.16, 1.37, 29.12)
+PASS Fishing Station 4 approach outbound
+PASS Fishing Station 4 approach return; actual=(21.16, 1.39, 29.12)
+PASS Fishing Station 5 approach outbound
+PASS Fishing Station 5 approach return; actual=(34.24, 1.41, -11.12)
+PASS Fishing Shelter approach outbound
+PASS Fishing Shelter approach return; actual=(31.96, 1.42, -16.98)
+PASS Fishing Lagoon circuit outbound
+PASS Fishing Lagoon circuit return; actual=(0.00, 1.42, 36.00)
+PASS Fishing Inlet bridge outbound
+PASS Fishing Inlet bridge return; actual=(-8.00, 1.33, 36.00)
+PASS Fishing shoreline containment 0
+PASS Fishing shoreline containment 26
+PASS Fishing shoreline containment 52
+PASS Fishing shoreline containment 78
+PASS Fishing shoreline containment 104
+PASS Fishing shoreline containment 130
+PASS Fishing shoreline containment 156
+PASS Fishing shoreline containment 182
+PASS Fishing shoreline containment 208
+PASS Fishing shoreline containment 234
+PASS Fishing shoreline containment 260
+PASS Fishing shoreline containment 286
+PASS Fishing shoreline containment 312
+PASS Fishing shoreline containment 338
+PASS Fishing shoreline containment 364
+PASS Fishing shoreline containment 390
+PASS Fishing shoreline containment 416
+PASS Fishing shoreline containment 442
+PASS Fishing shoreline containment 468
+PASS Fishing shoreline containment 494
+PASS Fishing shoreline containment 520
+PASS Fishing shoreline containment 546
+PASS Fishing shoreline containment 572
+PASS Fishing shoreline containment 598
+PASS Fishing shoreline containment 624
+PASS Fishing shoreline containment 650
+PASS Fishing shoreline containment 676
+PASS Fishing shoreline containment 702
+PASS Fishing shoreline containment 728
+PASS Fishing shoreline containment 754
+PASS Fishing shoreline containment 780
+PASS Fishing shoreline containment 806
+PASS Fishing shoreline containment 832
+PASS Fishing environment-specific fall recovery
+PASS Fishing camera 0 clearance at (0.00, 1.35, -32.00)
+PASS Fishing camera 1 clearance at (0.00, 1.35, -32.00)
+PASS Fishing camera 2 clearance at (0.00, 1.35, -32.00)
+PASS Fishing camera 0 clearance at (-30.43, 1.35, -9.89)
+PASS Fishing camera 1 clearance at (-30.43, 1.35, -9.89)
+PASS Fishing camera 2 clearance at (-30.43, 1.35, -9.89)
+PASS Fishing camera 0 clearance at (0.00, 1.35, -22.50)
+PASS Fishing camera 1 clearance at (0.00, 1.35, -22.50)
+PASS Fishing camera 2 clearance at (0.00, 1.35, -22.50)
+PASS Fishing camera 0 clearance at (-21.40, 1.35, -6.95)
+PASS Fishing camera 1 clearance at (-21.40, 1.35, -6.95)
+PASS Fishing camera 2 clearance at (-21.40, 1.35, -6.95)
+PASS Fishing camera 0 clearance at (-13.23, 1.35, 18.20)
+PASS Fishing camera 1 clearance at (-13.23, 1.35, 18.20)
+PASS Fishing camera 2 clearance at (-13.23, 1.35, 18.20)
+PASS Fishing camera 0 clearance at (13.23, 1.35, 18.20)
+PASS Fishing camera 1 clearance at (13.23, 1.35, 18.20)
+PASS Fishing camera 2 clearance at (13.23, 1.35, 18.20)
+PASS Fishing camera 0 clearance at (21.40, 1.35, -6.95)
+PASS Fishing camera 1 clearance at (21.40, 1.35, -6.95)
+PASS Fishing camera 2 clearance at (21.40, 1.35, -6.95)
+PASS Fishing camera 0 clearance at (41.00, 1.32, -13.00)
+PASS Fishing camera 1 clearance at (41.00, 1.32, -13.00)
+PASS Fishing camera 2 clearance at (41.00, 1.32, -13.00)
+PASS Fishing camera 0 clearance at (8.00, 1.35, 36.00)
+PASS Fishing camera 1 clearance at (8.00, 1.35, 36.00)
+PASS Fishing camera 2 clearance at (8.00, 1.35, 36.00)

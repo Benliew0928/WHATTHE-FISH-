@@ -1,0 +1,129 @@
+{
+  "status": "awaiting_user_direction_selection",
+  "generated_by": "built-in imagegen",
+  "generated_on": "2026-09-27",
+  "directions": [
+    {
+      "id": "G1",
+      "sport": "Golf",
+      "title": "Palm Garden Links",
+      "description": "A broad low tropical island approximately 400m across. A sweeping S-shaped main fairway travels from a welcoming timber pavilion and tee in the foreground toward a raised green at the far end. Lush carefully landscaped palm groves border fairways without blocking shots; cream limestone clusters hug the shore. A distinct raised waterfall garden and natural spring basin sit beside the back third. Small practice green near pavilion, exactly five visible sand bunkers distributed along the main fairway, one offshore limestone sea arch. A continuous warm sandy walking loop connects pavilion, practice green, cascade viewpoint and coast. Bright emerald and sage closely cut turf, cream sand and turquoise sea. Low welcoming composition with generous readable open course, no mountainous enclosure."
+    },
+    {
+      "id": "G2",
+      "sport": "Golf",
+      "title": "Limestone Cove Links",
+      "description": "An organic crescent-like tropical island approximately 400m across, with a complete playable central landmass, not a disconnected archipelago. A rolling main fairway bends between rounded cream limestone formations beside a sheltered turquoise cove. Low to medium planted rock terraces, a spring-fed stepped cascade overlooking the coast and an offshore sea arch provide landmarks. Main tee and small open welcome pavilion near foreground beach, practice green beside it, raised main green toward the far side, exactly five sand bunkers, continuous coastal and garden paths. More sculpted relief and sheltered coves than G1, but clear wide golfing corridor and gentle walkable elevation changes. Deep grass greens, sage rough, cream stone and honey timber, restrained teal pavilion trim. No huge mountains or cliff-only walking routes."
+    },
+    {
+      "id": "L1",
+      "sport": "Fishing",
+      "title": "Sheltered Palm Lagoon",
+      "description": "A compact lush tropical ring island approximately 115m across enclosing a calm round lagoon with one narrow inlet to the ocean. The land is gently sculpted sandy banks and low grassy dunes, abundant curved palm groves, shrubs and flowering ground cover. EXACTLY FIVE wide wooden fishing stations project inward into the lagoon, evenly distributed and all clearly visible, each separate with one distinct accent: teal, coral, yellow, violet, blue. A single timber bridge spans the inlet, closing a continuous generous walking loop around all five station entrances. One small open timber fishing shelter stands beside the path near the front beach, with benches and discreet storage. Rounded low cream limestone rocks scattered naturally rather than forming a wall. Inviting intimate garden lagoon, no tall cliffs, no extra platforms mistaken for stations, no boats."
+    },
+    {
+      "id": "L2",
+      "sport": "Fishing",
+      "title": "Limestone Garden Lagoon",
+      "description": "A compact organic lagoon ring island approximately 115m across. Sheltered central clear turquoise lagoon and one narrow inlet connected to outer sea. Planted rounded cream limestone terraces form a modest scenic backdrop along one side; low sandy coves and palm gardens keep the other side open. EXACTLY FIVE wide timber fishing stations project inward into central lagoon, evenly distributed and all clearly visible, shared design with independent teal, coral, yellow, violet, blue accents. A single detailed timber bridge crosses inlet, continuous gently graded walking circuit joins all five station entrances, with low cream stone edging. One small open timber shelter with stone bases, restrained teal roof trim, benches and storage stands on a garden landing off path. More terraced sculpted geology than L1 without tall mountains, hazardous sheer drops or blocked lagoon views. No boats or extra platforms."
+    }
+  ],
+  "images": [
+    {
+      "id": "G1_01_Overview",
+      "direction": "G1",
+      "title": "Palm Garden Links",
+      "view": "Annotated overview",
+      "file": "G1_01_Overview.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-57c00e48-cf6e-40d2-8ebc-59edabbc3763.png"
+    },
+    {
+      "id": "G2_01_Overview",
+      "direction": "G2",
+      "title": "Limestone Cove Links",
+      "view": "Annotated overview",
+      "file": "G2_01_Overview.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-a20d792a-e20c-4490-b592-1f5070da4bf1.png"
+    },
+    {
+      "id": "L1_01_Overview",
+      "direction": "L1",
+      "title": "Sheltered Palm Lagoon",
+      "view": "Annotated overview",
+      "file": "L1_01_Overview.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-d91b39b2-ea3e-49b6-a38d-b46ea4638ec7.png"
+    },
+    {
+      "id": "L2_01_Overview",
+      "direction": "L2",
+      "title": "Limestone Garden Lagoon",
+      "view": "Annotated overview",
+      "file": "L2_01_Overview.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-fd94233e-0333-43aa-87ce-557d92408c81.png"
+    },
+    {
+      "id": "G1_02_Player_View",
+      "direction": "G1",
+      "title": "Palm Garden Links",
+      "view": "Player-height landscape",
+      "file": "G1_02_Player_View.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-1dbdb8d0-b11e-4041-b5da-fe4ba4ee673a.png"
+    },
+    {
+      "id": "G1_03_Material_Close",
+      "direction": "G1",
+      "title": "Palm Garden Links",
+      "view": "Pavilion and materials",
+      "file": "G1_03_Material_Close.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-f0d5e869-6eae-43e0-b637-0bd54827e307.png"
+    },
+    {
+      "id": "G2_02_Player_View",
+      "direction": "G2",
+      "title": "Limestone Cove Links",
+      "view": "Player-height landscape",
+      "file": "G2_02_Player_View.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-d88d7cda-6a6b-4468-b1b2-ad5ceaf18b36.png"
+    },
+    {
+      "id": "G2_03_Material_Close",
+      "direction": "G2",
+      "title": "Limestone Cove Links",
+      "view": "Pavilion and materials",
+      "file": "G2_03_Material_Close.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-a99ac766-0225-4a06-9449-0c50f95436f2.png"
+    },
+    {
+      "id": "L1_02_Player_View",
+      "direction": "L1",
+      "title": "Sheltered Palm Lagoon",
+      "view": "Player-height landscape",
+      "file": "L1_02_Player_View.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-44719dee-8b8b-4ebf-ba56-8c3080fe3983.png"
+    },
+    {
+      "id": "L1_03_Material_Close",
+      "direction": "L1",
+      "title": "Sheltered Palm Lagoon",
+      "view": "Deck and materials",
+      "file": "L1_03_Material_Close.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-68b121df-083c-48c6-bbd5-47197f7d040f.png"
+    },
+    {
+      "id": "L2_02_Player_View",
+      "direction": "L2",
+      "title": "Limestone Garden Lagoon",
+      "view": "Player-height landscape",
+      "file": "L2_02_Player_View.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-2dea8c10-1109-4619-9af7-a4fac7f8c1a7.png"
+    },
+    {
+      "id": "L2_03_Material_Close",
+      "direction": "L2",
+      "title": "Limestone Garden Lagoon",
+      "view": "Deck and materials",
+      "file": "L2_03_Material_Close.png",
+      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-579bf318-4cb1-48d1-9125-581b7b908f86.png"
+    }
+  ]
+}

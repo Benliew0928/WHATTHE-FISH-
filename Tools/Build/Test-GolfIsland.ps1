@@ -1,7 +1,7 @@
 param([switch]$Headless)
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$out=Join-Path $root ('Builds\GolfTidebloomQA-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
+$out=Join-Path $root ('Builds\GolfG2QA-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out | Out-Null
 $argsList=@('-batchmode','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-probe','-sport','Golf','-golfAudit','-report',"$out\island.txt",'-exitAfter','24','-logFile',"$out\player.log")
 if($Headless){$argsList+='-nographics'}
@@ -16,3 +16,5 @@ try {
 } finally {
  if(!$p.HasExited){Stop-Process -Id $p.Id -ErrorAction SilentlyContinue}
 }
+
+\n

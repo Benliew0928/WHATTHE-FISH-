@@ -1,8 +1,8 @@
 # Rally Court — modular basketball art
 
-`Arena_Rally.blend` is the refined, editable source. It contains the complete assembled arena, two linked hoop instances, named module collections, five packed texture maps, four review cameras, and a separate `REVIEW_ONLY` lighting collection. The original prototype is archived at `Legacy/ArtSource/Basketball/Arena.blend`.
+`Arena_Rally.blend` is the refined, editable source. It contains the complete assembled arena, two linked hoop instances, named module collections, five Rally maps plus the shared coastal maps, four review cameras, and a separate `REVIEW_ONLY` lighting collection. The original prototype is archived at `Legacy/ArtSource/Basketball/Arena.blend`.
 
-The design takes the reference's warm timber, rounded sporting equipment, colorful seating, teal/coral/violet palette, arched gallery, and warm lights as direction. The rising-ball emblem, arena proportions, ceiling, fixtures, banners, and furniture are original geometry and artwork. No concept-image projection is used.
+The design takes the reference's warm timber, rounded sporting equipment, colorful seating, teal/coral/violet palette, arched gallery, and warm lights as direction. The rising-ball emblem, arena proportions, perimeter fixtures, banners, and furniture are original geometry and artwork. No concept-image projection is used.
 
 ## Modules
 
@@ -14,14 +14,11 @@ Each row has its own FBX and Unity prefab. All modules use metres and unit scale
 | CenterEmblem | Rising-ball disk, outline and bars | Swap the emblem, recolor each role |
 | Hoop | Rounded backboard, padding, frame, wheels, orange rim, diamond net, shot clock | Padding, target, board, rim, net, badge; replace whole assembly |
 | Stadium | Two-tier structural bowl, terrace stairs, arched concourses, wall panels | Architecture colors; individual bay meshes |
-| LowerSeating | 720 molded seats, 24 near/far bay pairs | Six independent seat colors |
+| LowerSeating | 680 molded seats, 24 near/far bay pairs | Six independent seat colors |
 | UpperSeating | 576 molded seats, 24 near/far bay pairs | Separate six-color palette from lower seating |
 | Railings | Balcony, promenade and aisle rails | Enamel and uprights |
 | PerimeterPads | Rounded courtside cushion blocks | Four independent cushion colors |
 | Banners | 12 cloth panels with ball motifs and diagonal prints | Fabric and print colors; replace individual banners |
-| LightingRig | Trusses, scoreboard bridge, 48 overhead fixtures, gallery sconces and balcony lights | Housing, metal, trim, emission |
-| Ceiling | Segmented acoustic canopy around central oculus | Panel/rib/inset colors; remove for cutaway views |
-| Scoreboard | Four-sided housing, static labels and digits, suspension cables | Casing, trim, display, labels; replace lettering with live UI later |
 | CourtsideFurniture | Folding team chairs, scorer table, monitors and coolers | Home/visitor upholstery, equipment and frames |
 
 ## Placement and scale
@@ -56,21 +53,21 @@ Use `export_rally_arena.py` for this asset library; `export_assets.py` now expor
 
 ## Unity library
 
-FBX files, PNG maps and 73 URP/Lit material assets live at `Game/Assets/_Game/Art/Basketball/Rally/`. The library contains 13 individual prefabs plus `Game/Assets/_Game/Prefabs/Basketball/Rally/RallyArena.prefab`. Open `Game/Assets/_Game/Scenes/RallyArenaReview.unity` for the assembled engine review.
+FBX files, PNG maps and module-specific URP/Lit material assets live at `Game/Assets/_Game/Art/Basketball/Rally/`. The library contains 10 individual module prefabs plus `Game/Assets/_Game/Prefabs/Basketball/Rally/RallyArena.prefab`. Open `Game/Assets/_Game/Scenes/RallyArenaReview.unity` for the assembled engine review.
 
 Reimport/rebuild through **Sports → Basketball → Build Rally art library**, or run `RallyArenaBuilder.Build` in Unity batch mode. This regenerates the module prefabs, materials and review scene from the FBX/manifest. Make persistent art changes in Blender or the generator; save alternate Unity colors as separate materials/prefab variants.
 
 `Bootstrap` and `BasketballEnvironment` now instantiate this library through `BasketballBuilder`. `Builds/WindowsFinal/WhatTheFish.exe` includes the replacement. The integration retains the four logo indices (Rally crest, star, lightning bolt, shield), saved palettes, arena-name signs, and the existing host-shared appearance model. Palette 0 restores the authored multi-color seating; other palettes tint the seats and replace the teal trim. Three legacy logo meshes are copied into standalone assets, so the old arena geometry is not instantiated in the game.
 
-The runtime environment adds camera/roof bounds and courtside furniture colliders, a scoped fill light, an interior menu camera, and live arena-name text on all four scoreboard faces. Match scoring, ball physics and animated nets remain future work.
+The runtime environment adds matched architecture collision, walkable entrances and stairs, courtside furniture colliders, coastal daylight and controlled fill, and live arena-name text on four supported perimeter scoreboard panels. The central court has no ceiling or suspended lighting rig. Match scoring, ball physics and animated nets remain future work.
 
 ## Rendering and budget
 
-- 1,296 seats; 48 bay-level LOD groups. Unity uses near geometry above 10% screen height, far geometry below that, and culls below 0.5%. Blender hides all far meshes for review. Never draw both versions together.
-- Complete assembly including both hoops: **533,155 triangles at all-near LOD**, **253,219 at all-far LOD**. Actual visibility varies by view. There are 311 mesh renderers including the 48 hidden alternate LOD meshes and 73 material assets; this is a modular art baseline, not a measured mobile draw-call budget.
-- Painted and woven surface maps: 256². Wood base color, roughness, and Unity metallic/smoothness: 2048². All five images are packed in the `.blend` and delivered as PNGs. UV0 is authored and validated; it is not a dedicated non-overlapping lightmap UV set.
-- The art prefab has seven simple colliders: floor, two padded hoop bases, and four runoff boundaries. The runtime environment adds six more: a canopy proxy, scorer table, and four team-seat groups. Nets, rims and concourses have no gameplay collision. Lighting fixtures contain emissive materials; Blender review area lights and Unity preview lights are kept out of the reusable art prefab.
-- Unity review disables ceiling shadow casting only in the review scene so its temporary overhead light can illuminate the court. The prefab retains authored shadows. Shipping indoor lighting needs lightmap UV generation/baking or a deliberate runtime lighting setup, followed by target-device profiling.
+- 1,256 seats and 48 bay-level LOD groups; 40 lower seats were removed to widen four entrance passages. Near/far geometry remains shared per bay.
+- Existing court wood uses a 2048px map. Approachable coastal structure uses shared 2048px base, normal and metallic/smoothness maps at 512 pixels/metre before mip selection.
+- `CoastalStadiumBuilder` adds cream arcades, modeled trim, planters, four exterior stairs and supported scoreboards. Architecture and simplified collision are separate FBXs under `Art/CoastalStadiums`; the source collections are saved in this same Blender file.
+- Continuous runoff walls, roof collision, ceiling, central scoreboard and overhead rig are retired. Structural meshes and simplified route collision support the existing player controller. Daylight is active inside and outside.
+- Current measured Windows performance, geometry audits and close-view evidence are documented in `Docs/COASTAL-STADIUMS.md`. Historical indoor triangle totals and lighting assumptions do not describe this coastal build. Android tuning is deferred.
 
 ## Verification
 

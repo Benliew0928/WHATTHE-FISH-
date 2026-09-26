@@ -1,0 +1,15 @@
+Process memory: Windows Process API, sampled within 250ms of each view/run report; original Unity/Mono output preserved in performance-runtime.txt.
+Visible Windows development player; GPU=NVIDIA GeForce RTX 4050 Laptop GPU; driver=Direct3D 11.0 [level 11.1]; vSync off; 1080p; 120 warm-up + 900 frames/view, plus 60-second real-controller run.
+Golf 01_Overview: samples=900; rendered_frames=1020; mean_ms=2.354; p95_ms=3.406; FPS=424.8; working_set_MiB=651; private_MiB=2176.6; Unity_reserved_MiB=406; graphics_MiB=1239; resolution=1920x1080
+Golf 04_Palm_Garden: samples=900; rendered_frames=1020; mean_ms=2.052; p95_ms=2.608; FPS=487.4; working_set_MiB=650; private_MiB=2116.1; Unity_reserved_MiB=406; graphics_MiB=1271; resolution=1920x1080
+Golf 07_Pavilion_Joinery: samples=900; rendered_frames=1020; mean_ms=2.047; p95_ms=2.736; FPS=488.6; working_set_MiB=650.4; private_MiB=2108.4; Unity_reserved_MiB=406; graphics_MiB=1271; resolution=1920x1080
+Golf sustained_walk_60s: samples=28642; rendered_frames=28642; mean_ms=2.095; p95_ms=2.777; FPS=477.3; working_set_MiB=651.2; private_MiB=2108.9; Unity_reserved_MiB=408; graphics_MiB=1271; resolution=1920x1080
+Golf walk_start=(-9.77, 4.92, -146.00) walk_end=(-22.12, 7.46, 81.64) waypoint=23/30 distance_metres=239.8
+Fishing 01_Overview: samples=900; rendered_frames=1020; mean_ms=2.428; p95_ms=3.950; FPS=411.9; working_set_MiB=651.3; private_MiB=2108.9; Unity_reserved_MiB=408; graphics_MiB=1271; resolution=1920x1080
+Fishing 04_Deck_Joinery: samples=900; rendered_frames=1020; mean_ms=2.392; p95_ms=2.948; FPS=418.1; working_set_MiB=651.3; private_MiB=2108.9; Unity_reserved_MiB=408; graphics_MiB=1271; resolution=1920x1080
+Fishing 07_Shelter: samples=900; rendered_frames=1020; mean_ms=2.063; p95_ms=2.925; FPS=484.8; working_set_MiB=651.3; private_MiB=2108.9; Unity_reserved_MiB=408; graphics_MiB=1271; resolution=1920x1080
+Fishing sustained_walk_60s: samples=28471; rendered_frames=28471; mean_ms=2.107; p95_ms=2.971; FPS=474.5; working_set_MiB=571.8; private_MiB=2109.5; Unity_reserved_MiB=408; graphics_MiB=1271; resolution=1920x1080
+Fishing walk_start=(0.00, 1.35, 36.00) walk_end=(13.00, 1.33, 33.55) waypoint=9/145 distance_metres=239.8
+ISLAND_BENCHMARK_COMPLETE
+
+Known separate native Unity shutdown access violation after completed measurements; see benchmark-exit.txt.

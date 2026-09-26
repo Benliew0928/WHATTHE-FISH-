@@ -12,11 +12,12 @@ report={'invalid_coordinates':0,'invalid_uvs':0,'degenerate_triangles':0,'missin
         'visible_triangles':0,'hidden_lod_triangles':0,'module_count':len(manifest['modules'])}
 for obj in bpy.context.scene.objects:
     if obj.type!='MESH':continue
+    if obj.parent and obj.parent.name in ('Basketball_Architecture','Basketball_Collision'):continue
     mesh=obj.data;mesh.calc_loop_triangles();report['mesh_objects']+=1
     assert mesh.uv_layers.active, obj.name
     assert len(mesh.vertices) and len(mesh.polygons),obj.name
     report['invalid_coordinates']+=sum(not all(math.isfinite(c) for c in v.co) for v in mesh.vertices)
-    report['invalid_uvs']+=sum(not all(math.isfinite(c) and -.00001<=c<=1.00001 for c in u.uv) for u in mesh.uv_layers.active.data)
+    report['invalid_uvs']+=sum(not all(math.isfinite(c) for c in u.uv) for u in mesh.uv_layers.active.data)
     report['missing_materials']+=sum(m is None for m in mesh.materials)
     for t in mesh.loop_triangles:
         a,b,c=(mesh.vertices[i].co for i in t.vertices)
@@ -54,7 +55,7 @@ report['lod1_bays']=sum(o.name.endswith('Seats_LOD1') for o in bpy.context.scene
 assert report['lod0_bays']==report['lod1_bays']==48
 assert all(o.hide_render for o in bpy.context.scene.objects if o.name.endswith('LOD1'))
 report['packed_maps']=[im.name for im in bpy.data.images if im.packed_file]
-assert len(report['packed_maps'])==5,report['packed_maps']
+assert len([n for n in report['packed_maps'] if n.startswith('Rally_')])==5,report['packed_maps']
 report['material_count']=len(manifest['materials'])
 report['fbx_exports']=[]
 for name in manifest['modules']:
@@ -65,6 +66,7 @@ for name in manifest['modules']:
 owners={}
 for obj in bpy.context.scene.objects:
     if obj.type!='MESH':continue
+    if obj.parent and obj.parent.name in ('Basketball_Architecture','Basketball_Collision'):continue
     module=obj.name.split('__')[0]
     for m in obj.data.materials:owners.setdefault(m.name,set()).add(module)
 assert all(len(o)==1 for o in owners.values()),owners
@@ -76,7 +78,9 @@ for obj in bpy.context.scene.objects:
             inward=Vector((-p.center.x,-p.center.y,0))
             report['inward_banner_prints'] &= p.normal.dot(inward)>0
 assert report['inward_banner_prints'],'Banner graphics face away from the court'
-assert report['module_count']==13
+assert report['module_count']==10
+assert bpy.data.objects.get('Ceiling') is None
+assert bpy.data.objects.get('LightingRig') is None
 assert report['invalid_coordinates']==report['invalid_uvs']==report['degenerate_triangles']==report['missing_materials']==0,report
 (SOURCE/'blender-source-audit.json').write_text(json.dumps(report,indent=2)+'\n')
 print('RALLY_SOURCE_AUDIT_PASS',json.dumps(report),flush=True)

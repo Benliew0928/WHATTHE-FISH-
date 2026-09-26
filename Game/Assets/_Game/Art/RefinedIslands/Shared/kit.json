@@ -1,0 +1,260 @@
+{
+  "modules": [
+    {
+      "name": "Palm_0",
+      "file": "Palm_0.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0.4,
+            3.5,
+            0
+          ],
+          "size": [
+            0.65,
+            7,
+            0.65
+          ]
+        }
+      ],
+      "lods": true,
+      "triangles": 14236
+    },
+    {
+      "name": "Palm_1",
+      "file": "Palm_1.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0.4,
+            3.5,
+            0
+          ],
+          "size": [
+            0.65,
+            7,
+            0.65
+          ]
+        }
+      ],
+      "lods": true,
+      "triangles": 14236
+    },
+    {
+      "name": "Palm_2",
+      "file": "Palm_2.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0.4,
+            3.5,
+            0
+          ],
+          "size": [
+            0.65,
+            7,
+            0.65
+          ]
+        }
+      ],
+      "lods": true,
+      "triangles": 14236
+    },
+    {
+      "name": "Palm_3",
+      "file": "Palm_3.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0.4,
+            3.5,
+            0
+          ],
+          "size": [
+            0.65,
+            7,
+            0.65
+          ]
+        }
+      ],
+      "lods": true,
+      "triangles": 14236
+    },
+    {
+      "name": "Plant_0",
+      "file": "Plant_0.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 2724
+    },
+    {
+      "name": "Plant_1",
+      "file": "Plant_1.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 2724
+    },
+    {
+      "name": "Plant_2",
+      "file": "Plant_2.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 2724
+    },
+    {
+      "name": "Plant_3",
+      "file": "Plant_3.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 224
+    },
+    {
+      "name": "Grass_0",
+      "file": "Grass_0.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 3300
+    },
+    {
+      "name": "Grass_1",
+      "file": "Grass_1.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 3300
+    },
+    {
+      "name": "Grass_2",
+      "file": "Grass_2.fbx",
+      "collision": "none",
+      "boxes": [],
+      "lods": true,
+      "triangles": 3300
+    },
+    {
+      "name": "Rock_0",
+      "file": "Rock_0.fbx",
+      "collision": "rock",
+      "boxes": [],
+      "lods": true,
+      "triangles": 1436
+    },
+    {
+      "name": "Rock_1",
+      "file": "Rock_1.fbx",
+      "collision": "rock",
+      "boxes": [],
+      "lods": true,
+      "triangles": 1436
+    },
+    {
+      "name": "Rock_2",
+      "file": "Rock_2.fbx",
+      "collision": "rock",
+      "boxes": [],
+      "lods": true,
+      "triangles": 1436
+    },
+    {
+      "name": "Rock_3",
+      "file": "Rock_3.fbx",
+      "collision": "rock",
+      "boxes": [],
+      "lods": true,
+      "triangles": 1436
+    },
+    {
+      "name": "PlayerStand",
+      "file": "PlayerStand.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0,
+            -0.16,
+            3.5
+          ],
+          "size": [
+            6,
+            0.32,
+            7
+          ]
+        }
+      ],
+      "lods": false,
+      "triangles": 11368
+    },
+    {
+      "name": "InletBridge",
+      "file": "InletBridge.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0,
+            -0.18,
+            0
+          ],
+          "size": [
+            13,
+            0.36,
+            4.2
+          ]
+        }
+      ],
+      "lods": false,
+      "triangles": 18088
+    },
+    {
+      "name": "GolfPavilion",
+      "file": "GolfPavilion.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0,
+            -0.16,
+            0
+          ],
+          "size": [
+            11,
+            0.32,
+            8
+          ]
+        }
+      ],
+      "lods": false,
+      "triangles": 4900
+    },
+    {
+      "name": "FishingShelter",
+      "file": "FishingShelter.fbx",
+      "collision": "boxes",
+      "boxes": [
+        {
+          "center": [
+            0,
+            -0.16,
+            0
+          ],
+          "size": [
+            8,
+            0.32,
+            5
+          ]
+        }
+      ],
+      "lods": false,
+      "triangles": 5260
+    }
+  ]
+}

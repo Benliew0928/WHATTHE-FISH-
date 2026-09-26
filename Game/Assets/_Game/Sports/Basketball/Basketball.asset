@@ -34,8 +34,8 @@ MonoBehaviour:
   farClip: 450
   fogStart: 180
   fogEnd: 430
-  ambientColor: {r: 0.66, g: 0.69, b: 0.74, a: 1}
-  backgroundColor: {r: 0.13725491, g: 0.22352941, b: 0.3137255, a: 1}
-  lightRotation: {x: 72, y: -25, z: 0}
-  lightIntensity: 1.15
-  indoor: 1
+  ambientColor: {r: 0.52, g: 0.61, b: 0.68, a: 1}
+  backgroundColor: {r: 0.49803922, g: 0.7764706, b: 0.9372549, a: 1}
+  lightRotation: {x: 56, y: -35, z: 0}
+  lightIntensity: 1.12
+  indoor: 0

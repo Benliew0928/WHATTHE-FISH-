@@ -63,6 +63,7 @@ public static class RallyArenaBuilder {
                 m.EnableKeyword("_EMISSION");
                 m.SetColor("_EmissionColor", color * spec.emission);
             }
+            CoastalStadiumBuilder.DetailMaterial(m,spec.name);
             m.enableInstancing = true; EditorUtility.SetDirty(m); materials[spec.name] = m;
         }
         foreach (var name in data.modules) {
@@ -110,11 +111,7 @@ public static class RallyArenaBuilder {
                 second.transform.localRotation = Quaternion.Euler(0, 180, 0);
             }
         }
-        var boundary = new GameObject("Collision_RunoffBoundary"); boundary.transform.SetParent(assembly.transform, false);
-        foreach (var s in new[] { -1f, 1f }) {
-            AddBox(boundary, "Sideline", new Vector3(s * 11.85f, 1.5f, 0), new Vector3(.25f, 3, 37.2f));
-            AddBox(boundary, "Endline", new Vector3(0, 1.5f, s * 18.55f), new Vector3(23.7f, 3, .25f));
-        }
+        // Open entry corridors replace the continuous runoff box.
         PrefabUtility.SaveAsPrefabAsset(assembly, Prefabs + "RallyArena.prefab");
         Audit(assembly, data.modules.Length, materials.Count);
         SetupReview(assembly);
@@ -173,7 +170,7 @@ public static class RallyArenaBuilder {
     }
     static void SetupReview(GameObject assembly) {
         // Preview lighting is separate from the reusable prefab. Indoor shipping lighting needs baking.
-        foreach (var r in assembly.transform.Find("Ceiling").GetComponentsInChildren<Renderer>()) r.shadowCastingMode = ShadowCastingMode.Off;
+        // Open-air review: the retired ceiling is absent.
         RenderSettings.ambientMode = AmbientMode.Flat; RenderSettings.ambientLight = new Color(.66f, .69f, .74f); RenderSettings.fog = false;
         var key = new GameObject("Review overhead wash").AddComponent<Light>(); key.type = LightType.Directional;
         key.color = new Color(1, .88f, .73f); key.intensity = 1.1f; key.shadows = LightShadows.Soft;

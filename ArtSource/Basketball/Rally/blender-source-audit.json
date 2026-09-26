@@ -3,10 +3,10 @@
   "invalid_uvs": 0,
   "degenerate_triangles": 0,
   "missing_materials": 0,
-  "mesh_objects": 311,
-  "visible_triangles": 533155,
-  "hidden_lod_triangles": 15552,
-  "module_count": 13,
+  "mesh_objects": 256,
+  "visible_triangles": 467827,
+  "hidden_lod_triangles": 15072,
+  "module_count": 10,
   "court_dimensions": [
     15.239999771118164,
     28.651199340820312
@@ -28,65 +28,83 @@
   "lod0_bays": 48,
   "lod1_bays": 48,
   "packed_maps": [
+    "Coastal_Bronze_BaseColor",
+    "Coastal_Bronze_Mask",
+    "Coastal_Bronze_Normal",
+    "Coastal_Flower_BaseColor",
+    "Coastal_Flower_Mask",
+    "Coastal_Flower_Normal",
+    "Coastal_Lamp_BaseColor",
+    "Coastal_Lamp_Mask",
+    "Coastal_Lamp_Normal",
+    "Coastal_Leaf_BaseColor",
+    "Coastal_Leaf_Mask",
+    "Coastal_Leaf_Normal",
+    "Coastal_Paving_BaseColor",
+    "Coastal_Paving_Mask",
+    "Coastal_Paving_Normal",
+    "Coastal_Plaster_BaseColor",
+    "Coastal_Plaster_Mask",
+    "Coastal_Plaster_Normal",
+    "Coastal_Screen_BaseColor",
+    "Coastal_Screen_Mask",
+    "Coastal_Screen_Normal",
+    "Coastal_Stone_BaseColor",
+    "Coastal_Stone_Mask",
+    "Coastal_Stone_Normal",
+    "Coastal_Teal_BaseColor",
+    "Coastal_Teal_Mask",
+    "Coastal_Teal_Normal",
+    "Coastal_Timber_BaseColor",
+    "Coastal_Timber_Mask",
+    "Coastal_Timber_Normal",
     "Rally_HoneyMaple_BaseColor",
     "Rally_HoneyMaple_MetallicSmoothness",
     "Rally_HoneyMaple_Roughness",
     "Rally_PaintedSurface",
     "Rally_WovenFabric"
   ],
-  "material_count": 73,
+  "material_count": 59,
   "fbx_exports": [
     {
       "module": "Court",
-      "bytes": 357804
+      "bytes": 357756
     },
     {
       "module": "CenterEmblem",
-      "bytes": 42444
+      "bytes": 42396
     },
     {
       "module": "Hoop",
-      "bytes": 215052
+      "bytes": 214988
     },
     {
       "module": "Stadium",
-      "bytes": 2068700
+      "bytes": 2104524
     },
     {
       "module": "LowerSeating",
-      "bytes": 2334316
+      "bytes": 2230108
     },
     {
       "module": "UpperSeating",
-      "bytes": 1881644
+      "bytes": 1881596
     },
     {
       "module": "Railings",
-      "bytes": 610108
+      "bytes": 609692
     },
     {
       "module": "PerimeterPads",
-      "bytes": 184796
+      "bytes": 174428
     },
     {
       "module": "Banners",
-      "bytes": 393324
-    },
-    {
-      "module": "LightingRig",
-      "bytes": 817404
-    },
-    {
-      "module": "Ceiling",
-      "bytes": 156028
-    },
-    {
-      "module": "Scoreboard",
-      "bytes": 77580
+      "bytes": 393244
     },
     {
       "module": "CourtsideFurniture",
-      "bytes": 113884
+      "bytes": 113836
     }
   ],
   "independent_module_materials": true,

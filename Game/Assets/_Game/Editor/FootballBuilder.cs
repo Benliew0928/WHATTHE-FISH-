@@ -22,6 +22,7 @@ public static partial class ProjectBuilder {
   var screen=WorldCanvas("Stadium screen",stadium.transform,new Vector3(0,20,-73.72f),new Vector2(13.7f,3.7f),Quaternion.Euler(0,180,0));
   view.title=WorldText(screen,"SUNVALE",new Vector2(0,75),new Vector2(1600,180),130,Color.white);
   view.subtitle=WorldText(screen,"MAKE YOURSELF AT HOME",new Vector2(0,-105),new Vector2(1600,90),46,LocalProfile.Teams[0]);
+  CoastalStadiumBuilder.Attach(stadium,"Football");
   return stadium;
  }
 }

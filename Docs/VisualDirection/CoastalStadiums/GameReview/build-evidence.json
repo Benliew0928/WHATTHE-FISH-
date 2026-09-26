@@ -1,0 +1,77 @@
+{
+  "reviewed_utc": "2026-09-26T15:54:27.796677+00:00",
+  "build_files": [
+    {
+      "path": "Builds/WindowsFinal/WhatTheFish.exe",
+      "sha256": "5D7EEB5359C2E35E4EB1F6A5844B25C3D7556795BD2F15EC234A2011406BC9C6",
+      "bytes": 667136
+    },
+    {
+      "path": "Builds/WindowsFinal/UnityPlayer.dll",
+      "sha256": "A6CF3D19D96BB4D9621EF80B474A5121BD929A1AB23264FBA07BC187AAF5FB34",
+      "bytes": 84173224
+    },
+    {
+      "path": "Builds/WindowsFinal/WhatTheFish_Data/data.unity3d",
+      "sha256": "CFA821670D02DE208CF23C4593668DCB596ACF26B3E570884AC585DC40F86505",
+      "bytes": 302849522
+    },
+    {
+      "path": "Builds/WindowsFinal/WhatTheFish_Data/Managed/Assembly-CSharp.dll",
+      "sha256": "9CED01BAF5B7EFA776178615555B3C7CF7581401BD6FCA915897045C88504354",
+      "bytes": 177152
+    }
+  ],
+  "actual_screenshots": 16,
+  "concept_images": 6,
+  "offline_assertions": 128,
+  "network_evidence": [
+    "Builds/CoastalRooms-Football-20260926-232404",
+    "Builds/CoastalRooms-Basketball-20260926-232407"
+  ],
+  "archives": [
+    {
+      "batch": "coastal-stadiums-20260926-231415",
+      "files": 4803,
+      "bytes": 1226127425
+    },
+    {
+      "batch": "coastal-stadiums-20260926-232756",
+      "files": 3462,
+      "bytes": 591583738
+    },
+    {
+      "batch": "coastal-stadiums-20260926-235334",
+      "files": 6523,
+      "bytes": 924640852
+    }
+  ],
+  "source_audit": "ArtSource/CoastalStadiums/source-audit.json",
+  "video_fps": 30,
+  "videos": {
+    "Football": {
+      "frames": 1829,
+      "fps": 30,
+      "seconds": 60.96,
+      "resolution": [
+        1280,
+        720
+      ],
+      "bytes": 49140554,
+      "sha256": "E334055D3EE74751F5F6063E37520BB786C4EC7266ADE89745ED66C5C6702DD7",
+      "full_decode_verified": true
+    },
+    "Basketball": {
+      "frames": 1615,
+      "fps": 30,
+      "seconds": 53.83,
+      "resolution": [
+        1280,
+        720
+      ],
+      "bytes": 47124167,
+      "sha256": "DC27716C0ED03F9B6DE069829F8A868C27B7CAC4A49E3A90593182C8499AD799",
+      "full_decode_verified": true
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "Fishing 04_Deck_Joinery": {
+    "sampledUTC": "2026-09-26T19:14:14.1959788Z",
+    "private_MiB": 2108.9,
+    "working_set_MiB": 651.3
+  },
+  "Golf 01_Overview": {
+    "sampledUTC": "2026-09-26T19:13:04.9934160Z",
+    "private_MiB": 2176.6,
+    "working_set_MiB": 651.0
+  },
+  "Golf 07_Pavilion_Joinery": {
+    "sampledUTC": "2026-09-26T19:13:09.1479630Z",
+    "private_MiB": 2108.4,
+    "working_set_MiB": 650.4
+  },
+  "Fishing 07_Shelter": {
+    "sampledUTC": "2026-09-26T19:14:16.4086324Z",
+    "private_MiB": 2108.9,
+    "working_set_MiB": 651.3
+  },
+  "Fishing sustained_walk_60s": {
+    "sampledUTC": "2026-09-26T19:15:16.4529194Z",
+    "private_MiB": 2109.5,
+    "working_set_MiB": 571.8
+  },
+  "Golf 04_Palm_Garden": {
+    "sampledUTC": "2026-09-26T19:13:06.9594089Z",
+    "private_MiB": 2116.1,
+    "working_set_MiB": 650.0
+  },
+  "Golf sustained_walk_60s": {
+    "sampledUTC": "2026-09-26T19:14:09.2302308Z",
+    "private_MiB": 2108.9,
+    "working_set_MiB": 651.2
+  },
+  "Fishing 01_Overview": {
+    "sampledUTC": "2026-09-26T19:14:11.9853684Z",
+    "private_MiB": 2108.9,
+    "working_set_MiB": 651.3
+  }
+}

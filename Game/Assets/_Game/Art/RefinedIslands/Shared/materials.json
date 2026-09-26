@@ -1,0 +1,139 @@
+{
+  "materials": [
+    {
+      "name": "RI_Stone",
+      "base_map": "RI_Stone_BaseColor.png",
+      "normal": "RI_Stone_Normal.png",
+      "mask": "RI_Stone_Mask.png",
+      "roughness": 0.81,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Paving",
+      "base_map": "RI_Paving_BaseColor.png",
+      "normal": "RI_Paving_Normal.png",
+      "mask": "RI_Paving_Mask.png",
+      "roughness": 0.83,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Timber",
+      "base_map": "RI_Timber_BaseColor.png",
+      "normal": "RI_Timber_Normal.png",
+      "mask": "RI_Timber_Mask.png",
+      "roughness": 0.66,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Bark",
+      "base_map": "RI_Bark_BaseColor.png",
+      "normal": "RI_Bark_Normal.png",
+      "mask": "RI_Bark_Mask.png",
+      "roughness": 0.89,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Leaf",
+      "base_map": "RI_Leaf_BaseColor.png",
+      "normal": "RI_Leaf_Normal.png",
+      "mask": "RI_Leaf_Mask.png",
+      "roughness": 0.76,
+      "foliage": true,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_LeafLight",
+      "base_map": "RI_LeafLight_BaseColor.png",
+      "normal": "RI_LeafLight_Normal.png",
+      "mask": "RI_LeafLight_Mask.png",
+      "roughness": 0.74,
+      "foliage": true,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Turf",
+      "base_map": "RI_Turf_BaseColor.png",
+      "normal": "RI_Turf_Normal.png",
+      "mask": "RI_Turf_Mask.png",
+      "roughness": 0.88,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Sand",
+      "base_map": "RI_Sand_BaseColor.png",
+      "normal": "RI_Sand_Normal.png",
+      "mask": "RI_Sand_Mask.png",
+      "roughness": 0.94,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Soil",
+      "base_map": "RI_Soil_BaseColor.png",
+      "normal": "RI_Soil_Normal.png",
+      "mask": "RI_Soil_Mask.png",
+      "roughness": 0.97,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Teal",
+      "base_map": "RI_Teal_BaseColor.png",
+      "normal": "RI_Teal_Normal.png",
+      "mask": "RI_Teal_Mask.png",
+      "roughness": 0.48,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Bronze",
+      "base_map": "RI_Bronze_BaseColor.png",
+      "normal": "RI_Bronze_Normal.png",
+      "mask": "RI_Bronze_Mask.png",
+      "roughness": 0.42,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Rope",
+      "base_map": "RI_Rope_BaseColor.png",
+      "normal": "RI_Rope_Normal.png",
+      "mask": "RI_Rope_Mask.png",
+      "roughness": 0.88,
+      "foliage": false,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Flower",
+      "base_map": "RI_Flower_BaseColor.png",
+      "normal": "RI_Flower_Normal.png",
+      "mask": "RI_Flower_Mask.png",
+      "roughness": 0.72,
+      "foliage": true,
+      "tile_metres": 4
+    },
+    {
+      "name": "RI_Gold",
+      "base_map": "RI_Gold_BaseColor.png",
+      "normal": "RI_Gold_Normal.png",
+      "mask": "RI_Gold_Mask.png",
+      "roughness": 0.7,
+      "foliage": true,
+      "tile_metres": 4
+    },
+    {
+      "name": "LG_Accent",
+      "base_map": "RI_Teal_BaseColor.png",
+      "normal": "RI_Teal_Normal.png",
+      "mask": "RI_Teal_Mask.png",
+      "roughness": 0.48,
+      "foliage": false,
+      "tile_metres": 4
+    }
+  ]
+}

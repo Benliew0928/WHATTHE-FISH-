@@ -96,12 +96,7 @@ public static class SunvaleStadiumBuilder {
                 south.transform.localRotation = Quaternion.Euler(0, 180, 0);
             }
         }
-        var collisions = new GameObject("Collision_RunoffBoundary");
-        collisions.transform.SetParent(assembly.transform, false);
-        foreach (float s in new[] { -1f, 1f }) {
-            AddBox(collisions, "Touchline runoff", new Vector3(s * 38.7f, 1.5f, 0), new Vector3(.3f, 3, 116));
-            AddBox(collisions, "End runoff", new Vector3(0, 1.5f, s * 58), new Vector3(77.4f, 3, .3f));
-        }
+        // Real arches and route collision replace the continuous runoff box.
         PrefabUtility.SaveAsPrefabAsset(assembly, Prefabs + "SunvaleStadium.prefab");
         SetupReviewScene();
         EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(), ScenePath);

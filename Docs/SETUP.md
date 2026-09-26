@@ -44,7 +44,7 @@ Close Unity while regenerating art, or wait for FBX export to finish before trig
 
 This rebuilds the football stadium only. **Save hand-edited variants under a new name before regenerating.** The venue assets use editable Blender files. Export axes are -Z forward / Y up, metres, without leaf bones.
 
-To export the hand-edited Tidebloom golf `.blend` without rebuilding it, run Blender with `--background --factory-startup --python .\Tools\Blender\export_assets.py` from the repository root. It does not overwrite the Rainbow Sprinter.
+Golf and fishing now share the G2/L2 library. See [Refined island authoring](../ArtSource/RefinedIslands/README.md) for the editable masters and deterministic export workflow.
 
 To regenerate the current character from the preserved Meshy ZIP, run `python .\Tools\Blender\prepare_rainbow_sprinter.py`, then run Blender with `--background --factory-startup --python .\Tools\Blender\export_rainbow_sprinter.py` from the repository root. This produces the editable master, a static skinned model FBX with two LODs, a separate FBX containing only the supplied run take, and the texture maps used by Unity. The two exports share the same rig. Character appearance controls are paused for this one-piece mesh.
 
@@ -60,25 +60,26 @@ Generate only the basketball art with:
 & 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python .\Tools\Blender\build_rally_arena.py
 ```
 
-Import the regenerated modules using the Unity menu **WHATTHE FISH?/Basketball/Build Rally art library**, then run `Tools/Build/Build.ps1 -Target Scene`, followed by Windows and Android builds. Keep hand-edited Blender variants separately before regeneration. Scene rebuilding configures all three environments, the four logo references, spawn points, cameras and lighting.
+Import the regenerated modules using the Unity menu **WHATTHE FISH?/Basketball/Build Rally art library**, then run `Tools/Build/Build.ps1 -Target Scene`, followed by Windows and Android builds. Keep hand-edited Blender variants separately before regeneration. Scene rebuilding configures all four environments, the four logo references, spawn points, cameras and lighting.
 
 Choose Basketball → Stadium customisation to change the arena name, accent palette and center logo. In a room only the host has this control. Return to the waiting room to edit settings, then start again. Logo selection persists locally and appears for joining guests. No image upload is included.
 
 Run `Tools/Build/Test-BasketballRooms.ps1 -Transport Local` for local checks or `-Transport Cloud` for real Relay checks. The latter creates temporary ten-player basketball and two-player football rooms using the linked Unity cloud project. Processes and evidence are isolated per run. Run `python Tools/Build/check_basketball_evidence.py <evidence-folder>` to compare actual movement and replicated positions. Use the same new build for every participant.
 
-## Golf island
+## Golf and fishing islands
 
-Generate only the island with:
+The selected G2 Limestone Cove Links and L2 Limestone Garden Lagoon use the shared detailed asset kit. Their current sources, materials, manifests and rebuild instructions are in [Refined island authoring](../ArtSource/RefinedIslands/README.md).
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python .\Tools\Blender\build_golf.py
+& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python-exit-code 1 --python Tools/Blender/build_refined_islands.py
+Tools/Build/Build.ps1 -Target Windows
 ```
 
-Run `Tools/Build/Build.ps1 -Target Scene`, then build Windows and Android. The scene builder configures all three sports. The golfer uses the shared athlete and controls; holding Shift or pushing the thumb stick fully runs at 7 m/s. Golf has a fixed name and no stadium customization controls.
+For layout iteration, append `-- --reuse-kit` to Blender. Unity method `RefinedIslandBuildEntry.BuildWindows` rebuilds just these two environments into the saved scene and Windows player, preserving the stadium scene objects. Windows is the current performance target; Android tuning is deferred.
 
-Use `-sport Golf -probe -golfAudit -report <absolute-path> -exitAfter 145` on the Windows development player to check the current Tidebloom shoreline, spawn support, fairway traversal and bunker exits. Prefer `Tools/Build/Test-GolfIsland.ps1` for the complete check. `-sport Golf -probe -smoke` captures the island overview, shore and all three cameras. Probes run only when explicitly requested by command-line flags.
+All four environments use the shared controller: WASD moves, Shift runs, right mouse drag looks, and C cycles camera modes. Golf retains ten player slots; fishing retains five independently coloured replaceable stations. Both preserve their existing fixed menu names. Swimming, golf shots, fishing mechanics and NPCs are outside this environment pass.
 
-Run `Tools/Build/Test-GolfRooms.ps1 -Transport Local` or `-Transport Cloud` to check a ten-player golf room alongside a two-player basketball room. Cloud launches are spaced to avoid authentication bursts. Run `python Tools/Build/check_basketball_evidence.py <golf-evidence-folder>` to compare movement and settled host/guest positions; this existing checker supports either sport.
+Run `Tools/Build/Review-RefinedIslands.ps1 -RecordRoutes` for actual Windows captures and route checks. The two `Test-RefinedIslandRooms.ps1 -Sport Golf/Fishing` runs check local host/guest movement. `Test-GolfIsland.ps1` and `Test-FishingIsland.ps1` retain the additional shore and module checks; their layout-dependent expectations now use the current manifests. `Test-GolfRooms.ps1 -Transport Local` and `Test-FishingRooms.ps1` check room capacities and authority. All diagnostics require explicit command-line opt-in.
 
 The football tackle update uses network protocol 6. See `Docs/VisualDirection/TACKLE-AUTHORING.md` for the Tackle button, Space shortcut, authoring commands and gameplay checks. Every participant must use matching builds. See `Docs/GOLF-VERIFICATION.md` for the historical golf package checks and unverified phone tests.
 

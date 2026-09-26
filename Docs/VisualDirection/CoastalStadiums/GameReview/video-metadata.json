@@ -1,0 +1,26 @@
+{
+  "Football": {
+    "frames": 1829,
+    "fps": 30,
+    "seconds": 60.96,
+    "resolution": [
+      1280,
+      720
+    ],
+    "bytes": 49140554,
+    "sha256": "E334055D3EE74751F5F6063E37520BB786C4EC7266ADE89745ED66C5C6702DD7",
+    "full_decode_verified": true
+  },
+  "Basketball": {
+    "frames": 1615,
+    "fps": 30,
+    "seconds": 53.83,
+    "resolution": [
+      1280,
+      720
+    ],
+    "bytes": 47124167,
+    "sha256": "DC27716C0ED03F9B6DE069829F8A868C27B7CAC4A49E3A90593182C8499AD799",
+    "full_decode_verified": true
+  }
+}

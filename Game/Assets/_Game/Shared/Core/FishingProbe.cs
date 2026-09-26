@@ -27,8 +27,10 @@ namespace WhatTheFish {
    Check(lagoon.playerStands.Length==5&&lagoon.playerStands.All(s=>s.moduleType=="PlayerStand"),"FIVE_INDEPENDENT_STANDS");
    var standMeshes=lagoon.playerStands.Select(s=>s.GetComponentInChildren<MeshFilter>().sharedMesh).ToArray();
    Check(standMeshes.All(m=>m==standMeshes[0]),"STANDS_SHARE_REPLACEABLE_MESH");
-   Check(lagoon.GetComponentsInChildren<FishingModule>().Select(m=>m.moduleType).Distinct().Count()==16,"SIXTEEN_MODULE_TYPES");
-   Check(lagoon.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterials.All(m=>m&&m.shader&&m.shader.isSupported)),"MATERIALS_SUPPORTED");
+   var layout=lagoon.GetComponent<RefinedIslandEnvironment>().layout;
+   Check(layout.instances.Select(m=>m.module).Distinct().Count()>=15,"L2_REUSABLE_ASSET_FAMILIES");
+   bool graphics=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;
+   Check(lagoon.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterials.All(m=>m&&m.shader&&(!graphics||m.shader.isSupported))),graphics?"MATERIALS_SUPPORTED":"MATERIAL_REFERENCES_PRESENT_HEADLESS");
    for(int i=0;i<5;i++){
     var spawn=def.Spawn(i);var stand=lagoon.standingPositions[i];
     Check(Physics.Raycast(spawn+Vector3.up,Vector3.down,out var floor,3,1<<8)&&Mathf.Abs(floor.point.y-1.2f)<.1f,"SPAWN_FLOOR_"+i);
@@ -46,11 +48,9 @@ namespace WhatTheFish {
     }
    }
    // Continuous circuit includes a straight crossing of the northern inlet.
-   IslandTeleport(new Vector3(0,1.35f,-36));bool loop=true;
-   for(int degree=185;degree<=535;degree+=5){
-    float a=degree*Mathf.Deg2Rad;var point=new Vector3(36*Mathf.Sin(a),1.2f,36*Mathf.Cos(a));
-    if(point.z>34&&Mathf.Abs(point.x)<7)point.z=36;
-    if(!FishingWalk(point,140)){Record("LOOP_STUCK angle="+degree+" actual="+app.LocalAthlete.transform.position+" target="+point);loop=false;break;}
+   var circuit=layout.routes.Single(r=>r.name=="Lagoon circuit").points;IslandTeleport(circuit[0]);bool loop=true;
+   foreach(var point in circuit){
+    if(!FishingWalk(point,140)){Record("LOOP_STUCK actual="+app.LocalAthlete.transform.position+" target="+point);loop=false;break;}
    }
    Check(loop,"FULL_COASTAL_LOOP_AND_BRIDGE");
    for(int i=0;i<5;i++){

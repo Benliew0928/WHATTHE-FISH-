@@ -20,12 +20,6 @@ public static partial class ProjectBuilder {
  public static void Setup(){
   foreach(string dir in new[]{"Resources","Materials","Scenes","Settings","Sports/Football","Sports/Basketball","Sports/Golf","Sports/Fishing","Shared/Platform"})Directory.CreateDirectory(Root+dir);
   AssetDatabase.Refresh();
-  foreach(string name in new[]{"GolfIsland"}){
-   var importer=AssetImporter.GetAtPath(Root+"Art/"+name+".fbx") as ModelImporter;if(!importer)throw new Exception("Run the Blender asset generator first.");
-   importer.globalScale=1;importer.useFileScale=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.ImportStandard;
-   importer.animationType=ModelImporterAnimationType.None;importer.importAnimation=false;importer.isReadable=false;
-   importer.SaveAndReimport();
-  }
   const string athletePath=Root+"Art/RainbowSprinter.fbx";
   var athleteImporter=AssetImporter.GetAtPath(athletePath) as ModelImporter;
   if(!athleteImporter)throw new Exception("Run the Rainbow Sprinter Blender export first.");
@@ -154,7 +148,9 @@ public static partial class ProjectBuilder {
   RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=new Color(.58f,.64f,.7f);DynamicGI.UpdateEnvironment();
   var volumeGO=new GameObject("Gentle colour grading");var volume=volumeGO.AddComponent<Volume>();volume.isGlobal=true;var profile=AssetDatabase.LoadAssetAtPath<VolumeProfile>(Root+"Settings/Colour.asset");if(!profile){profile=ScriptableObject.CreateInstance<VolumeProfile>();AssetDatabase.CreateAsset(profile,Root+"Settings/Colour.asset");var tone=profile.Add<Tonemapping>();tone.mode.Override(TonemappingMode.ACES);AssetDatabase.AddObjectToAsset(tone,profile);}volume.sharedProfile=profile;camera.GetComponent<UniversalAdditionalCameraData>().renderPostProcessing=true;
   foreach(SportId id in Enum.GetValues(typeof(SportId))){string path=Root+"Sports/"+id+"/"+id+".asset";var def=AssetDatabase.LoadAssetAtPath<SportDefinition>(path);if(!def){def=ScriptableObject.CreateInstance<SportDefinition>();AssetDatabase.CreateAsset(def,path);}def.id=id;def.displayName=id.ToString();def.available=true;EditorUtility.SetDirty(def);}
-  var basketball=BuildBasketball();var golf=BuildGolf();var fishing=BuildFishing();ConfigureEnvironments(app,stadium,basketball,golf,fishing,sun,camera);sv.Apply(LocalProfile.Stadium);EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(),Root+"Scenes/Bootstrap.unity");EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(Root+"Scenes/Bootstrap.unity",true)};AssetDatabase.SaveAssets();
+  var basketball=BuildBasketball();var golf=BuildGolf();var fishing=BuildFishing();
+  CoastalIslandBuilder.Attach(stadium,"Football");CoastalIslandBuilder.Attach(basketball,"Basketball");
+  ConfigureEnvironments(app,stadium,basketball,golf,fishing,sun,camera);sv.Apply(LocalProfile.Stadium);EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene(),Root+"Scenes/Bootstrap.unity");EditorBuildSettings.scenes=new[]{new EditorBuildSettingsScene(Root+"Scenes/Bootstrap.unity",true)};AssetDatabase.SaveAssets();
   Debug.Log("GAME_SETUP_COMPLETE clips="+string.Join(",",allClips.Select(c=>c.name)));
  }
  static void Transition(AnimatorState a,AnimatorState b,AnimatorConditionMode mode,float threshold,float seconds){var t=a.AddTransition(b);t.hasExitTime=false;t.hasFixedDuration=true;t.duration=seconds;t.interruptionSource=TransitionInterruptionSource.Destination;t.orderedInterruption=false;t.canTransitionToSelf=false;t.AddCondition(mode,threshold,"Speed");}
@@ -182,9 +178,28 @@ public static partial class ProjectBuilder {
  static Text WorldText(Transform parent,string value,Vector2 position,Vector2 size,int fontSize,Color color){var o=new GameObject("Graphic",typeof(RectTransform),typeof(Text));o.transform.SetParent(parent,false);var t=o.GetComponent<Text>();t.rectTransform.sizeDelta=size;t.rectTransform.anchoredPosition=position;t.text=value;t.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");t.fontSize=fontSize;t.alignment=TextAnchor.MiddleCenter;t.color=color;t.supportRichText=false;t.raycastTarget=false;return t;}
  [MenuItem("WHATTHE FISH?/Build Windows testing player")]
  public static void BuildWindows(){
-  Setup();Build(BuildTarget.StandaloneWindows64,"../Builds/WindowsFinal/WhatTheFish.exe");
+  Setup();
+  BuildCurrentWindows();
+  RefinedIslandDependencyAudit.Audit();
+ }
+ // Recompile a validated, already-generated scene after code-only changes.
+ public static void BuildCurrentWindows(){
+  string previousPipelinePath=AssetDatabase.GetAssetPath(GraphicsSettings.defaultRenderPipeline);
+  string previousQualityPath=AssetDatabase.GetAssetPath(QualitySettings.renderPipeline);
+  var desktopPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(Root+"Resources/DesktopCoastURP.asset");
+  try {
+   // Register the desktop feature set during compilation so Unity retains its SSAO resources.
+   GraphicsSettings.defaultRenderPipeline=desktopPipeline;QualitySettings.renderPipeline=desktopPipeline;
+   Build(BuildTarget.StandaloneWindows64,"../Builds/WindowsFinal/WhatTheFish.exe");
+  } finally {
+   // Building unloads unused assets: resolve fresh references instead of restoring destroyed objects.
+   GraphicsSettings.defaultRenderPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(previousPipelinePath);
+   QualitySettings.renderPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(previousQualityPath);
+   AssetDatabase.SaveAssets();
+  }
   File.WriteAllText("../Builds/WindowsFinal/Explore-Fishing.cmd","@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
-  File.WriteAllText("../Builds/WindowsFinal/LATEST-BUILD.txt","Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: Sunvale modular stadium\nBasketball: Rally Court modular arena\nGolf: Tidebloom Island, sculpted terrain and tropical art\nFishing: Lagoon Island, five modular stands; environment exploration only\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
+  File.WriteAllText("../Builds/WindowsFinal/Explore-Golf.cmd","@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
+  File.WriteAllText("../Builds/WindowsFinal/LATEST-BUILD.txt","Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade, detailed exterior and walkable routes\nBasketball: B1 open-air coastal arena and walkable routes\nGolf: G2 Limestone Cove Links, detailed coastal materials, pavilion and walking routes\nFishing: L2 Limestone Garden Lagoon, five modular coloured stations and shelter; exploration only\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}
  public static void SetupAndBuildWindows(){BuildWindows();}
@@ -194,3 +209,5 @@ public static partial class ProjectBuilder {
  public static void BuildAndroidRelease(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.CompressWithLz4HC);}
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){Directory.CreateDirectory(Path.GetDirectoryName(path));var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{Root+"Scenes/Bootstrap.unity"},locationPathName=path,target=target,options=options});if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);}
 }
+
+\n

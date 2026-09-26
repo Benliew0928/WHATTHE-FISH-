@@ -8,6 +8,7 @@ bpy.ops.wm.open_mainfile(filepath=str(source/'Stadium_Sunvale.blend'))
 report={'roof_shells':0,'mesh_objects':0,'invalid_coordinates':0,'invalid_uvs':0,'roof_boundary_edges':0}
 for obj in bpy.data.objects:
     if obj.type!='MESH' or obj.name=='Review ground':continue
+    if obj.parent and obj.parent.name in ('Football_Architecture','Football_Collision'):continue
     mesh=obj.data;report['mesh_objects']+=1
     assert len(mesh.vertices)>0 and len(mesh.polygons)>0, obj.name
     report['invalid_coordinates']+=sum(not all(math.isfinite(x) for x in v.co) for v in mesh.vertices)

@@ -104,6 +104,10 @@ class Batch:
         for poly,coords,mi,smooth in zip(mesh.polygons,self.uv,self.mi,self.smooth):
             poly.material_index=mi;poly.use_smooth=smooth
             for loop,co in zip(poly.loop_indices,coords):uv.data[loop].uv=co
+            if self.name.startswith('Stadium__') or self.name=='Court__Maple':
+                axes=[a for a in range(3) if a!=max(range(3),key=lambda a:abs(poly.normal[a]))]
+                for loop in poly.loop_indices:
+                    co=mesh.vertices[mesh.loops[loop].vertex_index].co;uv.data[loop].uv=(co[axes[0]]/4,co[axes[1]]/4)
         # Solids and authored graphics are kept in separate meshes.
         if not any(s in self.name for s in ('Graphics','Markings','Lettering','Maple','Cloth','Emblem')):
             bm=bmesh.new();bm.from_mesh(mesh);bmesh.ops.recalc_face_normals(bm,faces=list(bm.faces));bm.to_mesh(mesh);bm.free()
@@ -284,22 +288,20 @@ box('ShotClock',(0,.43,4.38),(.71,.24,.46),dark,.075)
 box('ShotClock',(0,.29,4.38),(.60,.035,.34),screen,.013)
 text('24',(0,.264,4.38),.31,led)
 
-module('Stadium');navy=mat('Shell','Navy',.72);blue=mat('WallPanels','Blue',.65);violet=mat('Balcony','Violet',.58);ivory=mat('ArchTrim','Ivory',.65);stone=mat('Terraces','Concrete',.75);teal=mat('Columns','DeepTeal',.55);gold=mat('Bands','Gold',.55)
+ENTRY_AISLES=[min(range(BAYS),key=lambda i:abs(path(i*BAY,0,0)[0]*dy-path(i*BAY,0,0)[1]*dx)+(0 if path(i*BAY,0,0)[0]*dx+path(i*BAY,0,0)[1]*dy>0 else 10000)) for dx,dy in ((0,1),(1,0),(0,-1),(-1,0))]
+module('Stadium');navy=mat('Shell','Ivory',.72);blue=mat('WallPanels','Ivory',.65);violet=mat('Balcony','Ivory',.58);ivory=mat('ArchTrim','Ivory',.65);stone=mat('Terraces','D8C5A4',.75);teal=mat('Columns','Ivory',.55);gold=mat('Bands','Gold',.55)
 for bay in range(BAYS):
     s0=bay*BAY;s1=(bay+1)*BAY;mid=(s0+s1)/2;mapper=lambda p:p;part=f'Bay_{bay:02d}'
     patch(part,s0,s1,-.5,9,-.45,-.02,navy)
     # Front rows, a walkable mid-level concourse, then an upper gallery.
-    for row in range(5):patch(part,s0+.48,s1-.48,.20+row*.79,.20+(row+1)*.79,-.01,.55+row*.42,stone)
+    for row in range(5):patch(part,s0+(1.15 if bay in ENTRY_AISLES else .55),s1-(1.15 if (bay+1)%BAYS in ENTRY_AISLES else .55),.20+row*.79,.20+(row+1)*.79,-.01,.55+row*.42,stone)
     patch(part,s0,s1,4.15,5.5,2.0,2.25,stone)
     patch(part,s0,s1,2.8,9,4.15,4.42,violet)
     patch(part,s0,s1,2.75,2.96,4.15,4.85,violet)
     patch(part,s0,s1,2.67,2.98,4.81,4.92,ivory)
     for row in range(4):patch(part,s0+.48,s1-.48,3.30+row*.82,3.30+(row+1)*.82,4.4,4.65+row*.44,stone)
     patch(part,s0,s1,6.58,8.95,5.85,6.10,stone)
-    patch(part,s0,s1,8.7,9.0,0,14.0,navy)
-    patch(part,s0+.09,s1-.09,8.4,8.72,10.1,13.65,blue)
-    patch(part,s0,s1,8.16,8.6,9.92,10.14,violet)
-    patch(part,s0,s1,8.14,8.65,13.8,14.10,gold)
+    # Open coastal facade replaces the navy enclosing wall.
     mapper=lambda p,m=mid:path(m+p[0],p[1],p[2])
     arch(part,2.30,7.78,6.1,7.75,10.05,.58,blue,ivory)
     # Mid-concourse openings read between the two seating decks.
@@ -309,7 +311,8 @@ for bay in range(BAYS):
         beam(part,(x,7.77,6.1),(x,7.77,10.2),.20,teal,12)
         beam(part,(x,7.77,9.15),(x,7.77,9.40),.225,gold,12)
     # Shared 0.96m aisle at each bay boundary, 0.21/0.22m risers.
-    for step in range(10):box(part,(-BAY/2,.20+(step+.5)*.395,.21+step*.21),(.96,.395,.42),stone)
+    for step in range(0 if bay in ENTRY_AISLES else 10):
+        h=(step+1)*.225;box(part,(-BAY/2,(step+.5)*.415,h/2),(.96,.415,h),stone)
     for step in range(8):box(part,(-BAY/2,3.3+(step+.5)*.41,4.43+step*.22),(.96,.41,.44),stone)
 
 seat_count=0
@@ -321,6 +324,7 @@ for upper in (False,True):
         for row in range(4 if upper else 5):
             d=(3.65 if upper else .52)+row*(.82 if upper else .79);z=(4.65 if upper else .55)+row*(.44 if upper else .42)
             for col in range(6):
+                if not upper and ((bay in ENTRY_AISLES and col==0) or ((bay+1)%BAYS in ENTRY_AISLES and col==5)):continue
                 x=(col-2.5)*.57;c=palette[((bay//2)+(2 if upper else 0))%6];seat_count+=1
                 round_panel(near,(x,d,z+.24),(.49,.47,.13),.10,c,2)
                 round_panel(near,(x,d+.20,z+.51),(.49,.12,.55),.11,c,1)
@@ -331,78 +335,37 @@ module('Railings');rail=mat('Enamel','Aqua',.42,metal=.15);dark=mat('Uprights','
 for bay in range(BAYS):
     mapper=lambda p,m=(bay+.5)*BAY:path(m+p[0],p[1],p[2]);part=f'Bay_{bay:02d}'
     for d,z in ((2.77,5.27),(6.78,6.86)):
-        line(part,[(-BAY/2+i*BAY/8,d,z) for i in range(9)],.042,rail)
-        line(part,[(-BAY/2+i*BAY/8,d,z-.4) for i in range(9)],.025,dark)
-        for i in range(9):beam(part,(-BAY/2+i*BAY/8,d,z-.74),(-BAY/2+i*BAY/8,d,z),.025,dark)
-    for d0,d1,z0,z1 in ((.45,3.7,1.6,3.32),(3.6,6.25,5.7,7.1)):
-        beam(part,(-BAY/2,d0,z0),(-BAY/2,d1,z1),.037,rail)
+        line(part,[(-BAY/2+.6+i*(BAY-1.2)/8,d,z) for i in range(9)],.042,rail)
+        line(part,[(-BAY/2+.6+i*(BAY-1.2)/8,d,z-.4) for i in range(9)],.025,dark)
+        for i in range(9):beam(part,(-BAY/2+.6+i*(BAY-1.2)/8,d,z-.74),(-BAY/2+.6+i*(BAY-1.2)/8,d,z),.025,dark)
+    for d0,d1,z0,z1 in (((3.6,6.25,5.7,7.1),) if bay in ENTRY_AISLES else ((.45,3.7,1.6,3.32),(3.6,6.25,5.7,7.1))):
+        beam(part,(-BAY/2+.49,d0,z0),(-BAY/2+.49,d1,z1),.037,rail)
         for f in (0,.5,1):
-            d=d0+(d1-d0)*f;z=z0+(z1-z0)*f;beam(part,(-BAY/2,d,z-.82),(-BAY/2,d,z),.027,dark)
+            d=d0+(d1-d0)*f;z=z0+(z1-z0)*f;beam(part,(-BAY/2+.49,d,z-.82),(-BAY/2+.49,d,z),.027,dark)
 
 module('PerimeterPads');padcolors=[mat('Cushion_'+c,c,.58) for c in ('Teal','Coral','Lavender','Gold')];seam=mat('Seams','Ivory',.55)
 for bay in range(BAYS):
     mapper=lambda p,m=(bay+.5)*BAY:path(m+p[0],p[1],p[2])
-    for i in (-1,0,1):box(f'Bay_{bay:02d}',(i*1.05,-.32,.43),(1.01,.36,.86),padcolors[(bay//3+(i==0))%4],.105)
+    for i in (-1,0,1):
+        if (i==-1 and bay in ENTRY_AISLES) or (i==1 and (bay+1)%BAYS in ENTRY_AISLES):continue
+        box(f'Bay_{bay:02d}',(i*1.05,-.32,.43),(1.01,.36,.86),padcolors[(bay//3+(i==0))%4],.105)
     # Gaps align to spectator aisles and preserve module boundaries.
 
 module('Banners');cloths=[mat(c,c,.86,'fabric') for c in ('Teal','Coral','Lavender')];gold=mat('Print','Gold',.8,'fabric');cream=mat('LightPrint','Ivory',.8,'fabric');pole=mat('Rods','Gold',.5,metal=.25)
 for bay in range(0,BAYS,2):
-    mapper=rigid_bay((bay+.5)*BAY);c=cloths[(bay//2)%3];part=f'Banner_{bay:02d}'
-    beam(part,(-.97,7.5,13.47),(.97,7.5,13.47),.04,pole)
+    mapper=rigid_bay(bay*BAY);c=cloths[(bay//2)%3];part=f'Banner_{bay:02d}'
+    beam(part,(-.97,7.5,9.47),(.97,7.5,9.47),.04,pole)
     # Slight cloth bow, closed thin sheet for correct backface appearance.
-    pts=[(-.84,7.43,13.4),(.84,7.43,13.4),(.84,7.30,10.62),(0,7.25,10.37),(-.84,7.30,10.62)]
+    pts=[(-.84,7.43,9.4),(.84,7.43,9.4),(.84,7.30,6.62),(0,7.25,6.37),(-.84,7.30,6.62)]
     batch(part+'Cloth').add(pts+[(x,y+.028,z) for x,y,z in pts],[(4,3,2,1,0),(5,6,7,8,9)]+[(i,(i+1)%5,(i+1)%5+5,i+5) for i in range(5)],c)
     # Rising-ball brand motif, instead of copying the concept's lightning emblem.
-    circle(part,(0,7.21,12.23),.46,.038,gold,'Y',36)
-    beam(part,(-.46,7.21,12.23),(.46,7.21,12.23),.025,gold)
-    beam(part,(0,7.21,11.77),(0,7.21,12.69),.025,gold)
-    graphic(part+'Graphics',[(-.84,7.18,10.62),(.84,7.18,11.38),(.84,7.18,11.72),(-.84,7.18,10.96)],gold)
-    graphic(part+'Graphics',[(-.84,7.17,11.03),(.84,7.17,11.79),(.84,7.17,11.95),(-.84,7.17,11.19)],cream)
+    circle(part,(0,7.21,8.23),.46,.038,gold,'Y',36)
+    beam(part,(-.46,7.21,8.23),(.46,7.21,8.23),.025,gold)
+    beam(part,(0,7.21,7.77),(0,7.21,8.69),.025,gold)
+    graphic(part+'Graphics',[(-.84,7.18,6.62),(.84,7.18,7.38),(.84,7.18,7.72),(-.84,7.18,6.96)],gold)
+    graphic(part+'Graphics',[(-.84,7.17,7.03),(.84,7.17,7.79),(.84,7.17,7.95),(-.84,7.17,7.19)],cream)
 
-module('LightingRig');steel=mat('Truss','Blue',.47,metal=.35);housing=mat('Housing','Navy',.48,metal=.2);gold=mat('Bezels','Gold',.42,metal=.3);lamp=mat('Lenses','White',.3,tex=None,emission=4)
-# Scoreboard support bridge spans the open oculus and lands on the roof ring.
-for y in (-1.3,1.3):
-    for z in (14.8,15.3):beam('ScoreboardBridge',(-8,y,z),(8,y,z),.065,steel)
-    for x in range(-8,8):beam('ScoreboardBridge',(x,y,14.8),(x+1,y,15.3),.034,steel)
-for bay in range(BAYS):
-    mapper=lambda p,m=(bay+.5)*BAY:path(m+p[0],p[1],p[2]);part=f'Bay_{bay:02d}'
-    for d,z in ((.1,13.2),(.7,13.2),(.4,13.8)):line(part,[(-BAY/2+i*BAY/6,d,z) for i in range(7)],.055,steel)
-    for j in range(4):
-        a=-BAY/2+j*BAY/4;b=a+BAY/4;beam(part,(a,.1,13.2),(b,.4,13.8),.032,steel);beam(part,(a,.7,13.2),(b,.4,13.8),.032,steel)
-    for x in (-.67,.67):
-        beam(part,(x,.40,13.2),(x,.40,12.88),.045,steel)
-        beam(part,(x,.4,12.86),(x,.24,12.54),.22,housing,16)
-        beam(part,(x,.235,12.53),(x,.20,12.46),.225,gold,16)
-        beam(part,(x,.196,12.45),(x,.182,12.42),.183,lamp,16)
-    # Balcony portholes and warm concourse sconces.
-    beam(part,(0,2.67,4.48),(0,2.53,4.48),.175,gold,16)
-    beam(part,(0,2.52,4.48),(0,2.49,4.48),.135,lamp,16)
-    for x in (-1.6,1.6):
-        box(part,(x,7.32,8.25),(.28,.22,.65),housing,.09)
-        box(part,(x,7.17,8.28),(.15,.055,.36),lamp,.025)
-
-module('Ceiling');navy=mat('AcousticPanels','Navy',.9);blue=mat('PanelRibs','Blue',.65);warm=mat('InsetPanels','Gold',.78);ivory=mat('SkylightFrame','Ivory',.58)
-for bay in range(BAYS):
-    mapper=lambda p:p;s0=bay*BAY;s1=(bay+1)*BAY
-    # Open central oculus: lights sit below the roof and remain readable from court.
-    patch(f'Panel_{bay:02d}',s0+.025,s1-.025,-5,9.15,14.25,14.5,navy)
-    patch(f'Panel_{bay:02d}',s0+.08,s1-.08,-4.85,-4.60,14.10,14.30,ivory)
-    patch(f'Panel_{bay:02d}',s0+.30,s1-.30,-4.35,-1.2,14.15,14.26,warm)
-    mapper=lambda p,m=(bay+.5)*BAY:path(m+p[0],p[1],p[2])
-    beam(f'Panel_{bay:02d}',(-BAY/2,-4.9,14.1),(-BAY/2,8.9,14.1),.06,blue)
-
-module('Scoreboard');dark=mat('Display','Dark',.4,tex=None);teal=mat('Casing','DeepTeal',.5);cream=mat('Edge','Ivory',.42);coral=mat('Accent','Coral',.48);gold=mat('Digits','Gold',.4,tex=None,emission=.6);white=mat('Labels','White',.5,tex=None,emission=.25)
-box('Body',(0,0,10.2),(3.9,3.9,2.2),teal,.22)
-box('Crown',(0,0,11.38),(4.12,4.12,.22),cream,.10)
-box('Base',(0,0,9.02),(4.12,4.12,.22),coral,.10)
-for face in range(4):
-    a=face*PI/2;mapper=lambda p,a=a:(p[0]*math.cos(a)-p[1]*math.sin(a),p[0]*math.sin(a)+p[1]*math.cos(a),p[2])
-    box('Displays',(0,-1.977,10.20),(3.54,.08,1.75),dark,.035)
-    text('HOME     AWAY',(0,-2.027,10.77),.19,white)
-    text('00 : 00',(0,-2.030,10.17),.62,gold)
-    text('R A L L Y  /  C O U R T',(0,-2.028,9.54),.14,white)
-    beam('Suspension',(-1.3,1.3,11.4),(-1.3,1.3,15),.03,teal)
-mapper=lambda p:p
+# Roof, central suspension and old lighting rig retired for the open-air design.
 
 module('CourtsideFurniture');teal=mat('Upholstery','Teal',.52);coral=mat('VisitorUpholstery','Coral',.52);ivory=mat('Frames','Ivory',.52);navy=mat('Equipment','Navy',.56);glass=mat('Screens','Glass',.4,tex=None);gold=mat('Accent','Gold',.5)
 for side in (-1,1):
@@ -430,6 +393,9 @@ for x in (-1.3,0,1.3):
 
 # Build compact meshes, export reusable origins, then assemble hoop instances.
 objects=[b.finish() for b in batches.values()]
+sys.path.insert(0,str(Path(__file__).parent))
+import coastal_stadium_detail
+coastal_stadium_detail.build(globals(),'Basketball')
 report={'name':'Rally Court','source':'Arena_Rally.blend','units':'metres','court_metres':[15.24,28.6512],
  'rim_height':3.048,'rim_inner_diameter':.4572,'seats':seat_count,'modules':{},'materials':material_specs,
  'coordinate_system':'Blender X width, Y length, Z up; FBX -Z forward, Y up. Unity maps (x,y,z) to (-x,z,-y).',

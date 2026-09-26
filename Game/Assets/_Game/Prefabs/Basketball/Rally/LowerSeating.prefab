@@ -260,7 +260,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1545216175877051116}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: 1.2396759, y: 1.782502, z: 21.619993}
+  m_LocalReferencePoint: {x: 1.5246758, y: 1.782502, z: 21.619993}
   m_Size: 3.670002
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -535,7 +535,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3341296707990693715}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: 3.6644533, y: 1.7824969, z: -21.619993}
+  m_LocalReferencePoint: {x: 3.9494534, y: 1.7824969, z: -21.619993}
   m_Size: 3.670002
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -645,7 +645,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5181847726360090380}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -1.2396759, y: 1.7824969, z: -21.619993}
+  m_LocalReferencePoint: {x: -1.5246758, y: 1.7824969, z: -21.619993}
   m_Size: 3.670002
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -700,7 +700,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5365921259972285215}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: 14.62, y: 1.7824993, z: -1.2396759}
+  m_LocalReferencePoint: {x: 14.62, y: 1.7824993, z: -1.5246757}
   m_Size: 3.67
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -865,7 +865,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6029851172666846180}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: 14.62, y: 1.7824999, z: 3.664452}
+  m_LocalReferencePoint: {x: 14.62, y: 1.7825, z: 3.9494524}
   m_Size: 3.67
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -920,7 +920,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6456375590302760496}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -14.62, y: 1.7824991, z: -3.6644526}
+  m_LocalReferencePoint: {x: -14.62, y: 1.7824991, z: -3.9494529}
   m_Size: 3.67
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -975,7 +975,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7360133375215594150}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -14.62, y: 1.7824996, z: 1.2396754}
+  m_LocalReferencePoint: {x: -14.62, y: 1.7824996, z: 1.5246753}
   m_Size: 3.67
   m_FadeMode: 0
   m_AnimateCrossFading: 0
@@ -1195,7 +1195,7 @@ LODGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8421936110430506636}
   serializedVersion: 2
-  m_LocalReferencePoint: {x: -3.6644533, y: 1.782502, z: 21.619993}
+  m_LocalReferencePoint: {x: -3.9494534, y: 1.782502, z: 21.619993}
   m_Size: 3.670002
   m_FadeMode: 0
   m_AnimateCrossFading: 0

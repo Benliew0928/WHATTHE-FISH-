@@ -23,8 +23,8 @@ MonoBehaviour:
   - {x: -18.809128, y: 1.35, z: 25.888544}
   - {x: 18.809128, y: 1.35, z: 25.888544}
   - {x: 30.43381, y: 1.35, z: -9.888544}
-  menuCamera: {x: 94, y: 126, z: -152}
-  menuFocus: {x: 0, y: 0, z: 0}
+  menuCamera: {x: 0, y: 97, z: -116}
+  menuFocus: {x: 0, y: 0, z: 3}
   elevatedDistance: 18
   farClip: 1200
   fogStart: 350

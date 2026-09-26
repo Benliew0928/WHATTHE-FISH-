@@ -10,10 +10,10 @@
 | Shared/Networking | MPS room lifecycle, Relay setup, capacity/phase approval, NGO players and authoritative movement |
 | Shared/Platform | Reserved for Android/Huawei services; IPlatformGameServices currently has an explicitly unavailable adapter |
 | Sports/Football | Stadium visuals and signage; football gameplay is deferred |
-| Sports/Basketball | Indoor arena visuals and host-selectable center logo catalog |
+| Sports/Basketball | Open-air coastal arena, host-selectable logos and palettes |
 | Sports/Golf | Flat island exploration; fixed appearance and shoreline boundary |
 
-`AppRoot` composes the prototype and owns navigation. `RoomService` is the `IRoomService` implementation. `ISportMode` and `IPlayerCommandSource` provide boundaries for future loaders/rules and bot commands; they are not implementations of the deferred sports. `SportEnvironmentController` activates exactly one Football/Basketball/Golf root in Bootstrap. Each `SportDefinition` stores its environment prefab, ten spawn positions, menu view, elevated-camera distance, far clip, fog distances and lighting values. There is no dynamic stadium resizing.
+`AppRoot` composes the prototype and owns navigation. `RoomService` is the `IRoomService` implementation. `ISportMode` and `IPlayerCommandSource` provide boundaries for future loaders/rules and bot commands; they are not implementations of the deferred sports. `SportEnvironmentController` activates exactly one Football/Basketball/Golf/Fishing root in Bootstrap. Each `SportDefinition` stores its environment prefab, ten spawn positions, menu view, elevated-camera distance, far clip, fog distances and lighting values. There is no dynamic stadium resizing.
 
 ## Network flow
 
@@ -47,3 +47,7 @@ Golf uses five Blender meshes: flat grass, sand, coastal edge, shallow sea and o
 - Huawei: implement authentication/game services and achievements/results behind IPlatformGameServices after checking competition and AppGallery requirements. Current builds do **not** claim HMS integration.
 - Improve high-latency movement with input sequencing, client prediction and reconciliation before competitive play.
 - Add accessibility scaling, remappable desktop controls and broader Android aspect-ratio testing.
+
+## Coastal stadium routes
+
+Football and basketball attach shared coastal architecture and simplified collision through `CoastalStadiumBuilder`. `CoastalVenueRoutes` stores four entrances, curved spectator stair paths, concourse anchors and a per-environment safe return position. Existing host-authoritative movement and camera casts use the same stadium layer outdoors; no new public networking API or audience simulation was added. Basketball has perimeter scoreboards and daylight instead of a ceiling or suspended rig. See [the current coastal report](COASTAL-STADIUMS.md) for the art sources and executable checks.

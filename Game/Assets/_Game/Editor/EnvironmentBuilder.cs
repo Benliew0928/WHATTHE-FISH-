@@ -19,15 +19,15 @@ public static partial class ProjectBuilder {
      def.menuCamera=new Vector3(87,64,-103);def.menuFocus=new Vector3(0,0,4);break;
     case SportId.Basketball:
      def.spawnPositions=Enumerable.Range(0,10).Select(n=>new Vector3((n%5-2)*1.5f,1,-4-(n/5)*2)).ToArray();
-     def.menuCamera=new Vector3(9,9.5f,15);def.menuFocus=new Vector3(0,1.2f,-1);def.elevatedDistance=12;def.indoor=true;
-     def.lightIntensity=1.15f;def.lightRotation=new Vector3(72,-25,0);def.ambientColor=new Color(.66f,.69f,.74f);def.backgroundColor=LocalProfile.Hex("233950");break;
+     def.menuCamera=new Vector3(9,9.5f,15);def.menuFocus=new Vector3(0,1.2f,-1);def.elevatedDistance=12;def.indoor=false;
+     def.lightIntensity=1.12f;def.lightRotation=new Vector3(56,-35,0);def.ambientColor=new Color(.52f,.61f,.68f);def.backgroundColor=LocalProfile.Hex("7FC6EF");break;
     case SportId.Golf:
      def.spawnPositions=ReadGolf().spawns;
-     def.menuCamera=new Vector3(295,285,-350);def.menuFocus=new Vector3(-65,0,25);def.farClip=1400;def.fogStart=700;def.fogEnd=1300;
+     def.menuCamera=ReadGolf().views[0].position;def.menuFocus=ReadGolf().views[0].target;def.farClip=3000;def.fogStart=1000;def.fogEnd=2700;
      def.lightIntensity=1.25f;def.lightRotation=new Vector3(48,-35,0);def.ambientColor=new Color(.64f,.72f,.78f);def.backgroundColor=LocalProfile.Hex("7FC6EF");def.elevatedDistance=25;break;
     case SportId.Fishing:
-     def.spawnPositions=ReadFishing().spawns;def.menuCamera=new Vector3(94,126,-152);def.menuFocus=new Vector3(0,0,0);
-     def.farClip=1200;def.fogStart=350;def.fogEnd=1000;def.elevatedDistance=18;
+     def.spawnPositions=ReadFishing().spawns;def.menuCamera=ReadFishing().views[0].position;def.menuFocus=ReadFishing().views[0].target;
+     def.farClip=3000;def.fogStart=1000;def.fogEnd=2700;def.elevatedDistance=18;
      def.lightIntensity=1.25f;def.lightRotation=new Vector3(48,-35,0);def.ambientColor=new Color(.64f,.72f,.78f);def.backgroundColor=LocalProfile.Hex("7FC6EF");break;
    }
    EditorUtility.SetDirty(def);env.definitions[i]=def;

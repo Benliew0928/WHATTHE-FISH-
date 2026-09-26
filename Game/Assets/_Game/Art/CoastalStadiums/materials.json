@@ -1,0 +1,74 @@
+{
+  "materials": [
+    {
+      "name": "Coastal_Stone",
+      "base_map": "Coastal_Stone_BaseColor.png",
+      "normal": "Coastal_Stone_Normal.png",
+      "mask": "Coastal_Stone_Mask.png",
+      "roughness": 0.78
+    },
+    {
+      "name": "Coastal_Plaster",
+      "base_map": "Coastal_Plaster_BaseColor.png",
+      "normal": "Coastal_Plaster_Normal.png",
+      "mask": "Coastal_Plaster_Mask.png",
+      "roughness": 0.85
+    },
+    {
+      "name": "Coastal_Paving",
+      "base_map": "Coastal_Paving_BaseColor.png",
+      "normal": "Coastal_Paving_Normal.png",
+      "mask": "Coastal_Paving_Mask.png",
+      "roughness": 0.76
+    },
+    {
+      "name": "Coastal_Timber",
+      "base_map": "Coastal_Timber_BaseColor.png",
+      "normal": "Coastal_Timber_Normal.png",
+      "mask": "Coastal_Timber_Mask.png",
+      "roughness": 0.61
+    },
+    {
+      "name": "Coastal_Teal",
+      "base_map": "Coastal_Teal_BaseColor.png",
+      "normal": "Coastal_Teal_Normal.png",
+      "mask": "Coastal_Teal_Mask.png",
+      "roughness": 0.4
+    },
+    {
+      "name": "Coastal_Bronze",
+      "base_map": "Coastal_Bronze_BaseColor.png",
+      "normal": "Coastal_Bronze_Normal.png",
+      "mask": "Coastal_Bronze_Mask.png",
+      "roughness": 0.38
+    },
+    {
+      "name": "Coastal_Leaf",
+      "base_map": "Coastal_Leaf_BaseColor.png",
+      "normal": "Coastal_Leaf_Normal.png",
+      "mask": "Coastal_Leaf_Mask.png",
+      "roughness": 0.75
+    },
+    {
+      "name": "Coastal_Flower",
+      "base_map": "Coastal_Flower_BaseColor.png",
+      "normal": "Coastal_Flower_Normal.png",
+      "mask": "Coastal_Flower_Mask.png",
+      "roughness": 0.69
+    },
+    {
+      "name": "Coastal_Lamp",
+      "base_map": "Coastal_Lamp_BaseColor.png",
+      "normal": "Coastal_Lamp_Normal.png",
+      "mask": "Coastal_Lamp_Mask.png",
+      "roughness": 0.45
+    },
+    {
+      "name": "Coastal_Screen",
+      "base_map": "Coastal_Screen_BaseColor.png",
+      "normal": "Coastal_Screen_Normal.png",
+      "mask": "Coastal_Screen_Mask.png",
+      "roughness": 0.45
+    }
+  ]
+}

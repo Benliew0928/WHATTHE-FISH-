@@ -1,0 +1,18 @@
+{
+  "build": [
+    "Built UTC: 2026-09-26T06:36:19.0964864Z",
+    "Football: unchanged Sunvale stadium + F1 Palm Shore exterior",
+    "Basketball: unchanged Rally arena + B1 Palm Shore exterior (roof preserved)",
+    "Golf: Tidebloom Island, sculpted terrain and tropical art",
+    "Fishing: Lagoon Island, five modular stands; environment exploration only",
+    "Scene: Assets/_Game/Scenes/Bootstrap.unity",
+    "Rebuild: Tools/Build/Build.ps1 -Target Windows"
+  ],
+  "assemblySHA256": "5E6F6D9F3B25187FD5011A0392C8E867A0653FBEC8484A989F721B613D9F69FC",
+  "gameDataSHA256": "EF7D84F0F5B011476E40435BAA9D23EBD1BAE59A5399EC1AF7EE26291140E482",
+  "captures": 14,
+  "reviewPasses": 41,
+  "footballSmoke": "PASS",
+  "basketballSmoke": "PASS",
+  "venueAssetsUnchanged": true
+}

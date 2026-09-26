@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 namespace WhatTheFish {
  public sealed class SportEnvironmentController:MonoBehaviour {
   public SportDefinition[] definitions;public GameObject[] roots;public Light mainLight;public Camera mainCamera;
@@ -14,6 +15,12 @@ namespace WhatTheFish {
    mainLight.transform.rotation=Quaternion.Euler(def.lightRotation);mainLight.intensity=def.lightIntensity;mainLight.color=def.indoor?Color.white:new Color(1,.94f,.85f);mainLight.shadows=def.indoor?LightShadows.None:LightShadows.Soft;
    RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=def.ambientColor;RenderSettings.fog=!def.indoor;mainCamera.backgroundColor=def.backgroundColor;
    mainCamera.farClipPlane=def.farClip;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=def.fogStart;RenderSettings.fogEndDistance=def.fogEnd;RenderSettings.fogColor=def.backgroundColor;
+   RenderSettings.skybox=null;mainCamera.clearFlags=CameraClearFlags.SolidColor;
+   var cameraData=mainCamera.GetComponent<UniversalAdditionalCameraData>();if(cameraData)cameraData.renderPostProcessing=true;
+   var coast=roots[Array.FindIndex(definitions,d=>d.id==sport)].GetComponentInChildren<CoastalEnvironment>();
+   if(coast)coast.Apply(mainCamera,mainLight);
+   var island=roots[Array.FindIndex(definitions,d=>d.id==sport)].GetComponent<RefinedIslandEnvironment>();
+   if(island)island.Apply(mainCamera,mainLight);
   }
  }
 }

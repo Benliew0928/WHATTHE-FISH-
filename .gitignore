@@ -7,6 +7,7 @@ Game/.vs/
 Game/.utmp/
 Builds/
 Legacy/
+Docs/VisualDirection/GolfFishingRefinement/GameReview/*.log
 *.csproj
 *.sln
 *.blend1

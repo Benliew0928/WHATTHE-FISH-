@@ -23,22 +23,25 @@ public static partial class ProjectBuilder {
   view.logoCatalog=new GameObject[4];view.logoCatalog[0]=arena.transform.Find("CenterEmblem").gameObject;
   BuildRallyLogoVariants(arena,view,art);
   // Indoor bounds match the refined geometry. These proxies also stop the camera.
-  RallyCollision(arena,"Collision_Canopy",new Vector3(0,14.55f,0),new Vector3(43,.25f,57));
+  // Open sky: no legacy ceiling collider.
   RallyCollision(arena,"Collision_ScorerTable",new Vector3(10.1f,.70f,0),new Vector3(1.2f,1.4f,4.45f));
   foreach(float side in new[]{-1f,1f})foreach(float z in new[]{-7f,7f})
    RallyCollision(arena,"Collision_TeamSeats",new Vector3(side*10.1f,.55f,z),new Vector3(.7f,1.1f,3.35f));
   foreach(var renderer in arena.GetComponentsInChildren<Renderer>(true))
    if(renderer.name=="Scoreboard__Lettering")renderer.gameObject.SetActive(false);
-  for(int i=0;i<4;i++){
-   var angle=i*90f;var rotation=Quaternion.Euler(0,angle,0);var normal=rotation*Vector3.back;
-   var panel=WorldCanvas("Rally scoreboard",arena.transform,new Vector3(0,10.2f,0)+normal*2.055f,new Vector2(3.42f,1.66f),rotation);
+  var coastalLayout=CoastalStadiumBuilder.ReadLayout("Basketball");
+  foreach(var screen in coastalLayout.scoreboards){
+   var inward=CoastalStadiumBuilder.V(screen.inward).normalized;
+   var rotation=Quaternion.LookRotation(-inward,Vector3.up);
+   var panel=WorldCanvas("Coastal perimeter scoreboard",arena.transform,CoastalStadiumBuilder.V(screen.position)+inward*.06f,new Vector2(3.42f,1.66f),rotation);
    WorldText(panel,"HOME       AWAY",new Vector2(0,285),new Vector2(1580,110),82,Color.white);
    WorldText(panel,"00 : 00",new Vector2(0,0),new Vector2(1580,330),240,LocalProfile.Hex("F5C356"));
    var sign=panel.gameObject.AddComponent<StadiumSign>();sign.nameSign=true;
    sign.label=WorldText(panel,"RALLY COURT",new Vector2(0,-290),new Vector2(1580,110),62,Color.white);
   }
+  CoastalStadiumBuilder.Attach(arena,"Basketball");
   var bounce=new GameObject("Rally warm fill").AddComponent<Light>();bounce.transform.SetParent(arena.transform,false);
-  bounce.type=LightType.Directional;bounce.color=new Color(1,.86f,.70f);bounce.intensity=.35f;
+  bounce.type=LightType.Directional;bounce.color=new Color(1,.86f,.70f);bounce.intensity=.12f;
   bounce.shadows=LightShadows.None;bounce.transform.localRotation=Quaternion.Euler(32,155,0);
   view.Apply(LocalProfile.Basketball);return arena;
  }
