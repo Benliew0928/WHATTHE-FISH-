@@ -14,7 +14,7 @@ To build on Windows from a clone, run `Tools/Build/Build.ps1 -Target Windows` at
 
 ## Android toolchain
 
-Android Build Support and the bundled SDK, NDK r27c, CMake and OpenJDK 17 are installed under this editor. Official downloads are cached in `Tools/Downloads`. `Tools/Build/Install-Android.ps1` installs the versions declared in the editor's `modules.json`; it requires administrator rights for Program Files.
+Android Build Support and the bundled SDK, NDK r27c, CMake and OpenJDK 17 are installed under this editor. `Tools/Build/Install-Android.ps1` caches official downloads in ignored `Tools/Downloads` and installs the versions declared in the editor's `modules.json`; it requires administrator rights for Program Files. Superseded local installer downloads were moved to the 29 September 2026 `Legacy/` housekeeping batch. Installed tools are unchanged; the installer downloads missing cache files when run again.
 
 Unity Preferences → External Tools should use the installed Unity SDK/NDK/JDK. Build Settings/Build Profiles → Android. The project uses IL2CPP, ARM64, minimum API 26, landscape, package ID `com.umpsa.whatthefish`. The identifier is a development placeholder; choose your publishing ID before release.
 

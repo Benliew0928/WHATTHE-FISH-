@@ -23,7 +23,7 @@ public static class CoastalLegacyAudit {
   var invalid=all.Where(p=>p.EndsWith(".prefab")||p.EndsWith(".unity")||p.EndsWith(".mat")).SelectMany(p=>AssetDatabase.GetDependencies(p,true).Select(d=>new{p,d})).Where(x=>x.d.Contains("/Legacy/"));
   if(invalid.Any())throw new Exception("Active Unity data references Legacy");
   foreach(var sport in new[]{"Football","Basketball"}){
-   var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Resources/"+sport+"Environment.prefab");
+   var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(MobilePackageCleanup.EnvironmentFolder+sport+"Environment.prefab");
    if(!prefab)throw new Exception("Missing environment "+sport);
    foreach(var transform in prefab.GetComponentsInChildren<Transform>(true))
     if(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(transform.gameObject)>0)throw new Exception("Missing script on "+transform.name);

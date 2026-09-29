@@ -1,0 +1,340 @@
+{
+  "materials": [
+    {
+      "material": "RI_Stone",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Stone_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Mineral.png",
+      "tint": [
+        0.9582341181345858,
+        0.8883285416458365,
+        0.7310479000446718
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Stone_Normal.png",
+      "maxPixelError": 1.3455180278944905,
+      "meanPixelError": 0.23981717643355682,
+      "sourceHash": "13324c2973ada4c773410e8a7205f0faeddc780726d3721a0e13b67457defa8c"
+    },
+    {
+      "material": "RI_Paving",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Paving_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Mineral.png",
+      "tint": [
+        0.9538637137615321,
+        0.8708533019053089,
+        0.7135742139377818
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Stone_Normal.png",
+      "maxPixelError": 1.3777363343951903,
+      "meanPixelError": 0.26592650167877324,
+      "sourceHash": "d742be64c085cd2ae1abb44aa85845315d9821afc2b5a65b89554d063485de54"
+    },
+    {
+      "material": "RI_Timber",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Timber_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Timber.png",
+      "tint": [
+        0.8223938445414773,
+        0.5733990106925804,
+        0.337514945553681
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Timber_Normal.png",
+      "maxPixelError": 1.7450195560774802,
+      "meanPixelError": 0.3162700679885489,
+      "sourceHash": "f5fcc9d69bcc47ad9389481afec2d4e03bdd69c242ae0e8683a6c36cb90bb1c0"
+    },
+    {
+      "material": "RI_Bark",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Bark_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Bark.png",
+      "tint": [
+        0.6647265843073232,
+        0.5206230714316267,
+        0.3503302954623375
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Bark_Normal.png",
+      "maxPixelError": 1.9797287219915192,
+      "meanPixelError": 0.34708310873445053,
+      "sourceHash": "9071db8857236cf2d1fb819474a3f951b8be920da851709578d28ae028ee1196"
+    },
+    {
+      "material": "RI_Leaf",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Leaf_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Foliage.png",
+      "tint": [
+        0.34634480156369,
+        0.6346152997703216,
+        0.26336112181219573
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Leaf_Normal.png",
+      "maxPixelError": 1.3661036628492789,
+      "meanPixelError": 0.2858001702089379,
+      "sourceHash": "6b9ff22e6b52939f653d2a7351f306f5eccd18a9a03cc8a432147c779b1b510f"
+    },
+    {
+      "material": "RI_LeafLight",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_LeafLight_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Foliage.png",
+      "tint": [
+        0.5341531902905524,
+        0.7438004630496642,
+        0.3376111817835638
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Leaf_Normal.png",
+      "maxPixelError": 1.4687348603136567,
+      "meanPixelError": 0.3515225014992615,
+      "sourceHash": "7a1056f5d50342608fe644ec0289cc570874cca8154d3cf735ad0a00d7681e80"
+    },
+    {
+      "material": "RI_Turf",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Turf_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Foliage.png",
+      "tint": [
+        0.49484464923942856,
+        0.7001238032609208,
+        0.2895662892513309
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Leaf_Normal.png",
+      "maxPixelError": 1.490376252638591,
+      "meanPixelError": 0.3662087782537525,
+      "sourceHash": "a8e8dbe4266297e7c5064a0e3dd1fc7e9e150bbaa8248896ea30e2f2e76624c6"
+    },
+    {
+      "material": "RI_Sand",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Sand_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Sand.png",
+      "tint": [
+        0.9766848116558416,
+        0.8542308285003164,
+        0.6311965212417913
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Sand_Normal.png",
+      "maxPixelError": 1.5266448347170114,
+      "meanPixelError": 0.22624396367474922,
+      "sourceHash": "c460336d936ff85191e86bd1e73d852941bdca1c439eae34a6dcd426bb05f90f"
+    },
+    {
+      "material": "RI_Soil",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Soil_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Plain.png",
+      "tint": [
+        0.4684090178936173,
+        0.3636402655931761,
+        0.23269186040523043
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Soil_Normal.png",
+      "maxPixelError": 1.1125030149261927,
+      "meanPixelError": 0.2981310665609492,
+      "sourceHash": "806f093e710cc37b2800d2129e4a75950a9503bf0b0f4da29b292fe0acd488fe"
+    },
+    {
+      "material": "RI_Teal",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Teal_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Plain.png",
+      "tint": [
+        0.1803037150006505,
+        0.5644300975617311,
+        0.6037163772393785
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Soil_Normal.png",
+      "maxPixelError": 1.427197543451437,
+      "meanPixelError": 0.39021028301990784,
+      "sourceHash": "c6022f1b24ecc0d92d520ba80abe17faa5546de0978176aa095112ddf41d1d05"
+    },
+    {
+      "material": "RI_Bronze",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Bronze_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Plain.png",
+      "tint": [
+        0.7128407776001241,
+        0.5469688890145451,
+        0.3112626960142037
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Soil_Normal.png",
+      "maxPixelError": 1.7049118600346542,
+      "meanPixelError": 0.40347841503144677,
+      "sourceHash": "8d4bdd81949c43e7377a35779e2a855e0eb5550ce78cca40708f35f382559564"
+    },
+    {
+      "material": "RI_Rope",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Rope_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Rope.png",
+      "tint": [
+        0.9576110744016325,
+        0.8877112501491413,
+        0.7217095664006502
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Rope_Normal.png",
+      "maxPixelError": 1.4604014456058851,
+      "meanPixelError": 0.3466328811720622,
+      "sourceHash": "c072a4bff3b8e57e6b2a0e4fe7518154e4db37735cd6397c109c02cb36783a4c"
+    },
+    {
+      "material": "RI_Flower",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Flower_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Plain.png",
+      "tint": [
+        1.0314851824856193,
+        0.6473640719264978,
+        0.6822843647540362
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Soil_Normal.png",
+      "maxPixelError": 1.7454411777593943,
+      "meanPixelError": 0.5198883161669554,
+      "sourceHash": "ed852d86631e573a18ec7e41731fc227bb720ee5b4c159ddef64b290a275c31b"
+    },
+    {
+      "material": "RI_Gold",
+      "source": "Assets/_Game/Art/RefinedIslands/Shared/RI_Gold_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/RI_Plain.png",
+      "tint": [
+        1.0358496246892765,
+        0.8787105028236136,
+        0.41601804923937963
+      ],
+      "normal": "Assets/_Game/Art/RefinedIslands/Shared/RI_Soil_Normal.png",
+      "maxPixelError": 1.748451952991394,
+      "meanPixelError": 0.5313462316077883,
+      "sourceHash": "aaf5583f314550c191b1d5cbff5a36bcc528e8a15d84863ff5437819ca39ddb4"
+    },
+    {
+      "material": "Coastal_Stone",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Stone_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Masonry.png",
+      "tint": [
+        1.0409042298721842,
+        0.9534512903997993,
+        0.7785552217957838
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Stone_Normal.png",
+      "maxPixelError": 1.3361834159084407,
+      "meanPixelError": 0.2452655701518509,
+      "sourceHash": "c4a4645392a988f1bd270cb61f99977d35095806a7db305f17c7025397d408de"
+    },
+    {
+      "material": "Coastal_Plaster",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plaster.png",
+      "tint": [
+        1.076449990972365,
+        1.019571523166982,
+        0.8970638797579789
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 1.2672577477051494,
+      "meanPixelError": 0.40666141601507544,
+      "sourceHash": "3951b58c5b8b60eb936ea7c57ece8c15176d52a13e79f2e29051974c6a1e1281"
+    },
+    {
+      "material": "Coastal_Paving",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Paving_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Masonry.png",
+      "tint": [
+        0.9534512903997993,
+        0.8703757472222327,
+        0.7260853482976533
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Stone_Normal.png",
+      "maxPixelError": 1.3361834159084407,
+      "meanPixelError": 0.32492418993115885,
+      "sourceHash": "911e26f850a73af908e04ed3fc025362d83a826a4be549b71267af58ac35d11f"
+    },
+    {
+      "material": "Coastal_Timber",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Timber_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Timber.png",
+      "tint": [
+        0.830979136463142,
+        0.5729569772914268,
+        0.32363421430995026
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Timber_Normal.png",
+      "maxPixelError": 0.9190962597648669,
+      "meanPixelError": 0.28899487352897696,
+      "sourceHash": "10c148248488a9e1745145549cb9cd88ef06d6ef48eee8d352bd7b2db01a6920"
+    },
+    {
+      "material": "Coastal_Teal",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Teal_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plain.png",
+      "tint": [
+        0.16892078032946425,
+        0.6247029645472,
+        0.6684750878175394
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 0.9615896529814694,
+      "meanPixelError": 0.2307563013659509,
+      "sourceHash": "bb77daec1aa105c99b3307fcbbe593f113504973c51f93832ad1f63e293214c2"
+    },
+    {
+      "material": "Coastal_Bronze",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Bronze_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plain.png",
+      "tint": [
+        0.8172640529940479,
+        0.598445616163561,
+        0.27471062232370114
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 1.2914623797114,
+      "meanPixelError": 0.39567921243223586,
+      "sourceHash": "2618fbb82740626998e463ab3da33bffc43b40718b98037c7d42076e192ea1ea"
+    },
+    {
+      "material": "Coastal_Leaf",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Leaf_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plain.png",
+      "tint": [
+        0.3314894331628705,
+        0.6465872925786844,
+        0.2790778702791687
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 1.0656187935402057,
+      "meanPixelError": 0.3019466720104116,
+      "sourceHash": "5520c20e5ed27b745315455c0a3b1db3dc0ba9a75672cdfe1b63342a47567548"
+    },
+    {
+      "material": "Coastal_Flower",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Flower_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plain.png",
+      "tint": [
+        1.0273364097579412,
+        0.5678114996833912,
+        0.6465872925786844
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 1.1675538867751634,
+      "meanPixelError": 0.3730850145731402,
+      "sourceHash": "92d96b67fa631a863c1f647ee6ba7dbc81b4b8ce3a3b175d27dd08e0259f6391"
+    },
+    {
+      "material": "Coastal_Lamp",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Lamp_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plain.png",
+      "tint": [
+        1.123615597616478,
+        1.0010778311515025,
+        0.7122415906619728
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 1.5381740427706276,
+      "meanPixelError": 0.46647370478173134,
+      "sourceHash": "4d287fb1c79fca796e2d5ce510b183113d53c5a0e98064b8aa87db5f480e0e6e"
+    },
+    {
+      "material": "Coastal_Screen",
+      "source": "Assets/_Game/Art/CoastalStadiums/Coastal_Screen_BaseColor.png",
+      "pattern": "Assets/_Game/Art/MobileMaterials/Coastal_Plain.png",
+      "tint": [
+        0.10868454004484182,
+        0.2834449524642853,
+        0.34023510649297845
+      ],
+      "normal": "Assets/_Game/Art/CoastalStadiums/Coastal_Plaster_Normal.png",
+      "maxPixelError": 0.7267388618965012,
+      "meanPixelError": 0.3276595654011486,
+      "sourceHash": "1d9bf14ae2890f6caaef53419c1d5eb5b1321b962e5099881a43c29be4a7b3b0"
+    }
+  ]
+}

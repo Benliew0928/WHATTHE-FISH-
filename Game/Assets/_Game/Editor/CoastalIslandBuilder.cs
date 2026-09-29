@@ -54,7 +54,7 @@ public static class CoastalIslandBuilder {
  }
  static void DesktopPipeline(){
   const string rendererPath="Assets/_Game/Settings/DesktopCoastRenderer.asset";
-  const string pipelinePath="Assets/_Game/Resources/DesktopCoastURP.asset";
+  const string pipelinePath=MobilePackageCleanup.DesktopPipelinePath;
   var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(rendererPath);
   if(!renderer){renderer=ScriptableObject.CreateInstance<UniversalRendererData>();AssetDatabase.CreateAsset(renderer,rendererPath);}
   var rendererSettings=new SerializedObject(renderer);

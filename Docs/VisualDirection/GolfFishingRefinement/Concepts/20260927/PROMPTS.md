@@ -170,7 +170,7 @@ Camera human eye level1.65m at1.5m from a L2 fishing station shore connection, a
 
 ## Targeted overview revisions
 
-The initial golf overviews contained six bunkers. Count corrections were attempted with imagegen; final gallery overviews show five. Two earlier edit attempts removed more than the requested patch and were not selected. The original G1/G2 draft files are retained separately from the gallery's final selection.
+The initial golf overviews contained six bunkers. Count corrections were attempted with imagegen; final gallery overviews show five. Two earlier edit attempts removed more than the requested patch and were not selected. The discarded G1/G2 draft images and raw generation-job metadata were moved to the local `Legacy/` housekeeping batch on 29 September 2026. The final selected gallery images and their provenance remain versioned; see `Docs/REPOSITORY-HYGIENE.md` for recovery.
 
 ### G1_01_Overview / revision 1
 
@@ -201,4 +201,3 @@ Use case: precise-object-edit. Make a strictly localized edit to this G2 concept
 Reference: `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-d31e348f-d87b-4dc1-ad75-abad6d30cef9.png`
 
 Use case: precise-object-edit. Edit this exact G1 concept image. Add ONE small shallow kidney-shaped ivory sand bunker on the RIGHT edge of the main striped fairway, directly to the right of the white dot from the 'Main fairway' annotation, halfway between the near pavilion and far raised green. Its center should be about59% across from left and43% down from top; width6% of image, height3% of image. Give it the same subtle dark-green turf lip as the existing four sand bunkers. Keep all four currently visible bunkers untouched: nearest lower-left, middle-left, far upper-left, far upper-right. This single added bunker makes five visible bunkers. Preserve absolutely everything else including labels, framing, plants, paths, pavilion, waterfall, sea arch and water. Do not remove or move any existing object.
-

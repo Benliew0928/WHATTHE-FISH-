@@ -21,7 +21,7 @@ public static class TackleAudit {
    if(Mathf.Abs(clips[0].length/playback-duration)>.002f)throw new Exception("Clip playback and gameplay duration differ");
   }
   foreach(var name in new[]{"OfflineAthlete","NetworkAthlete"}){
-   var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Resources/"+name+".prefab");
+   var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/"+name+".prefab");
    if(!prefab.GetComponent<FootballTackle>())throw new Exception("Missing football simulation component");
    var animator=prefab.GetComponentInChildren<Animator>();if(animator.applyRootMotion||!(animator.runtimeAnimatorController as UnityEditor.Animations.AnimatorController).layers.Any(l=>l.name=="Football action"))throw new Exception("Football Animator is not configured");
   }

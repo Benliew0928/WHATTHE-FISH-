@@ -18,7 +18,7 @@ public static partial class ProjectBuilder {
  const string Root="Assets/_Game/";
  [MenuItem("WHATTHE FISH?/Rebuild game scene")]
  public static void Setup(){
-  foreach(string dir in new[]{"Resources","Materials","Scenes","Settings","Sports/Football","Sports/Basketball","Sports/Golf","Sports/Fishing","Shared/Platform"})Directory.CreateDirectory(Root+dir);
+  foreach(string dir in new[]{"Prefabs/Characters","Prefabs/Environments","Materials","Scenes","Settings","Sports/Football","Sports/Basketball","Sports/Golf","Sports/Fishing","Shared/Platform"})Directory.CreateDirectory(Root+dir);
   AssetDatabase.Refresh();
   const string athletePath=Root+"Art/RainbowSprinter.fbx";
   var athleteImporter=AssetImporter.GetAtPath(athletePath) as ModelImporter;
@@ -138,9 +138,9 @@ public static partial class ProjectBuilder {
   }
   placement.hipOffset=athlete.transform.InverseTransformPoint(placement.hips.position)-(placement.left.initialPosition+placement.right.initialPosition)*.5f;placement.hipOffset.y=0;
   ((AnimationClip)idle.motion).SampleAnimation(model,0);
-  var offlinePrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Resources/OfflineAthlete.prefab");
+  var offlinePrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Prefabs/Characters/OfflineAthlete.prefab");
   athlete.AddComponent<NetworkObject>();var nt=athlete.AddComponent<NetworkTransform>();nt.Interpolate=true;nt.SyncScaleX=nt.SyncScaleY=nt.SyncScaleZ=false;athlete.AddComponent<NetworkAthlete>();
-  var playerPrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Resources/NetworkAthlete.prefab");UnityEngine.Object.DestroyImmediate(athlete);
+  var playerPrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Prefabs/Characters/NetworkAthlete.prefab");UnityEngine.Object.DestroyImmediate(athlete);
   var networkGO=new GameObject("Room network");var transport=networkGO.AddComponent<UnityTransport>();var manager=networkGO.AddComponent<NetworkManager>();manager.NetworkConfig=new NetworkConfig{ProtocolVersion=7,NetworkTransport=transport,PlayerPrefab=playerPrefab,TickRate=30,EnableSceneManagement=false,ConnectionApproval=true};manager.NetworkConfig.Prefabs.Add(new NetworkPrefab{Prefab=playerPrefab});
   var appGO=new GameObject("WHATTHE FISH? Application");var rooms=appGO.AddComponent<RoomService>();var app=appGO.AddComponent<AppRoot>();app.rooms=rooms;app.athletePrefab=offlinePrefab;
   var cameraGO=new GameObject("Main Camera");cameraGO.tag="MainCamera";var camera=cameraGO.AddComponent<Camera>();camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=LocalProfile.Hex("BFE2E7");camera.farClipPlane=450;camera.fieldOfView=60;cameraGO.AddComponent<AudioListener>();cameraGO.AddComponent<UniversalAdditionalCameraData>();app.view=cameraGO.AddComponent<PlayerView>();cameraGO.transform.position=new Vector3(87,64,-103);cameraGO.transform.LookAt(Vector3.zero);
@@ -187,7 +187,7 @@ public static partial class ProjectBuilder {
  public static void BuildCurrentWindows(){
   string previousPipelinePath=AssetDatabase.GetAssetPath(GraphicsSettings.defaultRenderPipeline);
   string previousQualityPath=AssetDatabase.GetAssetPath(QualitySettings.renderPipeline);
-  var desktopPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(Root+"Resources/DesktopCoastURP.asset");
+  var desktopPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(MobilePackageCleanup.DesktopPipelinePath);
   try {
    // Register the desktop feature set during compilation so Unity retains its SSAO resources.
    GraphicsSettings.defaultRenderPipeline=desktopPipeline;QualitySettings.renderPipeline=desktopPipeline;
@@ -207,6 +207,20 @@ public static partial class ProjectBuilder {
  [MenuItem("WHATTHE FISH?/Build Android development APK")]
  public static void BuildAndroid(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish.apk");}
  [MenuItem("WHATTHE FISH?/Build Android release APK")]
- public static void BuildAndroidRelease(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.CompressWithLz4HC);}
- static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){Directory.CreateDirectory(Path.GetDirectoryName(path));var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options});if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);}
+ public static void BuildAndroidRelease(){
+  MobileMaterialBuilder.Prepare();
+  EditorUserBuildSettings.buildAppBundle=false;
+  PlayerSettings.SetManagedStrippingLevel(UnityEditor.Build.NamedBuildTarget.Android,ManagedStrippingLevel.Medium);
+  PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.Android,UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
+  Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.None);
+ }
+ [MenuItem("WHATTHE FISH?/Build Android submission APK (under 100 MB)")]
+ public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk("../Builds/Android/WhatTheFish-release.apk",true);}
+ static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
+  Directory.CreateDirectory(Path.GetDirectoryName(path));
+  var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport});
+  if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);
+  Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);
+  if(target==BuildTarget.Android){BuildSizeAudit.Write(report,"latest");BuildSizeAudit.CheckApk(path,false);}
+ }
 }

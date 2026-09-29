@@ -7,7 +7,7 @@ using UnityEngine;
 public static class LegacyAssetAudit {
  public static void Prepare(){
   const string variants="Assets/_Game/Art/Basketball/Rally/LogoVariants/";
-  var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Resources/BasketballEnvironment.prefab");
+  var source=AssetDatabase.LoadAssetAtPath<GameObject>(MobilePackageCleanup.EnvironmentFolder+"BasketballEnvironment.prefab");
   if(!source)throw new Exception("Current basketball prefab is required.");
   for(int i=1;i<4;i++){
    var original=source.GetComponentsInChildren<MeshFilter>(true).Single(f=>f.name=="Logo"+i);

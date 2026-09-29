@@ -35,7 +35,8 @@ public static class RefinedIslandBuilder {
    var m=Material(Shared+"Materials/"+s.name+".mat",s.foliage?"WhatTheFish/RefinedFoliage":s.name=="RI_Stone"?"WhatTheFish/RefinedStone":"Universal Render Pipeline/Lit");m.SetColor("_BaseColor",Color.white);
    m.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Shared+s.base_map));m.SetTexture("_BumpMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Shared+s.normal));
    if(s.name=="LG_Accent")m.SetTexture("_BaseMap",Texture2D.whiteTexture);
-   m.SetTexture("_MetallicGlossMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Shared+s.mask));m.SetFloat("_Smoothness",1);m.SetFloat("_BumpScale",.5f);
+   // RefinedStone uses fixed smoothness and never samples the metallic mask.
+   m.SetTexture("_MetallicGlossMap",s.name=="RI_Stone"?null:AssetDatabase.LoadAssetAtPath<Texture2D>(Shared+s.mask));m.SetFloat("_Smoothness",1);m.SetFloat("_BumpScale",.5f);
    m.EnableKeyword("_NORMALMAP");m.EnableKeyword("_METALLICSPECGLOSSMAP");m.SetFloat("_Cull",s.foliage?0:2);m.doubleSidedGI=s.foliage;m.enableInstancing=true;
    EditorUtility.SetDirty(m);materials.Add(s.name,m);
   }

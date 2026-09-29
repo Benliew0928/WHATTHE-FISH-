@@ -61,7 +61,7 @@ public static class IdleImportAudit {
    }
    lines.Add($"PASS imported idle: duration={idle.length:F3}s bindings={AnimationUtility.GetCurveBindings(idle).Length} BlenderMaximumError={maximumError:F7}m lowestVertex={minimumY:F7}m");
    foreach(var prefabName in new[]{"OfflineAthlete","NetworkAthlete"}){
-    var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Resources/"+prefabName+".prefab");
+    var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/"+prefabName+".prefab");
     var animator=prefab.GetComponentInChildren<Animator>();Require(!animator.applyRootMotion,"Root motion enabled");
     var controller=(AnimatorController)animator.runtimeAnimatorController;
     var states=controller.layers[0].stateMachine;var idleState=states.states.Single(s=>s.state.name=="Idle").state;var runState=states.states.Single(s=>s.state.name=="Run").state;

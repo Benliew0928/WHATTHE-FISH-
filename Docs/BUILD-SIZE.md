@@ -1,6 +1,16 @@
-# Current build size — 25 September 2026
+# Current build size — 29 September 2026
 
-The final Android release-mode test APK includes Sunvale football, Rally basketball, Tidebloom golf and the current Rainbow Sprinter animations.
+The current Android release APK contains all four islands, Sky-Sail and the existing character animations. Its exact size is **83,282,804 bytes (83.28 MB / 79.42 MiB)**, leaving **16.72 MB** below the hackathon's 100,000,000-byte limit. The mobile asset pass reduced the 350.25 MB cleanup checkpoint by **266.97 MB (76.22%)**.
+
+Built at 20:01 Malaysia time on September 29 with Unity 6000.3.20f1, IL2CPP, ARM64, minimum API 26, target API 36 and default Android ZIP compression. `apksigner verify --verbose` passed (v2 signature). SHA-256: `894EE22E3E26F6BC19E513510A9DB4669CAACE846F699F3293FC7D035DF5EEE3`.
+
+Use `Tools/Build/Build.ps1 -Target AndroidRelease` for development releases. It generates size reports and warns above the **75,000,000-byte working target**. That target remains unmet by 8.28 MB. `-Target AndroidSubmission` rejects APKs of **100,000,000 bytes or larger**; the current submission check passes. `-Target OptimizeAndroid` reapplies mobile import settings and regenerates delivery libraries from their prepared source exports.
+
+The archive contains 56.98 MB of Unity scene/art/shader data and about 26.30 MB of runtime/Android overhead. Shared vegetation and material patterns, generated grass, selected render-mesh reductions and mobile compression account for the main saving. Cabin geometry and editable art masters are preserved. See [the measured optimization report and limits](APK-SIZE-AUDIT.md). Continue budgeting during development; no physical phone qualification has been performed.
+
+## Historical baseline — 25 September 2026
+
+The earlier Android release-mode test APK included Sunvale football, Rally basketball, Tidebloom golf and the Rainbow Sprinter animations available at that time. It predates fishing, the later island refinements and Sky-Sail; the table below is historical, not the current file at that path.
 
 | Artifact | Exact size | Decimal MB | MiB |
 | --- | ---: | ---: | ---: |

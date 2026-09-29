@@ -57,6 +57,7 @@ public static class SkySailBuilder {
     if(renderer.name.Contains("sea")||renderer.name.Contains("ocean"))renderer.gameObject.SetActive(false);
    }
    foreach(var t in island.GetComponentsInChildren<Transform>(true).Where(t=>t.name.Contains("cloud field")||t.name=="Sculpted clouds").ToArray())t.gameObject.SetActive(false);
+   foreach(var t in island.GetComponentsInChildren<Transform>(true).Where(t=>!t.gameObject.activeSelf&&MobilePackageCleanup.IsRetiredScenery(t.name)).ToArray())UnityEngine.Object.DestroyImmediate(t.gameObject);
    var marker=island.GetComponent<SkySailIslandScene>();if(!marker)marker=island.AddComponent<SkySailIslandScene>();marker.sport=id;
    var destination=SceneManager.GetSceneByName(SkySailStreaming.SceneName(id));if(!destination.IsValid())destination=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
    SceneManager.MoveGameObjectToScene(island,destination);island.SetActive(false);EditorSceneManager.SaveScene(destination,Scenes+SkySailStreaming.SceneName(id)+".unity");

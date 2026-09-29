@@ -30,7 +30,12 @@ namespace WhatTheFish {
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
   static void DesktopQuality(){
    if(Application.isMobilePlatform)return;
-   var pipeline=Resources.Load<UniversalRenderPipelineAsset>("DesktopCoastURP");
+   // Windows builds register this as the default pipeline. Keeping it outside
+   // Resources prevents shipping the desktop renderer in every Android APK.
+   var pipeline=UnityEngine.Rendering.GraphicsSettings.defaultRenderPipeline as UniversalRenderPipelineAsset;
+#if UNITY_EDITOR
+   pipeline=UnityEditor.AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>("Assets/_Game/Settings/DesktopCoastURP.asset");
+#endif
    if(!pipeline)return;
    // Runtime copy preserves the project's Android pipeline asset.
    pipeline=Object.Instantiate(pipeline);pipeline.name="Desktop coastal quality";

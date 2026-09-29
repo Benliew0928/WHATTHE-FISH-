@@ -15,7 +15,7 @@ public static class RefinedIslandDependencyAudit {
   foreach(var p in candidates)if(used.Contains(p))throw new Exception("Superseded island asset is still referenced: "+p);
   File.WriteAllLines(dir+"retired-unity-assets.txt",candidates);
   foreach(var sport in new[]{"Football","Basketball","Golf","Fishing"}){
-   var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Resources/"+sport+"Environment.prefab");if(!prefab)throw new Exception("Missing environment: "+sport);
+   var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(MobilePackageCleanup.EnvironmentFolder+sport+"Environment.prefab");if(!prefab)throw new Exception("Missing environment: "+sport);
    foreach(var t in prefab.GetComponentsInChildren<Transform>(true))if(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)>0)throw new Exception("Missing script on "+t.name);
    foreach(var r in prefab.GetComponentsInChildren<Renderer>(true))if(r.sharedMaterials.Any(m=>!m))throw new Exception("Missing material on "+r.name);
    foreach(var f in prefab.GetComponentsInChildren<MeshFilter>(true))if(!f.sharedMesh)throw new Exception("Missing mesh on "+f.name);

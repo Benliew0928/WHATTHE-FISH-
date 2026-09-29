@@ -9,7 +9,7 @@ public static partial class ProjectBuilder {
   var sports=new[]{SportId.Football,SportId.Basketball,SportId.Golf,SportId.Fishing};env.roots=new[]{football,basketball,golf,fishing};env.definitions=new SportDefinition[sports.Length];
   for(int i=0;i<sports.Length;i++){
    var sport=sports[i];var def=AssetDatabase.LoadAssetAtPath<SportDefinition>(Root+"Sports/"+sport+"/"+sport+".asset");
-   def.environmentPrefab=PrefabUtility.SaveAsPrefabAsset(env.roots[i],Root+"Resources/"+sport+"Environment.prefab");
+   def.environmentPrefab=PrefabUtility.SaveAsPrefabAsset(env.roots[i],MobilePackageCleanup.EnvironmentFolder+sport+"Environment.prefab");
    def.maxPlayers=sport==SportId.Fishing?5:10;def.farClip=450;def.fogStart=180;def.fogEnd=430;def.elevatedDistance=19;def.indoor=false;def.lightIntensity=1.1f;def.lightRotation=new Vector3(48,-35,0);
    def.ambientColor=new Color(.58f,.64f,.7f);def.backgroundColor=LocalProfile.Hex("BFE2E7");
    switch(sport){

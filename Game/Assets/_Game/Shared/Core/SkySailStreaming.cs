@@ -22,11 +22,19 @@ namespace WhatTheFish {
    throw new InvalidOperationException("Prepare the island asynchronously before activation: "+id);
   }
   public IEnumerator Prepare(SportId id){
-   Error=null;while(Busy)yield return null;if(Loaded(id))yield break;Busy=true;
+   while(Busy)yield return null;Error=null;Busy=true;
+   if(Loaded(id)){yield return PrepareGrass(id);Busy=false;yield break;}
    AsyncOperation operation=null;
    try{operation=SceneManager.LoadSceneAsync(SceneName(id),LoadSceneMode.Additive);}catch(Exception e){Error=e.Message;}
-   if(operation!=null){yield return operation;try{Bind(id);}catch(Exception e){Error=e.Message;}}
+   if(operation!=null){
+    yield return operation;try{Bind(id);}catch(Exception e){Error=e.Message;}
+    if(Error==null)yield return PrepareGrass(id);
+   }
    Busy=false;
+  }
+  IEnumerator PrepareGrass(SportId id){
+   var grass=environment.roots[(int)id].GetComponentInChildren<MobileIslandGrass>(true);
+   if(grass){yield return grass.Prepare();if(grass.Error!=null)Error=grass.Error;}
   }
   public IEnumerator Release(SportId id){
    while(Busy)yield return null;var scene=SceneManager.GetSceneByName(SceneName(id));if(!scene.isLoaded)yield break;

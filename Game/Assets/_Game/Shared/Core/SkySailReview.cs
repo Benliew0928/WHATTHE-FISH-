@@ -6,10 +6,14 @@ using System.Collections;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
+using Unity.Profiling;
 
 namespace WhatTheFish {
  public sealed class SkySailReview:MonoBehaviour {
   string folder;bool failed,network,captureOnly,walkOnly;AppRoot app;SkySailWorld world;Camera camera;
+  ProfilerRecorder drawCalls;
+  void Awake(){drawCalls=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",1);}
+  void OnDestroy(){drawCalls.Dispose();}
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Initialize(){var a=Environment.GetCommandLineArgs();int i=Array.IndexOf(a,"-skyReview");if(i<0)return;var r=new GameObject("Sky-Sail acceptance review").AddComponent<SkySailReview>();r.folder=a[i+1];r.network=a.Contains("-skyNetworkReview");r.captureOnly=a.Contains("-skyCaptureOnly");r.walkOnly=a.Contains("-skyWalkReview");}
   void Check(bool ok,string message){failed|=!ok;File.AppendAllText(Path.Combine(folder,"review.txt"),(ok?"PASS ":"FAIL ")+message+"\n");Debug.Log("SKY_REVIEW "+(ok?"PASS ":"FAIL ")+message);}
   IEnumerator Start(){
@@ -25,10 +29,16 @@ namespace WhatTheFish {
    }
    var streaming=app.environments.GetComponent<SkySailStreaming>();
    world.reviewCamera=true;app.view.enabled=false;
+   if(Environment.GetCommandLineArgs().Contains("-skyDetailsReview")){
+    foreach(var sport in SkySailMap.Circuit){yield return streaming.Prepare(sport);Check(streaming.Error==null,sport+" details prepared");app.SelectSport(sport);yield return null;yield return IslandDetails(sport);}
+    Finish();yield break;
+   }
    if(walkOnly){foreach(var sport in SkySailMap.Circuit){yield return streaming.Prepare(sport);app.SelectSport(sport);yield return null;yield return WalkApproach(sport);}Finish();yield break;}
    camera.transform.position=new Vector3(0,810,-1100)-world.Origin;camera.transform.LookAt(new Vector3(0,0,70)-world.Origin);camera.fieldOfView=62;yield return null;Capture("01_World_Overview");
    for(int leg=0;leg<(captureOnly?1:4);leg++){
-    var source=app.SelectedSport;var target=SkySailMap.Neighbor(source,1);Place(SkySailMap.Exit(source,0));Physics.SyncTransforms();
+    var source=app.SelectedSport;var target=SkySailMap.Neighbor(source,1);
+    if(!captureOnly)yield return IslandDetails(source);
+    Place(SkySailMap.Exit(source,0));Physics.SyncTransforms();
     Check(Physics.Raycast(app.LocalAthlete.transform.position+Vector3.up*.3f,Vector3.down,1,1<<8),source+" station arrival is supported");
     var station=world.stations[(int)source].transform;
     camera.transform.position=station.TransformPoint(new Vector3(14,10,20));camera.transform.LookAt(station.TransformPoint(new Vector3(0,4,-2)));camera.fieldOfView=60;yield return null;Capture(source+"_Station");
@@ -53,6 +63,20 @@ namespace WhatTheFish {
    Finish();
   }
   bool checkedSeat;
+  IEnumerator IslandDetails(SportId sport){
+   var root=app.environments.roots[(int)sport];var refined=root.GetComponentInChildren<RefinedIslandEnvironment>(true);
+   var grass=root.GetComponentInChildren<MobileIslandGrass>(true);
+   if(grass)Check(grass.Ready&&grass.Error==null,sport+" runtime grass prepared before activation");
+   if(refined){
+    foreach(var view in refined.layout.views){camera.transform.position=view.position;camera.transform.LookAt(view.target);camera.fieldOfView=view.fov;yield return null;Capture(sport+"_Detail_"+view.name);}
+   }else{
+    bool football=sport==SportId.Football;
+    Vector3[] positions=football?new[]{new Vector3(96,1.7f,-87),new Vector3(78,1.7f,-61),new Vector3(61,2,-111)}:new[]{new Vector3(51,1.6f,-45),new Vector3(43,1.65f,-30),new Vector3(31,1.8f,-61)};
+    Vector3[] targets=football?new[]{new Vector3(107,1,-75),new Vector3(65,2,-40),new Vector3(68,1,-100)}:new[]{new Vector3(57,.5f,-31),new Vector3(33,2,-13),new Vector3(37,1,-51)};
+    for(int i=0;i<positions.Length;i++){camera.transform.position=positions[i];camera.transform.LookAt(targets[i]);camera.fieldOfView=62;yield return null;Capture(sport+"_Detail_"+i);}
+    var instances=root.GetComponentInChildren<MobileVegetationInstances>();if(instances)Check(instances.DrawSubmissions>0&&instances.DrawSubmissions<150,sport+" vegetation uses bounded instance batches ("+instances.DrawSubmissions+")");
+   }
+  }
   IEnumerator WalkApproach(SportId sport){
    var approach=app.environments.roots[(int)sport].transform.Find("Sky-Sail shore approach");
    if(!approach){Check(false,sport+" approach exists");yield break;}
@@ -89,7 +113,7 @@ namespace WhatTheFish {
    yield return new WaitForSeconds(2);
   }
   void Place(Vector3 p){app.LocalAthlete.capsule.enabled=false;app.LocalAthlete.transform.position=p;app.LocalAthlete.capsule.enabled=true;app.LocalAthlete.ResetLocomotion();}
-  void Capture(string name){var rt=RenderTexture.GetTemporary(1920,1080,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Default,4);var old=camera.targetTexture;camera.targetTexture=rt;camera.Render();var active=RenderTexture.active;RenderTexture.active=rt;var pixels=new Texture2D(1920,1080,TextureFormat.RGB24,false);pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply();File.WriteAllBytes(Path.Combine(folder,name+".png"),pixels.EncodeToPNG());UnityEngine.Object.Destroy(pixels);RenderTexture.active=active;camera.targetTexture=old;RenderTexture.ReleaseTemporary(rt);}
+  void Capture(string name){File.AppendAllText(Path.Combine(folder,"render-counters.csv"),name+","+drawCalls.LastValue+"\n");var rt=RenderTexture.GetTemporary(1920,1080,24,RenderTextureFormat.ARGB32,RenderTextureReadWrite.Default,4);var old=camera.targetTexture;camera.targetTexture=rt;foreach(var instances in FindObjectsByType<MobileVegetationInstances>(FindObjectsSortMode.None))instances.RenderForCamera(camera);camera.Render();var active=RenderTexture.active;RenderTexture.active=rt;var pixels=new Texture2D(1920,1080,TextureFormat.RGB24,false);pixels.ReadPixels(new Rect(0,0,1920,1080),0,0);pixels.Apply();File.WriteAllBytes(Path.Combine(folder,name+".png"),pixels.EncodeToPNG());UnityEngine.Object.Destroy(pixels);RenderTexture.active=active;camera.targetTexture=old;RenderTexture.ReleaseTemporary(rt);}
   void Finish(){File.AppendAllText(Path.Combine(folder,"review.txt"),"SKY_SAIL_REVIEW_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}
  }
 }

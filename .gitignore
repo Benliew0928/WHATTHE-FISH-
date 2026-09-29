@@ -7,6 +7,19 @@ Game/.vs/
 Game/.utmp/
 Builds/
 Legacy/
+# Local build packages, logs, editor backups and operating-system clutter.
+# Active source art and curated documentation galleries remain versioned.
+*.apk
+*.aab
+*.log
+*.tmp
+*.bak
+*.blend[0-9]*
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+Desktop.ini
 Docs/VisualDirection/GolfFishingRefinement/GameReview/*.log
 Docs/VisualDirection/WorldConnections/GameReview/**/*.log
 *.csproj

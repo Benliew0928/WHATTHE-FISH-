@@ -1,0 +1,115 @@
+{
+  "placements": 1292,
+  "palms": 76,
+  "meshes": [
+    {
+      "name": "Palm_0_LOD0",
+      "triangles": 18248
+    },
+    {
+      "name": "Palm_0_LOD1",
+      "triangles": 11336
+    },
+    {
+      "name": "Palm_0_LOD2",
+      "triangles": 7880
+    },
+    {
+      "name": "Palm_1_LOD0",
+      "triangles": 18248
+    },
+    {
+      "name": "Palm_1_LOD1",
+      "triangles": 11336
+    },
+    {
+      "name": "Palm_1_LOD2",
+      "triangles": 7880
+    },
+    {
+      "name": "Palm_2_LOD0",
+      "triangles": 18248
+    },
+    {
+      "name": "Palm_2_LOD1",
+      "triangles": 11336
+    },
+    {
+      "name": "Palm_2_LOD2",
+      "triangles": 7880
+    },
+    {
+      "name": "Palm_3_LOD0",
+      "triangles": 18248
+    },
+    {
+      "name": "Palm_3_LOD1",
+      "triangles": 11336
+    },
+    {
+      "name": "Palm_3_LOD2",
+      "triangles": 7880
+    },
+    {
+      "name": "Plant_0_LOD0",
+      "triangles": 3512
+    },
+    {
+      "name": "Plant_0_LOD1",
+      "triangles": 1790
+    },
+    {
+      "name": "Plant_0_LOD2",
+      "triangles": 782
+    },
+    {
+      "name": "Plant_1_LOD0",
+      "triangles": 3512
+    },
+    {
+      "name": "Plant_1_LOD1",
+      "triangles": 1790
+    },
+    {
+      "name": "Plant_1_LOD2",
+      "triangles": 782
+    },
+    {
+      "name": "Plant_2_LOD0",
+      "triangles": 3512
+    },
+    {
+      "name": "Plant_2_LOD1",
+      "triangles": 1790
+    },
+    {
+      "name": "Plant_2_LOD2",
+      "triangles": 782
+    },
+    {
+      "name": "Tuft_0_LOD0",
+      "triangles": 448
+    },
+    {
+      "name": "Tuft_0_LOD1",
+      "triangles": 224
+    },
+    {
+      "name": "Tuft_0_LOD2",
+      "triangles": 112
+    },
+    {
+      "name": "Tuft_1_LOD0",
+      "triangles": 448
+    },
+    {
+      "name": "Tuft_1_LOD1",
+      "triangles": 224
+    },
+    {
+      "name": "Tuft_1_LOD2",
+      "triangles": 112
+    }
+  ],
+  "source": "Tools/Blender/build_coastal_islands.py; deterministic seed 926"
+}

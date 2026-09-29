@@ -1,0 +1,4286 @@
+{
+  "models": [
+    {
+      "source": "Assets/_Game/Art/CoastalStadiums/Football_Architecture.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/00_Football_Architecture.fbx",
+      "meshes": [
+        {
+          "mesh": "Aisle_00_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01080038771033287,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_01_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_02_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_03_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010280645452439785,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_04_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01026997808367014,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_05_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_06_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_07_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269977152347565,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_08_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010802378877997398,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_09_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01080142892897129,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_10_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_11_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010280645452439785,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_12_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01026997808367014,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_13_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_14_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.0108029805123806,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_15_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01080704852938652,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_16_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010800388641655445,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_17_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_18_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_19_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010280645452439785,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_20_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01026997808367014,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_21_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_22_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_23_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269977152347565,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_24_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010802378877997398,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_25_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01080142892897129,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_26_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_27_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010280645452439785,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_28_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01026997808367014,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_29_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.010269980877637863,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_30_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.0108029805123806,
+          "accepted": true
+        },
+        {
+          "mesh": "Aisle_31_Stone",
+          "before": 1020,
+          "after": 356,
+          "maxSourceVertexDistance": 0.01080704852938652,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588488183915615,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.01213997695595026,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.017006216570734978,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_00_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.011567779816687107,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_01_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.019955957308411598,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_01_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_01_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.014876662753522396,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_01_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_01_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_02_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588479056954384,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012137950398027897,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01700824312865734,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_02_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.012270161882042885,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_03_Bronze",
+          "before": 4192,
+          "after": 1466,
+          "maxSourceVertexDistance": 0.014853131957352161,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.01874721795320511,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Stone",
+          "before": 3180,
+          "after": 2146,
+          "maxSourceVertexDistance": 0.014984619803726673,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Teal",
+          "before": 4752,
+          "after": 1662,
+          "maxSourceVertexDistance": 0.018420573323965073,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959301307797432,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Tunnel_Stone",
+          "before": 2400,
+          "after": 840,
+          "maxSourceVertexDistance": 0.012643725611269474,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Tunnel_Timber",
+          "before": 2880,
+          "after": 1008,
+          "maxSourceVertexDistance": 0.010269097052514553,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_04_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588479056954384,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.01213864330202341,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699790731072426,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_04_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.012269331142306328,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959301307797432,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_05_Bronze",
+          "before": 1792,
+          "after": 626,
+          "maxSourceVertexDistance": 0.02166355773806572,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_05_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_05_Teal",
+          "before": 1188,
+          "after": 414,
+          "maxSourceVertexDistance": 0.011662263423204422,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_05_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.01195978932082653,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_05_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_06_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588488183915615,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011792080476880074,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.017006998881697655,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_06_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.012270556762814522,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_07_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.020756781101226807,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_07_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_07_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.014875276014208794,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_07_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.020090121775865555,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_07_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_08_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.019984835758805275,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012941321358084679,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.01678655855357647,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_08_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.013214430771768093,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.023331506177783012,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_09_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.019956015050411224,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_09_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.014874379150569439,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.02008839324116707,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_10_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.015882451087236404,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011792593635618687,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01700456067919731,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_10_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.011570816859602928,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_11_Bronze",
+          "before": 4192,
+          "after": 1466,
+          "maxSourceVertexDistance": 0.014853143133223057,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.018652502447366714,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Stone",
+          "before": 3180,
+          "after": 2146,
+          "maxSourceVertexDistance": 0.014988455921411514,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Teal",
+          "before": 4752,
+          "after": 1662,
+          "maxSourceVertexDistance": 0.017176153138279915,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959301307797432,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Tunnel_Stone",
+          "before": 2400,
+          "after": 840,
+          "maxSourceVertexDistance": 0.012643725611269474,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Tunnel_Timber",
+          "before": 2880,
+          "after": 1008,
+          "maxSourceVertexDistance": 0.010269097983837128,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_12_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.015881668776273727,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011792593635618687,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.017002863809466362,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_12_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.011570816859602928,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959308758378029,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_13_Bronze",
+          "before": 1792,
+          "after": 626,
+          "maxSourceVertexDistance": 0.021663708612322807,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_13_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_13_Teal",
+          "before": 1188,
+          "after": 414,
+          "maxSourceVertexDistance": 0.014876131899654865,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_13_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011980469338595867,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_13_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_14_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.018741577863693237,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012940329499542713,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.016784541308879852,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_14_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.013205261901021004,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.021439500153064728,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_15_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.022360125556588173,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_15_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.015873607248067856,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.021439000964164734,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_16_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588488183915615,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.01213997695595026,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.017006216570734978,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_16_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.011567779816687107,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_17_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.019955957308411598,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_17_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_17_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.014876662753522396,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_17_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_17_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_18_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588479056954384,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012137950398027897,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01700824312865734,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_18_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.012270161882042885,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_19_Bronze",
+          "before": 4192,
+          "after": 1466,
+          "maxSourceVertexDistance": 0.014853131957352161,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.01874721795320511,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Stone",
+          "before": 3180,
+          "after": 2146,
+          "maxSourceVertexDistance": 0.014984619803726673,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Teal",
+          "before": 4752,
+          "after": 1662,
+          "maxSourceVertexDistance": 0.018420573323965073,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959301307797432,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Tunnel_Stone",
+          "before": 2400,
+          "after": 840,
+          "maxSourceVertexDistance": 0.012643726542592049,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Tunnel_Timber",
+          "before": 2880,
+          "after": 1008,
+          "maxSourceVertexDistance": 0.010269097052514553,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_20_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588479056954384,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.01213864330202341,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699790731072426,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_20_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.012269331142306328,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959301307797432,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_21_Bronze",
+          "before": 1792,
+          "after": 626,
+          "maxSourceVertexDistance": 0.02166355773806572,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_21_Teal",
+          "before": 1188,
+          "after": 414,
+          "maxSourceVertexDistance": 0.011662263423204422,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959767900407314,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_22_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.01588488183915615,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011792080476880074,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.017006997019052505,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_22_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.012270556762814522,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_23_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.020756781101226807,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_23_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_23_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.014875276014208794,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_23_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.020090121775865555,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_23_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_24_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.019984835758805275,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_24_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012941321358084679,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_24_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.01678655855357647,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_24_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_24_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.013214430771768093,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_24_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.023331506177783012,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_24_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_25_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.019956015050411224,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_25_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_25_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.014874379150569439,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_25_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.02008839324116707,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_25_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_26_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.015882451087236404,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_26_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011792593635618687,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_26_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01700456067919731,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_26_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_26_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.011570816859602928,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_26_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959311552345753,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_26_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_27_Bronze",
+          "before": 4192,
+          "after": 1466,
+          "maxSourceVertexDistance": 0.014853143133223057,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.018652502447366714,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Stone",
+          "before": 3180,
+          "after": 2146,
+          "maxSourceVertexDistance": 0.014988455921411514,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Teal",
+          "before": 4752,
+          "after": 1662,
+          "maxSourceVertexDistance": 0.017176153138279915,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011959301307797432,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Tunnel_Stone",
+          "before": 2400,
+          "after": 840,
+          "maxSourceVertexDistance": 0.012643725611269474,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Tunnel_Timber",
+          "before": 2880,
+          "after": 1008,
+          "maxSourceVertexDistance": 0.010269097983837128,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_27_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_28_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.015881668776273727,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_28_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011792593635618687,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_28_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.017002863809466362,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_28_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_28_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.011570816859602928,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_28_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.011959308758378029,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_28_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_29_Bronze",
+          "before": 1792,
+          "after": 626,
+          "maxSourceVertexDistance": 0.021663708612322807,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_29_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_29_Teal",
+          "before": 1188,
+          "after": 414,
+          "maxSourceVertexDistance": 0.014876131899654865,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_29_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.011980469338595867,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_29_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_30_Bronze",
+          "before": 3272,
+          "after": 1144,
+          "maxSourceVertexDistance": 0.018741577863693237,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_30_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012940210290253162,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_30_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.016784541308879852,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_30_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_30_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.013205261901021004,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_30_Timber",
+          "before": 2364,
+          "after": 826,
+          "maxSourceVertexDistance": 0.021439500153064728,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_30_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_31_Bronze",
+          "before": 1672,
+          "after": 584,
+          "maxSourceVertexDistance": 0.022360125556588173,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_31_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_31_Teal",
+          "before": 1080,
+          "after": 378,
+          "maxSourceVertexDistance": 0.015873607248067856,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_31_Timber",
+          "before": 2340,
+          "after": 818,
+          "maxSourceVertexDistance": 0.021439000964164734,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_31_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        }
+      ],
+      "sourceHash": "a60bc1d0dd9f6acf57b89c59995e7bd7b03f09d70d084cc00e28a64f21880791"
+    },
+    {
+      "source": "Assets/_Game/Art/CoastalStadiums/Basketball_Architecture.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/01_Basketball_Architecture.fbx",
+      "meshes": [
+        {
+          "mesh": "Bay_00_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.01871502585709095,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.013354042544960976,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.017007730901241302,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_00_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.013515970669686794,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.02332577481865883,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_00_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_01_Bronze",
+          "before": 952,
+          "after": 332,
+          "maxSourceVertexDistance": 0.020728880539536476,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_01_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_01_Teal",
+          "before": 432,
+          "after": 150,
+          "maxSourceVertexDistance": 0.014877142384648323,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_01_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_01_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_02_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018689604476094246,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012137897312641144,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699790731072426,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_02_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.011572109535336494,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_02_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_03_Bronze",
+          "before": 2932,
+          "after": 1026,
+          "maxSourceVertexDistance": 0.014852482825517654,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.018550731241703033,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Stone",
+          "before": 2520,
+          "after": 1700,
+          "maxSourceVertexDistance": 0.014999867416918278,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Teal",
+          "before": 3420,
+          "after": 1196,
+          "maxSourceVertexDistance": 0.016711268573999405,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.011969009414315224,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Tunnel_Stone",
+          "before": 1560,
+          "after": 546,
+          "maxSourceVertexDistance": 0.012641768902540207,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Tunnel_Timber",
+          "before": 1800,
+          "after": 630,
+          "maxSourceVertexDistance": 0.010267194360494614,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_03_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_04_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018689604476094246,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011791751720011234,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699826866388321,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_04_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.011572109535336494,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_04_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_05_Bronze",
+          "before": 1072,
+          "after": 374,
+          "maxSourceVertexDistance": 0.020728640258312225,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_05_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_05_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.013196091167628765,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_05_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_05_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_06_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018748683854937553,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.014625579118728638,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.016677578911185265,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_06_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.01595953293144703,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Timber",
+          "before": 984,
+          "after": 664,
+          "maxSourceVertexDistance": 0.01165996678173542,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_06_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_07_Bronze",
+          "before": 952,
+          "after": 332,
+          "maxSourceVertexDistance": 0.020787985995411873,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_07_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_07_Teal",
+          "before": 432,
+          "after": 150,
+          "maxSourceVertexDistance": 0.014876704663038254,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_07_Timber",
+          "before": 960,
+          "after": 648,
+          "maxSourceVertexDistance": 0.011657873168587685,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_07_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_08_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018689604476094246,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011791818775236607,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699790731072426,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_08_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.012270019389688969,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.01749587617814541,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_08_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_09_Bronze",
+          "before": 2932,
+          "after": 1026,
+          "maxSourceVertexDistance": 0.014852482825517654,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.01874818466603756,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Stone",
+          "before": 2520,
+          "after": 1700,
+          "maxSourceVertexDistance": 0.014999977312982082,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Teal",
+          "before": 3420,
+          "after": 1196,
+          "maxSourceVertexDistance": 0.01842508092522621,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.011969009414315224,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Tunnel_Stone",
+          "before": 1560,
+          "after": 546,
+          "maxSourceVertexDistance": 0.012643703259527683,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Tunnel_Timber",
+          "before": 1800,
+          "after": 630,
+          "maxSourceVertexDistance": 0.010267295874655247,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_09_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_10_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.01871621422469616,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.013365994207561016,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699826866388321,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_10_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.014875954017043114,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.011983165517449379,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_10_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_11_Bronze",
+          "before": 1072,
+          "after": 374,
+          "maxSourceVertexDistance": 0.02229585126042366,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_11_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.015582413412630558,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Timber",
+          "before": 960,
+          "after": 648,
+          "maxSourceVertexDistance": 0.011661688797175884,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_11_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_12_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.01871502585709095,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.013354160822927952,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.017007889226078987,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_12_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.013515970669686794,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.02332577481865883,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_12_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_13_Bronze",
+          "before": 952,
+          "after": 332,
+          "maxSourceVertexDistance": 0.020728645846247673,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_13_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_13_Teal",
+          "before": 432,
+          "after": 150,
+          "maxSourceVertexDistance": 0.014877142384648323,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_13_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_13_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_14_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018689604476094246,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.012137897312641144,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699790731072426,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_14_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.011572109535336494,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_14_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_15_Bronze",
+          "before": 2932,
+          "after": 1026,
+          "maxSourceVertexDistance": 0.014852482825517654,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.018550090491771698,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Stone",
+          "before": 2520,
+          "after": 1700,
+          "maxSourceVertexDistance": 0.014999867416918278,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Teal",
+          "before": 3420,
+          "after": 1196,
+          "maxSourceVertexDistance": 0.016711268573999405,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.011969009414315224,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Tunnel_Stone",
+          "before": 1560,
+          "after": 546,
+          "maxSourceVertexDistance": 0.012641768902540207,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Tunnel_Timber",
+          "before": 1800,
+          "after": 630,
+          "maxSourceVertexDistance": 0.010267194360494614,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_15_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_16_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018689604476094246,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011791751720011234,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699826866388321,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_16_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.011572109535336494,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_16_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_17_Bronze",
+          "before": 1072,
+          "after": 374,
+          "maxSourceVertexDistance": 0.020728640258312225,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_17_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_17_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.013196091167628765,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_17_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.01195977907627821,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_17_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_18_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018748683854937553,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.014625679701566696,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Leaf",
+          "before": 1632,
+          "after": 1100,
+          "maxSourceVertexDistance": 0.016677578911185265,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_18_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.01595953293144703,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Timber",
+          "before": 984,
+          "after": 664,
+          "maxSourceVertexDistance": 0.01165996678173542,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_18_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_19_Bronze",
+          "before": 952,
+          "after": 332,
+          "maxSourceVertexDistance": 0.020787985995411873,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_19_Teal",
+          "before": 432,
+          "after": 150,
+          "maxSourceVertexDistance": 0.014876704663038254,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Timber",
+          "before": 960,
+          "after": 648,
+          "maxSourceVertexDistance": 0.011657873168587685,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_19_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_20_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.018689604476094246,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.011791878379881382,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699790731072426,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_20_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.012270019389688969,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.01749587617814541,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_20_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_21_Bronze",
+          "before": 2932,
+          "after": 1026,
+          "maxSourceVertexDistance": 0.014852482825517654,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Paving",
+          "before": 264,
+          "after": 92,
+          "maxSourceVertexDistance": 0.01874818466603756,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Stone",
+          "before": 2520,
+          "after": 1700,
+          "maxSourceVertexDistance": 0.014999977312982082,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Teal",
+          "before": 3420,
+          "after": 1196,
+          "maxSourceVertexDistance": 0.01842508092522621,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Timber",
+          "before": 960,
+          "after": 336,
+          "maxSourceVertexDistance": 0.011969009414315224,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Tunnel_Stone",
+          "before": 1560,
+          "after": 546,
+          "maxSourceVertexDistance": 0.012643703259527683,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Tunnel_Timber",
+          "before": 1800,
+          "after": 630,
+          "maxSourceVertexDistance": 0.01026717759668827,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_21_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_22_Bronze",
+          "before": 2672,
+          "after": 934,
+          "maxSourceVertexDistance": 0.01871621422469616,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Flower",
+          "before": 8000,
+          "after": 2800,
+          "maxSourceVertexDistance": 0.013365994207561016,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Leaf",
+          "before": 1632,
+          "after": 1101,
+          "maxSourceVertexDistance": 0.01699826866388321,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Stone",
+          "before": 900,
+          "after": 900,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_22_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.014875954017043114,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Timber",
+          "before": 984,
+          "after": 344,
+          "maxSourceVertexDistance": 0.011983165517449379,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_22_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_23_Bronze",
+          "before": 1072,
+          "after": 374,
+          "maxSourceVertexDistance": 0.02229585126042366,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_23_Stone",
+          "before": 660,
+          "after": 660,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Bay_23_Teal",
+          "before": 540,
+          "after": 188,
+          "maxSourceVertexDistance": 0.015582413412630558,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_23_Timber",
+          "before": 960,
+          "after": 648,
+          "maxSourceVertexDistance": 0.011661688797175884,
+          "accepted": true
+        },
+        {
+          "mesh": "Bay_23_Voussoirs_Stone",
+          "before": 288,
+          "after": 288,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "PerimeterScreen_03_Stone",
+          "before": 240,
+          "after": 240,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "PerimeterScreen_09_Stone",
+          "before": 240,
+          "after": 240,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "PerimeterScreen_15_Stone",
+          "before": 240,
+          "after": 240,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "PerimeterScreen_21_Stone",
+          "before": 240,
+          "after": 240,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        }
+      ],
+      "sourceHash": "affe4aa467a3fea136087a4e5a05c2a6bccf9efc1603a7e7e101f74cf5dcd959"
+    },
+    {
+      "source": "Assets/_Game/Art/Football/Sunvale/Stadium.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/02_Stadium.fbx",
+      "meshes": [
+        {
+          "mesh": "Stadium__Bay_00_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_00_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029733525589108467,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_01_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_01_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029654917307198048,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_02_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_02_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029733525589108467,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_03_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_03_Structure",
+          "before": 3192,
+          "after": 2672,
+          "maxSourceVertexDistance": 0.0029733525589108467,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_04_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_04_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029715520795434713,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_05_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_05_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029654917307198048,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_06_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_06_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029716920107603073,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_07_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_07_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.0029736270662397146,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_08_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_08_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.007206402253359556,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_09_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_09_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.0029733532574027777,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_10_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_10_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029654912650585175,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_11_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_11_Structure",
+          "before": 3192,
+          "after": 2672,
+          "maxSourceVertexDistance": 0.0029733614064753056,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_12_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_12_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_13_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_13_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.004676820244640112,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_14_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_14_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.008029547519981861,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_15_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_15_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.00804854091256857,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_16_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_16_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.0029733525589108467,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_17_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_17_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_18_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_18_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_19_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_19_Structure",
+          "before": 3192,
+          "after": 2672,
+          "maxSourceVertexDistance": 0.0029733614064753056,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_20_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_20_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_21_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_21_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_22_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_22_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_23_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_23_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.002973355120047927,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_24_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_24_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.007206402253359556,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_25_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_25_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.0029733877163380384,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_26_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_26_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.00223864009603858,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_27_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_27_Structure",
+          "before": 3192,
+          "after": 2672,
+          "maxSourceVertexDistance": 0.0029733525589108467,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_28_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_28_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.002965491032227874,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_29_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_29_Structure",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.004676820244640112,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_30_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_30_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.008029547519981861,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_31_Canopy",
+          "before": 636,
+          "after": 636,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_31_Structure",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.00804854091256857,
+          "accepted": true
+        }
+      ],
+      "sourceHash": "499a4990de1a5848b079888bbd4cf151130b8e6940ef330c085eca4fcbbabd50"
+    },
+    {
+      "source": "Assets/_Game/Art/Basketball/Rally/Stadium.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/03_Stadium.fbx",
+      "meshes": [
+        {
+          "mesh": "Stadium__Bay_00",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 2.1324806311895372e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_01",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_02",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.907581463456154e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_03",
+          "before": 3892,
+          "after": 3258,
+          "maxSourceVertexDistance": 1.9073486328125e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_04",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_05",
+          "before": 4012,
+          "after": 3686,
+          "maxSourceVertexDistance": 2.1324806311895372e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_06",
+          "before": 4012,
+          "after": 4012,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_07",
+          "before": 4012,
+          "after": 3686,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_08",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.9669532775878906e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_09",
+          "before": 3892,
+          "after": 3258,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_10",
+          "before": 4012,
+          "after": 4012,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_11",
+          "before": 4012,
+          "after": 4012,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_12",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 2.1324806311895372e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_13",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_14",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.907581463456154e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_15",
+          "before": 3892,
+          "after": 3258,
+          "maxSourceVertexDistance": 1.9073486328125e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_16",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_17",
+          "before": 4012,
+          "after": 3686,
+          "maxSourceVertexDistance": 2.1324806311895372e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_18",
+          "before": 4012,
+          "after": 4012,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_19",
+          "before": 4012,
+          "after": 3686,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_20",
+          "before": 4012,
+          "after": 3360,
+          "maxSourceVertexDistance": 1.9669532775878906e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_21",
+          "before": 3892,
+          "after": 3258,
+          "maxSourceVertexDistance": 1.9660499219753547e-06,
+          "accepted": true
+        },
+        {
+          "mesh": "Stadium__Bay_22",
+          "before": 4012,
+          "after": 4012,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Stadium__Bay_23",
+          "before": 4012,
+          "after": 4012,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        }
+      ],
+      "sourceHash": "acfc8dce5a45e2ec6bb57c9948a9c4cf29d911e8925a4b765f6ba4c6594003aa"
+    },
+    {
+      "source": "Assets/_Game/Art/Basketball/Rally/LowerSeating.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/04_LowerSeating.fbx",
+      "meshes": [],
+      "sourceHash": "177fa8cff72a2188fbd7ec478a5fc68477e765d7e9f6ace6f248b2e67382d692"
+    },
+    {
+      "source": "Assets/_Game/Art/Basketball/Rally/UpperSeating.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/05_UpperSeating.fbx",
+      "meshes": [],
+      "sourceHash": "117256c368fdab7ff499213eb9cfefd84038957345c7606de117ba8d4dace1f3"
+    },
+    {
+      "source": "Assets/_Game/Art/CoastalIslands/Football_Coast.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/06_Football_Coast.fbx",
+      "meshes": [
+        {
+          "mesh": "Football__BeachDetails_00",
+          "before": 2320,
+          "after": 812,
+          "maxSourceVertexDistance": 0.011082464829087257,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_01",
+          "before": 2240,
+          "after": 784,
+          "maxSourceVertexDistance": 0.010867687873542309,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_02",
+          "before": 1280,
+          "after": 448,
+          "maxSourceVertexDistance": 0.010396779514849186,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_03",
+          "before": 2240,
+          "after": 784,
+          "maxSourceVertexDistance": 0.011027853935956955,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_04",
+          "before": 2320,
+          "after": 812,
+          "maxSourceVertexDistance": 0.010281175374984741,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_05",
+          "before": 2720,
+          "after": 952,
+          "maxSourceVertexDistance": 0.011496341787278652,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_06",
+          "before": 2400,
+          "after": 840,
+          "maxSourceVertexDistance": 0.010612145066261292,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_07",
+          "before": 2880,
+          "after": 1008,
+          "maxSourceVertexDistance": 0.010046062059700489,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_08",
+          "before": 2480,
+          "after": 868,
+          "maxSourceVertexDistance": 0.009887747466564178,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_09",
+          "before": 2000,
+          "after": 700,
+          "maxSourceVertexDistance": 0.010926194489002228,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_10",
+          "before": 2480,
+          "after": 868,
+          "maxSourceVertexDistance": 0.010335368104279041,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_11",
+          "before": 2400,
+          "after": 840,
+          "maxSourceVertexDistance": 0.010563450865447521,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_12",
+          "before": 2320,
+          "after": 812,
+          "maxSourceVertexDistance": 0.010399154387414455,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_13",
+          "before": 2320,
+          "after": 812,
+          "maxSourceVertexDistance": 0.010042224079370499,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_14",
+          "before": 2880,
+          "after": 1008,
+          "maxSourceVertexDistance": 0.009263173677027225,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__BeachDetails_15",
+          "before": 2960,
+          "after": 1036,
+          "maxSourceVertexDistance": 0.009627173654735088,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_00",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.021144749596714973,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_01",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.019362956285476685,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_02",
+          "before": 1440,
+          "after": 1206,
+          "maxSourceVertexDistance": 0.022513078525662422,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_03",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.015513846650719643,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_04",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.01817314699292183,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_05",
+          "before": 1040,
+          "after": 702,
+          "maxSourceVertexDistance": 0.021266037598252296,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_06",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.022022634744644165,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_07",
+          "before": 1440,
+          "after": 1206,
+          "maxSourceVertexDistance": 0.020301906391978264,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_08",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.023730015382170677,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_09",
+          "before": 1040,
+          "after": 954,
+          "maxSourceVertexDistance": 0.014121013693511486,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_10",
+          "before": 720,
+          "after": 660,
+          "maxSourceVertexDistance": 0.019575970247387886,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_11",
+          "before": 1440,
+          "after": 1322,
+          "maxSourceVertexDistance": 0.015318447723984718,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_12",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.017697617411613464,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__CoastRocks_13",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.020393604412674904,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__DockCaps",
+          "before": 728,
+          "after": 490,
+          "maxSourceVertexDistance": 0.013083081692457199,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__DockFasteners",
+          "before": 4480,
+          "after": 1568,
+          "maxSourceVertexDistance": 0.009045595303177834,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__DockLashing",
+          "before": 31360,
+          "after": 10976,
+          "maxSourceVertexDistance": 0.012350136414170265,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__DockRailing",
+          "before": 11424,
+          "after": 7710,
+          "maxSourceVertexDistance": 0.008260195143520832,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__GardenOutcrop",
+          "before": 1280,
+          "after": 1280,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Football__Paving_00",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.01700568199157715,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_01",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.01947658322751522,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_02",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.01633487455546856,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_03",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.01572263240814209,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_04",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.019322063773870468,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_05",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.017290154471993446,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_06",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.015304744243621826,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_07",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.01608137972652912,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_08",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.016912149265408516,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_09",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.015516197308897972,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_10",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.015790965408086777,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_11",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.016025910153985023,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_12",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.01648722216486931,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_13",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.015626464039087296,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_14",
+          "before": 800,
+          "after": 540,
+          "maxSourceVertexDistance": 0.01663680374622345,
+          "accepted": true
+        },
+        {
+          "mesh": "Football__Paving_15",
+          "before": 880,
+          "after": 594,
+          "maxSourceVertexDistance": 0.015689557418227196,
+          "accepted": true
+        }
+      ],
+      "sourceHash": "1c12d1a0ed35ef9093f266cf0e5fa70f60d4a9635080ebfb89c7baf0781f2d6f"
+    },
+    {
+      "source": "Assets/_Game/Art/CoastalIslands/Basketball_Coast.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/07_Basketball_Coast.fbx",
+      "meshes": [
+        {
+          "mesh": "Basketball__BeachDetails_00",
+          "before": 1760,
+          "after": 616,
+          "maxSourceVertexDistance": 0.011843894608318806,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_01",
+          "before": 1680,
+          "after": 588,
+          "maxSourceVertexDistance": 0.010658917017281055,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_02",
+          "before": 1600,
+          "after": 560,
+          "maxSourceVertexDistance": 0.009258979000151157,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_03",
+          "before": 1680,
+          "after": 588,
+          "maxSourceVertexDistance": 0.010003897361457348,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_04",
+          "before": 2080,
+          "after": 728,
+          "maxSourceVertexDistance": 0.00924478005617857,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_05",
+          "before": 1440,
+          "after": 504,
+          "maxSourceVertexDistance": 0.010504226200282574,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_06",
+          "before": 2000,
+          "after": 700,
+          "maxSourceVertexDistance": 0.00925983302295208,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_07",
+          "before": 1360,
+          "after": 476,
+          "maxSourceVertexDistance": 0.013138576410710812,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_08",
+          "before": 1680,
+          "after": 588,
+          "maxSourceVertexDistance": 0.012017437256872654,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_09",
+          "before": 1680,
+          "after": 588,
+          "maxSourceVertexDistance": 0.010727595537900925,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_10",
+          "before": 1600,
+          "after": 560,
+          "maxSourceVertexDistance": 0.012595677748322487,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_11",
+          "before": 1120,
+          "after": 392,
+          "maxSourceVertexDistance": 0.010647093877196312,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_12",
+          "before": 1040,
+          "after": 364,
+          "maxSourceVertexDistance": 0.011144889518618584,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_13",
+          "before": 800,
+          "after": 280,
+          "maxSourceVertexDistance": 0.009542101062834263,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_14",
+          "before": 1920,
+          "after": 672,
+          "maxSourceVertexDistance": 0.01141896191984415,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__BeachDetails_15",
+          "before": 1200,
+          "after": 420,
+          "maxSourceVertexDistance": 0.011917217634618282,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_00",
+          "before": 2080,
+          "after": 1910,
+          "maxSourceVertexDistance": 0.017316363751888275,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_01",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.01375627052038908,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_02",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.02177559584379196,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_03",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.017656560987234116,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_04",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.017105817794799805,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_05",
+          "before": 1440,
+          "after": 1322,
+          "maxSourceVertexDistance": 0.01805269531905651,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_06",
+          "before": 2080,
+          "after": 1742,
+          "maxSourceVertexDistance": 0.016354531049728394,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_07",
+          "before": 1760,
+          "after": 1616,
+          "maxSourceVertexDistance": 0.019872775301337242,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_08",
+          "before": 1760,
+          "after": 1474,
+          "maxSourceVertexDistance": 0.017257435247302055,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_09",
+          "before": 1040,
+          "after": 870,
+          "maxSourceVertexDistance": 0.01399274542927742,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_11",
+          "before": 1440,
+          "after": 972,
+          "maxSourceVertexDistance": 0.019848952069878578,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_12",
+          "before": 2080,
+          "after": 1910,
+          "maxSourceVertexDistance": 0.017098743468523026,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__CoastRocks_13",
+          "before": 1440,
+          "after": 1206,
+          "maxSourceVertexDistance": 0.017871879041194916,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__DockCaps",
+          "before": 728,
+          "after": 490,
+          "maxSourceVertexDistance": 0.013068538159132004,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__DockFasteners",
+          "before": 4480,
+          "after": 1568,
+          "maxSourceVertexDistance": 0.009043673053383827,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__DockLashing",
+          "before": 31360,
+          "after": 10976,
+          "maxSourceVertexDistance": 0.012217752635478973,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__DockRailing",
+          "before": 11424,
+          "after": 7710,
+          "maxSourceVertexDistance": 0.008309823460876942,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__GardenOutcrop",
+          "before": 1280,
+          "after": 1280,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Basketball__Paving_00",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.014982229098677635,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_01",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.014953739009797573,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_02",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.014977877028286457,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_03",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.017446836456656456,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_04",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.02155584841966629,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_05",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.01990182138979435,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_06",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.015302752144634724,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_07",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.016081102192401886,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_08",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.01591288112103939,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_09",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.015521529130637646,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_10",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.01451551727950573,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_11",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.016289478167891502,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_12",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.016037501394748688,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_13",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.015626249834895134,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_14",
+          "before": 400,
+          "after": 270,
+          "maxSourceVertexDistance": 0.016636695712804794,
+          "accepted": true
+        },
+        {
+          "mesh": "Basketball__Paving_15",
+          "before": 480,
+          "after": 324,
+          "maxSourceVertexDistance": 0.015193725936114788,
+          "accepted": true
+        }
+      ],
+      "sourceHash": "60057b8815e16b83df0b0d0a86feb6ad53f9bc4dfad2d5f17439dc5cd34daae0"
+    },
+    {
+      "source": "Assets/_Game/Art/RefinedIslands/Golf/Structures.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/08_Structures.fbx",
+      "meshes": [
+        {
+          "mesh": "Structures__CascadeApproach_Stone",
+          "before": 1760,
+          "after": 1188,
+          "maxSourceVertexDistance": 0.016647474840283394,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__CascadeBasin_Stone",
+          "before": 3840,
+          "after": 3216,
+          "maxSourceVertexDistance": 0.014980857260525227,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__CascadeFoundation_Stone",
+          "before": 3840,
+          "after": 3528,
+          "maxSourceVertexDistance": 0.019043833017349243,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__CoastalPath_Paving",
+          "before": 3176,
+          "after": 3176,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Structures__CoastalPath_Stone",
+          "before": 63520,
+          "after": 42876,
+          "maxSourceVertexDistance": 0.017231816425919533,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__CourseProps_Teal",
+          "before": 664,
+          "after": 232,
+          "maxSourceVertexDistance": 0.018965236842632294,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__PracticeApproach_Stone",
+          "before": 3360,
+          "after": 2268,
+          "maxSourceVertexDistance": 0.016672585159540176,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__SpringRim_Stone",
+          "before": 11520,
+          "after": 9648,
+          "maxSourceVertexDistance": 0.013828122057020664,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__Wayfinding_Bronze",
+          "before": 696,
+          "after": 242,
+          "maxSourceVertexDistance": 0.013645869679749012,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__Wayfinding_Timber",
+          "before": 360,
+          "after": 126,
+          "maxSourceVertexDistance": 0.021280629560351372,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__WelcomeApproach_Stone",
+          "before": 3360,
+          "after": 2268,
+          "maxSourceVertexDistance": 0.01667080819606781,
+          "accepted": true
+        }
+      ],
+      "sourceHash": "f6a193d46aeab2051be94b63ebe702e4d69c7ea6fbc55a908b985590531664c0"
+    },
+    {
+      "source": "Assets/_Game/Art/RefinedIslands/Fishing/Structures.fbx",
+      "delivery": "Assets/_Game/Art/MobileModels/09_Structures.fbx",
+      "meshes": [
+        {
+          "mesh": "Structures__InletRetainingStone_Stone",
+          "before": 26820,
+          "after": 26820,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Structures__LagoonPath_Paving",
+          "before": 804,
+          "after": 804,
+          "maxSourceVertexDistance": 0,
+          "accepted": false
+        },
+        {
+          "mesh": "Structures__LagoonPath_Stone",
+          "before": 16160,
+          "after": 10908,
+          "maxSourceVertexDistance": 0.017229363322257996,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__ShelterApproach_Stone",
+          "before": 1120,
+          "after": 756,
+          "maxSourceVertexDistance": 0.017280681058764458,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__StandApproach_Stone",
+          "before": 3200,
+          "after": 2160,
+          "maxSourceVertexDistance": 0.016649819910526276,
+          "accepted": true
+        },
+        {
+          "mesh": "Structures__Wayfinding_Bronze.001",
+          "before": 232,
+          "after": 80,
+          "maxSourceVertexDistance": 0.014544649980962276,
+          "accepted": true
+        }
+      ],
+      "sourceHash": "f2c31ff33f870dcca0d8d086dceb57d7414553648208936fb6fc412a8d73d60c"
+    }
+  ]
+}

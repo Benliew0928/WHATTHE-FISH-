@@ -12,7 +12,7 @@ public static class RefinedIslandBuildEntry {
    int index=System.Array.FindIndex(env.definitions,d=>d.id==sport);Object.DestroyImmediate(env.roots[index]);
    var root=RefinedIslandBuilder.Build(sport.ToString());env.roots[index]=root;var layout=root.GetComponent<RefinedIslandEnvironment>().layout;var def=env.definitions[index];
    def.spawnPositions=layout.spawns;def.maxPlayers=layout.capacity;def.menuCamera=layout.views[0].position;def.menuFocus=layout.views[0].target;
-   def.environmentPrefab=PrefabUtility.SaveAsPrefabAsset(root,"Assets/_Game/Resources/"+sport+"Environment.prefab");EditorUtility.SetDirty(def);
+   def.environmentPrefab=PrefabUtility.SaveAsPrefabAsset(root,MobilePackageCleanup.EnvironmentFolder+sport+"Environment.prefab");EditorUtility.SetDirty(def);
   }
   env.Activate(SportId.Football);EditorSceneManager.SaveScene(EditorSceneManager.GetActiveScene());AssetDatabase.SaveAssets();
   ProjectBuilder.BuildCurrentWindows();

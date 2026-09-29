@@ -50,7 +50,7 @@ public static class TurnAudit {
    Require(clips.Length==1&&clips[0].name==name&&!clips[0].isLooping,"Turn clip import mismatch "+name);
    Require(Mathf.Abs(clips[0].length-(name.EndsWith("180")?.55f:.35f))<.002f,"Turn duration mismatch");
   }
-  var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Resources/OfflineAthlete.prefab");
+  var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Prefabs/Characters/OfflineAthlete.prefab");
   var instance=UnityEngine.Object.Instantiate(prefab);
   try {
    var athlete=instance.GetComponent<Athlete>();athlete.Motor.Reset(0);

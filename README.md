@@ -2,6 +2,8 @@
 
 WHATTHE FISH? is an Android-first game with football, basketball, golf, and fishing environments.
 
+AI contributors must read [AGENTS.md](AGENTS.md) for the **strictly under-100-MB APK requirement**, the 75 MB working target, visual-quality priorities and end-of-task cleanup. Before committing, run `Tools/Build/Check-TaskReady.ps1`; use `-RequireApk` when delivering an Android build. [Repository housekeeping](Docs/REPOSITORY-HYGIENE.md) explains what belongs in Git and how to recover archived files. The user stages, commits and pushes changes.
+
 The official game logo is the **Pocket Island** design. See the [official logo and usage note](Docs/Branding/README.md).
 
 The four islands now share the **Sky-Sail Circuit**: rideable group cabins, separate cable/tower/station modules, and distant 3D island views. Launch `Builds/WindowsFinal/Explore-SkySail.cmd` to start at a station. One host room travels together to one active island. See the [implementation guide](Docs/VisualDirection/WorldConnections/SKY-SAIL-IMPLEMENTATION.md) and [actual game gallery](Docs/VisualDirection/WorldConnections/GameReview/index.html).
@@ -27,7 +29,8 @@ For a fresh clone, install Git LFS and run `git lfs pull` before opening the Uni
 - `Tools/Build/` — build/environment scripts.
 - `Builds/WindowsFinal/` — latest Windows review player (launch `WhatTheFish.exe`), including the approved coastal football/basketball venues and G2/L2 islands. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
 - `Legacy/` — removable archive of old placeholders, unused materials, backups and superseded builds; see its archive manifest.
-- `Builds/Android/WhatTheFish-release.apk` — Android release APK built 29 September 2026, 354.31 MB, ARM64 / Android 8.0+, including the four islands and Sky-Sail world. Physical-phone qualification is pending.
+- `Builds/Android/WhatTheFish-release.apk` — optimized Android release APK built 29 September 2026, **83.28 MB**, ARM64 / Android 8.0+, including all four islands and Sky-Sail. It leaves **16.72 MB** below the hackathon limit; the 75 MB working target remains unmet. See [the optimization report](Docs/APK-SIZE-AUDIT.md). Physical-phone qualification is pending.
+- `Builds/WindowsMobilePreview/` — preview of mobile delivery geometry, built with `Tools/Build/Build.ps1 -Target MobilePreview`. Its desktop renderer and texture formats do not substitute for phone testing.
 - `Docs/SETUP.md` — toolchain, cloud linking and running on a phone.
 - `Docs/ARCHITECTURE.md` — code boundaries and future gameplay.
 - `Docs/VERIFICATION.md` — measured checks and remaining access requirements.
