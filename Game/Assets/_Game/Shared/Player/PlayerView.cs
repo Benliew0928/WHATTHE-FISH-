@@ -21,6 +21,7 @@ namespace WhatTheFish {
    if(Input.GetKeyDown(KeyCode.C))Switch();
    if(Input.GetMouseButton(1)){LookDelta+=new Vector2(Input.GetAxis("Mouse X")*14,Input.GetAxis("Mouse Y")*14);}
    yaw+=LookDelta.x*.13f;pitch=Mathf.Clamp(pitch-LookDelta.y*.10f,-25,65);LookDelta=Vector2.zero;
+   if(SkySailWorld.Instance&&SkySailWorld.Instance.RideCamera(cam,yaw,pitch,mode))return;
    Vector3 focus=target.transform.position+Vector3.up*(mode==0?1.57f:1.35f);
    var rotation=Quaternion.Euler(mode==2?58:pitch,yaw,0);float distance=mode==0?0:mode==1?5:AppRoot.Instance.environments.Current.elevatedDistance;
    Vector3 desired=focus-rotation*Vector3.forward*distance;

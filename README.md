@@ -4,6 +4,8 @@ WHATTHE FISH? is an Android-first game with football, basketball, golf, and fish
 
 The official game logo is the **Pocket Island** design. See the [official logo and usage note](Docs/Branding/README.md).
 
+The four islands now share the **Sky-Sail Circuit**: rideable group cabins, separate cable/tower/station modules, and distant 3D island views. Launch `Builds/WindowsFinal/Explore-SkySail.cmd` to start at a station. One host room travels together to one active island. See the [implementation guide](Docs/VisualDirection/WorldConnections/SKY-SAIL-IMPLEMENTATION.md) and [actual game gallery](Docs/VisualDirection/WorldConnections/GameReview/index.html).
+
 The Windows player includes the selected F1/B1 **walkable coastal stadiums**: detailed cream-stone entrances, teal and timber trim, sea islands, connected spectator stairs and an open-air basketball arena. See the [actual EXE review gallery](Docs/VisualDirection/CoastalStadiums/index.html) and [implementation and validation notes](Docs/COASTAL-STADIUMS.md).
 
 Golf and fishing now use **G2 Limestone Cove Links** and **L2 Limestone Garden Lagoon**, with detailed coastal materials, vegetation, facilities and walking routes. See the [27-view Windows gallery](Docs/VisualDirection/GolfFishingRefinement/GameReview/index.html) and [delivery evidence](Docs/VisualDirection/GolfFishingRefinement/GameReview/VALIDATION.md).
@@ -20,11 +22,12 @@ For a fresh clone, install Git LFS and run `git lfs pull` before opening the Uni
 - `ArtSource/Shared/Characters/Meshy/RainbowSprinter-source.zip` — preserved Meshy download and texture provenance.
 - `ArtSource/Basketball/Rally/Arena_Rally.blend` — current modular basketball arena, textured court, rounded hoops, colorful seating, gallery, banners and lighting. The placeholder source is archived under `Legacy/ArtSource/Basketball/`.
 - `ArtSource/RefinedIslands/` — editable G2 golf and L2 fishing masters, shared asset kit and measured layouts. Superseded golf/fishing sources are preserved in the dated `Legacy/GolfFishing-G2L2-*` batch.
+- `ArtSource/SkySail/` — editable cabin, interior, doors, hanger, tower, station and gangway masters. Matching Unity prefabs are in `Game/Assets/_Game/Prefabs/SkySail/`.
 - `Tools/Blender/` — deterministic asset generator and audit tool.
 - `Tools/Build/` — build/environment scripts.
 - `Builds/WindowsFinal/` — latest Windows review player (launch `WhatTheFish.exe`), including the approved coastal football/basketball venues and G2/L2 islands. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
 - `Legacy/` — removable archive of old placeholders, unused materials, backups and superseded builds; see its archive manifest.
-- `Builds/Android/WhatTheFish-release.apk` — current Android test APK, 72.69 MB, ARM64 / Android 8.0+, including all three refined environments.
+- `Builds/Android/WhatTheFish-release.apk` — Android release APK built 29 September 2026, 354.31 MB, ARM64 / Android 8.0+, including the four islands and Sky-Sail world. Physical-phone qualification is pending.
 - `Docs/SETUP.md` — toolchain, cloud linking and running on a phone.
 - `Docs/ARCHITECTURE.md` — code boundaries and future gameplay.
 - `Docs/VERIFICATION.md` — measured checks and remaining access requirements.

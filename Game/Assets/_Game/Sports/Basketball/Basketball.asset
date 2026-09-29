@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Basketball
   available: 1
   maxPlayers: 10
-  environmentPrefab: {fileID: 6390494283199185885, guid: b09dc0128d8da944fae158b30fa9a03d, type: 3}
+  environmentPrefab: {fileID: 0}
   spawnPositions:
   - {x: -3, y: 1, z: -4}
   - {x: -1.5, y: 1, z: -4}

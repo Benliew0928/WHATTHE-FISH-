@@ -1,0 +1,55 @@
+PASS Four islands and modular stations
+PASS One active detailed island at rest
+PASS Football to Fishing exact station endpoints
+PASS Football to Fishing sea clearance
+PASS Football to Golf exact station endpoints
+PASS Football to Golf sea clearance
+PASS Golf to Football exact station endpoints
+PASS Golf to Football sea clearance
+PASS Golf to Basketball exact station endpoints
+PASS Golf to Basketball sea clearance
+PASS Basketball to Golf exact station endpoints
+PASS Basketball to Golf sea clearance
+PASS Basketball to Fishing exact station endpoints
+PASS Basketball to Fishing sea clearance
+PASS Fishing to Basketball exact station endpoints
+PASS Fishing to Basketball sea clearance
+PASS Fishing to Football exact station endpoints
+PASS Fishing to Football sea clearance
+PASS Football station arrival is supported
+PASS Football group can board for Golf
+PASS Passenger anchored inside cabin during ride
+PASS Football → Golf completes actual journey
+PASS Football scene released during journey
+PASS Arrived on Golf
+PASS Walking restored at Golf
+PASS Golf disembark collision
+PASS Only destination detail active after docking
+PASS Golf station arrival is supported
+PASS Golf group can board for Basketball
+PASS Passenger anchored inside cabin during ride
+PASS Golf → Basketball completes actual journey
+PASS Golf scene released during journey
+PASS Arrived on Basketball
+PASS Walking restored at Basketball
+PASS Basketball disembark collision
+PASS Only destination detail active after docking
+PASS Basketball station arrival is supported
+PASS Basketball group can board for Fishing
+PASS Passenger anchored inside cabin during ride
+PASS Basketball → Fishing completes actual journey
+PASS Basketball scene released during journey
+PASS Arrived on Fishing
+PASS Walking restored at Fishing
+PASS Fishing disembark collision
+PASS Only destination detail active after docking
+PASS Fishing station arrival is supported
+PASS Fishing group can board for Football
+PASS Passenger anchored inside cabin during ride
+PASS Fishing → Football completes actual journey
+PASS Fishing scene released during journey
+PASS Arrived on Football
+PASS Walking restored at Football
+PASS Football disembark collision
+PASS Only destination detail active after docking
+SKY_SAIL_REVIEW_COMPLETE success=True

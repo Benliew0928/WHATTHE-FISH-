@@ -1,0 +1,35 @@
+PASS Four islands and modular stations
+PASS One active detailed island at rest
+PASS Football to Fishing exact station endpoints
+PASS Football to Fishing sea clearance
+PASS Football to Golf exact station endpoints
+PASS Football to Golf sea clearance
+PASS Golf to Football exact station endpoints
+PASS Golf to Football sea clearance
+PASS Golf to Basketball exact station endpoints
+PASS Golf to Basketball sea clearance
+PASS Basketball to Golf exact station endpoints
+PASS Basketball to Golf sea clearance
+PASS Basketball to Fishing exact station endpoints
+PASS Basketball to Fishing sea clearance
+PASS Fishing to Basketball exact station endpoints
+PASS Fishing to Basketball sea clearance
+PASS Fishing to Football exact station endpoints
+PASS Fishing to Football sea clearance
+PASS Football shore to gangway controller traversal ((110.56, 2.82, 0.00))
+PASS Football gangway to boarding deck controller traversal ((112.68, 2.82, 1.69))
+PASS Football deck to gangway controller traversal ((110.59, 2.82, 0.00))
+PASS Football gangway to shore controller traversal ((88.63, 0.02, 0.00))
+PASS Golf shore to gangway controller traversal ((0.00, 5.02, -173.56))
+PASS Golf gangway to boarding deck controller traversal ((1.69, 5.02, -175.68))
+PASS Golf deck to gangway controller traversal ((0.00, 5.02, -173.60))
+PASS Golf gangway to shore controller traversal ((0.00, 4.86, -151.63))
+PASS Basketball shore to gangway controller traversal ((-60.56, 2.82, 0.00))
+PASS Basketball gangway to boarding deck controller traversal ((-62.68, 2.82, -1.69))
+PASS Basketball deck to gangway controller traversal ((-60.60, 2.82, 0.00))
+PASS Basketball gangway to shore controller traversal ((-38.63, -0.14, 0.00))
+PASS Fishing shore to gangway controller traversal ((44.60, 2.89, 0.00))
+PASS Fishing gangway to boarding deck controller traversal ((46.71, 3.08, 1.71))
+PASS Fishing deck to gangway controller traversal ((44.62, 2.90, 0.02))
+PASS Fishing gangway to shore controller traversal ((36.02, 1.49, 0.00))
+SKY_SAIL_REVIEW_COMPLETE success=True

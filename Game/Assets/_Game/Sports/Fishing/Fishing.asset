@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Fishing
   available: 1
   maxPlayers: 5
-  environmentPrefab: {fileID: 4744382211143379285, guid: 1e9259779792e7f44996cda7a81bf7c8, type: 3}
+  environmentPrefab: {fileID: 0}
   spawnPositions:
   - {x: 3.91887e-15, y: 1.35, z: -32}
   - {x: -30.43381, y: 1.35, z: -9.888544}

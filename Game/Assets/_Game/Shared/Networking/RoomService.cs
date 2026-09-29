@@ -19,6 +19,7 @@ namespace WhatTheFish {
   public string Code=>Session?.Code??(LocalTest?"LOCAL TEST":"—");
   public int Capacity=>AppRoot.Instance.environments.Definition(Sport).maxPlayers;
   bool leaving;
+  public void SetTravelSport(SportId sport){if(Host)Sport=sport;}
   async Task Initialize(){
    if(string.IsNullOrEmpty(Application.cloudProjectId))throw new InvalidOperationException("Online rooms need a linked Unity cloud project. Offline Explore is ready to use. See Docs/SETUP.md.");
    if(UnityServices.State!=ServicesInitializationState.Initialized){

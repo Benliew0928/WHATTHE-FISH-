@@ -1,0 +1,95 @@
+{
+  "modules": [
+    {
+      "name": "CabinShell",
+      "triangles": 13548,
+      "meshes": 20
+    },
+    {
+      "name": "CabinInterior",
+      "triangles": 5384,
+      "meshes": 8
+    },
+    {
+      "name": "SlidingDoor",
+      "triangles": 464,
+      "meshes": 5
+    },
+    {
+      "name": "CabinHanger",
+      "triangles": 1316,
+      "meshes": 7
+    },
+    {
+      "name": "CableTower",
+      "triangles": 8156,
+      "meshes": 15
+    },
+    {
+      "name": "SailStation",
+      "triangles": 11340,
+      "meshes": 18
+    },
+    {
+      "name": "Gangway",
+      "triangles": 2212,
+      "meshes": 3
+    }
+  ],
+  "materials": [
+    {
+      "name": "SS_Timber",
+      "color": "B68651",
+      "roughness": 0.48,
+      "metallic": 0
+    },
+    {
+      "name": "SS_Teal",
+      "color": "18777E",
+      "roughness": 0.27,
+      "metallic": 0.18
+    },
+    {
+      "name": "SS_Cream",
+      "color": "F1DFB5",
+      "roughness": 0.42,
+      "metallic": 0
+    },
+    {
+      "name": "SS_Bronze",
+      "color": "C79855",
+      "roughness": 0.26,
+      "metallic": 0.72
+    },
+    {
+      "name": "SS_Steel",
+      "color": "253D45",
+      "roughness": 0.3,
+      "metallic": 0.7
+    },
+    {
+      "name": "SS_Cushion",
+      "color": "DCE7D6",
+      "roughness": 0.72,
+      "metallic": 0
+    },
+    {
+      "name": "SS_Glass",
+      "color": "99D9DC",
+      "roughness": 0.12,
+      "metallic": 0.25
+    },
+    {
+      "name": "SS_Lamp",
+      "color": "FFE1A3",
+      "roughness": 0.3,
+      "metallic": 0.15
+    },
+    {
+      "name": "SS_Rope",
+      "color": "977752",
+      "roughness": 0.82,
+      "metallic": 0
+    }
+  ]
+}

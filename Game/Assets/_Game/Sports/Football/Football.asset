@@ -16,7 +16,7 @@ MonoBehaviour:
   displayName: Football
   available: 1
   maxPlayers: 10
-  environmentPrefab: {fileID: 1166421589932882903, guid: 12b2af12f4b92ed4ab613b03ff89ef9f, type: 3}
+  environmentPrefab: {fileID: 0}
   spawnPositions:
   - {x: -4, y: 1, z: -8}
   - {x: -2, y: 1, z: -8}

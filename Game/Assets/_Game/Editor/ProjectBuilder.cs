@@ -178,6 +178,7 @@ public static partial class ProjectBuilder {
  static Text WorldText(Transform parent,string value,Vector2 position,Vector2 size,int fontSize,Color color){var o=new GameObject("Graphic",typeof(RectTransform),typeof(Text));o.transform.SetParent(parent,false);var t=o.GetComponent<Text>();t.rectTransform.sizeDelta=size;t.rectTransform.anchoredPosition=position;t.text=value;t.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");t.fontSize=fontSize;t.alignment=TextAnchor.MiddleCenter;t.color=color;t.supportRichText=false;t.raycastTarget=false;return t;}
  [MenuItem("WHATTHE FISH?/Build Windows testing player")]
  public static void BuildWindows(){
+  if(File.Exists("Assets/_Game/Scenes/SkySail_Football.unity")){SkySailBuilder.BuildWindows();return;}
   Setup();
   BuildCurrentWindows();
   RefinedIslandDependencyAudit.Audit();
@@ -207,7 +208,5 @@ public static partial class ProjectBuilder {
  public static void BuildAndroid(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish.apk");}
  [MenuItem("WHATTHE FISH?/Build Android release APK")]
  public static void BuildAndroidRelease(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.CompressWithLz4HC);}
- static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){Directory.CreateDirectory(Path.GetDirectoryName(path));var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{Root+"Scenes/Bootstrap.unity"},locationPathName=path,target=target,options=options});if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);}
+ static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){Directory.CreateDirectory(Path.GetDirectoryName(path));var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options});if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);}
 }
-
-\n

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public sealed class Athlete : MonoBehaviour {
-  public CharacterController capsule; public Transform visual; public bool controlled; public float speed;
+  public CharacterController capsule; public Transform visual; public bool controlled,inTransit; public float speed;
   float gravity; Animator animator; SkinnedMeshRenderer[] bodyRenderers;float turnWeight;int turnLayer=-1;FootballTackle football;int footballLayer=-1;float footballWeight;FootballSnapshot receivedFootball,cachedFootball;uint footballSequence=uint.MaxValue;double footballClock,footballReceivedAt;Vector3 visualRest;float groundSlideWeight;
   public LocomotionMotor Motor {get;}=new LocomotionMotor();
   public LocomotionPhase Phase=>remote?received.phase:Motor.Phase;
@@ -12,9 +12,9 @@ namespace WhatTheFish {
   public FootballAction Action=>remote?receivedFootball.action:football?football.State:FootballAction.None;
   public float ActionProgress=>remote?Mathf.Clamp01((float)((footballClock+Time.timeAsDouble-footballReceivedAt-receivedFootball.started)/FootballTackle.Duration(Action))):football?Mathf.Clamp01(football.Elapsed/FootballTackle.Duration(Action)):0;
   public float TackleCooldown=>remote?Mathf.Max(0,(float)(receivedFootball.cooldownUntil-footballClock-Time.timeAsDouble+footballReceivedAt)):football?football.CooldownRemaining:0;
-  public bool TackleReady=>FootballTackle.Allowed&&Action==FootballAction.None&&TackleCooldown<=0&&Grounded;
+  public bool TackleReady=>!inTransit&&FootballTackle.Allowed&&Action==FootballAction.None&&TackleCooldown<=0&&Grounded;
   public bool Grounded=>capsule&&Physics.Raycast(transform.position+Vector3.up*.1f,Vector3.down,.25f,1<<8,QueryTriggerInteraction.Ignore);
-  public bool TryTackle(){if(!initialized)Setup();return football&&football.TryStart(Grounded);}
+  public bool TryTackle(){if(inTransit)return false;if(!initialized)Setup();return football&&football.TryStart(Grounded);}
   public FootballSnapshot FootballState(double now){
    if(footballSequence!=football.Sequence){footballSequence=football.Sequence;cachedFootball=new FootballSnapshot{action=football.State,sequence=football.Sequence,started=now-football.Elapsed,cooldownUntil=now+football.CooldownRemaining};}
    return cachedFootball;
@@ -50,6 +50,7 @@ namespace WhatTheFish {
   }
   void Update(){
    if(!animator)return;
+   if(inTransit){animator.SetFloat("Speed",0);animator.SetBool("Turning",false);animator.SetBool("Launching",false);if(turnLayer>=0)animator.SetLayerWeight(turnLayer,0);if(footballLayer>=0)animator.SetLayerWeight(footballLayer,0);return;}
    bool turning=Phase==LocomotionPhase.Turning;
    float angle=remote?received.angle:Motor.TurnAngle;
    float progress=LocomotionMotor.PoseProgress(remote?received.startYaw:Motor.TurnStartYaw,angle,transform.eulerAngles.y);

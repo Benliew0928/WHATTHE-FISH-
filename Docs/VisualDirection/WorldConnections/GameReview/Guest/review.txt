@@ -1,0 +1,11 @@
+PASS Guest cannot choose the room destination
+PASS Replicated group ride completed to Golf
+PASS Shared destination agrees with host
+PASS Every player disembarks together
+PASS Network transforms restored
+PASS Guest cannot choose the room destination
+PASS Replicated group ride completed to Football
+PASS Shared destination agrees with host
+PASS Every player disembarks together
+PASS Network transforms restored
+SKY_SAIL_REVIEW_COMPLETE success=True

@@ -8,5 +8,17 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_Game/Scenes/Bootstrap.unity
     guid: d5699bba04b41924e9566133323bc291
+  - enabled: 1
+    path: Assets/_Game/Scenes/SkySail_Football.unity
+    guid: 86675e4dde3630f418ecc848a02e36b8
+  - enabled: 1
+    path: Assets/_Game/Scenes/SkySail_Golf.unity
+    guid: b5ae2351e7e8401418aff38ae888779b
+  - enabled: 1
+    path: Assets/_Game/Scenes/SkySail_Basketball.unity
+    guid: 9aaf4fbb886c3ef41b918a3843454f27
+  - enabled: 1
+    path: Assets/_Game/Scenes/SkySail_Fishing.unity
+    guid: 3e7e1f800428dc742a17e94f85db0ca3
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

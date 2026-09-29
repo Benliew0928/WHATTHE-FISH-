@@ -18,7 +18,7 @@ $method = switch ($Target) {
     'Windows' { 'ProjectBuilder.BuildWindows' }
     'Android' { 'ProjectBuilder.BuildAndroid' }
     'AndroidRelease' { 'ProjectBuilder.BuildAndroidRelease' }
-    'Scene' { 'ProjectBuilder.Setup' }
+    'Scene' { if (Test-Path -LiteralPath (Join-Path $gamePath 'Assets/_Game/Scenes/SkySail_Football.unity')) { 'SkySailBuilder.Prepare' } else { 'ProjectBuilder.Setup' } }
 }
 $argsList = @('-batchmode', '-nographics', '-quit', '-projectPath', ('"{0}"' -f $gamePath), '-executeMethod', $method, '-logFile', ('"{0}"' -f $logPath))
 if ($Target -in @('Android', 'AndroidRelease')) { $argsList += @('-buildTarget', 'Android') }

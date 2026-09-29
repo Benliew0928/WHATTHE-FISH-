@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
@@ -13,7 +14,8 @@ namespace WhatTheFish {
   public GameObject athletePrefab; Athlete offline; Canvas canvas;RectTransform safe,page;Font font;Sprite rounded;Text status,roster,fps;float rosterTimer;string screen="home",appliedWorld="";bool lastExploring; InputField code;
   readonly Color ink=LocalProfile.Hex("173834"),mint=LocalProfile.Hex("BFEBCB"),cream=LocalProfile.Hex("FFF9E9");
   void Awake(){Instance=this;Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
-  void Start(){
+  SportId? pendingSelection; uint selectionVersion;
+  IEnumerator Start(){
    font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");rounded=MakeRound();
    canvas=new GameObject("Mobile UI",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;
    var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
@@ -21,32 +23,35 @@ namespace WhatTheFish {
    if(!FindFirstObjectByType<EventSystem>())new GameObject("Input",typeof(EventSystem),typeof(StandaloneInputModule));
    rooms.SetupNetwork();rooms.Changed+=OnRoomChanged;
    offline=Instantiate(athletePrefab,new Vector3(0,.07f,-8),Quaternion.identity).GetComponent<Athlete>();offline.name="Offline athlete";offline.Setup();offline.Appearance(LocalProfile.Character);LocalAthlete=offline;
-   environments.Activate(SportId.Football);stadium.Apply(CurrentAppearance);Show("home");
-   var args=Environment.GetCommandLineArgs();int sportArg=Array.IndexOf(args,"-sport");if(sportArg>=0&&sportArg+1<args.Length&&Enum.TryParse<SportId>(args[sportArg+1],true,out var requested)&&environments.Definition(requested)&&environments.Definition(requested).available)SelectSport(requested);if(args.Contains("-offline"))EnterOffline();
+   var streaming=environments.GetComponent<SkySailStreaming>();if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(SportId.Football);
+   environments.Activate(SportId.Football);stadium?.Apply(CurrentAppearance);Show("home");
+   var args=Environment.GetCommandLineArgs();int sportArg=Array.IndexOf(args,"-sport");if(sportArg>=0&&sportArg+1<args.Length&&Enum.TryParse<SportId>(args[sportArg+1],true,out var requested)&&environments.Definition(requested)&&environments.Definition(requested).available){if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(requested);SelectSport(requested);}if(args.Contains("-offline"))EnterOffline();
    if(args.Contains("-localHost")||args.Contains("-localClient")){ushort port=7777;int ix=Array.IndexOf(args,"-port");if(ix>=0&&ix+1<args.Length)ushort.TryParse(args[ix+1],out port);offline.gameObject.SetActive(false);rooms.StartLocal(args.Contains("-localHost"),port);Show("room");}
   }
   void ApplySafeArea(){var a=Screen.safeArea;safe.anchorMin=new Vector2(a.x/Screen.width,a.y/Screen.height);safe.anchorMax=new Vector2(a.xMax/Screen.width,a.yMax/Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;}
-  void OnRoomChanged(){if(!rooms.Connected){appliedWorld="";stadium.Apply(CurrentAppearance);}if(rooms.Connected){offline.gameObject.SetActive(false);if(screen!="stadium"&&screen!="character")Show("room");}else if(screen=="room"||screen=="stadium"&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}UpdateStatus();}
+  void OnRoomChanged(){if(!rooms.Connected){appliedWorld="";stadium?.Apply(CurrentAppearance);}if(rooms.Connected){offline.gameObject.SetActive(false);if(screen!="stadium"&&screen!="character")Show("room");}else if(screen=="room"||screen=="stadium"&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}UpdateStatus();}
   void Update(){
    if(!Exploring){if(screen=="character"){view.transform.position=offline.transform.position+new Vector3(1.4f,1.25f,3.7f);view.transform.LookAt(offline.transform.position+new Vector3(1.4f,1.1f,0));}else {view.transform.position=environments.Current.menuCamera;view.transform.LookAt(environments.Current.menuFocus);}}
    if(!rooms.Connected&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}
    if(rooms.Connected&&NetworkAthlete.HostPlayer){
-    var world=NetworkAthlete.HostPlayer;if(SelectedSport!=world.WorldSport.Value){SelectSport(world.WorldSport.Value,true);if(screen=="room")Show("room");}string json=world.WorldAppearance.Value.ToString();if(json.Length>0&&json!=appliedWorld){appliedWorld=json;stadium.Apply(JsonUtility.FromJson<StadiumAppearance>(json));}
+    var world=NetworkAthlete.HostPlayer;if(SelectedSport!=world.WorldSport.Value&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)){SelectSport(world.WorldSport.Value,true);if(screen=="room")Show("room");}string json=world.WorldAppearance.Value.ToString();if(json.Length>0&&json!=appliedWorld){appliedWorld=json;stadium?.Apply(JsonUtility.FromJson<StadiumAppearance>(json));}
     if(world.Exploring.Value!=lastExploring){lastExploring=world.Exploring.Value;Exploring=lastExploring;Show(Exploring?"stadium":"room");}
    }
    view.target=LocalAthlete;view.active=Exploring;
-   if(Exploring&&!rooms.Connected&&LocalAthlete)LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
+   if(Exploring&&!rooms.Connected&&LocalAthlete&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
    if(!Exploring&&LocalAthlete)LocalAthlete.HideHead(false);
    if((rosterTimer-=Time.deltaTime)<0){rosterTimer=.5f;RefreshRoster();if(fps)fps.text=$"{Mathf.RoundToInt(1/Mathf.Max(Time.smoothDeltaTime,.001f))} FPS   •   {(rooms.Connected?"ONLINE":"OFFLINE")}";}
    if(Input.GetKeyDown(KeyCode.Escape)){if(Exploring)Return();else Show(rooms.Connected?"room":"home");}
   }
   void UpdateStatus(){if(status)status.text=rooms.busy?"Connecting…":rooms.Error??"";}
-  public void SelectSport(SportId sport,bool fromHost=false){if(rooms.Connected&&!fromHost)return;environments.Activate(sport);appliedWorld="";stadium.Apply(CurrentAppearance);if(offline&&!rooms.Connected)ResetOfflineSpawn();view.yaw=0;view.pitch=16;PlayerView.LookDelta=Vector2.zero;}
+  public void SelectSport(SportId sport,bool fromHost=false){if(rooms.Connected&&!fromHost)return;var streaming=environments.GetComponent<SkySailStreaming>();if(streaming&&streaming.enabledForWorld&&!streaming.Loaded(sport)){if(pendingSelection!=sport){pendingSelection=sport;Show(screen);StartCoroutine(SelectLoaded(sport,fromHost,++selectionVersion));}return;}pendingSelection=null;selectionVersion++;environments.Activate(sport);appliedWorld="";stadium?.Apply(CurrentAppearance);if(offline&&!rooms.Connected)ResetOfflineSpawn();view.yaw=0;view.pitch=16;PlayerView.LookDelta=Vector2.zero;}
+  IEnumerator SelectLoaded(SportId sport,bool fromHost,uint version){yield return environments.GetComponent<SkySailStreaming>().Prepare(sport);if(version!=selectionVersion)yield break;pendingSelection=null;if(!environments.GetComponent<SkySailStreaming>().Loaded(sport)){Debug.LogError("Could not load "+sport);yield break;}SelectSport(sport,fromHost);Show(screen);}
+  IEnumerator EnterWhenReady(){while(pendingSelection.HasValue)yield return null;EnterOffline();}
   void ResetOfflineSpawn(){offline.capsule.enabled=false;offline.transform.SetPositionAndRotation(environments.Current.Spawn(0),Quaternion.identity);offline.capsule.enabled=true;offline.ResetLocomotion();}
-  public void EnterOffline(){Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium.Apply(CurrentAppearance);Show("stadium");}
-  async void Return(){if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
+  public void EnterOffline(){if(pendingSelection.HasValue){StartCoroutine(EnterWhenReady());return;}Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium?.Apply(CurrentAppearance);Show("stadium");}
+  async void Return(){if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return;if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
   void Clear(){PlayerView.LookDelta=Vector2.zero;if(page)Destroy(page.gameObject);page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;}
-  public void Show(string which){if(which=="custom"&&!SupportsCustomization)which=rooms.Connected?"room":"sport";if(which=="custom"&&rooms.Connected&&!rooms.Host)which="room";screen=which;Clear();if(which=="stadium"){HUD();return;}
+  public void Show(string which){if(which=="custom"&&!SupportsCustomization)which=rooms.Connected?"room":"sport";if(which=="custom"&&rooms.Connected&&!rooms.Host)which="room";screen=which;Clear();if(pendingSelection.HasValue){Panel(page,new Vector2(330,450),new Vector2(590,824),new Color(1,.98f,.93f,.96f));Heading("Preparing "+pendingSelection.Value,"Your island is loading…");return;}if(which=="stadium"){HUD();return;}
    Panel(page,new Vector2(330,450),new Vector2(590,824),new Color(1,.98f,.93f,.96f));
    Label(page,"WHATTHE FISH?",58,new Vector2(82,822),new Vector2(510,35),16,ink);
    if(which=="home"){
@@ -104,7 +109,7 @@ namespace WhatTheFish {
   NetworkAthlete LocalNetwork()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
   void RefreshRoster(){if(!roster)return;var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).OrderBy(p=>p.OwnerClientId).ToArray();roster.text=string.Join("\n",players.Select(p=>{
    return $"{(p.OwnerClientId==0?"HOST":"PLAYER "+p.OwnerClientId)}{(p.IsOwner?" (you)":"")}  ·  Rainbow Sprinter  ·  {(p.Ready.Value?"READY":"choosing…")}";}));}
-  public void SaveStadium(StadiumAppearance a){if(!SupportsCustomization||rooms.Connected&&!rooms.Host)return;LocalProfile.SaveSport(SelectedSport,a);stadium.Apply(a);if(rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(a);}
+  public void SaveStadium(StadiumAppearance a){if(!SupportsCustomization||rooms.Connected&&!rooms.Host)return;LocalProfile.SaveSport(SelectedSport,a);stadium?.Apply(a);if(rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(a);}
   void Heading(string title,string caption){Label(page,title,0,new Vector2(82,714),new Vector2(510,80),44,ink);Label(page,caption,0,new Vector2(82,643),new Vector2(490,64),22,ink);}
   void Back(string target){Button("← Back",new Vector2(165,91),()=>Show(target),Color.white,new Vector2(165,54));}
   void HUD(){
