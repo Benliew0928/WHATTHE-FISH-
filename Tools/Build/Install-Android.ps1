@@ -1,5 +1,7 @@
+param([string]$UnityEditorRoot = (Join-Path $env:ProgramFiles 'Unity\Hub\Editor\6000.3.20f1'))
+
 $ErrorActionPreference = 'Stop'
-$editorRoot = 'C:\Program Files\Unity\Hub\Editor\6000.3.20f1'
+$editorRoot = $UnityEditorRoot
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 $cacheRoot = Join-Path $root 'Tools\Downloads'
 New-Item -ItemType Directory -Force -Path $cacheRoot | Out-Null

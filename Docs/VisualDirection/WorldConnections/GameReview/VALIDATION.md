@@ -34,7 +34,7 @@ No physical Android device is connected and no minimum phone model has been sele
 ```powershell
 Tools/Build/Build.ps1 -Target Windows
 Tools/Build/Test-SkySail.ps1
-Tools/Build/Test-SkySail.ps1 -WalkOnly -OutputPath C:\UMPSA\Docs\VisualDirection\WorldConnections\GameReview\Approaches
+Tools/Build/Test-SkySail.ps1 -WalkOnly -OutputPath Docs/VisualDirection/WorldConnections/GameReview/Approaches
 Tools/Build/Test-SkySail.ps1 -Network
 Tools/Build/Build.ps1 -Target AndroidRelease
 ```

@@ -111,7 +111,7 @@ def main():
         filepath=str(OUTPUT), use_selection=True, object_types={"MESH", "ARMATURE"},
         axis_forward="-Z", axis_up="Y", add_leaf_bones=False,
         bake_anim=False,
-        path_mode="AUTO", use_mesh_modifiers=True,
+        path_mode="RELATIVE", use_mesh_modifiers=True,
     )
     bpy.ops.object.select_all(action="DESELECT")
     for obj in (rig, lod0, lod1):
@@ -122,7 +122,7 @@ def main():
         axis_forward="-Z", axis_up="Y", add_leaf_bones=False,
         bake_anim=True, bake_anim_use_all_actions=True,
         bake_anim_use_nla_strips=False, bake_anim_simplify_factor=0,
-        path_mode="AUTO", use_mesh_modifiers=True,
+        path_mode="RELATIVE", use_mesh_modifiers=True,
     )
     print("RAINBOW_EXPORT_READY", len(source.data.polygons),
           len(lod0.data.polygons), len(lod1.data.polygons),

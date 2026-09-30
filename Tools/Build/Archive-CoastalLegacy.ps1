@@ -1,6 +1,8 @@
-param([string]$Manifest='C:\UMPSA\Builds\CoastalStadiumAudit\archive-candidates.json')
+param([string]$Manifest='')
 $ErrorActionPreference='Stop'
 $archiveWorkspace=[IO.Path]::GetFullPath((Split-Path (Split-Path $PSScriptRoot -Parent) -Parent))
+if (-not $Manifest) { $Manifest=Join-Path $archiveWorkspace 'Builds\CoastalStadiumAudit\archive-candidates.json' }
+elseif (-not [IO.Path]::IsPathRooted($Manifest)) { $Manifest=Join-Path $archiveWorkspace $Manifest }
 $batch=Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
 $qa=Get-Content -LiteralPath $batch.validation -Raw
 if($qa -match '(?m)^FAIL ' -or $qa -notmatch 'STADIUM_REVIEW_COMPLETE'){throw 'Archive requires completed passing EXE validation'}

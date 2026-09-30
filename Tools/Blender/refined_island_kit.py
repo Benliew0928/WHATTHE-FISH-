@@ -259,7 +259,7 @@ def export_asset(name,m,mats,lods=True,boxes=None,collision='none'):
                 bpy.ops.object.modifier_apply(modifier=mod.name);clone.hide_render=True;all_objects.append(clone)
     path=ART/'Shared'/(name+'.fbx');bpy.ops.object.select_all(action='DESELECT')
     for o in all_objects:o.select_set(True)
-    bpy.ops.export_scene.fbx(filepath=str(path),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',bake_anim=False,add_leaf_bones=False)
+    bpy.ops.export_scene.fbx(filepath=str(path),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',bake_anim=False,add_leaf_bones=False,path_mode='RELATIVE')
     tris=lambda obs:sum(sum(len(p.vertices)-2 for p in o.data.polygons) for o in obs)
     return dict(name=name,file=name+'.fbx',collision=collision,boxes=boxes or [],lods=lods,triangles=tris(objects)),col,objects
 
@@ -268,6 +268,11 @@ def build_kit(mats):
     for name,fn,lods,boxes in [(f'Palm_{i}',lambda m,i=i:palm(m,i),True,[dict(center=[.4,3.5,0],size=[.65,7,.65])]) for i in range(4)]+[(f'Plant_{i}',lambda m,i=i:plant(m,i),True,[]) for i in range(4)]+[(f'Grass_{i}',lambda m,i=i:grass(m,i),True,[]) for i in range(3)]+[(f'Rock_{i}',lambda m,i=i:limestone(m,i),True,[]) for i in range(4)]+[('PlayerStand',lambda m:deck(m),False,[dict(center=[0,-.16,3.5],size=[6,.32,7])]),('InletBridge',lambda m:deck(m,True),False,[dict(center=[0,-.18,0],size=[13,.36,4.2])]),('GolfPavilion',lambda m:pavilion(m),False,[dict(center=[0,-.16,0],size=[11,.32,8])]),('FishingShelter',lambda m:pavilion(m,True),False,[dict(center=[0,-.16,0],size=[8,.32,5])])]:
         m=Meshes();fn(m);spec,col,objects=export_asset(name,m,mats,lods,boxes,'rock' if name.startswith('Rock') else 'boxes' if boxes else 'none');specs.append(spec);library[name]=(col,objects)
     (ART/'Shared'/'kit.json').write_text(json.dumps(dict(modules=specs),indent=2))
-    bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'IslandAssetKit.blend'),compress=True)
+    source_path=SOURCE/'IslandAssetKit.blend'
+    # Keep packed and external texture references portable in saved masters.
+    for image in bpy.data.images:
+        if image.source=='FILE' and image.filepath:
+            image.filepath=bpy.path.relpath(bpy.path.abspath(image.filepath),start=str(source_path.parent))
+    bpy.ops.wm.save_as_mainfile(filepath=str(source_path),relative_remap=False,compress=True)
     return specs,library
 

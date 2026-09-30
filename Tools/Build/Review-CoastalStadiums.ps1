@@ -1,6 +1,8 @@
-param([string]$OutputPath='C:\UMPSA\Docs\VisualDirection\CoastalStadiums\GameReview',[switch]$RecordRoutes)
+param([string]$OutputPath='',[switch]$RecordRoutes)
 $ErrorActionPreference='Stop'
 $reviewRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+if (-not $OutputPath) { $OutputPath=Join-Path $reviewRoot 'Docs\VisualDirection\CoastalStadiums\GameReview' }
+elseif (-not [IO.Path]::IsPathRooted($OutputPath)) { $OutputPath=Join-Path $reviewRoot $OutputPath }
 New-Item -ItemType Directory -Force -Path $OutputPath | Out-Null
 $reviewLog=Join-Path $reviewRoot 'Builds\coastal-stadium-review.log'
 $reviewArgs=@('-batchmode','-force-d3d11','-screen-width','1920','-screen-height','1080','-screen-fullscreen','0','-stadiumReview',('"{0}"' -f $OutputPath),'-logFile',('"{0}"' -f $reviewLog))

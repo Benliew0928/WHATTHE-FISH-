@@ -1,6 +1,8 @@
-param([string]$OutputPath='C:\UMPSA\Docs\VisualDirection\GolfFishingRefinement\GameReview')
+param([string]$OutputPath='')
 $ErrorActionPreference='Stop'
 $benchmarkRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+if (-not $OutputPath) { $OutputPath=Join-Path $benchmarkRoot 'Docs\VisualDirection\GolfFishingRefinement\GameReview' }
+elseif (-not [IO.Path]::IsPathRooted($OutputPath)) { $OutputPath=Join-Path $benchmarkRoot $OutputPath }
 New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
 $arguments=@('-force-d3d11','-screen-width','1920','-screen-height','1080','-screen-fullscreen','0','-islandBenchmark',('"{0}\performance.txt"' -f $OutputPath),'-logFile',('"{0}\benchmark-player.log"' -f $OutputPath))
 $measurementStart=[DateTime]::UtcNow

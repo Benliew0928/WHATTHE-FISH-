@@ -10,6 +10,17 @@
 - Preserve the intended visual quality: cabin interiors, close props, island silhouettes, animation and travel should remain attractive. Keep editable high-quality masters; derive mobile delivery assets. Check affected close/distant views and gameplay after lossy changes. Never claim phone quality/FPS from a Windows preview alone.
 - Preserve the current world model: four islands, one active game per host room, everyone travels together. Keep cabin, cables, towers and stations modular.
 
+## Portable paths are required in commits
+
+- Never commit machine-specific absolute filesystem paths in code, scripts, configuration, documentation, generated records or active asset references. This includes personal drive locations, user/home directories, network shares and local file URLs. A teammate must be able to clone the project into a different directory without editing committed paths.
+- Use document-relative links in Markdown/HTML, repository-relative paths in manifests with a documented base, and script/runtime project-root resolution based on the script or project location. Do not derive the default project root from the caller's working directory.
+- Keep tool-installation paths and external locations in documented environment variables or explicit command-line overrides. Resolve standard system locations through the platform environment. Each developer sets their actual local values outside Git; do not commit those values, user settings or secrets.
+- Save Blender dependencies relative to their master and export active FBX texture references relative to the FBX. Update generators so regeneration preserves portability. Check that targets exist in the publishable clone, preserve asset content, and refresh verified integrity hashes when path-only changes alter source bytes.
+- Before committing, run `Tools/Build/Check-TaskReady.ps1` (which calls `Check-PortablePaths.ps1` for publishable working text). After staging the intended files, run `Tools/Build/Check-PortablePaths.ps1 -Staged` to inspect the exact indexed text blobs. Fix every finding and verify new links and defaults from a different checkout path, including paths with spaces and an unrelated working directory.
+- Text scanning does not validate opaque binary payloads. When creating or changing art, inspect dependencies with format-aware Blender/FBX tooling and run the applicable asset/build checks. Never blind-replace bytes in binary assets.
+- Nonfunctional exporter/native-source provenance, embedded preview metadata and saved Blender UI history may retain historical machine paths only when format-aware inspection proves they are not active dependencies and the exception is recorded in the task report. The existing retained art metadata is such an exception; absolute active image/library paths or FBX `RelativeFilename` values are never exempt.
+- These instructions and readiness checks are required workflow steps, not an automatically installed Git hook or proof that no binary string exists. Preserve unrelated work and follow the publishing authorization rule below.
+
 ## Repository hygiene after every task
 
 - Leave the workspace ready for the user to run `git add .`, commit and push themselves. **Do not stage, commit, push, reset, or rewrite history unless explicitly requested.** Preserve unrelated changes already in the workspace.

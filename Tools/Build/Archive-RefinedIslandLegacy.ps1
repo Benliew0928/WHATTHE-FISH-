@@ -1,6 +1,8 @@
-param([string]$Manifest='C:\UMPSA\Builds\IslandRefinementAudit\archive-candidates.json',[switch]$UseCompletedRouteChecks)
+param([string]$Manifest='',[switch]$UseCompletedRouteChecks)
 $ErrorActionPreference='Stop'
 $archiveWorkspace=[IO.Path]::GetFullPath((Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path)
+if (-not $Manifest) { $Manifest=Join-Path $archiveWorkspace 'Builds\IslandRefinementAudit\archive-candidates.json' }
+elseif (-not [IO.Path]::IsPathRooted($Manifest)) { $Manifest=Join-Path $archiveWorkspace $Manifest }
 $batch=Get-Content -LiteralPath $Manifest -Raw | ConvertFrom-Json
 $qa=Get-Content -LiteralPath $batch.validation -Raw
 if($qa -match '(?m)^FAIL '){throw 'Archive requires passing island checks'}
@@ -45,7 +47,7 @@ reasons, validation evidence and the pre-archive Windows build hashes. Files kee
 their original relative paths. Existing Legacy history has not been changed.
 
 Close Unity. For each file to restore, verify its SHA-256 against the manifest,
-then copy it from this batch to C:\UMPSA\<original>. Compare any newer destination
+then copy it from this batch to <repository-root>\<original>. Compare any newer destination
 before overwriting it. Restore Unity assets and their .meta files together to
 preserve GUIDs. No Git internals, generated Unity caches, approved stadium assets,
 current G2/L2 sources or selected concept references were archived.

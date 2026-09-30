@@ -1,16 +1,24 @@
 # Setup and build
 
-## Installed versions
+## Tool versions and local settings
 
-Unity: `C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe`
+Use Unity **6000.3.20f1** and Blender **5.1.2**. Clone the repository anywhere; scripts resolve the repository root from their own location. Run documentation command examples from the repository root. Relative `-OutputPath` and `-Manifest` arguments in the review/archive scripts also resolve from that root.
 
-Blender: `C:\Program Files\Blender Foundation\Blender 5.1\blender.exe` (5.1.2)
+Before running Blender examples, set `BLENDER_PATH` in your terminal to your installed Blender executable. If Blender is on `PATH`:
+
+```powershell
+$env:BLENDER_PATH = (Get-Command blender -ErrorAction Stop).Source
+```
+
+Otherwise assign your executable's actual path to `$env:BLENDER_PATH` locally. This setting is not stored in the repository. The examples use `& $env:BLENDER_PATH` so each teammate can use their own installation.
+
+Unity build scripts default to Unity Hub's editor under `$env:ProgramFiles`. For another installation, pass `-UnityEditorPath` to `Build.ps1` or `-UnityEditorRoot` (the version folder containing `Editor` and `modules.json`) to `Install-Android.ps1` and `Repair-CMake.ps1`.
 
 Project: the `Game` folder inside your clone.
 
 Install Git LFS before cloning, or run `git lfs pull` inside an existing clone. Use Unity Hub → Add project from disk → select the clone's `Game` folder. Let Unity import assets and packages on first open; it will regenerate the ignored `Library` folder. The manifest and lock pin URP, Multiplayer Services and NGO. These packages include the Relay/Lobby integrations and Transport dependencies. Open `Assets/_Game/Scenes/Bootstrap.unity` and press Play to explore offline. The exported models, textures, materials, scene and `.meta` files are part of the repository; Blender is only needed to edit or regenerate art.
 
-To build on Windows from a clone, run `Tools/Build/Build.ps1 -Target Windows` at the repository root. The script finds the clone automatically. If Unity is installed elsewhere, pass `-UnityEditorPath 'C:\path\to\Unity.exe'`. Install the matching Unity Editor and Windows Build Support; Android builds also require Android Build Support.
+To build on Windows from a clone, run `Tools/Build/Build.ps1 -Target Windows` at the repository root. The script finds the clone automatically. If Unity is installed elsewhere, set `$env:UNITY_EDITOR_PATH` locally and pass `-UnityEditorPath $env:UNITY_EDITOR_PATH`. Install the matching Unity Editor and Windows Build Support; Android builds also require Android Build Support.
 
 ## Android toolchain
 
@@ -39,7 +47,7 @@ The project is linked to Unity cloud project `633e314c-46d1-4b48-bbbc-2dc5f6fb65
 Close Unity while regenerating art, or wait for FBX export to finish before triggering asset import.
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python .\Tools\Blender\build_football_stadium.py
+& $env:BLENDER_PATH --background --factory-startup --python .\Tools\Blender\build_football_stadium.py
 ```
 
 This rebuilds the football stadium only. **Save hand-edited variants under a new name before regenerating.** The venue assets use editable Blender files. Export axes are -Z forward / Y up, metres, without leaf bones.
@@ -57,7 +65,7 @@ In Unity choose **WHATTHE FISH? → Rebuild game scene** to reconstruct the gene
 Generate only the basketball art with:
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python .\Tools\Blender\build_rally_arena.py
+& $env:BLENDER_PATH --background --factory-startup --python .\Tools\Blender\build_rally_arena.py
 ```
 
 Import the regenerated modules using the Unity menu **WHATTHE FISH?/Basketball/Build Rally art library**, then run `Tools/Build/Build.ps1 -Target Scene`, followed by Windows and Android builds. Keep hand-edited Blender variants separately before regeneration. Scene rebuilding configures all four environments, the four logo references, spawn points, cameras and lighting.
@@ -71,7 +79,7 @@ Run `Tools/Build/Test-BasketballRooms.ps1 -Transport Local` for local checks or 
 The selected G2 Limestone Cove Links and L2 Limestone Garden Lagoon use the shared detailed asset kit. Their current sources, materials, manifests and rebuild instructions are in [Refined island authoring](../ArtSource/RefinedIslands/README.md).
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python-exit-code 1 --python Tools/Blender/build_refined_islands.py
+& $env:BLENDER_PATH --background --factory-startup --python-exit-code 1 --python Tools/Blender/build_refined_islands.py
 Tools/Build/Build.ps1 -Target Windows
 ```
 

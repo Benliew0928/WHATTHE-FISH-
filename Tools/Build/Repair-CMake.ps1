@@ -1,5 +1,7 @@
+param([string]$UnityEditorRoot = (Join-Path $env:ProgramFiles 'Unity\Hub\Editor\6000.3.20f1'))
+
 $ErrorActionPreference = 'Stop'
-$cmakeDestination = 'C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmake\3.22.1'
+$cmakeDestination = Join-Path $UnityEditorRoot 'Editor\Data\PlaybackEngines\AndroidPlayer\SDK\cmake\3.22.1'
 New-Item -ItemType Directory -Force -Path $cmakeDestination | Out-Null
 $root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
 & tar -xf (Join-Path $root 'Tools\Downloads\cmake-3.22.1.zip') -C $cmakeDestination

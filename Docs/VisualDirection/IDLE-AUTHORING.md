@@ -1,5 +1,7 @@
 # Rainbow Sprinter animation workflow
 
+Set `BLENDER_PATH` for your installation as described in [Setup](../SETUP.md); run commands from the repository root.
+
 ## Source and performance
 
 `ArtSource/Shared/Characters/RainbowSprinterAnimation.blend` is the editable animation source. The original `RainbowSprinter.blend`, Meshy source, and supplied `Running` action remain separate and unchanged. Do not regenerate the animation source with the Meshy export script.
@@ -24,7 +26,7 @@ To study the supplied run, open the original character source and activate its `
 Run from the repository root in PowerShell with Blender 5.1.2:
 
 ```powershell
-$blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
+$blender = $env:BLENDER_PATH
 $tool = 'Tools/Blender/animate_rainbow_sprinter.py'
 
 # First-time setup only; an existing authored file is preserved byte-for-byte.

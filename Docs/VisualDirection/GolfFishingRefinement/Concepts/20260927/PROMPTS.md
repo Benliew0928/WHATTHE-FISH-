@@ -9,9 +9,9 @@ Each direction has three final images: annotated overview, player-height landsca
 Final image: [Annotated overview](G1_01_Overview.png)
 
 Reference images:
-1. `C:/UMPSA/Docs/VisualDirection/Golf/08_Windows_Overview.png`
-2. `C:/UMPSA/Docs/VisualDirection/SeaIslandConcepts/football-01-palm-shore.png`
-3. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png`
+1. [Docs/VisualDirection/Golf/08_Windows_Overview.png](../../../Golf/08_Windows_Overview.png)
+2. [Docs/VisualDirection/SeaIslandConcepts/football-01-palm-shore.png](../../../SeaIslandConcepts/football-01-palm-shore.png)
+3. [Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png](../../../CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png)
 
 ### Generation prompt
 
@@ -24,9 +24,9 @@ Camera: elevated three-quarter overview, show the entire island large in frame a
 Final image: [Annotated overview](G2_01_Overview.png)
 
 Reference images:
-1. `C:/UMPSA/Docs/VisualDirection/Golf/08_Windows_Overview.png`
-2. `C:/UMPSA/Docs/VisualDirection/SeaIslandConcepts/football-01-palm-shore.png`
-3. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png`
+1. [Docs/VisualDirection/Golf/08_Windows_Overview.png](../../../Golf/08_Windows_Overview.png)
+2. [Docs/VisualDirection/SeaIslandConcepts/football-01-palm-shore.png](../../../SeaIslandConcepts/football-01-palm-shore.png)
+3. [Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png](../../../CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png)
 
 ### Generation prompt
 
@@ -39,9 +39,9 @@ Camera: elevated three-quarter overview, show the entire island large in frame a
 Final image: [Annotated overview](L1_01_Overview.png)
 
 Reference images:
-1. `C:/UMPSA/Docs/VisualDirection/Fishing/Blender/04_Windows_Overview.png`
-2. `C:/UMPSA/Docs/VisualDirection/SeaIslandConcepts/basketball-01-palm-shore.png`
-3. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png`
+1. [Docs/VisualDirection/Fishing/Blender/04_Windows_Overview.png](../../../Fishing/Blender/04_Windows_Overview.png)
+2. [Docs/VisualDirection/SeaIslandConcepts/basketball-01-palm-shore.png](../../../SeaIslandConcepts/basketball-01-palm-shore.png)
+3. [Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png](../../../CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png)
 
 ### Generation prompt
 
@@ -54,9 +54,9 @@ Camera: elevated three-quarter overview, show the entire island large in frame a
 Final image: [Annotated overview](L2_01_Overview.png)
 
 Reference images:
-1. `C:/UMPSA/Docs/VisualDirection/Fishing/Blender/04_Windows_Overview.png`
-2. `C:/UMPSA/Docs/VisualDirection/SeaIslandConcepts/basketball-01-palm-shore.png`
-3. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png`
+1. [Docs/VisualDirection/Fishing/Blender/04_Windows_Overview.png](../../../Fishing/Blender/04_Windows_Overview.png)
+2. [Docs/VisualDirection/SeaIslandConcepts/basketball-01-palm-shore.png](../../../SeaIslandConcepts/basketball-01-palm-shore.png)
+3. [Docs/VisualDirection/CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png](../../../CoastalStadiums/GameReview/Basketball_01_Exterior_Front.png)
 
 ### Generation prompt
 
@@ -69,8 +69,8 @@ Camera: elevated three-quarter overview, show the entire island large in frame a
 Final image: [Player-height landscape](G1_02_Player_View.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. imagegen output `exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6` (historical overview, archived locally; [current selected overview](G1_01_Overview.png))
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -82,8 +82,8 @@ Camera at human eye height 1.65m standing on the gently curved sandy path beside
 Final image: [Pavilion and materials](G1_03_Material_Close.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. imagegen output `exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6` (historical overview, archived locally; [current selected overview](G1_01_Overview.png))
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -95,8 +95,8 @@ Camera human eye level1.65m from 1.5m away at the corner of the G1 open golf wel
 Final image: [Player-height landscape](G2_02_Player_View.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. imagegen output `exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf` (historical overview, archived locally; [current selected overview](G2_01_Overview.png))
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -108,8 +108,8 @@ Camera at human eye height 1.65m on a broad gently graded limestone-edged garden
 Final image: [Pavilion and materials](G2_03_Material_Close.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. imagegen output `exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf` (historical overview, archived locally; [current selected overview](G2_01_Overview.png))
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -121,8 +121,8 @@ Camera human eye level1.65m from1.5m away at the G2 open golf welcome pavilion o
 Final image: [Player-height landscape](L1_02_Player_View.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-d91b39b2-ea3e-49b6-a38d-b46ea4638ec7.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. [L1_01_Overview.png](L1_01_Overview.png)
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -134,8 +134,8 @@ Camera human eye height1.65m on the broad sandy lagoon loop beside a teal-accent
 Final image: [Deck and materials](L1_03_Material_Close.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-d91b39b2-ea3e-49b6-a38d-b46ea4638ec7.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. [L1_01_Overview.png](L1_01_Overview.png)
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -147,8 +147,8 @@ Camera human eye level1.65m at1.5m from a L1 fishing station corner, angled alon
 Final image: [Player-height landscape](L2_02_Player_View.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-fd94233e-0333-43aa-87ce-557d92408c81.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. [L2_01_Overview.png](L2_01_Overview.png)
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -160,8 +160,8 @@ Camera human eye height1.65m on continuous broad pale sand/stone-edged lagoon pa
 Final image: [Deck and materials](L2_03_Material_Close.png)
 
 Reference images:
-1. `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-fd94233e-0333-43aa-87ce-557d92408c81.png`
-2. `C:/UMPSA/Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png`
+1. [L2_01_Overview.png](L2_01_Overview.png)
+2. [Docs/VisualDirection/CoastalStadiums/GameReview/Football_04_Material_Close.png](../../../CoastalStadiums/GameReview/Football_04_Material_Close.png)
 
 ### Generation prompt
 
@@ -174,30 +174,30 @@ The initial golf overviews contained six bunkers. Count corrections were attempt
 
 ### G1_01_Overview / revision 1
 
-Reference: `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6.png`
+Reference: imagegen output `exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6` (historical overview, archived locally; [current selected overview](G1_01_Overview.png))
 
 Use case: precise-object-edit. Edit this annotated G1 golf island concept. Change only the following: remove the closest foreground sand bunker on the RIGHT side of the main fairway, just above the pavilion / practice-green area. Replace that one bunker with continuous matching green fairway/rough turf and retain its gentle ground contours. Preserve the other FIVE sand bunkers farther along the course, so the complete image contains EXACTLY FIVE sand bunkers total. Preserve the entire island layout, pavilion, practice green, raised main green, cascade, plants, sea arch, paths, island scale, all labels and framing exactly. Keep the same detailed 3D cartoon quality. Do not add anything.
 
 ### G2_01_Overview / revision 1
 
-Reference: `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf.png`
+Reference: imagegen output `exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf` (historical overview, archived locally; [current selected overview](G2_01_Overview.png))
 
 Use case: precise-object-edit. Edit this annotated G2 golf island concept. Change only the following: remove the closest foreground sand bunker on the RIGHT side of the main fairway, just above the pavilion / practice-green area. Replace that one bunker with continuous matching green fairway/rough turf and retain its gentle ground contours. Preserve the other FIVE sand bunkers farther along the course, so the complete image contains EXACTLY FIVE sand bunkers total. Also remove the tiny sailboat on the far-right sea horizon and the small rowboat beside the arrival dock, replacing them with matching water. Preserve the entire island layout, pavilion, practice green, raised main green, cascade, plants, sea arch, paths, island scale, all labels and framing exactly. Keep the same detailed 3D cartoon quality. Do not add anything.
 
 ### G1_01_Overview / revision 2
 
-Reference: `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6.png`
+Reference: imagegen output `exec-f0924ca4-5933-4eb5-9ecf-ed7c290703c6` (historical overview, archived locally; [current selected overview](G1_01_Overview.png))
 
 Use case: precise-object-edit. Make a strictly localized edit to this G1 concept. In the source image of width1536 height1024, there is ONE white sand bunker centered approximately at (878,561), bounded by x811..967 y527..600, at the near RIGHT corner of the main fairway above the wooden pavilion. Replace ONLY this specified sand patch with matching green turf. Leave every other sand patch untouched, in particular the lower LEFT patch centered(593,538), the middle RIGHT patch centered(912,437), middle LEFT(613,439), upper LEFT(810,310), upper RIGHT(1013,324). All those five white sand patches MUST remain visible and unchanged. Preserve all labels, palms, terrain, pavilion, water and image composition outside the targeted patch. No other edits.
 
 ### G2_01_Overview / revision 2
 
-Reference: `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf.png`
+Reference: imagegen output `exec-79cbc264-3185-4c4f-b4b8-038b65ac8abf` (historical overview, archived locally; [current selected overview](G2_01_Overview.png))
 
 Use case: precise-object-edit. Make a strictly localized edit to this G2 concept. In source width1672 height941, replace ONLY the single nearest white sand bunker centered(913,489), bounded by x850..976 y454..520, just above the foreground practice green, with matching green turf. Preserve all five OTHER white sand patches unchanged: lower left(693,438), middle right(1020,395), middle left(909,330), upper right(1040,257), upper left(932,232). Do NOT remove the mid-right bunker. Also remove just the small sailboat at far-right ocean horizon and rowboat beside arrival dock by replacing with matching water. Do not change any labels, framing, paths, architecture, vegetation, water, textures or other pixels.
 
 ### G1_01_Overview / revision 3
 
-Reference: `C:\Users\benli\.codex\generated_images\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\exec-d31e348f-d87b-4dc1-ad75-abad6d30cef9.png`
+Reference: imagegen output `exec-d31e348f-d87b-4dc1-ad75-abad6d30cef9` (discarded draft, archived locally; no versioned copy)
 
 Use case: precise-object-edit. Edit this exact G1 concept image. Add ONE small shallow kidney-shaped ivory sand bunker on the RIGHT edge of the main striped fairway, directly to the right of the white dot from the 'Main fairway' annotation, halfway between the near pavilion and far raised green. Its center should be about59% across from left and43% down from top; width6% of image, height3% of image. Give it the same subtle dark-green turf lip as the existing four sand bunkers. Keep all four currently visible bunkers untouched: nearest lower-left, middle-left, far upper-left, far upper-right. This single added bunker makes five visible bunkers. Preserve absolutely everything else including labels, framing, plants, paths, pavilion, waterfall, sea arch and water. Do not remove or move any existing object.

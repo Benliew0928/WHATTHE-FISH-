@@ -1,5 +1,7 @@
 # Rally Court — modular basketball art
 
+Set `BLENDER_PATH` for your installation as described in [Setup](../../../Docs/SETUP.md); run commands from the repository root.
+
 `Arena_Rally.blend` is the refined, editable source. It contains the complete assembled arena, two linked hoop instances, named module collections, five Rally maps plus the shared coastal maps, four review cameras, and a separate `REVIEW_ONLY` lighting collection. The original prototype is archived at `Legacy/ArtSource/Basketball/Arena.blend`.
 
 The design takes the reference's warm timber, rounded sporting equipment, colorful seating, teal/coral/violet palette, arched gallery, and warm lights as direction. The rising-ball emblem, arena proportions, perimeter fixtures, banners, and furniture are original geometry and artwork. No concept-image projection is used.
@@ -38,7 +40,7 @@ Open the source in Blender. Select the corresponding collection and role mesh. E
 To export hand edits without rebuilding:
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --python Tools/Blender/export_rally_arena.py
+& $env:BLENDER_PATH --background --python Tools/Blender/export_rally_arena.py
 ```
 
 Retain the module collections, empty roots, material names and seat `LOD0`/`LOD1` suffixes. The exporter reads changes to the existing named material roles. If adding a new role or changing texture assignments, update the manifest/import specification as part of that change. The Unity metallic/smoothness map is a separate packed map; if editing the wood roughness image, repack its inverse into the alpha channel of that map.
@@ -46,7 +48,7 @@ Retain the module collections, empty roots, material names and seat `LOD0`/`LOD1
 To regenerate the procedural design (this **overwrites** edits to the refined source and its exports):
 
 ```powershell
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --python Tools/Blender/build_rally_arena.py -- --render
+& $env:BLENDER_PATH --background --python Tools/Blender/build_rally_arena.py -- --render
 ```
 
 Use `export_rally_arena.py` for this asset library; `export_assets.py` now exports only the current golf source.

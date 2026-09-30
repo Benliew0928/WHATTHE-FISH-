@@ -1,18 +1,18 @@
 [
   {
-    "Path": "C:\\UMPSA\\ArtSource\\Football\\Sunvale\\Stadium_Sunvale.blend",
+    "Path": "ArtSource/Football/Sunvale/Stadium_Sunvale.blend",
     "Hash": "F30DBCD8E8E11F61145BFCA72CD96BD9668170F83F1071E595D30CA76353DB0C"
   },
   {
-    "Path": "C:\\UMPSA\\ArtSource\\Basketball\\Rally\\Arena_Rally.blend",
+    "Path": "ArtSource/Basketball/Rally/Arena_Rally.blend",
     "Hash": "F440EF8EB13488192ECC8BFCEADA731BBF55C43C2F817C4F4AE1BBB7F4A6B781"
   },
   {
-    "Path": "C:\\UMPSA\\Game\\Assets\\_Game\\Prefabs\\Football\\Sunvale\\SunvaleStadium.prefab",
+    "Path": "Game/Assets/_Game/Prefabs/Football/Sunvale/SunvaleStadium.prefab",
     "Hash": "EA40C4E6E8E714326C42C3D54F057B9BF915B5954F6231EE99B0846B7F4DDFE4"
   },
   {
-    "Path": "C:\\UMPSA\\Game\\Assets\\_Game\\Prefabs\\Basketball\\Rally\\RallyArena.prefab",
+    "Path": "Game/Assets/_Game/Prefabs/Basketball/Rally/RallyArena.prefab",
     "Hash": "707615BBB9831F4C21C9301C849D8C4FA3DB35BBF511C41CEE33C250656CB1E3"
   }
 ]

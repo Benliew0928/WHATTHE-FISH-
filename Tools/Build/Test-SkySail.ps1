@@ -1,6 +1,8 @@
-param([switch]$Network, [switch]$CaptureOnly, [switch]$WalkOnly, [string]$OutputPath='C:\UMPSA\Docs\VisualDirection\WorldConnections\GameReview', [string]$PlayerPath='')
+param([switch]$Network, [switch]$CaptureOnly, [switch]$WalkOnly, [string]$OutputPath='', [string]$PlayerPath='')
 $ErrorActionPreference='Stop'
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+if (-not $OutputPath) { $OutputPath=Join-Path $taskRoot 'Docs\VisualDirection\WorldConnections\GameReview' }
+elseif (-not [IO.Path]::IsPathRooted($OutputPath)) { $OutputPath=Join-Path $taskRoot $OutputPath }
 if (-not $PlayerPath) { $PlayerPath=Join-Path $taskRoot 'Builds\WindowsFinal\WhatTheFish.exe' }
 function Start-SkyReview([string]$Folder,[string[]]$Extra){
  New-Item -ItemType Directory -Force -Path $Folder | Out-Null

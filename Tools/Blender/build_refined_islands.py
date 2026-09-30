@@ -62,7 +62,7 @@ def export_world(name,m,materials,folder):
     col=bpy.data.collections.new(name);scene.collection.children.link(col);obs=m.finish(name,materials,col)
     bpy.ops.object.select_all(action='DESELECT')
     for o in obs:o.select_set(True)
-    bpy.ops.export_scene.fbx(filepath=str(folder/(name+'.fbx')),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',bake_anim=False,add_leaf_bones=False)
+    bpy.ops.export_scene.fbx(filepath=str(folder/(name+'.fbx')),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',bake_anim=False,add_leaf_bones=False,path_mode='RELATIVE')
     return col,obs
 
 def make_world(sport):
@@ -367,7 +367,7 @@ def make_world(sport):
             bpy.context.view_layer.objects.active=clone;mod=clone.modifiers.new('Grass distance density','DECIMATE');mod.ratio=ratio;bpy.ops.object.modifier_apply(modifier=mod.name);clone.hide_render=True;grass_objects.append(clone)
     bpy.ops.object.select_all(action='DESELECT')
     for obj in grass_objects:obj.select_set(True)
-    bpy.ops.export_scene.fbx(filepath=str(folder/'Grass.fbx'),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',bake_anim=False,add_leaf_bones=False)
+    bpy.ops.export_scene.fbx(filepath=str(folder/'Grass.fbx'),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',bake_anim=False,add_leaf_bones=False,path_mode='RELATIVE')
     water_col,water_objects=export_world('Cascade',water,worldmats,folder) if golf else (None,[])
     # Shore-distance/depth map used by the same water shader across the entire sea.
     water_extent=500 if golf else 160;n=2048;y,x=np.mgrid[:n,:n].astype(np.float32)/(n-1)*water_extent*2-water_extent
@@ -385,7 +385,12 @@ def make_world(sport):
     scene.world.use_nodes=True;scene.world.node_tree.nodes['Background'].inputs[0].default_value=(.4,.6,.8,1);scene.world.node_tree.nodes['Background'].inputs[1].default_value=.7
     bpy.ops.object.light_add(type='SUN');sun=bpy.context.object;sun.name=sport+'_ReviewSun';sun.rotation_euler=(.7,-.4,-.6);sun.data.energy=2.5;sun.data.angle=.12
     p=views[0]['position'];t=views[0]['target'];bpy.ops.object.camera_add(location=(p['x'],p['z'],p['y']));cam=bpy.context.object;cam.name=sport+'_Overview';cam.rotation_euler=(Vector((t['x'],t['z'],t['y']))-cam.location).to_track_quat('-Z','Y').to_euler();cam.data.clip_end=4000;scene.camera=cam
-    bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/(sport+'_'+code+'.blend')),compress=True)
+    source_path=SOURCE/(sport+'_'+code+'.blend')
+    # Keep packed and external texture references portable in saved masters.
+    for image in bpy.data.images:
+        if image.source=='FILE' and image.filepath:
+            image.filepath=bpy.path.relpath(bpy.path.abspath(image.filepath),start=str(source_path.parent))
+    bpy.ops.wm.save_as_mainfile(filepath=str(source_path),relative_remap=False,compress=True)
     for col in (assembly,terrain_col,structures_col,water_col,grass_col):
         if col:col.hide_render=True;col.hide_viewport=True
     sun.hide_render=True;cam.hide_render=True

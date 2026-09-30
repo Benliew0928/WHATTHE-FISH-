@@ -1,6 +1,8 @@
-param([string]$OutputPath='C:\UMPSA\Docs\VisualDirection\CoastalIslands')
+param([string]$OutputPath='')
 $ErrorActionPreference='Stop'
 $reviewRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+if (-not $OutputPath) { $OutputPath=Join-Path $reviewRoot 'Docs\VisualDirection\CoastalIslands' }
+elseif (-not [IO.Path]::IsPathRooted($OutputPath)) { $OutputPath=Join-Path $reviewRoot $OutputPath }
 New-Item -ItemType Directory -Force -Path $OutputPath | Out-Null
 $reviewLog=Join-Path $reviewRoot 'Builds\coastal-review-player.log'
 $reviewArgs=@('-batchmode','-screen-width','1920','-screen-height','1080','-screen-fullscreen','0','-coastalReview',('"{0}"' -f $OutputPath),'-logFile',('"{0}"' -f $reviewLog))

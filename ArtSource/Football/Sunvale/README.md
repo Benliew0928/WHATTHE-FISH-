@@ -1,5 +1,7 @@
 # Sunvale football stadium
 
+Set `BLENDER_PATH` for your installation as described in [Setup](../../../Docs/SETUP.md); run commands from the repository root.
+
 An original stadium inspired by the shape, color and material language of `Docs/VisualDirection/football-cartoon-concept.png`. The venue uses a warm limestone arcade, a scalloped teal canopy, coordinated seating zones and a sunburst identity. This is now the playable football environment in Bootstrap and the WindowsFinal player. The original placeholder is archived at `Legacy/ArtSource/Football/Stadium.blend`.
 
 ## Review
@@ -43,7 +45,7 @@ The roof has closed, outward-facing shells for correct backface culling in Unity
 From the repository root in PowerShell:
 
 ```powershell
-& 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe' --background --factory-startup --python Tools/Blender/build_football_stadium.py -- --render
+& $env:BLENDER_PATH --background --factory-startup --python Tools/Blender/build_football_stadium.py -- --render
 ```
 
 Then use **Sports → Football → Build Sunvale review assets** in Unity, or run `SunvaleStadiumBuilder.Build` in batch mode. This creates the module prefabs and isolated review scene. It does not rebuild Bootstrap, replace `FootballEnvironment.prefab`, or alter the sport selector.

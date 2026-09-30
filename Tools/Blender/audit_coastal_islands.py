@@ -15,7 +15,7 @@ for sport in ['Football','Basketball']:
 report['packed_textures']=sum(im.packed_file is not None for im in bpy.data.images)
 report['venue_sources_unchanged']=True
 for entry in json.loads((SRC/'venue-baseline.json').read_text(encoding='utf-8-sig')):
-    if hashlib.sha256(Path(entry['Path']).read_bytes()).hexdigest().upper()!=entry['Hash']:
+    if hashlib.sha256((ROOT/entry['Path']).read_bytes()).hexdigest().upper()!=entry['Hash']:
         report['venue_sources_unchanged']=False;errors.append('Changed venue '+entry['Path'])
 report['errors']=errors;(SRC/'blender-audit.json').write_text(json.dumps(report,indent=2))
 print(json.dumps(report,indent=2),flush=True)

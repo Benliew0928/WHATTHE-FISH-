@@ -1,6 +1,8 @@
-param([string]$OutputPath='C:\UMPSA\Docs\VisualDirection\GolfFishingRefinement\GameReview',[switch]$RecordRoutes,[switch]$CaptureOnly)
+param([string]$OutputPath='',[switch]$RecordRoutes,[switch]$CaptureOnly)
 $ErrorActionPreference='Stop'
 $reviewRoot=(Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+if (-not $OutputPath) { $OutputPath=Join-Path $reviewRoot 'Docs\VisualDirection\GolfFishingRefinement\GameReview' }
+elseif (-not [IO.Path]::IsPathRooted($OutputPath)) { $OutputPath=Join-Path $reviewRoot $OutputPath }
 New-Item -ItemType Directory -Path $OutputPath -Force | Out-Null
 $arguments=@('-batchmode','-force-d3d11','-screen-width','1920','-screen-height','1080','-screen-fullscreen','0','-islandReview',('"{0}"' -f $OutputPath),'-logFile',('"{0}\player.log"' -f $OutputPath))
 if($RecordRoutes){$arguments+='-recordRoutes'}

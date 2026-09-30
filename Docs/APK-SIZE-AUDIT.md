@@ -1,12 +1,14 @@
-# Mobile asset optimization — 29 September 2026
+# Mobile asset optimization — 30 September 2026
 
-The current self-contained APK is **83,282,804 bytes (83.28 MB / 79.42 MiB)**. It includes all four islands, shared Sky-Sail travel and the existing character animations. It is **266.97 MB smaller (76.22%)** than the 350.25 MB cleanup checkpoint, leaving **16.72 MB below the 100,000,000-byte hackathon ceiling**. No external asset download is required.
+The current self-contained APK is **83,282,808 bytes (83.28 MB / 79.42 MiB)**. It includes all four islands, shared Sky-Sail travel and the existing character animations. It is **266.97 MB smaller (76.22%)** than the 350.25 MB cleanup checkpoint, leaving **16.72 MB below the 100,000,000-byte hackathon ceiling**. No external asset download is required.
 
 The **75 MB working target remains unmet by 8.28 MB**. This provides room for gameplay, but does not establish that every future feature will fit. Measure each addition; do not postpone optimization until the APK reaches 700–800 MB.
 
-Artifact: `Builds/Android/WhatTheFish-release.apk`. Built at 20:01 Malaysia time with Unity 6000.3.20f1, release IL2CPP, ARM64, minimum Android API 26 and default Android ZIP compression. `AndroidSubmission` passed the size gate; APK v2 signature verification passed.
+Artifact: `Builds/Android/WhatTheFish-release.apk`. Built on 30 September at 09:49 UTC with Unity 6000.3.20f1, release IL2CPP, ARM64, minimum Android API 26 and default Android ZIP compression. `AndroidSubmission` passed the size gate; APK v2 signature verification passed.
 
-SHA-256: `894EE22E3E26F6BC19E513510A9DB4669CAACE846F699F3293FC7D035DF5EEE3`.
+SHA-256: `2196D57FEB20EB3164C628E4FE11C79EA96C38A9A9B04EBDD0B01B412568C700`.
+
+The 30 September portable-path validation rebuild is **4 bytes larger** than the 29 September APK. Only asset path strings and their integrity hashes changed; geometry and texture content were checked unchanged. The Android submission build and signature check passed. This did not add new Windows gameplay or physical-phone qualification.
 
 ## Measured stages
 

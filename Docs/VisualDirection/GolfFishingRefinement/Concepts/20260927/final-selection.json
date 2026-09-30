@@ -35,7 +35,8 @@
       "title": "Palm Garden Links",
       "view": "Annotated overview",
       "file": "G1_01_Overview.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-57c00e48-cf6e-40d2-8ebc-59edabbc3763.png"
+      "source": "G1_01_Overview.png",
+      "source_generation_id": "exec-57c00e48-cf6e-40d2-8ebc-59edabbc3763"
     },
     {
       "id": "G2_01_Overview",
@@ -43,7 +44,8 @@
       "title": "Limestone Cove Links",
       "view": "Annotated overview",
       "file": "G2_01_Overview.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-a20d792a-e20c-4490-b592-1f5070da4bf1.png"
+      "source": "G2_01_Overview.png",
+      "source_generation_id": "exec-a20d792a-e20c-4490-b592-1f5070da4bf1"
     },
     {
       "id": "L1_01_Overview",
@@ -51,7 +53,8 @@
       "title": "Sheltered Palm Lagoon",
       "view": "Annotated overview",
       "file": "L1_01_Overview.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-d91b39b2-ea3e-49b6-a38d-b46ea4638ec7.png"
+      "source": "L1_01_Overview.png",
+      "source_generation_id": "exec-d91b39b2-ea3e-49b6-a38d-b46ea4638ec7"
     },
     {
       "id": "L2_01_Overview",
@@ -59,7 +62,8 @@
       "title": "Limestone Garden Lagoon",
       "view": "Annotated overview",
       "file": "L2_01_Overview.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-fd94233e-0333-43aa-87ce-557d92408c81.png"
+      "source": "L2_01_Overview.png",
+      "source_generation_id": "exec-fd94233e-0333-43aa-87ce-557d92408c81"
     },
     {
       "id": "G1_02_Player_View",
@@ -67,7 +71,8 @@
       "title": "Palm Garden Links",
       "view": "Player-height landscape",
       "file": "G1_02_Player_View.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-1dbdb8d0-b11e-4041-b5da-fe4ba4ee673a.png"
+      "source": "G1_02_Player_View.png",
+      "source_generation_id": "exec-1dbdb8d0-b11e-4041-b5da-fe4ba4ee673a"
     },
     {
       "id": "G1_03_Material_Close",
@@ -75,7 +80,8 @@
       "title": "Palm Garden Links",
       "view": "Pavilion and materials",
       "file": "G1_03_Material_Close.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-f0d5e869-6eae-43e0-b637-0bd54827e307.png"
+      "source": "G1_03_Material_Close.png",
+      "source_generation_id": "exec-f0d5e869-6eae-43e0-b637-0bd54827e307"
     },
     {
       "id": "G2_02_Player_View",
@@ -83,7 +89,8 @@
       "title": "Limestone Cove Links",
       "view": "Player-height landscape",
       "file": "G2_02_Player_View.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-d88d7cda-6a6b-4468-b1b2-ad5ceaf18b36.png"
+      "source": "G2_02_Player_View.png",
+      "source_generation_id": "exec-d88d7cda-6a6b-4468-b1b2-ad5ceaf18b36"
     },
     {
       "id": "G2_03_Material_Close",
@@ -91,7 +98,8 @@
       "title": "Limestone Cove Links",
       "view": "Pavilion and materials",
       "file": "G2_03_Material_Close.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-a99ac766-0225-4a06-9449-0c50f95436f2.png"
+      "source": "G2_03_Material_Close.png",
+      "source_generation_id": "exec-a99ac766-0225-4a06-9449-0c50f95436f2"
     },
     {
       "id": "L1_02_Player_View",
@@ -99,7 +107,8 @@
       "title": "Sheltered Palm Lagoon",
       "view": "Player-height landscape",
       "file": "L1_02_Player_View.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-44719dee-8b8b-4ebf-ba56-8c3080fe3983.png"
+      "source": "L1_02_Player_View.png",
+      "source_generation_id": "exec-44719dee-8b8b-4ebf-ba56-8c3080fe3983"
     },
     {
       "id": "L1_03_Material_Close",
@@ -107,7 +116,8 @@
       "title": "Sheltered Palm Lagoon",
       "view": "Deck and materials",
       "file": "L1_03_Material_Close.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-68b121df-083c-48c6-bbd5-47197f7d040f.png"
+      "source": "L1_03_Material_Close.png",
+      "source_generation_id": "exec-68b121df-083c-48c6-bbd5-47197f7d040f"
     },
     {
       "id": "L2_02_Player_View",
@@ -115,7 +125,8 @@
       "title": "Limestone Garden Lagoon",
       "view": "Player-height landscape",
       "file": "L2_02_Player_View.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-2dea8c10-1109-4619-9af7-a4fac7f8c1a7.png"
+      "source": "L2_02_Player_View.png",
+      "source_generation_id": "exec-2dea8c10-1109-4619-9af7-a4fac7f8c1a7"
     },
     {
       "id": "L2_03_Material_Close",
@@ -123,7 +134,9 @@
       "title": "Limestone Garden Lagoon",
       "view": "Deck and materials",
       "file": "L2_03_Material_Close.png",
-      "source": "C:\\Users\\benli\\.codex\\generated_images\\01a0dc3a-7fa8-7182-9a28-04eff3d4ba89\\exec-579bf318-4cb1-48d1-9125-581b7b908f86.png"
+      "source": "L2_03_Material_Close.png",
+      "source_generation_id": "exec-579bf318-4cb1-48d1-9125-581b7b908f86"
     }
-  ]
+  ],
+  "path_base": "Image file and source paths are relative to this manifest directory; source is the versioned copy."
 }

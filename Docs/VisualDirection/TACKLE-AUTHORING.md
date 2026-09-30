@@ -1,5 +1,7 @@
 # Rainbow Sprinter: football ground tackle
 
+Set `BLENDER_PATH` for your installation as described in [Setup](../SETUP.md); run commands from the repository root.
+
 The tackle drops the character onto the turf, with a reclining torso, one leg reaching forward, the other folded, and a supporting arm behind. It launches immediately along body facing. Gameplay plays the authored slide at 2x speed: 4.62 metres of unobstructed travel over 0.275 seconds and 0.425 seconds including recovery. Movement input resumes during that recovery, without waiting for the clip to end. The existing responsive forward/backward locomotion remains unchanged.
 
 ## Controls and gameplay
@@ -29,10 +31,10 @@ Polish pelvis/foot contact before head and arm follow-through. Review front, sid
 
 ## Repeatable workflow
 
-Run from `C:/UMPSA` in PowerShell:
+Run from the repository root in PowerShell:
 
 ```powershell
-$blender = 'C:/Program Files/Blender Foundation/Blender 5.1/blender.exe'
+$blender = $env:BLENDER_PATH
 $tool = 'Tools/Blender/tackle_rainbow_sprinter.py'
 
 # Creates only when absent; preserves an existing authored source.

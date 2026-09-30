@@ -4231,7 +4231,7 @@
           "accepted": true
         }
       ],
-      "sourceHash": "f6a193d46aeab2051be94b63ebe702e4d69c7ea6fbc55a908b985590531664c0"
+      "sourceHash": "cc6ff199593cdbe6786a402d233651a8ea3a46fb911eff430af109e97dd3ce9e"
     },
     {
       "source": "Assets/_Game/Art/RefinedIslands/Fishing/Structures.fbx",
@@ -4280,7 +4280,7 @@
           "accepted": true
         }
       ],
-      "sourceHash": "f2c31ff33f870dcca0d8d086dceb57d7414553648208936fb6fc412a8d73d60c"
+      "sourceHash": "b7a548c748eed5f575b9d9ff4233904b68d73a85ac8226e2db9719d73ab79fc6"
     }
   ]
 }

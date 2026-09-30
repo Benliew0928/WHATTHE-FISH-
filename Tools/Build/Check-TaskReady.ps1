@@ -4,6 +4,7 @@ param([switch]$RequireApk)
 # This does not stage files, build the game, or establish APK freshness.
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
+& (Join-Path $PSScriptRoot 'Check-PortablePaths.ps1')
 $problems = [Collections.Generic.List[string]]::new()
 function Invoke-RepoGit {
     param([string[]]$Arguments)

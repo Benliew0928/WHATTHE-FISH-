@@ -303,5 +303,10 @@ ob.hide_render=True;ob.hide_viewport=True
 manifest=dict(materials=specs,islands=records,detail='Coast_GroundDetail.png',detailNormal='Coast_GroundNormal.png',scope='Exterior only; venue sources and prefabs untouched; no traversal added.')
 (OUT/'coast-manifest.json').write_text(json.dumps(manifest,indent=2));(SRC/'coast-manifest.json').write_text(json.dumps(manifest,indent=2))
 bpy.context.scene.unit_settings.system='METRIC'
-bpy.ops.wm.save_as_mainfile(filepath=str(SRC/'PalmShore_Islands.blend'))
+source_path=SRC/'PalmShore_Islands.blend'
+# Keep packed and external texture references portable in saved masters.
+for image in bpy.data.images:
+    if image.source=='FILE' and image.filepath:
+        image.filepath=bpy.path.relpath(bpy.path.abspath(image.filepath),start=str(source_path.parent))
+bpy.ops.wm.save_as_mainfile(filepath=str(source_path),relative_remap=False,compress=True)
 print('COAST_SOURCE_COMPLETE',flush=True)

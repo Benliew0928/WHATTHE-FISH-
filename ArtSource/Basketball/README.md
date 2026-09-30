@@ -4,4 +4,4 @@ Current editable master: `Rally/Arena_Rally.blend`. Read `Rally/README.md` for t
 
 The three alternative centre logos have independent mesh and prefab assets under `Game/Assets/_Game/Art/Basketball/Rally/LogoVariants`. Scene rebuilding no longer reads the old placeholder arena.
 
-The placeholder source, FBX and unused materials are archived under `C:/UMPSA/Legacy`, outside Unity Assets and safe to delete with that archive.
+The placeholder source, FBX and unused materials are archived under `Legacy/` (relative to the repository root), outside Unity Assets and safe to delete with that archive.

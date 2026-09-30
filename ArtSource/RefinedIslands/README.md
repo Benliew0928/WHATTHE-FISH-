@@ -1,5 +1,7 @@
 # G2 / L2 coastal environment authoring
 
+Set `BLENDER_PATH` for your installation as described in [Setup](../../Docs/SETUP.md); run commands from the repository root.
+
 The user selected **G2 Limestone Cove Links** and **L2 Limestone Garden Lagoon** on 27 September 2026. The new library does not write football or basketball art.
 
 - `IslandAssetKit.blend`: reusable metre-scale palms, plants, grass, limestone, pier, bridge, welcome pavilion and shelter. LOD0 is the authoring quality; LOD1/2 are derived meshes.
@@ -11,7 +13,7 @@ The user selected **G2 Limestone Cove Links** and **L2 Limestone Garden Lagoon**
 Run from the repository root with Unity closed, using your Blender executable path:
 
 ```powershell
-& '<path to Blender 5.1>/blender.exe' --background --factory-startup --python-exit-code 1 --python Tools/Blender/build_refined_islands.py
+& $env:BLENDER_PATH --background --factory-startup --python-exit-code 1 --python Tools/Blender/build_refined_islands.py
 ```
 
 For layout iteration, append `-- --reuse-kit`. To rebuild modules with cached textures, append `-- --reuse-kit --rebuild-kit`. Full generation replaces generated sources and exports; preserve any manual Blender variations under a different name first.
@@ -22,7 +24,7 @@ Validation entry points:
 
 ```powershell
 # Source integrity, UVs, materials and closed deck/bridge geometry
-& 'C:\Program Files\Blender Foundation\Blender 5.1\blender.exe' --background --factory-startup --python-exit-code 1 --python Tools/Blender/audit_refined_islands.py
+& $env:BLENDER_PATH --background --factory-startup --python-exit-code 1 --python Tools/Blender/audit_refined_islands.py
 # Actual EXE captures, real-controller routes, containment, cameras and switching
 Tools/Build/Review-RefinedIslands.ps1 -RecordRoutes
 Tools/Build/Test-RefinedIslandRooms.ps1 -Sport Golf
