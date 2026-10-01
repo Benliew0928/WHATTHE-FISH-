@@ -26,7 +26,7 @@ namespace WhatTheFish {
    athlete.Motor.Reset(transform.eulerAngles.y);return true;
   }
   public bool ReceiveHit(Vector3 push){
-   if(!Allowed||immunity>0)return false;
+   if(!Allowed||athlete.Airborne||immunity>0)return false;
    direction=push;direction.y=0;direction.Normalize();
    State=FootballAction.Hit;Elapsed=0;immunity=.65f;CooldownRemaining=Mathf.Max(CooldownRemaining,.45f);Sequence++;HitsReceived++;
    athlete.Motor.Reset(transform.eulerAngles.y);return true;

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-01",
+  "asset": "Rally basketball ball",
+  "pathsRelativeTo": "this JSON file",
+  "referenceImage": "basketball-meshy-reference.png",
+  "referenceImageSha256": "7967177B689740B1ABFBFC45CAC1B1E16EFB5993DDC53325116F89F97DCFF2F3",
+  "referenceGeneration": {
+    "tool": "built-in image_gen",
+    "prompt": "Use case: stylized-concept\nAsset type: single-object reference image for Meshy image-to-3D generation, for a mobile basketball game.\nPrimary request: one attractive classic orange basketball, a clean premium stylized 3D game prop, physically spherical with a perfectly circular silhouette, centred and entirely visible.\nScene/backdrop: plain neutral light gray studio background, no floor or ground plane, no contact shadow, no surrounding objects.\nSubject: a regulation-style eight-panel basketball, rich warm orange rubber panels separated by continuous thin charcoal-black recessed channels in a conventional symmetric basketball seam pattern. Show a three-quarter orientation with the recognisable centre seam and curving side seams. All channels lie flush in the spherical surface, no raised strips, no detached pieces. Subtle fine pebbled rubber grain, broad clean panels, smooth spherical silhouette.\nStyle/medium: polished appealing stylized 3D asset render compatible with a colourful island sports game, slightly simplified surface detail, believable matte rubber, nonmetallic.\nComposition/framing: square image; one ball fills about 80 percent of the frame, generous clear margin all around, orthographic-like product view, no perspective distortion.\nLighting: very soft even neutral illumination; readable colour and grooves, restrained smooth shading, no dramatic shadows or bright specular glare.\nConstraints: only one basketball; no hands, hoop, stand, pedestal, floor, text, numbers, logos, branding, labels, arrows, glow, flames, motion trails or watermark. No flattening, lobes, dents or inflation nipple sticking out. Keep detail primarily in surface colour and shallow grooves for a lightweight game mesh."
+  },
+  "meshy": {
+    "workspaceUrl": "https://www.meshy.ai/workspace",
+    "model": "Meshy 6 Lite",
+    "requestedLabel": "6.1 lite",
+    "labelNote": "The workspace offers Meshy 6 Lite, Meshy 6, and Meshy 7.1 - Flagship. No 6.1 Lite option was present.",
+    "sourceTriangleCount": 119304,
+    "sourceVertexCount": 59654,
+    "remeshTarget": 10000,
+    "remeshNote": "The 3K option opened a Pro subscription offer. Used the included 10K triangle option instead.",
+    "licenseShown": "CC BY 4.0",
+    "status": "complete: user-downloaded GLB received and preserved unchanged",
+    "remeshTriangleCount": 10330,
+    "remeshVertexCount": 7362,
+    "textureModel": "Meshy 6 Lite",
+    "textureInput": "same reference image",
+    "generatePbrMaps": true,
+    "creditsBefore": 250,
+    "creditsAfter": 230,
+    "download": {
+      "format": "glb",
+      "clicked": false,
+      "resizeEnabled": false,
+      "originControl": "Bottom shown but disabled; not export-verified",
+      "note": "Downloaded by the user. Source geometry and three embedded 2048-square textures inspected in Blender. Delivery scale and pivot rebuilt and verified.",
+      "receivedFile": "Meshy_AI_Basketball_1001104636_texture.glb",
+      "sha256": "e638b7c32a5e1239ec3fc963a714cb659bf2d7c8b3ac898fbe141f79d1bf434d"
+    },
+    "previewReview": {
+      "views": [
+        "front",
+        "rotated reverse"
+      ],
+      "findings": "Recognisable orange basketball with dark seams. Visible faceting and uneven seam widths remain; use as an editable source, not a qualified game-delivery mesh.",
+      "notVerified": [
+        "watertightness",
+        "exact spherical geometry",
+        "export pivot and scale",
+        "UV integrity",
+        "texture resolution and active dependency paths",
+        "mobile import appearance",
+        "physics and multiplayer"
+      ],
+      "followupAudit": "model-audit.json records Blender geometry, embedded textures, regenerated LODs and portable dependencies; the earlier web-only review is retained as history."
+    }
+  },
+  "integrationContract": {
+    "status": "model and physics foundation implemented; Blender reimport/portability, 53 Windows checks, and signed AndroidSubmission passed",
+    "geometry": "Rebuilt analytical 0.24 m sphere, centred pivot, applied scale, smooth outward normals. Meshy GLB preserved as visual provenance.",
+    "deliveryTarget": "2976 / 720 triangles in two LODs, one URP Lit material; 1024x512 colour and normal maps; Android ASTC 6x6.",
+    "transforms": "Verified 0.24 m diameter, zero mesh origin and unit authoring scale. Prefab uses a centred 0.12 m sphere collider.",
+    "physics": "0.62 kg Rigidbody with hollow-shell inertia, speculative continuous collision, friction/bounce/spin and bounds reset. No skeletal rig.",
+    "effects": "Separate empty EffectsAnchor provided. Trails, impact particles and audio remain a later gameplay stage.",
+    "networking": "Host-authoritative arena-local ball with approximately 20 Hz pose snapshots and guest interpolation. One ball per streamed basketball arena; network protocol 9.",
+    "validation": "See repository-root Docs/BASKETBALL-BALL.md and ignored Builds/BasketballModel/20261001 evidence. Pickup, dribbling, shooting controls and scoring are not yet implemented."
+  },
+  "apk": {
+    "existingBytes": 83282808,
+    "limitBytes": 100000000,
+    "headroomBytes": 16248948,
+    "developmentTargetBytes": 75000000,
+    "measuredAfterIntegration": true,
+    "note": "APK rose by 468244 bytes. Original GLB and authoring master maps are outside Unity Assets. Development target remains unmet; phone testing pending.",
+    "measuredBytes": 83751052,
+    "deltaBytes": 468244,
+    "sha256": "F707FA0E68252B96E56DC50F85B591B61448F6BB85EFFB556CDA54853D782E53"
+  },
+  "evidence": {
+    "pathsRelativeTo": "repository root",
+    "front": "Builds/BasketballModel/20261001/meshy-basketball-preview.jpg",
+    "reverse": "Builds/BasketballModel/20261001/meshy-reverse.jpg",
+    "handoff": "Builds/BasketballModel/20261001/meshy-download-ready.jpg",
+    "note": "Local review evidence is ignored by Git.",
+    "offline": "Builds/BasketballModel/20261001/Offline-191820/offline/results.txt",
+    "multiplayer": "Builds/BasketballModel/20261001/Local-191919/",
+    "portableClone": "Builds/BasketballModel/20261001/portability-result.json"
+  }
+}

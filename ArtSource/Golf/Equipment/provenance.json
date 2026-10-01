@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-01",
+  "status": "Four Meshy models generated, textured and downloaded; portable mobile derivatives integrated and visually reviewed in the actual Windows game.",
+  "generator": "Built-in image_gen tool",
+  "intended_mesh_generator": "Meshy 6 Lite (literal UI label; requested as 6.1 lite)",
+  "path_base": "This file's directory",
+  "sources": [
+    "../../RefinedIslands/README.md",
+    "../../../Docs/VisualDirection/GolfFishingRefinement/GameReview/Golf_08_Practice_Green.png",
+    "../../../Docs/VisualDirection/GolfFishingRefinement/GameReview/Golf_03_Fairway.png"
+  ],
+  "images": [
+    {
+      "file": "References/golf_ball-input.png",
+      "prompt": "Use case: stylized-concept. Asset type: single-object image-to-3D reference for Meshy, for the WHATTHE FISH? tropical limestone golf island mobile game. Primary request: one pristine ivory-white dimpled golf ball, a regular perfectly round sphere with evenly spaced shallow circular concave dimples. Clean softened game-ready PBR style, readable geometric forms matching a sunny stylized coastal golf course; plausible proportions and satin polymer finish. Composition: one ball only, centered, entire silhouette visible, occupying 75 percent of a square image, plain neutral pale-gray background, no floor line, no grass, no stand, no tee, no other props, no hands. Lighting: broad soft neutral studio illumination with modest dimensional shading, no dramatic reflections, no hard cast shadow. No logo, text, numbers, watermark, decorations, faceting, perforations, extra objects, or multiple views. The dimples should be visible and recessed, while the outer silhouette stays circular. Generate one focused reference image.",
+      "sha256": "52a694a12a8cf807d974be1327a672698012b034115c4d51e3580e47c5e42652",
+      "bytes": 1288912
+    },
+    {
+      "file": "References/golf_putter-input.png",
+      "prompt": "Use case: stylized-concept. Asset type: a single-object image-to-3D input reference for Meshy, for a sunny stylized tropical limestone golf-island mobile game. Clean softened game PBR style, realistic functional proportions, subtly rounded manufactured edges, broad neutral studio lighting, plain pale warm gray seamless background. Portrait composition, entire single club visible from grip cap to sole with generous margins, diagonal from upper right grip to lower left head, fills 88 percent of image height. Three-quarter FRONT view clearly showing striking face and some top and side of the head, continuous thin straight shaft visibly connected to the head and the grip. No cropping, extra objects, ball, tee, hands, ground, stand, logos, text, numbers, branding, watermarks, collage, duplicate views, sketch outlines or harsh shadows. Material palette: satin silver metal, dark charcoal shaft details, muted sea-teal rubber grip with simple subtle grip grooves and narrow cream accent ring. Primary request: exactly one golf blade putter. A slim brushed-silver rounded rectangular blade head, broad nearly vertical flat striking face with fine horizontal grooves, simple short plumber-neck hosel at the heel and a slim silver straight shaft. A muted sea-teal slightly tapered comfortable grip. The heel-to-toe head width is about one eighth of the entire club length. Restrained believable golf-club design.",
+      "sha256": "ae0503d7c9073933bc7e904bc49b39df130d35dffedb63d5931b0c5c0ed31857",
+      "bytes": 1276253
+    },
+    {
+      "file": "References/golf_iron-input.png",
+      "prompt": "Use case: stylized-concept. Asset type: a single-object image-to-3D input reference for Meshy, for a sunny stylized tropical limestone golf-island mobile game. Clean softened game PBR style, realistic functional proportions, subtly rounded manufactured edges, broad neutral studio lighting, plain pale warm gray seamless background. Portrait composition, entire single club visible from grip cap to sole with generous margins, diagonal from upper right grip to lower left head, fills 88 percent of image height. Three-quarter FRONT view clearly showing striking face and some top and side of the head, continuous thin straight shaft visibly connected to the head and the grip. No cropping, extra objects, ball, tee, hands, ground, stand, logos, text, numbers, branding, watermarks, collage, duplicate views, sketch outlines or harsh shadows. Material palette: satin silver metal, dark charcoal shaft details, muted sea-teal rubber grip with simple subtle grip grooves and narrow cream accent ring. Primary request: exactly one 7-iron golf club. Compact rounded trapezoid satin silver iron head with distinct tilted lofted flat striking face and shallow horizontal score lines, slim connected hosel at the heel, thin straight silver shaft, tapered muted sea-teal rubber grip. The head width is about one ninth of the entire club length. Restrained believable functional golf-club design.",
+      "sha256": "63f0347531d5cfffa007d6748017c069066dfcd768a968acb9c4694778ec536d",
+      "bytes": 1637271
+    },
+    {
+      "file": "References/golf_driver-input.png",
+      "prompt": "Use case: stylized-concept. Asset type: a single-object image-to-3D input reference for Meshy, for a sunny stylized tropical limestone golf-island mobile game. Clean softened game PBR style, realistic functional proportions, subtly rounded manufactured edges, broad neutral studio lighting, plain pale warm gray seamless background. Portrait composition, entire single club visible from grip cap to sole with generous margins, diagonal from upper right grip to lower left head, fills 88 percent of image height. Three-quarter FRONT view clearly showing striking face and some top and side of the head, continuous thin straight shaft visibly connected to the head and the grip. No cropping, extra objects, ball, tee, hands, ground, stand, logos, text, numbers, branding, watermarks, collage, duplicate views, sketch outlines or harsh shadows. Material palette: satin silver metal, dark charcoal shaft details, muted sea-teal rubber grip with simple subtle grip grooves and narrow cream accent ring. Primary request: exactly one golf driver. Rounded bulbous pear-shaped driver head, satin deep teal crown and clean silver shallowly convex striking face, dark charcoal straight graphite shaft connected at the heel, muted sea-teal rubber grip. The head width is about one eighth of the entire club length. Rounded volume is visibly distinct from a blade putter or iron. Restrained believable functional golf-club design.",
+      "sha256": "47abe314d29b2cce9e6a93028195d4169868ff39019f40ff3d195eef136942c0",
+      "bytes": 1591664
+    }
+  ],
+  "meshy": {
+    "generation_count": 4,
+    "texture_generation_count": 4,
+    "credits_before": 230,
+    "credits_after": 150,
+    "credits_spent": 80,
+    "model": "Meshy 6 Lite",
+    "model_availability": "Confirmed in the logged-in Chrome workspace; no 6.1 Lite option",
+    "workspace": "https://www.meshy.ai/workspace",
+    "creator_account": "benliew28262826",
+    "geometry_settings": "Image to 3D, High Detail, pose off",
+    "texture_settings": "Image Input using each matching source reference; Meshy 6 Lite; Generate PBR Maps enabled",
+    "license_shown": "CC BY 4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "private_generation": false,
+    "purchase_or_subscription": false,
+    "download_format": "FBX ZIP with embedded textures and separate lossless PNG maps",
+    "download_settings": "Resize disabled; normalization and pivots handled in the Blender generator",
+    "job_identifiers": "Not captured; original downloaded filenames and SHA-256 hashes identify the retained outputs",
+    "downloads": [
+      {
+        "file": "Downloads/Meshy_AI_Dimpled_Moon_1001111942_texture_fbx.zip",
+        "bytes": 21836585,
+        "sha256": "ad671f8986fbc7ad44627c6d46cd256cf3de7dc144fa39e9807a7a09578f8170"
+      },
+      {
+        "file": "Downloads/Meshy_AI_Golf_Club_1001112230_texture_fbx.zip",
+        "bytes": 10328843,
+        "sha256": "4a9196dc5f0a5f947a0c13354bb04e49e0e972149fc85c793eab657bb5eddd36"
+      },
+      {
+        "file": "Downloads/Meshy_AI_Golf_Putter_1001112238_texture_fbx.zip",
+        "bytes": 10239347,
+        "sha256": "b366778f427faf82022562454a5004410782fd1e547344d8f3532c7c910e8aaa"
+      },
+      {
+        "file": "Downloads/Meshy_AI_Teal_Horizon_Driver_1001112212_texture_fbx.zip",
+        "bytes": 9571867,
+        "sha256": "db655e270a6daa0e0a48cb57dc56f337da1de6e8df3a4513c0ccc74f4a0c4b6d"
+      }
+    ],
+    "review_evidence": "../../../Builds/GolfEquipment/20261001/meshy-four-generated.jpg",
+    "delivery_audit": "model-audit.json"
+  }
+}

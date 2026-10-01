@@ -89,10 +89,12 @@ All four environments use the shared controller: WASD moves, Shift runs, right m
 
 Run `Tools/Build/Review-RefinedIslands.ps1 -RecordRoutes` for actual Windows captures and route checks. The two `Test-RefinedIslandRooms.ps1 -Sport Golf/Fishing` runs check local host/guest movement. `Test-GolfIsland.ps1` and `Test-FishingIsland.ps1` retain the additional shore and module checks; their layout-dependent expectations now use the current manifests. `Test-GolfRooms.ps1 -Transport Local` and `Test-FishingRooms.ps1` check room capacities and authority. All diagnostics require explicit command-line opt-in.
 
-The football tackle update uses network protocol 6. See `Docs/VisualDirection/TACKLE-AUTHORING.md` for the Tackle button, Space shortcut, authoring commands and gameplay checks. Every participant must use matching builds. See `Docs/GOLF-VERIFICATION.md` for the historical golf package checks and unverified phone tests.
+The jump update uses network protocol 11. See `Docs/VisualDirection/TACKLE-AUTHORING.md` for the Tackle button, E shortcut, authoring commands and gameplay checks. Every participant must use matching builds. See `Docs/GOLF-VERIFICATION.md` for the historical golf package checks and unverified phone tests.
 
 The editable turn source is `ArtSource/Shared/Characters/RainbowSprinterTurns.blend`. Export saved turns with `Tools/Blender/turn_rainbow_sprinter.py`, then rebuild the scene and players. [Turn authoring](VisualDirection/TURN-AUTHORING.md) covers controls, timing, commands and the forward/backward gameplay checks. The motor responds to forward/backward input every simulation tick while smoothing body facing independently; it never waits for a turn clip to finish.
 
 ## Git
 
 Git LFS tracks `.blend`, `.fbx`, `.png` and source `.zip` files. Install Git LFS before cloning. Unity `.meta` files, sources, project settings, package manifest and lock belong in Git. Library, Temp, Logs, Builds, downloaded toolchains and credentials do not. `Legacy/` is a local archive excluded from Git and can be deleted after review. The GitHub remote is `https://github.com/Benliew0928/WHATTHE-FISH-`.
+
+Jump with **Space** or the **Jump** touch button on any island; steer with WASD or the stick in the air. Tackle uses **E** in football, and Sky-Sail clockwise travel uses **F**. See [jump animation and checks](JUMP-ANIMATION.md).

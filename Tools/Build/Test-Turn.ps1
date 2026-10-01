@@ -12,7 +12,7 @@ function Start-TurnProbe([string]$Name,[string]$Options){
 }
 try {
     $videoOption=if($Video){'-turnVideo'}else{''}
-    $processes+=Start-TurnProbe 'gameplay' "-batchmode -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -turnAudit $videoOption -exitAfter 50"
+    $processes+=Start-TurnProbe 'gameplay' "-batchmode -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -turnAudit $videoOption -exitAfter 90"
     $network="-batchmode -nographics -job-worker-count 2 -networkTurnAudit -port $Port -expected 2 -startAt 15 -returnAt 32 -exitAfter 37"
     $processes+=Start-TurnProbe 'host' "$network -localHost"
     $processes+=Start-TurnProbe 'client' "$network -localClient"

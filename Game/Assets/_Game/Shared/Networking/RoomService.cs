@@ -13,6 +13,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed class RoomService:MonoBehaviour,IRoomService {
+  public const ushort ProtocolVersion=11;
   public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   public bool Host=>Connected&&NetworkManager.Singleton.IsHost;
@@ -51,7 +52,7 @@ namespace WhatTheFish {
    var world=NetworkAthlete.HostPlayer;if(world)world.Exploring.Value=value;
   });}
   public void SetupNetwork(){
-   var n=NetworkManager.Singleton;n.NetworkConfig.ConnectionApproval=true;
+   var n=NetworkManager.Singleton;n.NetworkConfig.ProtocolVersion=ProtocolVersion;n.NetworkConfig.ConnectionApproval=true;
    n.ConnectionApprovalCallback=(request,response)=>{
     bool full=n.ConnectedClients.Count>=Capacity;bool running=NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value;
     response.Approved=!full&&!running;response.CreatePlayerObject=response.Approved;

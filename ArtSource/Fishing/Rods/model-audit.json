@@ -1,0 +1,205 @@
+{
+  "path_base": "repository root",
+  "models": {
+    "BlueLime": {
+      "source_file": "ArtSource/Fishing/Meshy_AI_Colorful_Fishing_Rod_1001115128_texture.glb",
+      "source_bytes": 4747480,
+      "source_sha256": "67a9214812193e0d9277264ca74af60259b58a16f1819904bdd5e4ea0ba729a0",
+      "source": {
+        "vertices": 11783,
+        "triangles": 23578,
+        "nonmanifold_edges": 0,
+        "euler_characteristic": -6,
+        "components": [
+          11783
+        ],
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "dimensions_metres": [
+          1.8988459706306458,
+          0.339915007352829,
+          0.5461540222167969
+        ]
+      },
+      "source_external_dependencies": [],
+      "length_metres": 1.8,
+      "pivot": "butt cap; rod rises along Unity +Y; original slight shaft curvature retained",
+      "lods": {
+        "BlueLime_LOD0": {
+          "vertices": 4994,
+          "triangles": 10000,
+          "nonmanifold_edges": 0,
+          "euler_characteristic": -6,
+          "components": [
+            4994
+          ],
+          "degenerate_triangles": 0,
+          "finite_uvs": true,
+          "dimensions_metres": [
+            0.3065456300973892,
+            0.3186606913805008,
+            1.8000310842071485
+          ],
+          "max_source_vertex_distance_metres": 0.0005406696000136435,
+          "rms_source_vertex_distance_metres": 0.00015903355816667943
+        },
+        "BlueLime_LOD1": {
+          "vertices": 1494,
+          "triangles": 3000,
+          "nonmanifold_edges": 0,
+          "euler_characteristic": -6,
+          "components": [
+            1494
+          ],
+          "degenerate_triangles": 0,
+          "finite_uvs": true,
+          "dimensions_metres": [
+            0.30664195120334625,
+            0.3181566894054413,
+            1.8002758884103969
+          ],
+          "max_source_vertex_distance_metres": 0.0015970615204423666,
+          "rms_source_vertex_distance_metres": 0.00043886872011810195
+        }
+      },
+      "fbx_relative_dependencies": [
+        "BlueLime_BaseColor.png",
+        "BlueLime_Normal.png"
+      ],
+      "fbx_other_payload_preserved": true,
+      "master_reopen_verified": true,
+      "fbx_reimport_verified": true
+    },
+    "TealOrange": {
+      "source_file": "ArtSource/Fishing/Meshy_AI_Colorful_Fishing_Rod_1001115122_texture.glb",
+      "source_bytes": 5591800,
+      "source_sha256": "08af49240049b7da72a495671534f7d163e565571df9ec9a31522331a07e87b5",
+      "source": {
+        "vertices": 21247,
+        "triangles": 42518,
+        "nonmanifold_edges": 0,
+        "euler_characteristic": -12,
+        "components": [
+          13754,
+          7493
+        ],
+        "degenerate_triangles": 0,
+        "finite_uvs": true,
+        "dimensions_metres": [
+          1.897823989391327,
+          1.090378999710083,
+          0.8671859800815582
+        ]
+      },
+      "source_external_dependencies": [],
+      "length_metres": 1.8,
+      "pivot": "butt cap; rod rises along Unity +Y; original slight shaft curvature retained",
+      "lods": {
+        "TealOrange_LOD0": {
+          "vertices": 6988,
+          "triangles": 14000,
+          "nonmanifold_edges": 0,
+          "euler_characteristic": -12,
+          "components": [
+            4409,
+            2579
+          ],
+          "degenerate_triangles": 0,
+          "finite_uvs": true,
+          "dimensions_metres": [
+            0.43064118921756744,
+            0.4202663153409958,
+            1.799895675980224
+          ],
+          "max_source_vertex_distance_metres": 0.0006311592296697199,
+          "rms_source_vertex_distance_metres": 0.00016740075201783768
+        },
+        "TealOrange_LOD1": {
+          "vertices": 1988,
+          "triangles": 4000,
+          "nonmanifold_edges": 0,
+          "euler_characteristic": -12,
+          "components": [
+            1249,
+            739
+          ],
+          "degenerate_triangles": 0,
+          "finite_uvs": true,
+          "dimensions_metres": [
+            0.4308387041091919,
+            0.4208008125424385,
+            1.7997916166787036
+          ],
+          "max_source_vertex_distance_metres": 0.0018352422630414367,
+          "rms_source_vertex_distance_metres": 0.00043318133333702626
+        }
+      },
+      "fbx_relative_dependencies": [
+        "TealOrange_BaseColor.png",
+        "TealOrange_Normal.png"
+      ],
+      "fbx_other_payload_preserved": true,
+      "master_reopen_verified": true,
+      "fbx_reimport_verified": true
+    }
+  },
+  "files": {
+    "ArtSource/Fishing/Rods/BlueLime.blend": {
+      "bytes": 2757434,
+      "sha256": "c0a1e0f3ec2f1ee18d08d909f9eb9283cbae29a26c3605ce214ed63860168115"
+    },
+    "ArtSource/Fishing/Rods/TealOrange.blend": {
+      "bytes": 3959793,
+      "sha256": "58d3798124a2db11752edc925ee142656c9fcca149289b069770aa91e0d7528e"
+    },
+    "ArtSource/Fishing/Rods/Textures/BlueLime_BaseColor.png": {
+      "bytes": 3688327,
+      "sha256": "a1ce81caaaa8d5438bdebef0565aff922e6d0f76e18944621dc0f8433b61ba3d"
+    },
+    "ArtSource/Fishing/Rods/Textures/BlueLime_MetallicRoughness.png": {
+      "bytes": 2457417,
+      "sha256": "8b9b78bb66871b99a9943867565440233a3254ef939795e80b1adb9d37e08e46"
+    },
+    "ArtSource/Fishing/Rods/Textures/BlueLime_Normal.png": {
+      "bytes": 3152069,
+      "sha256": "2c0985f42096520686612b0c5a21ea53d22e4478dc65cb9379eb0100bde77cef"
+    },
+    "ArtSource/Fishing/Rods/Textures/TealOrange_BaseColor.png": {
+      "bytes": 4032400,
+      "sha256": "38777303b72129151a4e92ad13cc20156a846b0424b850c437834225b760970e"
+    },
+    "ArtSource/Fishing/Rods/Textures/TealOrange_MetallicRoughness.png": {
+      "bytes": 2699385,
+      "sha256": "81a8ef387c74fe3cb7cc5094e18199c1a5ed90d141c9ee541f48796c8bc23a42"
+    },
+    "ArtSource/Fishing/Rods/Textures/TealOrange_Normal.png": {
+      "bytes": 3249659,
+      "sha256": "1bc2d6707a3f40e421db506499242b902ff232ce9cffa453b8fa6200da2cb961"
+    },
+    "Game/Assets/_Game/Art/Fishing/Rods/BlueLime.fbx": {
+      "bytes": 488140,
+      "sha256": "b70e7ec23102114aaf700fdf9f1700a8d8af9553be447e15379293e0373b2ba2"
+    },
+    "Game/Assets/_Game/Art/Fishing/Rods/TealOrange.fbx": {
+      "bytes": 678124,
+      "sha256": "03bb923c605035bcdcfb25d95d4ff49fe28b1a05482500bc01e9a80f84811261"
+    },
+    "Game/Assets/_Game/Art/Fishing/Rods/BlueLime_BaseColor.png": {
+      "bytes": 1011633,
+      "sha256": "b9e797b92d86679c93122dd189484fee363a716557ec10b6a6f03c7efb299142"
+    },
+    "Game/Assets/_Game/Art/Fishing/Rods/BlueLime_Normal.png": {
+      "bytes": 229068,
+      "sha256": "c0622b68f4cd958870490939516d1fd0d1d615fe514495396e79e8917c7ec7bb"
+    },
+    "Game/Assets/_Game/Art/Fishing/Rods/TealOrange_BaseColor.png": {
+      "bytes": 1131557,
+      "sha256": "7071817398d0c34ef2b5bb7d10ad2aed4cbfeae107e06550db6ce5b057972f4d"
+    },
+    "Game/Assets/_Game/Art/Fishing/Rods/TealOrange_Normal.png": {
+      "bytes": 254740,
+      "sha256": "4fd3925e4f8f39af3a3745607bb8c56d6124049b91e7d293e60ffedd5061a6cb"
+    }
+  },
+  "retained_metadata_exception": "Blender exporter fixed Original|FileName /foobar.fbx is nonfunctional provenance. All active delivery texture dependencies are relative siblings; master maps are relative or packed."
+}

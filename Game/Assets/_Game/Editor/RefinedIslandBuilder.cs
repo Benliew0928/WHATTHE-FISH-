@@ -100,7 +100,7 @@ public static class RefinedIslandBuilder {
   }
   // Snap planted rock ledges to the real support geometry, including irregular rock crowns.
   Physics.SyncTransforms();foreach(var p in plants)if(Physics.Raycast(p.transform.position+Vector3.up*35,Vector3.down,out var hit,100,1<<8))p.transform.position=hit.point-Vector3.up*.015f;
-  if(sport=="Golf")root.AddComponent<GolfIslandView>();else{var v=root.AddComponent<FishingLagoonView>();v.playerStands=stands.ToArray();v.standingPositions=data.stands;}
+  if(sport=="Golf"){root.AddComponent<GolfIslandView>();GolfEquipmentBuilder.Attach(root);}else{var v=root.AddComponent<FishingLagoonView>();v.playerStands=stands.ToArray();v.standingPositions=data.stands;FishingRodBuilder.Attach(root);}
   if(data.signs!=null)foreach(var s in data.signs){
    var canvas=new GameObject("Wayfinding "+s.title,typeof(RectTransform),typeof(Canvas));canvas.transform.SetParent(root.transform,false);canvas.transform.localPosition=s.position;canvas.transform.localRotation=Quaternion.Euler(0,s.yaw,0);canvas.transform.localScale=Vector3.one*.004f;canvas.GetComponent<Canvas>().renderMode=RenderMode.WorldSpace;canvas.GetComponent<RectTransform>().sizeDelta=new Vector2(s.width/.004f,140);
    var label=new GameObject("Label",typeof(RectTransform),typeof(UnityEngine.UI.Text));label.transform.SetParent(canvas.transform,false);var t=label.GetComponent<UnityEngine.UI.Text>();t.rectTransform.sizeDelta=new Vector2(s.width/.004f,140);t.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");t.fontSize=44;t.alignment=TextAnchor.MiddleCenter;t.color=new Color(1,.94f,.79f);t.text=s.title+"\n<size=25>"+s.caption+"</size>";t.raycastTarget=false;

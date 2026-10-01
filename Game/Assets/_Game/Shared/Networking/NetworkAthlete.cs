@@ -14,7 +14,9 @@ namespace WhatTheFish {
   public NetworkVariable<FixedString512Bytes> WorldAppearance=new();
   public NetworkVariable<FixedString128Bytes> AppearanceData=new();
   public NetworkVariable<LocomotionSnapshot> Motion=new();
+  public NetworkVariable<JumpSnapshot> Jump=new();
   public NetworkVariable<FootballSnapshot> Football=new();
+  public NetworkVariable<BasketballSnapshot> Basketball=new();
   Athlete athlete; PlayerCommand command; float lastInput; float sendTimer;
   public override void OnNetworkSpawn(){
    athlete=GetComponent<Athlete>();athlete.Setup();athlete.capsule.enabled=IsServer;
@@ -33,10 +35,17 @@ namespace WhatTheFish {
    command=new PlayerCommand{move=Vector2.ClampMagnitude(move,1),heading=heading%360,sprint=sprint};lastInput=Time.time;
   }
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void TackleRpc(){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryTackle();}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void JumpRpc(){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value)athlete.RequestJump();}
   void Update(){if(!IsSpawned)return;
-   if(IsOwner&&(sendTimer-=Time.deltaTime)<=0){sendTimer=1f/30;var c=PlayerView.Instance.ReadCommand();if(!AppRoot.Instance.Exploring)c.move=Vector2.zero;InputRpc(c.move,c.heading,c.sprint);if(c.tackle&&AppRoot.Instance.Exploring)TackleRpc();}
-   if(!IsServer){athlete.ApplySnapshot(Motion.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
+   if(IsOwner){
+    var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
+    if(!exploring)c.move=Vector2.zero;
+    // Reliable action edges are sent this frame, independently of movement throttling.
+    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint);}
+    if(c.jump&&exploring)JumpRpc();if(c.tackle&&exploring)TackleRpc();
+   }
+   if(!IsServer){athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
   }
-  void FixedUpdate(){if(!IsSpawned||!IsServer)return;if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value)c.move=Vector2.zero;athlete.Simulate(c,Time.fixedDeltaTime);Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
+  void FixedUpdate(){if(!IsSpawned||!IsServer)return;if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value)c.move=Vector2.zero;athlete.Simulate(c,Time.fixedDeltaTime);Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
  }
 }

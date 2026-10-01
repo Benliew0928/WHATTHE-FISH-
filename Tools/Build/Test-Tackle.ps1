@@ -12,7 +12,7 @@ function Start-TackleProbe([string]$Name,[string]$Options){
 }
 try {
     $videoOption=if($Video){'-tackleVideo'}else{''}
-    $processes+=Start-TackleProbe 'gameplay' "-batchmode -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -tackleAudit $videoOption -exitAfter 25"
+    $processes+=Start-TackleProbe 'gameplay' "-batchmode -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -tackleAudit $videoOption -exitAfter 60"
     $network="-batchmode -nographics -job-worker-count 2 -networkTackleAudit -port $Port -expected 2 -startAt 10 -returnAt 23 -exitAfter 28"
     $processes+=Start-TackleProbe 'host' "$network -localHost"
     $processes+=Start-TackleProbe 'client' "$network -localClient"

@@ -24,8 +24,9 @@ namespace WhatTheFish {
    app.view.enabled=true;app.EnterOffline();app.view.yaw=0;app.view.pitch=16;app.view.mode=1;
   }
   IEnumerator IslandAudit(){
-   yield return new WaitForSeconds(2);var app=AppRoot.Instance;app.SelectSport(SportId.Golf);Physics.SyncTransforms();
-   Check(app.environments.roots.Count(r=>r.activeSelf)==1,"GOLF_ONE_ACTIVE_ENVIRONMENT");
+   float deadline=Time.realtimeSinceStartup+60;while((!AppRoot.Instance||!AppRoot.Instance.LocalAthlete||AppRoot.Instance.SelectedSport!=SportId.Golf)&&Time.realtimeSinceStartup<deadline)yield return null;
+   var app=AppRoot.Instance;var streaming=app.environments.GetComponent<SkySailStreaming>();yield return streaming.Prepare(SportId.Golf);app.SelectSport(SportId.Golf);Physics.SyncTransforms();
+   Check(app.environments.roots.Count(r=>r&&r.activeSelf)==1,"GOLF_ONE_ACTIVE_ENVIRONMENT");
    Check(app.environments.Current.spawnPositions.Distinct().Count()==10,"GOLF_TEN_DISTINCT_SPAWNS");
    foreach(var spawn in app.environments.Current.spawnPositions)Check(Physics.Raycast(spawn,Vector3.down,2,1<<8),"GOLF_SPAWN_FLOOR "+spawn);
    var layout=app.stadium.GetComponent<RefinedIslandEnvironment>().layout;
@@ -38,7 +39,7 @@ namespace WhatTheFish {
    var change=app.CurrentAppearance;change.title="SHOULD NOT SAVE";app.SaveStadium(change);LocalProfile.SaveSport(SportId.Golf,change);
    Check(app.CurrentAppearance.title=="ISLAND GREENS"&&football==JsonUtility.ToJson(LocalProfile.Stadium)&&basketball==JsonUtility.ToJson(LocalProfile.Basketball),"GOLF_PREFERENCES_ISOLATED");
    foreach(var sport in new[]{SportId.Football,SportId.Basketball,SportId.Golf}){
-    app.SelectSport(sport);Check(app.environments.roots.Count(r=>r.activeSelf)==1,"SWITCH_ENVIRONMENT "+sport);
+    yield return streaming.Prepare(sport);app.SelectSport(sport);Check(app.environments.roots.Count(r=>r&&r.activeSelf)==1,"SWITCH_ENVIRONMENT "+sport);
     Check(Camera.main.farClipPlane==3000,"RESTORE_VIEW_DISTANCE "+sport);
    }
    app.EnterOffline();yield return new WaitForSeconds(.5f);

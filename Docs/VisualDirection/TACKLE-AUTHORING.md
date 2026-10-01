@@ -6,13 +6,13 @@ The tackle drops the character onto the turf, with a reclining torso, one leg re
 
 ## Controls and gameplay
 
-Football exploration exposes a **Tackle** touch button above Camera; desktop also supports **Space**. Pressing starts once, holding does not repeat, and the button shows its cooldown. A tackle requires ground contact and has a 1.25-second cooldown from launch. Basketball and golf expose no tackle button and reject tackle requests.
+Football exploration exposes a **Tackle** touch button above Camera; desktop also supports **E**. Pressing starts once, holding does not repeat, and the button shows its cooldown. A tackle requires ground contact and has a 1.25-second cooldown from launch. Basketball, golf and fishing expose no tackle button and reject tackle requests.
 
 An opponent hit by the slide receives a 0.45-second stumble and up to 0.72 metres of knockback over 0.24 seconds. Walls constrain both movements. Contacts sweep actual travelled distance, reject hits through world geometry, and affect each opponent once per slide. A short hit immunity prevents repeated stun from one contact cluster. There are no teams in this prototype, so other athletes are eligible opponents; this change does not add AI opponents, ball possession, health or ragdolls.
 
 `FootballTackle` owns action timing, cooldown and contact resolution. `Athlete` combines action displacement with the capsule motor and resumes normal movement during recovery. The Animator's full-body **Football action** layer blends in quickly and out smoothly, above the existing idle/run and turn-expression layers. During the slide, a measured visual ground-clearance correction removes the capsule's small standing gap without changing collision or camera height. Root motion remains disabled.
 
-Network action requests are reliable and restricted to the athlete's owner. The server validates and simulates them, including opponent contact. A separate `FootballSnapshot` carries action, start time, cooldown and sequence so remote animation follows server time. NGO protocol is **6**; all participants require matching builds. Existing movement input and locomotion snapshots retain their behavior. Local networking tests do not establish WAN latency performance.
+Network action requests are reliable and restricted to the athlete's owner. The server validates and simulates them, including opponent contact. A separate `FootballSnapshot` carries action, start time, cooldown and sequence so remote animation follows server time. The current jump update uses NGO protocol **11**; all participants require matching builds. Existing movement input and locomotion snapshots retain their behavior. Local networking tests do not establish WAN latency performance.
 
 ## Editable source
 

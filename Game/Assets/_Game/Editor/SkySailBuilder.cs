@@ -81,7 +81,7 @@ public static class SkySailBuilder {
   var water=Material("WorldOcean","WhatTheFish/SkySailOcean");foreach(var pair in new[]{new[]{"Golf","Golf"},new[]{"Fish","Fishing"}}){water.SetTexture("_"+pair[0]+"Color",AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Game/Art/RefinedIslands/"+pair[1]+"/"+pair[1]+"_WaterColor.png"));water.SetTexture("_"+pair[0]+"Depth",AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Game/Art/RefinedIslands/"+pair[1]+"/"+pair[1]+"_WaterDepth.png"));}EditorUtility.SetDirty(water);ocean.GetComponent<Renderer>().sharedMaterial=water;ocean.GetComponent<Renderer>().shadowCastingMode=ShadowCastingMode.Off;
   Clouds(world.scenery);
   env.roots=new GameObject[4];var streaming=env.GetComponent<SkySailStreaming>();if(!streaming)streaming=env.gameObject.AddComponent<SkySailStreaming>();streaming.enabledForWorld=true;
-  UnityEngine.Object.FindFirstObjectByType<NetworkManager>().NetworkConfig.ProtocolVersion=8;
+  UnityEngine.Object.FindFirstObjectByType<NetworkManager>().NetworkConfig.ProtocolVersion=RoomService.ProtocolVersion;
   world.scenery.localPosition=-SkySailMap.Center(SportId.Football);
   EditorSceneManager.MarkSceneDirty(bootstrap);EditorSceneManager.SaveScene(bootstrap);
   foreach(var island in full)EditorSceneManager.CloseScene(island.scene,true);
@@ -114,7 +114,17 @@ public static class SkySailBuilder {
  }
  static GameObject Module(string name,Transform parent){var g=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Prefabs+name+".prefab"));g.transform.SetParent(parent,false);return g;}
  static Material Material(string name,string shader){string path=Art+"Materials/"+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);if(!m){m=new Material(Shader.Find(shader));AssetDatabase.CreateAsset(m,path);}m.shader=Shader.Find(shader);return m;}
- static void SaveAsset(UnityEngine.Object value,string path){var old=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);if(old){EditorUtility.CopySerialized(value,old);UnityEngine.Object.DestroyImmediate(value);}else AssetDatabase.CreateAsset(value,path);}
+ // Rebuilding the world must retain the mobile packing used by delivered meshes.
+ static ModelImporterMeshCompression Packing(string path)=>path.Contains("/Distant/")?ModelImporterMeshCompression.High:ModelImporterMeshCompression.Low;
+ static void SaveAsset(UnityEngine.Object value,string path){if(value is Mesh mesh)MeshUtility.SetMeshCompression(mesh,Packing(path));var old=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(path);if(old){EditorUtility.CopySerialized(value,old);UnityEngine.Object.DestroyImmediate(value);}else AssetDatabase.CreateAsset(value,path);}
+ public static void PrepareMobileMeshes(){
+  foreach(string guid in AssetDatabase.FindAssets("t:Mesh",new[]{Art})){
+   string path=AssetDatabase.GUIDToAssetPath(guid);if(!path.EndsWith(".asset"))continue;
+   var mesh=AssetDatabase.LoadAssetAtPath<Mesh>(path);if(!mesh)continue;
+   if((int)MeshUtility.GetMeshCompression(mesh)<(int)Packing(path)){MeshUtility.SetMeshCompression(mesh,Packing(path));EditorUtility.SetDirty(mesh);}
+  }
+  AssetDatabase.SaveAssets();
+ }
  static void Box(GameObject root,string name,Vector3 p,Vector3 size){var g=new GameObject(name);g.layer=8;g.transform.SetParent(root.transform,false);g.transform.localPosition=p;g.AddComponent<BoxCollider>().size=size;}
  static void Sign(GameObject root,string words,Vector3 p,float width){
   for(int side=0;side<2;side++){

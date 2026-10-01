@@ -116,10 +116,14 @@ namespace WhatTheFish {
    var look=Panel(page,new Vector2(1170,480),new Vector2(820,720),new Color(1,1,1,.001f));look.gameObject.AddComponent<TouchPad>().look=true;
    var bg=Panel(page,new Vector2(190,178),new Vector2(176,176),new Color(1,1,1,.25f));var pad=bg.gameObject.AddComponent<TouchPad>();var knob=Panel(bg,Vector2.zero,new Vector2(82,82),cream);knob.anchorMin=knob.anchorMax=new Vector2(.5f,.5f);var circle=MakeCircle();foreach(var r in new[]{bg,knob}){r.GetComponent<Image>().sprite=circle;r.GetComponent<Image>().type=Image.Type.Simple;}pad.knob=knob;view.stick=pad;
    Button("Camera",new Vector2(1425,155),view.Switch,mint,new Vector2(220,90));Button(rooms.Host?"Return to room":SelectedSport switch{SportId.Basketball=>"Leave court",SportId.Golf=>"Leave island",SportId.Fishing=>"Leave lagoon",_=>"Leave pitch"},new Vector2(1418,818),Return,cream,new Vector2(250,62));
+   var jumpRect=Panel(page,new Vector2(1425,415),new Vector2(220,105),mint);jumpRect.name="Jump button";
+   var jump=jumpRect.gameObject.AddComponent<JumpButton>();jump.button=jumpRect.gameObject.AddComponent<Button>();
+   jump.label=Label(jumpRect,"Jump [Space]",0,Vector2.zero,new Vector2(210,90),23,ink);
+   jump.label.alignment=TextAnchor.MiddleCenter;jump.label.rectTransform.anchorMin=jump.label.rectTransform.anchorMax=jump.label.rectTransform.pivot=new Vector2(.5f,.5f);
    if(SelectedSport==SportId.Football){
     var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Tackle button";
     var control=rect.gameObject.AddComponent<TackleButton>();control.button=rect.gameObject.AddComponent<Button>();
-    control.label=Label(rect,"Tackle [Space]",0,Vector2.zero,new Vector2(210,90),23,ink);
+    control.label=Label(rect,"Tackle [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
     control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
    }
    var stadiumName=rooms.Connected&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.WorldAppearance.Value.Length>0?JsonUtility.FromJson<StadiumAppearance>(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString()).title:CurrentAppearance.title;

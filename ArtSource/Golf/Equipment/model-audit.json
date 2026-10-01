@@ -1,0 +1,435 @@
+{
+  "path_base": "repository root",
+  "models": {
+    "Ball": {
+      "source_zip": "Downloads/Meshy_AI_Dimpled_Moon_1001111942_texture_fbx.zip",
+      "source_sha256": "ad671f8986fbc7ad44627c6d46cd256cf3de7dc144fa39e9807a7a09578f8170",
+      "source": {
+        "vertices": 147000,
+        "triangles": 293996,
+        "nonmanifold_edges": 0,
+        "components": [
+          147000
+        ],
+        "degenerate_triangles": 0,
+        "dimensions_metres": [
+          1.898908019065857,
+          1.900083065032959,
+          1.898324966430664
+        ],
+        "finite_uvs": true
+      },
+      "length_metres": 0.043,
+      "pivot": "centre",
+      "lods": {
+        "Ball_LOD0": {
+          "vertices": 1490,
+          "triangles": 2976,
+          "nonmanifold_edges": 0,
+          "components": [
+            1490
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.04300002381205559,
+            0.043000027537345886,
+            0.0430000014603138
+          ],
+          "finite_uvs": true
+        },
+        "Ball_LOD1": {
+          "vertices": 362,
+          "triangles": 720,
+          "nonmanifold_edges": 0,
+          "components": [
+            362
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.0429999902844429,
+            0.0429999865591526,
+            0.0430000014603138
+          ],
+          "finite_uvs": true
+        }
+      },
+      "fbx_relative_dependencies": [
+        "Ball_Normal.png"
+      ],
+      "fbx_path_rewrite_preserved_other_payloads": true,
+      "reopened_master_dependencies_verified": true,
+      "reimported_delivery_verified": true
+    },
+    "Driver": {
+      "source_zip": "Downloads/Meshy_AI_Teal_Horizon_Driver_1001112212_texture_fbx.zip",
+      "source_sha256": "db655e270a6daa0e0a48cb57dc56f337da1de6e8df3a4513c0ccc74f4a0c4b6d",
+      "source": {
+        "vertices": 7025,
+        "triangles": 14046,
+        "nonmanifold_edges": 0,
+        "components": [
+          7025
+        ],
+        "degenerate_triangles": 0,
+        "dimensions_metres": [
+          1.507822036743164,
+          0.2707750201225281,
+          1.8980430364608765
+        ],
+        "finite_uvs": true
+      },
+      "length_metres": 1.14,
+      "pivot": "grip cap; shaft along local -Y in Unity",
+      "lods": {
+        "Driver_LOD0": {
+          "vertices": 2050,
+          "triangles": 4096,
+          "nonmanifold_edges": 0,
+          "components": [
+            2050
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.21993452310562134,
+            0.13487987220287323,
+            1.1400246620178223
+          ],
+          "finite_uvs": true
+        },
+        "Driver_LOD1": {
+          "vertices": 602,
+          "triangles": 1200,
+          "nonmanifold_edges": 0,
+          "components": [
+            602
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.2199636697769165,
+            0.13517028093338013,
+            1.1398142576217651
+          ],
+          "finite_uvs": true
+        }
+      },
+      "fbx_relative_dependencies": [
+        "Driver_BaseColor.png",
+        "Driver_Normal.png"
+      ],
+      "fbx_path_rewrite_preserved_other_payloads": true,
+      "reopened_master_dependencies_verified": true,
+      "reimported_delivery_verified": true
+    },
+    "Iron": {
+      "source_zip": "Downloads/Meshy_AI_Golf_Club_1001112230_texture_fbx.zip",
+      "source_sha256": "4a9196dc5f0a5f947a0c13354bb04e49e0e972149fc85c793eab657bb5eddd36",
+      "source": {
+        "vertices": 6504,
+        "triangles": 13004,
+        "nonmanifold_edges": 0,
+        "components": [
+          6504
+        ],
+        "degenerate_triangles": 0,
+        "dimensions_metres": [
+          1.46533203125,
+          0.07722599804401398,
+          1.8982410430908203
+        ],
+        "finite_uvs": true
+      },
+      "length_metres": 0.94,
+      "pivot": "grip cap; shaft along local -Y in Unity",
+      "lods": {
+        "Iron_LOD0": {
+          "vertices": 2050,
+          "triangles": 4096,
+          "nonmanifold_edges": 0,
+          "components": [
+            2050
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.17249909043312073,
+            0.03132203593850136,
+            0.9401063919067383
+          ],
+          "finite_uvs": true
+        },
+        "Iron_LOD1": {
+          "vertices": 602,
+          "triangles": 1200,
+          "nonmanifold_edges": 0,
+          "components": [
+            602
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.17238368093967438,
+            0.031102359294891357,
+            0.940121591091156
+          ],
+          "finite_uvs": true
+        }
+      },
+      "fbx_relative_dependencies": [
+        "Iron_BaseColor.png",
+        "Iron_Normal.png"
+      ],
+      "fbx_path_rewrite_preserved_other_payloads": true,
+      "reopened_master_dependencies_verified": true,
+      "reimported_delivery_verified": true
+    },
+    "Putter": {
+      "source_zip": "Downloads/Meshy_AI_Golf_Putter_1001112238_texture_fbx.zip",
+      "source_sha256": "b366778f427faf82022562454a5004410782fd1e547344d8f3532c7c910e8aaa",
+      "source": {
+        "vertices": 5993,
+        "triangles": 11982,
+        "nonmanifold_edges": 0,
+        "components": [
+          5993
+        ],
+        "degenerate_triangles": 0,
+        "dimensions_metres": [
+          1.4148080348968506,
+          0.07450199872255325,
+          1.8990750312805176
+        ],
+        "finite_uvs": true
+      },
+      "length_metres": 0.89,
+      "pivot": "grip cap; shaft along local -Y in Unity",
+      "lods": {
+        "Putter_LOD0": {
+          "vertices": 2050,
+          "triangles": 4096,
+          "nonmanifold_edges": 0,
+          "components": [
+            2050
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.1818055361509323,
+            0.029119446873664856,
+            0.8899689316749573
+          ],
+          "finite_uvs": true
+        },
+        "Putter_LOD1": {
+          "vertices": 602,
+          "triangles": 1200,
+          "nonmanifold_edges": 0,
+          "components": [
+            602
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.18178293108940125,
+            0.029074776917696,
+            0.8897954821586609
+          ],
+          "finite_uvs": true
+        }
+      },
+      "fbx_relative_dependencies": [
+        "Putter_BaseColor.png",
+        "Putter_Normal.png"
+      ],
+      "fbx_path_rewrite_preserved_other_payloads": true,
+      "reopened_master_dependencies_verified": true,
+      "reimported_delivery_verified": true
+    }
+  },
+  "files": {
+    "ArtSource/Golf/Equipment/Ball.blend": {
+      "bytes": 14241702,
+      "sha256": "9ab4cc43c7cf7e6466bbcf050276dd95c7009b181bf5cf9714432d5e240d58ec"
+    },
+    "ArtSource/Golf/Equipment/Driver.blend": {
+      "bytes": 960798,
+      "sha256": "eb91a0de9f8f79bac467a8a3b5825f144b7c64d9d3d5bfdb71cb46ccb3eb565a"
+    },
+    "ArtSource/Golf/Equipment/Iron.blend": {
+      "bytes": 890830,
+      "sha256": "b86b57606ae23589133590fa0bd8e193ddfb450adc954d3013113f72b6e97686"
+    },
+    "ArtSource/Golf/Equipment/Putter.blend": {
+      "bytes": 878480,
+      "sha256": "6d9c0d39d7042adf5be424c7766d704020b6348d3fb1124237a2a60923d1c8cc"
+    },
+    "ArtSource/Golf/Equipment/Textures/Ball_BaseColor.png": {
+      "bytes": 3126827,
+      "sha256": "99cd20b76626fa9f7634db0d5abc5c2815d4fb8e9bd38de614c744d1438bef7d"
+    },
+    "ArtSource/Golf/Equipment/Textures/Ball_DimpleNormal.png": {
+      "bytes": 768057,
+      "sha256": "f7062f071a7b937cb30e01e48ad37e28a2f1eb0419c1a1cfc4c3561ca9ff792a"
+    },
+    "ArtSource/Golf/Equipment/Textures/Ball_Metallic.png": {
+      "bytes": 18582,
+      "sha256": "3bbb563f6f64814a11d032201596bfad805205a11e253a4dafa5910c9e9cf088"
+    },
+    "ArtSource/Golf/Equipment/Textures/Ball_Normal.png": {
+      "bytes": 1810199,
+      "sha256": "fc3088e57768b17738e1ab4d7b855f95088d11e88270577db6f4091db5a9ccbb"
+    },
+    "ArtSource/Golf/Equipment/Textures/Ball_Roughness.png": {
+      "bytes": 1328831,
+      "sha256": "15c58171105039d03abdade543a9f6457c7d1c0ee47a4ad6cf2d10edd5cdf849"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_BaseColor.png": {
+      "bytes": 2190174,
+      "sha256": "a3b8a61fabc99f9b61ab879bef90fffd3803cae5984bc1cde9b04c1276442580"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_DeliveryBaseColor.png": {
+      "bytes": 87903,
+      "sha256": "d5156118d8ad935f13748e5eb64640281cb11d5db2a27061cddb7471975604e9"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_DeliveryMetallic.png": {
+      "bytes": 12006,
+      "sha256": "6aafef8b96f3e2160c3f0712db630192a033a32429ce0c991f85cb7aa2cf81ce"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_DeliveryNormal.png": {
+      "bytes": 73419,
+      "sha256": "fd8493af72a059de672f7aec5e8055b58100a8dc7a712e6bf8bf5d6b489568bf"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_DeliveryRoughness.png": {
+      "bytes": 21816,
+      "sha256": "788d375b11350bce8976937ddbfcb498cdfb49294931e81f3668795a8a520155"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_Metallic.png": {
+      "bytes": 234216,
+      "sha256": "4cd70a9ad31d805813348132810e372470b38163c401b704cfa4a5da3dcbc5ec"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_Normal.png": {
+      "bytes": 1726221,
+      "sha256": "6bd41c60a533cc210525abfeffa7263205b1c789078f3f05f1f16a9b4e0ee1cc"
+    },
+    "ArtSource/Golf/Equipment/Textures/Driver_Roughness.png": {
+      "bytes": 893479,
+      "sha256": "2576c19406a98b047833507d2cbee575807dae05343f5f3e59e22335c114f722"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_BaseColor.png": {
+      "bytes": 2236191,
+      "sha256": "53a201b2bd8fa8a0fcca95fd85eb946099acf026b7d4dfe6c499219f20e3f9d1"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_DeliveryBaseColor.png": {
+      "bytes": 72693,
+      "sha256": "92ac24ebb21fd62f040bebee5c553f91c72869b6006188728c5a49d508243b4f"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_DeliveryMetallic.png": {
+      "bytes": 17399,
+      "sha256": "a33112cb57007fda46aa4d486560a188487c1333cb70fc49f2eb661db2299a14"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_DeliveryNormal.png": {
+      "bytes": 62125,
+      "sha256": "650e5ea7950a6f151630bbd00e83d6e43fe6963b3986d764ec672fac056fb912"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_DeliveryRoughness.png": {
+      "bytes": 16755,
+      "sha256": "073a51d61540b2211e44d3ecef0c039649bb5f32a0050265b4bda217741c607d"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_Metallic.png": {
+      "bytes": 664642,
+      "sha256": "2f4c3f8c49f3002119cf409d28aa86d01f6f62204659975854e41d0e497e1918"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_Normal.png": {
+      "bytes": 1800546,
+      "sha256": "5de47ed7bfa9f233712b1b4b53559bba5a2d33ef9d42a298840a7af50354021a"
+    },
+    "ArtSource/Golf/Equipment/Textures/Iron_Roughness.png": {
+      "bytes": 765611,
+      "sha256": "c5bb03dfb13c9331a4ae006ef511c5b9621442c0ebed16e8099f567e24cfa763"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_BaseColor.png": {
+      "bytes": 2165335,
+      "sha256": "755498cb60124c6006a355ea7557abe587c4732b146bacb11c755572e383f388"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_DeliveryBaseColor.png": {
+      "bytes": 88668,
+      "sha256": "d689b89c9e371f5bd97a1ff8e015cc1870c843efcaaa47818698e59f78a95c67"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_DeliveryMetallic.png": {
+      "bytes": 21587,
+      "sha256": "af29e0615c82dd5a7f7cb4b3dfbfb47c9aa607d92bb56414cacb1694361ab0d2"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_DeliveryNormal.png": {
+      "bytes": 75607,
+      "sha256": "291be26e7ccbfbcb6653692a3caec37cd3e55be89e9db051c4c3ccc864ba259a"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_DeliveryRoughness.png": {
+      "bytes": 20664,
+      "sha256": "c1e32b7cd88564f5fb09386cfef037e3f5bfc2a67ca889b66c393f5845efc5ff"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_Metallic.png": {
+      "bytes": 623074,
+      "sha256": "baf17c0fe86b4dfea17241b7a7a16c01c9a95fe0a61754141440aa1cdb75c46f"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_Normal.png": {
+      "bytes": 1801029,
+      "sha256": "e810c4a16657a679630632c493750d4f2c1c8e4c61b08d9cf0dcf25bb14830d5"
+    },
+    "ArtSource/Golf/Equipment/Textures/Putter_Roughness.png": {
+      "bytes": 773076,
+      "sha256": "4cf16454ead2526e1d944a9b238fc4a97d2927dd9ec4e8dd9fe90bc3eea8d9f7"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Ball.fbx": {
+      "bytes": 96924,
+      "sha256": "2c9f7aadb4e17169d9b3bade8c30657339a5a86db1472557d5219db37e37c047"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Driver.fbx": {
+      "bytes": 200348,
+      "sha256": "c412f53bac332fcb7b48fa90ac4e42f0c233ce7449bd16ba63a37a5ad89ade13"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Iron.fbx": {
+      "bytes": 199068,
+      "sha256": "96bc6385c5dbabd02a212bc4dc5608a083a7d28348cb2b8a2979e04613c59e7a"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Putter.fbx": {
+      "bytes": 199228,
+      "sha256": "7c461c2407a36eeb20d4ab2790ce0733fad15401a6ccb96251269e4fd5fd2bf8"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Ball_Normal.png": {
+      "bytes": 768057,
+      "sha256": "f7062f071a7b937cb30e01e48ad37e28a2f1eb0419c1a1cfc4c3561ca9ff792a"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Driver_BaseColor.png": {
+      "bytes": 87903,
+      "sha256": "d5156118d8ad935f13748e5eb64640281cb11d5db2a27061cddb7471975604e9"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Driver_Mask.png": {
+      "bytes": 13858,
+      "sha256": "97b85ada28b2593b2f84438f5f049ad69938afe79b6786d2d89f0bc092ea72de"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Driver_Normal.png": {
+      "bytes": 73419,
+      "sha256": "fd8493af72a059de672f7aec5e8055b58100a8dc7a712e6bf8bf5d6b489568bf"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Iron_BaseColor.png": {
+      "bytes": 72693,
+      "sha256": "92ac24ebb21fd62f040bebee5c553f91c72869b6006188728c5a49d508243b4f"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Iron_Mask.png": {
+      "bytes": 17344,
+      "sha256": "fe5edf6d3bff9e17a594f405c8cda42236c68bb2f01602b397397e491bdbc41e"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Iron_Normal.png": {
+      "bytes": 62125,
+      "sha256": "650e5ea7950a6f151630bbd00e83d6e43fe6963b3986d764ec672fac056fb912"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Putter_BaseColor.png": {
+      "bytes": 88668,
+      "sha256": "d689b89c9e371f5bd97a1ff8e015cc1870c843efcaaa47818698e59f78a95c67"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Putter_Mask.png": {
+      "bytes": 25820,
+      "sha256": "cf128bb1807193b83e85ae52325afc4cb8b2c205eb76585dff0d3d4d01ed1d0f"
+    },
+    "Game/Assets/_Game/Art/Golf/Equipment/Putter_Normal.png": {
+      "bytes": 75607,
+      "sha256": "291be26e7ccbfbcb6653692a3caec37cd3e55be89e9db051c4c3ccc864ba259a"
+    }
+  },
+  "retained_metadata_exception": "Original downloaded FBX exporter provenance and packed source-image names are retained inside unchanged ZIP masters. Delivery FBX Texture/Video dependencies and unpacked Blender images use verified relative paths."
+}

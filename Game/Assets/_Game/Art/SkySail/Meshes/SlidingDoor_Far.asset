@@ -113,8 +113,8 @@ Mesh:
       m_BitSize: 0
     m_Normals:
       m_NumItems: 28
-      m_Range: 1.999999
-      m_Start: -0.9999995
+      m_Range: 2
+      m_Start: -1
       m_Data: 5e6900c07fa16af0ff7f00fcf7ff7f771c8df8d1f2e9b160140bba2e5fe100fe0fe0ff
       m_BitSize: 10
     m_Tangents:
@@ -129,7 +129,7 @@ Mesh:
       m_BitSize: 0
     m_NormalSigns:
       m_NumItems: 14
-      m_Data: 0006
+      m_Data: 1a36
       m_BitSize: 1
     m_TangentSigns:
       m_NumItems: 0
@@ -137,9 +137,9 @@ Mesh:
       m_BitSize: 0
     m_FloatColors:
       m_NumItems: 56
-      m_Range: 0.9490196
-      m_Start: 0.050980393
-      m_Data: 795d32ff1f2215ff7e5f34ff202416ff334638c9334438c95f5e40d0605e40d0462100ff462200ff492300ff492300ff94794aff957a4aff
+      m_Range: 0.94752765
+      m_Start: 0.052472338
+      m_Data: 795c31ff1e2115ff7e5f33ff1f2316ff324538c9324438c95f5d40cf605e40cf452000ff452100ff482200ff482200ff937949ff947a4aff
       m_BitSize: 8
     m_BoneIndices:
       m_NumItems: 0

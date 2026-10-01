@@ -43,6 +43,7 @@ public static partial class ProjectBuilder {
   var bounce=new GameObject("Rally warm fill").AddComponent<Light>();bounce.transform.SetParent(arena.transform,false);
   bounce.type=LightType.Directional;bounce.color=new Color(1,.86f,.70f);bounce.intensity=.12f;
   bounce.shadows=LightShadows.None;bounce.transform.localRotation=Quaternion.Euler(32,155,0);
+  BasketballBallBuilder.Attach(arena);
   view.Apply(LocalProfile.Basketball);return arena;
  }
  static void RallyCollision(GameObject parent,string name,Vector3 center,Vector3 size){

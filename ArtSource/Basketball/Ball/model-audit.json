@@ -1,0 +1,137 @@
+{
+  "source": {
+    "file": "Meshy_AI_Basketball_1001104636_texture.glb",
+    "sha256": "e638b7c32a5e1239ec3fc963a714cb659bf2d7c8b3ac898fbe141f79d1bf434d",
+    "bytes": 9094056,
+    "external_dependencies": [],
+    "mesh_objects": 1,
+    "dimensions": [
+      1.8953399658203125,
+      1.8987712264060974,
+      1.895954191684723
+    ],
+    "radial_range": [
+      0.9146712702115097,
+      0.9621357411136485
+    ],
+    "images": [
+      {
+        "name": "Image_0",
+        "size": [
+          2048,
+          2048
+        ],
+        "packed": true
+      },
+      {
+        "name": "Image_1",
+        "size": [
+          2048,
+          2048
+        ],
+        "packed": true
+      },
+      {
+        "name": "normal",
+        "size": [
+          2048,
+          2048
+        ],
+        "packed": true
+      }
+    ]
+  },
+  "diameter_metres": 0.24,
+  "geometry": "Rebuilt analytical sphere; Meshy appearance reference retained",
+  "texture_design": "Eight panels; uniform shallow channels and continuous procedural rubber grain",
+  "lods": {
+    "Basketball_LOD0": {
+      "vertices": 1490,
+      "triangles": 2976,
+      "nonmanifold_edges": 0,
+      "max_vertex_radius_error_metres": 6.002568164742428e-09,
+      "min_face_normal_dot": 0.9998698012204841,
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.23999999463558197,
+        0.23999999463558197,
+        0.23999999463558197
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "Basketball_LOD1": {
+      "vertices": 362,
+      "triangles": 720,
+      "nonmanifold_edges": 0,
+      "max_vertex_radius_error_metres": 6.002568164742428e-09,
+      "min_face_normal_dot": 0.9995235862443224,
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.23999999463558197,
+        0.23999999463558197,
+        0.23999999463558197
+      ],
+      "origin": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "scale": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    }
+  },
+  "material_count": 1,
+  "delivery_textures": [
+    {
+      "file": "Basketball_BaseColor.png",
+      "width": 1024,
+      "height": 512
+    },
+    {
+      "file": "Basketball_Normal.png",
+      "width": 1024,
+      "height": 512
+    }
+  ],
+  "fbx_relative_dependencies": [
+    "Basketball_BaseColor.png",
+    "Basketball_Normal.png"
+  ],
+  "fbx_path_rewrite_preserved_other_payloads": true,
+  "retained_metadata_exception": "FBX exporter Original|FileName /foobar.fbx is fixed, nonfunctional provenance; no image or library depends on it.",
+  "reopened_master_image_dependencies": [
+    "//BasketballMaster_BaseColor.png",
+    "//BasketballMaster_Normal.png"
+  ],
+  "fbx_reimport_verified": "Two correctly scaled, centred LODs; expected triangle counts; finite UVs",
+  "files": {
+    "ArtSource/Basketball/Ball/Basketball.blend": {
+      "bytes": 145126,
+      "sha256": "d6e061efa47b9385714a4613dccd7296167bc1df6803ecfe41905bbe951aed71"
+    },
+    "Game/Assets/_Game/Art/Basketball/Ball/Basketball.fbx": {
+      "bytes": 85660,
+      "sha256": "ea91adf7f2b6fee6c871f19e0043ddbdb8a584617cc60adf4af5c875b2d4defc"
+    },
+    "Game/Assets/_Game/Art/Basketball/Ball/Basketball_BaseColor.png": {
+      "bytes": 205027,
+      "sha256": "7314bce8b35de7cf82dff5edf727a8f474aa3f703e58815c12b48bd3859418a0"
+    },
+    "Game/Assets/_Game/Art/Basketball/Ball/Basketball_Normal.png": {
+      "bytes": 524433,
+      "sha256": "3a03b85b4839b420ea85cba56bed24b33bf214cd7a703386cbc4131be210b444"
+    }
+  }
+}

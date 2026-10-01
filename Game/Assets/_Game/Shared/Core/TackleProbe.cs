@@ -57,8 +57,10 @@ namespace WhatTheFish {
    PlaceAthlete(actor,origin+Vector3.up*3,0);Check(!actor.TryTackle(),"TACKLE_AIRBORNE_REJECTED");
    Destroy(rival.gameObject);
    foreach(var sport in new[]{SportId.Basketball,SportId.Golf}){
-    app.SelectSport(sport);app.EnterOffline();yield return new WaitForSeconds(.25f);
-    Check(!FindFirstObjectByType<TackleButton>()&&!actor.TryTackle(),"TACKLE_UNAVAILABLE_"+sport);
+    app.SelectSport(sport);app.EnterOffline();float deadline=Time.time+30;
+    while(app.SelectedSport!=sport&&Time.time<deadline)yield return null;
+    yield return new WaitForSeconds(.25f);
+    Check(app.SelectedSport==sport&&!FindFirstObjectByType<TackleButton>()&&!actor.TryTackle(),"TACKLE_UNAVAILABLE_"+sport);
    }
    actor.GetComponentInChildren<LODGroup>().ForceLOD(-1);TurnCommandActive=false;Record("TACKLE_GAMEPLAY_COMPLETE");
   }

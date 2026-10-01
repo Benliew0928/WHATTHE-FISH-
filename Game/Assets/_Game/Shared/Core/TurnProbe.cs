@@ -16,7 +16,10 @@ namespace WhatTheFish {
    Application.targetFrameRate=60;QualitySettings.vSyncCount=0;
    var app=AppRoot.Instance;TurnCommandActive=true;TurnCommand=default;
    foreach(SportId sport in Enum.GetValues(typeof(SportId))){
-    app.SelectSport(sport);app.EnterOffline();app.view.mode=1;app.view.yaw=-30;
+    TurnCommand=default;app.SelectSport(sport);app.EnterOffline();app.view.mode=1;app.view.yaw=-30;
+    float deadline=Time.time+30;
+    while((app.SelectedSport!=sport||!app.LocalAthlete.Grounded||app.LocalAthlete.Airborne)&&Time.time<deadline)yield return null;
+    Check(app.SelectedSport==sport&&app.LocalAthlete.Grounded&&!app.LocalAthlete.Airborne,"TURN_READY_"+sport);
     var athlete=app.LocalAthlete;var animator=athlete.GetComponentInChildren<Animator>();
     animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;
     var lod=athlete.GetComponentInChildren<LODGroup>();

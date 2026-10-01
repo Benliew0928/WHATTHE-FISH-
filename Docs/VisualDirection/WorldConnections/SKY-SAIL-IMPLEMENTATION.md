@@ -4,7 +4,7 @@ Implemented 29 September 2026 in Unity 6000.3.20f1. The four existing islands fo
 
 ## Play
 
-Run `Builds/WindowsFinal/Explore-SkySail.cmd` to start beside the football station. The regular menu and sport launchers still work. Walk to a shore station, then choose either neighboring island on its travel card. Windows also supports E for the clockwise destination. A ride cruises for 44 seconds, with door closing and docking time on either end.
+Run `Builds/WindowsFinal/Explore-SkySail.cmd` to start beside the football station. The regular menu and sport launchers still work. Walk to a shore station, then choose either neighboring island on its travel card. Windows also supports F for the clockwise destination. A ride cruises for 44 seconds, with door closing and docking time on either end.
 
 Look around with right mouse drag or the existing touch look control. C / Camera switches between cabin, chase and elevated panorama views. Walking resumes on the destination's boarding deck. Each stop disembarks the party; select the next leg to continue.
 

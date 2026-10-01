@@ -141,7 +141,7 @@ public static partial class ProjectBuilder {
   var offlinePrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Prefabs/Characters/OfflineAthlete.prefab");
   athlete.AddComponent<NetworkObject>();var nt=athlete.AddComponent<NetworkTransform>();nt.Interpolate=true;nt.SyncScaleX=nt.SyncScaleY=nt.SyncScaleZ=false;athlete.AddComponent<NetworkAthlete>();
   var playerPrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Prefabs/Characters/NetworkAthlete.prefab");UnityEngine.Object.DestroyImmediate(athlete);
-  var networkGO=new GameObject("Room network");var transport=networkGO.AddComponent<UnityTransport>();var manager=networkGO.AddComponent<NetworkManager>();manager.NetworkConfig=new NetworkConfig{ProtocolVersion=7,NetworkTransport=transport,PlayerPrefab=playerPrefab,TickRate=30,EnableSceneManagement=false,ConnectionApproval=true};manager.NetworkConfig.Prefabs.Add(new NetworkPrefab{Prefab=playerPrefab});
+  var networkGO=new GameObject("Room network");var transport=networkGO.AddComponent<UnityTransport>();var manager=networkGO.AddComponent<NetworkManager>();manager.NetworkConfig=new NetworkConfig{ProtocolVersion=RoomService.ProtocolVersion,NetworkTransport=transport,PlayerPrefab=playerPrefab,TickRate=30,EnableSceneManagement=false,ConnectionApproval=true};manager.NetworkConfig.Prefabs.Add(new NetworkPrefab{Prefab=playerPrefab});
   var appGO=new GameObject("WHATTHE FISH? Application");var rooms=appGO.AddComponent<RoomService>();var app=appGO.AddComponent<AppRoot>();app.rooms=rooms;app.athletePrefab=offlinePrefab;
   var cameraGO=new GameObject("Main Camera");cameraGO.tag="MainCamera";var camera=cameraGO.AddComponent<Camera>();camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=LocalProfile.Hex("BFE2E7");camera.farClipPlane=450;camera.fieldOfView=60;cameraGO.AddComponent<AudioListener>();cameraGO.AddComponent<UniversalAdditionalCameraData>();app.view=cameraGO.AddComponent<PlayerView>();cameraGO.transform.position=new Vector3(87,64,-103);cameraGO.transform.LookAt(Vector3.zero);
   var sunGO=new GameObject("Afternoon sun");var sun=sunGO.AddComponent<Light>();sun.type=LightType.Directional;sun.intensity=1.1f;sun.color=new Color(1,.94f,.85f);sun.shadows=LightShadows.Soft;sun.shadowBias=.08f;sun.shadowNormalBias=.3f;sunGO.transform.rotation=Quaternion.Euler(48,-35,0);RenderSettings.sun=sun;RenderSettings.ambientMode=AmbientMode.Trilight;RenderSettings.ambientSkyColor=new Color(.45f,.55f,.65f);RenderSettings.ambientEquatorColor=new Color(.28f,.35f,.39f);RenderSettings.ambientGroundColor=new Color(.18f,.22f,.18f);RenderSettings.fog=true;RenderSettings.fogColor=camera.backgroundColor;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=180;RenderSettings.fogEndDistance=430;
@@ -208,6 +208,7 @@ public static partial class ProjectBuilder {
  public static void BuildAndroid(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish.apk");}
  [MenuItem("WHATTHE FISH?/Build Android release APK")]
  public static void BuildAndroidRelease(){
+  SkySailBuilder.PrepareMobileMeshes();
   MobileMaterialBuilder.Prepare();
   EditorUserBuildSettings.buildAppBundle=false;
   PlayerSettings.SetManagedStrippingLevel(UnityEditor.Build.NamedBuildTarget.Android,ManagedStrippingLevel.Medium);
@@ -217,6 +218,7 @@ public static partial class ProjectBuilder {
  [MenuItem("WHATTHE FISH?/Build Android submission APK (under 100 MB)")]
  public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk("../Builds/Android/WhatTheFish-release.apk",true);}
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
+  JumpAnimationBuilder.Prepare();
   Directory.CreateDirectory(Path.GetDirectoryName(path));
   var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport});
   if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);

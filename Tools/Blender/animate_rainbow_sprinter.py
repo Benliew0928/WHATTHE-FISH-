@@ -334,14 +334,14 @@ def preview(rig, args):
     camera = bpy.data.objects.new("QA camera", camera_data)
     scene.collection.objects.link(camera)
     scene.camera = camera
-    camera_data.type, camera_data.ortho_scale = "ORTHO", 2.05
+    camera_data.type, camera_data.ortho_scale = "ORTHO", getattr(args, "ortho_scale", 2.05)
     views = {"front": (0,-4,1.25), "side": (4,0,1.25), "back": (0,4,1.25), "three-quarter": (2.5,-4,1.5)}
     out = EVIDENCE / args.label
     out.mkdir(parents=True, exist_ok=True)
     frames = range(scene.frame_start,scene.frame_end,2) if args.video else [int(f) for f in args.frames.split(",")]
     for view in (["three-quarter"] if args.video else views):
         camera.location = views[view]
-        camera.rotation_euler = (Vector((0,0,.82))-camera.location).to_track_quat("-Z","Y").to_euler()
+        camera.rotation_euler = (Vector((0,0,getattr(args,"focus_height",.82)))-camera.location).to_track_quat("-Z","Y").to_euler()
         for frame in frames:
             scene.frame_set(frame)
             scene.render.filepath = str(out / f"{view}-{frame:04d}.png")
