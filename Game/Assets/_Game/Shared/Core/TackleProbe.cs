@@ -27,7 +27,7 @@ namespace WhatTheFish {
     Check(actor.Action==FootballAction.Slide&&Vector3.Dot(actor.transform.position-first,Vector3.forward)>.01f,"TACKLE_IMMEDIATE_LOD"+lod);
     // Repeated presses during cooldown must not queue another slide.
     app.view.RequestTackle();app.view.RequestTackle();
-    bool hit=false,slideClip=false,hitClip=false,recoveredInput=false;float until=Time.time+1.3f;
+    bool hit=false,slideClip=false,hitClip=false,earlyInput=false;float until=Time.time+1.3f;
     while(Time.time<until){
      rival.Simulate(default,Time.deltaTime);hit|=rival.Action==FootballAction.Hit;
      var animator=actor.GetComponentInChildren<Animator>();var rivalAnimator=rival.GetComponentInChildren<Animator>();
@@ -35,13 +35,13 @@ namespace WhatTheFish {
      hitClip|=rivalAnimator.GetCurrentAnimatorClipInfo(2).Any(c=>c.clip.name=="Tackle_Hit")&&rivalAnimator.GetLayerWeight(2)>.8f;
      if(source.Elapsed>=FootballTackle.SlideTravel&&actor.Action==FootballAction.Slide){
       TurnCommand=new PlayerCommand{move=Vector2.right,sprint=true};var before=actor.transform.position;yield return null;
-      recoveredInput|=actor.transform.position.x>before.x+.01f;
+      earlyInput|=actor.transform.position.x>before.x+.01f;
      }else {if(actor.Action==FootballAction.None)TurnCommand=default;yield return null;}
     }
     Check(hit&&source.HitsDealt-dealt==1&&victim.HitsReceived-received==1,"TACKLE_SINGLE_HIT_LOD"+lod);
     Check(Vector3.Dot(rival.transform.position-rivalStart,Vector3.forward)>.3f,"TACKLE_OPPONENT_SLIDES_LOD"+lod);
-    Check(slideClip&&hitClip&&recoveredInput,"TACKLE_ANIMATION_AND_EARLY_CONTROL_LOD"+lod);
-    Check(actor.Action==FootballAction.None&&actor.TackleReady,"TACKLE_RECOVERED_NO_QUEUED_REPEAT_LOD"+lod);
+    Check(slideClip&&hitClip&&!earlyInput,"TACKLE_ANIMATION_AND_BLOCKED_RECOVERY_CONTROL_LOD"+lod);
+    Check(actor.Action==FootballAction.None&&!actor.TackleReady&&actor.TackleCooldown>2,"TACKLE_RECOVERED_COOLDOWN_NO_QUEUED_REPEAT_LOD"+lod);
    }
    // Miss, facing (rather than camera direction), wall obstruction and airborne rejection.
    PlaceAthlete(actor,origin,90);PlaceAthlete(rival,origin+Vector3.forward*4,180);TurnCommand=default;yield return null;
@@ -57,9 +57,9 @@ namespace WhatTheFish {
    PlaceAthlete(actor,origin+Vector3.up*3,0);Check(!actor.TryTackle(),"TACKLE_AIRBORNE_REJECTED");
    Destroy(rival.gameObject);
    foreach(var sport in new[]{SportId.Basketball,SportId.Golf}){
-    app.SelectSport(sport);app.EnterOffline();float deadline=Time.time+30;
-    while(app.SelectedSport!=sport&&Time.time<deadline)yield return null;
-    yield return new WaitForSeconds(.25f);
+    var streaming=app.environments.GetComponent<SkySailStreaming>();
+    if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(sport);
+    app.SelectSport(sport);app.EnterOffline();yield return new WaitForSeconds(.25f);
     Check(app.SelectedSport==sport&&!FindFirstObjectByType<TackleButton>()&&!actor.TryTackle(),"TACKLE_UNAVAILABLE_"+sport);
    }
    actor.GetComponentInChildren<LODGroup>().ForceLOD(-1);TurnCommandActive=false;Record("TACKLE_GAMEPLAY_COMPLETE");

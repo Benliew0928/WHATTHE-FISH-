@@ -9,7 +9,7 @@
 | Shared/UI | Main menu, profile, sport selection, waiting room, stadium settings, touch controls |
 | Shared/Networking | MPS room lifecycle, Relay setup, capacity/phase approval, NGO players and authoritative movement |
 | Shared/Platform | Reserved for Android/Huawei services; IPlatformGameServices currently has an explicitly unavailable adapter |
-| Sports/Football | Stadium visuals and signage; football gameplay is deferred |
+| Sports/Football | Stadium visuals, signage and basic kickable Rigidbody ball; match rules remain deferred |
 | Sports/Basketball | Open-air coastal arena, host-selectable logos/palettes, authoritative proximity pickup and assisted rigid-body shooting |
 | Sports/Golf | Flat island exploration; fixed appearance and shoreline boundary |
 
@@ -20,12 +20,12 @@
 1. UGS initialises only when an online action is selected. Anonymous authentication provides a player identity.
 2. MPS creates a private session with ten places and Relay networking, or joins by session code.
 3. NGO approves connections only while waiting and below ten connected players.
-4. Each owner sends a clamped movement vector, heading and sprint flag at 30 Hz. Only the host simulates CharacterController movement on the fixed timestep. Stale input expires after 0.25 s. Clients receive server NetworkTransform updates and interpolate them. There is no client prediction yet, so high latency can affect responsiveness.
+4. Each owner sends a clamped movement vector, heading, sprint and charging flags at 30 Hz. Only the host simulates CharacterController movement on the fixed timestep. Stale input expires after 0.25 s. Clients receive server NetworkTransform updates and interpolate them. There is no client prediction yet, so high latency can affect responsiveness.
 5. Each player's server-written cosmetic and readiness NetworkVariables update the waiting room and athlete. RPC ownership restricts players to their own avatar.
 6. The host player's server-written `WorldSport`, stadium preset (including logo ID), and phase variables are shared world state. The host locks the MPS session before starting exploration. NGO approval provides a second phase/capacity gate.
 7. Returning to the waiting room unlocks joining. Explicit host exit deletes the session. Disconnect/session deletion/host replacement returns clients to usable UI. The application does not elect a new gameplay host.
 
-Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and an owner-only reliable shot request. Protocol 12 adds possession/shot fields; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
+Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and an owner-only reliable shot request. Protocol 13 combines basketball possession/shot fields with football charge/control state; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
 
 ## Art/performance
 
@@ -37,12 +37,12 @@ URP uses a directional light, ambient fill, restricted shadow distance, 2× MSAA
 
 Golf uses five Blender meshes: flat grass, sand, coastal edge, shallow sea and open sea. Only grass and sand have walkable colliders. Overlapping shoreline box colliders live on layer 9 (PlayerBoundary); the shared camera casts only against layer 8. Golf sets far clip to 1,400 m and fog to 700–1,300 m. Other environments restore their existing 450 m far clip and 180–430 m fog. Water is static geometry without collision or simulation.
 
-`IRoomService.Create(SportId)` selects the host sport before starting networking; guests adopt the replicated sport without writing their preferences. `AppRoot.SaveStadium` ignores guest mutations. Football retains the `stadium` preference key; basketball uses `basketball`. Both persist compact appearance JSON, and only appearance IDs/text are transmitted. Golf returns a fixed appearance named ISLAND GREENS and cannot write either saved stadium profile. Golf customization is absent from menus. The football tackle update uses NGO protocol version 6 for the separate action snapshot alongside locomotion; earlier builds must not join these rooms. See `Docs/VisualDirection/TACKLE-AUTHORING.md` for owner-authorized action requests, server contact resolution and animation timing. See `Docs/VisualDirection/TURN-AUTHORING.md` for motor phases, turn-only foot placement and authoring/export responsibilities.
+`IRoomService.Create(SportId)` selects the host sport before starting networking; guests adopt the replicated sport without writing their preferences. `AppRoot.SaveStadium` ignores guest mutations. Football retains the `stadium` preference key; basketball uses `basketball`. Both persist compact appearance JSON, and only appearance IDs/text are transmitted. Golf returns a fixed appearance named ISLAND GREENS and cannot write either saved stadium profile. Golf customization is absent from menus. The football physics prototype uses NGO protocol version 13, adding the current controller ID to the host-written ball snapshot alongside locomotion and tackle state; earlier builds must not join these rooms. See [the prototype and verification guide](FOOTBALL-PROTOTYPE.md). See `Docs/VisualDirection/TACKLE-AUTHORING.md` for owner-authorized action requests, server contact resolution and animation timing. See `Docs/VisualDirection/TURN-AUTHORING.md` for motor phases, turn-only foot placement and authoring/export responsibilities.
 
 ## Next milestones
 
-- Extend the existing three-sport environment mapping for later venues.
-- Football/basketball rule modules: 1v1–5v5 team assignment, host settings, timed rounds, ball authority, scoring and a bot IPlayerCommandSource.
+- Retain the four-island mapping while adding sport rule modules.
+- Football/basketball rule modules: 1v1–5v5 team assignment, host settings, timed rounds, basketball ball authority, scoring and a bot IPlayerCommandSource.
 - Golf: add course layout, holes and a separate aiming/shot flow to the existing flat island.
 - Huawei: implement authentication/game services and achievements/results behind IPlatformGameServices after checking competition and AppGallery requirements. Current builds do **not** claim HMS integration.
 - Improve high-latency movement with input sequencing, client prediction and reconciliation before competitive play.

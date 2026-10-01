@@ -220,6 +220,10 @@ public static partial class ProjectBuilder {
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
   JumpAnimationBuilder.Prepare();
   Directory.CreateDirectory(Path.GetDirectoryName(path));
+  if(EditorUserBuildSettings.activeBuildTarget!=target&&!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(target),target))throw new Exception("Could not activate build target: "+target);
+  // URP can retain the previous platform's pipeline after a build in this editor.
+  // Recompute build resources so Android does not inherit desktop SSAO textures.
+  UnityEditor.Rendering.CoreBuildData.instance.Dispose();
   var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport});
   if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);
   Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);

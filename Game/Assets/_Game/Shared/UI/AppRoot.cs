@@ -125,12 +125,18 @@ namespace WhatTheFish {
     var control=rect.gameObject.AddComponent<TackleButton>();control.button=rect.gameObject.AddComponent<Button>();
     control.label=Label(rect,"Tackle [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
     control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
+    var kickRect=Panel(page,new Vector2(1425,545),new Vector2(220,105),mint);kickRect.name="Kick button";
+    var kick=kickRect.gameObject.AddComponent<KickButton>();kick.button=kickRect.gameObject.AddComponent<Button>();
+    var kickLabel=Label(kickRect,Application.isMobilePlatform?"Kick":"Kick [F]",0,Vector2.zero,new Vector2(210,90),23,ink);
+    kick.label=kickLabel;
+    kickLabel.alignment=TextAnchor.MiddleCenter;kickLabel.rectTransform.anchorMin=kickLabel.rectTransform.anchorMax=kickLabel.rectTransform.pivot=new Vector2(.5f,.5f);
    }
    if(SelectedSport==SportId.Basketball){
     var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Shoot button";
     var control=rect.gameObject.AddComponent<BasketballShootButton>();control.button=rect.gameObject.AddComponent<Button>();
     control.label=Label(rect,"Shoot [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
     control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
+
    }
    var stadiumName=rooms.Connected&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.WorldAppearance.Value.Length>0?JsonUtility.FromJson<StadiumAppearance>(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString()).title:CurrentAppearance.title;
    Pill(stadiumName.ToUpperInvariant(),new Vector2(252,818),new Vector2(400,62));fps=Label(page,"",0,new Vector2(66,742),new Vector2(380,44),18,Color.white);

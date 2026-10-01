@@ -1,6 +1,14 @@
 # APK size audit — 1 October 2026
 
+The combined GitHub/local working tree has no freshly verified APK. The upstream release record and historical local football records below do not validate this merged code.
+
 The current self-contained APK is **85,970,822 bytes (85.97 MB / 81.99 MiB)**. It includes all four islands, shared Sky-Sail travel, the steerable character jump, basketball pickup/carry/shoot gameplay, golf equipment and two fishing rods. It leaves **14,029,178 bytes (14.03 MB) to the strict 100,000,000-byte hackathon ceiling**. No external asset download is required.
+
+Historical local football sizes:
+
+This is the historical optimization baseline. The current charge-kick release measures **83,787,566 bytes** (+584 against the goal-entry release), with **16,212,434 bytes** of hard-limit headroom and **8,787,566 bytes above** the development target. Its actual ZIP entries and partial audit of 42 hash-identical streams are in [BUILD-SIZE.md](BUILD-SIZE.md); no new models or textures were introduced. The latest goal-entry/no-climb/field-boundary APK measures **83,786,982 bytes** (+7,704 against the preceding measured release), leaving **16,213,018 bytes** of hard-limit headroom and exceeding the development target by **8,786,982 bytes**. Actual APK entries and a partial estimate based only on 43 byte-identical streams are recorded in [BUILD-SIZE.md](BUILD-SIZE.md); incremental build packing offsets were unavailable. The newest 1 October player-interception APK is **83,779,278 bytes**, with **16,220,722 bytes** below the hard ceiling and **8,779,278 bytes above** the development target. It is 80 bytes smaller than the preceding physics prototype. Build/signature checks passed; see [the current size record](BUILD-SIZE.md) and [football prototype](FOOTBALL-PROTOTYPE.md). An intermediate desktop-pipeline APK measured 86,254,408 bytes; restoring the authored mobile pipeline removed that avoidable growth. Final art contributors remain unchanged and desktop SSAO textures/shader are absent.
+
+The 30 September self-contained APK is **83,282,808 bytes (83.28 MB / 79.42 MiB)**. It includes all four islands, shared Sky-Sail travel and the existing character animations. It is **266.97 MB smaller (76.22%)** than the 350.25 MB cleanup checkpoint, leaving **16.72 MB below the 100,000,000-byte hackathon ceiling**. No external asset download is required.
 
 The **75 MB working target remains unmet by 10,970,822 bytes (10.97 MB)**. Measure each addition and preserve the shared reserve for gameplay, effects, props and audio.
 

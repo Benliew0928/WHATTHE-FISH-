@@ -6,23 +6,26 @@ namespace WhatTheFish {
 
  // Simulation is called by Athlete, on the server for network players.
  public sealed class FootballTackle:MonoBehaviour {
-  public const float SlidePlayback=2f,SlideDuration=.85f/SlidePlayback,HitDuration=.45f,SlideTravel=.55f/SlidePlayback,HitTravel=.24f,Cooldown=1.25f;
+  public const float SlidePlayback=2f,SlideDuration=.85f/SlidePlayback,HitDuration=.45f,SlideTravel=.55f/SlidePlayback,HitTravel=.24f;
+  [Min(0)] public float cooldown=4,whiffRecovery=.35f;
   public FootballAction State {get;private set;}
   public float Elapsed {get;private set;}
   public float CooldownRemaining {get;private set;}
   public uint Sequence {get;private set;}
   public int HitsDealt {get;private set;}
   public int HitsReceived {get;private set;}
-  Vector3 direction;float immunity;Athlete athlete;
+  Vector3 direction;float immunity;Athlete athlete;bool ballHit;
+  public Vector3 Direction=>direction;
+  public bool ClaimBallContact(){if(State!=FootballAction.Slide||Elapsed>SlideTravel||ballHit)return false;ballHit=true;return true;}
   readonly Collider[] contacts=new Collider[32];readonly HashSet<FootballTackle> hitThisSlide=new();
   public static bool Allowed=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Football;
   public static float Duration(FootballAction action)=>action==FootballAction.Slide?SlideDuration:HitDuration;
   void Awake(){athlete=GetComponent<Athlete>();}
-  public void ResetAction(){State=FootballAction.None;Elapsed=0;CooldownRemaining=0;immunity=0;hitThisSlide.Clear();Sequence++;}
+  public void ResetAction(){State=FootballAction.None;Elapsed=0;CooldownRemaining=0;immunity=0;ballHit=false;hitThisSlide.Clear();Sequence++;}
   public bool TryStart(bool grounded){
    if(!Allowed||!grounded||State!=FootballAction.None||CooldownRemaining>0)return false;
    direction=transform.forward;direction.y=0;direction.Normalize();
-   State=FootballAction.Slide;Elapsed=0;CooldownRemaining=Cooldown;Sequence++;hitThisSlide.Clear();
+   State=FootballAction.Slide;Elapsed=0;CooldownRemaining=cooldown;Sequence++;ballHit=false;hitThisSlide.Clear();
    athlete.Motor.Reset(transform.eulerAngles.y);return true;
   }
   public bool ReceiveHit(Vector3 push){
@@ -42,11 +45,12 @@ namespace WhatTheFish {
    if(!Allowed){if(State!=FootballAction.None)ResetAction();return Vector3.zero;}
    if(State==FootballAction.None)return Vector3.zero;
    float travel=State==FootballAction.Slide?SlideTravel:HitTravel;
-   float used=Mathf.Clamp(travel-Elapsed,0,dt);normalTime=dt-used;
+   float used=Mathf.Clamp(travel-Elapsed,0,dt);normalTime=State==FootballAction.Slide?0:dt-used;
    var delta=direction*(TravelAt(State,Elapsed+dt)-TravelAt(State,Elapsed));
    slideContact=State==FootballAction.Slide&&used>0;
    Elapsed+=dt;
-   if(Elapsed>=Duration(State)){State=FootballAction.None;Elapsed=0;Sequence++;}
+   float duration=Duration(State)+(State==FootballAction.Slide&&!ballHit&&hitThisSlide.Count==0?whiffRecovery:0);
+   if(Elapsed>=duration){State=FootballAction.None;Elapsed=0;Sequence++;}
    return delta;
   }
   public void ResolveContacts(Vector3 before,Vector3 after){

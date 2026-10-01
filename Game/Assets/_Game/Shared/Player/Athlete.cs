@@ -1,7 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace WhatTheFish {
  public sealed class Athlete : MonoBehaviour {
+  public static readonly HashSet<Athlete> Active=new();
+  void OnEnable(){Active.Add(this);}
+  void OnDisable(){Active.Remove(this);FootballBall.Instance?.ForgetPlayer(this);}
   public CharacterController capsule; public Transform visual; public bool controlled,inTransit; public float speed;
   Animator animator; SkinnedMeshRenderer[] bodyRenderers;float turnWeight;int turnLayer=-1;FootballTackle football;int footballLayer=-1;float footballWeight;FootballSnapshot receivedFootball,cachedFootball;uint footballSequence=uint.MaxValue;double footballClock,footballReceivedAt;Vector3 visualRest;float groundSlideWeight;
   public JumpMotor Jump {get;}=new JumpMotor();
@@ -23,6 +27,11 @@ namespace WhatTheFish {
   public bool TackleReady=>!inTransit&&FootballTackle.Allowed&&Action==FootballAction.None&&TackleCooldown<=0&&!Airborne&&!LoadingJump&&Grounded;
   public bool Grounded=>capsule&&Physics.Raycast(transform.position+Vector3.up*.1f,Vector3.down,.25f,1<<8,QueryTriggerInteraction.Ignore);
   public bool TryTackle(){if(inTransit||Airborne||LoadingJump)return false;if(!initialized)Setup();return football&&football.TryStart(Grounded);}
+  float nextKick;
+  public bool Charging {get;private set;}
+  public bool KickReady=>!Airborne&&!LoadingJump&&Time.time>=nextKick&&FootballBall.Instance&&FootballBall.Instance.InKickRange(this);
+  public bool TryKick(float charge=1){if(!KickReady||!FootballBall.Instance.TryKick(this,charge))return false;nextKick=Time.time+.35f;return true;}
+  void OnControllerColliderHit(ControllerColliderHit hit){var ball=hit.collider.GetComponent<FootballBall>();if(ball&&!ball.Intercept(this))ball.Push(this,hit.moveDirection);}
   public FootballSnapshot FootballState(double now){
    if(footballSequence!=football.Sequence){footballSequence=football.Sequence;cachedFootball=new FootballSnapshot{action=football.State,sequence=football.Sequence,started=now-football.Elapsed,cooldownUntil=now+football.CooldownRemaining};}
    return cachedFootball;
@@ -44,7 +53,7 @@ namespace WhatTheFish {
    // Bounded sweeps keep low frame rates and short hitches from skipping ceilings.
    int steps=Mathf.Max(1,Mathf.CeilToInt(Mathf.Min(dt,.25f)*60));
    float step=Mathf.Min(dt,.25f)/steps;
-   for(int i=0;i<steps;i++){SimulateStep(command,step);command.tackle=false;}
+   for(int i=0;i<steps;i++){SimulateStep(command,step);command.tackle=false;command.kick=false;}
   }
   void SimulateStep(PlayerCommand command,float dt){
    if(!initialized)Setup(); if(!capsule.enabled)return;remote=false;
@@ -52,12 +61,17 @@ namespace WhatTheFish {
    var move=Vector2.ClampMagnitude(command.move,1);Vector3 direction=Quaternion.Euler(0,command.heading,0)*new Vector3(move.x,0,move.y);
    bool grounded=!Jump.Airborne&&Grounded;
    if(command.tackle)TryTackle();
+   if(command.kick)TryKick(command.kickCharge);
    float normalTime=dt;bool slideContact=false;
    var displacement=football?football.Step(dt,out normalTime,out slideContact):Vector3.zero;
-   if(normalTime>0)displacement+=Motor.Step(direction,command.sprint?7:4,grounded,normalTime);
+   Charging=command.charging&&KickReady;
+   float requestedSpeed=FootballBall.Instance&&FootballBall.Allowed?FootballBall.Instance.MovementSpeed(this,command.sprint,Charging):(command.sprint?7:4);
+   if(normalTime>0)displacement+=Motor.Step(direction,requestedSpeed,grounded,normalTime);
    float vertical=Jump.Step(grounded,CanRequestJump,dt);
    capsule.stepOffset=Jump.Airborne?0:.3f;
-   var before=transform.position;var flags=capsule.Move(displacement+Vector3.up*vertical);
+   var before=transform.position;
+   if(FootballBall.Instance)displacement=FootballBall.Instance.ConstrainPlayerMotion(this,displacement,dt);
+   var flags=capsule.Move(displacement+Vector3.up*vertical);
    Jump.Collide(flags);
    if(slideContact)football.ResolveContacts(before,transform.position);
    var actual=transform.position-before;actual.y=0;speed=dt>0?actual.magnitude/dt:0;
