@@ -10,7 +10,7 @@
 | Shared/Networking | MPS room lifecycle, Relay setup, capacity/phase approval, NGO players and authoritative movement |
 | Shared/Platform | Reserved for Android/Huawei services; IPlatformGameServices currently has an explicitly unavailable adapter |
 | Sports/Football | Stadium visuals and signage; football gameplay is deferred |
-| Sports/Basketball | Open-air coastal arena, host-selectable logos and palettes |
+| Sports/Basketball | Open-air coastal arena, host-selectable logos/palettes, authoritative proximity pickup and assisted rigid-body shooting |
 | Sports/Golf | Flat island exploration; fixed appearance and shoreline boundary |
 
 `AppRoot` composes the prototype and owns navigation. `RoomService` is the `IRoomService` implementation. `ISportMode` and `IPlayerCommandSource` provide boundaries for future loaders/rules and bot commands; they are not implementations of the deferred sports. `SportEnvironmentController` activates exactly one Football/Basketball/Golf/Fishing root in Bootstrap. Each `SportDefinition` stores its environment prefab, ten spawn positions, menu view, elevated-camera distance, far clip, fog distances and lighting values. There is no dynamic stadium resizing.
@@ -25,7 +25,7 @@
 6. The host player's server-written `WorldSport`, stadium preset (including logo ID), and phase variables are shared world state. The host locks the MPS session before starting exploration. NGO approval provides a second phase/capacity gate.
 7. Returning to the waiting room unlocks joining. Explicit host exit deletes the session. Disconnect/session deletion/host replacement returns clients to usable UI. The application does not elect a new gameplay host.
 
-Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work.
+Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and an owner-only reliable shot request. Protocol 12 adds possession/shot fields; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
 
 ## Art/performance
 

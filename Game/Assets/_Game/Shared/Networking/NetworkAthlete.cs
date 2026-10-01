@@ -36,13 +36,16 @@ namespace WhatTheFish {
   }
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void TackleRpc(){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryTackle();}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void JumpRpc(){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value)athlete.RequestJump();}
+  // The caller can request a shot only for their own avatar. The host chooses
+  // the hoop and velocity; clients never supply a ball pose, owner or power.
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void ShootRpc(float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryShoot(athlete,heading);}
   void Update(){if(!IsSpawned)return;
    if(IsOwner){
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
     if(!exploring)c.move=Vector2.zero;
     // Reliable action edges are sent this frame, independently of movement throttling.
-    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint);}
-    if(c.jump&&exploring)JumpRpc();if(c.tackle&&exploring)TackleRpc();
+    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint);}
+    if(c.jump&&exploring)JumpRpc();if(c.tackle&&exploring)TackleRpc();if(c.shoot&&exploring)ShootRpc(c.heading);
    }
    if(!IsServer){athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
   }

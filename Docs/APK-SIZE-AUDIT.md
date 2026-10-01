@@ -1,12 +1,20 @@
 # APK size audit — 1 October 2026
 
-The current self-contained APK is **85,957,194 bytes (85.96 MB / 81.98 MiB)**. It includes all four islands, shared Sky-Sail travel, the steerable character jump, basketball model/physics foundation, golf equipment and two fishing rods. It leaves **14,042,806 bytes (14.04 MB) to the strict 100,000,000-byte hackathon ceiling**. No external asset download is required.
+The current self-contained APK is **85,970,822 bytes (85.97 MB / 81.99 MiB)**. It includes all four islands, shared Sky-Sail travel, the steerable character jump, basketball pickup/carry/shoot gameplay, golf equipment and two fishing rods. It leaves **14,029,178 bytes (14.03 MB) to the strict 100,000,000-byte hackathon ceiling**. No external asset download is required.
 
-The **75 MB working target remains unmet by 10,957,194 bytes (10.96 MB)**. Measure each addition and preserve the shared reserve for gameplay, effects, props and audio.
+The **75 MB working target remains unmet by 10,970,822 bytes (10.97 MB)**. Measure each addition and preserve the shared reserve for gameplay, effects, props and audio.
 
-Artifact: `Builds/Android/WhatTheFish-release.apk`. Built on 1 October at 20:40:28 Malaysia time (12:40:28 UTC) with Unity 6000.3.20f1, release IL2CPP, ARM64, minimum Android API 26 and default Android ZIP compression. `AndroidSubmission` passed the size gate; APK v2 signature verification passed.
+Artifact: `Builds/Android/WhatTheFish-release.apk`. Built on 1 October at 22:08:35 Malaysia time (14:08:35 UTC) with Unity 6000.3.20f1, release IL2CPP, ARM64, minimum Android API 26 and default Android ZIP compression. `AndroidSubmission` passed the size gate; APK v2 signature verification passed.
 
-SHA-256: `99B19C56933544AC79A2CD597673DE1840D39A5D9378C63EF6B859A739EDC8C1`.
+SHA-256: `CCE5D8AE9AF66ADE9E3DDAAC3BA7AF7D7C9FB30204A9ED397539719B3DE381CC`.
+
+## Basketball gameplay revision
+
+Measured before/after APK: **85,957,194 to 85,970,822 bytes (+13,628 bytes)**. No new mesh, texture, animation, audio or package dependency is introduced. The largest contributors remain timber (about 2.25 MB), character albedo (1.99 MB), golf structures (1.98 MB), character mesh (1.57 MB) and stadium geometry. Per-asset estimates use separate DEFLATE compression and do not sum exactly to APK ZIP chunks. Entry comparison attributes the small increase primarily to runtime code/metadata; the scene/art budget remains stable.
+
+All **82 basketball gameplay checks**, **53 foundation checks** and **40 jump regression checks** passed on Windows. Gameplay checks include real 2-24 m rim crossings, repeated pickup after a rebound, ownership arbitration, host/guest shot input and holder disconnect/restart recovery. The portable copied-player fixture repeated all **61 offline checks** from a path with spaces and an unrelated working directory. No phone was connected; Android appearance, touch ergonomics, FPS and WAN latency remain unverified.
+
+Current evidence is under `Builds/BasketballGameplayQA/`: APK bytes/hashes, signature, build logs, `SizeAuditBefore/`, `SizeAuditFinal/`, contribution/ZIP comparisons, gameplay captures and portability evidence. See [basketball gameplay](BASKETBALL-GAMEPLAY.md) for controls and tuning.
 
 ## Jump motion revision
 

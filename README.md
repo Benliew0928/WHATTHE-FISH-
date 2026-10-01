@@ -29,7 +29,7 @@ For a fresh clone, install Git LFS and run `git lfs pull` before opening the Uni
 - `Tools/Build/` — build/environment scripts.
 - `Builds/WindowsFinal/` — latest Windows review player (launch `WhatTheFish.exe`), including the approved coastal football/basketball venues and G2/L2 islands. `Tools/Build/Build.ps1 -Target Windows` refreshes the playable scene and replaces this build; `LATEST-BUILD.txt` records its build time. Superseded Windows players are archived under `Legacy/Builds/`.
 - `Legacy/` — removable archive of old placeholders, unused materials, backups and superseded builds; see its archive manifest.
-- `Builds/Android/WhatTheFish-release.apk` — optimized Android release APK built 30 September 2026, **83.28 MB**, ARM64 / Android 8.0+, including all four islands and Sky-Sail. It leaves **16.72 MB** below the hackathon limit; the 75 MB working target remains unmet. See [the optimization report](Docs/APK-SIZE-AUDIT.md). Physical-phone qualification is pending.
+- `Builds/Android/WhatTheFish-release.apk` - Android release built 1 October 2026, **85,970,822 bytes (85.97 MB)**, ARM64 / Android 8.0+, including four islands, Sky-Sail and basketball pickup/shoot gameplay. It leaves **14,029,178 bytes** below the hard limit; the 75 MB working target remains unmet. See [the size audit](Docs/APK-SIZE-AUDIT.md). Physical-phone qualification is pending.
 - `Builds/WindowsMobilePreview/` — preview of mobile delivery geometry, built with `Tools/Build/Build.ps1 -Target MobilePreview`. Its desktop renderer and texture formats do not substitute for phone testing.
 - `Docs/SETUP.md` — toolchain, cloud linking and running on a phone.
 - `Docs/ARCHITECTURE.md` — code boundaries and future gameplay.
@@ -44,11 +44,13 @@ Fishing environment: launch `Builds/WindowsFinal/WhatTheFish.exe` and choose **L
 
 Landscape: left thumb stick moves; push it fully to run. Drag on the right to look. Tap **Camera** to cycle first person, third person and elevated views. On Windows: WASD, Shift, right mouse drag, C. Escape returns to the menu/waiting room. A guest leaving an environment leaves the room; the host can return everyone to the waiting room.
 
+Basketball: walk near the loose ball to pick it up automatically. Press **E** or tap **Shoot** to launch toward the hoop in your camera direction. Power and arc adjust to distance; the ball stays beside its holder without dribbling. The host controls possession and physics in rooms. See [basketball controls, tuning and validation](Docs/BASKETBALL-GAMEPLAY.md).
+
 The room system uses Unity Multiplayer Services sessions, Relay, Unity Transport and Netcode for GameObjects. Offline exploration requires no Unity account or internet connection. Online rooms require your cloud project to be linked and services enabled.
 
 The linked Unity cloud project supports internet rooms through Relay; create/join has been tested. Read `Docs/VERIFICATION.md` for the test coverage and phone checks still pending. Launch the Windows executable normally, without diagnostic arguments, for interactive play.
 
-This milestone is exploration, character art and networking infrastructure. The Rainbow Sprinter is one shared look for now; character appearance controls are paused until the model has separate, swappable parts. Football and basketball ball physics, scoring, bots, and golf gameplay are future work. Choose Basketball → Explore offline to walk the court. Arena customization provides four center logos, four accent palettes, a name, and a reset control. Hosts share their selection with guests; custom-image importing is deferred.
+This milestone includes exploration, character art, networking and the basketball pickup/shoot loop. The Rainbow Sprinter is one shared look for now; character appearance controls are paused until the model has separate, swappable parts. Football ball physics, scoring, bots and golf gameplay are future work. Choose Basketball > Explore offline to play with the ball. Arena customization provides four center logos, four accent palettes, a name and a reset control. Hosts share their selection with guests; custom-image importing is deferred.
 
 Choose Golf → Explore offline to visit ISLAND GREENS. Sprint shore to shore in approximately one minute in either direction. Invisible shoreline boundaries keep players on the island. Golf environment customization and golf gameplay are deferred.
 

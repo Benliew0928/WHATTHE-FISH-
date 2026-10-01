@@ -23,6 +23,7 @@ namespace WhatTheFish {
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    ball=app.stadium.GetComponentInChildren<BasketballBall>();
    if(!ball){Check(false,"ball exists in streamed arena");Finish();yield break;}
+   ball.autoPickup=false; // Isolate the existing material/contact tests from possession.
    yield return new WaitForFixedUpdate();
    Check(app.stadium.GetComponentsInChildren<BasketballBall>().Length==1,"one ball in active basketball arena");
    Check(ball.GetComponentsInChildren<Collider>().Length==1&&ball.GetComponent<SphereCollider>().radius==.12f,"one analytical sphere collider at 0.12 m radius");

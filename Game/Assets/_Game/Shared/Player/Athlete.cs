@@ -40,6 +40,7 @@ namespace WhatTheFish {
   public void Simulate(PlayerCommand command,float dt){
    if(!initialized)Setup();if(!capsule.enabled||inTransit||dt<=0)return;remote=false;
    if(command.jump)RequestJump();
+   if(command.shoot&&BasketballBall.Active)BasketballBall.Active.TryShoot(this,command.heading);
    // Bounded sweeps keep low frame rates and short hitches from skipping ceilings.
    int steps=Mathf.Max(1,Mathf.CeilToInt(Mathf.Min(dt,.25f)*60));
    float step=Mathf.Min(dt,.25f)/steps;

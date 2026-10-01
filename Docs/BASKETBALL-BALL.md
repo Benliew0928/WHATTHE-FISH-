@@ -1,6 +1,6 @@
 # Basketball model and physics foundation — 1 October 2026
 
-The basketball is imported into the existing Rally arena as one reusable rigid prop. This stage prepares the model, physical contacts and synchronized movement. It does not add pickup, possession, dribbling, shooting controls, scoring, sound or particles.
+The basketball is imported into the existing Rally arena as one reusable rigid prop. This report records the model, physical contacts and synchronized movement foundation. The subsequent [pickup and shooting implementation](BASKETBALL-GAMEPLAY.md) adds automatic possession and player-controlled assisted shots. Dribbling, scoring, sound and particles remain deferred.
 
 ## Source and delivery
 

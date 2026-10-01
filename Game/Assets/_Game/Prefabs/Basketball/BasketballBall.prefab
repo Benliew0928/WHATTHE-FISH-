@@ -120,6 +120,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4b6292ddf6bca40ba2bf15a3d3763e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.BasketballBall
+  autoPickup: 1
+  pickupRadius: 1.05
+  pickupHeight: 1.65
+  pickupMaxSpeed: 10
+  carryOffset: {x: 0.34, y: 1.05, z: 0.52}
+  releaseGrace: 0.3
+  shooterGrace: 0.9
+  arcHeight: 1.6
+  arcPerMetre: 0.12
+  maxShotSpeed: 24
+  backspin: 18
+  courtLimits: {x: 10, y: 17}
+  boundaryDelay: 0.75
+  strandedTimeout: 12
 --- !u!1 &467471867550599744
 GameObject:
   m_ObjectHideFlags: 0

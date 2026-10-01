@@ -69,7 +69,7 @@ namespace WhatTheFish {
     Button("Golf  /  Explore island",new Vector2(330,338),()=>{SelectSport(SportId.Golf);Show("sport");},mint);
     Button("Fishing  /  Explore lagoon",new Vector2(330,236),()=>{SelectSport(SportId.Fishing);Show("sport");},mint);Back("home");
    } else if(which=="sport"){
-    Heading(SelectedSport.ToString(),SelectedSport switch{SportId.Basketball=>"Your indoor home court. Take a look around.",SportId.Golf=>"An open island. Sea on every side.",SportId.Fishing=>"Five decks. One bright tropical lagoon.",_=>"The pitch is yours. Take a look around."});
+    Heading(SelectedSport.ToString(),SelectedSport switch{SportId.Basketball=>"Walk to the ball, then shoot toward a hoop.",SportId.Golf=>"An open island. Sea on every side.",SportId.Fishing=>"Five decks. One bright tropical lagoon.",_=>"The pitch is yours. Take a look around."});
     Button("Explore offline",new Vector2(330,568),EnterOffline,mint);
     Button("Create internet room",new Vector2(330,468),async()=>{await rooms.Create(SelectedSport);UpdateStatus();},Color.white);
     code=Field("Room code",new Vector2(235,367),new Vector2(305,76),"",12);
@@ -124,6 +124,12 @@ namespace WhatTheFish {
     var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Tackle button";
     var control=rect.gameObject.AddComponent<TackleButton>();control.button=rect.gameObject.AddComponent<Button>();
     control.label=Label(rect,"Tackle [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
+    control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
+   }
+   if(SelectedSport==SportId.Basketball){
+    var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Shoot button";
+    var control=rect.gameObject.AddComponent<BasketballShootButton>();control.button=rect.gameObject.AddComponent<Button>();
+    control.label=Label(rect,"Shoot [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
     control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
    }
    var stadiumName=rooms.Connected&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.WorldAppearance.Value.Length>0?JsonUtility.FromJson<StadiumAppearance>(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString()).title:CurrentAppearance.title;
