@@ -25,7 +25,7 @@
 6. The host player's server-written `WorldSport`, stadium preset (including logo ID), and phase variables are shared world state. The host locks the MPS session before starting exploration. NGO approval provides a second phase/capacity gate.
 7. Returning to the waiting room unlocks joining. Explicit host exit deletes the session. Disconnect/session deletion/host replacement returns clients to usable UI. The application does not elect a new gameplay host.
 
-Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and an owner-only reliable shot request. Protocol 13 combines basketball possession/shot fields with football charge/control state; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
+Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and owner-only reliable shot/pass requests. Protocol 14 combines basketball possession and action-pose fields with football ball and charge/control state; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
 
 ## Art/performance
 

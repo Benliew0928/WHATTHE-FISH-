@@ -34,6 +34,7 @@ public static class JumpAnimationBuilder {
   EditorUtility.SetDirty(controller);AssetDatabase.SaveAssets();Audit();
  }
  public static void Audit(){
+  MomentumChecks();
   foreach(int fps in new[]{20,30,60,120}){
    var jump=new JumpMotor();jump.Reset();jump.Request();float y=0,maximum=0;bool landed=false,tookOff=false;
    for(int i=0;i<fps*2;i++){
@@ -59,5 +60,35 @@ public static class JumpAnimationBuilder {
    if(!prefab||prefab.GetComponentInChildren<Animator>().applyRootMotion)throw new Exception("Jump requires the existing in-place athlete prefabs.");
   }
   Directory.CreateDirectory("../Builds/JumpQA");File.WriteAllText("../Builds/JumpQA/editor-audit.txt","PASS 20/30/60/120 FPS height; landing; no double jump; ceiling; coyote time; landing buffer; blocked input; root motion disabled.");
+ }
+ static void MomentumChecks(){
+  var lines=new System.Collections.Generic.List<string>();
+  foreach(int fps in new[]{20,30,60,120})foreach(float heading in Enumerable.Range(0,16).Select(i=>i*22.5f)){
+   float dt=1f/fps;var direction=Quaternion.Euler(0,heading,0)*Vector3.forward;
+   var motor=new LocomotionMotor();motor.Reset(heading);motor.Step(direction,7,true,.25f);
+   var travel=Vector3.zero;
+   for(int i=0;i<fps*2/5;i++)travel+=motor.Step(Vector3.zero,4,false,dt);
+   if(travel.magnitude<2.1f||travel.magnitude>2.3f||motor.Velocity.magnitude<4||Vector3.Cross(travel,direction).magnitude>.001f)throw new Exception("Air release lost momentum or changed heading "+fps+" / "+heading);
+   for(int i=0;i<Mathf.CeilToInt(fps*.3f);i++){
+    var before=motor.Velocity;motor.Step(-direction,7,false,dt);
+    if((motor.Velocity-before).magnitude>LocomotionMotor.AirAcceleration*dt+.001f)throw new Exception("Air steering snapped velocity");
+    if(motor.Velocity.magnitude>7.001f)throw new Exception("Air steering gained excess speed");
+   }
+   if(Vector3.Dot(motor.Velocity,-direction)<6.9f)throw new Exception("Air reversal too slow");
+   for(int i=0;i<Mathf.CeilToInt(fps*.3f);i++)motor.Step(Vector3.zero,4,true,dt);
+   if(motor.Velocity.sqrMagnitude>.00001f||motor.Phase!=LocomotionPhase.Idle)throw new Exception("Landing retained unwanted sliding");
+   motor.Step(direction,7,true,.25f);motor.Step(direction*.35f,4,false,.3f);
+   if(Mathf.Abs(motor.Velocity.magnitude-1.4f)>.001f)throw new Exception("Analog air input did not settle to requested speed");
+   motor.Reset(heading);if(motor.Step(Vector3.zero,4,false,.2f)!=Vector3.zero)throw new Exception("Reset retained air momentum");
+   lines.Add($"PASS momentum fps={fps} heading={heading} coast400ms={travel.magnitude:F4}m; bounded reversal; landing stop; analog; reset");
+  }
+  var wall=new LocomotionMotor();wall.Reset(45);wall.Step(new Vector3(1,0,1).normalized,7,true,.25f);wall.Constrain(Vector3.back);
+  if(Mathf.Abs(wall.Velocity.z)>.001f||wall.Velocity.x<4.9f)throw new Exception("Wall did not preserve only tangential momentum");
+  var regular=new LocomotionMotor();var hitch=new LocomotionMotor();regular.Reset(0);hitch.Reset(0);regular.Step(Vector3.forward,7,true,.25f);hitch.Step(Vector3.forward,7,true,.25f);
+  var regularTravel=Vector3.zero;for(int i=0;i<24;i++)regularTravel+=regular.Step(Vector3.zero,4,false,1f/60);
+  var hitchTravel=hitch.Step(Vector3.zero,4,false,.013f)+hitch.Step(Vector3.zero,4,false,.2f)+hitch.Step(Vector3.zero,4,false,.187f);
+  if(Vector3.Distance(regularTravel,hitchTravel)>.001f)throw new Exception("Hitch changed coasting distance");
+  lines.Add("PASS wall tangent preservation and irregular-frame coast distance");
+  Directory.CreateDirectory("../Builds/MomentumQA");File.WriteAllLines("../Builds/MomentumQA/editor-audit.txt",lines);
  }
 }

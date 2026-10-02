@@ -24,7 +24,7 @@ namespace WhatTheFish {
    ball=BasketballBall.Active;actor=app?app.LocalAthlete:null;
    if(!ball||!actor){Check(false,"basketball and player initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.5f);
-   Check(FindFirstObjectByType<BasketballShootButton>(),"minimal Shoot control present");
+   Check(FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass),"minimal Shoot control present");
    Check(Mathf.Abs(ball.arcPerMetre-.12f)<.0001f,"authored prefab shot arc imported");
    if(app.rooms.Connected){if(app.rooms.Host)yield return Host();else yield return Guest();}else yield return Offline();
    Finish();
@@ -55,9 +55,11 @@ namespace WhatTheFish {
     Check(ball.SelectHoop(ball.CarryPosition(actor),yaw)==hoop,"camera chooses "+trial.Item1+" at "+trial.Item2+" m");
     uint shots=ball.ShotCount;
     // Exercise the same pointer-down path used on Android, through ReadCommand.
-    var control=FindFirstObjectByType<BasketballShootButton>();yield return null;
+    var control=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass);yield return null;
     control.OnPointerDown(new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left});
     yield return null;yield return new WaitForFixedUpdate();
+    Check(ball.Held&&(ball.ActionQueued||actor.BasketballMotion.BeforeRelease),"shot gathers before release");
+    float releaseDeadline=Time.time+1.4f;while(ball.ShotCount==shots&&Time.time<releaseDeadline)yield return new WaitForFixedUpdate();
     Check(!ball.Held&&ball.ShotCount==shots+1,"touch edge launches once at "+trial.Item2+" m");
     Check(ball.Body.linearVelocity.y>3&&ball.Body.linearVelocity.magnitude<ball.maxShotSpeed&&ball.Body.angularVelocity.magnitude>10,"bounded shot speed and backspin");
     Check(!ball.TryShoot(actor,yaw),"duplicate shot without possession rejected");
@@ -90,7 +92,7 @@ namespace WhatTheFish {
    app.SendMessage("Return");yield return new WaitForSeconds(.15f);Check(!ball.Held&&ball.Body.isKinematic&&!ball.TryShoot(actor,0),"leaving exploration clears and freezes ball");
    app.EnterOffline();yield return new WaitForSeconds(.5f);Check(!ball.Held&&!ball.Body.isKinematic,"new offline session starts with loose ball");
    app.SelectSport(SportId.Football);yield return new WaitForSeconds(.3f);var stream=app.environments.GetComponent<SkySailStreaming>();while(stream.Busy)yield return null;app.Show("stadium");
-   Check(!BasketballBall.Active&&!FindFirstObjectByType<BasketballShootButton>(),"leaving island removes ball and Shoot control");
+   Check(!BasketballBall.Active&&!FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass),"leaving island removes ball and Shoot control");
    yield return stream.Prepare(SportId.Basketball);app.SelectSport(SportId.Basketball);app.EnterOffline();yield return new WaitForSeconds(.4f);ball=BasketballBall.Active;
    Check(FindObjectsByType<BasketballBall>(FindObjectsSortMode.None).Length==1&&!ball.Held,"returning island creates one fresh ball");
    Check(!BasketballBall.SolveShot(Vector3.zero,Vector3.up*3,1,1,out _)&&!BasketballBall.SolveShot(Vector3.zero,new Vector3(float.NaN,0,0),1,24,out _),"trajectory rejects impossible speed and invalid target");
@@ -102,11 +104,22 @@ namespace WhatTheFish {
    PlaceActor(actor,new Vector3(-.5f,.07f,-1.5f));PlaceActor(guest,new Vector3(.5f,.07f,-1.5f));ball.ResetHome();yield return WaitHeld(actor);
    Check(ball.HolderId==players[0].OwnerClientId&&!ball.TryShoot(guest,0),"simultaneous pickup selects one owner; nonholder shot rejected");
    yield return new WaitForSeconds(1.2f);PlaceActor(actor,new Vector3(0,.07f,5));yield return new WaitForSeconds(.7f);
-   app.view.RequestShoot();yield return new WaitForSeconds(.2f);Check(ball.ShotCount==1&&!ball.Held,"host input launches authoritative shot");yield return new WaitForSeconds(3);
+   app.view.RequestShoot();yield return new WaitForSeconds(1.1f);Check(ball.ShotCount==1&&!ball.Held,"host input launches authoritative shot");yield return new WaitForSeconds(3);
    PlaceActor(actor,new Vector3(-5,.07f,-5));PlaceActor(guest,new Vector3(0,.07f,-2));ball.ResetHome();yield return WaitHeld(guest);
    float deadline=Time.time+7;while(ball.ShotCount<2&&Time.time<deadline)yield return null;
    Check(ball.ShotCount==2&&!ball.Held,"guest reliable owner RPC launches one host-simulated shot");
-   yield return new WaitForSeconds(3);PlaceActor(guest,new Vector3(0,.07f,-2));ball.ResetHome();yield return WaitHeld(guest);
+   yield return new WaitForSeconds(3);
+   PlaceActor(actor,new Vector3(0,.07f,-2));PlaceActor(guest,new Vector3(0,.07f,3),180);ball.ResetHome();yield return WaitHeld(actor);
+   Check(ball.TryPass(actor,0)&&!ball.TryPass(actor,0),"host pass accepts one edge and rejects a duplicate");
+   deadline=Time.time+5;while(ball.Holder!=guest&&Time.time<deadline)yield return null;
+   Check(ball.PassCount==1&&ball.Holder==guest,"host chest pass is caught by guest");
+   deadline=Time.time+6;while((ball.PassCount<2||ball.Holder!=actor)&&Time.time<deadline)yield return null;
+   Check(ball.PassCount==2&&ball.Holder==actor,"guest reliable pass returns to host");
+   PlaceActor(actor,new Vector3(0,.07f,-4));PlaceActor(guest,new Vector3(0,.07f,7),180);
+   ball.Place(actor.transform.position+Vector3.forward*.6f+Vector3.up*.1f,Quaternion.identity,Vector3.zero,Vector3.zero);yield return WaitHeld(actor);
+   Check(ball.TryPass(actor,0),"long chest pass starts");deadline=Time.time+3;
+   while(ball.Holder!=guest&&Time.time<deadline)yield return null;
+   Check(ball.PassCount==3&&ball.Holder==guest,"11 metre pass arrives and is caught before recovery timeout");
    // Guest deliberately disconnects while holding; no stale kinematic possession.
    deadline=Time.time+8;while(NetworkManager.Singleton.ConnectedClients.Count>1&&Time.time<deadline)yield return null;
    yield return new WaitForSeconds(.5f);Check(!ball.Held&&!ball.Body.isKinematic,"holder disconnect recovers loose authoritative ball");
@@ -118,19 +131,22 @@ namespace WhatTheFish {
   IEnumerator Guest(){
    Check(!ball.Authority&&ball.Body.isKinematic&&!ball.Body.detectCollisions,"guest keeps kinematic replica");
    Check(!ball.TryShoot(actor,0)&&!ball.Place(Vector3.up,Quaternion.identity,Vector3.one,Vector3.one),"guest cannot directly mutate simulation");
-   bool sawHost=false,sawGuest=false,sawFlight=false,sent=false;float maxCarryError=0;double heldSince=0;float end=Time.time+30;
+   bool sawHost=false,sawGuest=false,sawFlight=false,sent=false,sentPass=false,sawWindup=false;float maxCarryError=0;double heldSince=0;float end=Time.time+40;
    while(Time.time<end){
     if(ball.Held){
      var holder=ball.Holder;if(holder){maxCarryError=Mathf.Max(maxCarryError,Vector3.Distance(ball.transform.position,ball.CarryPosition(holder)));}
      if(ball.HolderId==0){sawHost=true;CheckOnceCapture();}
      if(ball.CanShoot(actor)&&ball.ShotCount==1&&!sent){sawGuest=true;yield return new WaitForSeconds(.6f);app.view.RequestShoot();sent=true;}
-     if(ball.CanShoot(actor)&&ball.ShotCount==2){if(heldSince==0)heldSince=Time.time;if(Time.time-heldSince>.8f)break;}
+     if(ball.CanShoot(actor)&&ball.PassCount==1&&!sentPass){app.view.yaw=180;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=180};app.view.RequestPass();sentPass=true;}
+     foreach(var player in FindObjectsByType<Athlete>(FindObjectsSortMode.None))sawWindup|=player.BasketballMotion&&player.BasketballMotion.Busy;
+     if(ball.CanShoot(actor)&&ball.ShotCount==2&&ball.PassCount==3){if(heldSince==0)heldSince=Time.time;if(Time.time-heldSince>.8f)break;}
     }else if(ball.ShotCount>0)sawFlight=true;
     yield return new WaitForEndOfFrame();
    }
    Check(sawHost&&sawGuest,"replicated possession identifies both holders");Check(sent&&ball.ShotCount==2&&sawFlight,"guest receives host and guest shot flights");
    Check(maxCarryError<.15f,"carried replica follows presented athlete; max error="+maxCarryError.ToString("F3"));
    Check(ball.Body.isKinematic,"guest physics stays kinematic during shots");
+   Check(sentPass&&ball.PassCount==3&&sawWindup,"replicated action timelines and owner pass RPC");
    Check(ball.CanShoot(actor),"guest holds ball before disconnect");var leaving=app.rooms.Leave();while(!leaving.IsCompleted)yield return null;
   }
   bool captured;
