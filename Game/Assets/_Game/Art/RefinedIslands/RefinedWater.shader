@@ -11,11 +11,13 @@ Shader "WhatTheFish/RefinedWater" {
  CBUFFER_START(UnityPerMaterial)
  float _Extent,_Calm,_Cascade;
  CBUFFER_END
+ float4 _FishingLagoonCutout;
  struct A {float4 p:POSITION;float2 uv:TEXCOORD0;};struct V {float4 p:SV_POSITION;float3 world:TEXCOORD0;float2 uv:TEXCOORD1;float fog:TEXCOORD2;};
  V vert(A a){V o;VertexPositionInputs p=GetVertexPositionInputs(a.p.xyz);o.p=p.positionCS;o.world=p.positionWS;o.uv=a.uv;o.fog=ComputeFogFactor(p.positionCS.z);return o;}
  float hash(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);}
  float noise(float2 p){float2 a=floor(p),f=frac(p);f=f*f*(3-2*f);return lerp(lerp(hash(a),hash(a+float2(1,0)),f.x),lerp(hash(a+float2(0,1)),hash(a+1),f.x),f.y);}
  half4 frag(V i):SV_Target {
+  if(_FishingLagoonCutout.w>.5)clip(distance(i.world.xz,_FishingLagoonCutout.xy)-_FishingLagoonCutout.z);
   float2 p=i.world.xz,uv=p/(_Extent*2)+.5;half3 depth=SAMPLE_TEXTURE2D(_DepthMap,sampler_DepthMap,uv).rgb;
   float shore=(depth.r-.5)*64,calm=lerp(1,_Calm,depth.b),t=_Time.y;
   half3 color=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,uv).rgb;

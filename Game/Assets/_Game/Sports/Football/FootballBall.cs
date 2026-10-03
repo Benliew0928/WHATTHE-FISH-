@@ -96,7 +96,7 @@ namespace WhatTheFish {
   public Rigidbody Body {get;private set;}
   public Transform Pitch {get;private set;}
   public Bounds PitchBounds {get;private set;}
-  struct GoalArea {public Bounds bounds;public float front;public int sign;}
+  struct GoalArea {public Bounds bounds;public float front;public int sign;public FootballGoalNet net;}
   readonly GoalArea[] goals=new GoalArea[2];
   public int GoalCount {get;private set;}
   public Bounds GoalBounds(int index)=>goals[index].bounds;
@@ -135,11 +135,12 @@ namespace WhatTheFish {
     var top=InPitch(bar.transform,new Bounds(bar.center,bar.size));var back=InPitch(net.transform,net.sharedMesh.bounds);
     float front=Pitch.InverseTransformPoint(goal.position).z;int sign=front>PitchBounds.center.z?1:-1;
     var bounds=new Bounds();bounds.SetMinMax(new Vector3(a.max.x,PitchBounds.max.y,sign>0?PitchBounds.max.z:back.min.z+.01f),new Vector3(b.min.x,top.min.y,sign>0?back.max.z-.01f:PitchBounds.min.z));
-    goals[GoalCount++]=new GoalArea{bounds=bounds,front=front,sign=sign};
     FootballGoalNet.Attach(goal,Pitch,bounds,front,sign);
+    goals[GoalCount++]=new GoalArea{bounds=bounds,front=front,sign=sign,net=goal.GetComponentInChildren<FootballGoalNet>()};
    }
    if(!GetComponent<FootballMatch>())gameObject.AddComponent<FootballMatch>();
    if(Pitch&&GoalCount!=2)Debug.LogError("Football boundary requires both authored goal posts, crossbars and nets.",this);
+   FootballBoundaryVisual.Attach(this);
   }
   Bounds InPitch(Transform frame,Bounds source){
    var bounds=new Bounds(Pitch.InverseTransformPoint(frame.TransformPoint(source.min)),Vector3.zero);
@@ -158,15 +159,19 @@ namespace WhatTheFish {
   void FixedUpdate(){
    authority=HasAuthority;
    bool active=FootballTackle.EnvironmentAllowed&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!Online||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
-   bool dynamic=authority&&active&&!FootballMatch.BlocksActions;
+   bool followThrough=FootballMatch.GoalFollowThrough;
+   bool dynamic=authority&&active&&(!FootballMatch.BlocksActions||followThrough);
+   if(followThrough)ReleaseControl();
    SetPhysicsMode(dynamic&&!controller);
    Body.detectCollisions=authority;
    if(authority){
     if(active&&!playing)ResetBall();playing=active;
     if(!dynamic)ReleaseControl();
     if(dynamic){
-     RefreshControl();
-     if(!controller){Athlete closest=null;float distance=float.MaxValue;foreach(var candidate in Athlete.Active)if(CanControl(candidate)){float d=(candidate.transform.position-Body.position).sqrMagnitude;if(d<distance){distance=d;closest=candidate;}}if(closest)RefreshControl(closest);}
+     if(!followThrough){
+      RefreshControl();
+      if(!controller){Athlete closest=null;float distance=float.MaxValue;foreach(var candidate in Athlete.Active)if(CanControl(candidate)){float d=(candidate.transform.position-Body.position).sqrMagnitude;if(d<distance){distance=d;closest=candidate;}}if(closest)RefreshControl(closest);}
+     }
      float sea=RefinedIslandEnvironment.Active?RefinedIslandEnvironment.Active.layout.sea_level:0;
      if(Body.position.y<sea-2||Vector3.Distance(Body.position,origin)>300)ResetBall();
      if(controller)FollowController(controller);
@@ -184,7 +189,7 @@ namespace WhatTheFish {
   ulong ControllerId(){var net=controller?controller.GetComponent<NetworkObject>():null;return net&&net.IsSpawned?net.NetworkObjectId:ulong.MaxValue;}
   // Only the authoritative ball is bounded by pitch lines; nets have shared world collision.
   // LateUpdate catches the result of PhysX impulses, including a kick at the line.
-  void LateUpdate(){var owner=CurrentController;Body.interpolation=owner?RigidbodyInterpolation.None:freeInterpolation;if(owner&&Allowed)FollowController(owner);else if(HasAuthority&&!Body.isKinematic&&Allowed)KeepInsidePitch();}
+  void LateUpdate(){var owner=CurrentController;Body.interpolation=owner?RigidbodyInterpolation.None:freeInterpolation;if(owner&&Allowed)FollowController(owner);else if(HasAuthority&&!Body.isKinematic&&(Allowed||FootballMatch.GoalFollowThrough))KeepInsidePitch();}
   void KeepInsidePitch(){
    if(!Pitch)return;
    var point=Pitch.InverseTransformPoint(Body.position);var original=point;
@@ -203,6 +208,13 @@ namespace WhatTheFish {
     // The authored roof falls from 2.44 m at the mouth to 2.01 m at the back.
     ceiling=FootballGoalNet.RoofHeight(goal.bounds,goal.front,goal.sign,point.z)-marginY;
     point.y=Mathf.Min(point.y,ceiling);
+    // Report the surface point before containment removes incoming velocity.
+    // PhysX usually supplies the contact; this also covers a fast swept/clamped ball.
+    if(goal.net){
+     if(point.x!=original.x){float side=Mathf.Sign(original.x-point.x);goal.net.Contact(Pitch.TransformPoint(point+Vector3.right*(side*marginX)),Body.linearVelocity,Pitch.TransformDirection(Vector3.left*side));}
+     if(point.z!=original.z)goal.net.Contact(Pitch.TransformPoint(point+Vector3.forward*(goal.sign*marginZ)),Body.linearVelocity,Pitch.TransformDirection(Vector3.back*goal.sign));
+     if(point.y!=original.y)goal.net.Contact(Pitch.TransformPoint(point+Vector3.up*marginY),Body.linearVelocity,Pitch.TransformDirection(new Vector3(0,-1,-goal.sign*FootballGoalNet.RoofDrop/FootballGoalNet.RoofDepth).normalized));
+    }
    }else{
     point.x=Mathf.Clamp(point.x,PitchBounds.min.x+marginX,PitchBounds.max.x-marginX);
     point.z=Mathf.Clamp(point.z,PitchBounds.min.z+marginZ,PitchBounds.max.z-marginZ);
@@ -233,7 +245,13 @@ namespace WhatTheFish {
    if(!obstacle||!obstacle.GetComponentInParent<Athlete>())return;
    Body.position+=direction*Mathf.Max(0,nearest-radius*.05f-.002f);StopAtPlayer(obstacle.GetComponentInParent<Athlete>());
   }
-  void OnCollisionEnter(Collision collision){var actor=collision.collider.GetComponentInParent<Athlete>();if(actor)StopAtPlayer(actor);}
+  void OnCollisionEnter(Collision collision){
+   var actor=collision.collider.GetComponentInParent<Athlete>();if(actor)StopAtPlayer(actor);
+   if(!HasAuthority||!(Allowed||FootballMatch.GoalFollowThrough))return;
+   var net=collision.collider.GetComponentInParent<FootballGoalNet>();if(!net)return;
+   // The callback's collider-relative vector points opposite the ball's incoming motion.
+   for(int i=0;i<collision.contactCount;i++){var contact=collision.GetContact(i);net.Contact(contact.point,-collision.relativeVelocity,contact.normal);}
+  }
   public bool Intercept(Athlete actor){
    if(!actor||actor.inTransit||!HasAuthority||Body.isKinematic||!Allowed)return false;
    if(SlideContact(actor))return true;

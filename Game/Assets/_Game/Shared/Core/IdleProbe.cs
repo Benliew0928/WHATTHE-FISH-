@@ -32,6 +32,9 @@ namespace WhatTheFish {
     app.view.mode=1;yield return new WaitForSeconds(.2f);
     Check(athlete.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(r=>r.enabled),"IDLE_THIRD_PERSON_RESTORED_"+sport);
    }
+   // Use the open pitch for locomotion checks. The last enumerated sport can
+   // have nearby props/water boundaries that correctly stop actual movement.
+   app.SelectSport(SportId.Football);app.EnterOffline();yield return new WaitForSeconds(.5f);
    // Exercise real input/motor/Animator updates from distinct run phases.
    foreach(float phase in new[]{0f,.25f,.5f,.75f}){
     IslandDriving=true;IslandHeading=0;yield return new WaitForSeconds(.3f);animator.Play("Run",0,phase);yield return null;

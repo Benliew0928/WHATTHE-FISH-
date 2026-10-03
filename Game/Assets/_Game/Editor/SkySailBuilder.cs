@@ -59,6 +59,7 @@ public static class SkySailBuilder {
    foreach(var t in island.GetComponentsInChildren<Transform>(true).Where(t=>t.name.Contains("cloud field")||t.name=="Sculpted clouds").ToArray())t.gameObject.SetActive(false);
    foreach(var t in island.GetComponentsInChildren<Transform>(true).Where(t=>!t.gameObject.activeSelf&&MobilePackageCleanup.IsRetiredScenery(t.name)).ToArray())UnityEngine.Object.DestroyImmediate(t.gameObject);
    var marker=island.GetComponent<SkySailIslandScene>();if(!marker)marker=island.AddComponent<SkySailIslandScene>();marker.sport=id;
+   if(id==SportId.Fishing)LagoonPresentationBuilder.Attach(island);
    var destination=SceneManager.GetSceneByName(SkySailStreaming.SceneName(id));if(!destination.IsValid())destination=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
    SceneManager.MoveGameObjectToScene(island,destination);island.SetActive(false);EditorSceneManager.SaveScene(destination,Scenes+SkySailStreaming.SceneName(id)+".unity");
    env.definitions[(int)id].environmentPrefab=null;EditorUtility.SetDirty(env.definitions[(int)id]);
@@ -170,7 +171,7 @@ public static class SkySailBuilder {
   var cells=new Dictionary<Cell,int>();var vertices=new List<Vertex>();var triangles=new List<int>();var textures=new Dictionary<Texture,Color[]>();
   foreach(var f in root.GetComponentsInChildren<MeshFilter>(true)){
    var r=f.GetComponent<MeshRenderer>();if(!r||!r.gameObject.activeInHierarchy||!f.sharedMesh||skip.Contains(r))continue;string name=f.name.ToLowerInvariant();
-   if(name.Contains("cloud")||name.Contains("grass")||name.Contains("flower")||name.Contains("sky-sail")||name.Contains("sea")&&!name.Contains("seat")&&!name.Contains("arch"))continue;
+   if(name.Contains("cloud")||name.Contains("grass")||name.Contains("flower")||name.Contains("sky-sail")||name.Contains("sea")&&!name.Contains("seat")&&!name.Contains("arch")||f.GetComponentInParent<LagoonPresentation>())continue;
    if(r.bounds.size.magnitude<1.2f)continue;
    var mesh=f.sharedMesh;Vector3[] positions=mesh.vertices,normals=mesh.normals;var uv=mesh.uv;var transform=root.transform.worldToLocalMatrix*f.transform.localToWorldMatrix;
    for(int sub=0;sub<mesh.subMeshCount;sub++){

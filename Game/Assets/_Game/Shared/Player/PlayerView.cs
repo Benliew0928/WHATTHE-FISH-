@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using System.Collections.Generic;
 
 namespace WhatTheFish {
  [DefaultExecutionOrder(-100)]
@@ -21,34 +20,12 @@ namespace WhatTheFish {
   void HideKickAim(){if(kickAim)kickAim.enabled=false;}
   void OnDestroy(){if(kickAimMaterial)Destroy(kickAimMaterial);if(kickAimMesh)Destroy(kickAimMesh);}
   static Mesh CreateKickAimMesh(){
-   const float rounding=.09f,headLengthMultiplier=.8f;
-   var corners=new[]{new Vector3(-.22f,0,0),new Vector3(.22f,0,0),new Vector3(.22f,0,.56f),new Vector3(.5f,0,.56f),new Vector3(0,0,1),new Vector3(-.5f,0,.56f),new Vector3(-.22f,0,.56f)};
-   var outline=new List<Vector3>();
-   // Round every corner, including the tip and the inward shaft/head joins.
-   for(int i=0;i<corners.Length;i++){
-    var corner=corners[i];var previous=corners[(i+corners.Length-1)%corners.Length];var next=corners[(i+1)%corners.Length];
-    var entry=corner+(previous-corner).normalized*rounding;var exit=corner+(next-corner).normalized*rounding;
-    for(int step=0;step<=6;step++){float t=step/6f;outline.Add(entry*((1-t)*(1-t))+corner*(2*(1-t)*t)+exit*(t*t));}
-   }
-   // Normalize the rounded shape, then shorten only the head beyond its shoulder.
-   var bounds=new Bounds(outline[0],Vector3.zero);foreach(var point in outline)bounds.Encapsulate(point);
-   var vertices=new Vector3[outline.Count+1];var normals=new Vector3[vertices.Length];
-   vertices[0]=new Vector3(0,0,(.56f-bounds.min.z)/bounds.size.z);
-   for(int i=0;i<outline.Count;i++){
-    var p=outline[i];float z=(p.z-bounds.min.z)/bounds.size.z;
-    if(z>vertices[0].z)z=vertices[0].z+(z-vertices[0].z)*headLengthMultiplier;
-    vertices[i+1]=new Vector3((p.x-bounds.center.x)/bounds.size.x,0,z);
-   }
-   for(int i=0;i<normals.Length;i++)normals[i]=Vector3.up;
-   var triangles=new List<int>();
-   // The shoulder centre sees the entire outline; one fan avoids alpha overlap.
-   for(int i=0;i<outline.Count;i++){
-    int current=i+1,next=(i+1)%outline.Count+1;
-    if(Vector3.Cross(vertices[next]-vertices[0],vertices[current]-vertices[0]).y<=.0000001f)continue;
-    triangles.Add(0);triangles.Add(next);triangles.Add(current);
-   }
-   var mesh=new Mesh{name="Rounded solid kick arrow"};mesh.vertices=vertices;mesh.triangles=triangles.ToArray();mesh.normals=normals;
-   mesh.RecalculateBounds();return mesh;
+   // One reusable canvas for analytic rails, arrowhead, glow and flowing colour.
+   // UVs are in arrow space; padding keeps the soft glow inside the quad.
+   var mesh=new Mesh{name="Twin-rail energy kick arrow"};
+   mesh.vertices=new[]{new Vector3(-.67f,0,-.12f),new Vector3(.67f,0,-.12f),new Vector3(.67f,0,1.12f),new Vector3(-.67f,0,1.12f)};
+   mesh.uv=new[]{new Vector2(-.67f,-.12f),new Vector2(.67f,-.12f),new Vector2(.67f,1.12f),new Vector2(-.67f,1.12f)};
+   mesh.triangles=new[]{0,2,1,0,3,2};mesh.RecalculateBounds();return mesh;
   }
   void UpdateKickAim(){
    var ball=FootballBall.Instance;
@@ -64,9 +41,11 @@ namespace WhatTheFish {
    }
    var direction=FootballBall.KickDirection(target);
    float charge=Charge;
-   kickAimMaterial.SetColor("_BaseColor",charge>=1?new Color(1,0,0,.5f):new Color(1,1,1,.5f));
+   var cool=new Color(.08f,.85f,1,.9f);var gold=new Color(1,.8f,.16f,.9f);var hot=new Color(1,.2f,.32f,.9f);
+   kickAimMaterial.SetColor("_BaseColor",charge<.55f?Color.Lerp(cool,gold,charge/.55f):Color.Lerp(gold,hot,(charge-.55f)/.45f));
+   kickAimMaterial.SetFloat("_Charge",charge);
    kickAim.transform.SetPositionAndRotation(ball.transform.position+Vector3.up*.06f,Quaternion.LookRotation(direction));
-   kickAim.transform.localScale=new Vector3(.85f*.8f,1,Mathf.Lerp(1.6f,1.6f*1.8f,charge));
+   kickAim.transform.localScale=new Vector3(Mathf.Lerp(.85f,1.25f,charge),1,Mathf.Lerp(2.2f,4.4f,charge));
    kickAim.enabled=true;
   }
   void OnDisable(){CancelInput();if(Instance==this)Instance=null;}

@@ -13,6 +13,8 @@ The football stadium now uses the editable modular [Sunvale asset](../../ArtSour
 
 ## Style target
 
+The [football animation implementation and design](../FOOTBALL-ANIMATION.md) covers movement, dribbling, stopping, direction changes, kicking, tackles, directional falls and recovery for the existing Rainbow Sprinter. It includes 26 saved pose takes, the runtime layer, editing commands and measured review limits.
+
 Build an **inhabitable animated sports world**, not a miniature copy of real stadiums or a realistic child. Quality should come from excellent silhouettes, intentional shape design, clean color composition, appealing animation, and art-directed light.
 
 - **Shapes:** rounded, chunky, gently asymmetrical forms. Roofs, seats, hoops, rocks, trees, shoes and hair should share a soft sculpted language. Exaggerate for charm while retaining clear sport equipment and field markings.

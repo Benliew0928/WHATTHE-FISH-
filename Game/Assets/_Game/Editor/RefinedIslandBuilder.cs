@@ -125,6 +125,7 @@ public static class RefinedIslandBuilder {
    float a=i*Mathf.PI*2/32,r=650+(float)random.NextDouble()*600,s=11+(float)random.NextDouble()*12;c.transform.localPosition=new Vector3(Mathf.Cos(a)*r,120+(float)random.NextDouble()*100,Mathf.Sin(a)*r);c.transform.localRotation=Quaternion.Euler(0,i*71,0);c.transform.localScale=new Vector3(s,s*.75f,s*.88f);
    foreach(var renderer in c.GetComponentsInChildren<Renderer>()){renderer.sharedMaterial=clouds;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.gameObject.layer=10;}
   }
+  if(sport=="Fishing")LagoonPresentationBuilder.Attach(root);
   AssetDatabase.SaveAssets();Debug.Log("REFINED_ISLAND_BUILT "+sport+" modules="+data.instances.Length+" routes="+data.routes.Length);return root;
  }
 }

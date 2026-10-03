@@ -120,7 +120,7 @@ namespace WhatTheFish {
    TurnCommandActive=true;TurnCommand=default;
    while(!AppRoot.Instance||!AppRoot.Instance.Exploring)yield return null;
    float start=float.Parse(Value("-startAt","10"));bool positioned=false,repositioned=false,first=false,second=false;
-   var slides=new HashSet<ulong>();var hits=new HashSet<ulong>();var travel=new Dictionary<ulong,float>();var positions=new Dictionary<ulong,Vector3>();
+   var slides=new HashSet<ulong>();var hits=new HashSet<ulong>();var variants=new HashSet<ulong>();var travel=new Dictionary<ulong,float>();var positions=new Dictionary<ulong,Vector3>();
    while(elapsed<start+10){
     var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None);var app=AppRoot.Instance;
     if(app.rooms.Host&&(!positioned||elapsed>start+5&&!repositioned)){
@@ -132,12 +132,13 @@ namespace WhatTheFish {
     foreach(var p in players){
      var a=p.GetComponent<Athlete>();var id=p.OwnerClientId;
      if(a.Action==FootballAction.Slide)slides.Add(id);
-     if(a.Action==FootballAction.Hit){hits.Add(id);if(positions.TryGetValue(id,out var before)){var delta=a.transform.position-before;delta.y=0;travel[id]=travel.GetValueOrDefault(id)+delta.magnitude;}}
+     if(a.Action==FootballAction.Hit){hits.Add(id);if(a.HitVariant==0&&a.FootballMotion&&a.FootballMotion.RigReady)variants.Add(id);if(positions.TryGetValue(id,out var before)){var delta=a.transform.position-before;delta.y=0;travel[id]=travel.GetValueOrDefault(id)+delta.magnitude;}}
      positions[id]=a.transform.position;
     }
     yield return null;
    }
    Check(slides.Count==expected&&hits.Count==expected,"NETWORK_BOTH_PLAYERS_TACKLE_AND_REACT");
+   Check(variants.Count==expected,"NETWORK_BOTH_DIRECTIONAL_FALL_VARIANTS_AND_RIGS");
    Check(travel.Count==expected&&travel.All(p=>p.Value>.2f),"NETWORK_TACKLE_KNOCKBACK "+string.Join(",",travel.Select(p=>p.Key+":"+p.Value)));
    TurnCommandActive=false;Record("NETWORK_TACKLE_COMPLETE");
   }

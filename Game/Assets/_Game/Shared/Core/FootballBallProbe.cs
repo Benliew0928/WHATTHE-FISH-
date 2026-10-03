@@ -219,12 +219,12 @@ namespace WhatTheFish {
    var aim=PlayerView.Instance.GetComponentsInChildren<MeshRenderer>(true).FirstOrDefault(r=>r.name=="Kick aim");
    Check(aim&&aim.enabled&&Vector3.Dot(aim.transform.forward,FootballBall.KickDirection(actor))>.999f,"CONTROL_CHARGE_AIM_MATCHES_KICK_DIRECTION");
    float AimLength()=>aim.GetComponent<MeshFilter>().sharedMesh.bounds.size.z*aim.transform.lossyScale.z;
-   Check(aim.GetComponent<MeshFilter>().sharedMesh.vertexCount>7&&aim.GetComponent<MeshFilter>().sharedMesh.triangles.Length>9,"CONTROL_CHARGE_AIM_ROUNDED_FILLED_SHAFT_AND_HEAD");
+   Check(aim.GetComponent<MeshFilter>().sharedMesh.vertexCount==4&&aim.sharedMaterial.shader.name=="WhatTheFish/FootballKickCharge","CONTROL_CHARGE_TWIN_RAIL_PROCEDURAL_AIM");
    var aimColor=aim.sharedMaterial.GetColor("_BaseColor");float earlyAimLength=AimLength();
    File.AppendAllText(ReportPath,$"MEASURE aim color={aimColor} surface={aim.sharedMaterial.GetFloat("_Surface")} zwrite={aim.sharedMaterial.GetFloat("_ZWrite")} queue={aim.sharedMaterial.renderQueue} charge={PlayerView.Instance.Charge} graphics={SystemInfo.graphicsDeviceType}\n");
-   Check(aimColor==new Color(1,1,1,.5f)&&aim.sharedMaterial.GetFloat("_Surface")==1&&aim.sharedMaterial.GetFloat("_ZWrite")==0&&aim.sharedMaterial.renderQueue==3000,"CONTROL_CHARGE_AIM_WHITE_TRANSPARENT");
+   Check(aimColor.a==.9f&&aim.sharedMaterial.GetFloat("_Charge")>0&&aim.sharedMaterial.GetFloat("_Surface")==1&&aim.sharedMaterial.GetFloat("_ZWrite")==0&&aim.sharedMaterial.renderQueue==3000,"CONTROL_CHARGE_AIM_COLOR_FLOW_TRANSPARENT");
    yield return new WaitForSeconds(ball.maximumChargeTime+.1f);yield return null;yield return null;
-   Check(PlayerView.Instance.Charge==1&&aim.sharedMaterial.GetColor("_BaseColor")==new Color(1,0,0,.5f)&&Mathf.Abs(aim.transform.localScale.z-2.88f)<.001f&&AimLength()>2.6f&&AimLength()<2.7f&&earlyAimLength<AimLength(),"CONTROL_FULL_CHARGE_ROUND_SHORT_HEAD_AIM_RED_AND_18X_SCALE");
+   Check(PlayerView.Instance.Charge==1&&aim.sharedMaterial.GetColor("_BaseColor")==new Color(1,.2f,.32f,.9f)&&Mathf.Abs(aim.transform.localScale.z-4.4f)<.001f&&Mathf.Abs(aim.transform.localScale.x-1.25f)<.001f&&AimLength()>5.4f&&AimLength()<5.5f&&earlyAimLength<AimLength(),"CONTROL_FULL_CHARGE_RAINBOW_RAILS_DOUBLE_LENGTH_AND_WIDER");
    yield return CaptureControl(actor,"charge-aim");
    PlayerView.Instance.CancelKick(int.MinValue);DevelopmentProbe.TurnCommand=default;
    Check(aim&&!aim.enabled,"CONTROL_CANCEL_HIDES_KICK_AIM");
@@ -243,10 +243,14 @@ namespace WhatTheFish {
    Check(view.Charging&&!finger.useDragThreshold&&kickButton.cancelArea.gameObject.activeSelf,"FAKE_SHOT_CHARGE_SHOWS_CANCEL_AREA");
    yield return new WaitForSeconds(.2f);
    yield return CaptureControl(actor,"fake-shot-charge");
+   // The previously inactive cancel rect is laid out when the charge shows it.
+   // Drag to its displayed position, not its pre-activation layout coordinates.
+   Canvas.ForceUpdateCanvases();cancelPoint=RectTransformUtility.WorldToScreenPoint(null,kickButton.cancelArea.position);
    var otherFinger=new PointerEventData(EventSystem.current){pointerId=43,button=PointerEventData.InputButton.Left,position=cancelPoint};
    kickButton.OnDrag(otherFinger);kickButton.OnPointerUp(otherFinger);
    Check(view.Charging,"FAKE_SHOT_OTHER_FINGER_CANNOT_CANCEL_OR_RELEASE");
    finger.position=cancelPoint;kickButton.OnBeginDrag(finger);
+   File.AppendAllText(ReportPath,$"CANCEL state charging={view.Charging} aim={aim.enabled} owner={ball.CurrentController==actor} kinematic={ball.Body.isKinematic} point={cancelPoint} contains={RectTransformUtility.RectangleContainsScreenPoint(kickButton.cancelArea,cancelPoint,null)}\n");
    Check(!view.Charging&&!view.ReadCommand().kick&&!aim.enabled&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_CANCEL_NEVER_RELEASES_BALL");
    finger.position=kickPoint;kickButton.OnDrag(finger);kickButton.OnPointerDown(finger);
    Check(!view.Charging,"FAKE_SHOT_RETURN_TO_KICK_CANNOT_RESTART_SAME_GESTURE");

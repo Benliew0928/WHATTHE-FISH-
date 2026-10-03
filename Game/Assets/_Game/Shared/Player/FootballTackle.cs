@@ -15,6 +15,7 @@ namespace WhatTheFish {
   public float RecoveryRemaining {get;private set;}
   public float MovementMultiplier {get;private set;}=1;
   public uint Sequence {get;private set;}
+  public byte HitVariant {get;private set;}
   public int HitsDealt {get;private set;}
   public int HitsReceived {get;private set;}
   Vector3 direction;float immunity;Athlete athlete;bool ballHit;
@@ -35,6 +36,7 @@ namespace WhatTheFish {
   public bool ReceiveHit(Vector3 push,Athlete tackler=null){
    if(!Allowed||athlete.inTransit||athlete.Airborne||immunity>0)return false;
    direction=push;direction.y=0;direction.Normalize();
+   HitVariant=(byte)FootballMotion.FallVariant(direction,transform.rotation);
    State=FootballAction.Hit;Elapsed=0;immunity=HitDuration;CooldownRemaining=Mathf.Max(CooldownRemaining,HitDuration);Sequence++;HitsReceived++;
    RecoveryRemaining=0;MovementMultiplier=1;
    athlete.Motor.Reset(transform.eulerAngles.y);FootballBall.Instance?.ReleaseFromTackle(athlete,tackler,direction);return true;

@@ -1,4 +1,44 @@
-# APK size audit — football and basketball integration, 3 October 2026
+# APK size audit — fishing presentation, 3 October 2026
+
+## Transparent lagoon and three fish sizes — 3 October 2026
+
+Actual task APK: **86,574,958 → 86,757,976 bytes (+183,018)**. Hard-limit headroom: **13,242,024 bytes**; development-target overrun: **11,757,976 bytes**. Frozen-checkout AndroidSubmission and v2 signing passed. See [source/build scope and hash](BUILD-SIZE.md#transparent-lagoon-and-three-fish-sizes--3-october-2026). The concurrent root APK/audit was retained; current fishing evidence is under `Builds/FishingWaterQA/FinalSizeAudit/`.
+
+The largest new fishing art estimates are lagoon surface **43,086**, shared fish **40,321**, sandy bed **19,892**, water shader **8,560**, fish shader **8,088**, and bed shader **5,540 bytes**. Including their materials, the group totals **125,801 independent DEFLATE-estimated bytes**. These estimates are not exact APK allocations because ZIP chunks share compression. Serialized packed assets total **151,508,417 bytes**. The authoring master stays outside the player; all three fish sizes share the two delivered meshes/material.
+
+The final build reuses `RI_Sand_BaseColor.png`, already required by the terrain. `KeepSourceTexture` bypasses replacement in both mobile material preparation and application, with a case-insensitive tag comparison because Unity normalizes serialized boolean-looking tags. The packing report confirms `MobileMaterials/RI_Sand.png` is absent. The compact intermediate APK was **87,021,080 bytes**; final sharing removes **263,104 actual package bytes**. Earlier mesh simplification removed **80,758 bytes** without changing close/distant silhouettes. Reviewed obsolete generated bed material variants were archived only after checking scene/prefab references and the replacement path.
+
+Combined baseline-to-final ZIP changes include IL2CPP **+34,172**, Burst **+6,703**, metadata **+4,741**, and the concurrent net shader **+9,348 bytes**. Fishing split-entry differences reflect both new art and changed chunk boundaries. Existing largest art contributors remain unchanged: timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB**, and stadium **1.556 MB**. No extra image texture, audio, imported animation or package was added for fishing. The remaining reserve is below the desired development margin; no phone performance qualification is claimed.
+
+## Football character motion — 3 October 2026
+
+The final signed AndroidSubmission APK measures **86,574,958 → 86,764,912 bytes (+189,954)**, leaving **13,235,088 bytes** below the strict ceiling and exceeding the working target by **11,764,912 bytes**. The comparison includes concurrent fishing and net changes. [Build provenance and hash](BUILD-SIZE.md#football-character-motion--3-october-2026).
+
+The new 26-take resource is **11,548 serialized bytes / approximately 1,574 independently compressed bytes**. This estimate excludes its compiled runtime code and ZIP container interactions. Animation reuses the existing character, materials and run/jump/slide clips, with no imported mesh, texture, motion pack or middleware. Combined IL2CPP growth is **41,048 bytes**, metadata **4,734** and Burst **6,703**; these cannot be attributed solely to animation. The concurrent net shader adds a 9,348-byte ZIP entry. The largest remaining changed ZIP chunks are in fishing scene data.
+
+The first successful package was 87,028,088 bytes. Rebuilding with the concurrent material-sharing correction reduced it by **263,176 bytes**, avoiding a duplicated fishing texture while retaining its shared source image. Fresh asset estimates remain led by timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected character-art growth was found. Serialized assets total **151,508,629 bytes**, not the compressed delivery size.
+
+Current populated packing/ZIP records are in `Builds/SizeAudit/latest/`, with a preserved task copy at `Builds/FootballMotionQA/ReleaseSizeAudit/`. `release.json`, `apk-entry-deltas.csv`, `apk-signature.txt` and input manifests in the task folder record exact bytes, comparisons, v2 signing and an unchanged final build input set. [Verification](VERIFICATION.md#football-character-motion--3-october-2026) records the 1,807 checks, remaining contact tolerances and cleanup. Device quality/FPS and WAN remain unverified; 75 MB is still unmet.
+
+## Position-aware goal net — 3 October 2026
+
+Actual APK: **86,574,958 → 87,028,060 bytes (+453,102)**. Hard-limit headroom: **12,971,940 bytes**; development-target overrun: **12,028,060 bytes**. Main-project AndroidSubmission and v2 signing passed. See [release provenance, artifact and SHA-256](BUILD-SIZE.md#position-aware-goal-net--3-october-2026).
+
+The net shader adds **9,348 actual ZIP bytes**, versus a **9,291-byte independent per-asset DEFLATE estimate** and **18,520 serialized bytes**. Its shared material is **112 serialized bytes**. Script records are serialization records, not compiled-code cost; the opt-in review implementation is excluded from release. The source stadium and its editable masters are preserved. The new net uses generated geometry and shader motion, without textures, clips or a cloth solver.
+
+The combined snapshot also contains concurrent fishing and football-motion changes. Largest new art estimates: mobile sand **259,471**, lagoon surface **43,086**, fish **40,321**, lagoon bed **19,892 bytes**. IL2CPP grows **41,048**, metadata **4,734**, and Burst **6,703 compressed bytes**. Large shifts among `sharedassets4.assets.split*` entries reflect changed packed fishing content and chunk boundaries; individual split deltas are not per-asset sizes. The five largest existing art contributors remain unchanged. Serialized total: **151,858,317 bytes**.
+
+Task baseline/release hashes, ZIP and asset deltas, full build logs, signature verification and populated packing offsets are retained in `Builds/FootballNetQA/`. The exact measured APK is retained there under `Android/`; root audit outputs may later be replaced by another build. The package remains above the 75 MB development target. No physical Android device was attached. See [verification](VERIFICATION.md#position-aware-goal-net--3-october-2026) for functional/render coverage and archived iterations.
+
+## Interactive football boundary and twin-rail aim — 3 October 2026
+
+Measured APK: **86,498,912 → 86,574,958 bytes (+76,046)**. Headroom: **13,425,042 bytes** below the strict ceiling; development-target overrun: **11,574,958 bytes**. The baseline is the actual older local package measured before editing, not the newer historical release documented below. The difference includes pulled code changes as well as these effects. The main-project AndroidSubmission build and APK v2 signing check passed. See [release provenance and SHA-256](BUILD-SIZE.md#interactive-football-boundary-and-twin-rail-aim--3-october-2026).
+
+Current packing/ZIP records and per-asset estimates are in `Builds/SizeAudit/latest/`. Serialized total: **151,235,033 bytes**, not the APK allocation. New standalone shader ZIP entries cost **7,604 bytes** (boundary) and **7,056 bytes** (charge arrow), including their entry content overhead. Independent per-asset DEFLATE estimates are **7,549 / 7,002 bytes** respectively and should not be substituted for those actual entries. The wall material is 260 serialized bytes; the updated aim material is 160. Each new runtime/review script record is 112 serialized bytes, which does not measure compiled native code; the review implementation is excluded from release.
+
+Actual ZIP growth is primarily IL2CPP **+50,982**, metadata **+11,757**, new shaders **+14,660**, Unity native code **+1,413**, offset partly by Burst **−5,225 bytes**. Existing art remains led by timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No texture, source model, audio, animation clip or package dependency was added. Procedural geometry is created once and reused; animation needs no particle system, bloom, light or additional render pass. Preserve the remaining reserve; 75 MB is still unmet.
+
+Baseline/release bytes and hashes, ZIP deltas, signature result, final Windows/Android logs and previews are under `Builds/FootballFeedbackQA/`; detailed [verification and cleanup](VERIFICATION.md#interactive-football-boundary-and-twin-rail-aim--3-october-2026) cover 559 checks. No phone was attached, so device rendering/FPS/touch remain unverified. Earlier sections below retain their historical source/build scope.
 
 ## GitHub integration release — 3 October 2026
 
