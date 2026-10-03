@@ -89,6 +89,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a07d68b08cc66b469a234d7b04a4920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.FootballTackle
+  cooldown: 4
+  whiffRecovery: 0.8
 --- !u!114 &6481158643221054622
 MonoBehaviour:
   m_ObjectHideFlags: 0

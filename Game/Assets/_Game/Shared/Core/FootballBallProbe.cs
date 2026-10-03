@@ -12,6 +12,14 @@ namespace WhatTheFish {
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var args=Environment.GetCommandLineArgs();if(args.Contains("-footballBallAudit")){var probe=new GameObject("Football physics checks").AddComponent<FootballBallProbe>();int i=Array.IndexOf(args,"-report");probe.ReportPath=i>=0?args[i+1]:Path.Combine(Application.persistentDataPath,"football-ball.txt");}}
   void Check(bool ok,string name){File.AppendAllText(ReportPath,(ok?"PASS ":"FAIL ")+name+Environment.NewLine);if(!ok)throw new Exception("Football check failed: "+name);}
   void Place(Athlete actor,Vector3 position,float yaw=0){actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(position,Quaternion.Euler(0,yaw,0));actor.ResetLocomotion();actor.capsule.enabled=true;Physics.SyncTransforms();}
+  IEnumerator CaptureControl(Athlete actor,string name){
+   File.AppendAllText(ReportPath,$"CAPTURE {name} batch={Application.isBatchMode} graphics={SystemInfo.graphicsDeviceType}\n");
+   if(Application.isBatchMode)yield break;
+   var view=PlayerView.Instance;int mode=view.mode;float yaw=view.yaw,pitch=view.pitch;
+   view.mode=1;view.yaw=actor.transform.eulerAngles.y+145;view.pitch=14;
+   yield return new WaitForEndOfFrame();var path=Path.Combine(Path.GetDirectoryName(ReportPath),"control-"+name+".png");var probe=FindFirstObjectByType<DevelopmentProbe>();if(probe)probe.CaptureFrame(path);else ScreenCapture.CaptureScreenshot(path);
+   yield return null;view.mode=mode;view.yaw=yaw;view.pitch=pitch;
+  }
   IEnumerator Start(){
    Directory.CreateDirectory(Path.GetDirectoryName(ReportPath));File.WriteAllText(ReportPath,"Football prototype integration checks\n");
    while(!AppRoot.Instance||!FootballBall.Instance||!AppRoot.Instance.LocalAthlete)yield return null;
@@ -48,26 +56,22 @@ namespace WhatTheFish {
    ball.ResetBall();Place(actor,origin+new Vector3(-4,-.22f,-4));rival=Instantiate(app.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(rival,origin+new Vector3(.35f,-.22f,2));
    ball.Body.WakeUp();ball.Body.linearVelocity=Vector3.forward*18;yield return new WaitForSeconds(.3f);
    Check(ball.Body.linearVelocity.magnitude<.08f&&ball.Body.angularVelocity.magnitude<.5f&&ball.Body.position.z<origin.z+2,"FAST_GLANCING_PLAYER_INTERCEPTION");Destroy(rival.gameObject);
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);Check(actor.TryKick(0),"SELF_INTERCEPTION_KICK");
-   Place(actor,origin+new Vector3(.8f,-.22f,-.9f));DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,sprint=true};
-   float deadline=Time.time+6;while(actor.transform.position.z<ball.Body.position.z+.8f&&Time.time<deadline)yield return null;
-   Check(actor.transform.position.z>ball.Body.position.z+.7f,"SPRINTER_OVERTAKES_OWN_ROLLING_BALL");
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.left,sprint=true};deadline=Time.time+1;while(actor.transform.position.x>origin.x+.03f&&Time.time<deadline)yield return null;
-   DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
-   File.AppendAllText(ReportPath,$"Self interception ball={ball.Body.position} actor={actor.transform.position} velocity={ball.Body.linearVelocity} angular={ball.Body.angularVelocity}\n");
-   Check(ball.Body.linearVelocity.magnitude<.08f&&ball.Body.angularVelocity.magnitude<.5f&&ball.Body.position.z<actor.transform.position.z,"OWN_BALL_STOPS_BEHIND_OVERTAKING_PLAYER");
+   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);Check(actor.TryKick(0),"KICK_RELEASES_ATTACHED_BALL");
+   Check(!ball.CurrentController&&!ball.Body.isKinematic,"KICK_RESTORES_FREE_PHYSICS");
+   Place(actor,origin+new Vector3(4,-.22f,-4));yield return new WaitForSeconds(.2f);
+   float deadline;
    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-1.2f));DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(.8f);DevelopmentProbe.TurnCommand=default;
-   Check(ball.Body.position.z>origin.z+.3f&&ball.Body.position.y<origin.y+.3f,"CONTROLLER_PUSHES_WITHOUT_LAUNCH");
+   Check(ball.Body.position.z>origin.z+.3f&&ball.Body.position.y<origin.y+.3f,"ATTACHED_BALL_FOLLOWS_WALK_WITHOUT_LAUNCH");
    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.55f));yield return new WaitForSeconds(.3f);
    var contactOrigin=ball.Body.position;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(.8f);DevelopmentProbe.TurnCommand=default;
    File.AppendAllText(ReportPath,$"Rest contact ball={ball.Body.position} actor={actor.transform.position} speed={actor.speed} motor={actor.Motor.Velocity} radius={actor.capsule.radius} centre={actor.capsule.center} step={actor.capsule.stepOffset}\n");
-   Check(ball.Body.position.z>contactOrigin.z+.3f,"CONTROLLER_PUSHES_FROM_REST_AT_CONTACT");
+   Check(ball.Body.position.z>contactOrigin.z+.3f,"ATTACHMENT_FOLLOWS_MOVEMENT_FROM_REST");
    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.7f));yield return new WaitForSeconds(.3f);
    float feet=actor.transform.position.y,maxFeet=feet;
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up*.2f};deadline=Time.time+2;
    while(Time.time<deadline){maxFeet=Mathf.Max(maxFeet,actor.transform.position.y);yield return null;}DevelopmentProbe.TurnCommand=default;
    File.AppendAllText(ReportPath,$"Slow contact ball={ball.Body.position} actor={actor.transform.position} grounded={actor.Grounded} range={ball.InKickRange(actor)} speed={actor.speed}\n");
-   Check(ball.Body.position.z>origin.z+.3f,"SLOW_CONTROLLER_CONTACT_MOVES_BALL");
+   Check(ball.Body.position.z>origin.z+.3f,"SLOW_ATTACHED_MOVEMENT_FOLLOWS");
    Check(maxFeet<feet+.08f&&actor.Grounded,"SLOW_CONTACT_CANNOT_CLIMB_BALL");
    Check(ball.InKickRange(actor),"KICK_ELIGIBLE_AFTER_GROUNDED_CONTACT");
    foreach(var sprint in new[]{false,true}){
@@ -120,6 +124,7 @@ namespace WhatTheFish {
     ball.ResetBall();shot.x=goal.center.x;shot.z=line-sign*.5f;shot.y+=3;ball.Body.position=ball.Pitch.TransformPoint(shot);ball.Body.WakeUp();ball.Body.linearVelocity=shotDirection*18;yield return new WaitForSeconds(.2f);
     Check((ball.Pitch.InverseTransformPoint(ball.Body.position).z-line)*sign<=-radius+.002f,"ABOVE_CROSSBAR_STILL_BOUNDED_"+goalIndex);
    }
+   yield return GoalNetAudit(ball,actor,origin);
    ball.Body.position=origin+Vector3.down*30;yield return new WaitForFixedUpdate();Check(Vector3.Distance(ball.Body.position,origin)<.1f,"FALL_RECOVERY_TO_CENTRE");
    var parent=ball.transform.parent;var previous=parent.position;parent.position+=Vector3.right*100;ball.ResetBall();Check(Vector3.Distance(ball.Body.position,origin+Vector3.right*100)<.1f,"CENTRE_FOLLOWS_STREAMED_ISLAND_OFFSET");parent.position=previous;Physics.SyncTransforms();ball.ResetBall();
    Check(Vector3.Distance(ball.Body.position,origin)<.1f,"CENTRE_RESTORED_AFTER_ISLAND_REBASE");
@@ -134,11 +139,12 @@ namespace WhatTheFish {
    Check(PlayerView.Instance.BeginKick(),"KEYBOARD_CHARGE_BEGINS");yield return new WaitForSeconds(ball.maximumChargeTime*.5f);float half=PlayerView.Instance.Charge;PlayerView.Instance.EndKick();yield return new WaitForSeconds(.08f);
    Check(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude>weak+1&&Mathf.Abs(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude-Mathf.Lerp(ball.minimumKickSpeed,ball.kickSpeed,half))<.6f,"HALF_CHARGE_INTERPOLATES_FORCE");
    yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
-   button.OnPointerDown(kickPointer);yield return new WaitForSeconds(.2f);button.OnPointerExit(kickPointer);button.OnPointerUp(kickPointer);yield return new WaitForSeconds(.1f);
-   Check(!PlayerView.Instance.Charging&&ball.Body.linearVelocity.magnitude<.08f,"DRAG_OFF_CANCELS_WITHOUT_KICK");
+   button.OnPointerDown(kickPointer);yield return new WaitForSeconds(.2f);kickPointer.position=RectTransformUtility.WorldToScreenPoint(null,button.cancelArea.position);button.OnDrag(kickPointer);button.OnPointerUp(kickPointer);yield return new WaitForSeconds(.1f);
+   Check(!PlayerView.Instance.Charging&&ball.CurrentController==actor&&ball.Body.isKinematic,"CANCEL_AREA_DRAG_RETAINS_BALL_WITHOUT_KICK");
+   kickPointer.position=RectTransformUtility.WorldToScreenPoint(null,button.GetComponent<RectTransform>().position);
    Check(PlayerView.Instance.BeginKick(),"CHARGE_FOR_CHANGED_FACING");yield return new WaitForSeconds(.2f);Place(actor,origin+new Vector3(-.9f,-.22f,0),90);yield return new WaitForSeconds(.1f);PlayerView.Instance.EndKick();yield return new WaitForSeconds(.08f);
    Check(ball.Body.linearVelocity.x>2&&Mathf.Abs(ball.Body.linearVelocity.z)<.15f,"RELEASE_USES_CURRENT_FACING");
-   yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);PlayerView.Instance.BeginKick();Place(actor,origin+new Vector3(0,-.22f,-4));yield return new WaitForSeconds(.1f);PlayerView.Instance.EndKick();yield return new WaitForSeconds(.08f);
+   yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);PlayerView.Instance.BeginKick();ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-4));yield return new WaitForSeconds(.1f);PlayerView.Instance.EndKick();yield return new WaitForSeconds(.08f);
    Check(!PlayerView.Instance.Charging&&ball.Body.linearVelocity.magnitude<.08f,"OUT_OF_RANGE_CHARGE_CANCELS");
    Check(!ball.TryKick(actor,float.NaN)&&!ball.TryKick(actor,float.PositiveInfinity),"NONFINITE_CHARGE_REJECTED");
    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);Check(ball.TryKick(actor,5),"OVERSIZED_CHARGE_CLAMPED");yield return new WaitForSeconds(.08f);
@@ -147,87 +153,170 @@ namespace WhatTheFish {
    ball.ResetBall();DevelopmentProbe.TurnCommandActive=false;File.AppendAllText(ReportPath,"FOOTBALL_PHYSICS_COMPLETE\n");Debug.Log("FOOTBALL_PHYSICS_COMPLETE "+ReportPath);
   }
 
+  IEnumerator GoalNetAudit(FootballBall ball,Athlete actor,Vector3 origin){
+   DevelopmentProbe.TurnCommand=default;ball.ResetBall();
+   var nets=ball.Pitch.GetComponentsInChildren<FootballGoalNet>(true);
+   Check(nets.Length==2,"BOTH_GOALS_HAVE_CONTINUOUS_NET_COLLISION");
+   foreach(var net in nets)Check(net.GetComponentsInChildren<MeshCollider>().Length==4&&net.GetComponentsInChildren<MeshCollider>().All(c=>c.convex&&!c.isTrigger&&c.gameObject.layer==8),"NET_FOUR_SOLID_WORLD_PANELS_"+net.transform.parent.name);
+   for(int i=0;i<ball.GoalCount;i++){
+    var bounds=ball.GoalBounds(i);float front=ball.GoalFront(i);int sign=ball.GoalSign(i);float back=sign>0?bounds.max.z:bounds.min.z;
+    File.AppendAllText(ReportPath,$"NET geometry goal={i} bounds={bounds} front={front:F3} back={back:F3} roofBack={FootballGoalNet.RoofHeight(bounds,front,sign,back):F3}\n");
+    foreach(int face in new[]{0,1,2})foreach(bool outside in new[]{false,true})foreach(int mode in new[]{0,1,2}){
+     Vector3 normal=face==0?Vector3.left:face==1?Vector3.right:Vector3.forward*sign;
+     var surface=new Vector3(face==0?bounds.min.x:face==1?bounds.max.x:bounds.center.x,bounds.min.y,face==2?back:(front+back)*.5f);
+     var position=ball.Pitch.TransformPoint(surface+normal*(outside?.8f:-.8f));var direction=ball.Pitch.TransformDirection(normal*(outside?-1:1));float yaw=Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg;
+     Place(actor,position,yaw);var command=new PlayerCommand{move=Vector2.up,heading=yaw,sprint=mode==1};
+     if(mode==2){Check(actor.TryTackle(),$"NET_SLIDE_START_{i}_{face}_{outside}");command.move=Vector2.zero;}
+     for(int step=0;step<12;step++)actor.Simulate(command,.05f);
+     float distance=Vector3.Dot(ball.Pitch.InverseTransformPoint(actor.transform.position)-surface,normal);
+     Check(outside?distance>.25f:distance<-.25f,$"NET_BLOCKS_{(mode==0?"WALK":mode==1?"SPRINT":"SLIDE")}_{i}_{face}_{(outside?"OUTSIDE":"INSIDE")}");
+    }
+    var mouth=new Vector3(bounds.center.x,bounds.min.y,front-sign*.8f);var heading=ball.Pitch.TransformDirection(Vector3.forward*sign);float mouthYaw=Mathf.Atan2(heading.x,heading.z)*Mathf.Rad2Deg;
+    Place(actor,ball.Pitch.TransformPoint(mouth),mouthYaw);for(int step=0;step<12;step++)actor.Simulate(new PlayerCommand{move=Vector2.up,heading=mouthYaw},.05f);
+    Check((ball.Pitch.InverseTransformPoint(actor.transform.position).z-front)*sign>.4f,"PLAYER_CAN_ENTER_OPEN_GOAL_MOUTH_"+i);
+    Place(actor,actor.transform.position,mouthYaw+180);for(int step=0;step<12;step++)actor.Simulate(new PlayerCommand{move=Vector2.up,heading=mouthYaw+180},.05f);
+    Check((ball.Pitch.InverseTransformPoint(actor.transform.position).z-front)*sign<-.4f,"PLAYER_CAN_EXIT_OPEN_GOAL_MOUTH_"+i);
+    var middle=new Vector3(bounds.center.x,bounds.min.y,(front+back)*.5f);Place(actor,ball.Pitch.TransformPoint(middle));actor.RequestJump();float highest=actor.capsule.bounds.max.y;
+    for(int step=0;step<40;step++){actor.Simulate(default,.05f);highest=Mathf.Max(highest,actor.capsule.bounds.max.y);}
+    float ceiling=ball.Pitch.TransformPoint(new Vector3(middle.x,FootballGoalNet.RoofHeight(bounds,front,sign,middle.z),middle.z)).y;
+    Check(highest<=ceiling+.04f,"JUMP_CANNOT_PASS_NET_ROOF_"+i);
+   }
+   Place(actor,origin+new Vector3(-4,-.22f,-4));ball.ResetBall();yield return null;
+  }
+
   IEnumerator BalanceAudit(FootballBall ball,Athlete actor,Vector3 origin){
    var run=new PlayerCommand{move=Vector2.up,sprint=true};
    DevelopmentProbe.TurnCommand=default;ball.ResetBall();Place(actor,origin+new Vector3(5,-.22f,-5));
    DevelopmentProbe.TurnCommand=run;yield return new WaitForSeconds(.6f);float sprint=actor.speed;
-   Check(Mathf.Abs(sprint-7)<.1f,"BALANCE_UNLADEN_SPRINT_UNCHANGED");
+   Check(Mathf.Abs(sprint-7)<.1f,"CONTROL_UNLADEN_SPRINT_UNCHANGED");
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(.4f);float walk=actor.speed;
-   Check(Mathf.Abs(walk-4)<.1f,"BALANCE_UNLADEN_WALK_UNCHANGED");
-   DevelopmentProbe.TurnCommand=default;ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.7f));yield return new WaitForSeconds(.2f);
-   Check(ball.CurrentController==actor,"BALANCE_FRONT_LOW_SPEED_ACQUIRES");
-   var rival=Instantiate(AppRoot.Instance.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(rival,origin+new Vector3(.1f,-.22f,-1));ball.RefreshControl(rival);
-   Check(ball.CurrentController==actor,"BALANCE_PROXIMITY_DOES_NOT_STEAL");
-   Check(Mathf.Abs(ball.MovementSpeed(actor,false,false)-3.4f)<.01f&&Mathf.Abs(ball.MovementSpeed(actor,true,false)-5.95f)<.01f&&ball.MovementSpeed(rival,true,false)==7,"BALANCE_ONLY_CONTROLLER_BASE_TIMES_POINT85");
-   Place(rival,origin+new Vector3(3,-.22f,-3.7f));DevelopmentProbe.TurnCommand=run;
-   float gap=rival.transform.position.z-actor.transform.position.z,until=Time.time+1.5f,dribbleMotor=0,dribbleTravel=0;
-   while(Time.time<until){yield return new WaitForFixedUpdate();rival.Simulate(run,Time.fixedDeltaTime);dribbleMotor=Mathf.Max(dribbleMotor,actor.Motor.Velocity.magnitude);dribbleTravel=Mathf.Max(dribbleTravel,actor.speed);}
-   Check(rival.transform.position.z-actor.transform.position.z>gap+.8f,"BALANCE_UNLADEN_CLOSES_ON_DRIBBLER");
-   Check(dribbleMotor<=5.96f&&ball.CurrentController==actor,"BALANCE_DRIBBLE_CONTROL_STABLE");
-   DevelopmentProbe.TurnCommand=default;Destroy(rival.gameObject);yield return null;
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);
-   Check(actor.TryKick(0),"BALANCE_LIGHT_ACCEPTED");float light=ball.Body.linearVelocity.magnitude;
-   Check(ball.CurrentController!=actor&&ball.MovementSpeed(actor,true,false)==7,"BALANCE_RELEASE_REMOVES_SLOWDOWN");yield return new WaitForFixedUpdate();float lightPhysics=ball.Body.linearVelocity.magnitude;
-   Check(lightPhysics>sprint,"BALANCE_LIGHT_ACTUAL_PHYSICS_FASTER_THAN_SPRINT");
-   ball.Body.position=actor.transform.position+new Vector3(0,.22f,.9f);ball.Body.linearVelocity=Vector3.zero;ball.Body.angularVelocity=Vector3.zero;Physics.SyncTransforms();ball.RefreshControl(actor);
-   Check(ball.CurrentController!=actor,"BALANCE_KICKER_RECAPTURE_COOLDOWN");
-   rival=Instantiate(AppRoot.Instance.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(rival,actor.transform.position+new Vector3(.15f,0,0));ball.RefreshControl(rival);
-   Check(ball.CurrentController==rival,"BALANCE_TEAMMATE_RECEIVES_DURING_KICKER_COOLDOWN");Destroy(rival.gameObject);yield return null;yield return new WaitForSeconds(.35f);ball.RefreshControl(actor);
-   Check(ball.CurrentController==actor,"BALANCE_VALID_REACQUISITION_AFTER_COOLDOWN");
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);Check(actor.TryKick(0),"BALANCE_PUSH_INTO_SPACE");
-   DevelopmentProbe.TurnCommand=run;until=Time.time+7;bool left=false,regained=false;float chase=0;
-   while(Time.time<until){yield return null;left|=Vector3.ProjectOnPlane(ball.Body.position-actor.transform.position,Vector3.up).magnitude>2;chase=Mathf.Max(chase,actor.speed);if(left&&ball.CurrentController==actor){regained=true;break;}}
-   Check(left&&regained&&chase>6.9f,"BALANCE_LIGHT_LEAVES_FEET_FULL_SPEED_CHASE_REGAIN");
-   DevelopmentProbe.TurnCommand=default;ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.7f));yield return new WaitForSeconds(.4f);
-   Check(PlayerView.Instance.BeginKick(),"BALANCE_CHARGE_START");DevelopmentProbe.TurnCommand=run;yield return new WaitForSeconds(.16f);float charge=actor.Motor.Velocity.magnitude;
-   Check(charge<=2.41f&&ball.CurrentController==actor,"BALANCE_CHARGE_NO_SPRINT_NO_DOUBLE_MULTIPLIER");PlayerView.Instance.CancelKick(int.MinValue);DevelopmentProbe.TurnCommand=default;
-   yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
-   Check(actor.TryKick(1),"BALANCE_FULL_ACCEPTED");float full=ball.Body.linearVelocity.magnitude;yield return new WaitForFixedUpdate();float fullPhysics=ball.Body.linearVelocity.magnitude;
-   Check(fullPhysics>lightPhysics*1.5f,"BALANCE_FULL_CLEARLY_STRONGER_THAN_LIGHT");
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.7f));yield return new WaitForSeconds(.4f);Check(actor.TryTackle(),"BALANCE_SLIDE_START");
-   yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();float slide=ball.Body.linearVelocity.magnitude;
-   for(int i=0;i<20;i++)ball.Push(actor,Vector3.forward,28);float repeated=ball.Body.linearVelocity.magnitude;
-   Check(slide>1&&slide<lightPhysics&&repeated<=slide+.01f,"BALANCE_SLIDE_WEAKER_DUPLICATE_CONTACTS_DO_NOT_ACCELERATE");Check(!actor.TryTackle()&&actor.TackleCooldown>3,"BALANCE_SLIDE_FOUR_SECOND_COOLDOWN");
-   yield return new WaitForSeconds(.9f);ball.ResetBall();Place(actor,origin+new Vector3(4,-.22f,-4));Check(actor.TryTackle(),"BALANCE_WHIFF_START");
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,sprint=true,heading=180};yield return new WaitForSeconds(.5f);
-   Check(actor.Action==FootballAction.Slide&&!actor.KickReady&&actor.Motor.Velocity.magnitude<.01f,"BALANCE_WHIFF_RECOVERY_BLOCKS_SPRINT_KICK");Check(Vector3.Dot(actor.GetComponent<FootballTackle>().Direction,Vector3.forward)>.99f,"BALANCE_SLIDE_DIRECTION_LOCKED");
-   DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.35f);Check(actor.Action==FootballAction.None&&!actor.TackleReady,"BALANCE_WHIFF_CONSUMES_COOLDOWN");
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));ball.Body.linearVelocity=Vector3.forward*15;ball.RefreshControl(actor);Check(ball.CurrentController!=actor,"BALANCE_FAST_SHOT_NO_AUTO_CONTROL");
-   DevelopmentProbe.TurnCommand=default;ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);
-   ball.RefreshControl(actor);Place(actor,origin+new Vector3(0,-.22f,-1.3f));ball.RefreshControl(actor);Check(ball.CurrentController==actor,"BALANCE_DISTANCE_HYSTERESIS_RETAINS_OWNER");
-   Place(actor,origin+new Vector3(0,-.22f,-1.7f));ball.RefreshControl(actor);Check(ball.CurrentController!=actor,"BALANCE_LEAVING_RANGE_CLEARS_CONTROL");
-   Place(actor,origin+new Vector3(0,-.22f,-.9f),180);ball.RefreshControl(actor);Check(ball.CurrentController!=actor,"BALANCE_BACKWARD_BALL_NO_CONTROL");
-   Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);ball.RefreshControl(actor);actor.GetComponent<FootballTackle>().ReceiveHit(Vector3.back);ball.RefreshControl(actor);
-   Check(ball.CurrentController!=actor,"BALANCE_KNOCKDOWN_CLEARS_CONTROL");
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));rival=Instantiate(AppRoot.Instance.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(rival,origin+new Vector3(0,-.22f,8),180);yield return new WaitForSeconds(.4f);
-   Check(actor.TryKick(0),"BALANCE_SHORT_PASS_START");float passStarted=Time.time;until=Time.time+2;
-   while(Time.time<until&&ball.Body.position.z<origin.z+7.35f)yield return new WaitForFixedUpdate();float passTime=Time.time-passStarted;
-   yield return new WaitForSeconds(.1f);Check(ball.Body.position.z>origin.z+7&&ball.Body.linearVelocity.magnitude<.08f&&ball.CurrentController==rival&&passTime<8/5.95f,"BALANCE_SHORT_PASS_RECEIVED_FASTER_THAN_DRIBBLING");
-   Destroy(rival.gameObject);yield return null;
-   foreach(float incoming in new[]{10f,18f}){
-    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);
-    Check(actor.TryTackle(),"BALANCE_FAST_INTERCEPT_START_"+incoming);ball.Body.WakeUp();ball.Body.linearVelocity=Vector3.back*incoming;ball.Intercept(actor);float intercepted=ball.Body.linearVelocity.magnitude;
-    Check(intercepted<incoming&&intercepted>1,"BALANCE_FAST_INTERCEPT_REDUCES_SPEED_"+incoming);
-    for(int i=0;i<5;i++){yield return new WaitForFixedUpdate();ball.Push(actor,Vector3.forward,28);}
-    Check(ball.Body.linearVelocity.magnitude<=intercepted+.2f,"BALANCE_SLIDE_SUSTAINED_PHYSICS_FRAMES_NO_REACCELERATION_"+incoming);
-    File.AppendAllText(ReportPath,$"MEASURE slide incoming={incoming:F2} redirected={intercepted:F3} afterSustained={ball.Body.linearVelocity.magnitude:F3}\n");
+   Check(Mathf.Abs(walk-4)<.1f,"CONTROL_UNLADEN_WALK_UNCHANGED");
+   DevelopmentProbe.TurnCommand=default;ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
+   Check(ball.CurrentController==actor&&ball.Body.isKinematic,"CONTROL_ACQUIRE_IS_ATTACHED_STATE");
+   yield return CaptureControl(actor,"acquired");
+   Check(Mathf.Abs(ball.MovementSpeed(actor,false,false)-3f)<.01f&&Mathf.Abs(ball.MovementSpeed(actor,true,false)-5.25f)<.01f,"CONTROL_BASE_SPEED_TIMES_POINT75_ONCE");
+   for(int i=0;i<30;i++)ball.MovementSpeed(actor,true,false);
+   Check(Mathf.Abs(ball.MovementSpeed(actor,true,false)-5.25f)<.01f,"CONTROL_REPEATED_QUERIES_NO_COMPOUND_SLOWDOWN");
+   Check(!actor.CanRequestJump&&!actor.TackleReady&&!actor.TryTackle()&&!actor.GetComponent<FootballTackle>().TryStart(true),"CONTROL_JUMP_TACKLE_AND_DIRECT_SLIDE_BLOCKED");
+   actor.RequestJump();Check(!actor.LoadingJump&&!actor.Airborne,"CONTROL_DIRECT_JUMP_REQUEST_BLOCKED");
+   var rival=Instantiate(AppRoot.Instance.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(rival,actor.transform.position+new Vector3(.1f,0,0));ball.RefreshControl(rival);
+   Check(ball.CurrentController==actor&&ball.MovementSpeed(rival,true,false)==7&&!ball.TryKick(rival,0),"CONTROL_PROXIMITY_CONTACT_AND_OTHER_KICK_CANNOT_STEAL");
+   Place(rival,origin+new Vector3(4,-.22f,-4));
+   foreach(float yaw in new[]{180f,90f,270f,0f}){
+    actor.transform.rotation=Quaternion.Euler(0,yaw,0);actor.ResetLocomotion();ball.RefreshControl();yield return null;
+    Check(ball.CurrentController==actor&&Vector3.Distance(ball.Body.position,ball.FootPosition(actor))<.002f&&Vector3.Distance(ball.transform.position,ball.FootPosition(actor))<.002f,"CONTROL_STATIONARY_TURN_FOLLOWS_"+yaw);
+    if(yaw==180)yield return CaptureControl(actor,"turn180");
    }
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);Check(actor.TryKick(0),"BALANCE_FREE_LIGHT_ROLL_START");Place(actor,origin+new Vector3(5,-.22f,-4));until=Time.time+10;
-   while(!ball.Body.IsSleeping()&&Time.time<until)yield return new WaitForFixedUpdate();float lightDistance=Vector3.Distance(ball.Body.position,origin);
-   Check(ball.Body.IsSleeping()&&lightDistance>8&&lightDistance<30,"BALANCE_LIGHT_NATURAL_STOP_AWAY_FROM_BOUNDARY");
+   float maxGap=0,dribble=0;
+   foreach(bool running in new[]{false,true}){
+    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,sprint=running};float until=Time.time+.7f;
+    while(Time.time<until){yield return null;maxGap=Mathf.Max(maxGap,Vector3.Distance(ball.transform.position,ball.FootPosition(actor)));dribble=actor.speed;}
+    Check(ball.CurrentController==actor&&maxGap<.12f&&Mathf.Abs(dribble-(running?5.25f:3f))<.1f,running?"CONTROL_SPRINT_STAYS_ATTACHED_AT_5_POINT25":"CONTROL_WALK_STAYS_ATTACHED_AT_3");
+   }
+   DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.2f);
+   Check(PlayerView.Instance.BeginKick(),"CONTROL_CHARGE_START");DevelopmentProbe.TurnCommand=run;yield return new WaitForSeconds(.2f);
+   Check(actor.Motor.Velocity.magnitude<=2.41f&&ball.CurrentController==actor&&Vector3.Distance(ball.Body.position,ball.FootPosition(actor))<.002f,"CONTROL_CHARGE_RETAINS_ATTACHMENT_SEPARATE_SPEED");
+   var aim=PlayerView.Instance.GetComponentsInChildren<MeshRenderer>(true).FirstOrDefault(r=>r.name=="Kick aim");
+   Check(aim&&aim.enabled&&Vector3.Dot(aim.transform.forward,FootballBall.KickDirection(actor))>.999f,"CONTROL_CHARGE_AIM_MATCHES_KICK_DIRECTION");
+   float AimLength()=>aim.GetComponent<MeshFilter>().sharedMesh.bounds.size.z*aim.transform.lossyScale.z;
+   Check(aim.GetComponent<MeshFilter>().sharedMesh.vertexCount>7&&aim.GetComponent<MeshFilter>().sharedMesh.triangles.Length>9,"CONTROL_CHARGE_AIM_ROUNDED_FILLED_SHAFT_AND_HEAD");
+   var aimColor=aim.sharedMaterial.GetColor("_BaseColor");float earlyAimLength=AimLength();
+   File.AppendAllText(ReportPath,$"MEASURE aim color={aimColor} surface={aim.sharedMaterial.GetFloat("_Surface")} zwrite={aim.sharedMaterial.GetFloat("_ZWrite")} queue={aim.sharedMaterial.renderQueue} charge={PlayerView.Instance.Charge} graphics={SystemInfo.graphicsDeviceType}\n");
+   Check(aimColor==new Color(1,1,1,.5f)&&aim.sharedMaterial.GetFloat("_Surface")==1&&aim.sharedMaterial.GetFloat("_ZWrite")==0&&aim.sharedMaterial.renderQueue==3000,"CONTROL_CHARGE_AIM_WHITE_TRANSPARENT");
+   yield return new WaitForSeconds(ball.maximumChargeTime+.1f);yield return null;yield return null;
+   Check(PlayerView.Instance.Charge==1&&aim.sharedMaterial.GetColor("_BaseColor")==new Color(1,0,0,.5f)&&Mathf.Abs(aim.transform.localScale.z-2.88f)<.001f&&AimLength()>2.6f&&AimLength()<2.7f&&earlyAimLength<AimLength(),"CONTROL_FULL_CHARGE_ROUND_SHORT_HEAD_AIM_RED_AND_18X_SCALE");
+   yield return CaptureControl(actor,"charge-aim");
+   PlayerView.Instance.CancelKick(int.MinValue);DevelopmentProbe.TurnCommand=default;
+   Check(aim&&!aim.enabled,"CONTROL_CANCEL_HIDES_KICK_AIM");
+   Check(PlayerView.Instance.BeginKick(),"CONTROL_AIM_RECHARGE");yield return null;yield return null;
+   Check(aim.enabled,"CONTROL_RECHARGE_REUSES_KICK_AIM");PlayerView.Instance.EndKick();
+   Check(!aim.enabled,"CONTROL_RELEASE_HIDES_KICK_AIM");PlayerView.Instance.ClearMatchInput();
+   Check(PlayerView.Instance.BeginKick(),"CONTROL_AIM_BEFORE_TRAVEL");actor.inTransit=true;yield return null;yield return null;
+   Check(!aim.enabled&&!PlayerView.Instance.Charging,"CONTROL_TRAVEL_CANCELS_KICK_AIM");actor.inTransit=false;
+   yield return null;yield return null;
+   var kickButton=FindFirstObjectByType<KickButton>();var view=PlayerView.Instance;
+   Check(kickButton&&kickButton.cancelArea,"FAKE_SHOT_CANCEL_AREA_EXISTS");
+   var kickPoint=RectTransformUtility.WorldToScreenPoint(null,kickButton.GetComponent<RectTransform>().position);
+   var cancelPoint=RectTransformUtility.WorldToScreenPoint(null,kickButton.cancelArea.position);
+   var finger=new PointerEventData(EventSystem.current){pointerId=42,button=PointerEventData.InputButton.Left,position=kickPoint};
+   kickButton.OnInitializePotentialDrag(finger);kickButton.OnPointerDown(finger);
+   Check(view.Charging&&!finger.useDragThreshold&&kickButton.cancelArea.gameObject.activeSelf,"FAKE_SHOT_CHARGE_SHOWS_CANCEL_AREA");
+   yield return new WaitForSeconds(.2f);
+   yield return CaptureControl(actor,"fake-shot-charge");
+   var otherFinger=new PointerEventData(EventSystem.current){pointerId=43,button=PointerEventData.InputButton.Left,position=cancelPoint};
+   kickButton.OnDrag(otherFinger);kickButton.OnPointerUp(otherFinger);
+   Check(view.Charging,"FAKE_SHOT_OTHER_FINGER_CANNOT_CANCEL_OR_RELEASE");
+   finger.position=cancelPoint;kickButton.OnBeginDrag(finger);
+   Check(!view.Charging&&!view.ReadCommand().kick&&!aim.enabled&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_CANCEL_NEVER_RELEASES_BALL");
+   finger.position=kickPoint;kickButton.OnDrag(finger);kickButton.OnPointerDown(finger);
+   Check(!view.Charging,"FAKE_SHOT_RETURN_TO_KICK_CANNOT_RESTART_SAME_GESTURE");
+   // Real second-finger joystick input stays independent of the cancelled Kick gesture.
+   DevelopmentProbe.TurnCommandActive=false;var stick=view.stick;
+   otherFinger.position=RectTransformUtility.WorldToScreenPoint(null,stick.transform.position);stick.OnPointerDown(otherFinger);
+   otherFinger.position+=Vector2.right*(70*stick.transform.lossyScale.x);stick.OnDrag(otherFinger);
+   float beforeTurn=actor.transform.eulerAngles.y;yield return new WaitForSeconds(.3f);
+   Check(actor.speed>0&&Mathf.Abs(Mathf.DeltaAngle(beforeTurn,actor.transform.eulerAngles.y))>10&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_LEFT_JOYSTICK_TURNS_AND_DRIBBLES_WITHOUT_RELEASE");
+   stick.OnPointerUp(otherFinger);DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
+   kickButton.OnPointerUp(finger);yield return null;
+   Check(!view.Charging&&!view.ReadCommand().kick&&!kickButton.cancelArea.gameObject.activeSelf&&ball.CurrentController==actor,"FAKE_SHOT_CANCELLED_RELEASE_HAS_NO_DELAYED_KICK");
+   kickButton.OnPointerDown(finger);Check(view.Charging,"FAKE_SHOT_FRESH_PRESS_RESTARTS_CHARGE");kickButton.OnPointerUp(finger);
+   var lightCommand=view.ReadCommand();Check(lightCommand.kick&&lightCommand.kickCharge<.01f,"FAKE_SHOT_NORMAL_TAP_STILL_QUEUES_LIGHT_KICK");
+   kickButton.OnPointerDown(finger);yield return new WaitForSeconds(ball.maximumChargeTime+.1f);kickButton.OnPointerUp(finger);
+   var fullCommand=view.ReadCommand();Check(fullCommand.kick&&fullCommand.kickCharge==1,"FAKE_SHOT_NORMAL_HOLD_STILL_QUEUES_FULL_KICK");
+   kickButton.OnPointerDown(finger);finger.position=cancelPoint;kickButton.OnPointerUp(finger);
+   Check(!view.Charging&&!view.ReadCommand().kick&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_RELEASE_IN_CANCEL_AREA_WITHOUT_DRAG_STILL_CANCELS");
    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
-   rival=Instantiate(AppRoot.Instance.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(rival,origin+new Vector3(-.7f,-.22f,0),90);
-   ball.Push(rival,Vector3.right,4);Check(ball.CurrentController==rival,"BALANCE_REAL_CONTACT_CAN_STEAL_CONTROL");
-   Place(rival,origin+new Vector3(4,-.22f,0),90);ball.RefreshControl(actor);Check(ball.CurrentController==actor,"BALANCE_NONKICKER_CAN_REGAIN_WITHOUT_KICK_COOLDOWN");Destroy(rival.gameObject);yield return null;
-   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.7f));rival=Instantiate(AppRoot.Instance.athletePrefab).GetComponent<Athlete>();rival.Setup();float contestedPeak=0;
-   for(int i=0;i<15;i++){
-    yield return new WaitForFixedUpdate();var at=ball.Body.position;Place(actor,at+new Vector3(0,-.22f,-.7f));Place(rival,at+new Vector3(-.7f,-.22f,0),90);
-    ball.Push(actor,Vector3.forward,7);ball.Push(rival,Vector3.right,7);contestedPeak=Mathf.Max(contestedPeak,Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude);
+   Check(actor.TryKick(0),"CONTROL_LIGHT_KICK_RELEASE");float light=ball.Body.linearVelocity.magnitude;
+   Check(!ball.CurrentController&&!ball.Body.isKinematic&&ball.MovementSpeed(actor,true,false)==7,"CONTROL_KICK_CLEAR_OWNER_RESTORE_DYNAMIC_AND_FULL_SPEED");
+   // Check the immediate exclusion before rendering can advance the real ball out of range.
+   ball.Body.position=ball.FootPosition(actor);ball.Body.linearVelocity=Vector3.zero;ball.Body.angularVelocity=Vector3.zero;Physics.SyncTransforms();ball.RefreshControl(actor);
+   Check(!ball.CurrentController,"CONTROL_RELEASE_REQUIRES_FRESH_APPROACH_NO_TIMER");
+   Place(rival,actor.transform.position+Vector3.right*.15f);ball.RefreshControl(rival);
+   Check(ball.CurrentController==rival,"CONTROL_OTHER_PLAYER_CAN_RECEIVE_IMMEDIATELY");
+   ball.ResetBall();Place(rival,origin+new Vector3(4,-.22f,-4));Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
+   Check(actor.TryKick(0),"CONTROL_LIGHT_KICK_PRESENTATION");yield return new WaitForFixedUpdate();
+   Check(ball.Body.linearVelocity.magnitude>sprint,"CONTROL_LIGHT_FIRST_PHYSICS_FASTER_THAN_RUN");yield return CaptureControl(actor,"kicked");
+   ball.ResetBall();Place(rival,origin+new Vector3(4,-.22f,-4));Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);Check(actor.TryKick(1),"CONTROL_FULL_KICK_RELEASE");float full=ball.Body.linearVelocity.magnitude;
+   Check(full>light*1.5f,"CONTROL_FULL_CLEARLY_STRONGER_THAN_LIGHT");
+   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.4f);
+   // A slide touching only the held ball, or missing both, cannot eject possession.
+   Place(rival,ball.Body.position+new Vector3(1.4f,-.22f,0),270);Check(rival.TryTackle(),"CONTROL_OPPONENT_SLIDE_START");
+   rival.Simulate(default,.1f);ball.Intercept(rival);
+   Check(ball.CurrentController==actor,"CONTROL_MISSED_TACKLE_AND_BALL_ONLY_CONTACT_KEEP_OWNER");
+   var hit=actor.GetComponent<FootballTackle>();int beforeHit=hit.HitsReceived;
+   Place(rival,actor.transform.position+Vector3.left*1.4f,90);Check(rival.TryTackle(),"CONTROL_ACTUAL_PLAYER_SLIDE_START");rival.Simulate(default,.1f);
+   Check(hit.HitsReceived==beforeHit+1&&actor.Action==FootballAction.Hit&&!ball.CurrentController&&!ball.Body.isKinematic,"CONTROL_VALID_PLAYER_SLIDE_HIT_RELEASES_FREE_BALL");
+   float slide=Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude;
+   Check(Mathf.Abs(ball.Body.linearVelocity.y-ball.tackleBallLift)<.01f,"CONTROL_TACKLE_LAUNCHES_BALL_UPWARD");
+   for(int i=0;i<20;i++)ball.Intercept(rival);
+   Check(slide<=ball.tackleBallSpeed+.01f&&slide<light&&Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude<=slide+.01f&&ball.Body.linearVelocity.y<=ball.tackleBallLift+.01f,"CONTROL_SINGLE_SLIDE_NO_DUPLICATE_ACCELERATION");
+   ball.RefreshControl(actor);ball.RefreshControl(rival);Check(!ball.CurrentController,"CONTROL_TACKLER_AND_VICTIM_DO_NOT_AUTO_RECEIVE");
+   float launchHeight=ball.Body.position.y;yield return new WaitForSeconds(.12f);
+   Check(ball.Body.position.y>launchHeight+.2f,"CONTROL_TACKLE_BALL_ACTUALLY_RISES");
+   yield return new WaitForSeconds(1);
+   rival.ResetLocomotion();Place(rival,origin+new Vector3(8,-.22f,-8));actor.ResetLocomotion();ball.RefreshControl(actor);
+   var free=ball.Body.position;Place(actor,free+new Vector3(0,-.22f,-3));ball.RefreshControl(actor);Place(actor,free+new Vector3(0,-.22f,-.9f));ball.Body.linearVelocity=Vector3.zero;ball.RefreshControl(actor);
+   Check(ball.CurrentController==actor&&ball.Body.isKinematic,"CONTROL_FRESH_APPROACH_CAN_REGAIN_AFTER_TACKLE");
+   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));ball.Body.linearVelocity=Vector3.forward*15;ball.RefreshControl(actor);
+   Check(!ball.CurrentController,"CONTROL_FAST_PASS_NOT_AUTO_ACQUIRED");
+   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f),180);ball.RefreshControl(actor);Check(!ball.CurrentController,"CONTROL_BACK_TO_BALL_NOT_ACQUIRED");
+   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));Check(actor.TryTackle(),"CONTROL_FREE_PLAYER_CAN_SLIDE");ball.RefreshControl(actor);Check(!ball.CurrentController,"CONTROL_SLIDING_PLAYER_CANNOT_ACQUIRE");
+   Check(ball.Intercept(actor)&&Mathf.Abs(ball.Body.linearVelocity.y-ball.tackleBallLift)<.01f,"CONTROL_FREE_BALL_SLIDE_LAUNCHES_UPWARD");
+   var freeLaunch=ball.Body.linearVelocity;ball.Intercept(actor);
+   Check(Vector3.Distance(ball.Body.linearVelocity,freeLaunch)<.001f,"CONTROL_FREE_BALL_SLIDE_SINGLE_LAUNCH");ball.ResetBall();
+   actor.ResetLocomotion();Place(actor,origin+new Vector3(0,-.22f,-.9f));ball.RefreshControl(actor);Check(ball.CurrentController==actor,"CONTROL_NORMAL_PLAYER_REACQUIRES");
+   ball.ResetBall();Check(!ball.CurrentController&&!Physics.GetIgnoreCollision(ball.GetComponent<SphereCollider>(),actor.capsule),"CONTROL_RESET_RESTORES_COLLISION_AND_CLEARS_OWNER");
+   Place(actor,origin+new Vector3(0,-.22f,-.9f));ball.RefreshControl(actor);actor.gameObject.SetActive(false);Check(!ball.CurrentController&&!ball.Body.isKinematic,"CONTROL_DESPAWN_RELEASES_PHYSICS");actor.gameObject.SetActive(true);actor.ResetLocomotion();
+   ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));ball.RefreshControl(actor);actor.inTransit=true;ball.RefreshControl();Check(!ball.CurrentController,"CONTROL_TRAVEL_RELEASES_OWNER");actor.inTransit=false;
+   foreach(var outward in new[]{Vector3.right,Vector3.left,Vector3.forward,Vector3.back}){
+    ball.ResetBall();var local=ball.Pitch.InverseTransformPoint(origin);local.x=outward.x==0?5:outward.x>0?ball.PitchBounds.max.x-.4f:ball.PitchBounds.min.x+.4f;local.z=outward.z==0?0:outward.z>0?ball.PitchBounds.max.z-.4f:ball.PitchBounds.min.z+.4f;
+    ball.Body.position=ball.Pitch.TransformPoint(local);var forward=ball.Pitch.TransformDirection(outward);var feet=ball.Body.position-forward*.9f;feet.y=origin.y-.22f;float yaw=Mathf.Atan2(forward.x,forward.z)*Mathf.Rad2Deg;Place(actor,feet,yaw);ball.RefreshControl(actor);
+    for(int i=0;i<5;i++)actor.Simulate(new PlayerCommand{move=Vector2.up,sprint=true,heading=yaw},.1f);
+    var at=ball.Pitch.InverseTransformPoint(ball.Body.position);Check(ball.CurrentController==actor&&Vector3.Distance(ball.Body.position,ball.FootPosition(actor))<.002f&&at.x<=ball.PitchBounds.max.x-.218f&&at.x>=ball.PitchBounds.min.x+.218f&&at.z<=ball.PitchBounds.max.z-.218f&&at.z>=ball.PitchBounds.min.z+.218f,"CONTROL_ATTACHED_FIELD_EDGE_"+outward);
    }
-   Check(contestedPeak<=5.96f,"BALANCE_MULTIPLE_PLAYERS_CANNOT_STACK_ORTHOGONAL_PUSH_SPEED");Destroy(rival.gameObject);yield return null;
-   File.AppendAllText(ReportPath,$"MEASURE contestedPushPeak={contestedPeak:F3}m/s\n");
-   File.AppendAllText(ReportPath,$"MEASURE passArrival={passTime:F3}s dribbleMinimum={8/5.95f:F3}s lightFreeStopDistance={lightDistance:F3}m\n");
-   File.AppendAllText(ReportPath,$"MEASURE balance walk={walk:F3} sprint={sprint:F3} dribbleMotor={dribbleMotor:F3} dribbleTravelPeak={dribbleTravel:F3} chargeMotor={charge:F3} lightImmediate={light:F3} lightFirstPhysics={lightPhysics:F3} fullImmediate={full:F3} fullFirstPhysics={fullPhysics:F3} slideFirstPhysics={slide:F3} repeatedSlide={repeated:F3} chasePeak={chase:F3}\n");
+   Destroy(rival.gameObject);DevelopmentProbe.TurnCommand=default;
+   File.AppendAllText(ReportPath,$"MEASURE attached walk={walk:F3} sprint={sprint:F3} dribbleSprint={dribble:F3} maxPresentationGap={maxGap:F4}m light={light:F3} full={full:F3} tackle={slide:F3}m/s\n");
+   yield return null;
   }
  }
 }

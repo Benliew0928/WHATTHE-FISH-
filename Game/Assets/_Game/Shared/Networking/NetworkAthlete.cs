@@ -18,6 +18,11 @@ namespace WhatTheFish {
   public NetworkVariable<FootballSnapshot> Football=new();
   public NetworkVariable<BasketballSnapshot> Basketball=new();
   public NetworkVariable<FootballBallSnapshot> Ball=new();
+  public NetworkVariable<FootballMatchSnapshot> Match=new();
+  public NetworkVariable<FootballTeam> Team=new(FootballTeam.None);
+  public void ClearMatchInput(){command=default;lastInput=0;}
+  uint MatchRevision=>HostPlayer?HostPlayer.Match.Value.revision:0;
+  bool AcceptRound(uint round)=>!FootballMatch.Instance||!FootballMatch.Instance.Context||!FootballMatch.BlocksMovement&&round==MatchRevision;
   Athlete athlete; PlayerCommand command; float lastInput; float sendTimer;
   public override void OnNetworkSpawn(){
    athlete=GetComponent<Athlete>();athlete.Setup();athlete.capsule.enabled=IsServer;
@@ -30,14 +35,16 @@ namespace WhatTheFish {
   void OnAppearance(FixedString128Bytes oldValue,FixedString128Bytes newValue){if(newValue.Length>0)athlete.Appearance(JsonUtility.FromJson<CharacterAppearance>(newValue.ToString()));}
   [Rpc(SendTo.Server)] public void AppearanceRpc(FixedString128Bytes json){var a=JsonUtility.FromJson<CharacterAppearance>(json.ToString());a.Clamp();AppearanceData.Value=JsonUtility.ToJson(a);}
   [Rpc(SendTo.Server)] public void ReadyRpc(bool value){Ready.Value=value;}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseFootballTeamRpc(FootballTeam team,uint selectionRevision){if(IsSpawned&&FootballMatch.Instance)FootballMatch.Instance.ChooseTeam(athlete,team,selectionRevision);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void TravelReadyRpc(uint sequence){if(HostPlayer&&HostPlayer.WorldTravel.Value.phase==SkySailPhase.Preparing&&HostPlayer.WorldTravel.Value.sequence==sequence)TravelReady.Value=sequence;}
-  [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool charging){
+  [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool charging,uint round){
    if(float.IsNaN(move.x)||float.IsNaN(move.y)||float.IsNaN(heading)||float.IsInfinity(heading)||float.IsInfinity(move.x)||float.IsInfinity(move.y))return;
+   if(!AcceptRound(round))return;
    command=new PlayerCommand{move=Vector2.ClampMagnitude(move,1),heading=heading%360,sprint=sprint,charging=charging};lastInput=Time.time;
   }
-  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void TackleRpc(){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryTackle();}
-  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void KickRpc(float charge){if(float.IsNaN(charge)||float.IsInfinity(charge))return;if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryKick(Mathf.Clamp01(charge));}
-  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void JumpRpc(){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value)athlete.RequestJump();}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void TackleRpc(uint round){if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryTackle();}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void KickRpc(float charge,uint round){if(float.IsNaN(charge)||float.IsInfinity(charge))return;if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryKick(Mathf.Clamp01(charge));}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void JumpRpc(uint round){if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value)athlete.RequestJump();}
   // The caller can request a shot only for their own avatar. The host chooses
   // the hoop and velocity; clients never supply a ball pose, owner or power.
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void ShootRpc(float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryShoot(athlete,heading);}
@@ -46,8 +53,8 @@ namespace WhatTheFish {
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
     if(!exploring)c.move=Vector2.zero;
     // Reliable action edges are sent this frame, independently of movement throttling.
-    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.kick){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.charging&&exploring);}
-    if(c.kick&&exploring)KickRpc(c.kickCharge);if(c.jump&&exploring)JumpRpc();if(c.tackle&&exploring)TackleRpc();if(c.shoot&&exploring)ShootRpc(c.heading);
+    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.kick){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.charging&&exploring,MatchRevision);}
+    if(c.kick&&exploring)KickRpc(c.kickCharge,MatchRevision);if(c.jump&&exploring)JumpRpc(MatchRevision);if(c.tackle&&exploring)TackleRpc(MatchRevision);if(c.shoot&&exploring)ShootRpc(c.heading);
    }
    if(!IsServer){athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
   }

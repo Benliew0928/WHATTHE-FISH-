@@ -9,7 +9,9 @@ function Start-BallProbe([string]$name,[string]$arguments){
     $taskReport=Join-Path $taskOutput "$name.txt"
     if(Test-Path -LiteralPath $taskReport){throw "Archive previous evidence before rerunning: $taskReport"}
     $taskLog=Join-Path $taskOutput "$name.log"
-    Start-Process -FilePath $taskPlayer -WindowStyle Hidden -PassThru -ArgumentList "-batchmode -nographics -job-worker-count 2 $arguments -report `"$taskReport`" -logFile `"$taskLog`""
+    # The offline aim assertions inspect shader material state, which needs a graphics device.
+    $taskGraphics=if($name -eq 'player-offline'){''}else{'-nographics'}
+    Start-Process -FilePath $taskPlayer -WindowStyle Hidden -PassThru -ArgumentList "-batchmode $taskGraphics -job-worker-count 2 $arguments -report `"$taskReport`" -logFile `"$taskLog`""
 }
 $taskProcesses=@()
 if(!$NetworkOnly){$taskProcesses+=Start-BallProbe 'player-offline' '-offline -footballBallAudit -probe -exitAfter 90'}

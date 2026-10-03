@@ -9,11 +9,17 @@
 | Shared/UI | Main menu, profile, sport selection, waiting room, stadium settings, touch controls |
 | Shared/Networking | MPS room lifecycle, Relay setup, capacity/phase approval, NGO players and authoritative movement |
 | Shared/Platform | Reserved for Android/Huawei services; IPlatformGameServices currently has an explicitly unavailable adapter |
-| Sports/Football | Stadium visuals, signage and basic kickable Rigidbody ball; match rules remain deferred |
+| Sports/Football | Stadium visuals, host-owned attached-foot possession and free Rigidbody ball, capacity-limited A/B team selection and independent match rules; whole-ball goals, restart and seamless golden-goal overtime |
 | Sports/Basketball | Open-air coastal arena, host-selectable logos/palettes, authoritative proximity pickup and assisted rigid-body shooting |
 | Sports/Golf | Flat island exploration; fixed appearance and shoreline boundary |
 
 `AppRoot` composes the prototype and owns navigation. `RoomService` is the `IRoomService` implementation. `ISportMode` and `IPlayerCommandSource` provide boundaries for future loaders/rules and bot commands; they are not implementations of the deferred sports. `SportEnvironmentController` activates exactly one Football/Basketball/Golf/Fishing root in Bootstrap. Each `SportDefinition` stores its environment prefab, ten spawn positions, menu view, elevated-camera distance, far clip, fog distances and lighting values. There is no dynamic stadium resizing.
+
+`FootballBall` owns exclusive attached-foot possession. `Athlete` reads it for base-speed penalties and action eligibility; a successful `FootballTackle.ReceiveHit` releases it. The host owns these transitions. Guests follow the replicated owner while held and interpolate the existing ball snapshot when free. Ordinary character movement no longer writes football velocity.
+
+`FootballGoalNet` adds continuous world collision to both authored goal nets using the goal bounds found by `FootballBall`. Four small convex panels follow each goal's transform, leaving its front opening clear. Shared CharacterController/PhysX collision blocks all athletes at the side/back/roof nets while unladen athletes can still leave the pitch elsewhere; no separate player or network collision system is introduced.
+
+Football keeps match phases separate from room/exploration phases. `FootballTeamSelection` enforces exclusive capacity-limited seats; `FootballMatchState` owns deadlines and results; `FootballMatch` connects these to scene lifecycle and existing NGO snapshots. `FootballMatchHUD` displays state and submits owner choices. Movement gates are independent of action/scoring gates: Finished locks results while walking/running/cameras continue. Tied regulation directly becomes overtime without reset, action cancellation or a new request revision. See [rules and current validation](FOOTBALL-MATCH.md).
 
 ## Network flow
 
@@ -25,7 +31,7 @@
 6. The host player's server-written `WorldSport`, stadium preset (including logo ID), and phase variables are shared world state. The host locks the MPS session before starting exploration. NGO approval provides a second phase/capacity gate.
 7. Returning to the waiting room unlocks joining. Explicit host exit deletes the session. Disconnect/session deletion/host replacement returns clients to usable UI. The application does not elect a new gameplay host.
 
-Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and an owner-only reliable shot request. Protocol 13 combines basketball possession/shot fields with football charge/control state; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
+Only cosmetic IDs, short text, flags, movement and state are transmitted. The bundled FBX meshes are never sent across the room connection. Shared world authority assumes a trusted player host; anti-cheat, prediction and dedicated servers are future work. Basketball uses the host athlete's ball snapshot for pose and possession and an owner-only reliable shot request. Protocol 16 combines basketball possession/shot fields with football charge/control and authoritative team-selection state; see [basketball interaction and recovery](BASKETBALL-GAMEPLAY.md).
 
 ## Art/performance
 
@@ -37,12 +43,12 @@ URP uses a directional light, ambient fill, restricted shadow distance, 2× MSAA
 
 Golf uses five Blender meshes: flat grass, sand, coastal edge, shallow sea and open sea. Only grass and sand have walkable colliders. Overlapping shoreline box colliders live on layer 9 (PlayerBoundary); the shared camera casts only against layer 8. Golf sets far clip to 1,400 m and fog to 700–1,300 m. Other environments restore their existing 450 m far clip and 180–430 m fog. Water is static geometry without collision or simulation.
 
-`IRoomService.Create(SportId)` selects the host sport before starting networking; guests adopt the replicated sport without writing their preferences. `AppRoot.SaveStadium` ignores guest mutations. Football retains the `stadium` preference key; basketball uses `basketball`. Both persist compact appearance JSON, and only appearance IDs/text are transmitted. Golf returns a fixed appearance named ISLAND GREENS and cannot write either saved stadium profile. Golf customization is absent from menus. The football physics prototype uses NGO protocol version 13, adding the current controller ID to the host-written ball snapshot alongside locomotion and tackle state; earlier builds must not join these rooms. See [the prototype and verification guide](FOOTBALL-PROTOTYPE.md). See `Docs/VisualDirection/TACKLE-AUTHORING.md` for owner-authorized action requests, server contact resolution and animation timing. See `Docs/VisualDirection/TURN-AUTHORING.md` for motor phases, turn-only foot placement and authoring/export responsibilities.
+`IRoomService.Create(SportId)` selects the host sport before starting networking; guests adopt the replicated sport without writing their preferences. `AppRoot.SaveStadium` ignores guest mutations. Football retains the `stadium` preference key; basketball uses `basketball`. Both persist compact appearance JSON, and only appearance IDs/text are transmitted. Golf returns a fixed appearance named ISLAND GREENS and cannot write either saved stadium profile. Golf customization is absent from menus. The football physics prototype uses NGO protocol version 16, adding the current controller ID to the host-written ball snapshot alongside locomotion and tackle state; earlier builds must not join these rooms. See [the prototype and verification guide](FOOTBALL-PROTOTYPE.md). See `Docs/VisualDirection/TACKLE-AUTHORING.md` for owner-authorized action requests, server contact resolution and animation timing. See `Docs/VisualDirection/TURN-AUTHORING.md` for motor phases, turn-only foot placement and authoring/export responsibilities.
 
 ## Next milestones
 
 - Retain the four-island mapping while adding sport rule modules.
-- Football/basketball rule modules: 1v1–5v5 team assignment, host settings, timed rounds, basketball ball authority, scoring and a bot IPlayerCommandSource.
+- Expand football team/host settings and add bot IPlayerCommandSource; basketball scoring and timed rules remain future work. Football baseline rules are in [FOOTBALL-MATCH.md](FOOTBALL-MATCH.md).
 - Golf: add course layout, holes and a separate aiming/shot flow to the existing flat island.
 - Huawei: implement authentication/game services and achievements/results behind IPlatformGameServices after checking competition and AppGallery requirements. Current builds do **not** claim HMS integration.
 - Improve high-latency movement with input sequencing, client prediction and reconciliation before competitive play.

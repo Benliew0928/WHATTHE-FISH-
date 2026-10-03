@@ -12,7 +12,8 @@ namespace WhatTheFish {
   JumpSnapshot receivedJump;int jumpLayer=-1;float jumpWeight;
   public bool LoadingJump=>remote?receivedJump.preparing:Jump.Preparing;
   public bool Airborne=>remote?receivedJump.airborne:Jump.Airborne;
-  public bool CanRequestJump=>!inTransit&&Action==FootballAction.None&&AppRoot.Instance&&AppRoot.Instance.Exploring;
+  public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
+  public bool CanRequestJump=>!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
   public JumpSnapshot JumpState()=>new JumpSnapshot{airborne=Jump.Airborne,preparing=Jump.Preparing,load=Jump.LoadElapsed,velocity=Jump.Velocity,landing=Jump.Landing,sequence=Jump.Sequence};
   public void ApplyJump(JumpSnapshot value){receivedJump=value;}
@@ -24,21 +25,21 @@ namespace WhatTheFish {
   public FootballAction Action=>remote?receivedFootball.action:football?football.State:FootballAction.None;
   public float ActionProgress=>remote?Mathf.Clamp01((float)((footballClock+Time.timeAsDouble-footballReceivedAt-receivedFootball.started)/FootballTackle.Duration(Action))):football?Mathf.Clamp01(football.Elapsed/FootballTackle.Duration(Action)):0;
   public float TackleCooldown=>remote?Mathf.Max(0,(float)(receivedFootball.cooldownUntil-footballClock-Time.timeAsDouble+footballReceivedAt)):football?football.CooldownRemaining:0;
-  public bool TackleReady=>!inTransit&&FootballTackle.Allowed&&Action==FootballAction.None&&TackleCooldown<=0&&!Airborne&&!LoadingJump&&Grounded;
+  public bool TackleReady=>!ControlsFootball&&!inTransit&&FootballTackle.Allowed&&Action==FootballAction.None&&TackleCooldown<=0&&!Airborne&&!LoadingJump&&Grounded;
   public bool Grounded=>capsule&&Physics.Raycast(transform.position+Vector3.up*.1f,Vector3.down,.25f,1<<8,QueryTriggerInteraction.Ignore);
-  public bool TryTackle(){if(inTransit||Airborne||LoadingJump)return false;if(!initialized)Setup();return football&&football.TryStart(Grounded);}
+  public bool TryTackle(){if(ControlsFootball||inTransit||Airborne||LoadingJump)return false;if(!initialized)Setup();return football&&football.TryStart(Grounded);}
   float nextKick;
   public bool Charging {get;private set;}
   public bool KickReady=>!Airborne&&!LoadingJump&&Time.time>=nextKick&&FootballBall.Instance&&FootballBall.Instance.InKickRange(this);
   public bool TryKick(float charge=1){if(!KickReady||!FootballBall.Instance.TryKick(this,charge))return false;nextKick=Time.time+.35f;return true;}
-  void OnControllerColliderHit(ControllerColliderHit hit){var ball=hit.collider.GetComponent<FootballBall>();if(ball&&!ball.Intercept(this))ball.Push(this,hit.moveDirection);}
+  void OnControllerColliderHit(ControllerColliderHit hit){var ball=hit.collider.GetComponent<FootballBall>();if(ball)ball.Intercept(this);}
   public FootballSnapshot FootballState(double now){
    if(footballSequence!=football.Sequence){footballSequence=football.Sequence;cachedFootball=new FootballSnapshot{action=football.State,sequence=football.Sequence,started=now-football.Elapsed,cooldownUntil=now+football.CooldownRemaining};}
    return cachedFootball;
   }
   public void ApplyFootball(FootballSnapshot value,double serverTime){receivedFootball=value;footballClock=serverTime;footballReceivedAt=Time.timeAsDouble;}
   public void Setup(){capsule=GetComponent<CharacterController>();animator=GetComponentInChildren<Animator>();football=GetComponent<FootballTackle>();jumpLayer=animator?animator.GetLayerIndex("Jump"):-1;footballLayer=animator?animator.GetLayerIndex("Football action"):-1;turnLayer=animator?animator.GetLayerIndex("Turn expression"):-1;bodyRenderers=visual?visual.GetComponentsInChildren<SkinnedMeshRenderer>(true):GetComponentsInChildren<SkinnedMeshRenderer>(true);if(!initialized){Jump.Reset();Motor.Reset(transform.eulerAngles.y);lastPosition=transform.position;visualRest=visual?visual.localPosition:Vector3.zero;initialized=true;}}
-  public void ResetLocomotion(){if(!initialized)Setup();Motor.Reset(transform.eulerAngles.y);speed=0;Jump.Reset();receivedJump=default;jumpWeight=0;if(animator&&jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);if(football)football.ResetAction();footballWeight=0;groundSlideWeight=0;if(visual)visual.localPosition=visualRest;if(animator&&footballLayer>=0)animator.SetLayerWeight(footballLayer,0);lastPosition=transform.position;turnWeight=0;if(animator&&turnLayer>=0)animator.SetLayerWeight(turnLayer,0);}
+  public void ResetLocomotion(){if(!initialized)Setup();Motor.Reset(transform.eulerAngles.y);speed=0;Charging=false;nextKick=0;Jump.Reset();receivedJump=default;jumpWeight=0;if(animator&&jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);if(football)football.ResetAction();footballWeight=0;groundSlideWeight=0;if(visual)visual.localPosition=visualRest;if(animator&&footballLayer>=0)animator.SetLayerWeight(footballLayer,0);lastPosition=transform.position;turnWeight=0;if(animator&&turnLayer>=0)animator.SetLayerWeight(turnLayer,0);}
   public LocomotionSnapshot Snapshot(double now){
    // Keep the timestamp stable within a phase, including idle, so unchanged
    // athletes do not resend the entire snapshot on every network tick.
@@ -48,6 +49,9 @@ namespace WhatTheFish {
   public void ApplySnapshot(LocomotionSnapshot value){remote=true;received=value;speed=value.speed;}
   public void Simulate(PlayerCommand command,float dt){
    if(!initialized)Setup();if(!capsule.enabled||inTransit||dt<=0)return;remote=false;
+   if(FootballMatch.BlocksMovement){Charging=false;speed=0;return;}
+   if(FootballMatch.BlocksActions){command.kick=command.tackle=command.jump=command.shoot=command.charging=false;}
+   if(FootballBall.Instance)FootballBall.Instance.RefreshControl(this);
    if(command.jump)RequestJump();
    if(command.shoot&&BasketballBall.Active)BasketballBall.Active.TryShoot(this,command.heading);
    // Bounded sweeps keep low frame rates and short hitches from skipping ceilings.
@@ -66,16 +70,18 @@ namespace WhatTheFish {
    var displacement=football?football.Step(dt,out normalTime,out slideContact):Vector3.zero;
    Charging=command.charging&&KickReady;
    float requestedSpeed=FootballBall.Instance&&FootballBall.Allowed?FootballBall.Instance.MovementSpeed(this,command.sprint,Charging):(command.sprint?7:4);
+   if(football)requestedSpeed*=football.MovementMultiplier;
    if(normalTime>0)displacement+=Motor.Step(direction,requestedSpeed,grounded,normalTime);
    float vertical=Jump.Step(grounded,CanRequestJump,dt);
    capsule.stepOffset=Jump.Airborne?0:.3f;
    var before=transform.position;
+   transform.rotation=Quaternion.Euler(0,Motor.Yaw,0);
    if(FootballBall.Instance)displacement=FootballBall.Instance.ConstrainPlayerMotion(this,displacement,dt);
    var flags=capsule.Move(displacement+Vector3.up*vertical);
    Jump.Collide(flags);
    if(slideContact)football.ResolveContacts(before,transform.position);
    var actual=transform.position-before;actual.y=0;speed=dt>0?actual.magnitude/dt:0;
-   transform.rotation=Quaternion.Euler(0,Motor.Yaw,0);
+   if(FootballBall.Instance)FootballBall.Instance.FollowController(this);
    var island=RefinedIslandEnvironment.Active;
    float fallLimit=island?island.layout.sea_level-2:(CoastalVenueRoutes.Active?-2.0f:-10f);
    if(transform.position.y<fallLimit){capsule.enabled=false;transform.position=island?island.layout.safe_return:(CoastalVenueRoutes.Active?CoastalVenueRoutes.Active.safeReturn:new Vector3(0,1,0));capsule.enabled=true;ResetLocomotion();}

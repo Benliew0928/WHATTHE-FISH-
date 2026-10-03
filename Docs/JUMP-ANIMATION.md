@@ -1,5 +1,7 @@
 # Rainbow Sprinter jump
 
+As of 2 October 2026, football jumping is restored alongside basketball, golf and fishing. Airborne players evade football tackles. Knocked-down players cannot jump or move under input for 0.8 seconds. Attached football possession blocks jumping and tackles. Match-phase, missed-slide recovery and travel restrictions remain. A fresh combined-source Windows player passed 34 jump, 202 tackle and 56 turning checks after the initial open-project attempts. See [current verification](VERIFICATION.md#attached-football-possession--2-october-2026); physical Android validation remains pending.
+
 Jump with **Space** or the **Jump** touch button while exploring any of the four islands. WASD and the movement stick continue to steer throughout flight and landing, including immediate reversals. **E** tackles in football; **F** selects clockwise Sky-Sail travel at the station. Space no longer submits a selected menu button; Enter still does.
 
 The revised animation starts with a grounded knee bend and arm backswing, then extends the legs as the arms drive upward. Feet stay beneath or slightly behind the hips in flight, extend before contact and absorb the landing. The former forward foot tuck and disconnected arm motion have been replaced. The 80 ms grounded preparation includes the push: physical takeoff aligns with the extended pose, rather than starting the arm swing after departure. Input shows the preparation immediately and horizontal control stays active throughout.

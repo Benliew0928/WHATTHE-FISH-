@@ -103,15 +103,14 @@ MonoBehaviour:
   angularDamping: 0.05
   rollingDeceleration: 2
   controlDistance: 1.2
-  releaseDistance: 1.6
+  footControlDistance: 0.55
+  footOffset: 0.65
   controlAngle: 55
-  releaseAngle: 80
   controlSpeed: 6.2
-  releaseSpeed: 7
-  dribbleMovementMultiplier: 0.85
+  dribbleMovementMultiplier: 0.75
   chargeMovementMultiplier: 0.6
-  recaptureDelay: 0.3
   tackleBallSpeed: 8
+  tackleBallLift: 4
   tackleIncomingRetention: 0.65
 --- !u!1001 &2622012963384074648
 PrefabInstance:

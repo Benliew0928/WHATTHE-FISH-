@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
+  public void CaptureFrame(string path)=>Capture(path);
   void Capture(string path){
    if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null)return;
    var camera=Camera.main;var canvas=FindObjectsByType<Canvas>(FindObjectsSortMode.None).FirstOrDefault(c=>c.renderMode==RenderMode.ScreenSpaceOverlay);

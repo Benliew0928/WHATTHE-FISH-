@@ -121,6 +121,7 @@ namespace WhatTheFish {
    jump.label=Label(jumpRect,"Jump [Space]",0,Vector2.zero,new Vector2(210,90),23,ink);
    jump.label.alignment=TextAnchor.MiddleCenter;jump.label.rectTransform.anchorMin=jump.label.rectTransform.anchorMax=jump.label.rectTransform.pivot=new Vector2(.5f,.5f);
    if(SelectedSport==SportId.Football){
+    FootballMatchHUD.Create(page,font);
     var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Tackle button";
     var control=rect.gameObject.AddComponent<TackleButton>();control.button=rect.gameObject.AddComponent<Button>();
     control.label=Label(rect,"Tackle [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
@@ -130,6 +131,10 @@ namespace WhatTheFish {
     var kickLabel=Label(kickRect,Application.isMobilePlatform?"Kick":"Kick [F]",0,Vector2.zero,new Vector2(210,90),23,ink);
     kick.label=kickLabel;
     kickLabel.alignment=TextAnchor.MiddleCenter;kickLabel.rectTransform.anchorMin=kickLabel.rectTransform.anchorMax=kickLabel.rectTransform.pivot=new Vector2(.5f,.5f);
+    var cancelRect=Panel(page,new Vector2(1200,545),new Vector2(150,105),cream);cancelRect.name="Kick cancel area";
+    kick.cancelArea=cancelRect;kick.cancelLabel=Label(cancelRect,"× 取消",0,Vector2.zero,new Vector2(145,90),23,ink);
+    kick.cancelLabel.alignment=TextAnchor.MiddleCenter;kick.cancelLabel.rectTransform.anchorMin=kick.cancelLabel.rectTransform.anchorMax=kick.cancelLabel.rectTransform.pivot=new Vector2(.5f,.5f);
+    cancelRect.gameObject.SetActive(false);
    }
    if(SelectedSport==SportId.Basketball){
     var rect=Panel(page,new Vector2(1425,285),new Vector2(220,105),LocalProfile.Hex("F0B956"));rect.name="Shoot button";

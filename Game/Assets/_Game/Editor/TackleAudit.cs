@@ -17,7 +17,7 @@ public static class TackleAudit {
    var clips=AssetDatabase.LoadAllAssetsAtPath(path).OfType<AnimationClip>().Where(c=>!c.name.StartsWith("__preview__")).ToArray();
    if(clips.Length!=1||clips[0].name!=name||clips[0].isLooping)throw new Exception("Incorrect football animation import");
    float duration=name=="Slide_Tackle"?FootballTackle.SlideDuration:FootballTackle.HitDuration;
-   float playback=name=="Slide_Tackle"?FootballTackle.SlidePlayback:1;
+   float playback=name=="Slide_Tackle"?FootballTackle.SlidePlayback:FootballTackle.HitPlayback;
    if(Mathf.Abs(clips[0].length/playback-duration)>.002f)throw new Exception("Clip playback and gameplay duration differ");
   }
   foreach(var name in new[]{"OfflineAthlete","NetworkAthlete"}){

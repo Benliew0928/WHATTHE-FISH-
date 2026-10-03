@@ -49,12 +49,64 @@ namespace WhatTheFish {
    Check(actor.transform.position.x>start.x+.01f&&Mathf.Abs(actor.transform.position.z-start.z)<.01f,"TACKLE_FACING_NOT_CAMERA");
    yield return new WaitForSeconds(1.2f);Check(source.HitsDealt==hits,"TACKLE_MISS_NO_HIT");
    Check(Vector3.Distance(actor.transform.position,start)>4.4f,"TACKLE_FULL_SLIDE_DISTANCE");recordingTurn=false;Time.captureFramerate=0;
+   // A miss slows movement for exactly 0.8 seconds after the slide, at every tick rate.
+   foreach(int fps in new[]{30,60,120}){
+    PlaceAthlete(actor,origin,90);actor.TryTackle();float slowedTime=0,freeTime=0;
+    for(int i=0;i<fps*2;i++){
+     source.Step(1f/fps,out float normal,out _);freeTime+=normal;
+     slowedTime+=normal*(1-source.MovementMultiplier)/(1-FootballTackle.WhiffSpeedMultiplier);
+     if(source.RecoveryRemaining>0)Check(!actor.CanRequestJump&&!actor.TryTackle(),"TACKLE_MISS_NO_JUMP_OR_REPEAT_"+fps+"_"+i);
+    }
+    Check(Mathf.Abs(slowedTime-.8f)<.001f&&Mathf.Abs(freeTime-(2-FootballTackle.SlideDuration))<.001f&&source.RecoveryRemaining==0&&source.MovementMultiplier==1,"TACKLE_MISS_08_SECOND_60_PERCENT_SLOW_"+fps);
+   }
+   PlaceAthlete(actor,origin,90);actor.TryTackle();
+   Check(source.ClaimBallContact(),"TACKLE_BALL_CONTACT_ACCEPTED");
+   source.Step(FootballTackle.SlideDuration,out _,out _);
+   Check(source.RecoveryRemaining==0&&source.MovementMultiplier==1,"TACKLE_BALL_CONTACT_NO_MISS_PENALTY");
+   PlaceAthlete(actor,origin,0);PlaceAthlete(rival,origin+Vector3.forward,180);actor.TryTackle();source.ResolveContacts(origin,origin+Vector3.forward*.5f);
+   source.Step(FootballTackle.SlideDuration,out _,out _);
+   Check(source.RecoveryRemaining==0&&source.MovementMultiplier==1,"TACKLE_PLAYER_CONTACT_NO_MISS_PENALTY");
+   PlaceAthlete(actor,origin,90);PlaceAthlete(rival,origin+Vector3.forward*4,180);actor.TryTackle();
+   TurnCommand=new PlayerCommand{move=Vector2.up,heading=90,sprint=true};yield return new WaitForSeconds(.7f);
+   Check(source.RecoveryRemaining>0&&actor.speed>2.6f&&actor.speed<2.9f,"TACKLE_MISS_SPRINT_SPEED_28_METRES_PER_SECOND");
+   yield return new WaitForSeconds(.7f);
+   Check(source.RecoveryRemaining==0&&actor.speed>6.8f,"TACKLE_MISS_FULL_SPRINT_RESUMES");TurnCommand=default;
+   hits=source.HitsDealt;
    PlaceAthlete(actor,origin,0);PlaceAthlete(rival,origin+Vector3.forward*1.8f,180);
    var wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.layer=8;wall.transform.position=origin+Vector3.forward+Vector3.up;wall.transform.localScale=new Vector3(4,2,.15f);Physics.SyncTransforms();
    app.view.RequestTackle();yield return null;float end=Time.time+1;
    while(Time.time<end){rival.Simulate(default,Time.deltaTime);yield return null;}
-   Check(actor.transform.position.z<origin.z+.7f&&source.HitsDealt==hits,"TACKLE_WALL_BLOCKS_SLIDE_AND_HIT");Destroy(wall);
+   Check(actor.transform.position.z<origin.z+.7f&&source.HitsDealt==hits,"TACKLE_WALL_BLOCKS_SLIDE_AND_HIT");Destroy(wall);yield return null;
    PlaceAthlete(actor,origin+Vector3.up*3,0);Check(!actor.TryTackle(),"TACKLE_AIRBORNE_REJECTED");
+   PlaceAthlete(actor,origin,0);PlaceAthlete(rival,origin+Vector3.forward,180);
+   Check(actor.TryTackle()&&rival.TryTackle(),"TACKLE_MUTUAL_START");
+   source.ResolveContacts(origin,origin+Vector3.forward*.5f);
+   Check(source.State==FootballAction.Hit&&victim.State==FootballAction.Hit,"TACKLE_MUTUAL_KNOCKDOWN");
+   // Input stays locked after the initial knockback until the full 0.8 seconds.
+   foreach(int fps in new[]{30,60,120}){
+    PlaceAthlete(rival,origin+Vector3.right*8,180);victim.ReceiveHit(Vector3.forward,actor);
+    float unlocked=0;bool held=true;
+    for(int i=0;i<fps;i++){
+     victim.Step(1f/fps,out float normal,out _);unlocked+=normal;
+     if((i+1f)/fps<FootballTackle.HitDuration-.001f)held&=normal==0&&victim.State==FootballAction.Hit;
+    }
+    Check(held&&Mathf.Abs(unlocked-.2f)<.001f&&victim.State==FootballAction.None,"TACKLE_FULL_08_SECOND_LOCK_"+fps);
+   }
+   PlaceAthlete(rival,origin+Vector3.right*8,180);rival.RequestJump();
+   for(int i=0;i<7;i++)rival.Simulate(default,1f/60);
+   Check(rival.Airborne&&!victim.ReceiveHit(Vector3.forward,actor),"TACKLE_JUMP_DODGES_HIT");
+   // More than the original 32-query slots, plus an athlete outside the path.
+   var crowd=new List<Athlete>();
+   for(int i=0;i<40;i++){
+    var a=Instantiate(app.athletePrefab).GetComponent<Athlete>();a.Setup();
+    PlaceAthlete(a,origin+Vector3.forward*(1+i*.03f)+Vector3.right*((i%3-1)*.1f),0);crowd.Add(a);
+   }
+   PlaceAthlete(actor,origin,0);PlaceAthlete(rival,origin+Vector3.right*3,180);actor.TryTackle();
+   int crowdHits=source.HitsDealt;source.ResolveContacts(origin,origin+Vector3.forward*2.5f);
+   Check(source.HitsDealt-crowdHits==40&&crowd.All(a=>a.Action==FootballAction.Hit)&&rival.Action==FootballAction.None,"TACKLE_UNCAPPED_PATH_ONLY_CONTACTS");
+   source.ResolveContacts(origin,origin+Vector3.forward*2.5f);
+   Check(source.HitsDealt-crowdHits==40,"TACKLE_ONE_HIT_PER_PLAYER_PER_SLIDE");
+   foreach(var a in crowd){a.capsule.enabled=false;Destroy(a.gameObject);}
    Destroy(rival.gameObject);
    foreach(var sport in new[]{SportId.Basketball,SportId.Golf}){
     var streaming=app.environments.GetComponent<SkySailStreaming>();
