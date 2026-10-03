@@ -2,7 +2,7 @@
 
 Set `BLENDER_PATH` for your installation as described in [Setup](../SETUP.md); run commands from the repository root.
 
-Current gameplay prioritizes stick response: every active input moves in its requested direction on the next simulation tick, even while the body is turning. Facing smooths independently. Speed eases in over 0.10 seconds and out within approximately 0.14 seconds; reversals retain speed. The original 4 m/s movement and 7 m/s sprint limits remain unchanged. There is no committed turn, queued direction or animation completion gate.
+Grounded gameplay prioritizes stick response: active input moves in its requested direction on the next simulation tick, even while the body is turning. Facing smooths independently. Speed eases in over 0.10 seconds and out within approximately 0.14 seconds; grounded reversals retain speed. Jumps carry momentum on release, steer with bounded air acceleration and settle through the first 160 ms after landing; see [jump momentum](../JUMP-ANIMATION.md). The original 4 m/s movement and 7 m/s sprint limits remain unchanged. There is no committed turn, queued direction or animation completion gate.
 
 The earlier turn-before-run implementation looked good but could trap alternating input in repeated stationary pivots. It is superseded by the behavior below.
 

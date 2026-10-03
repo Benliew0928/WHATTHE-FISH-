@@ -1,4 +1,14 @@
-# Build size — football flow and glass scoreboard, 2 October 2026
+# Build size — football and basketball integration, 3 October 2026
+
+## GitHub integration release — 3 October 2026
+
+Actual APK: **86,532,484 → 86,563,288 bytes (+30,804)**. Strict-limit headroom is **13,436,712 bytes**. The **75,000,000-byte development target remains unmet by 11,563,288 bytes**. The merge retains local football gameplay from `571cacc` and upstream basketball animation/passing from `c9810c4`, with shared network protocol **17**. No imported art or package dependency was added during conflict resolution.
+
+The prescribed main-project AndroidSubmission attempt exited while the user's Unity editor was running. The same script and target succeeded in the existing ignored isolated checkout, using clean build cache for complete packing offsets. Its 112 C# inputs match the workspace; only the isolated editor's Android clean-cache option differs. TEMP/TMP were set only within the build process to `Builds/JdkTmp/`. Unity 6000.3.20f1 produced a release IL2CPP ARM64 APK at **15:08:49 Malaysia time**, passed the strict budget gate and APK v2 signature verification.
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **AFFFA3FA0DD6797B97099E36C7F8AF73AC77187DD714AA661C25BAE442279696**. Complete packing, ZIP and contribution records are in `Builds/SizeAudit/latest/`; task evidence is in `Builds/GitMergeQA/`. Serialized assets total **151,213,873 bytes (+376)**, a separate measurement from the APK. Largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. APK entry growth is chiefly IL2CPP **+25,950 bytes**, metadata **+2,906**, Burst **+851** and Unity native code **+640**. No unexpected art growth was found.
+
+The rebuilt Windows player passed **1,061 offline/loopback assertions**, including football matches/physics/fake shots, basketball motion/passing and shared jump/tackle/turning checks. See [verification scope](VERIFICATION.md#github-integration-release--3-october-2026). Physical-phone touch, rendering/FPS and WAN latency remain unverified. Reviewed old artifacts were archived in `Legacy/20261003-150444-050-git-merge-baseline/`; completed merge backups and superseded root audit output are in `Legacy/20261003-151034-738-git-merge-cleanup/`. No active art or Unity cache was archived. All earlier entries below are historical source/build snapshots.
 
 ## Football legacy-state cleanup — 3 October 2026
 
@@ -122,15 +132,30 @@ No art, texture, animation or package was added for match rules. The only new sh
 
 Gameplay evidence and limitations are in [FOOTBALL-MATCH.md](FOOTBALL-MATCH.md). No physical-phone or WAN qualification was performed. The superseded first-pass verification player was archived under `Legacy/20261002-171536-058-football-match-player-trial/`; its reports remain as first-pass evidence.
 
-## Upstream release record — 1 October 2026
+## Upstream basketball animation snapshot — 3 October 2026
 
-The current Android release APK contains all four islands, Sky-Sail, the steerable character jump, basketball pickup/carry/shoot gameplay, golf equipment and two fishing rods. Its exact size is **85,970,822 bytes (85.97 MB / 81.99 MiB)**, leaving **14,029,178 bytes (14.03 MB)** to the hackathon's strict 100,000,000-byte limit.
+The combined football and basketball Android submission APK measures **86,498,912 bytes (86.50 MB / 82.49 MiB)**. It leaves **13,501,088 bytes (13.50 MB)** below the strict 100,000,000-byte limit and exceeds the 75,000,000-byte development target by **11,498,912 bytes**. The pre-merge basketball animation APK measured **85,993,642 bytes**; the merged build added **505,270 bytes**. These figures are from the APK files themselves.
 
-Built at 22:08:35 Malaysia time (14:08:35 UTC) on October 1 with Unity 6000.3.20f1, IL2CPP, ARM64, minimum API 26, target API 36 and default Android ZIP compression. `AndroidSubmission` and `apksigner verify --verbose` passed (v2 signature). SHA-256: `CCE5D8AE9AF66ADE9E3DDAAC3BA7AF7D7C9FB30204A9ED397539719B3DE381CC`.
+Built on 2 October at 16:04:53 Malaysia time (08:04:53 UTC) with Unity 6000.3.20f1, release IL2CPP, ARM64, minimum API 26, target API 36 and default Android ZIP compression. `Tools/Build/Build.ps1 -Target AndroidSubmission` passed the hard size gate, and `apksigner verify --verbose` passed with a v2 signature. SHA-256: `6EB19CFA79CF55571963DA49DFE687B6402E6F7A675A375B9C1503C9D0F91418`.
 
-Use `Tools/Build/Build.ps1 -Target AndroidRelease` for development releases. It generates size reports and warns above the **75,000,000-byte working target**. That target remains unmet by **10,970,822 bytes (10.97 MB)**. `-Target AndroidSubmission` rejects APKs of **100,000,000 bytes or larger**; the current submission check passes. `-Target OptimizeAndroid` reapplies mobile import settings and regenerates delivery libraries from their prepared source exports.
 
-The archive contains about **59.64 MB** of Unity scene/art/shader data and **26.33 MB** of runtime/Android overhead. Shared vegetation and material patterns, generated grass, selected render-mesh reductions and mobile compression account for the main saving. Cabin geometry and editable art masters are preserved. See [the measured optimization report and limits](APK-SIZE-AUDIT.md). Continue budgeting during development; no physical phone qualification has been performed.
+The current audit is in `Builds/SizeAudit/latest/`. The football ball FBX adds **550,636 uncompressed serialized asset bytes**; this is not an APK allocation. ZIP entry growth is concentrated in the football scene asset splits, with roughly 20.8 kB of IL2CPP and 3.7 kB of metadata growth. No new texture or package dependency appeared. The rebuilt Windows player passed **367 checks** across football physics and host/guest replication, basketball motion and passing, and jump gameplay and replication. No physical Android phone or WAN test was performed.
+
+The pre-merge APK, Windows player and size audit were preserved locally in `Legacy/20261002-155631-852-football-merge-build-baseline/`. The teammate's earlier football APK measurements and verification are retained below as history from a separate working tree.
+
+## Basketball animation release before merge — 2 October 2026
+
+The earlier Android release APK contained all four islands, Sky-Sail, the steerable character jump, basketball dribbling, shooting and passing animations, golf equipment and two fishing rods. Its exact size was **85,993,642 bytes (85.99 MB / 82.01 MiB)**, leaving **14,006,358 bytes (14.01 MB)** to the hackathon's strict 100,000,000-byte limit at that checkpoint.
+
+Built at 15:40:51 Malaysia time (07:40:51 UTC) on October 2 with Unity 6000.3.20f1, IL2CPP, ARM64, minimum API 26, target API 36 and default Android ZIP compression. `AndroidSubmission` and `apksigner verify --verbose` passed (v2 signature). SHA-256: `5FD964709B5D449ED0508FDB56E287DAFA3FCD48A89540191B7FE71447BD12CF`.
+
+Use `Tools/Build/Build.ps1 -Target AndroidRelease` for development releases. It generates size reports and warns above the **75,000,000-byte working target**. That target remains unmet by **10,993,642 bytes (10.99 MB)**. `-Target AndroidSubmission` rejects APKs of **100,000,000 bytes or larger**; the current submission check passes. `-Target OptimizeAndroid` reapplies mobile import settings and regenerates delivery libraries from their prepared source exports.
+
+The archive contains about **59.64 MB** of Unity scene/art/shader data and **26.35 MB** of runtime/Android overhead. Shared vegetation and material patterns, generated grass, selected render-mesh reductions and mobile compression account for the main saving. Cabin geometry and editable art masters are preserved. See [the measured optimization report and limits](APK-SIZE-AUDIT.md). Continue budgeting during development; no physical phone qualification has been performed.
+
+The basketball animation update measured **85,970,874 to 85,993,642 bytes (+22,768 bytes)**. It adds a procedural pose layer, timed dribble/shot/pass release, a Pass control and protocol-13 action replication while reusing all art. Windows checks passed at four animation rates, with multiplayer passing, ball physics, jump regression and a portable copied-player run; **65 editor motor checks** also passed. The final idle-pose replication fix passed the 56-check motion review and two-player regression. Close and side views of both character LODs were inspected. See [basketball animation and verification](BASKETBALL-ANIMATION.md). The release has no new mesh, texture, material or package dependency.
+
+The momentum update measured **85,970,822 to 85,970,874 bytes (+52 bytes)**. It changes movement code, reusing all art and the existing protocol-12 replication. All **287 Windows player checks** and **65 motor checks** passed, covering release in eight directions and three jump phases, air steering, landing, walls, host/guest replication, tackle, turning and basketball regression. See [jump momentum and verification](JUMP-ANIMATION.md). No asset dependency growth was found.
 
 The basketball gameplay revision measured **85,957,194 to 85,970,822 bytes (+13,628 bytes)**. It reuses the ball, hoops and character art, adding proximity possession, assisted shooting, recovery and protocol-12 synchronization. The final Windows gameplay suite passed **82 checks**, with **53 foundation physics/replication checks** and **40 jump regression checks** also passing. A copied-player fixture in a path with spaces passed all 61 offline gameplay checks from an unrelated working directory. See [controls, tuning and current evidence](BASKETBALL-GAMEPLAY.md).
 

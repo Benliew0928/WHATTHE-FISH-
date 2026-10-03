@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace WhatTheFish {
  [DefaultExecutionOrder(-100)]
  public sealed class PlayerView:MonoBehaviour,IPlayerCommandSource {
-  public static Vector2 LookDelta; public static PlayerView Instance; public Athlete target; public TouchPad stick; public int mode; public float yaw=0,pitch=16; public bool active; Camera cam;bool pendingTackle,pendingJump,pendingShoot;
+  public static Vector2 LookDelta; public static PlayerView Instance; public Athlete target; public TouchPad stick; public int mode; public float yaw=0,pitch=16; public bool active; Camera cam;bool pendingTackle,pendingJump,pendingShoot,pendingPass;
   void Awake(){Instance=this;cam=GetComponent<Camera>();mode=Mathf.Clamp(PlayerPrefs.GetInt("camera",1),0,2);}
   public void RequestTackle(){if(active&&target&&target.TackleReady)pendingTackle=true;}
   bool pendingKick;float pendingCharge,chargeStarted;int chargeSource;
@@ -17,7 +17,7 @@ namespace WhatTheFish {
   public void EndKick(int source=int.MinValue){if(!Charging||source!=chargeSource)return;float charge=Charge;Charging=false;HideKickAim();RequestKick(charge);}
   public void CancelKick(int source){if(Charging&&source==chargeSource){Charging=false;HideKickAim();}}
   public void ClearMatchInput(){CancelInput();}
-  void CancelInput(){Charging=false;HideKickAim();pendingKick=false;pendingTackle=pendingJump=pendingShoot=false;}
+  void CancelInput(){Charging=false;HideKickAim();pendingKick=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;}
   void HideKickAim(){if(kickAim)kickAim.enabled=false;}
   void OnDestroy(){if(kickAimMaterial)Destroy(kickAimMaterial);if(kickAimMesh)Destroy(kickAimMesh);}
   static Mesh CreateKickAimMesh(){
@@ -75,25 +75,27 @@ namespace WhatTheFish {
   void OnApplicationPause(bool paused){if(paused)CancelInput();}
   public void RequestJump(){if(active&&target&&target.CanRequestJump)pendingJump=true;}
   public void RequestShoot(){if(active&&target&&BasketballBall.Active&&BasketballBall.Active.CanShoot(target))pendingShoot=true;}
+  public void RequestPass(){if(active&&target&&BasketballBall.Active&&BasketballBall.Active.CanShoot(target))pendingPass=true;}
   void Update(){
    if(!active||!target||target.inTransit||FootballMatch.BlocksActions){CancelInput();return;}
    if(!FootballBall.Allowed){Charging=false;pendingKick=false;}
    if(Charging&&!target.KickReady)Charging=false;
    if(Input.GetKeyDown(KeyCode.Space)&&target.CanRequestJump){Charging=false;RequestJump();}
    if(Input.GetKeyDown(KeyCode.E)){Charging=false;RequestTackle();RequestShoot();}
+   if(Input.GetKeyDown(KeyCode.Q))RequestPass();
    if(Input.GetKeyDown(KeyCode.F))BeginKick();if(Input.GetKeyUp(KeyCode.F))EndKick();
   }
   public void Switch(){mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
   public PlayerCommand ReadCommand(){
    if(FootballMatch.BlocksMovement){CancelInput();return default;}
    if(FootballMatch.BlocksActions)CancelInput();
-   bool tackle=pendingTackle,jump=pendingJump,shoot=pendingShoot,kick=pendingKick;float charge=pendingCharge;pendingTackle=pendingJump=pendingShoot=false;pendingKick=false;
+   bool tackle=pendingTackle,jump=pendingJump,shoot=pendingShoot,pass=pendingPass,kick=pendingKick;float charge=pendingCharge;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingKick=false;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-   if(DevelopmentProbe.TurnCommandActive){var command=DevelopmentProbe.TurnCommand;command.tackle|=tackle;command.jump|=jump;command.shoot|=shoot;command.charging|=Charging;if(kick){command.kick=true;command.kickCharge=charge;}return command;}
+   if(DevelopmentProbe.TurnCommandActive){var command=DevelopmentProbe.TurnCommand;command.tackle|=tackle;command.jump|=jump;command.shoot|=shoot;command.pass|=pass;command.charging|=Charging;if(kick){command.kick=true;command.kickCharge=charge;}return command;}
    if(DevelopmentProbe.IslandDriving)return new PlayerCommand{move=Vector2.up,heading=DevelopmentProbe.IslandHeading,sprint=true};
    if(DevelopmentProbe.Driving)return new PlayerCommand{move=Vector2.up,heading=DevelopmentProbe.Heading,sprint=false};
 #endif
-   var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));return new PlayerCommand{move=Vector2.ClampMagnitude(v,1),heading=yaw,tackle=tackle,jump=jump,shoot=shoot,kick=kick,kickCharge=charge,charging=Charging,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f};}
+   var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));return new PlayerCommand{move=Vector2.ClampMagnitude(v,1),heading=yaw,tackle=tackle,jump=jump,shoot=shoot,pass=pass,kick=kick,kickCharge=charge,charging=Charging,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f};}
   void LateUpdate(){
    if(!active||!target){HideKickAim();return;}
    if(Input.GetKeyDown(KeyCode.C))Switch();

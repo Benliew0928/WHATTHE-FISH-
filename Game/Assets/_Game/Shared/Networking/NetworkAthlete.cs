@@ -23,6 +23,7 @@ namespace WhatTheFish {
   public void ClearMatchInput(){command=default;lastInput=0;}
   uint MatchRevision=>HostPlayer?HostPlayer.Match.Value.revision:0;
   bool AcceptRound(uint round)=>!FootballMatch.Instance||!FootballMatch.Instance.Context||!FootballMatch.BlocksMovement&&round==MatchRevision;
+  public NetworkVariable<BasketballMotionState> BasketballPose=new();
   Athlete athlete; PlayerCommand command; float lastInput; float sendTimer;
   public override void OnNetworkSpawn(){
    athlete=GetComponent<Athlete>();athlete.Setup();athlete.capsule.enabled=IsServer;
@@ -48,16 +49,17 @@ namespace WhatTheFish {
   // The caller can request a shot only for their own avatar. The host chooses
   // the hoop and velocity; clients never supply a ball pose, owner or power.
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void ShootRpc(float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryShoot(athlete,heading);}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void PassRpc(float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryPass(athlete,heading);}
   void Update(){if(!IsSpawned)return;
    if(IsOwner){
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
     if(!exploring)c.move=Vector2.zero;
     // Reliable action edges are sent this frame, independently of movement throttling.
-    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.kick){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.charging&&exploring,MatchRevision);}
-    if(c.kick&&exploring)KickRpc(c.kickCharge,MatchRevision);if(c.jump&&exploring)JumpRpc(MatchRevision);if(c.tackle&&exploring)TackleRpc(MatchRevision);if(c.shoot&&exploring)ShootRpc(c.heading);
+    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.pass||c.kick){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.charging&&exploring,MatchRevision);}
+    if(c.kick&&exploring)KickRpc(c.kickCharge,MatchRevision);if(c.jump&&exploring)JumpRpc(MatchRevision);if(c.tackle&&exploring)TackleRpc(MatchRevision);if(c.shoot&&exploring)ShootRpc(c.heading);else if(c.pass&&exploring)PassRpc(c.heading);
    }
-   if(!IsServer){athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
+   if(!IsServer){athlete.BasketballMotion.Receive(BasketballPose.Value);athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
   }
-  void FixedUpdate(){if(!IsSpawned||!IsServer)return;if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value){c.move=Vector2.zero;c.charging=false;}athlete.Simulate(c,Time.fixedDeltaTime);Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
+  void FixedUpdate(){if(!IsSpawned||!IsServer)return;if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value){c.move=Vector2.zero;c.charging=false;}athlete.Simulate(c,Time.fixedDeltaTime);BasketballPose.Value=athlete.BasketballMotion.State;Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
  }
 }

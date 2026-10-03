@@ -38,7 +38,7 @@ Reset, travel, scene deactivation, despawn and match action gates release owners
 
 Free balls keep the existing 0.43 kg Rigidbody, 22 cm sphere, gravity, continuous dynamic collision detection, **0.05** linear/angular damping and **2 m/s²** grounded rolling resistance. Ground friction creates visible rotation and the ball slows to sleep. Player interception, no-climb movement, the authored **68 × 105 m** white-line bounds and both **7.32 × 2.44 m** goal openings remain in use. No low global velocity cap or new art assets are introduced.
 
-The host/offline authority alone chooses possession, simulates kicks and resolves tackle release. The existing ball snapshot carries position, rotation, sequence and controller NetworkObject ID at up to 20 Hz. A guest follows the replicated athlete's foot anchor while owned and returns to snapshot interpolation when free. No second network manager or client physics effect is added. **Protocol 16** prevents earlier free-dribbling builds from joining.
+The host/offline authority alone chooses possession, simulates kicks and resolves tackle release. The existing ball snapshot carries position, rotation, sequence and controller NetworkObject ID at up to 20 Hz. A guest follows the replicated athlete's foot anchor while owned and returns to snapshot interpolation when free. No second network manager or client physics effect is added. **Protocol 17** prevents earlier free-dribbling builds from joining.
 
 Main extension points:
 
@@ -115,7 +115,7 @@ Unity's actual-pitch checks passed. The final Windows development player was bui
 
 ## GitHub integration — 2 October 2026
 
-Merged upstream `e3bbb39` (basketball gameplay, jump and equipment) into the local football working tree, then pulled again with no further upstream changes. Both ball snapshots and all movement/action fields are retained. The combined network layout uses protocol 13; all peers need matching builds. Space is jump, E is football tackle / basketball shoot, and F remains football charge/release. Football Kick, shared Jump and Tackle touch controls occupy separate positions.
+Merged upstream `e3bbb39` (basketball gameplay, jump and equipment) into the local football working tree, then pulled again with no further upstream changes. That checkpoint used protocol 13. The later integration with basketball animation and passing uses protocol 17; all peers need matching builds. Both ball snapshots and all movement/action fields are retained. Space is jump, E is football tackle / basketball shoot, F is football charge/release and Q is basketball pass. Football Kick, shared Jump and Tackle touch controls occupy separate positions.
 
 The rebuilt combined Windows player passed **289 checks**: football **119 offline + 13 host + 11 guest**, basketball **61 offline + 12 host + 9 guest**, jump **34 offline + 2 host + 4 guest**, and tackle **18 offline + 2 host + 4 guest**. Actual football measurements: walk 4.000 m/s, unladen sprint 7.000 m/s, dribble sprint 5.950 m/s, charge movement 2.400 m/s; light initial/first-physics speeds 12.003/11.988 m/s, full charge 22.001/21.978 m/s, slide and repeated-contact speed 8.014 m/s. An 8 m light pass arrived in 0.835 s versus a 1.345 s minimum for straight dribbling; the free light ball stopped after 17.232 m. Both added checks confirm genuine contact can steal control and nonkickers do not inherit the kicker's recapture cooldown.
 

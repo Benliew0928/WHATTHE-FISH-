@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public struct BasketballSnapshot:INetworkSerializable,IEquatable<BasketballSnapshot> {
-  public bool valid,held;public ulong holder;public Vector3 position;public Quaternion rotation;public uint reset,shots;public double time;
+  public bool valid,held,queued;public ulong holder;public Vector3 position;public Quaternion rotation;public uint reset,shots,passes;public double time;public float dribble,cadence;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {
-   s.SerializeValue(ref valid);s.SerializeValue(ref held);s.SerializeValue(ref holder);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref reset);s.SerializeValue(ref shots);s.SerializeValue(ref time);
+   s.SerializeValue(ref valid);s.SerializeValue(ref held);s.SerializeValue(ref queued);s.SerializeValue(ref holder);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref reset);s.SerializeValue(ref shots);s.SerializeValue(ref passes);s.SerializeValue(ref dribble);s.SerializeValue(ref cadence);s.SerializeValue(ref time);
   }
-  public bool Equals(BasketballSnapshot b)=>valid==b.valid&&held==b.held&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&time==b.time;
+  public bool Equals(BasketballSnapshot b)=>valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time;
  }
 
  // One arena-local ball. Only the host (or offline player) owns physical simulation.
@@ -57,7 +57,7 @@ namespace WhatTheFish {
    if(simulate&&(transform.localPosition.y < -3||transform.localPosition.y>25||Mathf.Abs(transform.localPosition.x)>35||Mathf.Abs(transform.localPosition.z)>45))ResetHome();
    if(connected&&authority&&host&&host.IsSpawned&&Time.unscaledTime>=sendAt){
     sendAt=Time.unscaledTime+.05f;
-    host.Basketball.Value=new BasketballSnapshot{valid=true,held=Held,holder=HolderId,shots=shotCount,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time};
+    host.Basketball.Value=new BasketballSnapshot{valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time};
    }
   }
   void Update(){

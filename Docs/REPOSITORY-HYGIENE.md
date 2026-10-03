@@ -63,3 +63,17 @@ Batch: `Legacy/20260929-201920-001-repository-hygiene/`.
 - All archive paths and lengths were checked; the three formerly versioned files were hash-verified after the move. The APK SHA-256 and Git index remained unchanged. Protected/out-of-workspace archive paths were rejected in validation. The commit-readiness check passed with the expected warning above the 75 MB working target.
 
 Historical reports can mention output at its former `Builds/` path. Look up that original relative path inside this archive batch. Newly run tests can recreate the usual active output paths. The optimization result remains **83,282,804 bytes**; this housekeeping-only task did not change the game or rebuild it.
+
+## Cleanup completed on 2 October 2026
+
+Batch: `Legacy/20261002-162115-398-reviewed-qa-cleanup/`.
+
+Archived **24 ignored generated files / 3,825,309 bytes (3.83 MB)** across nine reviewed paths. These were the preliminary jump run `Run-20261001-194729`, the intermediate basketball foundation run `Local-215557`, the September 29 AndroidRelease log, a stale September 25 Android build marker, and five obsolete Git/readiness snapshots. The two test runs have the same passing assertion names as their retained final replacements. No source, script, documentation or saved-summary consumer of the selected outputs was found.
+
+The archive preserves the original directory structure. Its portable `archive-manifest.json` records every original path, archived path, byte count, SHA-256, reason and replacement. All **24 archived files** and all **3,382 retained pre-existing Builds files** were hash-verified; the **42 pre-existing modified/untracked publishable files** remained byte-identical. Relocation freed no disk space and changed no Git history.
+
+Retained the current Android APK and complete Windows player, `SizeAudit/latest/` and `latest-apk.txt`, all documented feature evidence, the merged 367-check reports, motion frames/videos, and the separate mobile, fishing-rod and golf-equipment previews. The pre-merge stash and `Builds/MergeFootball-20261002-155106/` recovery backup remain intact. Reusable test scripts, terrain fixtures, source masters, active assets and Unity/tool caches were left in place. Uncertain local inspection/library helpers and unique dependency/LFS audit records were retained.
+
+The existing APK remained **86,498,912 bytes**, with **13,501,088 bytes** to the strict 100,000,000-byte ceiling and **11,498,912 bytes above** the development target. SHA-256 remained `6EB19CFA79CF55571963DA49DFE687B6402E6F7A675A375B9C1503C9D0F91418`. This housekeeping task did not rebuild or rerun gameplay tests; the retained merged reports contain 367 passing checks. See [the current build record](BUILD-SIZE.md) for the release's verification limits.
+
+The detailed keep/archive inventory, dependency checks, hash verification and readiness output are local evidence under `Builds/Housekeeping/20261002T081405Z-cleanup/`. No Git staging, commit, push, reset or merge was performed.

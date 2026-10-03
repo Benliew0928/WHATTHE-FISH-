@@ -69,7 +69,7 @@ namespace WhatTheFish {
     Button("Golf  /  Explore island",new Vector2(330,338),()=>{SelectSport(SportId.Golf);Show("sport");},mint);
     Button("Fishing  /  Explore lagoon",new Vector2(330,236),()=>{SelectSport(SportId.Fishing);Show("sport");},mint);Back("home");
    } else if(which=="sport"){
-    Heading(SelectedSport.ToString(),SelectedSport switch{SportId.Basketball=>"Walk to the ball, then shoot toward a hoop.",SportId.Golf=>"An open island. Sea on every side.",SportId.Fishing=>"Five decks. One bright tropical lagoon.",_=>"The pitch is yours. Take a look around."});
+    Heading(SelectedSport.ToString(),SelectedSport switch{SportId.Basketball=>"Dribble, shoot toward a hoop, or pass to a teammate.",SportId.Golf=>"An open island. Sea on every side.",SportId.Fishing=>"Five decks. One bright tropical lagoon.",_=>"The pitch is yours. Take a look around."});
     Button("Explore offline",new Vector2(330,568),EnterOffline,mint);
     Button("Create internet room",new Vector2(330,468),async()=>{await rooms.Create(SelectedSport);UpdateStatus();},Color.white);
     code=Field("Room code",new Vector2(235,367),new Vector2(305,76),"",12);
@@ -142,6 +142,12 @@ namespace WhatTheFish {
     control.label=Label(rect,"Shoot [E]",0,Vector2.zero,new Vector2(210,90),23,ink);
     control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
 
+   }
+   if(SelectedSport==SportId.Basketball){
+    var rect=Panel(page,new Vector2(1175,285),new Vector2(200,105),LocalProfile.Hex("F0B956"));rect.name="Pass button";
+    var control=rect.gameObject.AddComponent<BasketballShootButton>();control.pass=true;control.button=rect.gameObject.AddComponent<Button>();
+    control.label=Label(rect,"Pass [Q]",0,Vector2.zero,new Vector2(190,90),23,ink);
+    control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
    }
    var stadiumName=rooms.Connected&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.WorldAppearance.Value.Length>0?JsonUtility.FromJson<StadiumAppearance>(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString()).title:CurrentAppearance.title;
    Pill(stadiumName.ToUpperInvariant(),new Vector2(252,818),new Vector2(400,62));fps=Label(page,"",0,new Vector2(66,742),new Vector2(380,44),18,Color.white);
