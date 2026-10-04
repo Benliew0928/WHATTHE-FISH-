@@ -10,6 +10,12 @@
 - Preserve the intended visual quality: cabin interiors, close props, island silhouettes, animation and travel should remain attractive. Keep editable high-quality masters; derive mobile delivery assets. Check affected close/distant views and gameplay after lossy changes. Never claim phone quality/FPS from a Windows preview alone.
 - Preserve the current world model: four islands, one active game per host room, everyone travels together. Keep cabin, cables, towers and stations modular.
 
+## Windows testing player delivery
+
+- After each delivered gameplay or asset change, update the complete validated Windows player in **`Builds/WindowsFinal/`**. Keep `WhatTheFish.exe`, `WhatTheFish_Data/`, runtime DLLs, supporting folders and launchers together; replacing only the executable does not update a Unity game.
+- If validation uses an isolated checkout or task-specific player folder, promote that complete tested player to `Builds/WindowsFinal/` before handoff. Archive the reviewed superseded player with the repository's archive tool, preserve the task's validation evidence, and do not replace a newer concurrent delivery with an older snapshot.
+- Update `Builds/WindowsFinal/LATEST-BUILD.txt` with build time, included changes, verification evidence and any source-snapshot limits. Keep all build output ignored. Documentation-only tasks do not require a new player.
+
 ## Portable paths are required in commits
 
 - Never commit machine-specific absolute filesystem paths in code, scripts, configuration, documentation, generated records or active asset references. This includes personal drive locations, user/home directories, network shares and local file URLs. A teammate must be able to clone the project into a different directory without editing committed paths.

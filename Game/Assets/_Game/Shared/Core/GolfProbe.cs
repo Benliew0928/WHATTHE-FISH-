@@ -21,6 +21,11 @@ namespace WhatTheFish {
    // Neutral art review from the running player, followed by restored player controls.
    app.view.enabled=false;var cam=Camera.main;cam.transform.position=new Vector3(290,260,-350);cam.transform.LookAt(new Vector3(0,3,5));
    yield return new WaitForSeconds(.6f);Capture(Path.ChangeExtension(output,"overview.png"));
+   var course=app.stadium.GetComponentInChildren<GolfCourse>();
+   if(course)foreach(var hole in course.holes){
+    cam.transform.position=hole.cup.position+new Vector3(-8,5,-11);cam.transform.LookAt(hole.cup.position+Vector3.up*.9f);
+    yield return new WaitForSeconds(.4f);Capture(Path.ChangeExtension(output,"hole"+hole.number+".png"));
+   }
    app.view.enabled=true;app.EnterOffline();app.view.yaw=0;app.view.pitch=16;app.view.mode=1;
   }
   IEnumerator IslandAudit(){
@@ -35,6 +40,14 @@ namespace WhatTheFish {
    bool graphics=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;
    Check(renderers.Length>100&&renderers.All(r=>r.sharedMaterials.All(m=>m&&m.shader&&(!graphics||m.shader.isSupported))),"G2_MATERIALS_AND_MESHES");
    Check(app.stadium.GetComponentsInChildren<MeshCollider>().Count(c=>c.name.StartsWith("Terrain__"))==16,"G2_TERRAIN_COLLISION");
+   var course=app.stadium.GetComponentInChildren<GolfCourse>();
+   Check(course&&course.holes.Length==5&&course.holes.Select(h=>h.number).OrderBy(n=>n).SequenceEqual(new[]{1,2,3,4,5}),"GOLF_FIVE_NEW_HOLES");
+   if(course)foreach(var hole in course.holes){
+    var p=hole.cup.position;
+    Check(hole.flag&&hole.tee&&Vector3.Distance(hole.flag.position,p)<.001f&&hole.flag.GetComponentsInChildren<MeshRenderer>().Length==4,"GOLF_NUMBERED_FLAG_"+hole.number);
+    Check(Physics.Raycast(p+Vector3.up,Vector3.down,out var bottom,2,1<<8)&&bottom.collider.name=="Cup floor"&&Mathf.Abs(bottom.point.y-(p.y-hole.cupDepth))<.004f,"GOLF_OPEN_CUP_DEPTH_"+hole.number);
+    Check(Physics.Raycast(hole.tee.position+Vector3.up,Vector3.down,2,1<<8),"GOLF_TEE_GROUND_"+hole.number);
+   }
    var football=JsonUtility.ToJson(LocalProfile.Stadium);var basketball=JsonUtility.ToJson(LocalProfile.Basketball);
    var change=app.CurrentAppearance;change.title="SHOULD NOT SAVE";app.SaveStadium(change);LocalProfile.SaveSport(SportId.Golf,change);
    Check(app.CurrentAppearance.title=="ISLAND GREENS"&&football==JsonUtility.ToJson(LocalProfile.Stadium)&&basketball==JsonUtility.ToJson(LocalProfile.Basketball),"GOLF_PREFERENCES_ISOLATED");

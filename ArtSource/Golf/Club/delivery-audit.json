@@ -1,0 +1,143 @@
+{
+  "source": {
+    "vertices": 3853,
+    "triangles": 7702,
+    "nonmanifold_edges": 0,
+    "components": [
+      3853
+    ],
+    "degenerate_triangles": 0,
+    "dimensions_metres": [
+      0.31387001276016235,
+      0.07355599850416183,
+      1.898987054824829
+    ],
+    "finite_uvs": true
+  },
+  "length_metres": 1.02,
+  "grip_from_top_metres": 0.0918,
+  "head_marker": [
+    0.061085294932127,
+    0.0010293765226379037,
+    -0.9024502038955688
+  ],
+  "lods": [
+    {
+      "level": 0,
+      "vertices": 1802,
+      "triangles": 3600,
+      "nonmanifold_edges": 0,
+      "components": [
+        1802
+      ],
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.16860812902450562,
+        0.03955475613474846,
+        1.0199403762817383
+      ],
+      "finite_uvs": true
+    },
+    {
+      "level": 1,
+      "vertices": 702,
+      "triangles": 1400,
+      "nonmanifold_edges": 0,
+      "components": [
+        702
+      ],
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.16881239414215088,
+        0.03985228389501572,
+        1.0202932357788086
+      ],
+      "finite_uvs": true
+    },
+    {
+      "level": 2,
+      "vertices": 252,
+      "triangles": 500,
+      "nonmanifold_edges": 0,
+      "components": [
+        252
+      ],
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.16925770044326782,
+        0.03958973288536072,
+        1.0202466249465942
+      ],
+      "finite_uvs": true
+    }
+  ],
+  "texture_refs": [
+    "MidnightIron_BaseColor.png",
+    "MidnightIron_Mask.png",
+    "MidnightIron_Normal.png"
+  ],
+  "images": [
+    {
+      "name": "Meshy_AI_Midnight_Iron_1004033216_texture.png",
+      "path": "//Textures/MidnightIron_BaseColor.png",
+      "packed": false
+    },
+    {
+      "name": "Meshy_AI_Midnight_Iron_1004033216_texture.png.001",
+      "path": "//../../../Game/Assets/_Game/Art/Golf/Club/MidnightIron_BaseColor.png",
+      "packed": false
+    },
+    {
+      "name": "Meshy_AI_Midnight_Iron_1004033216_texture_metallic.png",
+      "path": "//Textures/MidnightIron_Metallic.png",
+      "packed": false
+    },
+    {
+      "name": "Meshy_AI_Midnight_Iron_1004033216_texture_normal.png",
+      "path": "//Textures/MidnightIron_Normal.png",
+      "packed": false
+    },
+    {
+      "name": "Meshy_AI_Midnight_Iron_1004033216_texture_normal.png.001",
+      "path": "//../../../Game/Assets/_Game/Art/Golf/Club/MidnightIron_Normal.png",
+      "packed": false
+    },
+    {
+      "name": "Meshy_AI_Midnight_Iron_1004033216_texture_roughness.png",
+      "path": "//Textures/MidnightIron_Roughness.png",
+      "packed": false
+    },
+    {
+      "name": "MidnightIron_Mask",
+      "path": "//../../../Game/Assets/_Game/Art/Golf/Club/MidnightIron_Mask.png",
+      "packed": false
+    }
+  ],
+  "files": [
+    {
+      "path": "ArtSource/Golf/Club/MidnightIron.blend",
+      "bytes": 579752,
+      "sha256": "af79c79d429dfae22fa10d6982b8484112a6c20501ab28e0f4ba94d5d731711d"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Club/MidnightIron.fbx",
+      "bytes": 248380,
+      "sha256": "6769101e2019ca3a479af03e25ca01e6570e27a3894f1aa23159972cafa1f2e1"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Club/MidnightIron_BaseColor.png",
+      "bytes": 256420,
+      "sha256": "2fe5823e4c519f663fe29e4613b851fd3d056d287f80b3a3a6ed97202e944809"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Club/MidnightIron_Mask.png",
+      "bytes": 90436,
+      "sha256": "bb9c7caf2d2aa43a0b6838c8f4de43779ef794e4eab3af7d1f20b7411bfeb556"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Club/MidnightIron_Normal.png",
+      "bytes": 181225,
+      "sha256": "60ffec2f88bf547c201fca6612278ab3da59281c91363874c43f035b63f96b12"
+    }
+  ]
+}

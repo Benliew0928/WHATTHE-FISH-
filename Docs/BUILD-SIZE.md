@@ -1,4 +1,722 @@
-# Build size — football and basketball integration, 3 October 2026
+# Build size — measured release records
+
+## Golf swing speed 18 m/s — 4 October 2026
+
+Full charge now launches at **18 m/s horizontally**, with the existing
+**1.2 m/s** minimum and **1.8 m/s** maximum lift. The preceding five-metre
+distance cap is removed. Flying and fast rolling retain normal physics;
+the existing gradual slope settling, resting and next-hit wake remain.
+Launch and settling parameters are centralized in
+[GolfBallPhysics.asset](../Game/Assets/_Game/Resources/GolfBallPhysics.asset).
+
+Fresh primary AndroidSubmission completed at **23:27:16 Malaysia time**:
+**89,024,798 → 89,024,294 bytes (−504)**. Strict headroom is
+**10,975,706 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,024,294 bytes**. The strict gate and independent APK v2 signature pass.
+SHA-256: **32A7E0B4FF36268312E7C62762BEB9FE8C67FBE6D27BC6FAC8FDE282EDEC3792**.
+See [packing audit](APK-SIZE-AUDIT.md#golf-swing-speed-18-ms--4-october-2026).
+
+The complete tested **23:20:49 Windows player**, including all **313 files**,
+is promoted to `Builds/WindowsFinal/` and retained in
+`Builds/GolfEighteenSpeedQA/Release/Windows/`. **250 assertions** pass: 76 ball
+physics, 134 Golf offline and 20 host plus 20 client. A real full-charge contact
+measures **18.00000 m/s** horizontally and travels **12.27873 m** during the
+0.8-second observation from release. Charge/contact, scoring, the original
+meadow and forward-facing cart feet are retained. Exact APK/audit, signatures,
+source comparisons and promotion hashes are in `Builds/GolfEighteenSpeedQA/`.
+See [verification](VERIFICATION.md#golf-swing-speed-18-ms--4-october-2026).
+Phone rendering, touch, FPS and WAN remain unverified.
+
+Reviewed obsolete APK/audit: `Legacy/20261004-232537-143-golf-eighteen-speed-old-apk/`
+(12 files, 92.66 MB). Superseded Windows delivery:
+`Legacy/20261004-232723-737-golf-eighteen-speed-delivery/` (313 files, 589.54 MB).
+Redundant and superseded candidates:
+`Legacy/20261004-233110-778-golf-eighteen-speed-candidates/`
+(1,252 files, 2,358.14 MB). Current release evidence is retained under `Builds/`.
+
+## Golf meadow restored — 4 October 2026
+
+Restored **294 original desktop mesh references** and the Android meadow,
+retaining all five numbered cups, flags, tees, collision openings and scoring.
+Only the cup radius plus **0.10 m** is cleared, replacing the former large
+green-radius clearings. The current original placements have no blades in those
+tiny openings: **2,289 blades** return, restoring **137,724** original blades.
+Original terrain maps and five-hole configuration hashes remain unchanged.
+
+Opening APK **89,021,758** → fresh **89,024,882 bytes (+3,124)**, including
+concurrent shot-range/cart work. Shared primary AndroidSubmission completed at
+**22:44:23 Malaysia time**; strict gate and independent v2 signature pass.
+Strict headroom **10,975,118 bytes**; the **75,000,000-byte development target
+remains exceeded by 14,024,882 bytes**. SHA-256:
+**20D100869CBFAA24F9E74F7F5CE1D16BCA0075A8B8F3FDC4F935A301272706E4**.
+See [audit](APK-SIZE-AUDIT.md#golf-meadow-restored--4-october-2026).
+
+Complete tested **22:43:13 Windows player** promoted to `Builds/WindowsFinal/`.
+**354 checks** pass (78 editor, 142 rendered island, 134 rendered match), plus
+desktop-reference and full runtime-meadow comparisons. Exact player/APK/audit
+and evidence: `Builds/GolfGrassQA/Release/` and
+[verification](VERIFICATION.md#golf-meadow-restored--4-october-2026).
+Phone appearance/touch/FPS remains unverified. Snapshot includes the concurrent
+5 m stroke cap and cart foot pose. The later **22:46 GolfBall settled-stroke
+range guard fix** belongs to another ongoing task and is not validated by these
+packages. Reviewed clone differences are editor-only clean packing, platform
+URP registrations and equivalent Ball prefab IDs.
+
+Initial disk-full incomplete player and 21 proven-unused grass derivatives:
+`Legacy/20261004-223137-525-golf-grass-obsolete/` (76 files, 875.77 MB).
+Companion metadata: `Legacy/20261004-223608-027-golf-grass-meta/`.
+Older 22:23 player, clone derivatives and temporary editor wrappers:
+`Legacy/20261004-224855-541-golf-grass-delivery/` (360 files, 592.78 MB).
+Closed-cache lossless compression preserved all hashes; caches remain in place.
+Git publishing remains with the user.
+
+## Golf cart forward-facing feet — 4 October 2026
+
+Fresh task APK: **89,021,758 → 89,025,074 bytes (+3,316)**, built at
+**22:40:48 Malaysia time**. Strict headroom **10,974,926 bytes**;
+development target exceeded by **14,025,074 bytes**. AndroidSubmission,
+APK v2 signature and independent packing audit pass. Serialized assets grow
+only **4 bytes** from the concurrent five-metre Golf configuration; no art is
+added by the feet correction. ZIP entries grow 3,314 bytes and signing/container
+overhead grows 2 bytes. The largest estimates remain timber 2.247 MB, character
+albedo 1.993 MB, Golf structures 1.981 MB and character mesh 1.588 MB.
+
+Exact task packages/audit are retained in `Builds/GolfCartFeetQA/Release/`.
+The newer shared APK (**89,024,882 bytes**, 22:44:23) is preserved;
+its v2 signature and generated native toe-tip branch were checked. Current
+shared headroom is **10,975,118 bytes**; its development-target
+excess is **14,024,882 bytes**. These snapshots differ in unrelated
+concurrent grass work. The initial 313-file Windows feet snapshot passed
+**439 checks**. The newer complete shared Windows player (22:43:13) includes
+the same feet correction and passed another **221 cart assertions**. See
+[verification and scope](VERIFICATION.md#golf-cart-forward-facing-feet--4-october-2026).
+
+## Reliable Golf Swing proximity — 4 October 2026
+
+Fresh APK: **89,000,984 → 89,021,758 bytes (+20,774)** from the task opening,
+including intervening wooden-tee and cart releases. The immediate predecessor
+was **89,022,058 bytes**; this Swing release is **300 bytes smaller**.
+Strict-limit headroom is **10,978,242 bytes**. The **75,000,000-byte development
+target remains exceeded by 14,021,758 bytes**. AndroidSubmission completed at
+**21:16:14 Malaysia time**, with the strict gate and independent APK v2
+signature passing. SHA-256:
+**101E2ADF8BE4052299771D620B804932FF1E64F8541A3352457C9CCF0E82CCEE**.
+
+The complete Windows player built at **21:32:44** is promoted to
+`Builds/WindowsFinal/`; all **313 files** match the retained release. The APK
+and all **11 audit files** also match. Current packages and exact retained
+copies are under `Builds/Android/` and `Builds/GolfSwingQA/Release/`.
+**560 assertions** pass on matching gameplay/assets: 104 Swing interaction,
+134 Golf offline, 41 side-approach host/client, 72 ball/tee/physics and 209 cart.
+See [verification](VERIFICATION.md#reliable-golf-swing-proximity--4-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#reliable-golf-swing-proximity--4-october-2026).
+
+The **2,974-input** capture retains the current scenes, art, physics, wooden
+tees and cart. The final Windows-only gait probe uses a level test fixture;
+the entire probe is excluded from release APK compilation. Reviewed isolated
+differences are editor-only clean packing, generated URP registrations,
+equivalent **14-object** Ball prefab IDs and a legacy material color
+serialization difference below **1e-6**. Lit BaseColor and all other material
+properties match. No new art is added by the Swing fix. Source manifests,
+signature, graph comparison and promotion hashes remain in `Builds/GolfSwingQA/`.
+Physical-phone touch/rendering/FPS and WAN remain unverified.
+
+Reviewed superseded delivery: `Legacy/20261004-214618-687-golf-swing-delivery/`
+(**325 files, 682.33 MB**). Candidate/redundant players:
+`Legacy/20261004-214623-806-golf-swing-candidates/` (**1,252 files, 2,357.51 MB**).
+The interrupted initial player and old isolated APK/audit are recoverable in
+`Legacy/20261004-204653-489-golf-swing-interrupted/` and
+`Legacy/20261004-211127-929-golf-swing-old-clone-apk/`. Git publishing remains
+with the user.
+
+
+## Golf wooden opening tee — 4 October 2026
+
+Opening APK: **89,000,984 bytes**. Delivered measured APK: **89,022,058 bytes
+(+21,074)**, with **10,977,942 bytes** of strict-limit headroom. The
+**75,000,000-byte development target remains exceeded by 14,022,058 bytes**.
+The four shared tee assets add **28,923 serialized bytes / 16,266 estimated
+ZIP bytes**. They use one **832-triangle** mesh, one **64×128** wood-grain
+texture with ASTC 6×6 Android import, and one instanced material. The existing
+ball, island terrain, flags, characters and equipment are retained.
+See [packing audit](APK-SIZE-AUDIT.md#golf-wooden-opening-tee--4-october-2026).
+
+The first primary AndroidSubmission attempt failed with native out-of-memory
+before producing an APK. A subsequent concurrent cart-seat AndroidSubmission
+successfully built the same gameplay and tee assets at **20:56:07 Malaysia
+time**. This exact fresh package is reused after a full source comparison,
+packing analysis and independent APK v2 verification; no older APK is used to
+validate this change. Reviewed differences are platform URP registrations,
+build-only clean packing, equivalent Ball prefab local IDs, and later editor
+or development-only review/probe code. SHA-256:
+**C260EDEBFFF01DC214668A9B6AF72736EA7E5A57FFBE71B25675711CCC27D947**.
+The optional `Tools/Build/Build.ps1 -JobWorkerCount 2` now permits a smaller
+Unity worker pool on memory-constrained machines; its default remains unchanged.
+
+The complete Windows player built at **20:57:01** passes **246 assertions**
+(72 rendered ball/tee/physics checks, 134 rendered Golf/club checks, 20 host
+and 20 client checks). It is promoted to `Builds/WindowsFinal/`, preserving the
+latest straight-knee cart pose, slope settling, 3× ball and Aim controls.
+Exact retained player: `Builds/GolfWoodTeeQA/Player/`; APK and audit:
+`Builds/GolfWoodTeeQA/Release/`. The **2,974-input** source comparison and final
+evidence remain under `Builds/GolfWoodTeeQA/`. Later primary `GolfClubMotion`
+work and a development-only `GolfMatchProbe` edit are outside this tested
+snapshot; their source changes are preserved. Physical-phone rendering/touch/FPS
+and WAN remain unverified. See [verification](VERIFICATION.md#golf-wooden-opening-tee--4-october-2026).
+
+The superseded shared player is recoverable in
+`Legacy/20261004-211728-900-golf-wood-tee-delivery/` (**313 files, 589.38 MB**).
+Reviewed intermediate players and compile/stance/integration/OOM diagnostics
+are recorded in `Builds/GolfWoodTeeQA/archive-*.txt`. Git publishing stays with
+the user.
+
+## Golf cart straight-knee driver — 4 October 2026
+
+Opening APK: **89,002,854 bytes**. Fresh APK: **89,022,058 bytes (+19,204)**;
+the intervening gentle-contact delivery was **89,000,870 bytes (+21,188)**.
+Strict-limit headroom: **10,977,942 bytes**. The **75,000,000-byte development
+target remains exceeded by 14,022,058 bytes**. AndroidSubmission completed
+release IL2CPP ARM64 at **20:56:07 Malaysia time**; strict size gate,
+independent APK v2 signature and fresh packing analysis pass. SHA-256:
+**C260EDEBFFF01DC214668A9B6AF72736EA7E5A57FFBE71B25675711CCC27D947**.
+
+The pose change adds no art, animation, texture or package. This snapshot also
+retains the current wooden starting tee and slope settling/contact behavior.
+Serialized assets total **155,324,105 bytes (+29,099)** against the preceding
+contact delivery; the wooden tee accounts for **28,923** of those bytes.
+See [fresh packing audit](APK-SIZE-AUDIT.md#golf-cart-straight-knee-driver--4-october-2026).
+
+The complete Windows player built at **20:47:08** passes **455 assertions**:
+**209 cart**, **72 ball/physics/tee**, and **174 Golf/club/room** checks.
+All **313 Windows files**, **11 audit files**, and the APK match the retained
+release. Current delivery: `Builds/WindowsFinal/` and
+`Builds/Android/WhatTheFish-release.apk`; exact retained player/APK/audit:
+`Builds/GolfCartSeatQA/Release/`. The **2,974-input** capture retains all
+gameplay sources. Later development-only GolfMatchProbe/GolfSwingProbe and
+editor GolfSwingReview changes are outside this tested snapshot and compiled
+out of release. Generated URP registrations and equivalent Ball prefab IDs
+are reviewed; the canonical **14-object graph** matches. Ignored performance
+test run records are excluded. [Native evidence and limits](VERIFICATION.md#golf-cart-straight-knee-driver--4-october-2026).
+
+Superseded Windows: `Legacy/20261004-205455-043-golf-cart-seat-windows/`
+(**313 files, 589.34 MB**); superseded Android/audit:
+`Legacy/20261004-210405-328-golf-cart-seat-android/` (**13 files, 93.05 MB**).
+The reviewed trial is in `Legacy/20261004-203548-973-golf-cart-seat-trial/`
+(**359 files, 639.50 MB**); a concurrent-build memory failure is preserved in
+`Legacy/20261004-204222-803-golf-cart-seat-oom/` (**3 files, 1.00 MB**).
+Current evidence remains under `Builds/GolfCartSeatQA/`. No publishing action
+was performed. Phone quality/FPS and WAN remain unverified.
+
+## Golf slope settling and resting — 4 October 2026
+
+Final APK: **89,001,008 → 89,000,870 bytes (−138)**. The concurrent Aim
+delivery was **89,000,984 bytes** (final is **114 bytes smaller**); an interim
+settling candidate was **89,002,854** (final is **1,984 bytes smaller**).
+Strict-limit headroom: **10,999,130 bytes**. The **75,000,000-byte development
+target remains exceeded by 14,000,870**. AndroidSubmission completed release
+IL2CPP ARM64 at **20:39:41 Malaysia time**; strict size gate, independent APK
+v2 signature and fresh packing audit pass.
+SHA-256: **76ED88F934D6DFB4CB5CEF3A04C4A6359045BE2C136B737FE98C422DC29DA8C1**.
+
+The complete Windows player built at **20:29:59** passes **233 assertions**
+(61 rendered ball physics, 134 Golf offline, 19 host, 19 client). It is promoted
+to `Builds/WindowsFinal/`; all **313 files** match the retained release. The
+shared APK and all **11 audit files** match as well. Current APK:
+`Builds/Android/WhatTheFish-release.apk`; retained complete player/APK/audit:
+`Builds/GolfSettlingQA/Release/`.
+
+The isolated **2,957-input** snapshot retains the existing scene/map/hole/player
+structure. Concurrent wooden-tee, swing-review and cart/locomotion work remains
+in primary but is outside this release. Tee-dependent probe blocks and its
+new ground-query layer are excluded only in the isolated snapshot; core ball
+physics otherwise matches primary, as recorded in the code comparison.
+Reviewed generated differences are clean packing and equivalent Ball prefab
+local IDs; its canonical **14-object graph** matches. Source manifests,
+protected-asset comparison, signatures and promotion hashes remain under
+`Builds/GolfSettlingQA/`. See
+[61+172-check scope](VERIFICATION.md#golf-slope-settling-and-resting--4-october-2026)
+and [packing analysis](APK-SIZE-AUDIT.md#golf-slope-settling-and-resting--4-october-2026).
+Physical-phone touch/rendering/FPS and WAN remain unverified.
+
+Final superseded delivery: `Legacy/20261004-204254-498-golf-settling-final-delivery/`
+(**325 files, 681.62 MB**). Earlier shared delivery is in
+`Legacy/20261004-202200-124-golf-settling-delivery/` (**325 files, 682.26 MB**).
+Interim exact release/evidence is in
+`Legacy/20261004-203148-982-golf-settling-interim/` (**336 files, 684.15 MB**).
+Superseded checks and diagnostics are in
+`Legacy/20261004-203654-635-golf-settling-superseded-checks/` (**59 files, 67.90 MB**)
+and `Legacy/20261004-201545-660-golf-settling-trials/` (**55 files, 58.28 MB**).
+Earlier candidate players are in the `golf-settling-first-player`,
+`golf-settling-refinement` and `golf-settling-player-copy` batches; exact recovery
+records remain in `Builds/GolfSettlingQA/archive-*.txt`. The final redundant
+isolated player is recorded in `archive-final-player-copy.txt` there.
+Git staging, commit and push remain with the user.
+
+
+## Golf 3x ball and optional Aim — 4 October 2026
+
+Opening APK: **88,984,188 bytes**. Final measured APK: **89,000,984 bytes
+(+16,796)**; the intervening grip delivery was **89,001,008 bytes**, so this
+release is **24 bytes smaller**. Strict-limit headroom is **10,999,016 bytes**.
+The **75,000,000-byte development target remains exceeded by 14,000,984 bytes**.
+No new ball mesh, texture, material or package is added. The existing shared
+ball LODs scale to 3x together with their physics sphere; four extra control
+glyphs add **936 bytes** to the existing font subset. Concurrent validated
+grip/carry improvements are retained and account for most of the combined
+growth. Serialized assets are **155,294,810 bytes (+16,350)**, separate from APK
+length. See [packing audit](APK-SIZE-AUDIT.md#golf-3x-ball-and-optional-aim--4-october-2026).
+
+Unity 6000.3.20f1 completed release IL2CPP ARM64 AndroidSubmission at
+**19:39:23 Malaysia time**. Its strict gate and independent APK v2 signature
+pass. SHA-256:
+**6A46C9CD239FD8D43A7234C5FAFC9C02991146B06FD1B4B87738E78BF25FBC4D**.
+Current APK: `Builds/Android/WhatTheFish-release.apk`; exact retained APK,
+fresh audit and complete Windows player: `Builds/GolfBallAimQA/Release/`.
+
+The complete Windows player built at **19:50:57 Malaysia time** is promoted
+to `Builds/WindowsFinal/`. It passes **41 rendered ball/Aim/physics/cup/restart
+checks** and **172 Golf/club/room checks**; **203 cart checks** also pass on the
+same cart/input/camera behavior. Every delivered Windows file and the APK
+match the retained package. All **2,953 primary asset/package/settings inputs**
+were captured and remain unchanged after the final Windows capture. Reviewed
+isolated differences are the build-only clean-cache editor option and
+equivalent Ball prefab local IDs; the canonical **14-object graph** matches.
+The APK's earlier development-only GolfMatchProbe diagnostic is compiled out
+of release; its gameplay sources match. See
+[verification scope](VERIFICATION.md#golf-3x-ball-and-optional-aim--4-october-2026).
+Physical-phone touch/rendering/FPS and WAN remain unverified.
+
+The superseded shared grip player/APK/audit is recoverable in
+`Legacy/20261004-195606-285-golf-ball-aim-delivery/` (**326 files, 682.31 MB**).
+Reviewed intermediate snapshots and trials are in
+`Legacy/20261004-190612-519-golf-ball-aim-initial/` (**318 files, 590.81 MB**),
+`Legacy/20261004-192331-749-golf-ball-aim-snapshot/` (**332 files, 619.31 MB**)
+and `Legacy/20261004-194641-726-golf-ball-aim-probe-snapshot/`
+(**315 files, 590.77 MB**). Current evidence and input comparisons remain under
+`Builds/GolfBallAimQA/`. Git publishing remains with the user.
+
+The redundant isolated final player is recoverable in
+`Legacy/20261004-200344-604-golf-ball-aim-player-copy/`
+(**313 files, 589.33 MB**); the shared and retained player remain current.
+TaskReady passes using a read-only copy of the index because the pre-existing
+shared `.git/index.lock` is still present. The real index hash is unchanged;
+no lock removal, staging or publishing was performed.
+
+## Golf closed grip and raised carry angle — 4 October 2026
+
+Fresh APK: **88,984,188 → 89,001,008 bytes (+16,820)**. Strict-limit
+headroom is **10,998,992 bytes**. The **75,000,000-byte development target
+remains exceeded by 14,001,008 bytes**. AndroidSubmission and independent APK
+v2 signing pass. Unity 6000.3.20f1 completed release IL2CPP ARM64 at **19:35:26
+Malaysia time**. SHA-256:
+**DAAE6E64BE696721C3344CCDBB447E505D428537EF5A81047783E61DD751A12F**.
+
+The complete Windows player built at **19:26:59** passes **172 Golf/club/room
+checks** (134 rendered offline, 19 host, 19 client). It is promoted to
+`Builds/WindowsFinal/`; all **313 files** match the retained release. The shared
+APK and all **11 audit files** match as well. Current APK:
+`Builds/Android/WhatTheFish-release.apk`; retained player/APK/audit and source
+fingerprints: `Builds/GolfGripSlopeQA/Release/` and its parent.
+
+The **2,953 captured primary inputs** include the concurrent aim-button/3x-ball
+runtime. Reviewed isolated differences are generated Android URP registrations,
+build-only clean packing, semantically equivalent Ball prefab local IDs, and a
+later primary edit to the independent development-only ball-physics probe.
+That probe edit is outside this player and does not change release gameplay.
+The Ball prefab's canonical **14-object graph** matches. Original character
+FBX bytes remain unchanged; the grip is derived at import. See
+[packing audit](APK-SIZE-AUDIT.md#golf-closed-grip-and-raised-carry-angle--4-october-2026)
+and [native checks](VERIFICATION.md#golf-closed-grip-and-raised-carry-angle--4-october-2026).
+Phone rendering/touch/FPS and WAN remain unverified.
+
+The replaced shared delivery is recoverable in
+`Legacy/20261004-193744-641-golf-grip-delivery/` (**325 files, 682.27 MB**).
+Superseded diagnostics are in
+`Legacy/20261004-193144-915-golf-grip-trials/` (**106 files, 107.84 MB**); the
+initial diagnostic player is in
+`Legacy/20261004-190323-109-golf-grip-raw-player/` (**314 files, 589.32 MB**).
+The redundant isolated final player is archived under the `golf-grip-player-copy`
+batch recorded in `Builds/GolfGripSlopeQA/archive-player-copy.txt`.
+Git staging, commit and push remain with the user.
+
+
+## Golf ball visibility and free physics — 4 October 2026
+
+Opening APK: **88,981,824 bytes**. The intervening palm-carry delivery was
+**88,982,396 bytes**; the final measured physics release is **88,984,188 bytes**
+(**+2,364** from task opening, **+1,792** from the preceding delivery).
+Strict-limit headroom is **11,015,812 bytes**. The **75,000,000-byte development
+target remains exceeded by 13,984,188 bytes**. This update adds no mesh,
+texture, material, font, audio or package. Existing shared ball LODs remain
+15,998 / 720 triangles; the far silhouette now stays rendered. Serialized
+assets rise only **104 bytes**, to **155,278,460**, from development-probe
+MonoScript metadata; that measurement is separate from APK length.
+
+Current APK: `Builds/Android/WhatTheFish-release.apk`; exact retained APK and
+fresh detailed audit: `Builds/GolfBallPhysicsQA/Release/`.
+SHA-256: **48E35D9E094FE1DA24752C66DBC96EA735AB50B982D7CCF9261C79B076CE8BE6**.
+Unity 6000.3.20f1 completed release IL2CPP ARM64 at **17:30:40 Malaysia time**.
+AndroidSubmission, its strict size gate, fresh per-asset analysis and
+independent APK v2 signature pass. The isolated build uses clean packing and
+process-local JVM/temp settings. All **2,951 asset/package/settings inputs**
+are captured and primary remained unchanged. Reviewed isolated differences
+are generated Android URP registrations, the build-only clean-cache editor
+option and equivalent Ball prefab local IDs; its canonical **14-object graph**
+matches. No unexpected large packed dependency appeared. See
+[packing details](APK-SIZE-AUDIT.md#golf-ball-visibility-and-free-physics--4-october-2026).
+
+The complete Windows player built at **17:22:06 Malaysia time** is retained in
+`Builds/GolfBallPhysicsQA/Release/Windows/` and promoted to
+`Builds/WindowsFinal/`. All **313 files** match; the root APK also matches its
+retained hash. It passes **22 final native visibility/physics checks** with all
+UI overlays captured. The same gameplay sources pass **143 Golf/club/room
+checks** and **203 cart regressions**. See
+[measurements and verification scope](VERIFICATION.md#golf-ball-visibility-and-free-physics--4-october-2026).
+Physical-phone touch/rendering/FPS and WAN remain unverified.
+
+The replaced shared player/APK/audit is recoverable in
+`Legacy/20261004-173632-475-golf-ball-physics-delivery/` (**327 files, 682.28 MB**).
+Earlier task snapshots are in
+`Legacy/20261004-172548-441-golf-ball-physics-snapshot/` (**326 files, 682.25 MB**);
+superseded test records/backups are in
+`Legacy/20261004-173123-168-golf-ball-physics-trials/` (**68 files, 72.30 MB**).
+The first diagnostic player is in
+`Legacy/20261004-163507-728-golf-ball-physics-diagnostic/` (**313 files, 589.33 MB**).
+Current before/after evidence, input hashes, signatures and delivery comparisons
+remain under `Builds/GolfBallPhysicsQA/`. Git publishing remains with the user.
+The redundant isolated final player is recoverable in
+`Legacy/20261004-173844-536-golf-ball-physics-player-copy/` (**313 files, 589.35 MB**);
+the current tested player remains in the shared and retained release folders.
+
+## Golf palm animation — 4 October 2026
+
+Fresh carry-fix APK: **88,981,824 → 88,982,396 bytes (+572)**. Strict-limit
+headroom is **11,017,604 bytes**; the **75,000,000-byte development target remains
+exceeded by 13,982,396 bytes**. The change preserves the animated right wrist
+and curls fingers in the palm's own frame. No art, animation asset or package
+was added. Serialized assets remain **155,278,356 bytes**.
+
+Current APK: `Builds/Android/WhatTheFish-release.apk`; exact retained copy:
+`Builds/GolfPalmCarryQA/Release/WhatTheFish-release.apk`.
+SHA-256: **D32D66D6D9AF7A71A549ACC36E02FDC78949AA09F1FB40F59AD921B24E525EF5**.
+Unity 6000.3.20f1 completed release IL2CPP ARM64 at **16:15:54 Malaysia time**.
+The prescribed AndroidSubmission target, strict size gate, fresh per-asset
+analysis and independent APK v2 signature pass. The isolated checkout uses
+clean packing and process-local JVM/temp settings. All **2,949 inputs** were
+captured. Gameplay/art match primary; a subsequently added editor-only
+`GolfBallBuilder.BuildPhysicsVerification` entry point and development-only ball
+physics probe are outside this snapshot.
+Generated URP registrations, the clean-cache editor option and equivalent Ball
+prefab local IDs are reviewed isolated differences. The fourteen-object prefab
+graph and external references match.
+
+The complete Windows player built at **16:07:57 Malaysia time** is retained at
+`Builds/GolfPalmCarryQA/Release/Windows/` and passes **142 Golf checks** with native
+idle/walk/run/charge views inspected. Its `LATEST-BUILD.txt` identifies the exact
+snapshot. After the old player closed, the complete validated player was promoted
+to `Builds/WindowsFinal/`, with all **314 files** matching the retained release.
+The matching APK and audit are updated in the shared Android/SizeAudit folders.
+Reviewed superseded output is recoverable in
+`Legacy/20261004-162407-373-golf-palm-delivery/` (**325 files, 682.08 MB**).
+Exact fresh audits, signatures, input comparisons and current
+evidence are under `Builds/GolfPalmCarryQA/`; the release audit is in
+`Builds/GolfPalmCarryQA/Release/latest/`. See [functional verification](VERIFICATION.md#golf-palm-animation--4-october-2026).
+Physical-phone quality/FPS and WAN remain unverified. Git publishing remains
+with the user.
+
+## Rounded Golf ball — 4 October 2026
+
+Measured current APK: **89,418,634 → 88,981,824 bytes (−436,810)**.
+Strict-limit headroom is **11,018,176 bytes**; the **75,000,000-byte development
+target remains exceeded by 13,981,824 bytes**. The supplied rounded ball uses
+geometric dimples, one plain shared material and **15,998 / 720** delivery
+triangles. Its original 87,048-triangle FBX and editable master remain outside
+Unity delivery. Removing the old normal-map dependency more than offsets the
+new mesh; no new texture, shader, font, package or runtime physics system is
+added. The combined snapshot also includes the current natural club carry.
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`; exact retained copy:
+`Builds/GolfBallRoundedQA/Release/WhatTheFish-release.apk`. SHA-256:
+**54F69C76229C96F46D79035629D3AC7D135AC9284B3165D1C90F0E346DF1EC65**.
+Unity 6000.3.20f1 completed release IL2CPP ARM64 at **14:42:09 Malaysia time**.
+The prescribed `Tools/Build/Build.ps1 -Target AndroidSubmission`, strict size
+gate and independent APK v2 signature pass. After a local Gradle loopback
+failure, the existing isolated checkout completed the same target with clean
+packing and process-local JVM/temp settings. All **2,949 captured
+asset/package/settings inputs** match final primary gameplay/art sources;
+expected differences are Android URP registrations, the ignored isolated
+editor's clean-cache option and equivalent Ball prefab local object IDs.
+The canonical **14-object prefab graph** matches. Captures, comparisons and
+signing evidence are under `Builds/GolfBallRoundedQA/`.
+
+Serialized assets total **155,278,356 bytes (−583,832)**, separate from APK
+length. The ball mesh's independent compressed estimate increases **38,364 →
+198,847 bytes (+160,483)**; the old normal map's **596,010-byte** estimate is
+absent from the fresh packed assets. Material metadata decreases 13 estimated
+bytes. Exact compressed ZIP entries shrink **436,645 bytes**, with another
+**165 bytes** of container/signing reduction. The leading estimates remain
+timber **2.247 MB**, character albedo **1.993 MB**, Golf structures **1.981 MB**,
+character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected
+large dependency appeared. Complete current/retained audits are in
+`Builds/SizeAudit/latest/` and `Builds/GolfBallRoundedQA/Release/latest/`.
+
+The complete matching Windows player was built at **14:23:37 Malaysia time**
+and promoted to `Builds/WindowsFinal/`, including data, DLLs and launchers. It
+passes **140 Golf checks**; the unchanged ball art also passes **20 equipment
+checks**, with close, normal playing and both LOD views inspected. Original
+physics dimensions, five-hole flow, ownership, strokes, recovery and authority
+are preserved. See [source and verification](VERIFICATION.md#rounded-golf-ball--4-october-2026).
+Physical-phone touch, rendering/FPS and WAN remain unverified.
+
+Reviewed superseded player, portable-regeneration copy and one-off helpers are
+recoverable in `Legacy/20261004-143815-451-golf-ball-rounded-trials/` (**324
+files, 597.19 MB**). The replaced shared player/APK/audit are in
+`Legacy/20261004-144741-052-golf-ball-rounded-final/` (**326 files, 682.62 MB**).
+The earlier failed probe player is in
+`Legacy/20261004-142138-879-golf-ball-probe-frame/` (**313 files, 589.33 MB**).
+Superseded initial/failed suite captures and build diagnostics are in
+`Legacy/20261004-145331-764-golf-ball-rounded-diagnostics/` (**28 files,
+27.31 MB**).
+Current evidence, exact releases, active assets and editable masters are
+retained; caches and unrelated work are preserved. Git staging and publishing
+remain with the user. Earlier entries describe historical snapshots.
+
+## Golf club natural carry — 4 October 2026
+
+Measured carry-task APK: **89,418,634 → 88,981,788 bytes (−436,846)**.
+Strict-limit headroom is **11,018,212 bytes**; the **75,000,000-byte development
+target remains exceeded by 13,981,788 bytes**. Carry changes reuse the existing
+rig, club mesh and three maps. This combined snapshot also preserves concurrent
+rounded-ball work, which removes the old ball normal-map dependency; the whole
+package reduction is not a benchmark of the carry code alone.
+
+Exact retained artifact: `Builds/GolfClubCarryQA/Release/WhatTheFish-release.apk`.
+SHA-256:
+**CF27A930CEF35A99675AACE86221DA8764602E4CB56472A96F6BAE44AA4BF9CE**.
+Unity 6000.3.20f1 completed release IL2CPP ARM64 at **14:29:19 Malaysia time**.
+The prescribed AndroidSubmission target, strict size gate and independent APK
+v2 signature pass. The existing isolated checkout completed clean packing with
+process-local JVM/temp settings. All **2,949 primary asset/package/settings
+inputs** remain unchanged during packaging. Isolated differences are the clean
+cache editor option, generated Android URP registrations and regenerated Ball
+prefab local IDs; its canonical fourteen-object graph and external references
+match the primary asset. Runtime/art sources match the validated Windows player.
+
+Serialized assets total **155,278,356 bytes (−583,832)**, separate from APK bytes.
+The concurrent ball mesh adds **115,396 serialized / 160,483 estimated bytes**;
+the old ball normal map removes **699,212 serialized / 596,010 estimated bytes**.
+Exact compressed ZIP entries shrink **436,680 bytes**, with **166 bytes** less
+container/signing overhead giving the measured APK delta. Leading estimates
+remain timber **2.247 MB**, character albedo **1.993 MB**, Golf structures
+**1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**.
+Club geometry and map estimates remain unchanged; no unexpected large dependency
+appeared. Its exact complete audit is retained at
+`Builds/GolfClubCarryQA/Release/latest/`.
+
+The complete Windows player, built at **14:19:25 Malaysia time**, passes **140
+Golf checks (103 offline, 19 host, 18 client)** and inspected native carry/swing
+views. The exact tested player is retained at `Builds/GolfClubCarryQA/Release/Windows/`.
+See [gait measurements and validation scope](VERIFICATION.md#golf-club-natural-carry--4-october-2026).
+The newer rounded-ball release supersedes this snapshot in the shared delivery
+folders. Its **14:23:37** Windows player includes this final carry implementation
+and passes the same **140 Golf checks**, in
+`Builds/GolfMiniGameQA/Run-20261004-142455/`. All **313 promoted files** match its
+retained player. The shared APK now measures **88,981,824 bytes** (**−436,810**
+from this task's opening release), with **11,018,176 bytes** of strict-limit
+headroom and **13,981,824 bytes** above the development target. Its hash and fresh
+`Builds/SizeAudit/latest/` reports are recorded in the rounded-ball entry above.
+The newer complete shared release is preserved under the repository's concurrent
+delivery rule. Physical-phone touch, rendering/FPS and WAN remain unverified.
+
+Reviewed obsolete isolated output is recoverable in
+`Legacy/20261004-134111-108-golf-hand-carry-isolated/` (**325 files, 683.05 MB**),
+and trial output in `Legacy/20261004-142547-964-golf-hand-carry-trials/`
+(**44 files, 38.96 MB**). The partial delivery batch
+`Legacy/20261004-143258-918-golf-hand-carry-delivery/` contains only the **12
+completed APK/audit moves (93,364,352 bytes)**; its Windows entries did not move
+while the older game was open. That older player was subsequently archived in
+the rounded-ball final batch listed above. An unchanged empty Git index mutex
+was cleared after separate observations and exclusive-access checks, with the
+actual index hash unchanged. Its one-file backup is in
+`Legacy/20261004-145444-646-golf-hand-carry-mutex/`; integrity evidence remains in
+`Builds/GolfClubCarryQA/`. Normal readiness checks pass. No staging, commit or
+push was performed.
+
+## Midnight Iron handheld club — 4 October 2026
+
+Measured current APK: **88,787,790 → 89,418,634 bytes (+630,844)**. Strict-limit headroom is **10,581,366 bytes**. The **75,000,000-byte development target remains exceeded by 14,418,634 bytes**. This combined snapshot includes the already validated reference cart tyres: against that separate **88,963,010-byte** release, the club/gameplay update is **+455,624 bytes**. Original high-quality meshes, the supplied ZIP and 2048-pixel source maps remain outside Unity delivery; the handheld club uses three LODs, one shared material, two 512-pixel maps and a 256-pixel packed mask. No animation asset, font, shader or package was added.
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`; exact retained copy: `Builds/GolfClubQA/Release/WhatTheFish-release.apk`. SHA-256: **49BC113AFE2C569D42CCB63154158294E6748C81AF309F0638279A71D357E679**. Unity 6000.3.20f1 completed release IL2CPP ARM64 at **13:12:04 Malaysia time**. The prescribed `Tools/Build/Build.ps1 -Target AndroidSubmission`, strict size gate and independent APK v2 signature pass. The open primary editor and caches were preserved; the existing isolated checkout completed the same target with clean packing and process-local JVM/temp settings. All **2,947 captured asset/package/settings inputs** stayed unchanged during final packaging and match the primary workspace except the ignored isolated editor's clean-cache build option. Final texture references are confirmed in the fresh packed reports.
+
+Serialized assets total **155,862,188 bytes (+919,293)**, separate from APK length. The club's total independent compressed contribution estimate is **405,759 bytes**: mesh **123,767**, colour **129,848**, normal **131,740**, mask **18,413**, plus prefab/material/script metadata **1,991**. Exact compressed ZIP growth is **629,813 bytes** against the opening APK, or **454,593** against the tyre release; APK container/signing overhead accounts for the remaining **1,031 bytes**. The same leading estimates remain timber **2.247 MB**, character albedo **1.993 MB**, Golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. Cart mesh growth from the opening snapshot and the club maps/mesh explain the asset increase; no unexpected large dependency appeared. Complete fresh reports: `Builds/SizeAudit/latest/` and `Builds/GolfClubQA/Release/latest/`.
+
+The complete matching Windows player was built at **13:04:30 Malaysia time** and promoted to `Builds/WindowsFinal/` with its data, DLLs and launchers; its 313 files match the retained delivery. It passes **113 Golf assertions**. The same gameplay sources pass **203 cart**, **509 football** and **28 basketball gameplay checks**, plus two basketball connection checks, before the final texture-import-only correction. Native carry, two-hand charge/contact/follow-through, first-person and running views and three model LODs were inspected. See [verification and source scope](VERIFICATION.md#midnight-iron-handheld-club--4-october-2026). Physical-phone touch, rendering/FPS and WAN remain unverified.
+
+Reviewed superseded shared APK/audit/player, duplicate extractions and club import/swing/test trials are recoverable in `Legacy/20261004-131836-279-golf-midnight-iron-final/` (**422 files, 763.69 MB**). Current masters, delivery assets, before/after references, exact releases and useful validation evidence remain available; caches and unrelated work were preserved. Git staging and publishing remain with the user. Earlier entries describe historical snapshots.
+
+## Golf cart reference tyres — 4 October 2026
+
+Measured tyre-verification APK: **88,787,790 → 88,963,010 bytes (+175,220)**. Strict-limit headroom is **11,036,990 bytes**. The **75,000,000-byte development target remains exceeded by 13,963,010 bytes**. The larger tyre wall, chevron grooves and cream six-spoke rims reuse the existing atlas/material, with no new shipped texture, shader or runtime system. Mid/far axial simplification saves **1,600 / 960 triangles** against the full new profile; final cart totals are **33,958 / 13,805 / 6,721** with five active renderers per LOD.
+
+Exact retained artifact: `Builds/GolfCartTreadQA/Release/WhatTheFish-release.apk`. SHA-256: **F496DE0E1B37750841EB36950244CB955754DA92253B23D26AF3336BD6A56486**. Unity 6000.3.20f1 completed release IL2CPP ARM64 at **11:55:46 Malaysia time**. The prescribed AndroidSubmission target, strict size gate and independent APK v2 signing pass. The primary batch attempt was blocked by the open editor; the existing isolated checkout completed the same target with clean packing and process-local JVM/temp settings. The open editor and caches were preserved.
+
+This is a separate captured tyre release. Cart runtime/art/prefab inputs match the primary workspace. Android's URP resource registrations are generated, and the isolated editor uses task-specific Windows output and clean-cache options. After source capture, the workspace acquired Golf-club art/editor/runtime files, a `GolfClubBuilder.Prepare` call and subsequent player/network/Golf integration, material and probe changes. Those ongoing changes are outside this APK's verification scope; use matching captured builds for its multiplayer tests. The shared root APK/audit were preserved. Captured **2,925 inputs**, final source comparisons, additions, signatures and exact packing offsets are in `Builds/GolfCartTreadQA/`; the matching tested player is retained in its `Player/` folder.
+
+Serialized assets total **155,187,375 bytes (+244,480)**, distinct from APK length. The cart FBX independent compressed estimate grows **736,970 → 909,743 bytes (+172,773)**. All other per-asset estimates and the three existing cart texture hashes are unchanged. Exact compressed ZIP growth is **175,220 bytes**, equal to the APK delta. The same leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. The increase is explained by the requested geometric tread and profile; no unexpected large dependency appeared. Complete fresh reports are in `Builds/GolfCartTreadQA/Release/latest/`.
+
+The final Windows suite passes **203 cart assertions**, including measured rolling radii, steering/collision, forty sand-bowl crossings and two-player replication. Close, rolling, native and three-LOD views were inspected; original master/body geometry/UVs and texture bytes are preserved, with equivalent regeneration from another checkout path. See [verification](VERIFICATION.md#golf-cart-reference-tyres--4-october-2026). Phone quality/FPS, touch and WAN remain unverified. Superseded generation/render diagnostics are recoverable in `Legacy/20261004-120128-305-golf-cart-reference-tyre-trials/` (**3 files, 0.02 MB**); current before/after references, player and release remain under ignored Builds. Git staging and publishing remain with the user. Earlier entries describe historical snapshots.
+
+## Golf cart rim fit and circularity — 4 October 2026
+
+Measured APK: **88,713,562 → 88,787,790 bytes (+74,228)**. Strict-limit headroom is **11,212,210 bytes**. The **75,000,000-byte development target remains unmet by 13,787,790 bytes**. The release contains the equal circular rims and welded tyre beads, together with concurrent fixed axle supports, wheel rotation calibration and driving HUD changes; the package delta is a combined snapshot.
+
+Artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **A8AFCC287E25A32D92694EE21D311B30ED23CF888692B2CB2BD3C75D92818D57**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **02:18:57 Malaysia time**. AndroidSubmission's strict gate and independent APK v2 signature pass. The open primary editor prevented its batch build; the same target completed in this task's isolated checkout using clean packing and process-local JVM/temp settings. The captured **2,925 input files** and source comparisons are in `Builds/GolfCartRimQA/`. Runtime/art inputs match the working source; the URP global resource asset is regenerated for Android, and only the isolated editor's output/cache options differ.
+
+Serialized assets total **154,942,895 bytes (+170,272)**, separate from APK length. The cart FBX estimate is **659,132 → 736,970 bytes (+77,838)**. All three existing texture hashes remain unchanged, with no new material, texture, shader or package. Continuous UV strips remove **6,288 position/UV splits (21,928 → 15,640)** across the twelve wheels. Mid/far spokes omit small corner bevels, saving **768 triangles per LOD**. The final snapshot is **4,560 APK bytes smaller** than the 88,792,350-byte intermediate; that comparison also includes concurrent vehicle changes and is not an isolated UV benchmark. Fresh estimates and ZIP deltas were calculated from this APK's own packing offsets.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected large dependency appeared. The final Windows cart suite passes **203 assertions**, with **142 island checks** and close/LOD views also verified. See [rim geometry, source integrity and validation scope](VERIFICATION.md#golf-cart-rim-fit-and-circularity--4-october-2026). Phone touch/rendering/FPS and WAN remain unverified.
+
+Reviewed obsolete artifacts are recoverable in three batches: `Legacy/20261004-011055-897-golf-cart-rim-trials/` (**332 files, 603.52 MB**, superseded source backups, swatch experiments and first trial player); `Legacy/20261004-022544-106-golf-cart-rim-final/` (**316 files, 589.38 MB**, intermediate player and obsolete diagnostic helpers); and `Legacy/20261004-022754-456-golf-cart-rim-release/` (**12 files, 92.74 MB**, superseded shared APK/audit). Current comparison references, final player and validation evidence remain under ignored Builds. Active assets, original masters, caches and unrelated work were preserved. Git staging and publishing remain with the user. Earlier entries describe historical snapshots.
+
+## Golf cart chassis connections and startup rolling — 4 October 2026
+
+Measured combined snapshot: **88,708,082 → 88,782,546 bytes (+74,464)** from the task-opening APK, including the separately refined rim/bead model. Against the immediately preceding complete shared release, this update measures **88,787,118 → 88,782,546 bytes (−4,572)**. Strict-limit headroom is **11,217,454 bytes**. The **75,000,000-byte development target remains unmet by 13,782,546 bytes**; this is still a constrained development budget.
+
+Current APK: `Builds/Android/WhatTheFish-release.apk`, with an exact retained copy at `Builds/GolfCartWheelContactQA/Release/WhatTheFish-release.apk`. SHA-256: **2C8425FC65A741B265894D8209F749A41D827721E11CF928F3984B97C74BE599**. Unity 6000.3.20f1 completed release IL2CPP ARM64 at **02:04:52 Malaysia time on 4 October**. The prescribed `Tools/Build/Build.ps1 -Target AndroidSubmission` target, strict size gate and independent APK v2 signing pass. The user's open Unity project remains open; the existing checkout with spaces ran the same target with clean packing cache and process-local TEMP/TMP/JVM settings. All **2,925 captured asset/package/settings inputs remain unchanged during final packaging and match the primary workspace**, except the isolated editor's clean-cache build option. A concurrent art re-export during the first package was retained, synchronized and rebuilt before this final delivery. Exact APK/audit/player, source manifests, signatures and comparison records are in `Builds/GolfCartWheelContactQA/`.
+
+Four fixed axles and upright mounts join wheel hubs to the chassis in all three LODs. Totals are **28,838 / 12,205 / 5,761 triangles**, adding only **288 / 224 / 160** support triangles. Five renderers per LOD and one shared material remain; original high-quality geometry/UVs and delivery map hashes are unchanged. No texture, font, shader or package is added. Final serialized assets measure **154,942,895 bytes (−84,608)** against the preceding release; this is separate from APK size. Cart mesh packing decreases **84,612 serialized bytes**, and its independent compressed estimate decreases **738,348 → 736,970 bytes (−1,378)**; the rolling-scale prefab field adds four serialized/estimated bytes. Cart maps and material estimates remain unchanged. Exact compressed ZIP entries shrink **4,570 bytes**, chiefly cart mesh data **−2,479** and IL2CPP **−2,086**; container/signing overhead shrinks two bytes, giving the measured **−4,572-byte APK** change. Leading estimates remain timber 2.247 MB, character albedo 1.993 MB, Golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. No unexpected large dependency or avoidable texture growth appeared. Current complete audit: `Builds/SizeAudit/latest/`; exact retained audit: `Builds/GolfCartWheelContactQA/Release/latest/`.
+
+The matching Windows development player passes **203 cart checks (159 offline, 22 host, 22 client)**. These include 28 new checks for measured tyre radius, 10/25/50 cm starts, reverse and stationary tilt/target-speed behavior, plus existing camera, pose, forty sand-bowl crossings, collision, authority and replication checks. Format-aware art audits pass in the primary and alternate checkout, with close/far/native/full-steering views inspected. **Wheel Roll Scale = 0.85** is intentional visual calibration; 1.0 restores the tyre-circumference ratio. See [verification and exact scope](VERIFICATION.md#golf-cart-chassis-connections-and-startup-rolling--4-october-2026). Physical-phone touch, rendering/FPS and WAN remain unverified.
+
+Reviewed superseded shared APK/audit/player, first export/package/probe, failed generation logs and source backups are recoverable in `Legacy/20261004-020924-883-golf-cart-wheel-contact/` (**378 files, 814.16 MB**). An unchanged empty Git mutex was confirmed exclusively openable across separate inspections, then removed with the index hash unchanged; its backup is in that batch. A later transient concurrent lock cleared independently, and the readiness retry passed. Active art, original masters, Unity caches and unrelated work were preserved. Git staging and publishing remain with the user. Earlier entries describe historical snapshots.
+
+## Golf cart elevated steering follow — 4 October 2026
+
+Measured APK: **88,708,082 → 88,787,118 bytes (+79,036)**. Strict-limit headroom is **11,212,882 bytes**. The **75,000,000-byte development target remains unmet by 13,787,118 bytes**. Elevated camera following adds no art, texture, font, shader or package. This combined snapshot also includes the separately updated cart rim/bead mesh and sand-bowl motor fix; the whole package delta is not the cost of the camera change alone.
+
+Artifact: `Builds/Android/WhatTheFish-release.apk`, with an exact retained copy at `Builds/GolfCartOverheadQA/Release/WhatTheFish-release.apk`. SHA-256: **3FDC1DDE408244001008F76556BE825B476CDAB9F3BBC9B9F6423068D1649A7B**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **01:06:24 Malaysia time on 4 October**. AndroidSubmission's strict limit and independent APK v2 signing pass. All **2,925 captured asset/package/settings inputs remain unchanged during packaging and match the primary workspace**, except the isolated editor's clean-cache build option. Source manifests/comparisons, signatures and packing comparisons are in `Builds/GolfCartOverheadQA/`.
+
+The primary script attempt exited while the user's Unity editor held the project. The existing independent checkout completed the same `Tools/Build/Build.ps1 -Target AndroidSubmission` target with clean packing cache and process-local TEMP/TMP/JVM settings. The open editor, original caches, dependencies and unrelated changes were preserved. A full Windows build validates the currently captured art and camera sources before Android packaging.
+
+Serialized assets total **155,027,503 bytes (+254,880)**, separate from APK bytes. The separate rim/bead model accounts for the entire serialized increase; its estimate rises **659,132 → 738,348 bytes (+79,216)**. Cart textures and material estimates remain unchanged. Exact compressed ZIP entries grow **79,039 bytes**, including cart mesh data **+78,860** and IL2CPP **+178** for the combined motor/camera code. Container/signing overhead changes by **−3 bytes**, yielding the measured APK delta. No unexpected large dependency or avoidable camera asset growth was found. Leading estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. Current complete audit is in `Builds/SizeAudit/latest/`; the exact release's audit is retained in `Builds/GolfCartOverheadQA/Release/latest/`.
+
+The matching Windows player passes **175 cart checks** (131 offline, 22 host, 22 client) and **81 Golf gameplay checks**. Elevated cart/camera turns match **+9.20° / +9.20°**, **−8.80° / −8.80°**, and **−18.53° / −18.53°** on the driving client. Manual view offsets, three camera modes, reverse behavior, exit, collision, all real sand bowls, authority and replication pass; the elevated native view was inspected. See [evidence and scope](VERIFICATION.md#golf-cart-elevated-steering-follow--4-october-2026). Phone touch, rendering/FPS and WAN remain unverified.
+
+Reviewed old shared APK/audit/player and task baseline/source copies are recoverable in `Legacy/20261004-011144-554-golf-cart-overhead/` (**352 files, 862.45 MB**). No active art, Unity cache or unrelated QA was archived; Git staging and publishing remain with the user. Earlier entries describe historical snapshots.
+
+## Golf cart sand-bowl rim traversal — 4 October 2026
+
+Vehicle-fix APK: **88,625,838 → 88,708,270 bytes (+82,432)** across this task's combined snapshot. Relative to the complete 88,708,082-byte Golf mini-game release, the rim-traversal code adds **188 bytes**. Strict-limit headroom is **11,291,730 bytes**; the **75,000,000-byte development target remains unmet by 13,708,270 bytes**. The motor fix adds no art, texture, material, shader or package.
+
+Artifact: `Builds/GolfCartRoundFixQA/Release/WhatTheFish-release.apk`. SHA-256: **144B87D8DD87E8AA3EC1775F51EF28D999C2201205E66FCC26492CC776D6CDF4**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **00:35:14 Malaysia time on 4 October**. The prescribed AndroidSubmission target and independent APK v2 signing pass. This separate delivery preserves the other task's shared APK. All **2,925 captured asset/package/settings inputs** match before packaging apart from the isolated editor's clean-cache option. A subsequent parallel **wheel-rim/bead mesh refinement at 00:40** changes the primary FBX after this snapshot; it is outside this APK and Windows player's verification scope. Motor, pose, networking, Golf rules and UI inputs still match. Source comparisons and signatures are in `Builds/GolfCartRoundFixQA/hill-*`.
+
+Serialized assets remain **154,772,623 bytes**, with **zero asset growth against the preceding complete Golf release**. The cart's captured mesh estimate remains **659,132 bytes** and its colour/normal/mask maps and material remain unchanged. Exact compressed ZIP growth against that release is **189 bytes**, chiefly IL2CPP **+188**; container overhead accounts for the one-byte difference from total APK growth. Against the task-opening release, serialized assets grow **62,952 bytes** and exact compressed entries grow **82,430 bytes**; the circular tyres account for **37,071 estimated bytes** while concurrent Golf/camera code contributes to native growth. Leading art estimates remain timber 2.247 MB, character albedo 1.993 MB, Golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. No unexpected large shipped dependency appeared. Complete fresh packing/contribution records are in `Builds/GolfCartRoundFixQA/Release/latest/`; comparisons are in `hill-package-comparison.json` and `hill-*-entry-deltas.csv` within the task directory.
+
+The fresh vehicle Windows player passes **169 checks** (127 offline, 21 host, 21 client), including **40 real sand-bowl crossings** in four directions and forward/reverse, plus existing walls, twelve shoreline directions, seating, wheel LODs and host/client replication. Evidence is `Builds/GolfCartQA/Run-20261004-002512/`; the complete tested player is in `Builds/GolfCartRoundFixQA/Release/Windows/`. See [reproduction and validation](VERIFICATION.md#golf-cart-sand-bowl-rim-traversal--4-october-2026). The successful retry uses the same existing isolated checkout and process-local TEMP/TMP/JVM settings described below. No new disk-space recovery was needed. Phone touch, rendering/FPS and WAN remain unverified.
+
+The superseded seating/tyre-only release and empty stale-mutex backup are recoverable in `Legacy/20261004-004451-752-golf-cart-rim-delivery/` (**326 files, 681.49 MB**). Earlier trials/source backups remain in `Legacy/20261003-235959-283-golf-cart-round-seated-cleanup/`, with the inspection helper in `Legacy/20261003-220432-659-golf-cart-inspect-helper/`. The abandoned empty Git index lock was confirmed unchanged and exclusively openable, then removed without altering the index or history. Caches, source masters, parallel wheel work and shared deliveries were preserved. Earlier entries below describe historical captured snapshots.
+
+## Golf mini game — 4 October 2026
+
+Measured APK: **88,625,838 → 88,708,082 bytes (+82,244)**. Strict-limit headroom is **11,291,918 bytes**. The **75,000,000-byte development target remains unmet by 13,708,082 bytes**. Golf gameplay reuses the existing course, equipment ball meshes/materials, font and native UI geometry; it adds no imported art, texture, shader or package. This combined snapshot also includes the separate camera and circular-tyre work, so the whole APK delta is not the isolated cost of Golf rules.
+
+Artifact: `Builds/Android/WhatTheFish-release.apk`, with an exact retained copy at `Builds/GolfMiniGameQA/Release/WhatTheFish-release.apk`. SHA-256: **B2B7B27CD2541D9EB0AC157E006081C85618143D568BE69B8747BDB723FBF6B3**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **00:23:04 Malaysia time on 4 October**. AndroidSubmission's strict gate and independent APK v2 signing pass. All **2,925 captured asset/package/settings inputs remain unchanged during packaging**. Golf gameplay, player, networking and UI inputs match the workspace. A separate ongoing cart-rim task subsequently changed the cart FBX, `GolfCartMotor` and the development-only `GolfCartProbe`; those later edits are outside this captured release. The isolated editor's clean-cache option is the only intentional build-source difference. Input manifests and comparisons are in `Builds/GolfMiniGameQA/`.
+
+The prescribed primary build attempt exited with the user's editor holding the project. The independent checkout completed the same `Tools/Build/Build.ps1 -Target AndroidSubmission` target with clean packing cache and process-local TEMP/TMP/JVM settings. An earlier Windows retry ran out of disk space; NTFS compression retained this task's copied Library, storing **8,372,093,269 logical bytes in 4,725,265,238 bytes**. Original caches, dependencies, source assets and the open editor were preserved. Compression changes neither logical source content nor APK bytes.
+
+Serialized assets total **154,772,623 bytes (+62,952)**, separate from APK bytes. The concurrent circular-tyre mesh explains the main asset increase: **622,061 → 659,132 independently compressed estimated bytes (+37,071)**, with unchanged cart texture maps. Exact compressed ZIP entries grow **82,241 bytes**: IL2CPP **+44,396**, cart mesh data **+36,476**, metadata **+6,198**, and Burst **−5,657** are the main changes. Container/signing overhead accounts for the remaining **3 bytes**. Golf's tiny MonoScript records are metadata, not estimates of compiled code cost; development fixture behavior is absent from the release's generated C++.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected large dependency appeared. Complete fresh packing is in `Builds/SizeAudit/latest/`; this exact release's audit is also retained in `Builds/GolfMiniGameQA/Release/latest/`. APK entry and asset-estimate comparisons are in `Builds/GolfMiniGameQA/`.
+
+The current Windows player passes **81 Golf gameplay, 509 football, 142 Golf map, 128 cart and 67 basketball checks**. The rendered leaderboard and target/ball indicators were inspected. See [exact scope and evidence](VERIFICATION.md#golf-mini-game--4-october-2026). Physical-phone touch, rendering/FPS and WAN remain unverified. Reviewed old player/APK/audit, task source backups, superseded probes and failed build/precision/fixture attempts are recoverable in `Legacy/20261004-002911-162-golf-mini-game/` (**382 files, 868.08 MB**). No active art or Unity cache was archived. Earlier release records below are historical snapshots.
+
+## Golf cart driving cameras — 3 October 2026
+
+Measured APK: **88,625,838 → 88,713,562 bytes (+87,724)**. Strict-limit headroom is **11,286,438 bytes**. The **75,000,000-byte development target remains unmet by 13,713,562 bytes**. Camera following adds no art, texture, shader or package. This combined snapshot also includes concurrent golf gameplay and cart seating/circular-tyre changes; the package increase is not the cost of camera following alone.
+
+Artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **D953A218545FC7F01953901B1512ADE2958A543A8F2F4DE6EE1A8AFE27412993**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **23:44:05 Malaysia time**. AndroidSubmission's strict gate and independent APK v2 signing pass. The **2,925-file input snapshot** remains unchanged inside the build checkout. Camera/vehicle inputs match the primary workspace. Two subsequent parallel changes, `GolfBall.ResetSequence` reception and the development-only `GolfMatchProbe`, are outside this captured APK; this record verifies the camera change and does not certify ongoing golf work. Input comparisons, signatures and current test evidence are in `Builds/GolfCartCameraQA/`; complete packing records are in `Builds/SizeAudit/latest/`.
+
+Serialized assets total **154,772,623 bytes (+62,952)**, separate from APK bytes. The concurrent tyre refinement raises the cart mesh independent estimate **622,061 → 659,132 bytes (+37,071)**; its colour/normal/mask maps remain unchanged. Exact compressed entry growth is **87,725 bytes**: IL2CPP **+44,653**, cart mesh data **+36,476** and metadata **+6,198** account for most of it. The one-byte difference from total APK growth is container overhead. Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected large shipped dependency appeared.
+
+The primary build attempt exited on the open editor. The isolated checkout completed the same script/target with clean packing cache and process-local TEMP/TMP/JVM settings. A later attempt ran out of disk space; retaining and applying NTFS compression to this task's copied Library stored **8,300,495,635 logical bytes in 4,823,223,361 bytes**. Original caches, installed dependencies and source assets were preserved; inputs were rechecked before the successful retry. Compression does not change logical APK bytes or asset content.
+
+The validated camera player in `Builds/GolfCartCameraQA/Player/` passes **128 cart checks** and **142 golf scene checks**, with native reverse/forward/turn/elevated views inspected. See [camera measurements and exact scope](VERIFICATION.md#golf-cart-driving-cameras--3-october-2026). Phone touch, clipping/rendering/FPS and WAN remain unverified. Reviewed old APK/audit, intermediate snapshot, source backups and failed comparisons/builds are recoverable in `Legacy/20261003-235321-846-golf-cart-camera/` (**60 files, 210.06 MB**). Earlier records below are historical snapshots.
+
+## Golf cart seating and circular tyres — 3 October 2026
+
+Historical vehicle-validation APK: **88,625,838 → 88,707,818 bytes (+81,980)**, leaving **11,292,182 bytes** below the strict 100,000,000-byte limit. The **75,000,000-byte development target was unmet by 13,707,818 bytes**. This captured release is now recoverable at `Legacy/20261004-004451-752-golf-cart-rim-delivery/Builds/GolfCartRoundFixQA/Release/WhatTheFish-release.apk`; shared deliveries were preserved. SHA-256: **08F24EA6CFCB41F230EB340C2089E329449A5B9FED850AA0D1099E21DFCEEB07**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **23:48:50 Malaysia time on 3 October**. AndroidSubmission's strict gate and independent APK v2 signature pass.
+
+The captured **2,925-file** asset/package/settings manifest and comparison records are in `Builds/GolfCartRoundFixQA/`. Vehicle art, seat, pose and camera inputs matched the workspace at capture. Parallel changes to `GolfBall`, `GolfMatchState` and the development-only `GolfMatchProbe` during packaging are outside this APK's captured scope; this record validates the vehicle changes rather than subsequent golf rules. The isolated editor's clean-cache build option is the only intentional source difference. The primary build attempt stopped on the open editor; the existing isolated checkout completed the same `Tools/Build/Build.ps1 -Target AndroidSubmission` command after resynchronizing incomplete parallel gameplay inputs.
+
+Serialized assets measure **154,772,623 bytes (+62,952)**, separate from APK bytes. The circular-tyre cart FBX rises **674,932 → 736,800 serialized bytes (+61,868)** and **622,061 → 659,132 independently compressed estimated bytes (+37,071)**. The existing colour/normal/mask textures and material are unchanged. Delivery geometry totals **25,833 / 9,686 / 3,748 triangles**, using 64/40/24 concentric tyre segments while retaining authored hubs and the original high-quality master. No new texture, shader or package was added. Exact compressed ZIP entry growth is **81,977 bytes**, including IL2CPP **+44,132**, metadata **+6,198** and Unity native code **+319**; these native increases also include parallel golf/camera work. Leading art estimates remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. This snapshot's packing and contribution records are recoverable at `Legacy/20261004-004451-752-golf-cart-rim-delivery/Builds/GolfCartRoundFixQA/Release/latest/`.
+
+A native-link retry exhausted disk space. NTFS compression of three already-reviewed, ignored historical cart archive batches freed **636,760,064 physical bytes**, preserving all **724 files' logical sizes and SHA-256 hashes**. No original Unity cache, installed dependency or source asset was removed. Process-local TEMP/TMP used `Builds/JdkTmp/`; the subsequent submission build succeeded. Recovery evidence is in `disk-recovery.json` and `compressed-archive-integrity.txt` within the task evidence directory.
+
+The captured Windows vehicle player passes **128 assertions** (86 offline, 21 host, 21 client), including seated roof clearance, both character LODs and all cart wheel LODs. Snapshot evidence is `Builds/GolfCartQA/Run-20261003-231835/`; its tested complete player is recoverable in `Legacy/20261004-004451-752-golf-cart-rim-delivery/Builds/GolfCartRoundFixQA/Release/Windows/`. See [pose, wheel and portable-art verification](VERIFICATION.md#golf-cart-seating-and-circular-tyres--3-october-2026). Phone touch, rendering/FPS and WAN remain unverified. Superseded source backups, old delivery/audit and trial runs are recoverable in `Legacy/20261003-235959-283-golf-cart-round-seated-cleanup/` (**98 files, 184.87 MB**); an obsolete inspection helper is in `Legacy/20261003-220432-659-golf-cart-inspect-helper/`.
+
+## Golf cart rear-wheel rendering and steering — 3 October 2026
+
+Actual APK: **88,625,346 → 88,625,838 bytes (+492)**. Strict-limit headroom is **11,374,162 bytes**. The **75,000,000-byte development target remains unmet by 13,625,838 bytes**. The rear hub repair preserves original face winding rather than recalculating inward normals on open wheel parts. Steering increases to 120°/s with a 38° front-wheel limit, and equal stick strength gives equal straight/turning throttle. No package, texture, material or extra geometry was added.
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **F4646C546AD3248D8AE7FA637351EE20C257114C3FDB3C66B77CAB41D51D15F2**. Unity 6000.3.20f1 built release IL2CPP ARM64 at **21:34:38 Malaysia time**. The prescribed main-project AndroidSubmission attempt exited on the open editor; the same script/target passed in the matching-source isolated checkout using clean build cache and process-local TEMP/TMP in `Builds/JdkTmp/`. The strict budget gate and independent APK v2 signing pass. All **2,890 publishable asset/package/settings hashes** match, except isolated editor output/clean-cache options. Current packing records are in `Builds/SizeAudit/latest/`; comparisons, signatures, source manifests and art checks are in `Builds/GolfCartHandlingQA/`.
+
+Serialized assets measure **154,709,671 bytes (+52)**, separate from APK bytes. Cart mesh independent compression estimate falls **622,153 → 622,061 bytes (−92)**; colour/normal/mask estimates are unchanged at 498,110/621,270/71,311 bytes. Exact compressed ZIP growth is 492 bytes, including IL2CPP **+556**; metadata and Unity native code remain unchanged. Total mobile triangles remain 24,000/8,000/2,500 and source geometry/UV/texture hashes are unchanged. Leading art estimates remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. No unexpected dependency or art growth appeared.
+
+The fresh desktop player passes **90 cart assertions** (56 offline, 17 host, 17 client). Measured straight/full-turn speed is **17.000/17.000 m/s**, half-strength straight/turn is **8.500/8.500**, and reverse turning remains **8.000**. All twelve wheel/LOD hub orientations point outward; actual three-LOD views show the restored rear pattern. Evidence: `Builds/GolfCartQA/Run-20261003-212527/`. Current desktop delivery is in `Builds/WindowsFinal/`; phone touch, rendering/FPS and WAN remain unverified. Reviewed old deliveries and wrong-normal art backups are recoverable in `Legacy/20261003-213949-431-golf-cart-render-steering/`. Source masters, caches and unrelated work were preserved. Earlier records below are historical snapshots.
+
+## Golf cart speed and wheels — 3 October 2026
+
+Current APK: **88,625,346 bytes**, leaving **11,374,654 bytes** under the strict 100,000,000-byte ceiling. The **75,000,000-byte development target remains unmet by 13,625,346 bytes**. Task-opening APK: **86,896,050 bytes**; a concurrent base-cart release measured **88,756,434 bytes**. The final combined release is **131,088 bytes smaller than that base-cart package** and **1,729,296 bytes larger than the task-opening package**. This comparison includes concurrent course refinement, not just wheel animation. The immediately preceding combined APK was **88,624,542 bytes**; restoring the tested slope-heading stability adds **804 bytes**.
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **6FF7DD3020809D03BE903CB50FC7ECBC87FD6E6B02BF21EAAABE69C20BDB39DC**. Unity 6000.3.20f1 produced release IL2CPP ARM64 at **20:58:58 Malaysia time**. The prescribed main-project AndroidSubmission attempt exited on the user's open editor; the same script/target passed in a matching-source isolated checkout with clean build cache for full packing offsets and process-local TEMP/TMP under `Builds/JdkTmp/`. The strict size gate and independent APK v2 signing passed. All **2,890 publishable asset/package/settings input hashes** match except the isolated editor's output/clean-cache options. The final 84 runtime C# hashes also match the successfully tested Windows player.
+
+Serialized assets total **154,709,619 bytes**, separate from APK size. Separating the existing wheels retains **24,000 / 8,000 / 2,500 total triangles**, one shared material and unchanged colour/normal/mask textures. The cart FBX estimate falls **632,112 → 622,153 bytes (−9,959)**; its prefab estimate grows **2,246 bytes**. No new wheel texture, shader or package was introduced. The unrelated course refinement accounts for most of the remaining package reduction. Largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected large dependency was found.
+
+The corrected player passes **87 cart assertions** and a separate **142 golf assertions**; measured forward/reverse speeds are **17.000 / −8.000 m/s**. Turning, wheel roll/reverse/stop, all three LOD views, collisions, slope parking, cameras, shared travel and two-player replication pass. Source/master UV integrity and relative Blender/FBX dependencies were checked from a second checkout and unrelated working directory. Current evidence: `Builds/GolfCartWheelsQA/`, `Builds/GolfCartQA/Run-20261003-202128/` and `Builds/GolfG2QA-20261003-202344/`; current complete packing records: `Builds/SizeAudit/latest/`. The validated desktop player is in `Builds/WindowsFinal/`. Physical-phone touch, rendering/FPS and WAN remain unverified.
+
+An intermediate APK containing a concurrent rollback of the slope fix is recoverable in `Legacy/20261003-205405-553-golf-cart-wheels-intermediate/`. Replaced shared deliveries, old static-wheel asset backups, rejected geometry trials and superseded failed probes are in `Legacy/20261003-210419-502-golf-cart-wheels-delivery/`. Active masters, caches, dependencies and unrelated source work were preserved. Earlier records below are historical source/build snapshots with their original scope.
+
+## Golf course refinement and current combined release — 3 October 2026
+
+Actual APK: **86,896,050 → 88,624,542 bytes (+1,728,492)**. Strict-limit headroom is **11,375,458 bytes**. The **75,000,000-byte development target remains unmet by 13,624,542 bytes**. The five-hole refinement uses the original aqua material and terrain colours, spreads the holes across the island and enlarges cup diameter to 0.285 m. The combined release also includes the separate protocol 19 cart speed/wheel updates; the APK increase is not the cost of the course refinement alone. See [course authoring](GOLF-COURSE.md) and [cart validation](VERIFICATION.md#golf-cart-speed-and-wheels--3-october-2026).
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **9D2AD84E7F8211681B4AFF14FE945B8B3A9F4EA18CF6ABCC91DFE840816CDAFF**. Unity 6000.3.20f1 produced release IL2CPP ARM64 at **20:28:02 Malaysia time**. AndroidSubmission's strict budget gate and independent APK v2 signing passed. All **2,903 authored asset/package/settings input hashes** match the primary workspace; the isolated editor differs only by its Android clean-cache option. Generated Performance Test resources are excluded from authoring hash comparisons. Current packing/ZIP/contribution records are in `Builds/SizeAudit/latest/`; source manifests, comparisons, renders and signing evidence are in `Builds/GolfCourseRefinementQA/`.
+
+The prescribed main-project attempt exited on the open Unity project. The matching-source isolated checkout completed the same script/target. A later Gradle daemon exhausted native memory; the successful retry set only process-local TEMP/TMP to `Builds/JdkTmp/` and JAVA_TOOL_OPTIONS to two active processors/two Gradle workers, sequential execution, no persistent daemon and a 32 GB JVM heap base. No user or game-quality setting changed. The shorter ignored checkout path avoids Mono's long-path cache errors.
+
+Serialized assets total **154,709,619 bytes (+2,598,806)**, a separate measurement from APK bytes. Course asset estimates fall **652,179 → 610,202 bytes (−41,977)**; the original terrain estimate falls another **80,439 bytes**, for a **122,416-byte reduction** in their combined independent compression estimates. Five precise derived terrain sectors retain small cup boundaries. Removing the coloured green meshes/materials avoids added turf textures; shared aqua, poles, numbers, floors and tees reuse existing art. Neither baked golf grass nor the removed overlays/materials is packed. Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. New cart art accounts for the principal combined-source growth; no unexpected course dependency appeared.
+
+Course checks passed **235 editor assertions**, **78 saved-scene assertions**, **142 mobile-geometry Windows assertions**, **142 later desktop assertions**, and **13,122 terrain-reference samples**. Close/distant and cup-detail views were inspected. The map/grass inputs remain identical through later cart-only source updates; the cart's separate final tests are linked above. Physical-phone touch, quality/FPS, WAN latency and golf shot/scoring behavior remain unverified.
+
+Unused course overlays/materials and old grass/terrain derivatives are recoverable in `Legacy/20261003-192351-292-golf-course-refine-unused/`. Superseded intermediate packages are in `Legacy/20261003-194837-732-golf-refine-first-package/` and `Legacy/20261003-200907-120-golf-refine-second-package/`. The replaced shared APK/audit/log is in `Legacy/20261003-204804-232-golf-refine-current-release/`; reviewed backups, duplicate captures and superseded diagnostics are in `Legacy/20261003-204959-483-golf-refine-task-cleanup/`. Final cleanup records are retained in the task QA folder. The map validation players remain in the ignored task checkout and its recorded run folders; the separate cart task's player outputs are preserved. No art master, installed dependency or primary Unity cache was removed. Earlier records below are historical snapshots with their original scope.
+
+## Golf cart summon and driving snapshot — 3 October 2026
+
+Actual APK: **86,896,050 → 88,756,434 bytes (+1,860,384)**. Strict-limit headroom is **11,243,566 bytes**. The **75,000,000-byte development target remains unmet by 13,756,434 bytes**. The supplied cart gains owner-limited summon/recall, public empty-cart driving, parked persistence and Golf-only controls. See [gameplay and art](GOLF-CART.md).
+
+This is the validated **protocol 18 base snapshot**, retained at `Builds/GolfCartQA/ReleaseBase/WhatTheFish-release.apk`; SHA-256 **C055ED1CEFCA2E8560D2954FEF00A72E0B173E76F14E56D661DD87BD54210FEE**. Concurrent tasks subsequently changed course assets and introduced protocol 19, doubled cart speed and animated wheels. Those later inputs are outside this snapshot's build and test scope. This record does not establish freshness of the shared `Builds/Android/` APK for those inputs.
+
+The prescribed main-project AndroidSubmission attempt exited on the user's open Unity project. The same script/target succeeded in the existing ignored isolated checkout, using its Android clean-cache option for full packing offsets and process-local TEMP/TMP under `Builds/JdkTmp/`. Unity 6000.3.20f1 produced the final release IL2CPP ARM64 APK at **19:56:01 Malaysia time**. The strict budget gate passed; the retained final file was separately verified with APK v2 signing. Complete packing, recalculated per-asset estimates and ZIP entries are in `Builds/GolfCartQA/ReleaseBase/latest/`; exact comparisons and signature evidence remain in `Builds/GolfCartQA/`.
+
+Serialized assets total **154,919,835 bytes (+2,809,022)**, a separate measurement from compressed APK bytes. Three cart LODs retain **24,000 / 8,000 / 2,500 triangles**, with shared 1024² colour/normal and 512² mask maps in ASTC. The original 246,850-triangle master, original ZIP and full font stay outside Unity assets. The eight-glyph font subset is **5,320 source bytes**, with its full OFL licence shipped. Independently compressed cart asset estimates total **1,830,717 bytes**. Existing leading art contributors remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected large dependency appeared.
+
+The Windows base player passed **76 cart assertions**, including owner-only recall and public guest driving, plus football, basketball, jump, golf traversal and shared travel regressions. Portable source dependencies and close/distant cart views were inspected. See [verification scope](VERIFICATION.md#golf-cart-summon-and-driving-snapshot--3-october-2026). Physical-phone touch, rendering/FPS and WAN latency remain unverified.
+
+Reviewed obsolete players, APK/audit output and the replaced nonportable FBX are recoverable in `Legacy/20261003-192438-574-golf-cart-player-baseline/`, `Legacy/20261003-194210-309-golf-cart-apk-baseline/` and `Legacy/20261003-195112-220-golf-cart-portable-fbx/`. Superseded pre-licence packaging and completed path-rewrite/relocation fixtures are in `Legacy/20261003-202644-582-golf-cart-base-cleanup/`. Active masters, caches, installed dependencies and other tasks' outputs remain in place. Earlier entries below retain their original source/build scope.
+
+## Five-hole golf map — 3 October 2026
+
+Actual APK: **86,563,288 → 86,896,050 bytes (+332,762)**. Strict-limit headroom is **13,103,950 bytes**. The **75,000,000-byte development target remains unmet by 11,896,050 bytes**. Five new numbered flags, recessed cups, putting greens and tees are included in the streamed golf scene. See [course layout and authoring](GOLF-COURSE.md).
+
+The prescribed main-project AndroidSubmission attempt exited while the user's Unity editor held the project open. The same script/target built the matching-source isolated project successfully, using its Android clean-cache option for complete packing offsets. TEMP/TMP were set only within the build processes to ignored `Builds/JdkTmp/`. Unity 6000.3.20f1 produced the final release IL2CPP ARM64 APK at **17:14:07 Malaysia time**; the strict budget gate and APK v2 signature verification passed.
+
+Current artifact: `Builds/Android/WhatTheFish-release.apk`. SHA-256: **977703634DD39FC91717CED426B67AC424EEA49F3105E27CD5789FC12F5C471A**. Complete current packing/ZIP/contribution records are in `Builds/SizeAudit/latest/`; source hashes, signature results, captures and comparisons are in `Builds/GolfFiveHolesQA/`. All authored asset inputs match the build checkout; only the isolated editor's clean-cache build option differs. Serialized assets total **152,110,813 bytes (+896,940)**, a separate measurement from APK size.
+
+The four derived terrain sectors and five greens use existing textures and shader families. Shared pole, pennant, cup-floor, tee and number meshes avoid repeated assets. New course assets contribute about **652,179 independently compressed bytes**, offset by a **320,128-byte** reduction in the original terrain estimate; these estimates are not exact ZIP allocation. Inspection caught an unnecessary inherited turf metallic mask: removing it reduced the trial APK from **87,045,510 to 86,896,050 bytes (−149,460)** while preserving colour/normal detail. Neither this mask nor baked golf grass is packed in the final APK. Largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**.
+
+The editor scene/prefab review passed **160 assertions**, the mobile-geometry Windows preview passed **142 golf assertions**, and the final desktop player passed **142**. The unchanged analytic terrain function also passed **13,122 authoring samples**. Physics openings, inner walls, recessed floors, grounded tees, materials, shoreline containment, fairway/bunker traversal and island switching were checked; close and distant renders were inspected. Physical-phone touch, quality/FPS and golf shot/scoring behavior are outside this map-only validation. No imported Blender/FBX master changed. The current desktop player is retained in `Builds/WindowsFinal/`.
+
+The obsolete first-layout terrain mesh is recoverable in `Legacy/20261003-165821-340-golf-five-holes-trial-mesh/`. Old players/APKs, the first masked-material package, root audit output and trial diagnostics are archived in `Legacy/20261003-171933-414-golf-five-holes-delivery/`. No active master, cache or installed dependency was moved. Earlier entries below are historical source/build snapshots.
 
 ## GitHub integration release — 3 October 2026
 

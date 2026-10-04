@@ -1,0 +1,100 @@
+{
+  "path_base": "repository root",
+  "source": {
+    "vertices": 43526,
+    "triangles": 87048,
+    "nonmanifold_edges": 0,
+    "components": [
+      43526
+    ],
+    "degenerate_triangles": 0,
+    "dimensions_metres": [
+      0.04269890859723091,
+      0.042670898139476776,
+      0.042699165642261505
+    ],
+    "finite_uvs": true
+  },
+  "radius_metres": 0.0215,
+  "normalized_master": {
+    "vertices": 43526,
+    "triangles": 87048,
+    "nonmanifold_edges": 0,
+    "components": [
+      43526
+    ],
+    "degenerate_triangles": 0,
+    "dimensions_metres": [
+      0.04297422245144844,
+      0.04294602945446968,
+      0.042974479496479034
+    ],
+    "finite_uvs": true
+  },
+  "lods": [
+    {
+      "level": 0,
+      "envelope_constrained_vertices": 287,
+      "radial_range": [
+        0.02035395738274093,
+        0.021500001467904532
+      ],
+      "vertices": 8001,
+      "triangles": 15998,
+      "nonmanifold_edges": 0,
+      "components": [
+        8001
+      ],
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.04296925663948059,
+        0.042954497039318085,
+        0.04296097904443741
+      ],
+      "finite_uvs": true
+    },
+    {
+      "level": 1,
+      "envelope_constrained_vertices": 62,
+      "radial_range": [
+        0.021499990209090606,
+        0.0215000007301569
+      ],
+      "vertices": 362,
+      "triangles": 720,
+      "nonmanifold_edges": 0,
+      "components": [
+        362
+      ],
+      "degenerate_triangles": 0,
+      "dimensions_metres": [
+        0.0429999902844429,
+        0.0429999865591526,
+        0.0430000014603138
+      ],
+      "finite_uvs": true
+    }
+  ],
+  "external_images": 0,
+  "external_libraries": 0,
+  "inactive_exporter_provenance_fields": [
+    "FBXHeaderExtension/SceneInfo/Properties70/P"
+  ],
+  "files": [
+    {
+      "path": "ArtSource/Golf/Ball/Originals/golf-ball-rounded.fbx",
+      "bytes": 3465164,
+      "sha256": "f900eb7b74e2ce0ad9dbfd9baa2e1d26155fd091cf86e3d56fa2dab039f57998"
+    },
+    {
+      "path": "ArtSource/Golf/Ball/RoundedBall.blend",
+      "bytes": 3789295,
+      "sha256": "59117a91d2616d74751110df4c0cf29daf75019669dd818c4c77c6ba09be2bed"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Equipment/Ball.fbx",
+      "bytes": 525132,
+      "sha256": "71f703ff0e058bc12b41d6e3ab7b799cc300060b0a42b94f00cfd07669b5916d"
+    }
+  ]
+}

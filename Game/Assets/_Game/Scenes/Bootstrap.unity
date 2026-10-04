@@ -5232,7 +5232,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkManager
   NetworkManagerExpanded: 0
   NetworkConfig:
-    ProtocolVersion: 17
+    ProtocolVersion: 20
     NetworkTransport: {fileID: 1141826220}
     PlayerPrefab: {fileID: 1345723060313390385, guid: eeb3ae523a1283541878bbda59d263d0, type: 3}
     Prefabs:

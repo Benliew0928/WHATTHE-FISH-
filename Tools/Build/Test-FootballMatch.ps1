@@ -9,7 +9,9 @@ function Invoke-Probes($Specs){
  try {
   foreach($taskSpec in $Specs){
    $taskReport=Join-Path $taskOutput ($taskSpec.name+'.txt');$taskLog=Join-Path $taskOutput ($taskSpec.name+'.log')
-   $taskGraphics=if($Render){'-screen-width 960 -screen-height 540 -screen-fullscreen 0'}else{'-batchmode -nographics'}
+   # Aim-material assertions need a graphics device. Keep the physics probe in
+   # batch mode so review captures cannot resize its pointer-coordinate fixture.
+   $taskGraphics=if($taskSpec.name -eq 'physics'){'-batchmode -screen-width 960 -screen-height 540 -screen-fullscreen 0'}elseif($Render){'-screen-width 960 -screen-height 540 -screen-fullscreen 0'}else{'-batchmode -nographics'}
    $taskOptions="$taskGraphics -job-worker-count 2 $($taskSpec.args) -probe -exitAfter 120 -report `"$taskReport`" -logFile `"$taskLog`""
    $taskProcesses+=Start-Process -FilePath $PlayerPath -WindowStyle Hidden -ArgumentList $taskOptions -PassThru
    if($taskSpec.name -match 'host'){Start-Sleep -Seconds 2}

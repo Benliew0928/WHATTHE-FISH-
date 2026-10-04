@@ -2,20 +2,20 @@
   "path_base": "repository root",
   "models": {
     "Ball": {
-      "source_zip": "Downloads/Meshy_AI_Dimpled_Moon_1001111942_texture_fbx.zip",
-      "source_sha256": "ad671f8986fbc7ad44627c6d46cd256cf3de7dc144fa39e9807a7a09578f8170",
+      "source_file": "ArtSource/Golf/Ball/Originals/golf-ball-rounded.fbx",
+      "delivery_audit": "ArtSource/Golf/Ball/delivery-audit.json",
       "source": {
-        "vertices": 147000,
-        "triangles": 293996,
+        "vertices": 43526,
+        "triangles": 87048,
         "nonmanifold_edges": 0,
         "components": [
-          147000
+          43526
         ],
         "degenerate_triangles": 0,
         "dimensions_metres": [
-          1.898908019065857,
-          1.900083065032959,
-          1.898324966430664
+          0.04269890859723091,
+          0.042670898139476776,
+          0.042699165642261505
         ],
         "finite_uvs": true
       },
@@ -23,21 +23,33 @@
       "pivot": "centre",
       "lods": {
         "Ball_LOD0": {
-          "vertices": 1490,
-          "triangles": 2976,
+          "level": 0,
+          "envelope_constrained_vertices": 287,
+          "radial_range": [
+            0.02035395738274093,
+            0.021500001467904532
+          ],
+          "vertices": 8001,
+          "triangles": 15998,
           "nonmanifold_edges": 0,
           "components": [
-            1490
+            8001
           ],
           "degenerate_triangles": 0,
           "dimensions_metres": [
-            0.04300002381205559,
-            0.043000027537345886,
-            0.0430000014603138
+            0.04296925663948059,
+            0.042954497039318085,
+            0.04296097904443741
           ],
           "finite_uvs": true
         },
         "Ball_LOD1": {
+          "level": 1,
+          "envelope_constrained_vertices": 62,
+          "radial_range": [
+            0.021499990209090606,
+            0.0215000007301569
+          ],
           "vertices": 362,
           "triangles": 720,
           "nonmanifold_edges": 0,
@@ -53,12 +65,8 @@
           "finite_uvs": true
         }
       },
-      "fbx_relative_dependencies": [
-        "Ball_Normal.png"
-      ],
-      "fbx_path_rewrite_preserved_other_payloads": true,
-      "reopened_master_dependencies_verified": true,
-      "reimported_delivery_verified": true
+      "external_images": 0,
+      "external_libraries": 0
     },
     "Driver": {
       "source_zip": "Downloads/Meshy_AI_Teal_Horizon_Driver_1001112212_texture_fbx.zip",
@@ -375,8 +383,8 @@
       "sha256": "4cf16454ead2526e1d944a9b238fc4a97d2927dd9ec4e8dd9fe90bc3eea8d9f7"
     },
     "Game/Assets/_Game/Art/Golf/Equipment/Ball.fbx": {
-      "bytes": 96924,
-      "sha256": "2c9f7aadb4e17169d9b3bade8c30657339a5a86db1472557d5219db37e37c047"
+      "bytes": 525132,
+      "sha256": "71f703ff0e058bc12b41d6e3ab7b799cc300060b0a42b94f00cfd07669b5916d"
     },
     "Game/Assets/_Game/Art/Golf/Equipment/Driver.fbx": {
       "bytes": 200348,
@@ -431,5 +439,66 @@
       "sha256": "291be26e7ccbfbcb6653692a3caec37cd3e55be89e9db051c4c3ccc864ba259a"
     }
   },
-  "retained_metadata_exception": "Original downloaded FBX exporter provenance and packed source-image names are retained inside unchanged ZIP masters. Delivery FBX Texture/Video dependencies and unpacked Blender images use verified relative paths."
+  "retained_metadata_exception": "Original downloaded FBX exporter provenance and packed source-image names are retained inside unchanged ZIP masters. Delivery FBX Texture/Video dependencies and unpacked Blender images use verified relative paths.",
+  "historical_models": {
+    "Ball": {
+      "source_zip": "Downloads/Meshy_AI_Dimpled_Moon_1001111942_texture_fbx.zip",
+      "source_sha256": "ad671f8986fbc7ad44627c6d46cd256cf3de7dc144fa39e9807a7a09578f8170",
+      "source": {
+        "vertices": 147000,
+        "triangles": 293996,
+        "nonmanifold_edges": 0,
+        "components": [
+          147000
+        ],
+        "degenerate_triangles": 0,
+        "dimensions_metres": [
+          1.898908019065857,
+          1.900083065032959,
+          1.898324966430664
+        ],
+        "finite_uvs": true
+      },
+      "length_metres": 0.043,
+      "pivot": "centre",
+      "lods": {
+        "Ball_LOD0": {
+          "vertices": 1490,
+          "triangles": 2976,
+          "nonmanifold_edges": 0,
+          "components": [
+            1490
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.04300002381205559,
+            0.043000027537345886,
+            0.0430000014603138
+          ],
+          "finite_uvs": true
+        },
+        "Ball_LOD1": {
+          "vertices": 362,
+          "triangles": 720,
+          "nonmanifold_edges": 0,
+          "components": [
+            362
+          ],
+          "degenerate_triangles": 0,
+          "dimensions_metres": [
+            0.0429999902844429,
+            0.0429999865591526,
+            0.0430000014603138
+          ],
+          "finite_uvs": true
+        }
+      },
+      "fbx_relative_dependencies": [
+        "Ball_Normal.png"
+      ],
+      "fbx_path_rewrite_preserved_other_payloads": true,
+      "reopened_master_dependencies_verified": true,
+      "reimported_delivery_verified": true
+    }
+  }
 }

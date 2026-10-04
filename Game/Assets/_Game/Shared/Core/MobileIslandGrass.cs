@@ -53,10 +53,14 @@ namespace WhatTheFish {
    bool golf=environment&&environment.layout.sport=="Golf";
    string sport=environment?environment.layout.sport:coast.basketball?"Basketball":"Football";
    var placements=environment?environment.layout.instances.Where(p=>p.module.StartsWith("Grass_")).ToArray():Array.Empty<IslandPlacement>();
+   var course=golf?GetComponentInChildren<GolfCourse>(true):null;
+   // Preserve the authored meadow; clear only the actual cup opening, not a putting-green disc.
+   // Snapshot Unity transforms before starting the pure geometry worker. z stores squared clearance radius.
+   var greens=course?course.holes.Select(h=>{var p=transform.InverseTransformPoint(h.cup.position);float radius=h.cupRadius+.1f;return new Vector3(p.x,p.z,radius*radius);}).ToArray():Array.Empty<Vector3>();
    var coastal=coast?library.coastal.Where(p=>p.sport==sport).ToArray():null;
    var patches=library.patches;cancellation=new CancellationTokenSource();var token=cancellation.Token;
    var clock=System.Diagnostics.Stopwatch.StartNew();
-   var task=Task.Run(()=>coastal!=null?GenerateCoast(coastal,token):Generate(placements,patches,golf,token),token);
+   var task=Task.Run(()=>coastal!=null?GenerateCoast(coastal,token):Generate(placements,patches,golf,greens,token),token);
    while(!task.IsCompleted)yield return null;
    if(task.IsCanceled){Error="Grass preparation cancelled";yield break;}
    if(task.IsFaulted){Error=task.Exception.GetBaseException().Message;yield break;}
@@ -94,7 +98,7 @@ namespace WhatTheFish {
    }
    return cells.Values.ToList();
   }
-  static List<Cell> Generate(IslandPlacement[] placements,MobileGrassLibrary.Patch[] patches,bool golf,CancellationToken token){
+  static List<Cell> Generate(IslandPlacement[] placements,MobileGrassLibrary.Patch[] patches,bool golf,Vector3[] greens,CancellationToken token){
    var cells=new Dictionary<(int,int),Cell>();int bladeNumber=0;float extent=golf?220:70;var points=new Vector3[5];
    foreach(var placement in placements){
     token.ThrowIfCancellationRequested();
@@ -107,6 +111,7 @@ namespace WhatTheFish {
      for(int i=0;i<points.Length;i++){
       var p=points[i];float x=placement.position.x+placement.scale*(p.x*cos-p.z*sin),z=placement.position.z+placement.scale*(p.x*sin+p.z*cos);
       if(golf)foreach(var bunker in Bunkers)if(BunkerDistance(x,z,bunker)<=1.02){allowed=false;break;}
+      foreach(var green in greens)if((x-green.x)*(x-green.x)+(z-green.y)*(z-green.y)<green.z){allowed=false;break;}
       points[i]=new Vector3(x,(float)Height(x,z,golf)+p.y*placement.scale-.01f,z);
      }
      if(!allowed)continue;

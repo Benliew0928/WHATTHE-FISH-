@@ -1,6 +1,7 @@
 param(
     [ValidateSet('Windows','Android','AndroidRelease','AndroidSubmission','OptimizeAndroid','MobilePreview','Scene')][string]$Target = 'Windows',
-    [string]$UnityEditorPath = (Join-Path $env:ProgramFiles 'Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe')
+    [string]$UnityEditorPath = (Join-Path $env:ProgramFiles 'Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe'),
+    [ValidateRange(0,64)][int]$JobWorkerCount = 0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -24,6 +25,7 @@ $method = switch ($Target) {
     'Scene' { if (Test-Path -LiteralPath (Join-Path $gamePath 'Assets/_Game/Scenes/SkySail_Football.unity')) { 'SkySailBuilder.Prepare' } else { 'ProjectBuilder.Setup' } }
 }
 $argsList = @('-batchmode', '-nographics', '-quit', '-projectPath', ('"{0}"' -f $gamePath), '-executeMethod', $method, '-logFile', ('"{0}"' -f $logPath))
+if ($JobWorkerCount -gt 0) { $argsList += @('-job-worker-count', $JobWorkerCount.ToString()) }
 if ($Target -in @('Android', 'AndroidRelease', 'AndroidSubmission', 'OptimizeAndroid')) { $argsList += @('-buildTarget', 'Android') }
 if ($Target -in @('Windows','MobilePreview')) { $argsList += @('-buildTarget', 'Win64') }
 

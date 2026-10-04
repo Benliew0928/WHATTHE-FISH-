@@ -118,25 +118,33 @@ def portable_fbx(path):
     tree, version = parse_fbx.parse(str(path))
     methods = dict(B='bool', C='char', Z='int8', Y='int16', I='int32', L='int64', F='float32', D='float64', R='bytes', S='string', i='int32_array', l='int64_array', f='float32_array', d='float64_array', b='bool_array', c='byte_array')
     refs = []
-    def rewrite(node, parent=b''):
+    def path_slots(node, ancestry):
+        if ancestry and ancestry[-1] in (b'Texture', b'Video') and node.id in (b'FileName', b'Filename', b'RelativeFilename'):
+            return set(range(len(node.props)))
+        # Blender also writes a live image path in Video.Properties70.Path.
+        if node.id == b'P' and node.props and node.props[0] == b'Path' and ancestry and ancestry[-1] == b'Properties70' and any(p in (b'Texture', b'Video') for p in ancestry):
+            return {len(node.props) - 1}
+        return set()
+    def rewrite(node, ancestry=()):
         out = encode_bin.FBXElem(node.id)
         values = list(node.props)
-        if parent in (b'Texture', b'Video') and node.id in (b'FileName', b'Filename', b'RelativeFilename'):
-            values = [Path(p.decode('utf8').replace('\\', '/')).name.encode() if isinstance(p, bytes) else p for p in values]
-            refs.extend(p.decode() for p in values if isinstance(p, bytes))
+        for index in path_slots(node, ancestry):
+            if not isinstance(values[index], bytes): continue
+            values[index] = Path(values[index].decode('utf8').replace('\\', '/')).name.encode()
+            refs.append(values[index].decode())
         for kind, value in zip(node.props_type, values):
             getattr(out, 'add_' + methods[chr(kind)])(value)
-        out.elems = [rewrite(child, node.id) for child in node.elems]
+        out.elems = [rewrite(child, ancestry + (node.id,)) for child in node.elems]
         return out
     encode_bin.write(str(path), rewrite(tree), version)
     checked, _ = parse_fbx.parse(str(path))
-    def verify(before, after, parent=b''):
+    def verify(before, after, ancestry=()):
         assert before.id == after.id and before.props_type == after.props_type
-        if not (parent in (b'Texture', b'Video') and before.id in (b'FileName', b'Filename', b'RelativeFilename')):
-            assert all(np.array_equal(a, b) for a, b in zip(before.props, after.props))
+        slots = path_slots(before, ancestry)
+        assert all(index in slots or np.array_equal(a, b) for index, (a, b) in enumerate(zip(before.props, after.props)))
         assert len(before.elems) == len(after.elems)
         for a, b in zip(before.elems, after.elems):
-            verify(a, b, before.id)
+            verify(a, b, ancestry + (before.id,))
     verify(tree, checked)
     assert refs and all((path.parent / p).is_file() for p in refs)
     return sorted(set(refs))
@@ -180,6 +188,9 @@ def render(name, lods, evidence):
 
 
 def build(name, filename, length, root, source, game, evidence, do_render):
+    if name == 'Ball':
+        from prepare_golf_ball import prepare
+        return prepare(root, do_render)
     bpy.ops.wm.read_factory_settings(use_empty=True)
     bpy.context.preferences.filepaths.save_version = 0
     archive = source / 'Downloads' / filename

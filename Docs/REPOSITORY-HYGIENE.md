@@ -4,6 +4,21 @@ The root [AGENTS.md](../AGENTS.md) carries the standing instructions for new age
 
 ## What belongs in Git
 
+### Verified local compression — 4 October 2026
+
+The disk-space request used standard NTFS lossless compression of reviewed
+existing files. SHA-256 checks prove the contents are unchanged: archived
+artifacts saved **1,501,461,838 bytes**, the closed historical Football control
+cache **3,037,340,817**, the closed goal-net cache **3,089,851,766**, and the
+closed Swing validation cache **73,856,948**. Total measured allocation saving:
+**7,702,511,369 bytes (7.70 decimal GB)**. Caches remain in place; directory
+defaults are unchanged for the cache operations. Current player/APK, source
+art and installed tools remain available. Evidence and per-file hashes are in
+ignored `Builds/DiskSpaceQA/`; `final-result.json` records the measured saving
+and a free-space snapshot. Simultaneous builds and deliveries change total
+free disk space independently of these verified per-file savings.
+
+
 Keep runtime/editor code, active scenes and prefabs, Unity asset metadata, project settings, package locks, mobile delivery assets, source masters, generators, fixtures, current documentation and useful design references. Large source models and curated image/video references use the existing Git LFS rules. They are not the same as APK contents.
 
 Build packages, caches, downloaded installers, raw logs, temporary scripts, obsolete build checkpoints, unused drafts and Blender backup versions do not belong in a normal commit. Current output stays in ignored `Builds/`; confirmed superseded files go to an ignored dated batch under `Legacy/`. Unity caches stay in place and stay ignored. Do not move an active dependency merely because it is generated or absent from one build report.
@@ -37,6 +52,12 @@ git push
 ```
 
 Agents leave these publishing steps to the user unless explicitly asked to perform them. The pending optimization contains legitimate asset moves from Resources into Prefabs/Settings; matching `.meta` files preserve their GUIDs.
+
+## Windows player handoff
+
+After every gameplay or asset delivery, update the complete validated player in `Builds/WindowsFinal/`, including `WhatTheFish.exe`, its `_Data` directory, runtime DLLs, supporting folders and launchers. The regular Windows builder already uses this destination. If an isolated checkout was used, promote its tested package, archive the superseded player with the tool below and compare the copied files with the tested source package. Do not overwrite a newer concurrent delivery with an older snapshot.
+
+Keep `LATEST-BUILD.txt` beside the executable with its build time, included feature changes, verification evidence and any ongoing changes outside that snapshot. Task-specific players and reports may remain under ignored Builds for evidence; `WindowsFinal` is the user's normal launch location. Documentation-only changes do not require rebuilding a player.
 
 ## Archive and restore
 

@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3d77cd26809473d9a42d66cf15f097d, type: 3}
+  m_Name: GolfBallPhysics
+  m_EditorClassIdentifier:
+  minimumSwingSpeed: 1.2
+  maximumSwingSpeed: 18
+  maximumSwingLift: 1.8
+  slowRollingThreshold: 2
+  stopSpeedThreshold: 0.25
+  stopDelay: 0.5
+  settlingMaxSpeed: 1
+  rollingResistanceStrength: 1.8
+  levelRollingResistance: 1.35
+  levelGroundDegrees: 0.5
+  externalVelocityChange: 0.2
+  newForceGracePeriod: 0.12

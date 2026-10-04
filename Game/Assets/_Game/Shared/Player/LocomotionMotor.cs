@@ -102,6 +102,7 @@ namespace WhatTheFish {
    return wanted*((previousSpeed+nextSpeed)*.5f*dt);
   }
   public void FaceBasketball(float heading,float dt){Yaw=Mathf.SmoothDampAngle(Yaw,heading,ref actionYawVelocity,.105f,900,dt);}
+  public void FaceGolf(float heading){Yaw=heading;yawVelocity=actionYawVelocity=0;}
   void Face(Vector3 direction,float dt){
    float angle=Angle(direction);
    // Discard rotation away from fresh input, while coasting settles toward the

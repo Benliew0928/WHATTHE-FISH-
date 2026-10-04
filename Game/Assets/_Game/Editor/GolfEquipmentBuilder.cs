@@ -9,11 +9,12 @@ using WhatTheFish;
 public static class GolfEquipmentBuilder {
  const string Art="Assets/_Game/Art/Golf/Equipment/", Prefabs="Assets/_Game/Prefabs/Golf/";
  public const string GroupName="Golf Equipment";
+ public const string BallPrefabPath="Assets/_Game/Prefabs/Golf/Ball.prefab";
  static readonly string[] Names={"Ball","Driver","Iron","Putter"};
  [MenuItem("WHATTHE FISH?/Golf/Prepare Meshy equipment")]
  public static void Prepare(){
   Directory.CreateDirectory(Prefabs);Directory.CreateDirectory("../Builds/GolfEquipment/20261001");AssetDatabase.Refresh();
-  foreach(var file in Directory.GetFiles(Art,"*.png")){
+  foreach(var file in Directory.GetFiles(Art,"*.png").Where(f=>!Path.GetFileName(f).StartsWith("Ball_"))){
    var path=file.Replace('\\','/');var importer=(TextureImporter)AssetImporter.GetAtPath(path);bool normal=path.Contains("Normal"),mask=path.Contains("Mask");
    importer.textureType=normal?TextureImporterType.NormalMap:TextureImporterType.Default;importer.sRGBTexture=!normal&&!mask;
    importer.mipmapEnabled=true;importer.isReadable=false;importer.wrapMode=path.Contains("Ball_")?TextureWrapMode.Repeat:TextureWrapMode.Clamp;importer.anisoLevel=4;
@@ -22,6 +23,7 @@ public static class GolfEquipmentBuilder {
    importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings{name="Android",overridden=true,maxTextureSize=importer.maxTextureSize,format=normal?TextureImporterFormat.ASTC_4x4:TextureImporterFormat.ASTC_6x6,compressionQuality=100});importer.SaveAndReimport();
   }
   foreach(string name in Names){
+   if(name=="Ball"){GolfBallBuilder.Prepare();continue;}
    var importer=(ModelImporter)AssetImporter.GetAtPath(Art+name+".fbx");if(!importer)throw new Exception("Run build_golf_equipment.py first.");
    importer.globalScale=1;importer.useFileScale=true;importer.importAnimation=false;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;
    importer.importNormals=ModelImporterNormals.Import;importer.importTangents=ModelImporterTangents.CalculateMikk;importer.meshCompression=ModelImporterMeshCompression.Off;importer.isReadable=false;importer.SaveAndReimport();

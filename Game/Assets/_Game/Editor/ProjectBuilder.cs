@@ -184,23 +184,25 @@ public static partial class ProjectBuilder {
   RefinedIslandDependencyAudit.Audit();
  }
  // Recompile a validated, already-generated scene after code-only changes.
- public static void BuildCurrentWindows(){
+ public static void BuildCurrentWindows()=>BuildWindowsPlayer("../Builds/WindowsFinal/WhatTheFish.exe");
+ public static void BuildWindowsPlayer(string playerPath){
   string previousPipelinePath=AssetDatabase.GetAssetPath(GraphicsSettings.defaultRenderPipeline);
   string previousQualityPath=AssetDatabase.GetAssetPath(QualitySettings.renderPipeline);
   var desktopPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(MobilePackageCleanup.DesktopPipelinePath);
   try {
    // Register the desktop feature set during compilation so Unity retains its SSAO resources.
    GraphicsSettings.defaultRenderPipeline=desktopPipeline;QualitySettings.renderPipeline=desktopPipeline;
-   Build(BuildTarget.StandaloneWindows64,"../Builds/WindowsFinal/WhatTheFish.exe");
+   Build(BuildTarget.StandaloneWindows64,playerPath);
   } finally {
    // Building unloads unused assets: resolve fresh references instead of restoring destroyed objects.
    GraphicsSettings.defaultRenderPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(previousPipelinePath);
    QualitySettings.renderPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(previousQualityPath);
    AssetDatabase.SaveAssets();
   }
-  File.WriteAllText("../Builds/WindowsFinal/Explore-Fishing.cmd","@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
-  File.WriteAllText("../Builds/WindowsFinal/Explore-Golf.cmd","@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
-  File.WriteAllText("../Builds/WindowsFinal/LATEST-BUILD.txt","Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade, detailed exterior and walkable routes\nBasketball: B1 open-air coastal arena and walkable routes\nGolf: G2 Limestone Cove Links, detailed coastal materials, pavilion and walking routes\nFishing: L2 Limestone Garden Lagoon, five modular coloured stations and shelter; exploration only\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
+  var outputDirectory=Path.GetDirectoryName(playerPath);
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-Fishing.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-Golf.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade, detailed exterior and walkable routes\nBasketball: B1 open-air coastal arena and walkable routes\nGolf: G2 Limestone Cove Links, detailed coastal materials, pavilion and walking routes\nFishing: L2 Limestone Garden Lagoon, five modular coloured stations and shelter; exploration only\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildFootballMatchVerification(){Build(BuildTarget.StandaloneWindows64,"../Builds/FootballMatchQA/Player/WhatTheFish.exe");}
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}
@@ -220,6 +222,10 @@ public static partial class ProjectBuilder {
  public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk("../Builds/Android/WhatTheFish-release.apk",true);}
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
   JumpAnimationBuilder.Prepare();
+  GolfCartBuilder.Prepare();
+  GolfClubBuilder.Prepare();
+  GolfBallBuilder.Prepare();
+  GolfTeeBuilder.Prepare();
   Directory.CreateDirectory(Path.GetDirectoryName(path));
   if(EditorUserBuildSettings.activeBuildTarget!=target&&!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(target),target))throw new Exception("Could not activate build target: "+target);
   // URP can retain the previous platform's pipeline after a build in this editor.

@@ -90,7 +90,7 @@ public static class MobileGeometryBuilder {
     Debug.Log("MOBILE_COAST_REUSED "+scene.name+" placements="+placements.Length+" retired baked clusters="+source.Count);
    }
    foreach(var refined in root.GetComponentsInChildren<RefinedIslandEnvironment>(true)){
-    var old=refined.GetComponentsInChildren<MeshFilter>(true).Where(f=>AssetDatabase.GetAssetPath(f.sharedMesh).EndsWith("/Grass.fbx")).ToArray();
+    var old=refined.GetComponentsInChildren<MeshFilter>(true).Where(f=>AssetDatabase.GetAssetPath(f.sharedMesh).EndsWith("/Grass.fbx")||GolfCourseBuilder.IsCourseGrass(f.sharedMesh)).ToArray();
     if(old.Length==0)continue;
     foreach(var filter in old){filter.sharedMesh=null;var renderer=filter.GetComponent<MeshRenderer>();renderer.enabled=false;renderer.sharedMaterials=Array.Empty<Material>();}
     var grass=refined.gameObject.AddComponent<MobileIslandGrass>();grass.library=AssetDatabase.LoadAssetAtPath<MobileGrassLibrary>(Root+"GrassLibrary.asset");

@@ -1,4 +1,462 @@
-# APK size audit — football and basketball integration, 3 October 2026
+# APK size audit — measured release records
+
+## Golf swing speed 18 m/s — 4 October 2026
+
+Fresh primary AndroidSubmission at **23:27:16 Malaysia time** measures
+**89,024,798 → 89,024,294 bytes (−504)**. Strict headroom is **10,975,706 bytes**;
+the development target remains exceeded by **14,024,294 bytes**. The strict
+gate and independent APK v2 signature pass. Exact APK and all audit files are
+retained in `Builds/GolfEighteenSpeedQA/Release/`. Release provenance, source
+scope and archives are in
+[BUILD-SIZE](BUILD-SIZE.md#golf-swing-speed-18-ms--4-october-2026).
+
+Serialized assets measure **155,324,117 bytes**, **8 bytes** above the preceding
+five-metre configuration. `GolfBallPhysics.asset` grows from **88 to 96 serialized
+bytes**, with its estimated ZIP contribution changing from **68 to 76 bytes**.
+No new art, audio, font, animation or package is added by the launch-speed fix.
+Leading compressed estimates remain timber **2.247 MB**, character albedo
+**1.993 MB**, Golf structures **1.981 MB**, character mesh **1.588 MB** and
+football stadium **1.556 MB**. No unexpected large contributor appears.
+Estimated contributions and serialized totals are separate from exact APK size.
+Evidence: `Builds/GolfEighteenSpeedQA/packing-top.txt`, `release-audit.json` and
+`apk-signature.txt`; current primary audit: `Builds/SizeAudit/latest/`.
+
+## Golf meadow restored — 4 October 2026
+
+Fresh shared primary AndroidSubmission: **89,021,758 → 89,024,882 bytes
+(+3,124)**, including concurrent shot-range/cart changes. Strict headroom
+**10,975,118 bytes**; development target exceeded by **14,024,882**. Gate and
+independent v2 signature pass. Snapshot limits and archives:
+[BUILD-SIZE](BUILD-SIZE.md#golf-meadow-restored--4-october-2026).
+
+Serialized assets **155,324,109 bytes**, only **4 bytes** above the prior Swing
+release. Android reuses the existing grass library; restoring 2,289 blades adds
+no shipped mesh or texture. The 21 obsolete derivatives are proven unreferenced.
+Leading compressed estimates remain timber **2.247 MB**, character albedo
+**1.993 MB**, Golf structures **1.981 MB**, character mesh **1.588 MB** and
+football stadium **1.556 MB**. No unexpected large contributor appears.
+These estimates and serialized totals differ from exact APK length.
+Fresh detailed audit/APK: `Builds/GolfGrassQA/Release/`; source scope, signature,
+original-map hashes and package comparison: `Builds/GolfGrassQA/`.
+
+## Golf cart forward-facing feet — 4 October 2026
+
+Fresh task APK: **89,021,758 → 89,025,074 bytes (+3,316)**, built at
+**22:40:48 Malaysia time**. Strict headroom **10,974,926 bytes**;
+development target exceeded by **14,025,074 bytes**. AndroidSubmission,
+APK v2 signature and independent packing audit pass. Serialized assets grow
+only **4 bytes** from the concurrent five-metre Golf configuration; no art is
+added by the feet correction. ZIP entries grow 3,314 bytes and signing/container
+overhead grows 2 bytes. The largest estimates remain timber 2.247 MB, character
+albedo 1.993 MB, Golf structures 1.981 MB and character mesh 1.588 MB.
+
+Exact task packages/audit are retained in `Builds/GolfCartFeetQA/Release/`.
+The newer shared APK (**89,024,882 bytes**, 22:44:23) is preserved;
+its v2 signature and generated native toe-tip branch were checked. Current
+shared headroom is **10,975,118 bytes**; its development-target
+excess is **14,024,882 bytes**. These snapshots differ in unrelated
+concurrent grass work. The initial 313-file Windows feet snapshot passed
+**439 checks**. The newer complete shared Windows player (22:43:13) includes
+the same feet correction and passed another **221 cart assertions**. See
+[verification and scope](VERIFICATION.md#golf-cart-forward-facing-feet--4-october-2026).
+
+## Reliable Golf Swing proximity — 4 October 2026
+
+Fresh measured APK: **89,021,758 bytes**, **+20,774** from opening
+**89,000,984**, including intervening tee/cart deliveries, and **−300** from
+the immediate **89,022,058-byte** predecessor. Strict headroom is
+**10,978,242 bytes**; the development target is exceeded by **14,021,758**.
+AndroidSubmission and independent APK v2 signature pass.
+
+Serialized assets remain **155,324,105 bytes**, identical to the immediate
+predecessor. Every per-asset contribution matches; no extra mesh, texture,
+font, audio, animation or package is shipped by this fix. Actual compressed
+ZIP entries decrease **299 bytes** and container/signing overhead decreases
+**1 byte**. The leading per-asset estimates remain timber **2.247 MB**,
+character albedo **1.993 MB**, Golf structures **1.981 MB**, character mesh
+**1.588 MB** and football stadium **1.556 MB**. No unexpected large contributor
+appears. These estimates and serialized bytes are separate from APK length.
+
+Current fresh audit: `Builds/SizeAudit/latest/`; exact retained audit and APK:
+`Builds/GolfSwingQA/Release/`. Exact comparisons, signature and source scope:
+`Builds/GolfSwingQA/release-audit.json`, `apk-signature.txt` and
+`delivery-source-inputs.json`. See
+[release and archives](BUILD-SIZE.md#reliable-golf-swing-proximity--4-october-2026)
+and [feature checks](VERIFICATION.md#reliable-golf-swing-proximity--4-october-2026).
+
+
+## Golf wooden opening tee — 4 October 2026
+
+Measured APK: **89,000,984 → 89,022,058 bytes (+21,074)**. Strict-limit
+headroom is **10,977,942 bytes**; the development target remains exceeded by
+**14,022,058 bytes**. The reused concurrent AndroidSubmission package contains
+the exact tee and gameplay sources. Its gate, fresh detailed packing analysis
+and independent v2 signature pass. Retained APK/audit:
+`Builds/GolfWoodTeeQA/Release/`. Primary's earlier OOM attempt produced no APK;
+source comparison and reuse provenance are in
+[BUILD-SIZE](BUILD-SIZE.md#golf-wooden-opening-tee--4-october-2026).
+
+| Shared tee asset | Serialized bytes | Estimated ZIP bytes |
+| --- | ---: | ---: |
+| 832-triangle lathe mesh, also used for static cup collision | 21,304 | 10,933 |
+| 64×128 wood grain, Android ASTC 6×6 with mipmaps | 5,516 | 4,529 |
+| Instanced Lit material | 1,660 | 632 |
+| Opening support prefab | 443 | 172 |
+| Total | 28,923 | 16,266 |
+
+Every player's support shares these assets. The user reference stays outside
+Unity in `ArtSource/Golf/Tee/`; it is absent from the shipped asset graph. No
+replacement ball, package, audio or large texture is added. The existing ball
+retains its 15,998/720-triangle meshes and material. Its ground query also
+recognizes the support's Ignore Raycast layer, while ordinary character/cart
+terrain queries retain their original layer.
+
+Serialized assets total **155,324,105 bytes (+29,295)**. Exact ZIP entries
+grow **20,214 bytes** and container/signing overhead grows **860 bytes**;
+these measurements differ from per-asset compression estimates. Concurrent
+validated settling, swing-address and seated-pose code is retained. Leading
+contributors remain timber **2.247 MB**, character albedo **1.993 MB**, Golf
+structures **1.981 MB**, character mesh **1.588 MB**, and football stadium
+**1.556 MB**. No unexpected large dependency appeared. The 75 MB target remains
+outstanding; this small prop does not change that wider optimization requirement.
+
+## Golf cart straight-knee driver — 4 October 2026
+
+Fresh APK: **89,022,058 bytes**; **+19,204** from the recorded opening
+**89,002,854**, and **+21,188** from the intervening **89,000,870-byte** contact
+release. Strict-limit headroom: **10,977,942**; development-target excess:
+**14,022,058**. AndroidSubmission and independent v2 signing pass.
+
+The straight-knee pose reuses the existing character, cart and animations.
+Serialized assets are **155,324,105 bytes**, **+29,099** against the contact
+release. Retained concurrent tee entries account for **28,923**: mesh **21,304**,
+grain **5,516**, material **1,660**, prefab **443**. Their compressed estimates
+are about **10,933 / 4,529 / 632 / 172 bytes** respectively. Tee/Swing probe
+MonoScript metadata adds the remaining **176 serialized bytes**; opt-in probe
+code is compiled out of release. No large new dependency appears.
+
+Actual ZIP compressed entries grow **20,501 bytes**; container/signing
+overhead accounts for **687 bytes** of the immediate APK difference.
+Fresh per-asset estimates retain timber **2.247 MB**, character albedo
+**1.993 MB**, Golf structures **1.981 MB**, character mesh **1.588 MB**, and
+football stadium **1.556 MB** as the leading entries. These estimates differ
+from exact ZIP and APK lengths. Ignored performance-test resource records
+are omitted from the isolated build.
+
+Exact APK and all **11 fresh audit files**: `Builds/GolfCartSeatQA/Release/`;
+shared audit: `Builds/SizeAudit/latest/`. Packing comparison, signatures,
+source scope and complete-package hashes are under `Builds/GolfCartSeatQA/`.
+See [delivery records](BUILD-SIZE.md#golf-cart-straight-knee-driver--4-october-2026)
+and [455 checks](VERIFICATION.md#golf-cart-straight-knee-driver--4-october-2026).
+Physical-phone rendering/FPS and WAN remain unverified.
+
+## Golf slope settling and resting — 4 October 2026
+
+Final APK **89,000,870 bytes**: **138 bytes below** opening **89,001,008**,
+**114 below** the intervening Aim delivery **89,000,984**, and **1,984 below**
+the interim settling candidate. Hard-limit headroom is **10,999,130**, with
+**14,000,870** above the development target. AndroidSubmission, independent
+v2 signature and fresh per-asset audit pass.
+
+Serialized assets total **155,295,006 bytes (+196)**: **84 bytes** of persistent
+physics settings and **112 bytes** of MonoScript metadata. No delivered art,
+texture, mesh, animation, font or package is added. Actual compressed ZIP entries
+fall **311 bytes**; container/signing overhead increases **173 bytes**, giving
+the exact **138-byte APK reduction**. Per-asset estimates stay led by timber
+**2.247 MB**, character albedo **1.993 MB**, Golf structures **1.981 MB**,
+character mesh **1.588 MB**, football stadium **1.556 MB**. No unexpected large
+dependency appears. Serialized bytes and per-asset estimates are not APK length.
+
+Fresh retained audit: `Builds/GolfSettlingQA/Release/SizeAudit/`; shared audit:
+`Builds/SizeAudit/latest/`. Concurrent in-progress tee, swing-review and
+cart/locomotion changes are outside this original-map snapshot. See
+[hash, input scope and delivery](BUILD-SIZE.md#golf-slope-settling-and-resting--4-october-2026)
+and [physics and gameplay checks](VERIFICATION.md#golf-slope-settling-and-resting--4-october-2026).
+
+
+## Golf 3x ball and optional Aim — 4 October 2026
+
+Fresh APK: **89,000,984 bytes**, **+16,796** from the recorded **88,984,188-byte**
+opening and **24 bytes below** the intervening grip release. Hard-limit
+headroom is **10,999,016 bytes**; the development target remains exceeded by
+**14,000,984 bytes**. AndroidSubmission and independent v2 signing pass.
+
+The ball reuses its existing **15,998 / 720-triangle** LODs and material.
+Prefab visual scale and physical radius grow together; no model/texture
+payload is added. The shared Chinese control font grows **5,320 → 6,256 bytes**
+for Aim/Cancel, with **936 serialized bytes / 728 estimated ZIP bytes** added.
+The retained concurrent grip adds **15,168 serialized bytes / 13,560 estimated
+ZIP bytes** to the existing character mesh, plus **123 serialized bytes** to
+each character prefab. Serialized assets total **155,294,810 (+16,350)**.
+Exact compressed ZIP entries grow **16,798 bytes**; container/signing overhead
+changes by **−2 bytes**. These are separate from per-asset estimates.
+
+Fresh estimates use this APK's own detailed packing offsets. Leading entries
+remain timber **2.247 MB**, character albedo **1.993 MB**, Golf structures
+**1.981 MB**, character mesh **1.588 MB**, and football stadium **1.556 MB**.
+No unexpected large dependency appears. Exact retained APK/audit:
+`Builds/GolfBallAimQA/Release/`; raw signatures, source fingerprints and
+comparisons: `Builds/GolfBallAimQA/`. See
+[release/delivery scope](BUILD-SIZE.md#golf-3x-ball-and-optional-aim--4-october-2026)
+and [native checks](VERIFICATION.md#golf-3x-ball-and-optional-aim--4-october-2026).
+Phone quality/FPS and WAN remain unverified.
+
+## Golf closed grip and raised carry angle — 4 October 2026
+
+Fresh APK **89,001,008 bytes**, **+16,820** from opening; strict-limit headroom
+**10,998,992**, development-target excess **14,001,008**. AndroidSubmission,
+independent v2 signature and fresh per-asset packing analysis pass.
+
+Serialized assets are **155,294,810 bytes (+16,350)**, separate from compressed
+APK size. The derived closed-hand shape and grip socket add **15,168 serialized
+bytes** to the character mesh and **123 bytes** to each athlete prefab. The
+concurrent aim-button snapshot adds **936 bytes** to the existing label font.
+There is no added texture, material, renderer or package. Both original character
+LODs remain; only **335 / 55** positions receive grip deltas. The original FBX
+SHA-256 is unchanged, with no new binary dependency paths.
+
+Leading compressed estimates: timber **2.247 MB**, character albedo **1.993 MB**,
+Golf structures **1.981 MB**, character mesh **1.588 MB** (about **13,560 bytes**
+additional), football stadium **1.556 MB**. No unexpected large dependency
+appears. Actual compressed ZIP entries grow **16,822 bytes**, with **−2 bytes**
+of container/signing overhead. Per-asset estimates are not exact ZIP attribution.
+
+Retained fresh audit: `Builds/GolfGripSlopeQA/Release/SizeAudit/`; shared audit:
+`Builds/SizeAudit/latest/`. See
+[hash, snapshot scope and archives](BUILD-SIZE.md#golf-closed-grip-and-raised-carry-angle--4-october-2026)
+and [172-check gameplay verification](VERIFICATION.md#golf-closed-grip-and-raised-carry-angle--4-october-2026).
+
+
+## Golf ball visibility and free physics — 4 October 2026
+
+Fresh APK: **88,984,188 bytes**; **+2,364** from the recorded task opening and
+**+1,792** from the intervening palm-carry release. It leaves **11,015,812 bytes**
+below the strict ceiling and exceeds the development target by **13,984,188**.
+AndroidSubmission and independent v2 signing pass. No art, shader, font, audio
+or package is added. Rolling physics, player/cart isolation, camera framing
+and UI marker spacing reuse existing systems and assets.
+
+Serialized assets total **155,278,460 bytes (+104)**: the new opt-in probe
+contributes only MonoScript metadata to release packing, while its fixture code
+is compiled out. Asset estimates use this APK's own fresh packing offsets.
+Leading estimates remain timber **2.247 MB**, character albedo **1.993 MB**,
+Golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium
+**1.556 MB**. No unexpected large dependency appears. Actual compressed ZIP
+entries grow **1,788 bytes** against the preceding carry release, plus **4
+bytes** of container/signing overhead.
+
+Exact retained APK/audit: `Builds/GolfBallPhysicsQA/Release/`; current shared
+audit: `Builds/SizeAudit/latest/`. Hash, input scope, complete Windows delivery
+and archives are in
+[BUILD-SIZE](BUILD-SIZE.md#golf-ball-visibility-and-free-physics--4-october-2026).
+See [measured gameplay checks](VERIFICATION.md#golf-ball-visibility-and-free-physics--4-october-2026).
+Phone quality/FPS and WAN remain unverified.
+
+## Golf palm animation — 4 October 2026
+
+The freshly built and independently signed APK measures **88,982,396 bytes**,
+**572 bytes above** the opening release, with **11,017,604 bytes** below the
+strict ceiling and **13,982,396 bytes** above the development target. The right
+wrist correction adds no mesh, texture, animation asset, shader, font or package.
+Serialized assets remain **155,278,356 bytes**. Fresh detailed packing offsets
+were analyzed against this APK itself. Leading estimates remain timber
+**2.247 MB**, character albedo **1.993 MB**, Golf structures **1.981 MB**,
+character mesh **1.574 MB** and football stadium **1.556 MB**; no unexpected
+large dependency appeared.
+
+Exact APK/audit: `Builds/GolfPalmCarryQA/Release/`; build logs, signature and
+input comparisons: `Builds/GolfPalmCarryQA/`. The shared Android APK,
+`Builds/SizeAudit/latest/` and complete `Builds/WindowsFinal/` are updated to this
+validated release. See
+[hash, snapshot scope and delivery status](BUILD-SIZE.md#golf-palm-animation--4-october-2026)
+and [142-check gameplay validation](VERIFICATION.md#golf-palm-animation--4-october-2026).
+Physical-phone quality/FPS and WAN remain unverified.
+
+## Rounded Golf ball — 4 October 2026
+
+Fresh APK: **89,418,634 → 88,981,824 bytes (−436,810)**, leaving **11,018,176
+bytes** below the strict ceiling and **13,981,824 bytes** above the development
+target. AndroidSubmission, clean packing and independent v2 signing pass.
+See [exact release, input scope and recovery](BUILD-SIZE.md#rounded-golf-ball--4-october-2026).
+
+The original 87,048-triangle rounded-dimple model is retained as an editable
+master and byte-identical FBX outside Unity. Delivery uses **15,998 / 720
+triangles**, low mesh compression, imported normals, no tangents and one shared
+ivory material. The distant mesh preserves a round silhouette once the small
+dimples are below pixel scale. No new texture, shader, font or package is
+shipped. Both LODs fit the existing 43 mm sphere; no duplicate physics body or
+collider is added. The old ball's normal map remains available as historical
+source provenance but is no longer referenced by the current material or
+included in this APK.
+
+Serialized assets measure **155,278,356 bytes (−583,832)**. The fresh mesh
+estimate is **198,847 bytes (+160,483)**, the former normal map's **596,010
+estimated bytes / 699,212 serialized bytes** are absent, and material metadata
+decreases **13 estimated / 16 serialized bytes**. Exact compressed ZIP entries
+shrink **436,645 bytes**; container/signing overhead shrinks **165 bytes**.
+All other art sizes are stable, apart from negligible compression differences.
+Leading estimates remain timber 2.247 MB, character albedo 1.993 MB, Golf
+structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB.
+There is no unexpected large shipped dependency. These estimates were computed
+from this APK's own detailed packing offsets, not the earlier cached report.
+
+Current audit: `Builds/SizeAudit/latest/`; exact retained audit and APK:
+`Builds/GolfBallRoundedQA/Release/`. Comparisons, source manifests and signing:
+`Builds/GolfBallRoundedQA/`. Format-aware primary/alternate-checkout audits find
+no active image/library dependency or machine path; inactive exporter SceneInfo
+and saved Blender UI provenance are documented exceptions. See
+[regeneration](../ArtSource/Golf/Ball/README.md) and
+[functional/visual checks](VERIFICATION.md#rounded-golf-ball--4-october-2026).
+Phone touch/rendering/FPS and WAN remain unverified.
+
+## Golf club natural carry — 4 October 2026
+
+The retained carry-task **88,981,788-byte** APK shrinks **436,846 bytes** from the opening
+89,418,634-byte release. Hard-limit headroom is **11,018,212 bytes**; the 75 MB
+development target remains exceeded by **13,981,788 bytes**. AndroidSubmission
+and independent APK v2 signing pass. Hash, exact release paths and input scope
+are in [BUILD-SIZE](BUILD-SIZE.md#golf-club-natural-carry--4-october-2026).
+
+Natural hand carry adds no mesh, map, animation, shader, font or package. The
+existing 3,600 / 1,400 / 500-triangle club and 512 / 512 / 256-pixel maps remain
+unchanged. This combined snapshot preserves the concurrent rounded-ball update:
+ball geometry grows **115,396 serialized / 160,483 estimated bytes**, while its
+old normal map removes **699,212 serialized / 596,010 estimated bytes**. Total
+serialized assets shrink **583,832 bytes** to **155,278,356**. Actual compressed
+ZIP entries shrink **436,680 bytes**, plus **166 bytes** of container/signing
+overhead. Fresh offsets and estimates were calculated from this APK itself.
+Timber (2.247 MB), character albedo (1.993 MB), Golf structures (1.981 MB),
+character mesh (1.574 MB) and football stadium (1.556 MB) remain the largest
+estimates. No unexpected large dependency appeared.
+
+Exact retained audit: `Builds/GolfClubCarryQA/Release/latest/`.
+Before/after input manifests, signatures,
+package deltas and the canonical Ball prefab graph comparison are in
+`Builds/GolfClubCarryQA/`. Primary source stays unchanged across packaging;
+Android URP registrations and local prefab IDs are generated, and the isolated
+editor uses clean packing. See [whole-gait, native-view and loopback verification](VERIFICATION.md#golf-club-natural-carry--4-october-2026).
+The tested complete Windows player is retained in the same release folder;
+physical-phone quality/FPS and WAN remain unverified.
+
+The newer rounded-ball delivery includes this carry implementation and supersedes
+the shared APK/player. The current APK is **88,981,824 bytes**, **436,810 bytes
+smaller** than the task's opening release, with **11,018,176 bytes** of strict-limit
+headroom. The development target remains exceeded by **13,981,824 bytes**.
+Current `Builds/SizeAudit/latest/` reports belong to that newer APK; its exact
+measurements and input scope are in the rounded-ball entry above. The complete
+shared Windows player also passes the final 140-check carry/Golf suite.
+
+## Midnight Iron handheld club — 4 October 2026
+
+The final APK measures **89,418,634 bytes**, **+630,844** from the opening **88,787,790-byte** artifact and **+455,624** from the separately validated reference-tyre release. Hard-limit headroom is **10,581,366 bytes**; the development target is still exceeded by **14,418,634 bytes**. AndroidSubmission and independent APK v2 signature verification pass. SHA-256: **49BC113AFE2C569D42CCB63154158294E6748C81AF309F0638279A71D357E679**. Exact current/retained APKs and complete matching Windows delivery are recorded in [BUILD-SIZE](BUILD-SIZE.md#midnight-iron-handheld-club--4-october-2026).
+
+The 7,702-triangle editable master and all original 2048-pixel maps remain under ArtSource. Only **3,600 / 1,400 / 500** delivery triangles, one URP material, **512-pixel colour/normal** and a **256-pixel metallic/smoothness mask** enter Unity. Mobile formats are ASTC 6×6 / 4×4 / 8×8 respectively, with mipmaps. All maps explicitly import as Texture2D and are referenced by the material; the missing-map cubemap trial was corrected and rebuilt. Three LODs share one material; two-hand motion uses the existing avatar rig, with no shipped swing animation, additional shader, font or package. The club has no rigidbody or collider.
+
+Fresh packing-offset analysis gives club estimates of **123,767 bytes mesh**, **129,848 colour**, **131,740 normal**, **18,413 mask** and **1,991 prefab/material/script metadata**: **405,759 bytes total**. Serialized assets measure **155,862,188 bytes**, **+919,293** from the opening snapshot; these are not compressed APK bytes. Exact ZIP-entry growth is **629,813 bytes**, with **1,031 bytes** of container/signing overhead completing the APK delta. Against the tyre release, existing asset sizes remain stable apart from eight player-prefab serialized bytes and negligible estimate changes. The new club and updated IL2CPP/metadata packing account for the incremental snapshot; no unexpected large dependency appeared. Leading estimates remain timber 2.247 MB, character albedo 1.993 MB, Golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB.
+
+Audit files and exact current packing offsets: `Builds/SizeAudit/latest/`; retained release: `Builds/GolfClubQA/Release/latest/`. Comparisons, signing, unchanged 2,947-input capture and Windows promotion hashes: `Builds/GolfClubQA/`. Both primary and alternate-checkout format-aware audits pass: all seven Blender image dependencies and FBX texture references are relative and exist, with no external library or active machine path. Original embedded source/provenance is retained for editing; the delivery FBX has no inactive machine-path provenance fields. See [source and regeneration](../ArtSource/Golf/Club/README.md) and [functional/visual verification](VERIFICATION.md#midnight-iron-handheld-club--4-october-2026). Phone quality/FPS and WAN remain unverified.
+
+## Golf cart reference tyres — 4 October 2026
+
+The fresh tyre-verification APK measures **88,787,790 → 88,963,010 bytes (+175,220)**, with **11,036,990 bytes** below the strict ceiling and **13,963,010 bytes** above the development target. AndroidSubmission, clean packing and independent v2 signing pass. The exact retained APK and complete audit are in `Builds/GolfCartTreadQA/Release/`; the shared root delivery is preserved because concurrent Golf-club additions postdate this captured source. See [hash, scope and recovery](BUILD-SIZE.md#golf-cart-reference-tyres--4-october-2026).
+
+Serialized assets are **155,187,375 bytes (+244,480)**. The cart FBX estimate rises **172,773 bytes to 909,743** for the requested rounded thick tyre and geometric chevron channels. All other per-asset estimates and cart texture hashes are unchanged, retaining one material and five renderers per LOD. Mid/far axial simplification removes **2,560 triangles** versus the full new profile. Exact compressed entries grow **175,220 bytes**, with no net container-overhead change. Leading contributors remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB; no unexpected shipped dependency or texture growth appeared. Estimates were recalculated from this APK's own packing offsets. Phone rendering/FPS and the 75 MB development goal remain unqualified.
+
+## Golf cart rim fit and circularity — 4 October 2026
+
+Fresh combined snapshot: **88,713,562 → 88,787,790 bytes (+74,228)**, with **11,212,210 bytes** strict-limit headroom and **13,787,790 bytes** above the development target. AndroidSubmission, complete packing and independent APK v2 signing pass. See [release hash, captured scope and recovery](BUILD-SIZE.md#golf-cart-rim-fit-and-circularity--4-october-2026).
+
+Serialized assets are **154,942,895 bytes**; the cart mesh estimate changes **659,132 → 736,970 bytes** for circular equal rims, joined beads and concurrent chassis supports. Existing texture hashes, one shared material and five renderers per LOD are retained. Continuous UVs remove **6,288 position/UV splits** without changing wheel geometry; mid/far spokes omit **1,536 total bevel triangles**. The final combined APK is **4,560 bytes smaller** than the intermediate before that packing refinement. Exact ZIP-entry growth against the starting APK is **74,225 bytes**, with three bytes of container overhead completing the APK delta. Leading art contributors are unchanged and no new large dependency appears. Current per-asset/ZIP records are in `Builds/SizeAudit/latest/`, comparisons and raw source/functional evidence in `Builds/GolfCartRimQA/`. The 75 MB target and phone quality/FPS remain unqualified.
+
+## Golf cart chassis connections and startup rolling — 4 October 2026
+
+Final APK: **88,708,082 → 88,782,546 bytes (+74,464)** against the task-opening combined snapshot, or **88,787,118 → 88,782,546 bytes (−4,572)** against the preceding complete shared release. Hard-limit headroom is **11,217,454 bytes**; the development target remains exceeded by **13,782,546 bytes**. AndroidSubmission, complete clean-cache packing and independent v2 signing pass. Source consistency, release hash, tests and reviewed recovery batch are recorded in [BUILD-SIZE.md](BUILD-SIZE.md#golf-cart-chassis-connections-and-startup-rolling--4-october-2026).
+
+The twelve checked wheel-to-chassis connections add **288 / 224 / 160 triangles** across the three LODs, preserving five active renderers and one material. No new texture, font, shader or package is shipped. The high-quality source geometry/UV hash and delivery map hashes are unchanged. Final serialized assets measure **154,942,895 bytes (−84,608)** against the preceding release, with cart mesh packing **−84,612** and the prefab field **+4**. Independent cart mesh estimate is **736,970 bytes (−1,378)**; its colour, normal, mask and material estimates remain **498,110 / 621,270 / 71,311 / 671 bytes**. Exact compressed entries shrink **4,570 bytes**: cart mesh **−2,479**, IL2CPP **−2,086** and small metadata/engine/config changes explain the result. Container/signing overhead shrinks two more bytes. Asset estimates are distinct from the actual APK measurement.
+
+Leading estimates remain timber **2.247 MB**, character albedo **1.993 MB**, Golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected dependency or texture growth appeared. Complete current reports are in `Builds/SizeAudit/latest/`, with an exact retained audit at `Builds/GolfCartWheelContactQA/Release/latest/`; asset/entry deltas are in `Builds/GolfCartWheelContactQA/`. The latest matching player passes **203 cart assertions** and both format-aware art audits. Close/far LOD and full-steering views were inspected; phone quality/FPS remains unverified.
+
+## Golf cart elevated steering follow — 4 October 2026
+
+Fresh combined release: **88,708,082 → 88,787,118 bytes (+79,036)**. Hard-limit headroom: **11,212,882 bytes**; the 75,000,000-byte development target remains exceeded by **13,787,118 bytes**. AndroidSubmission, complete clean-cache packing and independent v2 signing pass. The elevated camera change adds no imported art, texture, font, shader or package. The package includes the separately refined rim/bead mesh and sand-bowl motor fix. See [hash, source consistency, build and archive](BUILD-SIZE.md#golf-cart-elevated-steering-follow--4-october-2026).
+
+Serialized assets measure **155,027,503 bytes (+254,880)**; the cart mesh accounts for that increase and rises **79,216 estimated compressed bytes to 738,348**. Its maps and material are unchanged. Exact compressed entries grow **79,039 bytes**: cart mesh data **+78,860** and combined IL2CPP **+178** are the main contributors. Container/signing overhead falls 3 bytes. All other independently estimated assets remain unchanged. Leading estimates remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. No unexpected large dependency or camera asset growth appeared.
+
+All 2,925 captured inputs remain stable during packaging and match the primary workspace except the isolated clean-cache editor option. Packing records: `Builds/SizeAudit/latest/`; exact retained release/audit: `Builds/GolfCartOverheadQA/Release/`; comparisons and hashes: `Builds/GolfCartOverheadQA/`. The matching Windows player passes 175 cart and 81 Golf gameplay checks, with native elevated views inspected. Phone touch, rendering/FPS and WAN remain unverified; the 75 MB development target still requires deliberate optimization.
+
+## Golf cart sand-bowl rim traversal — 4 October 2026
+
+The captured vehicle-fix APK measures **88,708,270 bytes**, **+82,432** against the task-opening 88,625,838-byte package and **+188** against the complete Golf mini-game release. Hard-limit headroom is **11,291,730 bytes**; the development target is exceeded by **13,708,270 bytes**. AndroidSubmission, independent v2 signing and fresh packing/contribution analysis pass. Artifact/audit: `Builds/GolfCartRoundFixQA/Release/WhatTheFish-release.apk` and `Builds/GolfCartRoundFixQA/Release/latest/`. See [hash, captured-source scope and archive records](BUILD-SIZE.md#golf-cart-sand-bowl-rim-traversal--4-october-2026).
+
+The ground-sweep fix adds **zero serialized asset bytes** against the preceding complete release; serialized assets remain **154,772,623 bytes**. Exact compressed entry growth is **189 bytes**, with IL2CPP **+188** and a one-byte container difference. The captured cart mesh estimate is **659,132 bytes**; its texture maps and material are unchanged. No new art, shader or package is introduced. The later parallel rim/bead geometry export is outside this measured snapshot; the shared root APK is preserved. The 169-check cart replay includes 40 forward/reverse sand-bowl crossings. Phone touch, rendering/FPS and WAN remain unverified, and the 75 MB development target remains unmet.
+
+## Golf mini game — 4 October 2026
+
+Fresh Golf release: **88,625,838 → 88,708,082 bytes (+82,244)**. Hard-limit headroom: **11,291,918 bytes**; the 75,000,000-byte development target remains exceeded by **13,708,082 bytes**. AndroidSubmission, complete clean-cache packing and independent APK v2 signing pass. Golf reuses course/ball art, font and native UI arrows without importing assets, shaders or packages. This combined snapshot includes separate camera/circular-tyre changes. See [hash, captured source scope, build recovery and archive](BUILD-SIZE.md#golf-mini-game--4-october-2026).
+
+Serialized assets remain **154,772,623 bytes**, **62,952** above the task's opening baseline. The separate cart mesh estimate rises **37,071 bytes to 659,132**, with unchanged maps. Exact compressed entry growth is **82,241 bytes**, including IL2CPP **+44,396**, cart mesh data **+36,476**, metadata **+6,198** and Burst **−5,657**. Container/signing overhead adds 3 bytes. Golf's small script records describe metadata; its development probe behavior is absent from release code. No unexpected large dependency or avoidable Golf texture/font growth was found.
+
+Largest estimates remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. Current packing: `Builds/SizeAudit/latest/`; retained exact snapshot: `Builds/GolfMiniGameQA/Release/latest/`; baseline comparisons and input hashes: `Builds/GolfMiniGameQA/`. All 2,925 captured inputs are stable through the build. Later parallel cart-rim FBX/motor/probe edits are outside this release. Its Golf source passes 81 gameplay checks plus existing sport/cart regressions; physical-phone quality/FPS, touch and WAN remain unverified. The remaining hard-limit reserve is not treated as a development budget; the 75 MB target still needs deliberate optimization.
+
+## Golf cart driving cameras — 3 October 2026
+
+Fresh camera snapshot: **88,625,838 → 88,713,562 bytes (+87,724)**. Hard-limit headroom: **11,286,438 bytes**; the 75,000,000-byte development target remains exceeded by **13,713,562 bytes**. AndroidSubmission, complete packing and independent v2 signature pass. The camera change adds no asset, shader, texture or package; this APK also contains concurrent golf gameplay and cart seating/tyre updates. See [hash, captured source scope, build recovery and archive](BUILD-SIZE.md#golf-cart-driving-cameras--3-october-2026).
+
+Serialized assets total **154,772,623 bytes (+62,952)**. The cart mesh estimate rises **622,061 → 659,132 bytes (+37,071)** for the separate circular-tyre work, with unchanged maps. Exact ZIP entry increases are **44,653 bytes** for IL2CPP, **36,476** for cart mesh data and **6,198** for metadata; overall entry growth is 87,725 bytes, one byte above the APK delta because container overhead also changes. Leading estimates remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. No unexpected large dependency was added. Current audit: `Builds/SizeAudit/latest/`; comparison CSVs and signatures: `Builds/GolfCartCameraQA/`.
+
+The captured camera inputs pass 128 cart and 142 golf checks. Subsequent concurrent golf ball/probe edits are outside this APK's verification scope. Phone touch, clipping/rendering/FPS and WAN remain unverified. The 75 MB target still needs deliberate optimization; this release does not treat the remaining hard-limit reserve as a development budget.
+
+## Golf cart seating and circular tyres — 3 October 2026
+
+The historical vehicle-validation snapshot measures **88,625,838 → 88,707,818 bytes (+81,980)**, with **11,292,182 bytes** hard-limit headroom and **13,707,818 bytes** above the development target. AndroidSubmission, complete clean-cache packing and independent APK v2 signing pass. Its APK and audit are now under `Legacy/20261004-004451-752-golf-cart-rim-delivery/Builds/GolfCartRoundFixQA/Release/`. Shared deliveries are preserved. See [hash, captured source scope, disk recovery and archive records](BUILD-SIZE.md#golf-cart-seating-and-circular-tyres--3-october-2026).
+
+Serialized assets grow **62,952 bytes to 154,772,623**. Circular tyres and rear-well cleanup raise the cart FBX independent estimate **37,071 bytes to 659,132**, retaining existing texture hashes, material, authored hubs and the high-quality master. Mobile totals are 25,833/9,686/3,748 triangles. Exact compressed entry growth is **81,977 bytes**; IL2CPP **+44,132**, metadata **+6,198** and Unity native code **+319** include parallel gameplay/camera code. No unexpected large asset or shipped dependency appeared. Fresh contribution estimates were regenerated from this APK's own packing offsets rather than reused from an earlier report. Physical-phone quality/FPS remains unverified, and the 75 MB development target still needs optimization.
+
+## Golf cart rear-wheel rendering and steering — 3 October 2026
+
+Fresh APK: **88,625,346 → 88,625,838 bytes (+492)**, leaving **11,374,162 bytes** hard-limit headroom and exceeding the development target by **13,625,838 bytes**. AndroidSubmission, complete clean-cache packing and independent APK v2 signing pass. See [release hash, input comparison, testing and recovery](BUILD-SIZE.md#golf-cart-rear-wheel-rendering-and-steering--3-october-2026).
+
+Serialized assets increase only **52 bytes to 154,709,671**. Original mesh positions, triangle totals, UVs, maps and material are retained; corrected face winding restores rear hub visibility. Independent mesh estimate changes **622,153 → 622,061 bytes (−92)**; texture estimates are unchanged. Native IL2CPP grows 556 compressed bytes, metadata/Unity native code stay unchanged, and exact total ZIP growth is 492 bytes. Leading art contributors remain timber 2.247 MB, character albedo 1.993 MB, golf structures 1.981 MB, character mesh 1.574 MB and football stadium 1.556 MB. No new wheel texture, shader/package or unexpected large dependency was introduced. Current reports: `Builds/SizeAudit/latest/`; detailed comparison and signing evidence: `Builds/GolfCartHandlingQA/`. Phone quality/FPS remains unverified.
+
+## Golf cart speed and wheels — 3 October 2026
+
+The final corrected APK is **88,625,346 bytes**: **−131,088 bytes** against the retained 88,756,434-byte base-cart package, or **+804 bytes** against the immediately preceding 88,624,542-byte combined course/cart release. Strict-limit headroom is **11,374,654 bytes**; the development target is still exceeded by **13,625,346 bytes**. The base-cart comparison includes concurrent course refinement. See [release hashes, build provenance and verification](BUILD-SIZE.md#golf-cart-speed-and-wheels--3-october-2026).
+
+Complete fresh packing/ZIP/contribution records are in `Builds/SizeAudit/latest/`; comparison CSVs, source hashes and signing evidence are in `Builds/GolfCartWheelsQA/`. Serialized assets remain **154,709,619 bytes**. Wheel partitioning preserves total triangles and all three texture hashes. Independent cart estimates are mesh **622,153**, normal **621,270**, colour **498,110**, mask **71,311** and material **671 bytes**. Mesh estimate reduction is **9,959 bytes**; prefab estimate increase is **2,246**. The existing five-renderer LODs share one material. No imported wheel texture or new shader/package is packed.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. Terrain-sector identity changes in the baseline comparison belong to the concurrent course refinement; assess their aggregate, including removed overlays and the original terrain reduction. No unexpected dependency or avoidable wheel-texture growth was found. Actual APK and independent asset estimates remain different measurements. The source master geometry/UV hash is unchanged; exporter `SceneInfo` machine-path metadata is proven inactive and all active art references resolve relatively. Phone quality/FPS remains unverified. Recovery batches are recorded in the release entry above.
+
+## Golf course refinement and current combined release — 3 October 2026
+
+The fresh combined APK measures **86,896,050 → 88,624,542 bytes (+1,728,492)**, leaving **11,375,458 bytes** below the strict ceiling and exceeding the development target by **13,624,542 bytes**. AndroidSubmission, complete clean-cache packing and independent APK v2 signing passed. The package includes the separate protocol 19 cart speed/wheel update. All 2,903 authored asset/package/settings hashes match, with only the isolated editor's clean-cache option differing. See [release provenance and build-process memory mitigation](BUILD-SIZE.md#golf-course-refinement-and-current-combined-release--3-october-2026).
+
+Current records are in `Builds/SizeAudit/latest/`; comparisons and source hashes are in `Builds/GolfCourseRefinementQA/`. Serialized assets are **154,709,619 bytes (+2,598,806)**, distinct from compressed APK bytes. Independent course estimates fall **652,179 → 610,202 bytes (−41,977)**, and the original terrain estimate falls **80,439 bytes**: together **−122,416 bytes**. Five terrain sectors carry precision openings. No green overlay, old orange/putting material or baked golf grass is packed, and the course adds no imported texture or font.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. The cart adds the main delivered dependencies: approximately **622,153** mesh, **621,270** normal, **498,110** colour and **71,311** mask bytes in independent compression estimates, plus tiny prefab/font/licence/material/script records. These separate cart additions explain the overall increase despite the course reduction. No unrelated large art growth was found.
+
+Exact compressed ZIP entries grow **1,727,121 bytes**; signing/ZIP overhead accounts for **1,371 bytes**. Assess split-file changes in aggregate. These exact entry measurements and independent per-asset estimates describe different quantities. Actual close/distant and cup-detail views, collision, terrain colour/UV preservation and mobile grass clearing passed their map checks; phone rendering/FPS remains unverified. Unused course assets were archived with GUID/runtime/generator/provenance evidence under `Legacy/20261003-192351-292-golf-course-refine-unused/`.
+
+## Golf cart summon and driving snapshot — 3 October 2026
+
+The retained protocol 18 base APK measures **86,896,050 → 88,756,434 bytes (+1,860,384)**, leaving **11,243,566 bytes** under the strict ceiling and exceeding the development target by **13,756,434 bytes**. AndroidSubmission, complete clean-cache packing and the final retained file's APK v2 signing passed. Later course refinement, protocol 19, doubled speed and wheel animation remain outside this measured snapshot. See [release provenance](BUILD-SIZE.md#golf-cart-summon-and-driving-snapshot--3-october-2026).
+
+`Builds/GolfCartQA/ReleaseBase/latest/` preserves the actual build's packing and ZIP records, with asset estimates regenerated from that APK and its packing offsets. Serialized assets are **154,919,835 bytes (+2,809,022)**. Cart estimates total **1,830,717 bytes**: mesh **632,112**, normal **621,270**, colour **498,110**, mask **71,311**, subset font **3,638**, full licence **1,975**, prefab **1,097**, material **671** and tiny script records. Script records are not compiled native-code cost. All cart LODs share one material and the three maps; Android uses ASTC 6×6 colour, 4×4 normal and 8×8 mask. The master, original ZIP, full 17.77 MB font and unused source textures are not packed.
+
+Exact ZIP-entry growth totals **1,859,011 bytes**, with **1,373 bytes** of ZIP/signing overhead making the actual APK delta. The four main cart art entries add **1,823,308 compressed bytes**; IL2CPP adds **23,228**, metadata **3,313**, the font entry **3,746** and licence entry **2,059**. Full comparison is `Builds/GolfCartQA/base-apk-entry-deltas.csv`. Largest pre-existing art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No avoidable large asset dependency was introduced.
+
+The FBX exporter now rewrites both direct image filenames and active nested Video `Path` properties through format-aware parsing, preserving all non-path payloads. Blender image/library dependencies and FBX texture references were checked after relocation to a path containing spaces and execution from an unrelated directory. The base master has seven existing relative images and no external libraries; the supplied original FBX embeds all four source maps. The retained relocation audit identifies only an inactive `FBXHeaderExtension/SceneInfo/Properties70/P` exporter-provenance field as the allowed historical metadata exception; active texture dependencies are relative. Evidence is `Builds/GolfCartQA/portable-relocated-base-audit.json` and `portable-font-final.txt`. Cleanup batches and functional/device limits are in [the release record](BUILD-SIZE.md#golf-cart-summon-and-driving-snapshot--3-october-2026).
+
+## Five-hole golf map — 3 October 2026
+
+The final APK measures **86,563,288 → 86,896,050 bytes (+332,762)**, leaving **13,103,950 bytes** under the strict ceiling and exceeding the development target by **11,896,050 bytes**. Matching-source isolated AndroidSubmission, populated clean-cache packing and APK v2 signing passed after the open main-project attempt exited. See [release provenance and validation](BUILD-SIZE.md#five-hole-golf-map--3-october-2026).
+
+`Builds/SizeAudit/latest/` contains complete current packing offsets, ZIP entries and estimates. Serialized assets are **152,110,813 bytes (+896,940)**; they are not APK bytes. New course estimates total **652,179 bytes**: derived terrain about **474,257**, greens **159,170**, and shared cup/flag/tee meshes and materials **18,752**. The original terrain estimate falls from **1,284,955 to 964,827 bytes (−320,128)** as four sectors use precise derived geometry. Terrain cutouts remain uncompressed to retain the small cup boundaries; unused vertices are removed. Desktop grass derivatives are retired for the existing mobile grass library and are absent from the APK.
+
+An inherited `RI_Turf_Mask.png` appeared in the first trial package: **5,592,556 serialized bytes**, approximately **147,833 independently compressed bytes**. The putting material now clears its metallic texture/keyword. This removes the dependency without altering the source texture/master or grass colour/normal detail. Actual APK savings are **149,460 bytes** against the **87,045,510-byte** trial. No new imported texture, font, model or package was added. Largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No other unexpected art growth was found.
+
+ZIP entry comparisons include split-file boundary shifts and should be assessed in aggregate. IL2CPP grows **1,646 compressed bytes**, managed metadata **112**; Unity native code and Burst are unchanged. Total compressed entry delta is **332,593 bytes**; ZIP/signing overhead accounts for the remaining **169** APK bytes. These exact entry measurements differ from independently compressed asset estimates.
+
+Evidence: `Builds/GolfFiveHolesQA/`. Source masters match Git HEAD; generated Unity references, geometry winding, course collision, close/distant views and mobile grass clearing were inspected. Phone rendering/FPS remains unverified. Archive batches: `Legacy/20261003-165821-340-golf-five-holes-trial-mesh/` and `Legacy/20261003-171933-414-golf-five-holes-delivery/`. Earlier audit records below retain their original scope.
 
 ## GitHub integration release — 3 October 2026
 

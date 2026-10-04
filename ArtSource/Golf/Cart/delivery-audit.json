@@ -1,0 +1,234 @@
+{
+  "blender": "5.2.2 LTS",
+  "source": {
+    "vertices": 123397,
+    "triangles": 246850,
+    "nonmanifold_edges": 0,
+    "degenerate_triangles": 0,
+    "finite_uvs": true
+  },
+  "length_metres": 2.85,
+  "lods": [
+    {
+      "level": 0,
+      "triangles": 33958,
+      "parts": [
+        {
+          "name": "GolfCart_Body_LOD0",
+          "vertices": 9400,
+          "triangles": 18598,
+          "nonmanifold_edges": 232,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_FL_LOD0",
+          "vertices": 1936,
+          "triangles": 3840,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_FR_LOD0",
+          "vertices": 1936,
+          "triangles": 3840,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_RL_LOD0",
+          "vertices": 1936,
+          "triangles": 3840,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_RR_LOD0",
+          "vertices": 1936,
+          "triangles": 3840,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        }
+      ]
+    },
+    {
+      "level": 1,
+      "triangles": 13805,
+      "parts": [
+        {
+          "name": "GolfCart_Body_LOD1",
+          "vertices": 3147,
+          "triangles": 6189,
+          "nonmanifold_edges": 137,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_FL_LOD1",
+          "vertices": 968,
+          "triangles": 1904,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_FR_LOD1",
+          "vertices": 968,
+          "triangles": 1904,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_RL_LOD1",
+          "vertices": 968,
+          "triangles": 1904,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_RR_LOD1",
+          "vertices": 968,
+          "triangles": 1904,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        }
+      ]
+    },
+    {
+      "level": 2,
+      "triangles": 6721,
+      "parts": [
+        {
+          "name": "GolfCart_Body_LOD2",
+          "vertices": 1046,
+          "triangles": 2049,
+          "nonmanifold_edges": 79,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_FL_LOD2",
+          "vertices": 600,
+          "triangles": 1168,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_FR_LOD2",
+          "vertices": 600,
+          "triangles": 1168,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_RL_LOD2",
+          "vertices": 600,
+          "triangles": 1168,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        },
+        {
+          "name": "GolfCart_Wheel_RR_LOD2",
+          "vertices": 600,
+          "triangles": 1168,
+          "nonmanifold_edges": 0,
+          "degenerate_triangles": 0,
+          "finite_uvs": true
+        }
+      ]
+    }
+  ],
+  "wheel_shape": "Thick rounded black tyres with geometric chevron channels and equal 38 cm cream six-spoke rims; welded beads and fixed chassis axle mounts; rear-well fragments removed",
+  "rim_diameter_metres": 0.38,
+  "wheel_angular_segments": [
+    64,
+    40,
+    24
+  ],
+  "tread_rows": [
+    16,
+    10,
+    6
+  ],
+  "tread_depth_metres": 0.006,
+  "driver_hip_height_metres": 1.04,
+  "delivery_texture_refs": [
+    "GolfCart_BaseColor.png",
+    "GolfCart_Mask.png",
+    "GolfCart_Normal.png"
+  ],
+  "dependencies": [
+    {
+      "image": "GolfCart_Mask",
+      "path": "//../../../Game/Assets/_Game/Art/Golf/Cart/GolfCart_Mask.png",
+      "packed": false
+    },
+    {
+      "image": "Meshy_AI_Golf_Cart_1003101246_texture.png",
+      "path": "//Textures/GolfCart_BaseColor.png",
+      "packed": false
+    },
+    {
+      "image": "Meshy_AI_Golf_Cart_1003101246_texture.png.001",
+      "path": "//../../../Game/Assets/_Game/Art/Golf/Cart/GolfCart_BaseColor.png",
+      "packed": false
+    },
+    {
+      "image": "Meshy_AI_Golf_Cart_1003101246_texture_metallic.png",
+      "path": "//Textures/GolfCart_Metallic.png",
+      "packed": false
+    },
+    {
+      "image": "Meshy_AI_Golf_Cart_1003101246_texture_normal.png",
+      "path": "//Textures/GolfCart_Normal.png",
+      "packed": false
+    },
+    {
+      "image": "Meshy_AI_Golf_Cart_1003101246_texture_normal.png.001",
+      "path": "//../../../Game/Assets/_Game/Art/Golf/Cart/GolfCart_Normal.png",
+      "packed": false
+    },
+    {
+      "image": "Meshy_AI_Golf_Cart_1003101246_texture_roughness.png",
+      "path": "//Textures/GolfCart_Roughness.png",
+      "packed": false
+    }
+  ],
+  "files": [
+    {
+      "path": "ArtSource/Golf/Cart/GolfCart.blend",
+      "bytes": 12772771,
+      "sha256": "baaf63e442bc9f02a90f32bd085c8a5a04cc04d4448bd51f7f01fc58227c2141"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Cart/GolfCart.fbx",
+      "bytes": 1817132,
+      "sha256": "bd1d234766150e3fadfd3928c5588b5c250f01204a431f2719f89e4aca1dafda"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Cart/GolfCart_BaseColor.png",
+      "bytes": 945545,
+      "sha256": "45b2f8b979613d282d410afb199683b48f6ea07ec31199a6fd0ab2287194d081"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Cart/GolfCart_Mask.png",
+      "bytes": 232694,
+      "sha256": "3bd06d2fb51bf37e959e80f74c2affa3535cbc720afaf82b384fee30c7d1ec3f"
+    },
+    {
+      "path": "Game/Assets/_Game/Art/Golf/Cart/GolfCart_Normal.png",
+      "bytes": 797094,
+      "sha256": "ab7d85a3ac3ac7e0e437811b67c8c276351acbc67a166e39f19699c0b75cd250"
+    }
+  ]
+}

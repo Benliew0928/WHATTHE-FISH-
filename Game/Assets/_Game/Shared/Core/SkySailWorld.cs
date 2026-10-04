@@ -62,6 +62,7 @@ namespace WhatTheFish {
    if(Travelling&&!app.Exploring){if(Authority){var cancel=Journey;cancel.phase=SkySailPhase.Idle;SetState(cancel);}AbortLocal();return;}
    if(Travelling&&(seenSequence!=Journey.sequence||seenPhase==SkySailPhase.Idle)){
     seenSequence=Journey.sequence;onlineJourney=app.rooms.Connected;released=approach=prepared=false;acknowledged=0;lengths=SkySailMap.Distances(Journey.from,Journey.to);
+    GolfCartWorld.ParkDrivers(true);
     passengers=Group();foreach(var a in passengers){a.ResetLocomotion();a.inTransit=true;a.capsule.enabled=false;var nt=a.GetComponent<NetworkTransform>();if(nt)nt.enabled=false;}
     app.view.yaw=SkySailMap.Facing(Journey.from).eulerAngles.y;app.view.pitch=8;app.view.mode=0;StartCoroutine(Prepare(Journey.to,Journey.sequence));
    }
@@ -90,7 +91,7 @@ namespace WhatTheFish {
      else if(Journey.phase==SkySailPhase.Riding&&elapsed>=Journey.duration)Advance(SkySailPhase.Docking);
      else if(Journey.phase==SkySailPhase.Docking&&elapsed>3.5)Advance(SkySailPhase.Idle);
     }
-   }else if(app.Exploring){cabin.localPosition=SkySailMap.Berth(app.SelectedSport);cabin.localRotation=SkySailMap.Facing(app.SelectedSport);if(Input.GetKeyDown(KeyCode.F))RequestTravel(SkySailMap.Neighbor(app.SelectedSport,1));}
+   }else if(app.Exploring){cabin.localPosition=SkySailMap.Berth(app.SelectedSport);cabin.localRotation=SkySailMap.Facing(app.SelectedSport);if(Input.GetKeyDown(KeyCode.F)&&!(app.SelectedSport==SportId.Golf&&GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running))RequestTravel(SkySailMap.Neighbor(app.SelectedSport,1));}
    float open=Journey.phase==SkySailPhase.Idle||Journey.phase==SkySailPhase.Preparing?1:Journey.phase==SkySailPhase.Docking?Mathf.Clamp01((float)(Clock-Journey.started)/2):Journey.phase==SkySailPhase.Boarding?1-Mathf.Clamp01((float)(Clock-Journey.started)/2):0;
    leftDoor.localPosition=doorLeft+Vector3.left*(open*1.34f);rightDoor.localPosition=doorRight+Vector3.right*(open*1.34f);
    if(motor){motor.volume=Mathf.Lerp(motor.volume,Journey.phase==SkySailPhase.Riding?.10f:.016f,Time.deltaTime*2);motor.pitch=Mathf.Lerp(.55f,1,Mathf.Sin(Progress*Mathf.PI));}
