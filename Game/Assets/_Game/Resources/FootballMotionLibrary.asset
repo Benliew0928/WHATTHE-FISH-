@@ -818,7 +818,7 @@ MonoBehaviour:
         leftToe: 0
         rightToe: 0
   - name: Fall_Back
-    duration: 0.8
+    duration: 1.1
     loop: 0
     keys:
     - time: 0
@@ -833,7 +833,7 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.1
+    - time: 0.09
       pose:
         pelvis: {x: 0, y: -0.09, z: 0}
         body: {x: -20, y: 0, z: 0}
@@ -845,33 +845,33 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.3
+    - time: 0.27
       pose:
-        pelvis: {x: 0, y: -0.31, z: -0.025}
+        pelvis: {x: 0, y: -0.24, z: -0.025}
         body: {x: -65, y: 0, z: 5}
         chest: {x: 8, y: 0, z: 0}
         head: {x: 20, y: 0, z: 0}
         leftFoot: {x: 0.035, y: 0.015, z: 0.12}
         rightFoot: {x: -0.025, y: 0.07, z: 0.09}
-        leftHand: {x: -0.24, y: 0.14, z: -0.13}
+        leftHand: {x: -0.24, y: 0.16, z: -0.2}
         rightHand: {x: 0.23, y: 0.34, z: -0.15}
         leftToe: 0
         rightToe: 0
-    - time: 0.46
+    - time: 0.36
       pose:
-        pelvis: {x: 0, y: -0.31, z: -0.025}
+        pelvis: {x: 0, y: -0.24, z: -0.025}
         body: {x: -65, y: 0, z: 5}
         chest: {x: 8, y: 0, z: 0}
         head: {x: 20, y: 0, z: 0}
         leftFoot: {x: 0.035, y: 0.015, z: 0.12}
         rightFoot: {x: -0.025, y: 0.07, z: 0.09}
-        leftHand: {x: -0.24, y: 0.14, z: -0.13}
+        leftHand: {x: -0.24, y: 0.16, z: -0.2}
         rightHand: {x: 0.23, y: 0.34, z: -0.15}
         leftToe: 0
         rightToe: 0
-    - time: 0.6
+    - time: 0.54
       pose:
-        pelvis: {x: 0, y: -0.31, z: 0.02}
+        pelvis: {x: 0, y: -0.24, z: 0.02}
         body: {x: -8, y: 0, z: 10}
         chest: {x: 0, y: 0, z: 0}
         head: {x: -3, y: 0, z: 0}
@@ -881,16 +881,16 @@ MonoBehaviour:
         rightHand: {x: 0.23, y: 0.43, z: 0.1}
         leftToe: 0
         rightToe: 0
-    - time: 0.76
+    - time: 0.73
       pose:
-        pelvis: {x: 0, y: -0.22, z: 0.02}
+        pelvis: {x: 0, y: -0.16, z: 0.02}
         body: {x: 28, y: 0, z: 0}
         chest: {x: 0, y: 0, z: 0}
         head: {x: -3, y: 0, z: 0}
         leftFoot: {x: -0.012, y: 0, z: -0.055}
         rightFoot: {x: 0.012, y: 0, z: 0.06}
-        leftHand: {x: -0.23, y: 0.3, z: 0.3}
-        rightHand: {x: 0.23, y: 0.32, z: 0.29}
+        leftHand: {x: -0.23, y: 0.37, z: 0.45}
+        rightHand: {x: 0.23, y: 0.39, z: 0.44}
         leftToe: 0
         rightToe: 0
     - time: 1
@@ -906,7 +906,7 @@ MonoBehaviour:
         leftToe: 0
         rightToe: 0
   - name: Fall_Forward
-    duration: 0.8
+    duration: 1.1
     loop: 0
     keys:
     - time: 0
@@ -921,7 +921,7 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.1
+    - time: 0.09
       pose:
         pelvis: {x: 0, y: -0.09, z: 0}
         body: {x: 21, y: 0, z: 0}
@@ -929,44 +929,44 @@ MonoBehaviour:
         head: {x: -10, y: 0, z: 0}
         leftFoot: {x: -0.012, y: 0, z: -0.02}
         rightFoot: {x: 0.012, y: 0, z: 0.02}
-        leftHand: {x: -0.24, y: 0.7, z: 0.21}
-        rightHand: {x: 0.24, y: 0.7, z: 0.21}
+        leftHand: {x: -0.23, y: 0.78, z: 0.43}
+        rightHand: {x: 0.23, y: 0.78, z: 0.43}
         leftToe: 0
         rightToe: 0
-    - time: 0.3
+    - time: 0.27
       pose:
-        pelvis: {x: 0, y: -0.31, z: 0}
+        pelvis: {x: 0, y: -0.24, z: 0}
         body: {x: 62, y: 0, z: 0}
         chest: {x: 8, y: 0, z: 0}
         head: {x: -22, y: 0, z: 0}
         leftFoot: {x: 0.03, y: 0, z: -0.12}
         rightFoot: {x: -0.02, y: 0.04, z: -0.07}
-        leftHand: {x: -0.22, y: 0.17, z: 0.39}
-        rightHand: {x: 0.22, y: 0.17, z: 0.39}
+        leftHand: {x: -0.22, y: 0.18, z: 0.66}
+        rightHand: {x: 0.22, y: 0.18, z: 0.66}
         leftToe: 0
         rightToe: 0
-    - time: 0.48
+    - time: 0.38
       pose:
-        pelvis: {x: 0, y: -0.31, z: 0}
+        pelvis: {x: 0, y: -0.24, z: 0}
         body: {x: 62, y: 0, z: 0}
         chest: {x: 8, y: 0, z: 0}
         head: {x: -22, y: 0, z: 0}
         leftFoot: {x: 0.03, y: 0, z: -0.12}
         rightFoot: {x: -0.02, y: 0.04, z: -0.07}
-        leftHand: {x: -0.22, y: 0.17, z: 0.39}
-        rightHand: {x: 0.22, y: 0.17, z: 0.39}
+        leftHand: {x: -0.22, y: 0.18, z: 0.66}
+        rightHand: {x: 0.22, y: 0.18, z: 0.66}
         leftToe: 0
         rightToe: 0
-    - time: 0.7
+    - time: 0.69
       pose:
-        pelvis: {x: 0, y: -0.22, z: 0.02}
+        pelvis: {x: 0, y: -0.16, z: 0.02}
         body: {x: 28, y: 0, z: 0}
         chest: {x: 0, y: 0, z: 0}
         head: {x: -3, y: 0, z: 0}
         leftFoot: {x: -0.012, y: 0, z: -0.055}
         rightFoot: {x: 0.012, y: 0, z: 0.06}
-        leftHand: {x: -0.23, y: 0.3, z: 0.3}
-        rightHand: {x: 0.23, y: 0.32, z: 0.29}
+        leftHand: {x: -0.23, y: 0.37, z: 0.45}
+        rightHand: {x: 0.23, y: 0.39, z: 0.44}
         leftToe: 0
         rightToe: 0
     - time: 1
@@ -982,7 +982,7 @@ MonoBehaviour:
         leftToe: 0
         rightToe: 0
   - name: Fall_Left
-    duration: 0.8
+    duration: 1.1
     loop: 0
     keys:
     - time: 0
@@ -997,7 +997,7 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.1
+    - time: 0.09
       pose:
         pelvis: {x: 0, y: -0.035, z: 0}
         body: {x: 4, y: 0, z: 22}
@@ -1009,40 +1009,40 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.3
+    - time: 0.27
       pose:
-        pelvis: {x: -0.015, y: -0.26, z: 0}
+        pelvis: {x: -0.015, y: -0.19, z: 0}
         body: {x: 12, y: 0, z: 62}
         chest: {x: 8, y: 0, z: 0}
         head: {x: -5, y: 0, z: -18}
         leftFoot: {x: 0.02, y: 0.015, z: 0.06}
         rightFoot: {x: -0.02, y: 0.07, z: 0.025}
-        leftHand: {x: -0.34, y: 0.17, z: 0.17}
-        rightHand: {x: -0.03, y: 0.43, z: 0.28}
+        leftHand: {x: -0.5, y: 0.2, z: 0.17}
+        rightHand: {x: -0.17, y: 0.45, z: 0.31}
         leftToe: 0
         rightToe: 0
-    - time: 0.48
+    - time: 0.38
       pose:
-        pelvis: {x: -0.015, y: -0.26, z: 0}
+        pelvis: {x: -0.015, y: -0.19, z: 0}
         body: {x: 12, y: 0, z: 62}
         chest: {x: 8, y: 0, z: 0}
         head: {x: -5, y: 0, z: -18}
         leftFoot: {x: 0.02, y: 0.015, z: 0.06}
         rightFoot: {x: -0.02, y: 0.07, z: 0.025}
-        leftHand: {x: -0.34, y: 0.17, z: 0.17}
-        rightHand: {x: -0.03, y: 0.43, z: 0.28}
+        leftHand: {x: -0.5, y: 0.2, z: 0.17}
+        rightHand: {x: -0.17, y: 0.45, z: 0.31}
         leftToe: 0
         rightToe: 0
-    - time: 0.7
+    - time: 0.69
       pose:
-        pelvis: {x: 0, y: -0.22, z: 0.02}
+        pelvis: {x: 0, y: -0.16, z: 0.02}
         body: {x: 28, y: 0, z: 0}
         chest: {x: 0, y: 0, z: 0}
         head: {x: -3, y: 0, z: 0}
         leftFoot: {x: -0.012, y: 0, z: -0.055}
         rightFoot: {x: 0.012, y: 0, z: 0.06}
-        leftHand: {x: -0.23, y: 0.3, z: 0.3}
-        rightHand: {x: 0.23, y: 0.32, z: 0.29}
+        leftHand: {x: -0.23, y: 0.37, z: 0.45}
+        rightHand: {x: 0.23, y: 0.39, z: 0.44}
         leftToe: 0
         rightToe: 0
     - time: 1
@@ -1058,7 +1058,7 @@ MonoBehaviour:
         leftToe: 0
         rightToe: 0
   - name: Fall_Right
-    duration: 0.8
+    duration: 1.1
     loop: 0
     keys:
     - time: 0
@@ -1073,7 +1073,7 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.1
+    - time: 0.09
       pose:
         pelvis: {x: -0, y: -0.035, z: 0}
         body: {x: 4, y: -0, z: -22}
@@ -1085,40 +1085,40 @@ MonoBehaviour:
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0
         rightToe: 0
-    - time: 0.3
+    - time: 0.27
       pose:
-        pelvis: {x: 0.015, y: -0.26, z: 0}
+        pelvis: {x: 0.015, y: -0.19, z: 0}
         body: {x: 12, y: -0, z: -62}
         chest: {x: 8, y: -0, z: -0}
         head: {x: -5, y: -0, z: 18}
         leftFoot: {x: 0.02, y: 0.07, z: 0.025}
         rightFoot: {x: -0.02, y: 0.015, z: 0.06}
-        leftHand: {x: 0.03, y: 0.43, z: 0.28}
-        rightHand: {x: 0.34, y: 0.17, z: 0.17}
+        leftHand: {x: 0.17, y: 0.45, z: 0.31}
+        rightHand: {x: 0.5, y: 0.2, z: 0.17}
         leftToe: 0
         rightToe: 0
-    - time: 0.48
+    - time: 0.38
       pose:
-        pelvis: {x: 0.015, y: -0.26, z: 0}
+        pelvis: {x: 0.015, y: -0.19, z: 0}
         body: {x: 12, y: -0, z: -62}
         chest: {x: 8, y: -0, z: -0}
         head: {x: -5, y: -0, z: 18}
         leftFoot: {x: 0.02, y: 0.07, z: 0.025}
         rightFoot: {x: -0.02, y: 0.015, z: 0.06}
-        leftHand: {x: 0.03, y: 0.43, z: 0.28}
-        rightHand: {x: 0.34, y: 0.17, z: 0.17}
+        leftHand: {x: 0.17, y: 0.45, z: 0.31}
+        rightHand: {x: 0.5, y: 0.2, z: 0.17}
         leftToe: 0
         rightToe: 0
-    - time: 0.7
+    - time: 0.69
       pose:
-        pelvis: {x: -0, y: -0.22, z: 0.02}
+        pelvis: {x: -0, y: -0.16, z: 0.02}
         body: {x: 28, y: -0, z: -0}
         chest: {x: 0, y: -0, z: -0}
         head: {x: -3, y: -0, z: -0}
         leftFoot: {x: -0.012, y: 0, z: 0.06}
         rightFoot: {x: 0.012, y: 0, z: -0.055}
-        leftHand: {x: -0.23, y: 0.32, z: 0.29}
-        rightHand: {x: 0.23, y: 0.3, z: 0.3}
+        leftHand: {x: -0.23, y: 0.39, z: 0.44}
+        rightHand: {x: 0.23, y: 0.37, z: 0.45}
         leftToe: 0
         rightToe: 0
     - time: 1
@@ -1129,6 +1129,182 @@ MonoBehaviour:
         head: {x: -3, y: -0, z: -0}
         leftFoot: {x: -0.012, y: 0, z: 0.02}
         rightFoot: {x: 0.012, y: 0, z: -0.02}
+        leftHand: {x: -0.24, y: 0.7, z: 0.21}
+        rightHand: {x: 0.24, y: 0.7, z: 0.21}
+        leftToe: 0
+        rightToe: 0
+  - name: Slide_Tackle
+    duration: 0.68
+    loop: 0
+    keys:
+    - time: 0
+      pose:
+        pelvis: {x: 0, y: -0.035, z: 0}
+        body: {x: 4, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.24, y: 0.7, z: 0.21}
+        rightHand: {x: 0.24, y: 0.7, z: 0.21}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.12
+      pose:
+        pelvis: {x: 0, y: -0.1, z: 0}
+        body: {x: -16, y: 0, z: -6}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.23, y: 0.53, z: -0.04}
+        rightHand: {x: 0.24, y: 0.77, z: 0.13}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.29
+      pose:
+        pelvis: {x: 0.015, y: -0.23, z: -0.01}
+        body: {x: -62, y: 0, z: -8}
+        chest: {x: 8, y: 0, z: 0}
+        head: {x: 18, y: 0, z: 0}
+        leftFoot: {x: 0.01, y: 0.04, z: 0.12}
+        rightFoot: {x: -0.02, y: 0.015, z: -0.06}
+        leftHand: {x: -0.25, y: 0.16, z: -0.29}
+        rightHand: {x: 0.24, y: 0.46, z: -0.03}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.43
+      pose:
+        pelvis: {x: 0.015, y: -0.23, z: -0.01}
+        body: {x: -62, y: 0, z: -8}
+        chest: {x: 8, y: 0, z: 0}
+        head: {x: 18, y: 0, z: 0}
+        leftFoot: {x: 0.01, y: 0.04, z: 0.12}
+        rightFoot: {x: -0.02, y: 0.015, z: -0.06}
+        leftHand: {x: -0.25, y: 0.16, z: -0.29}
+        rightHand: {x: 0.24, y: 0.46, z: -0.03}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.55
+      pose:
+        pelvis: {x: 0, y: -0.2, z: 0}
+        body: {x: -35, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: 0.06}
+        rightFoot: {x: 0.012, y: 0, z: -0.05}
+        leftHand: {x: -0.25, y: 0.35, z: -0.13}
+        rightHand: {x: 0.25, y: 0.53, z: 0.1}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.72
+      pose:
+        pelvis: {x: 0, y: -0.15, z: 0}
+        body: {x: 12, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: 0.06}
+        rightFoot: {x: 0.012, y: 0, z: -0.05}
+        leftHand: {x: -0.25, y: 0.45, z: 0.23}
+        rightHand: {x: 0.25, y: 0.45, z: 0.23}
+        leftToe: 0
+        rightToe: 0
+    - time: 1
+      pose:
+        pelvis: {x: 0, y: -0.035, z: 0}
+        body: {x: 4, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.24, y: 0.7, z: 0.21}
+        rightHand: {x: 0.24, y: 0.7, z: 0.21}
+        leftToe: 0
+        rightToe: 0
+  - name: Jump
+    duration: 1
+    loop: 0
+    keys:
+    - time: 0
+      pose:
+        pelvis: {x: 0, y: -0.035, z: 0}
+        body: {x: 4, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.24, y: 0.7, z: 0.21}
+        rightHand: {x: 0.24, y: 0.7, z: 0.21}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.12
+      pose:
+        pelvis: {x: 0, y: -0.075, z: 0}
+        body: {x: 10, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.23, y: 0.64, z: 0.08}
+        rightHand: {x: 0.23, y: 0.64, z: 0.08}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.32
+      pose:
+        pelvis: {x: 0, y: -0.005, z: 0}
+        body: {x: 2, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.24, y: 0.9, z: 0.3}
+        rightHand: {x: 0.24, y: 0.9, z: 0.3}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.52
+      pose:
+        pelvis: {x: 0, y: -0.005, z: 0}
+        body: {x: 6, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: 0.01, y: 0.065, z: -0.025}
+        rightFoot: {x: -0.01, y: 0.055, z: -0.015}
+        leftHand: {x: -0.24, y: 0.84, z: 0.24}
+        rightHand: {x: 0.24, y: 0.84, z: 0.24}
+        leftToe: -8
+        rightToe: -8
+    - time: 0.72
+      pose:
+        pelvis: {x: 0, y: -0.035, z: 0}
+        body: {x: 4, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.24, y: 0.7, z: 0.21}
+        rightHand: {x: 0.24, y: 0.7, z: 0.21}
+        leftToe: 0
+        rightToe: 0
+    - time: 0.82
+      pose:
+        pelvis: {x: 0, y: -0.08, z: 0}
+        body: {x: 10, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
+        leftHand: {x: -0.26, y: 0.73, z: 0.27}
+        rightHand: {x: 0.26, y: 0.73, z: 0.27}
+        leftToe: 0
+        rightToe: 0
+    - time: 1
+      pose:
+        pelvis: {x: 0, y: -0.035, z: 0}
+        body: {x: 4, y: 0, z: 0}
+        chest: {x: 0, y: 0, z: 0}
+        head: {x: -3, y: 0, z: 0}
+        leftFoot: {x: -0.012, y: 0, z: -0.02}
+        rightFoot: {x: 0.012, y: 0, z: 0.02}
         leftHand: {x: -0.24, y: 0.7, z: 0.21}
         rightHand: {x: 0.24, y: 0.7, z: 0.21}
         leftToe: 0

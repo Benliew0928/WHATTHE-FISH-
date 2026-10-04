@@ -1,4 +1,4 @@
-param([ValidateSet(20,30,60,120)][int]$Fps=30,[switch]$NoCapture,[string]$PlayerPath)
+param([ValidateSet(20,30,60,120)][int]$Fps=60,[switch]$NoCapture,[switch]$CompareSourceClips,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if(!$PlayerPath){$PlayerPath=Join-Path $taskRoot 'Builds/WindowsFinal/WhatTheFish.exe'}
@@ -6,6 +6,7 @@ $taskOutput=Join-Path $taskRoot ('Builds/FootballMotionQA/Run-'+(Get-Date -Forma
 New-Item -ItemType Directory -Path $taskOutput | Out-Null
 $taskArgs=@('-batchmode','-screen-width','960','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2','-probe','-offline','-footballMotionReview',('"'+$taskOutput+'"'),'-motionRate',$Fps,'-report',('"'+(Join-Path $taskOutput 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $taskOutput 'player.log')+'"'),'-exitAfter','180')
 if($NoCapture){$taskArgs+=@('-nographics','-motionNoCapture')}
+if($CompareSourceClips){$taskArgs+='-motionCompare'}
 $taskProcess=Start-Process -FilePath $PlayerPath -ArgumentList $taskArgs -WindowStyle Hidden -PassThru
 try {
  $taskDeadline=(Get-Date).AddSeconds(240);$taskResults=Join-Path $taskOutput 'results.txt'

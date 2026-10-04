@@ -1,4 +1,14 @@
-# APK size audit — fishing presentation, 3 October 2026
+# APK size audit — football animation rebuild, 4 October 2026
+
+## Football animation rebuild — 4 October 2026
+
+Actual signed AndroidSubmission APK: **86,764,912 → 86,774,768 bytes (+9,856)**. Hard-limit headroom: **13,225,232 bytes**; development-target overrun: **11,774,768 bytes**. [Build provenance, source scope and SHA-256](BUILD-SIZE.md#football-animation-rebuild--4-october-2026).
+
+The existing character mesh, skeleton, textures and imported clips are unchanged. One distance-driven gait, coordinated FK arms, contact IK and 28 editable control-space records replace the previous mixed animation clocks. The resource grows by **1,560 serialized bytes / approximately 280 independently compressed bytes**, to **13,108 / 1,854 bytes**. These estimates exclude compiled code and are not exact allocations within the APK's shared ZIP chunks.
+
+The largest changed ZIP entries are IL2CPP **+9,778**, global metadata **+1,181**, and Burst **−1,530 bytes**. Fresh per-asset estimates retain the same leading art contributors: timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB**, and stadium **1.556 MB**. No mesh, texture, animation pack, audio or middleware was added. Shared locomotion clips remain needed by other sports; removing them would not be a safe size optimization.
+
+Serialized assets total **151,510,277 bytes**, distinct from the actual compressed APK size. Current populated records are in `Builds/SizeAudit/latest/`, with a task copy in `Builds/FootballMotionPolishQA/FinalSizeAudit/`. The task folder retains `before.json`, `release.json`, `apk-entry-deltas.csv`, `apk-signature.txt` and source-hash verification. The 75 MB development target is still unmet; preserve the remaining reserve. See [verification](VERIFICATION.md#football-animation-rebuild--4-october-2026) for test scope and physical-device limits.
 
 ## Transparent lagoon and three fish sizes — 3 October 2026
 

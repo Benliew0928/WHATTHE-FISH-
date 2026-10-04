@@ -1,5 +1,33 @@
 # Verification records
 
+## Football animation rebuild — 4 October 2026
+
+Rebuilt football presentation on the existing Rainbow Sprinter model: one distance-driven gait, coordinated shoulders/elbows/wrists, world-space support feet, gradual starts/stops/turns, swing-phase dribble contact, complete-pose transitions, jump/landing, directional falls and interrupted recovery. The 28 saved records are compact posture/action timelines combined with procedural motion, not 28 imported mocap clips. [Implementation and reproduction](FOOTBALL-ANIMATION.md).
+
+The final checked source passes **2,116 assertions** across the following suites. Repeated rates and scenarios are included in that total; it is not a count of distinct animations or a quality score.
+
+| Suite | Passing assertions |
+| --- | ---: |
+| Motion at 20 / 30 / 60 / 120 timeline FPS, both LODs | 292 / 292 / 296 / 292 (1,172) |
+| Rendered football match, physics and host/guest replication | 532 |
+| Shared jump gameplay and loopback | 140 |
+| Shared tackle gameplay and loopback | 210 |
+| Final shared turning gameplay and loopback | 62 |
+
+Across the four motion runs, maximum high-weight dribble contact error is **2.13 cm**, maximum sampled rendered floor penetration is **1.35 cm**, and maximum live local joint speed is **2,637.72 degrees/second**, below the unchanged 2,700-degree regression ceiling. Walking records **17 / 28 / 59 / 123** consecutive support samples with zero horizontal displacement at the trace's recorded precision. Low-rate sampling can miss the short sprint stance; zero slip without support samples is not evidence of a good plant. Bone-length error remains below 0.1 mm. Ten athletes allocate **zero steady-frame pose bytes**; measured Windows pose work peaks at **0.711–0.809 ms**, excluding Animator, physics and rendering. This is not phone FPS.
+
+Actual Unity renders were inspected for locomotion, dribbling, cuts, stops, jumps, slides, directional falls and recovery, plus the two LOD pose sheets. The final video is **800 × 688, 60 FPS, 86.4 seconds**, with normal and half-speed playback and original shared clips for comparison. The exporter now retains chronological repeated stages and uses the recorded capture rate. Current footage, sheets and trace: `Builds/FootballMotionQA/Run-20261004-224406-424/`. Other final rates are indexed by `Builds/FootballMotionPolishQA/final-runs.json`; numeric summaries are in `motion-results-summary.json` and the run-local `continuity.json` files. The playable Windows build remains under `Builds/WindowsFinal/`.
+
+Gameplay evidence: football `Builds/FootballMatchQA/Run-20261004-224456/`, jump `Builds/JumpQA/Run-20261004-224456/`, tackle `Builds/TackleQA/Run-20261004-224611/`, and final turning `Builds/TurnQA/Run-20261004-225849/`. The first turning run failed two Golf LOD1 cases after accumulated route travel; a previous-player control and isolated rerun passed those cases. The rerun exposed a separate obsolete base-clip assertion during a football hand-off. The development-only turn probe now samples the final displayed pose after animation evaluation, checks the football rig/weight/finite feet or an active/incoming shared clip, and repeats the same starting route for each LOD. Travel, speed, state-change, first-person and replication assertions remain. The corrected final suite passes; initial reports and comparison evidence are retained.
+
+Both Python review helpers passed with default root/run selection from a copied checkout path containing spaces and an unrelated working directory. No character mesh, rig, texture, material, imported clip or package changed. The new `FootballGait.cs` file has Unity metadata; the pose resource is retained as active source. The 32 recorded football source/resource inputs match the tested Windows motion and Android build; the later turn-probe edit is wholly excluded from nondevelopment players. Its hash is recorded separately. Portable path and task-readiness checks passed without staging or committing files.
+
+AndroidSubmission, the strict size gate and APK v2 signing passed: **86,764,912 → 86,774,768 bytes (+9,856)**, leaving **13,225,232 bytes** hard-limit headroom. The **75 MB development target remains unmet**. The preserved APK is `Builds/FootballMotionPolishQA/Android/WhatTheFish-release.apk`; [size audit and exact build scope](BUILD-SIZE.md#football-animation-rebuild--4-october-2026) record its hash and contributors.
+
+This is a stylized short-legged character at unchanged gameplay speeds. Numerical gates and frame inspection do not certify human biomechanics, every self-intersection or a subjective "top-class" rating. No Android device was connected, so physical-phone appearance, touch, sustained FPS, thermals and WAN playback remain unverified.
+
+Reviewed superseded captures, failed iterations/logs and the completed portability fixture were archived with hashes and recovery paths in `Legacy/20261004-225208-764-football-motion-polish-iterations/`. Current review evidence, player/APK, active source, authoring masters and Unity caches remain. No Git staging, commit, push or history rewrite was performed.
+
 ## Transparent lagoon and three fish sizes — 3 October 2026
 
 Implemented transparent moving lagoon water, a sandy basin with animated caustics, and one gold-and-teal fish in **0.4 / 0.9 / 1.8 m** variants. All sizes share the same meshes/material; the two mobile LODs contain **3,192 / 1,248 triangles**, with the **12,792-triangle editable master** retained outside Unity. Casting, catching, swimming AI and scoring are deferred. [Design and rebuild instructions](FISHING-PRESENTATION.md).

@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace WhatTheFish {
  // The motor and ball remain authoritative. This component owns only the
- // football presentation, restores its previous pose before Animator evaluation,
- // then composes saved control-space takes with the existing run/jump/slide.
+ // football presentation. One coordinated gait drives all four limbs. Animator
+ // is restored before evaluation, keeping the other sports' clips untouched.
  [DefaultExecutionOrder(50)]
  public sealed class FootballMotion:MonoBehaviour {
   public FootballMotionState State {get;private set;}
@@ -15,22 +15,28 @@ namespace WhatTheFish {
   public float BallContactError {get;private set;}
   public float ContactWeight {get;private set;}
   public string Performance {get;private set;}="Ready";
-  public float GaitPhase=>phase;
+  public float GaitPhase=>gait.Phase;
+  public bool LeftPlanted=>gait.Planted[0]&&contactBlend>.99f;
+  public bool RightPlanted=>gait.Planted[1]&&contactBlend>.99f;
   public Vector3 LeftFoot=>legs[0].end.position;
   public Vector3 RightFoot=>legs[1].end.position;
   public static double Clock=>BasketballMotion.Clock;
   public FootballMotionLibrary library;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-  public string ReviewTake;public float ReviewTime;
+  public string ReviewTake;public float ReviewTime;public bool ReviewOriginal;
   public double LastPoseMilliseconds {get;private set;}
   public long LastPoseAllocatedBytes {get;private set;}
 #endif
   Athlete athlete;Transform hips,spine,chest,head;Limb[] legs,arms;
-  Transform[] bones;Vector3[] beforePosition,referencePosition;Quaternion[] beforeRotation,referenceRotation;
-  Vector3[] feet;Quaternion[] footRotation;Vector3 hipReference;readonly Vector3[] stopPins=new Vector3[2];
-  bool applied,heldBefore,received;uint receivedSequence;float weight,phase,previousSpeed,previousYaw,brake,startAccent,turn,bank,receiveAt=-10,stopAt=-10,cutAt=-10,cutSign=1;
-  double resultAt;FootballMatchPhase lastMatchPhase;Vector3 previousPosition;bool stopLeft;FootballPose pose;
-  sealed class Limb {public Transform upper,lower,end,toe;public float upperLength,lowerLength;public Quaternion wristRest;}
+  Transform[] bones;Vector3[] beforePosition,referencePosition,lastPosition,entryPosition;Quaternion[] beforeRotation,referenceRotation,lastRotation,entryRotation;
+  Vector3[] feet;Quaternion[] footRotation;Vector3 hipReference;
+  readonly Vector3[] footTarget=new Vector3[2],footVelocity=new Vector3[2];bool feetInitialized;
+  readonly Vector3[] displayedFeet=new Vector3[2],settleFrom=new Vector3[2];readonly float[] touchWeights=new float[2];float settleAt=-10,wallFreedom=1,groundOffset,jumpTime;int receiveFoot,settleLead;
+  bool applied,heldBefore,received,haveLast;uint receivedSequence;float weight,phase,previousSpeed,previousYaw,brake,startAccent,turn,bank,receiveAt=-10;
+  readonly FootballGait gait=new();float transitionAge=1,contactBlend,actionAge=10,actionDuration,armActionWeight;int mode,lastMode=-1,fallVariant;FootballAction lastAction,previousAction;
+  Vector3 smoothBody,smoothPelvis,bodyVelocity,pelvisVelocity;Quaternion chestReference;float smoothedYaw,yawVelocity;
+  double resultAt;FootballMatchPhase lastMatchPhase;Vector3 previousPosition;FootballPose pose;
+  sealed class Limb {public Transform upper,lower,end,toe;public float upperLength,lowerLength;public Quaternion wristRest,palmRest,upperBasis,lowerBasis;public Vector3 toeOffset;}
   public static int FallVariant(Vector3 push,Quaternion facing){var v=Quaternion.Inverse(facing)*push;return Mathf.Abs(v.x)>Mathf.Abs(v.z)?(v.x<0?2:3):(v.z<0?0:1);}
   public void Bind(Athlete owner){
    if(RigReady)return;athlete=owner;if(!owner.visual)return;
@@ -39,25 +45,261 @@ namespace WhatTheFish {
    Limb Make(string side,bool arm){var l=new Limb{upper=Bone(side+(arm?"Arm":"UpLeg")),lower=Bone(side+(arm?"ForeArm":"Leg")),end=Bone(side+(arm?"Hand":"Foot")),toe=Bone(side+(arm?"HandMiddle4":"Toe_End"))};if(l.upper&&l.lower&&l.end){l.upperLength=Vector3.Distance(l.upper.position,l.lower.position);l.lowerLength=Vector3.Distance(l.lower.position,l.end.position);}return l;}
    hips=Bone("Hips");spine=Bone("Spine");chest=Bone("Spine2");head=Bone("Head");legs=new[]{Make("Left",false),Make("Right",false)};arms=new[]{Make("Left",true),Make("Right",true)};
    if(!hips||!spine||!chest||!head)return;foreach(var limb in legs)if(!limb.end)return;foreach(var limb in arms)if(!limb.end)return;
-   foreach(var limb in arms)limb.wristRest=Quaternion.Inverse(limb.lower.rotation)*limb.end.rotation;
+   foreach(var limb in arms){limb.wristRest=Quaternion.Inverse(limb.lower.rotation)*limb.end.rotation;var finger=limb.toe?limb.toe.position-limb.end.position:Vector3.down;limb.palmRest=Quaternion.Inverse(transform.rotation)*Quaternion.FromToRotation(finger,transform.forward)*limb.end.rotation;}
+   foreach(var group in new[]{legs,arms})foreach(var limb in group){var u=limb.lower.position-limb.upper.position;var l=limb.end.position-limb.lower.position;var normal=Vector3.Cross(u,l).normalized;if(normal.sqrMagnitude<.01f)normal=transform.right;limb.upperBasis=Quaternion.Inverse(Quaternion.LookRotation(u,normal))*limb.upper.rotation;limb.lowerBasis=Quaternion.Inverse(Quaternion.LookRotation(l,normal))*limb.lower.rotation;}
+   foreach(var group in new[]{legs,arms})foreach(var limb in group)limb.toeOffset=limb.toe?Quaternion.Inverse(limb.end.rotation)*(limb.toe.position-limb.end.position):Vector3.zero;
    var placement=owner.GetComponent<TurnFootPlacement>();feet=new Vector3[2];footRotation=new Quaternion[2];
    for(int i=0;i<2;i++){var stored=placement?(i==0?placement.left:placement.right):null;feet[i]=stored!=null?stored.initialPosition:transform.InverseTransformPoint(legs[i].end.position);footRotation[i]=stored!=null?stored.initialRotation:Quaternion.Inverse(transform.rotation)*legs[i].end.rotation;}
    hipReference=transform.InverseTransformPoint(hips.position);
    beforePosition=new Vector3[bones.Length];referencePosition=new Vector3[bones.Length];beforeRotation=new Quaternion[bones.Length];referenceRotation=new Quaternion[bones.Length];
+   lastPosition=new Vector3[bones.Length];entryPosition=new Vector3[bones.Length];lastRotation=new Quaternion[bones.Length];entryRotation=new Quaternion[bones.Length];
    for(int i=0;i<bones.Length;i++){referencePosition[i]=bones[i].localPosition;referenceRotation[i]=bones[i].localRotation;}
    library=Resources.Load<FootballMotionLibrary>("FootballMotionLibrary");
    if(!library){Debug.LogError("Missing FootballMotionLibrary; run FootballMotionBuilder.Prepare before building.");return;}
-   RigReady=true;previousPosition=transform.position;previousYaw=transform.eulerAngles.y;
+   RigReady=true;previousPosition=transform.position;smoothedYaw=previousYaw=transform.eulerAngles.y;chestReference=Quaternion.Inverse(transform.rotation)*chest.rotation;
   }
-  public void ResetPose(){Restore();State=new(){sequence=State.sequence+1};weight=phase=previousSpeed=brake=startAccent=turn=bank=0;receiveAt=stopAt=cutAt=-10;heldBefore=false;previousPosition=transform.position;previousYaw=transform.eulerAngles.y;lastMatchPhase=FootballMatchPhase.Idle;}
+  void ApplyFrame(){
+   if(!RigReady)return;
+   float dt=Mathf.Clamp(Time.deltaTime,.0001f,.1f);
+   if(!Active){weight=0;haveLast=false;gait.Reset();return;}
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(ReviewOriginal){weight=0;haveLast=false;return;}
+#endif
+   var displacement=Vector3.ProjectOnPlane(transform.position-previousPosition,Vector3.up);previousPosition=transform.position;
+   if(displacement.magnitude>2){gait.Reset();haveLast=false;displacement=Vector3.zero;}
+   bool jump=athlete.PresentingJump;
+   jumpTime=athlete.JumpPose;
+   // Controller skin clearance belongs to collision, not the rendered sole.
+   // Retain this offset in flight so takeoff/landing have the same origin.
+   if(!athlete.Airborne&&Physics.Raycast(transform.position+Vector3.up*.2f,Vector3.down,out var ground,.55f,1<<8,QueryTriggerInteraction.Ignore))groundOffset=Mathf.Clamp(transform.position.y-ground.point.y,0,.12f);
+   float speed=athlete.Action==FootballAction.None?displacement.magnitude/dt:0;
+   float accel=(speed-previousSpeed)/dt;
+   if(previousSpeed>.10f&&speed<=.10f&&haveLast){settleAt=Time.time;settleLead=displayedFeet[0].y<displayedFeet[1].y?0:1;for(int i=0;i<2;i++)settleFrom[i]=displayedFeet[i];}
+   if(speed>.15f)settleAt=-10;previousSpeed=speed;
+   brake=Smooth(brake,Mathf.Clamp01(-accel/45),14,dt);startAccent=Smooth(startAccent,Mathf.Clamp01(accel/45),14,dt);
+   float yaw=transform.eulerAngles.y,yawRate=Mathf.DeltaAngle(previousYaw,yaw)/dt;previousYaw=yaw;
+   smoothedYaw=Mathf.SmoothDampAngle(smoothedYaw,yaw,ref yawVelocity,.065f,1440,dt);
+   turn=Smooth(turn,Mathf.Clamp(yawRate/500,-1,1),12,dt);bank=Smooth(bank,turn*Mathf.Clamp01(speed/4),10,dt);
+   bool held=athlete.ControlsFootball;if(held&&!heldBefore){receiveAt=Time.time;receiveFoot=gait.Swing(0)>gait.Swing(1)?0:1;}heldBefore=held;
+   gait.Advance(displacement,transform.rotation,dt,jump||athlete.Action!=FootballAction.None);phase=gait.Phase;
+   var action=athlete.Action;
+   if(action!=previousAction&&action!=FootballAction.None){actionAge=athlete.ActionProgress*FootballTackle.Duration(action);actionDuration=action==FootballAction.Hit?1.10f:.68f;fallVariant=athlete.HitVariant;}
+   else actionAge+=dt;
+   previousAction=action;
+   if(action!=FootballAction.None)lastAction=action;
+   bool reacting=actionAge<actionDuration;
+   if(jump&&action==FootballAction.None){reacting=false;actionAge=actionDuration;}
+   bool hit=reacting&&lastAction==FootballAction.Hit;
+   bool slide=reacting&&lastAction==FootballAction.Slide;
+   if(!reacting)lastAction=FootballAction.None;
+   float elapsed=(float)(Clock-State.started);
+   float gestureDuration=State.gesture==FootballGesture.Kick?.35f:State.gesture==FootballGesture.Cancel?.24f:.28f;
+   bool gesture=State.gesture!=FootballGesture.None&&elapsed>=0&&elapsed<gestureDuration&&!FootballMatch.BlocksActions&&!reacting;
+   var match=FootballMatch.Instance;var matchPhase=match&&match.Context?match.Snapshot.phase:FootballMatchPhase.Idle;
+   if(matchPhase!=lastMatchPhase){lastMatchPhase=matchPhase;resultAt=Clock;}
+   pose=Take(held?(speed>3.3f?"Dribble_Fast":"Dribble_Control"):speed>.15f?"Walk":"Ready",speed>.15f?phase:(float)(Clock/2.8));
+   // A coordinated pelvis/chest counter-rotation. The support side takes the
+   // weight; vertical flight is deliberately small on this oversized-head rig.
+   float wave=Mathf.Sin(phase*Mathf.PI*2),doubleWave=Mathf.Cos(phase*Mathf.PI*4);
+   pose.pelvis+=new Vector3(-wave*.009f*gait.Amount,-.020f*gait.Amount+.010f*gait.Run*doubleWave,.018f*gait.Run);
+   if(!held)pose.pelvis.y-=.025f*gait.Run;
+   pose.body+=new Vector3(startAccent*5-brake*8+6*gait.Run,Mathf.DeltaAngle(yaw,smoothedYaw)+wave*3*gait.Amount,-bank*6-wave*2*gait.Amount);
+   pose.chest+=new Vector3(-2*gait.Run,-wave*6*gait.Amount+turn*5,bank*2);
+   pose.head+=new Vector3(-2*gait.Run,turn*6-wave*1.5f*gait.Amount,bank*2);
+   pose.pelvis.y-=brake*.025f;
+   if(athlete.WhiffRemaining>0){pose.body.x+=5;pose.pelvis.y-=.012f;Performance="WhiffRecover";}
+   float receive=1-Ease((Time.time-receiveAt)/.24f);
+   if(receive>0){pose.chest.y-=5*receive;Performance="Receive";}
+   if(State.charging&&!reacting){
+    float charge=Ease((float)(Clock-State.chargeStarted));pose.body.x-=charge*4;pose.chest.y+=(State.left?-1:1)*charge*9;
+    if(speed<.3f){if(State.left){pose.leftFoot.y+=.025f*charge;pose.leftFoot.z-=.045f*charge;}else{pose.rightFoot.y+=.025f*charge;pose.rightFoot.z-=.045f*charge;}}Performance="Charge";
+   }
+   armActionWeight=0;mode=jump?1:0;
+   if(jump){pose=Take("Jump",athlete.JumpPose);armActionWeight=1;}
+   if(gesture){
+    string name=State.gesture==FootballGesture.Kick?(State.left?"Kick_L":"Kick_R"):State.gesture==FootballGesture.Cancel?(State.left?"FakeCancel_L":"FakeCancel_R"):"Bump";
+    var p=Take(name,elapsed/gestureDuration);if(name=="Bump"&&State.left)p=p.Mirror();
+    armActionWeight=1-Ease((elapsed-(gestureDuration-.12f))/.12f);
+    pose=FootballPose.Lerp(pose,p,armActionWeight);mode=10+(int)State.gesture+(State.left?10:0);
+   }
+   var locomotionPose=pose;
+   if(hit){pose=Take(fallVariant==0?"Fall_Back":fallVariant==1?"Fall_Forward":fallVariant==2?"Fall_Left":"Fall_Right",actionAge/actionDuration);mode=30+fallVariant;armActionWeight=1;}
+   if(slide){pose=Take("Slide_Tackle",actionAge/actionDuration);mode=35;armActionWeight=1;}
+   float recoveryMove=reacting&&action==FootballAction.None?FootballGait.Ease((actionAge-FootballTackle.Duration(lastAction))/.24f)*gait.Amount:0;
+   if(recoveryMove>0){pose=FootballPose.Lerp(pose,locomotionPose,recoveryMove);armActionWeight*=1-recoveryMove;}
+   var headReach=transform.TransformPoint(hipReference+pose.pelvis)+transform.rotation*Quaternion.Euler(pose.body)*Vector3.up*.60f;
+   bool obstructed=reacting&&Physics.Linecast(transform.position+Vector3.up*.45f,headReach,out var wall,1<<8,QueryTriggerInteraction.Ignore)&&Mathf.Abs(wall.normal.y)<.5f;
+   wallFreedom=Smooth(wallFreedom,obstructed?.45f:1,14,dt);if(reacting){pose.body*=wallFreedom;pose.pelvis.y*=wallFreedom;}
+   if(matchPhase==FootballMatchPhase.Finished){var team=match.TeamOf(athlete);bool won=match.Snapshot.result==FootballMatchResult.TeamA&&team==FootballTeam.A||match.Snapshot.result==FootballMatchResult.TeamB&&team==FootballTeam.B;pose=Take(won?"Result_Win":"Result_Disappointed",(float)(Clock-resultAt)/1.7f);mode=40;armActionWeight=1;}
+   bool review=false;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(!string.IsNullOrEmpty(ReviewTake)){pose=Take(ReviewTake,ReviewTime);mode=ReviewTake=="Jump"?1:50;jumpTime=ReviewTime;armActionWeight=1;review=true;}
+#endif
+   for(int i=0;i<bones.Length;i++){beforePosition[i]=bones[i].localPosition;beforeRotation[i]=bones[i].localRotation;}applied=true;
+   weight=1;
+   {
+    for(int i=0;i<bones.Length;i++){bones[i].localPosition=referencePosition[i];bones[i].localRotation=referenceRotation[i];}
+    hips.position=transform.TransformPoint(hipReference)-Vector3.up*groundOffset;
+    // Damping applies to locomotion posture only; it never smears a planted
+    // foot or adds a delay to the motor, ball release or tackle contacts.
+    smoothBody=Vector3.SmoothDamp(smoothBody,pose.body,ref bodyVelocity,.075f,1200,dt);
+    smoothPelvis=Vector3.SmoothDamp(smoothPelvis,pose.pelvis,ref pelvisVelocity,.075f,4,dt);
+    var body=mode==0?smoothBody:pose.body;var pelvis=mode==0?smoothPelvis:pose.pelvis;
+    hips.position+=transform.TransformVector(pelvis);
+    Rotate(hips,body);Rotate(spine,pose.chest*.4f);Rotate(chest,pose.chest*.6f);Rotate(head,pose.head-body*.22f);
+    MaximumReachError=BallContactError=ContactWeight=0;
+    for(int i=0;i<2;i++){
+     var offset=i==0?pose.leftFoot:pose.rightFoot;
+     gait.Target(i,transform,feet[i]+offset,footRotation[i],groundOffset,dt,out var target,out var rotation);
+     if(jump||reacting||review||mode==40) {target=Vector3.Lerp(transform.TransformPoint(feet[i]+offset)-Vector3.up*groundOffset,target,recoveryMove);rotation=Quaternion.Slerp(transform.rotation*footRotation[i],rotation,recoveryMove);}
+     rotation=Quaternion.AngleAxis(i==0?pose.leftToe:pose.rightToe,transform.right)*rotation;
+     float contact=0;touchWeights[i]=0;
+     if(held&&!reacting&&!State.charging&&!gesture&&speed>.2f){
+      // Touch only in the forward part of THIS foot's swing, never on its
+      // supporting step. Arms use precisely the same phase below.
+      float u=gait.Swing(i);contact=FootballGait.Ease((u-.32f)/.32f)*(1-FootballGait.Ease((u-.77f)/.23f));
+      var ball=FootballBall.Instance;
+      if(ball&&contact>0){var touchRotation=transform.rotation*footRotation[i];target=Vector3.Lerp(target,ContactAnkle(i,ball.FootPosition(athlete),touchRotation),contact);rotation=Quaternion.Slerp(rotation,touchRotation,contact);}
+     }
+     float receiving=(Time.time-receiveAt)/.34f,settling=(Time.time-settleAt)/.34f;
+     if(held&&!reacting&&!gesture&&!State.charging&&i==receiveFoot&&((receiving>=0&&receiving<1)||(settling>=0&&settling<1))){
+      float t=receiving<1?receiving:settling;contact=Mathf.Pow(Mathf.Sin(Mathf.PI*t),2);var touchRotation=transform.rotation*footRotation[i];var ball=FootballBall.Instance;
+      if(ball){target=Vector3.Lerp(target,ContactAnkle(i,ball.FootPosition(athlete),touchRotation),contact);rotation=Quaternion.Slerp(rotation,touchRotation,contact);}
+     }
+     if(gesture&&State.gesture==FootballGesture.Kick&&i==(State.left?0:1)){
+      float strike=(1-Ease(elapsed/.10f));var touchRotation=transform.rotation*footRotation[i];target=Vector3.Lerp(target,ContactAnkle(i,transform.TransformPoint(State.contact),touchRotation),strike);rotation=Quaternion.Slerp(rotation,touchRotation,strike);
+     }
+     if(!jump&&!reacting&&!review&&mode!=40){
+      var local=transform.InverseTransformPoint(target);
+      if(!feetInitialized){footTarget[i]=feet[i];footVelocity[i]=Vector3.zero;}
+      if(gait.Planted[i]){footTarget[i]=local;footVelocity[i]=-transform.InverseTransformVector(displacement/dt);}
+      else {
+       float landing=FootballGait.Ease((gait.Swing(i)-.70f)/.30f);
+       float damping=held?Mathf.Lerp(.008f,.045f,Mathf.Abs(turn)*(1-contact)):Mathf.Lerp(.038f,.008f,Mathf.Max(contact,landing));
+       // SmoothDamp's speed clamp is multiplied by smoothTime, not deltaTime.
+       // With an 8ms contact response it truncated legitimate 50ms frames,
+       // leaving the shoe behind the ball. Damping and IK bound the motion.
+       footTarget[i]=Vector3.SmoothDamp(footTarget[i],local,ref footVelocity[i],damping,Mathf.Infinity,dt);target=transform.TransformPoint(footTarget[i]);
+      }
+     }
+     if(!held&&!jump&&!reacting&&!review&&Time.time-settleAt<.34f){
+      float t=Mathf.Clamp01((Time.time-settleAt-(i==settleLead?.10f:0))/.24f);var neutral=transform.TransformPoint(feet[i]+offset)-Vector3.up*groundOffset;
+      float step=Mathf.Clamp01(Vector3.ProjectOnPlane(neutral-settleFrom[i],Vector3.up).magnitude/.04f);
+      target=Vector3.Lerp(settleFrom[i],neutral,FootballGait.Ease(t))+Vector3.up*(.028f*step*Mathf.Pow(Mathf.Sin(Mathf.PI*t),2));
+      footTarget[i]=transform.InverseTransformPoint(target);footVelocity[i]=Vector3.zero;
+     }
+     FloorFoot(i,ref target,rotation);
+     var knee=transform.rotation*Quaternion.Euler(0,body.y,0)*new Vector3(i==0?-.10f:.10f,Mathf.Clamp01(-pelvis.y/.20f)*.85f,1);
+     Solve(legs[i],target,knee,rotation);
+     touchWeights[i]=contact;
+    }
+    feetInitialized=true;
+    for(int i=0;i<2;i++)Arm(i,hit||slide,review,dt);
+   }
+   // Inertialize complete skeletons on entry/exit, including jump and slide.
+   // Offsets are measured from the last displayed pose, not the bind pose.
+   if(mode!=lastMode){
+    transitionAge=0;lastMode=mode;
+    for(int i=0;i<bones.Length;i++){entryPosition[i]=haveLast?lastPosition[i]-bones[i].localPosition:Vector3.zero;entryRotation[i]=haveLast?Quaternion.Inverse(bones[i].localRotation)*lastRotation[i]:Quaternion.identity;}
+   }
+   transitionAge+=dt;float remain=1-FootballGait.Ease(transitionAge/(jump?.16f:reacting?.14f:.16f));
+   for(int i=0;i<bones.Length;i++){
+    bones[i].localPosition+=entryPosition[i]*remain;
+    bones[i].localRotation*=Quaternion.Slerp(Quaternion.identity,entryRotation[i],remain);
+   }
+   // Final contact correction also covers inertialized entry poses, which can
+   // otherwise put a heel below the surface even when the target pose is safe.
+   for(int i=0;i<2;i++){
+    var target=legs[i].end.position;FloorFoot(i,ref target,legs[i].end.rotation);
+    if(target.y>legs[i].end.position.y+.0005f){var leg=legs[i];var axis=target-leg.upper.position;var bend=Vector3.ProjectOnPlane(leg.lower.position-leg.upper.position,axis);Solve(leg,target,bend,leg.end.rotation);}
+    if(reacting||review&&(Performance.StartsWith("Fall")||Performance=="Slide_Tackle")){var arm=arms[i];var tip=arm.end.position+arm.end.rotation*arm.toeOffset;float min=Mathf.Min(arm.end.position.y-.05f,tip.y-.05f);
+     if(Physics.Raycast(arm.end.position+Vector3.up*.3f,Vector3.down,out var floor,.8f,1<<8,QueryTriggerInteraction.Ignore)&&min<floor.point.y+.005f){var axis=arm.end.position-arm.upper.position;var bend=Vector3.ProjectOnPlane(arm.lower.position-arm.upper.position,axis);Solve(arm,arm.end.position+Vector3.up*(floor.point.y+.005f-min),bend,arm.end.rotation);}
+    }
+   }
+   for(int i=0;i<bones.Length;i++){lastPosition[i]=bones[i].localPosition;lastRotation[i]=bones[i].localRotation;}
+   haveLast=true;contactBlend=mode==0&&!gesture&&!review?1-remain:0;
+   // Contact is measured after the final visible blend, not on an intermediate
+   // IK result. This is the same skeleton the renderer and the review see.
+   BallContactError=ContactWeight=0;
+   for(int i=0;i<2;i++){displayedFeet[i]=legs[i].end.position;if(touchWeights[i]>.90f&&FootballBall.Instance&&legs[i].toe){ContactWeight=Mathf.Max(ContactWeight,touchWeights[i]);BallContactError=Mathf.Max(BallContactError,Mathf.Abs(Vector3.Distance(legs[i].toe.position,FootballBall.Instance.transform.position)-FootballBall.Instance.WorldRadius));}}
+  }
+  void Arm(int side,bool ground,bool review,float dt){
+   var arm=arms[side];float sign=side==0?-1:1;
+   float f=gait.FootPhase(side),wave=Mathf.Cos(f*Mathf.PI*2);
+   float shoulder=-wave*Mathf.Lerp(16,32,gait.Run)*gait.Amount+3+sign*bank*8;
+   float flex=Mathf.Lerp(18,82,gait.Run*gait.Amount)+wave*8*gait.Amount;
+   if(mode==1){float t=jumpTime,lift=FootballGait.Ease(t/.40f)*(1-FootballGait.Ease((t-.48f)/.45f));shoulder=-12*(1-FootballGait.Ease(t/.18f))+65*lift;flex=18+35*lift;}
+   var frame=chest.rotation*Quaternion.Inverse(chestReference);
+   Vector3 Direction(float degrees)=>new Vector3(sign*(.17f+Mathf.Abs(bank)*.16f),-Mathf.Cos(degrees*Mathf.Deg2Rad),Mathf.Sin(degrees*Mathf.Deg2Rad)).normalized;
+   arm.upper.rotation=Quaternion.FromToRotation(arm.lower.position-arm.upper.position,frame*Direction(shoulder))*arm.upper.rotation;
+   arm.lower.rotation=Quaternion.FromToRotation(arm.end.position-arm.lower.position,frame*Direction(shoulder+flex))*arm.lower.rotation;
+   var wrist=Quaternion.AngleAxis(-5-wave*3*gait.Amount,frame*Vector3.right)*arm.lower.rotation*arm.wristRest;
+   arm.end.rotation=wrist;
+   if(armActionWeight<=0||mode==1)return;
+   var target=Vector3.Lerp(arm.end.position,transform.TransformPoint(side==0?pose.leftHand:pose.rightHand)-Vector3.up*groundOffset,armActionWeight);
+   // Preserve the authored FK bend plane. Ground bracing opens continuously,
+   // instead of changing the elbow guide abruptly at timeline thresholds.
+   var axis=(arm.end.position-arm.upper.position).normalized;
+   var pole=Vector3.ProjectOnPlane(arm.lower.position-arm.upper.position,axis).normalized;
+   float brace=ground?FootballGait.Ease(actionAge/.16f)*(1-FootballGait.Ease((actionAge-.62f)/.30f)):0;
+   if(review)brace=Performance.StartsWith("Fall")||Performance=="Slide_Tackle"?1:0;
+   pole=Vector3.Slerp(pole,(transform.right*sign*.8f+transform.forward*.2f-Vector3.up*.15f).normalized,brace);
+   // Rotate the large hand toward its supporting surface before lowering it.
+   var finger=arm.toe?arm.toe.position-arm.end.position:arm.end.rotation*Vector3.down*.14f;
+   var palm=transform.rotation*arm.palmRest;
+   wrist=Quaternion.Slerp(wrist,palm,brace);
+   if(ground||review){
+    float down=arm.toe?(Quaternion.Inverse(arm.end.rotation)*finger).magnitude:.14f;
+    if(Physics.Raycast(target+Vector3.up*.5f,Vector3.down,out var floor,1.2f,1<<8,QueryTriggerInteraction.Ignore))target.y=Mathf.Max(target.y,floor.point.y+.045f+down*(1-brace));
+   }
+   Solve(arm,target,pole,wrist);
+   arm.end.rotation=Quaternion.RotateTowards(arm.lower.rotation*arm.wristRest,wrist,50);
+  }
+  void FloorFoot(int side,ref Vector3 target,Quaternion rotation){
+   if(!Physics.Raycast(target+Vector3.up*.5f,Vector3.down,out var floor,1,1<<8,QueryTriggerInteraction.Ignore))return;
+   var delta=rotation*Quaternion.Inverse(transform.rotation*footRotation[side]);
+   // Conservative sole corners, calibrated to this shoe's rest-plane height.
+   float min=0;
+   for(int x=-1;x<=1;x+=2)for(int z=0;z<2;z++)min=Mathf.Min(min,(delta*new Vector3(x*.055f,-feet[side].y+.012f,z==0?-.055f:.19f)).y);
+   // The heel is partly weighted to the shin. Deep crouches deform it below
+   // the rigid sole plane; this measured clearance also covers that skin.
+   var leg=legs[side];float folded=Vector3.Distance(leg.upper.position,target)/(leg.upperLength+leg.lowerLength);
+   float heel=.024f*FootballGait.Ease((.85f-folded)/.45f);
+   target.y=Mathf.Max(target.y,floor.point.y-min+heel);
+  }
+  void Rotate(Transform bone,Vector3 angles){bone.rotation=transform.rotation*Quaternion.Euler(angles)*Quaternion.Inverse(transform.rotation)*bone.rotation;}
+  Vector3 ContactAnkle(int side,Vector3 center,Quaternion rotation){
+   float radius=FootballBall.Instance?FootballBall.Instance.WorldRadius:.11f;
+   var normal=transform.TransformDirection(new Vector3(side==0?-.55f:.55f,-.45f,-.704f).normalized);
+   return center+normal*radius-rotation*legs[side].toeOffset;
+  }
+  void Solve(Limb l,Vector3 target,Vector3 pole,Quaternion endRotation){
+   if(Physics.Linecast(l.upper.position,target,out var wall,1<<8,QueryTriggerInteraction.Ignore)&&Mathf.Abs(wall.normal.y)<.5f)target=wall.point+wall.normal*.025f;
+   Vector3 a=l.upper.position,b=l.lower.position,c=l.end.position,delta=target-a;float reach=delta.magnitude;if(reach<.001f)return;
+   float upper=l.upperLength,lower=l.lowerLength;
+   // Keep a small knee/elbow bend; the fully straight singularity can flip
+   // the bend plane even though the previous solver preserved bone lengths.
+   float length=Mathf.Clamp(reach,Mathf.Abs(upper-lower)+.012f,upper+lower-.009f);
+   Vector3 axis=delta/reach,bend=Vector3.ProjectOnPlane(pole,axis).normalized;
+   if(bend.sqrMagnitude<.01f)bend=Vector3.ProjectOnPlane(b-a,axis).normalized;
+   if(bend.sqrMagnitude<.01f)bend=Vector3.ProjectOnPlane(transform.right,axis).normalized;
+   float along=(upper*upper-lower*lower+length*length)/(2*length);var joint=a+axis*along+bend*Mathf.Sqrt(Mathf.Max(0,upper*upper-along*along));
+   // Reconstruct a stable hinge frame. Shortest-arc FromToRotation alone
+   // loses twist near a 180-degree swing and can flip an otherwise valid knee.
+   var normal=Vector3.Cross(bend,axis).normalized;
+   l.upper.rotation=Quaternion.LookRotation(joint-a,normal)*l.upperBasis;
+   l.lower.rotation=Quaternion.LookRotation(a+axis*length-joint,normal)*l.lowerBasis;l.end.rotation=endRotation;
+   MaximumReachError=Mathf.Max(MaximumReachError,Mathf.Max(0,reach-length));
+  }
+  public void ResetPose(){Restore();State=new(){sequence=State.sequence+1};weight=phase=previousSpeed=brake=startAccent=turn=bank=0;receiveAt=settleAt=-10;wallFreedom=1;heldBefore=haveLast=feetInitialized=false;gait.Reset();lastMode=-1;actionAge=10;lastAction=previousAction=FootballAction.None;smoothBody=smoothPelvis=bodyVelocity=pelvisVelocity=Vector3.zero;yawVelocity=0;previousPosition=transform.position;smoothedYaw=previousYaw=transform.eulerAngles.y;lastMatchPhase=FootballMatchPhase.Idle;}
   public void Receive(FootballMotionState value){if(received&&unchecked((int)(value.sequence-receivedSequence))<0)return;received=true;receivedSequence=value.sequence;State=value;}
   public void Charging(bool active){
    if(active==State.charging)return;var s=State;s.sequence++;s.charging=active;
-   if(active){s.chargeStarted=Clock;s.left=phase<.5f;s.gesture=FootballGesture.None;}
+   if(active){s.chargeStarted=Clock;s.left=gait.Swing(0)>gait.Swing(1);s.gesture=FootballGesture.None;}
    else if(State.gesture!=FootballGesture.Kick||Clock-State.started>.35){s.gesture=FootballGesture.Cancel;s.started=Clock;}
    State=s;
   }
-  public void Kick(float power,Vector3 ball){State=new(){sequence=State.sequence+1,gesture=FootballGesture.Kick,started=Clock,left=State.charging?State.left:phase<.5f,power=Mathf.Clamp01(power),contact=transform.InverseTransformPoint(ball)};}
+  public void Kick(float power,Vector3 ball){State=new(){sequence=State.sequence+1,gesture=FootballGesture.Kick,started=Clock,left=State.charging?State.left:gait.Swing(0)>gait.Swing(1),power=Mathf.Clamp01(power),contact=transform.InverseTransformPoint(ball)};}
   public void Bump(Vector3 normal){if(!Active||athlete.Action!=FootballAction.None||athlete.speed<1||Mathf.Abs(normal.y)>.3f||Clock-State.started<.3||State.charging)return;State=new(){sequence=State.sequence+1,gesture=FootballGesture.Bump,started=Clock,left=Vector3.Dot(normal,transform.right)<0};}
   void OnDisable(){Restore();}
   void Restore(){if(!applied)return;for(int i=0;i<bones.Length;i++)if(bones[i]){bones[i].localPosition=beforePosition[i];bones[i].localRotation=beforeRotation[i];}applied=false;}
@@ -74,108 +316,6 @@ namespace WhatTheFish {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    LastPoseMilliseconds=(System.Diagnostics.Stopwatch.GetTimestamp()-start)*1000.0/System.Diagnostics.Stopwatch.Frequency;LastPoseAllocatedBytes=GC.GetAllocatedBytesForCurrentThread()-allocated;
 #endif
-  }
-  void ApplyFrame(){
-   if(!RigReady)return;float dt=Mathf.Clamp(Time.deltaTime,.0001f,.1f);
-   bool active=Active,air=athlete.Airborne||athlete.LoadingJump;float targetWeight=active&&!air?1:0;
-   weight=Smooth(weight,targetWeight,air?28:16,dt);if(!active){weight=0;heldBefore=false;return;}if(weight<.001f)return;
-   var displacement=Vector3.ProjectOnPlane(transform.position-previousPosition,Vector3.up);previousPosition=transform.position;
-   if(displacement.magnitude>2){previousSpeed=0;stopAt=receiveAt=cutAt=-10;displacement=Vector3.zero;}
-   float speed=athlete.Action==FootballAction.None?athlete.speed:0;
-   bool held=athlete.ControlsFootball;float accel=(speed-previousSpeed)/dt;
-   brake=Smooth(brake,Mathf.Clamp01(-accel/35),16,dt);startAccent=Smooth(startAccent,Mathf.Clamp01(accel/35),18,dt);
-   if(previousSpeed>.35f&&speed<.35f){stopAt=Time.time;stopLeft=legs[0].end.position.y<legs[1].end.position.y;for(int i=0;i<2;i++)stopPins[i]=legs[i].end.position;}
-   if(speed>.5f&&accel>1)stopAt=-10;
-   float yaw=transform.eulerAngles.y,yawRate=Mathf.DeltaAngle(previousYaw,yaw)/dt;previousYaw=yaw;
-   turn=Smooth(turn,Mathf.Clamp(yawRate/320,-1,1),12,dt);bank=Smooth(bank,turn*Mathf.Clamp01(speed/4),10,dt);
-   if(Mathf.Abs(yawRate)>170&&Time.time-cutAt>.25f&&speed>.8f){cutAt=Time.time;cutSign=Mathf.Sign(yawRate);}
-   if(held&&!heldBefore)receiveAt=Time.time;heldBefore=held;
-   // Distance and current speed drive a continuous phase, not a restarted clip.
-   phase=Mathf.Repeat(phase+dt*Mathf.Lerp(held?.8f:.9f,held?1.4f:2.4f,Mathf.Clamp01(speed/(held?5.25f:7f)))*Mathf.Clamp01(speed/.6f),1);
-   previousSpeed=speed;float gait=Ease(speed/1.2f),elapsed=(float)(Clock-State.started),stopTime=Time.time-stopAt;
-   bool hit=athlete.Action==FootballAction.Hit,slide=athlete.Action==FootballAction.Slide;
-   float gestureDuration=State.gesture==FootballGesture.Kick?.35f:State.gesture==FootballGesture.Cancel?.18f:.22f;
-   bool gesture=State.gesture!=FootballGesture.None&&elapsed<gestureDuration&&!FootballMatch.BlocksActions;
-   pose=Take(held?(speed>3.3f?"Dribble_Fast":"Dribble_Control"):speed>.2f?"Walk":"Ready",phase);
-   if(!held&&speed<.2f)pose=Take("Ready",(float)(Clock/2.8));
-   bool authored=speed>1.25f&&!hit;float contact=0;int foot=phase<.5f?0:1;
-   if(stopTime<.30f){pose=Take(held?(stopLeft?"BallSettle_L":"BallSettle_R"):(stopLeft?"Stop_L":"Stop_R"),stopTime/(held?.28f:.30f));}
-   else if(Time.time-receiveAt<.22f)pose=Take(foot==0?"Receive_L":"Receive_R",(Time.time-receiveAt)/.22f);
-   else if(startAccent>.08f){pose=FootballPose.Lerp(pose,Take(foot==0?"Start_L":"Start_R",.36f),startAccent*.65f);}
-   if(Time.time-cutAt<.25f&&!gesture)pose=FootballPose.Lerp(pose,Take(cutSign<0?"Cut_L":"Cut_R",(Time.time-cutAt)/.25f),Mathf.Abs(bank)*.65f);
-   pose.body.z-=bank*7;pose.chest.y+=turn*6;pose.head.y+=turn*7;pose.pelvis.y-=brake*.025f;
-   if(athlete.WhiffRemaining>0)pose=FootballPose.Lerp(pose,Take("WhiffRecover",1-athlete.WhiffRemaining/.8f),.75f);
-   if(State.charging&&!gesture&&!FootballMatch.BlocksActions){
-    float charge=Ease((float)(Clock-State.chargeStarted));pose.body.x-=charge*5;pose.chest.y+=(State.left?-1:1)*charge*8;
-    if(speed<.3f){if(State.left){pose.leftFoot.y+=.03f*charge;pose.leftFoot.z-=.065f*charge;}else{pose.rightFoot.y+=.03f*charge;pose.rightFoot.z-=.065f*charge;}}
-    Performance="Charge";
-   }
-   if(gesture){var name=State.gesture==FootballGesture.Kick?(State.left?"Kick_L":"Kick_R"):State.gesture==FootballGesture.Cancel?(State.left?"FakeCancel_L":"FakeCancel_R"):"Bump";var p=Take(name,elapsed/gestureDuration);if(name=="Bump"&&State.left)p=p.Mirror();float power=State.gesture==FootballGesture.Kick?Mathf.Lerp(.65f,1,State.power):1;pose=FootballPose.Lerp(pose,p,power*(1-Ease((elapsed-(gestureDuration-.10f))/.10f)));foot=State.left?0:1;}
-   var match=FootballMatch.Instance;var matchPhase=match&&match.Context?match.Snapshot.phase:FootballMatchPhase.Idle;
-   if(matchPhase!=lastMatchPhase){lastMatchPhase=matchPhase;resultAt=Clock;}
-   if(matchPhase==FootballMatchPhase.Finished){var team=match.TeamOf(athlete);bool won=match.Snapshot.result==FootballMatchResult.TeamA&&team==FootballTeam.A||match.Snapshot.result==FootballMatchResult.TeamB&&team==FootballTeam.B;pose=Take(won?"Result_Win":"Result_Disappointed",(float)(Clock-resultAt)/1.7f);authored=false;}
-   if(hit){var variant=athlete.HitVariant;pose=Take(variant==0?"Fall_Back":variant==1?"Fall_Forward":variant==2?"Fall_Left":"Fall_Right",athlete.ActionProgress);authored=false;}
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-   if(!string.IsNullOrEmpty(ReviewTake)){pose=Take(ReviewTake,ReviewTime);authored=false;}
-#endif
-   if(slide){Performance="Slide_Tackle";return;} // Retain the saved authored slide and its hand/leg recovery.
-   for(int i=0;i<bones.Length;i++){beforePosition[i]=bones[i].localPosition;beforeRotation[i]=bones[i].localRotation;}applied=true;
-   var leftPos=legs[0].end.position;var rightPos=legs[1].end.position;var leftRot=legs[0].end.rotation;var rightRot=legs[1].end.rotation;
-   if(!authored){for(int i=0;i<bones.Length;i++){bones[i].localPosition=referencePosition[i];bones[i].localRotation=referenceRotation[i];}hips.position=transform.TransformPoint(hipReference);}
-   // A wall-shortened fall stays compact. It may change the visible lean but
-   // never the authoritative capsule or hit duration.
-   var reachHead=hips.position+transform.TransformVector(pose.pelvis)+transform.rotation*Quaternion.Euler(pose.body)*Vector3.up*.60f;
-   if(Physics.Linecast(transform.position+Vector3.up*.45f,reachHead,out var obstruction,1<<8,QueryTriggerInteraction.Ignore)&&Mathf.Abs(obstruction.normal.y)<.5f){pose.body*=.42f;pose.pelvis.x*=.4f;pose.pelvis.z*=.4f;}
-   hips.position+=transform.TransformVector(pose.pelvis);
-   Rotate(hips,pose.body);Rotate(spine,pose.chest*.4f);Rotate(chest,pose.chest*.6f);Rotate(head,pose.head-pose.body*.25f);
-   MaximumReachError=BallContactError=ContactWeight=0;
-   for(int i=0;i<2;i++){
-    var offset=i==0?pose.leftFoot:pose.rightFoot;var target=transform.TransformPoint(feet[i]+offset);var rotation=transform.rotation*footRotation[i]*Quaternion.AngleAxis(i==0?pose.leftToe:pose.rightToe,Vector3.right);
-    if(authored){target=(i==0?leftPos:rightPos)+transform.TransformVector(offset*.35f);rotation=i==0?leftRot:rightRot;}
-    else if(speed>.15f&&!hit&&stopTime>.3f){
-     float f=Mathf.Repeat(phase+i*.5f,1);float z=f<.6f?Mathf.Lerp(.09f,-.09f,f/.6f):Mathf.Lerp(-.09f,.09f,Ease((f-.6f)/.4f));float lift=f>.6f?.065f*Mathf.Sin((f-.6f)/.4f*Mathf.PI):0;
-     target+=transform.forward*z*gait+Vector3.up*lift*gait;rotation=Quaternion.AngleAxis(f>.6f?-12*Mathf.Sin((f-.6f)/.4f*Mathf.PI):6*Mathf.Sin(f/.6f*Mathf.PI),transform.right)*rotation;
-    }
-    if(held&&!hit&&speed>.2f&&!State.charging&&!gesture){float f=Mathf.Repeat(phase*2,1);contact=Ease(f/.16f)*(1-Ease((f-.32f)/.20f));if(i==foot)target=BallTarget(i,target,contact,rotation,out rotation);}
-    if(held&&Time.time-receiveAt<.22f&&!hit&&i==foot){contact=Mathf.Sin(Mathf.PI*Mathf.Clamp01((Time.time-receiveAt)/.22f));target=BallTarget(i,target,contact,rotation,out rotation);}
-    if(gesture&&State.gesture==FootballGesture.Kick&&i==foot&&!hit){float strike=1-Ease(elapsed/.09f);Vector3 center=transform.TransformPoint(State.contact);var touch=ContactAnkle(i,center);target=Vector3.Lerp(target,touch,strike);rotation=Quaternion.Slerp(rotation,transform.rotation*footRotation[i],strike);}
-    if(stopTime<.18f&&speed<.35f&&!hit&&!gesture&&i==(stopLeft?0:1)&&Mathf.Abs(yawRate)<90)target=Vector3.Lerp(stopPins[i],target,Ease(stopTime/.18f));
-    // The world floor has final say. Feet are never pulled below it to meet a
-    // decorative target. World walls also shorten a reach without moving roots.
-    if(Physics.Raycast(target+Vector3.up*.5f,Vector3.down,out var floor,.9f,1<<8,QueryTriggerInteraction.Ignore))target.y=Mathf.Max(target.y,floor.point.y+feet[i].y-.018f);
-    Solve(legs[i],target,transform.forward,rotation);
-    if(i==foot&&contact>.9f&&!hit){ContactWeight=contact;var ball=FootballBall.Instance;if(ball){var toe=legs[i].toe?legs[i].toe.position:legs[i].end.position;BallContactError=Mathf.Abs(Vector3.Distance(toe,ball.transform.position)-ball.WorldRadius);}}
-   }
-   for(int i=0;i<2;i++){
-    var local=i==0?pose.leftHand:pose.rightHand;
-    if(!hit&&!gesture){float swing=Mathf.Sin((phase+i*.5f)*Mathf.PI*2)*Mathf.Lerp(.025f,.10f,Mathf.Clamp01(speed/7));local.z+=swing*gait;local.y+=Mathf.Max(0,swing)*.3f;}
-    var arm=arms[i];var rotation=arm.end.rotation;var target=transform.TransformPoint(local);
-    Vector3 pole=transform.right*(i==0?-1:1)*.7f-transform.forward*.25f-Vector3.up*.3f;
-    if(hit&&athlete.ActionProgress>.25f&&athlete.ActionProgress<.72f)pole=transform.right*(i==0?-1:1)*.7f+transform.forward*.2f;
-    Solve(arm,target,pole,rotation);arm.end.rotation=arm.lower.rotation*arm.wristRest;
-    if(hit&&arm.toe&&Physics.Raycast(arm.toe.position+Vector3.up*.5f,Vector3.down,out var handFloor,1,1<<8,QueryTriggerInteraction.Ignore)){
-     for(int correction=0;correction<2;correction++){float lift=handFloor.point.y+.025f-arm.toe.position.y;if(lift<=0)break;target+=Vector3.up*Mathf.Min(lift,.09f);Solve(arm,target,pole,rotation);arm.end.rotation=arm.lower.rotation*arm.wristRest;}
-    }
-   }
-   if(weight<.999f)for(int i=0;i<bones.Length;i++){bones[i].localPosition=Vector3.Lerp(beforePosition[i],bones[i].localPosition,weight);bones[i].localRotation=Quaternion.Slerp(beforeRotation[i],bones[i].localRotation,weight);}
-  }
-  void Rotate(Transform bone,Vector3 angles){bone.rotation=transform.rotation*Quaternion.Euler(angles)*Quaternion.Inverse(transform.rotation)*bone.rotation;}
-  Vector3 ContactAnkle(int side,Vector3 center){
-   // Toe landmark measures this mesh's actual shoe length. Work back from the
-   // ball's near surface and use the inside edge; do not target its centre.
-   var leg=legs[side];float toe=leg.toe?Mathf.Clamp(Vector3.Distance(leg.end.position,leg.toe.position),.1f,.25f):.18f;
-   float radius=FootballBall.Instance?FootballBall.Instance.WorldRadius:.11f;
-   return center-transform.forward*(radius+toe*.8f)+transform.right*(side==0?-.045f:.045f)+Vector3.up*.015f;
-  }
-  Vector3 BallTarget(int side,Vector3 from,float blend,Quaternion source,out Quaternion rotation){rotation=Quaternion.Slerp(source,transform.rotation*footRotation[side],Ease(blend/.8f));var ball=FootballBall.Instance;return ball?Vector3.Lerp(from,ContactAnkle(side,ball.FootPosition(athlete)),blend):from;}
-  void Solve(Limb l,Vector3 target,Vector3 pole,Quaternion endRotation){
-   if(Physics.Linecast(l.upper.position,target,out var wall,1<<8,QueryTriggerInteraction.Ignore)&&Mathf.Abs(wall.normal.y)<.5f)target=wall.point+wall.normal*.025f;
-   Vector3 a=l.upper.position,b=l.lower.position,c=l.end.position;float upper=Vector3.Distance(a,b),lower=Vector3.Distance(b,c);Vector3 delta=target-a;float reach=delta.magnitude;if(reach<.001f)return;
-   float length=Mathf.Clamp(reach,Mathf.Abs(upper-lower)+.003f,upper+lower-.006f);Vector3 axis=delta/reach;
-   Vector3 bend=Vector3.ProjectOnPlane(pole,axis).normalized;if(bend.sqrMagnitude<.01f)bend=Vector3.ProjectOnPlane(transform.right,axis).normalized;
-   float along=(upper*upper-lower*lower+length*length)/(2*length);var joint=a+axis*along+bend*Mathf.Sqrt(Mathf.Max(0,upper*upper-along*along));
-   l.upper.rotation=Quaternion.FromToRotation(b-a,joint-a)*l.upper.rotation;l.lower.rotation=Quaternion.FromToRotation(l.end.position-l.lower.position,a+axis*length-l.lower.position)*l.lower.rotation;l.end.rotation=endRotation;
-   MaximumReachError=Mathf.Max(MaximumReachError,Mathf.Max(0,reach-length));
   }
  }
 }

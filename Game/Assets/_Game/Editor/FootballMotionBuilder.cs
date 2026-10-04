@@ -10,7 +10,7 @@ public sealed class FootballMotionBuilder:IPreprocessBuildWithReport {
  public void OnPreprocessBuild(BuildReport report){Prepare();}
  // Explicit authoring command only: ordinary Prepare/build preserves edits.
  [MenuItem("WHATTHE FISH?/Football/Reset motion library to generator poses")]
- public static void ResetLibraryToDefaults(){Prepare();var library=AssetDatabase.LoadAssetAtPath<FootballMotionLibrary>("Assets/_Game/Resources/FootballMotionLibrary.asset");library.takes=FootballMotionLibrary.Defaults();EditorUtility.SetDirty(library);AssetDatabase.SaveAssets();}
+ public static void ResetLibraryToDefaults(){const string path="Assets/_Game/Resources/FootballMotionLibrary.asset";var library=AssetDatabase.LoadAssetAtPath<FootballMotionLibrary>(path);if(!library){library=ScriptableObject.CreateInstance<FootballMotionLibrary>();AssetDatabase.CreateAsset(library,path);}library.takes=FootballMotionLibrary.Defaults();EditorUtility.SetDirty(library);AssetDatabase.SaveAssets();Prepare();}
  public static void BuildInitialReview(){ResetLibraryToDefaults();SkySailBuilder.RebuildPlayer();}
  [MenuItem("WHATTHE FISH?/Football/Prepare complete motion library")]
  public static void Prepare(){

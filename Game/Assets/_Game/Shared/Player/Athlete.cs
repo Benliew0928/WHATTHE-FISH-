@@ -16,6 +16,8 @@ namespace WhatTheFish {
   JumpSnapshot receivedJump;int jumpLayer=-1;float jumpWeight;
   public bool LoadingJump=>remote?receivedJump.preparing:Jump.Preparing;
   public bool Airborne=>remote?receivedJump.airborne:Jump.Airborne;
+  public bool PresentingJump=>remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
+  public float JumpPose=>remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
   public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
   public bool CanRequestJump=>!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
@@ -114,8 +116,8 @@ namespace WhatTheFish {
    turnWeight=Mathf.MoveTowards(turnWeight,turning&&speed>.2f&&Action==FootballAction.None?.65f:0,Time.deltaTime*8);
    if(turnLayer>=0)animator.SetLayerWeight(turnLayer,FootballMotion&&FootballMotion.Active?0:turnWeight);
    if(jumpLayer>=0){
-    float pose=remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
-    bool presenting=remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
+    float pose=JumpPose;
+    bool presenting=PresentingJump;
     jumpWeight=Mathf.MoveTowards(jumpWeight,presenting&&Action==FootballAction.None?1:0,Time.deltaTime*18);
     animator.SetFloat("JumpTime",pose);animator.SetLayerWeight(jumpLayer,jumpWeight);
    }

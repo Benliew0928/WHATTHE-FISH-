@@ -13,11 +13,13 @@ ROOT = Path(__file__).resolve().parents[2]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--run', type=Path)
-    parser.add_argument('--fps', type=int, default=30, help='Capture timeline rate, not measured device FPS')
+    parser.add_argument('--fps', type=int, help='Override recorded capture rate (legacy runs only)')
     args = parser.parse_args()
     runs = sorted((ROOT / 'Builds/FootballMotionQA').glob('Run-*'))
     run = args.run.resolve() if args.run else runs[-1]
     frames = sorted((run / 'frames').glob('*.png'))
+    rate_file = run / 'capture-rate.txt'
+    fps = int(rate_file.read_text()) if rate_file.exists() else (args.fps or 30) / 2
     if not frames:
         raise RuntimeError('This run has no rendered frames.')
     font_path = Path(os.environ.get('WINDIR', '')) / 'Fonts/arial.ttf'
@@ -25,15 +27,19 @@ def main():
     small = ImageFont.truetype(str(font_path), 16) if font_path.is_file() else ImageFont.load_default(size=16)
     metrics = {int(row['frame']): row for row in csv.DictReader((run / 'motion.csv').open())}
     stages = {}
+    sequences = []
     for frame in frames:
         number = int(frame.name.split('-', 1)[0])
         label = metrics[number]['stage']
         stages.setdefault(label, []).append(frame)
+        if not sequences or sequences[-1][0] != label:
+            sequences.append((label, []))
+        sequences[-1][1].append(frame)
     output = run / 'football-motion-review.mp4'
-    writer = imageio_ffmpeg.write_frames(str(output), (800, 688), fps=args.fps / 2,
+    writer = imageio_ffmpeg.write_frames(str(output), (800, 688), fps=fps,
                                         codec='libx264', pix_fmt_in='rgb24', pix_fmt_out='yuv420p', quality=8)
     writer.send(None)
-    for label, files in stages.items():
+    for label, files in sequences:
         if label.startswith('take-'):
             continue
         for slow in (False, True):

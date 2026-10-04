@@ -1,4 +1,16 @@
-# Build size — fishing presentation, 3 October 2026
+# Build size — football animation rebuild, 4 October 2026
+
+## Football animation rebuild — 4 October 2026
+
+Measured release: **86,764,912 → 86,774,768 bytes (+9,856)**. Strict-limit headroom: **13,225,232 bytes**. The **75,000,000-byte development target remains unmet by 11,774,768 bytes**. The baseline is the actual local APK recorded before this task; no new mesh, texture, imported clip, audio or package was added.
+
+The prescribed main-project `Tools/Build/Build.ps1 -Target AndroidSubmission` passed with Unity 6000.3.20f1, release IL2CPP ARM64, at **22:49 Malaysia time**. Process-local TEMP/TMP used ignored `Builds/JdkTmp/`. The strict budget gate and APK v2 signature verification passed. Root output: `Builds/Android/WhatTheFish-release.apk`; preserved task copy: `Builds/FootballMotionPolishQA/Android/WhatTheFish-release.apk`. SHA-256: **4218128125E5ADDD4E65361CFA904A378595567438408F2FF375E36A400FEEB8**.
+
+The rebuilt gait and FK/IK presentation share the existing character. The 28-record posture/action resource is **13,108 serialized bytes / 1,854 independently compressed bytes**, versus 11,548 / 1,574 previously. Actual ZIP changes include IL2CPP **+9,778**, metadata **+1,181** and Burst **−1,530 bytes**; resource and container changes make up the remainder. The largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected art growth or new shipped dependency appeared. Shared source clips remain used by other sports.
+
+Fresh populated packing offsets, per-asset estimates, ZIP comparisons, signature output and exact before/after measurements are retained under `Builds/FootballMotionPolishQA/FinalSizeAudit/` and the task evidence folder. Serialized assets total **151,510,277 bytes**, a separate measurement from the APK. The 32 checked football runtime/resource/editor/review inputs are unchanged between the verified Windows motion run and Android build. Subsequent turn-probe corrections are entirely development-only and do not affect the release player.
+
+See [motion implementation](FOOTBALL-ANIMATION.md) and [validation, visual evidence and cleanup](VERIFICATION.md#football-animation-rebuild--4-october-2026). The current short-legged character remains stylized. No physical Android device was connected; phone rendering, touch, sustained FPS and thermals remain unverified. Earlier sections describe their historical releases.
 
 ## Transparent lagoon and three fish sizes — 3 October 2026
 

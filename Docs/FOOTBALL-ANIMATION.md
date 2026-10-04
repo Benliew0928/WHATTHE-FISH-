@@ -1,8 +1,75 @@
 # Football animation
 
-Implemented on the Rainbow Sprinter rig, 3 October 2026. The saved performance library and runtime pose layer cover the existing football controls. The earlier conversation motion study remains a schematic; the implementation review captures the actual Unity player. Authoring targets in the original design below are distinguished from the measured results in [verification](VERIFICATION.md).
+Football presentation has been rebuilt on the unchanged Rainbow Sprinter character, 4 October 2026. The original diagnosis below is retained as a record of the defects in the 3 October implementation. The schematic is not runtime evidence; reviews use the actual Unity player.
 
-## Implemented performance layer
+## Coordinated movement rebuild — 4 October 2026
+
+[FootballGait](../Game/Assets/_Game/Sports/Football/FootballGait.cs) and [FootballMotion](../Game/Assets/_Game/Sports/Football/FootballMotion.cs) replace the old mixture of independently timed running legs and procedural arms. One continuous phase drives the feet, opposite arm swing, pelvis, chest and dribble timing. Ground travel determines stride; the short-legged rig uses a shorter support phase at higher speed. Supporting feet retain world-space positions. A foot can acquire a plant at touchdown, never halfway through a support phase when an activation threshold changes.
+
+The football pose removes the controller's ground clearance from the rendered body and feet. That correction is retained through flight, so the jump has a consistent origin. It does not change the controller, movement speeds, jump trajectory, tackle sweep, ball authority, room/world model or network protocol.
+
+| Movement | Current implementation |
+| --- | --- |
+| Ready, walk, run, sprint | Coordinated shoulder/elbow arcs, restrained wrist follow-through, weight shift, torso counter-rotation and speed-dependent posture; no 1.25 m/s pose switch |
+| Starts, stops, changes of direction | Acceleration lean, braking compression, continuous arm relaxation, alternating settling steps, visual facing lag, gaze lead and balance-arm widening |
+| Receiving, dribbling, ball stops | Either-foot receiving/settling; touches during the correct foot's forward swing; lower inside-surface contact adapted to the actual ball/shoe size; smoothly weighted contact approach with swing filtering |
+| Charge, fake, kicks and bumps | Existing authoritative events select the gesture and foot; complete-skeleton entry/exit blends retain the last visible pose; restrained wrists and body counterbalance |
+| Jump and landing | Football-specific leg/body posture and coordinated forward-kinematic arm swing follow the shared jump phase, including landing compression |
+| Slide, miss and four falls | Directional recoil, continuous hand/foot arcs, bracing and recovery; added slide recovery passing pose; final floor checks also cover blended entry poses |
+| Results and lifecycle | Win/disappointment poses, reset/travel cleanup and existing sequenced network gesture playback |
+
+Gameplay locks remain **0.425 s for a slide** and **0.8 s for a hit**. Cosmetic recovery lasts up to **0.68 s / 1.10 s**, respectively. Control returns at the original authoritative deadline while the visible recovery finishes. No animation introduces an extra action lock. The old shared imported clips remain available to the other sports.
+
+The IK solver constructs a stable hinge frame, avoids the fully straight singularity, uses continuous bend guides and limits action wrist deviation to 50 degrees before final contact corrections. The saved posture/action library uses shape-preserving cubic tangents: passing poses have continuous velocity, while actual holds and extrema settle. Its **28 records are editable control-space timelines**, combined with the continuous gait and FK/IK code; they are not 28 imported motion-capture clips or independently animated fingers. No skeleton, mesh, texture or package dependency was added.
+
+The review records actual joint quaternions and positions, support samples, contact error and skinned-mesh floor penetration. It checks the final displayed skeleton, after transition blending. Its angular-speed ceiling is a regression detector for large snaps, not a certificate of human biomechanics. Likewise, zero reported support slip is meaningful only when the accompanying support-sample count is nonzero. A 20 FPS sample can miss a complete short sprint contact.
+
+The final 20/30/60/120-rate reviews pass **1,172 assertions**. Maximum measured shoe-to-ball error during high-weight dribble touches is **2.13 cm** across these runs; maximum sampled skinned floor penetration is **1.35 cm**. Walking has **17 / 28 / 59 / 123** consecutive support samples, respectively, with zero horizontal displacement at the trace's recorded precision. Large-snap checks retain their 2,700 degrees/second ceiling; the highest measured live local joint speed is **2,637.72 degrees/second**. These are bounded continuity/contact measurements, not evidence that every pose is anatomically realistic.
+
+The reviewed actual-player video is **60 FPS**, 86.4 seconds including normal and half-speed playback, under `Builds/FootballMotionQA/Run-20261004-224406-424/`. It includes original shared clips for comparison, live motion, interrupted recoveries and the resulting 28-record pose sheets on both LODs. Final rate traces and gameplay evidence are indexed in `Builds/FootballMotionPolishQA/final-runs.json`. The Android release adds **9,856 actual APK bytes**; see the linked release records below.
+
+The unchanged **7 m/s** sprint and approximately **0.31 m** leg chains still imply fast, stylized footwork. Physical-phone rendering/performance and a human assessment of the final motion remain separate from automated checks. See [verification](VERIFICATION.md) for measured results and [build size](BUILD-SIZE.md) for the actual release artifact; earlier dated sections describe older snapshots.
+
+### Reproduce the current review
+
+```powershell
+Tools/Build/Build.ps1 -Target Windows
+Tools/Build/Test-FootballMotion.ps1 -Fps 60 -CompareSourceClips
+Tools/Build/Test-FootballMotion.ps1 -Fps 20 -NoCapture
+Tools/Build/Test-FootballMotion.ps1 -Fps 30 -NoCapture
+Tools/Build/Test-FootballMotion.ps1 -Fps 120 -NoCapture
+python Tools/Blender/audit_football_motion.py --run Builds/FootballMotionQA/Run-<timestamp>
+python Tools/Blender/package_football_motion.py --run Builds/FootballMotionQA/Run-<timestamp>
+```
+
+Every live review frame is captured. The encoder reads `capture-rate.txt`, so a 60 FPS timeline produces a 60 FPS video. Half-speed playback repeats those full-rate samples. `-CompareSourceClips` includes the original shared run/stop clips as a comparison on the same model; their lack of support samples must not be reported as evidence of zero sliding. `joints.csv`, `motion.csv`, `continuity.json`, frames and videos remain ignored under `Builds/`.
+
+Edit named pose keys in the Unity Inspector. Ordinary builds preserve the saved resource; **Reset motion library to generator poses** deliberately replaces it with the C# defaults. [FootballMotionBuilder](../Game/Assets/_Game/Editor/FootballMotionBuilder.cs) validates the required records before building. `BuildInitialReview` is the explicit regeneration command, not the ordinary build path.
+
+## Historical motion quality diagnosis — 4 October 2026
+
+**The action set is functionally covered, but the current movement is not accepted as natural or sufficiently smooth.** The user observed awkward hands and legs in both the playable game and the actual-player video. The earlier test count establishes functional behavior and limited pose constraints; it does not establish animation quality. This analysis changes documentation only, with no new runtime or APK release.
+
+The primary problem is the animation implementation. The model's proportions amplify it. Read-only inspection of the retained Blender master measures a **1.70 m** near-LOD mesh, pelvis rest height **0.470 m**, thigh/shin chain **0.307 m**, shoulder-to-wrist chain **0.343 m**, and ankle-to-toe marker distance **0.252 m** on the left. The avatar has deliberately short legs and large shoes, but its overall height is not an import-scale failure. Uniformly scaling the model cannot repair the timing and transition defects below. Skin deformation under extreme joint rotations deserves a separate audit; this inspection does not certify every skin weight.
+
+| Finding in current source | Visible consequence | Correction needed |
+| --- | --- | --- |
+| `Athlete` plays the 40-frame/60 FPS run at `speed/7`, while `FootballMotion` advances an independent phase. At 7 m/s these are **1.5 versus 2.4 cycles/s**. Dribble contact uses the independent phase too. | Arms drift out of step with the source legs; a foot can be pulled toward the ball during the wrong part of its stride. | One shared gait/contact phase; preserve the authored arm/leg relationship. |
+| The `authored` flag switches at **1.25 m/s**. Below it the layer resets every bone to its saved reference; above it it retains the Animator pose. The usual overlay weight is already one. | Walk/run and slowing transitions can jump between unrelated poses despite the Animator's own transitions. | Blend complete poses through a speed range with aligned foot phases. |
+| Walk targets move relative to the athlete with a fixed 0.18 m nominal fore/aft sweep. World pins exist only for a short stop interval, not ordinary stance. The calculated displacement is used only to detect teleports. | Feet slide with the body instead of carrying its weight. At steady 0.8 m/s the target formula predicts roughly **0.56 m/s forward stance slip**, before IK constraints. This is an analytical prediction, not a live slip measurement. | Derive travel from actual displacement, retain stance contacts in world space, and fit cadence/stride to this rig. |
+| At 7 m/s the body travels **4.67 m per source run cycle** on 0.31 m leg chains. | Motion speed and visible step length are poorly matched. Short proportions make this especially apparent. | Calibrate stride and cadence against distance, then assess whether proportion or speed changes are desirable as a separate design decision. |
+| Every frame replaces arm motion with absolute wrist targets and a fixed wrist-to-forearm relationship. Knees use a generic forward bend direction. | Hands look carried or paddled; knees/elbows can look mechanically steered even when all bone lengths remain valid. | Authored shoulder, elbow and wrist arcs; use IK as a limited contact correction with anatomical bend limits. |
+| The fall elbow direction changes abruptly at 25% and 72% of the hit timeline (0.20 and 0.576 s). Ground hand correction is applied directly. | Elbow or hand direction can snap during a fall. | Continuous bend guides and smoothly weighted ground contact. |
+| Walk and both dribble entries each contain two identical posture keys. All other key intervals independently ease to zero velocity; fall poses hold and then recover rapidly within 0.8 s. Hit/slide transitions do not preserve the previous visible pose as an entry blend. | The set contains procedural posture recipes and mirrored variants, rather than 26 finished full-body performances. Falls can feel like pose changes instead of transferred weight and momentum. | Reauthor complete performances for this rig, with continuous arcs, support changes, impact and recovery; retain responsiveness and explicitly review the existing gameplay time limits. |
+| The delivered preview is **15 FPS**; half-speed playback duplicates those frames. | The video exaggerates the stepping and cannot be used to judge fine temporal smoothness. It does not explain the defects also seen in the game. | Capture every frame at 60 FPS and retain a frame-by-frame pose trace. |
+
+The existing checks measure limb length, reach, a toe-to-ball distance during selected contact samples, floor penetration, allocations and gameplay/network state. They do **not** measure stance-foot slip, joint angular velocity/acceleration, bend-guide continuity, phase alignment, self-intersection or credible weight support. Preserving bone lengths is especially weak evidence of natural movement because pure joint rotations preserve lengths by construction.
+
+The next correction should begin with an A/B capture on the **unchanged model**: original clips alone versus the current football layer, then a rebuilt walk/run/stop cycle using one phase and real support contacts. Once that baseline moves convincingly, extend it to dribbling and the four falls. Review modest leg/shoe/rig adjustments only after that comparison; replacing or resizing the character first would leave the confirmed animation defects in place. This is a recommendation, not a claim that those corrections have already been implemented.
+
+Evidence retained under ignored `Builds/FootballMotionDiagnosis/`: `rig-audit.json`, the read-only Blender inspection script/output and `findings.json`. The existing Unity renders and motion traces are under `Builds/FootballMotionQA/Run-20261003-223534-834/`. No art master, imported FBX, gameplay setting, pose library or runtime source changed in this diagnosis.
+
+## Historical implementation — 3 October 2026
 
 [FootballMotion](../Game/Assets/_Game/Sports/Football/FootballMotion.cs) composes **26 editable control-space takes** from [FootballMotionLibrary.asset](../Game/Assets/_Game/Resources/FootballMotionLibrary.asset) with the existing authored run, jump and slide clips. These are compact skeletal pose timelines, not 26 imported FBX clips. The character mesh, textures and bone lengths are shared and unchanged.
 
