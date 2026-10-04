@@ -79,6 +79,11 @@ namespace WhatTheFish {
    Check(Vector3.Distance(ball.KickoffPosition,centre)<.001f,"FORMATION_NEVER_CHANGES_BALL_ANCHOR");
   }
   IEnumerator WaitPlaying(){while(!FootballMatch.Instance||!FootballMatch.Instance.Running)yield return new WaitForFixedUpdate();}
+  IEnumerator SelectSportReady(AppRoot app,SportId sport){
+   app.SelectSport(sport);float until=Time.realtimeSinceStartup+20;
+   while(app.SelectedSport!=sport&&Time.realtimeSinceStartup<until)yield return null;
+   Check(app.SelectedSport==sport,"STREAMED_SPORT_READY_"+sport);yield return new WaitForFixedUpdate();
+  }
   IEnumerator ResetPresentation(string goal){
    var ball=FootballBall.Instance;
    var match=FootballMatch.Instance;var actor=AppRoot.Instance.LocalAthlete;
@@ -98,7 +103,23 @@ namespace WhatTheFish {
     yield return null;yield return new WaitForEndOfFrame();PlayerView.Instance.yaw=yaw;
    }
   }
-  IEnumerator Shoot(int index){var ball=FootballBall.Instance;int sign=ball.GoalSign(index);float line=sign*Mathf.Max(sign*ball.GoalFront(index),sign*(sign>0?ball.PitchBounds.max.z+.06f:ball.PitchBounds.min.z-.06f));ball.Body.position=ball.Pitch.TransformPoint(new Vector3(0,ball.PitchBounds.max.y+.24f,line-sign));if(ball.Body.isKinematic){yield return new WaitForFixedUpdate();ball.Body.position=ball.Pitch.TransformPoint(new Vector3(0,ball.PitchBounds.max.y+.24f,line+sign));yield return new WaitForFixedUpdate();yield break;}ball.Body.linearVelocity=Vector3.zero;yield return new WaitForFixedUpdate();ball.Body.linearVelocity=ball.Pitch.TransformDirection(new Vector3(0,0,sign*12));float until=Time.time+1;while(Time.time<until&&FootballMatch.Instance.Running)yield return new WaitForFixedUpdate();}
+  IEnumerator Shoot(int index){var ball=FootballBall.Instance;int sign=ball.GoalSign(index);float line=sign*Mathf.Max(sign*ball.GoalFront(index),sign*(sign>0?ball.PitchBounds.max.z+.06f:ball.PitchBounds.min.z-.06f));ball.Body.position=ball.Pitch.TransformPoint(new Vector3(0,ball.PitchBounds.max.y+.24f,line-sign));if(ball.Body.isKinematic){yield return new WaitForFixedUpdate();ball.Body.position=ball.Pitch.TransformPoint(new Vector3(0,ball.PitchBounds.max.y+.24f,line+sign));yield return new WaitForFixedUpdate();yield break;}ball.Body.linearVelocity=Vector3.zero;yield return new WaitForFixedUpdate();ball.Body.linearVelocity=ball.Pitch.TransformDirection(new Vector3(0,0,sign*12));float until=Time.time+1;while(Time.time<until&&FootballMatch.Instance.Running)yield return new WaitForFixedUpdate();
+   if(FootballMatch.GoalFollowThrough){
+    var match=FootballMatch.Instance;int score=match.State.ScoreA+match.State.ScoreB;double started=match.Now,remaining=match.Remaining;
+    var surface=ball.Pitch.GetComponentsInChildren<FootballNetSurface>().First(n=>n.Sign==sign);uint impacts=surface.ImpactCount;
+    Check(!ball.Body.isKinematic&&FootballMatch.BlocksActions&&!ball.TryKick(AppRoot.Instance.LocalAthlete),"GOAL_FOLLOW_THROUGH_NO_NEW_KICKS_"+sign);
+    bool golden=match.State.Phase==FootballMatchPhase.Finished;
+    if(golden)Check(match.State.Result!=FootballMatchResult.None,"GOLDEN_GOAL_RESULT_PRECEDES_NET_IMPACT");
+    yield return new WaitForSeconds(.1f);
+    Check(Math.Abs(match.Remaining-remaining)<.001,"CLOCK_PAUSED_DURING_NET_FOLLOW_THROUGH_"+sign);
+    while(FootballMatch.GoalFollowThrough)yield return new WaitForFixedUpdate();
+    File.AppendAllText(ReportPath,"FOLLOW_THROUGH_END phase="+match.State.Phase+" remaining="+match.Remaining.ToString("R")+" countdown="+match.rules.kickoffSeconds.ToString("R")+" elapsed="+(match.Now-started).ToString("R")+"\n");
+    Check(surface.ImpactCount>impacts,"SCORED_BALL_REACHES_NET_"+sign);
+    Check(match.Now-started<=.68&&match.State.ScoreA+match.State.ScoreB==score,"BOUNDED_FOLLOW_THROUGH_NO_DOUBLE_SCORE_"+sign);
+    if(golden){yield return new WaitForFixedUpdate();Check(ball.Body.isKinematic&&Vector3.Distance(ball.Body.position,ball.KickoffPosition)>10,"GOLDEN_GOAL_FREEZES_AT_NET_WITHOUT_RESET");}
+    else Check(match.State.Phase==FootballMatchPhase.Kickoff&&match.Remaining<=match.rules.kickoffSeconds+.001,"FOLLOW_THROUGH_THEN_NORMAL_KICKOFF_"+sign);
+   }
+  }
   IEnumerator Start(){
    Directory.CreateDirectory(Path.GetDirectoryName(ReportPath));File.WriteAllText(ReportPath,"Football match checks\n");Rules();Geometry();Teams();
    while(!AppRoot.Instance||!FootballBall.Instance||!AppRoot.Instance.LocalAthlete)yield return null;
@@ -136,7 +157,7 @@ namespace WhatTheFish {
    Check(actor.TryTackle(),"SLIDE_BEFORE_OVERTIME");liveRevision=match.Snapshot.revision;
    while(match.State.Phase==FootballMatchPhase.Regulation)yield return new WaitForFixedUpdate();
    Check(actor.Action==FootballAction.Slide&&actor.ActionProgress>0&&match.Snapshot.revision==liveRevision,"SLIDE_CONTINUES_IN_OVERTIME");
-   uint priorMatchRevision=match.Snapshot.revision;match.ClearMatch();match.rules=original;app.SelectSport(SportId.Basketball);yield return new WaitForSeconds(1);Check(!FootballMatch.BlocksActions,"OTHER_SPORT_UNBLOCKED");app.SelectSport(SportId.Football);yield return new WaitForSeconds(1);Check(FootballMatch.Instance&&FootballMatch.Instance.State.Phase==FootballMatchPhase.Idle,"RETURN_NO_OLD_MATCH");
+   uint priorMatchRevision=match.Snapshot.revision;match.ClearMatch();match.rules=original;yield return SelectSportReady(app,SportId.Basketball);Check(!FootballMatch.BlocksActions,"OTHER_SPORT_UNBLOCKED");yield return SelectSportReady(app,SportId.Football);Check(FootballMatch.Instance&&FootballMatch.Instance.State.Phase==FootballMatchPhase.Idle,"RETURN_NO_OLD_MATCH");
    Check(FootballMatch.Instance.Snapshot.revision!=priorMatchRevision,"CROSS_SCENE_ROUND_REVISION_UNIQUE");
    DevelopmentProbe.TurnCommandActive=false;File.AppendAllText(ReportPath,"MATCH_COMPLETE checks="+count+"\n");
   }

@@ -8,6 +8,7 @@ namespace WhatTheFish {
   public const float RoofDrop=.43f,RoofDepth=2.2f;
   const float Thickness=.04f;
   readonly List<Mesh> meshes=new();
+  public FootballNetSurface Surface {get;private set;}
   public static float RoofHeight(Bounds bounds,float front,int sign,float z)=>bounds.max.y-RoofDrop*Mathf.Clamp01((z-front)*sign/RoofDepth);
   public static void Attach(Transform goal,Transform pitch,Bounds bounds,float front,int sign){
    if(goal.Find("Goal net collision"))return;
@@ -19,7 +20,9 @@ namespace WhatTheFish {
    net.Panel(pitch,"Right",new Vector3(right,low,front),new Vector3(right,high,front),new Vector3(right,backHigh,back),new Vector3(right,low,back),Vector3.right);
    net.Panel(pitch,"Back",new Vector3(left,low,back),new Vector3(right,low,back),new Vector3(right,backHigh,back),new Vector3(left,backHigh,back),Vector3.forward*sign);
    net.Panel(pitch,"Roof",new Vector3(left,high,front),new Vector3(left,backHigh,back),new Vector3(right,backHigh,back),new Vector3(right,high,front),Vector3.up);
+   net.Surface=FootballNetSurface.Create(goal,pitch,bounds,front,sign);
   }
+  public void Contact(Vector3 point,Vector3 velocity,Vector3 inwardNormal){if(Surface)Surface.Contact(point,velocity,inwardNormal);}
   void Panel(Transform pitch,string name,Vector3 a,Vector3 b,Vector3 c,Vector3 d,Vector3 outward){
    var vertices=new[]{a,b,c,d,a+outward*Thickness,b+outward*Thickness,c+outward*Thickness,d+outward*Thickness};
    for(int i=0;i<vertices.Length;i++)vertices[i]=transform.InverseTransformPoint(pitch.TransformPoint(vertices[i]));

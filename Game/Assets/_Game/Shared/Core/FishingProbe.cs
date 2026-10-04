@@ -17,12 +17,18 @@ namespace WhatTheFish {
   }
   IEnumerator FishingAudit(){
    yield return new WaitForSeconds(2);var app=AppRoot.Instance;
+   var streaming=app.environments.GetComponent<SkySailStreaming>();
+   if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(SportId.Fishing);
    app.SelectSport(SportId.Fishing);app.Show("sports");yield return null;
    Check(FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="Fishing  /  Explore lagoon"),"FISHING_MENU_ENTRY");
    Capture(Path.ChangeExtension(output,"sports.png"));
    app.EnterOffline();yield return new WaitForSeconds(.4f);Physics.SyncTransforms();
    var lagoon=(FishingLagoonView)app.stadium;var def=app.environments.Current;
-   Check(app.environments.roots.Count(r=>r.activeSelf)==1,"FISHING_ONE_ENVIRONMENT");
+   // Diagnostic control run distinguishes existing route failures from new art.
+   if(args.Contains("-withoutLagoonPresentation")){
+    var presentation=lagoon.GetComponentInChildren<LagoonPresentation>();if(presentation)presentation.gameObject.SetActive(false);
+   }
+   Check(app.environments.roots.Count(r=>r&&r.activeSelf)==1,"FISHING_ONE_ENVIRONMENT");
    Check(def.maxPlayers==5&&def.spawnPositions.Distinct().Count()==5,"FIVE_SPAWNS_CAPACITY");
    Check(lagoon.playerStands.Length==5&&lagoon.playerStands.All(s=>s.moduleType=="PlayerStand"),"FIVE_INDEPENDENT_STANDS");
    var standMeshes=lagoon.playerStands.Select(s=>s.GetComponentInChildren<MeshFilter>().sharedMesh).ToArray();
@@ -66,8 +72,10 @@ namespace WhatTheFish {
     Check(Vector4.Distance(block.GetColor("_BaseColor"),stand.accent)<.001f,"STATION_ACCENT_"+stand.slotId);
    }
    foreach(var sport in new[]{SportId.Football,SportId.Basketball,SportId.Golf,SportId.Fishing}){
-    app.SelectSport(sport);Check(app.environments.roots.Count(r=>r.activeSelf)==1,"SPORT_SWITCH_"+sport);
+    if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(sport);
+    app.SelectSport(sport);Check(app.environments.roots.Count(r=>r&&r.activeSelf)==1,"SPORT_SWITCH_"+sport);
    }
+   lagoon=(FishingLagoonView)app.stadium;
    app.EnterOffline();IslandTeleport(lagoon.standingPositions[0]);app.view.yaw=0;app.view.pitch=12;
    for(int mode=0;mode<3;mode++){app.view.mode=mode;yield return new WaitForSeconds(.3f);Capture(Path.ChangeExtension(output,"camera"+mode+".png"));}
    app.view.enabled=false;var camera=Camera.main;

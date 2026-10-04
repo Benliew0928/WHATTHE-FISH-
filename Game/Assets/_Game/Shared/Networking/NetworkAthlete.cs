@@ -24,6 +24,7 @@ namespace WhatTheFish {
   uint MatchRevision=>HostPlayer?HostPlayer.Match.Value.revision:0;
   bool AcceptRound(uint round)=>!FootballMatch.Instance||!FootballMatch.Instance.Context||!FootballMatch.BlocksMovement&&round==MatchRevision;
   public NetworkVariable<BasketballMotionState> BasketballPose=new();
+  public NetworkVariable<FootballMotionState> FootballPose=new();
   public NetworkVariable<GolfCartState> Cart=new();
   public NetworkVariable<GolfMatchSnapshot> GolfMatch=new();
   public NetworkList<GolfPlayerRecord> GolfPlayers=new();
@@ -71,8 +72,8 @@ namespace WhatTheFish {
     if(sentGolfCharge!=golfCharge||sentGolfRound!=c.golfRound||golfCharge&&Mathf.Abs(Mathf.DeltaAngle(sentGolfHeading,c.heading))>3){sentGolfCharge=golfCharge;sentGolfRound=c.golfRound;sentGolfHeading=c.heading;GolfChargeRpc(golfCharge,c.golfBallOwner,c.heading,c.golfRound);}
     if(c.golfSwing&&exploring)GolfSwingRpc(c.golfBallOwner,c.heading,c.golfCharge,c.golfRound);
    }
-   if(!IsServer){GolfCartWorld.Receive(athlete,Cart.Value);athlete.BasketballMotion.Receive(BasketballPose.Value);athlete.GolfClubMotion.Receive(GolfPose.Value);athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
+   if(!IsServer){GolfCartWorld.Receive(athlete,Cart.Value);athlete.BasketballMotion.Receive(BasketballPose.Value);athlete.FootballMotion.Receive(FootballPose.Value);athlete.GolfClubMotion.Receive(GolfPose.Value);athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
   }
-  void FixedUpdate(){if(!IsSpawned||!IsServer)return;Cart.Value=GolfCartWorld.State(athlete);if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value){c.move=Vector2.zero;c.charging=false;}athlete.Simulate(c,Time.fixedDeltaTime);Cart.Value=GolfCartWorld.State(athlete);BasketballPose.Value=athlete.BasketballMotion.State;GolfPose.Value=athlete.GolfClubMotion.State;Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
+  void FixedUpdate(){if(!IsSpawned||!IsServer)return;Cart.Value=GolfCartWorld.State(athlete);if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value){c.move=Vector2.zero;c.charging=false;}athlete.Simulate(c,Time.fixedDeltaTime);Cart.Value=GolfCartWorld.State(athlete);BasketballPose.Value=athlete.BasketballMotion.State;FootballPose.Value=athlete.FootballMotion.State;GolfPose.Value=athlete.GolfClubMotion.State;Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
  }
 }

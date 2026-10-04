@@ -129,7 +129,7 @@ applies ball velocity at 0.10 seconds. Feet stay planted through contact and
 control resumes during follow-through. Recovery lasts 0.74 seconds and prevents
 duplicate strokes. Round changes and ball resets cancel queued contacts. Charge,
 heading, round, sequence and server start time synchronize the presentation;
-protocol 21 requires matching host/client players. Ball ownership, scoring,
+protocol 22 requires matching host/client players. Ball ownership, scoring,
 cup order and the shared final countdown retain their existing rules.
 
 See [source, regeneration and tuning](../ArtSource/Golf/Club/README.md).

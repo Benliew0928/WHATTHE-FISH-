@@ -8,12 +8,13 @@ Shader "WhatTheFish/SkySailOcean" {
  #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
  TEXTURE2D(_GolfColor);SAMPLER(sampler_GolfColor);TEXTURE2D(_GolfDepth);SAMPLER(sampler_GolfDepth);
  TEXTURE2D(_FishColor);SAMPLER(sampler_FishColor);TEXTURE2D(_FishDepth);SAMPLER(sampler_FishDepth);
- float4 _SkySailOrigin;
+ float4 _SkySailOrigin,_FishingLagoonCutout;
  struct A {float4 p:POSITION;};struct V {float4 p:SV_POSITION;float3 world:TEXCOORD0;float fog:TEXCOORD1;};
  V vert(A a){V o;VertexPositionInputs p=GetVertexPositionInputs(a.p.xyz);o.p=p.positionCS;o.world=p.positionWS;o.fog=ComputeFogFactor(p.positionCS.z);return o;}
  float hash(float2 p){return frac(sin(dot(p,float2(127.1,311.7)))*43758.5453);}
  float noise(float2 p){float2 a=floor(p),f=frac(p);f=f*f*(3-2*f);return lerp(lerp(hash(a),hash(a+float2(1,0)),f.x),lerp(hash(a+float2(0,1)),hash(a+1),f.x),f.y);}
  half4 frag(V i):SV_Target {
+  if(_FishingLagoonCutout.w>.5)clip(distance(i.world.xz,_FishingLagoonCutout.xy)-_FishingLagoonCutout.z);
   float2 p=i.world.xz+_SkySailOrigin.xz;float t=_Time.y;
   float2 f=p-float2(-430,0),b=p-float2(430,0);
   float shore=min((length(f/float2(132,160))-1)*132,(length(b/float2(70,83))-1)*70);

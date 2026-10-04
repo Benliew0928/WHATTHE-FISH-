@@ -9,8 +9,10 @@ namespace WhatTheFish {
    TurnCommandActive=true;TurnCommand=default;
    while(!AppRoot.Instance||!AppRoot.Instance.Exploring||!FootballBall.Instance)yield return null;
    var app=AppRoot.Instance;var ball=FootballBall.Instance;float start=elapsed;bool arranged=false,hostKick=false,clientKick=false,clientCharging=false,hostCharging=false,hostReleased=false;bool serverChargeSeen=false,clientControlSeen=false;float chargeMovePeak=0;float clientChargeStart=0,clientPeak=0;Vector3 centre=ball.Body.position;float clientTravel=0,hostTravel=0;
+   var animatedKicks=new System.Collections.Generic.HashSet<ulong>();var animatedCharges=new System.Collections.Generic.HashSet<ulong>();
    while(elapsed<start+13){
     var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None);var snapshot=NetworkAthlete.HostPlayer.Ball.Value;
+    foreach(var p in players){var m=p.GetComponent<Athlete>().FootballMotion;if(m&&m.State.charging)animatedCharges.Add(p.OwnerClientId);if(m&&m.State.gesture==FootballGesture.Kick)animatedKicks.Add(p.OwnerClientId);}
     if(app.rooms.Host&&!arranged&&elapsed>start+1){
      ball.ResetBall();centre=ball.Body.position;
      foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-.22f,p.OwnerClientId==0?-4:-.9f);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
@@ -32,6 +34,7 @@ namespace WhatTheFish {
     yield return null;
    }
    Check(clientTravel>2&&hostTravel>2,"BOTH_PLAYERS_KICK_ONE_SHARED_BALL");
+   Check(animatedKicks.Count==expected&&animatedCharges.Count==expected,"BOTH_PLAYERS_KICK_AND_CHARGE_POSES_REPLICATE");
    Check(app.rooms.Host?!ball.Body.isKinematic:ball.Body.isKinematic&&!ball.Body.detectCollisions,"ONLY_HOST_SIMULATES_PHYSICS");
    Check(Vector3.Distance(ball.Body.position,NetworkAthlete.HostPlayer.Ball.Value.position)<1,"SNAPSHOT_PRESENTATION_WITHIN_ONE_METRE");
    if(app.rooms.Host){

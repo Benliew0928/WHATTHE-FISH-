@@ -1,0 +1,31 @@
+{
+  "base": "repository root",
+  "length_metres": 1.0,
+  "prefab_lengths_metres": [
+    0.4,
+    0.9,
+    1.8
+  ],
+  "meshes": [
+    {
+      "name": "LagoonFish_Master",
+      "vertices": 6446,
+      "triangles": 12792
+    },
+    {
+      "name": "LagoonFish_LOD0",
+      "vertices": 1646,
+      "triangles": 3192
+    },
+    {
+      "name": "LagoonFish_LOD1",
+      "vertices": 674,
+      "triangles": 1248
+    }
+  ],
+  "external_dependencies": [],
+  "sha256": {
+    "Game/Assets/_Game/Art/Fishing/Fish/LagoonFish.fbx": "735494bc1c2a017271f2b16982da5301eb56758919d9a3486a1af302dde6a5ff",
+    "ArtSource/Fishing/LagoonFish/LagoonFish.blend": "eaf72db9d6701329f7ac1aeb2c5b14606edb5206094c298d9bcdf890f386ccbf"
+  }
+}

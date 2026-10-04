@@ -11,9 +11,14 @@ namespace WhatTheFish {
   public JumpMotor Jump {get;}=new JumpMotor();
   public BasketballMotion BasketballMotion {get;private set;}
   public GolfClubMotion GolfClubMotion {get;private set;}
+  public FootballMotion FootballMotion {get;private set;}
+  public int HitVariant=>remote?receivedFootball.hitVariant:football?football.HitVariant:0;
+  public float WhiffRemaining=>remote?Mathf.Max(0,(float)(receivedFootball.whiffUntil-footballClock-Time.timeAsDouble+footballReceivedAt)):football?football.RecoveryRemaining:0;
   JumpSnapshot receivedJump;int jumpLayer=-1;float jumpWeight;
   public bool LoadingJump=>remote?receivedJump.preparing:Jump.Preparing;
   public bool Airborne=>remote?receivedJump.airborne:Jump.Airborne;
+  public bool PresentingJump=>remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
+  public float JumpPose=>remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
   public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
   public bool CanRequestJump=>!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
@@ -33,14 +38,14 @@ namespace WhatTheFish {
   float nextKick;
   public bool Charging {get;private set;}
   public bool KickReady=>!Airborne&&!LoadingJump&&Time.time>=nextKick&&FootballBall.Instance&&FootballBall.Instance.InKickRange(this);
-  public bool TryKick(float charge=1){if(!KickReady||!FootballBall.Instance.TryKick(this,charge))return false;nextKick=Time.time+.35f;return true;}
+  public bool TryKick(float charge=1){if(!KickReady)return false;var contact=FootballBall.Instance.transform.position;if(!FootballBall.Instance.TryKick(this,charge))return false;FootballMotion?.Kick(charge,contact);nextKick=Time.time+.35f;return true;}
   public FootballSnapshot FootballState(double now){
-   if(footballSequence!=football.Sequence){footballSequence=football.Sequence;cachedFootball=new FootballSnapshot{action=football.State,sequence=football.Sequence,started=now-football.Elapsed,cooldownUntil=now+football.CooldownRemaining};}
+   if(footballSequence!=football.Sequence){footballSequence=football.Sequence;cachedFootball=new FootballSnapshot{action=football.State,sequence=football.Sequence,started=now-football.Elapsed,cooldownUntil=now+football.CooldownRemaining,hitVariant=football.HitVariant,whiffUntil=football.RecoveryRemaining>0?now+football.RecoveryRemaining:0};}
    return cachedFootball;
   }
   public void ApplyFootball(FootballSnapshot value,double serverTime){receivedFootball=value;footballClock=serverTime;footballReceivedAt=Time.timeAsDouble;}
-  public void Setup(){if(!BasketballMotion)BasketballMotion=GetComponent<BasketballMotion>()??gameObject.AddComponent<BasketballMotion>();BasketballMotion.Bind(this);if(!GolfClubMotion)GolfClubMotion=GetComponent<GolfClubMotion>()??gameObject.AddComponent<GolfClubMotion>();GolfClubMotion.Bind(this);capsule=GetComponent<CharacterController>();animator=GetComponentInChildren<Animator>();football=GetComponent<FootballTackle>();jumpLayer=animator?animator.GetLayerIndex("Jump"):-1;footballLayer=animator?animator.GetLayerIndex("Football action"):-1;turnLayer=animator?animator.GetLayerIndex("Turn expression"):-1;bodyRenderers=visual?visual.GetComponentsInChildren<SkinnedMeshRenderer>(true):GetComponentsInChildren<SkinnedMeshRenderer>(true);if(!initialized){Jump.Reset();Motor.Reset(transform.eulerAngles.y);lastPosition=transform.position;visualRest=visual?visual.localPosition:Vector3.zero;initialized=true;}}
-  public void ResetLocomotion(){if(!initialized)Setup();Motor.Reset(transform.eulerAngles.y);speed=0;Charging=false;nextKick=0;if(BasketballMotion)BasketballMotion.ResetPose();if(GolfClubMotion)GolfClubMotion.ResetPose();Jump.Reset();receivedJump=default;jumpWeight=0;if(animator&&jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);if(football)football.ResetAction();footballWeight=0;groundSlideWeight=0;if(visual)visual.localPosition=visualRest;if(animator&&footballLayer>=0)animator.SetLayerWeight(footballLayer,0);lastPosition=transform.position;turnWeight=0;if(animator&&turnLayer>=0)animator.SetLayerWeight(turnLayer,0);}
+  public void Setup(){if(!BasketballMotion)BasketballMotion=GetComponent<BasketballMotion>()??gameObject.AddComponent<BasketballMotion>();BasketballMotion.Bind(this);if(!GolfClubMotion)GolfClubMotion=GetComponent<GolfClubMotion>()??gameObject.AddComponent<GolfClubMotion>();GolfClubMotion.Bind(this);if(!FootballMotion){FootballMotion=GetComponent<FootballMotion>();if(!FootballMotion)FootballMotion=gameObject.AddComponent<FootballMotion>();}FootballMotion.Bind(this);capsule=GetComponent<CharacterController>();animator=GetComponentInChildren<Animator>();football=GetComponent<FootballTackle>();jumpLayer=animator?animator.GetLayerIndex("Jump"):-1;footballLayer=animator?animator.GetLayerIndex("Football action"):-1;turnLayer=animator?animator.GetLayerIndex("Turn expression"):-1;bodyRenderers=visual?visual.GetComponentsInChildren<SkinnedMeshRenderer>(true):GetComponentsInChildren<SkinnedMeshRenderer>(true);if(!initialized){Jump.Reset();Motor.Reset(transform.eulerAngles.y);lastPosition=transform.position;visualRest=visual?visual.localPosition:Vector3.zero;initialized=true;}}
+  public void ResetLocomotion(){if(!initialized)Setup();Motor.Reset(transform.eulerAngles.y);speed=0;Charging=false;nextKick=0;if(BasketballMotion)BasketballMotion.ResetPose();if(GolfClubMotion)GolfClubMotion.ResetPose();if(FootballMotion)FootballMotion.ResetPose();Jump.Reset();receivedJump=default;jumpWeight=0;if(animator&&jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);if(football)football.ResetAction();footballWeight=0;groundSlideWeight=0;if(visual)visual.localPosition=visualRest;if(animator&&footballLayer>=0)animator.SetLayerWeight(footballLayer,0);lastPosition=transform.position;turnWeight=0;if(animator&&turnLayer>=0)animator.SetLayerWeight(turnLayer,0);}
   public LocomotionSnapshot Snapshot(double now){
    // Keep the timestamp stable within a phase, including idle, so unchanged
    // athletes do not resend the entire snapshot on every network tick.
@@ -81,6 +86,7 @@ namespace WhatTheFish {
    float normalTime=dt;bool slideContact=false;
    var displacement=football?football.Step(dt,out normalTime,out slideContact):Vector3.zero;
    Charging=command.charging&&KickReady;
+   FootballMotion?.Charging(Charging);
    float requestedSpeed=FootballBall.Instance&&FootballBall.Allowed?FootballBall.Instance.MovementSpeed(this,command.sprint,Charging):(command.sprint?7:4);
    if(football)requestedSpeed*=football.MovementMultiplier;
    float vertical=Jump.Step(grounded,CanRequestJump,dt);
@@ -104,7 +110,7 @@ namespace WhatTheFish {
    if(transform.position.y<fallLimit){capsule.enabled=false;transform.position=island?island.layout.safe_return:(CoastalVenueRoutes.Active?CoastalVenueRoutes.Active.safeReturn:new Vector3(0,1,0));capsule.enabled=true;ResetLocomotion();}
    lastPosition=transform.position;
   }
-  void OnControllerColliderHit(ControllerColliderHit hit){var ball=hit.collider.GetComponent<FootballBall>();if(ball)ball.Intercept(this);Motor.Constrain(hit.normal);}
+  void OnControllerColliderHit(ControllerColliderHit hit){var ball=hit.collider.GetComponent<FootballBall>();if(ball)ball.Intercept(this);else FootballMotion?.Bump(hit.normal);Motor.Constrain(hit.normal);}
   void Update(){
    if(!animator)return;
    if(inTransit){if(jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);jumpWeight=0;animator.SetFloat("Speed",0);animator.SetBool("Turning",false);animator.SetBool("Launching",false);if(turnLayer>=0)animator.SetLayerWeight(turnLayer,0);if(footballLayer>=0)animator.SetLayerWeight(footballLayer,0);return;}
@@ -118,10 +124,10 @@ namespace WhatTheFish {
    // The running legs stay active while the saved turn contributes torso/head
    // expression. Neither the animation nor planted-foot IK can gate travel.
    turnWeight=Mathf.MoveTowards(turnWeight,turning&&speed>.2f&&Action==FootballAction.None?.65f:0,Time.deltaTime*8);
-   if(turnLayer>=0)animator.SetLayerWeight(turnLayer,turnWeight);
+   if(turnLayer>=0)animator.SetLayerWeight(turnLayer,FootballMotion&&FootballMotion.Active?0:turnWeight);
    if(jumpLayer>=0){
-    float pose=remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
-    bool presenting=remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
+    float pose=JumpPose;
+    bool presenting=PresentingJump;
     jumpWeight=Mathf.MoveTowards(jumpWeight,presenting&&Action==FootballAction.None?1:0,Time.deltaTime*18);
     animator.SetFloat("JumpTime",pose);animator.SetLayerWeight(jumpLayer,jumpWeight);
    }

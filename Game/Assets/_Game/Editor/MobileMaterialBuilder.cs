@@ -37,7 +37,7 @@ public static class MobileMaterialBuilder {
   var paths=AssetDatabase.GetDependencies(SkySailBuilder.BuildScenes().Concat(AssetDatabase.FindAssets("t:Prefab",new[]{"Assets/_Game/Art/MobileVegetation"}).Select(AssetDatabase.GUIDToAssetPath)).ToArray(),true);
   foreach(string path in paths.Where(p=>p.EndsWith(".mat")).Distinct()){
    var original=AssetDatabase.LoadAssetAtPath<Material>(path);
-   if(!original.HasProperty("_BaseMap"))continue;
+   if(!original.HasProperty("_BaseMap")||string.Equals(original.GetTag("KeepSourceTexture",false),"True",StringComparison.OrdinalIgnoreCase))continue;
    var entry=entries.FirstOrDefault(e=>e.source==AssetDatabase.GetAssetPath(original.GetTexture("_BaseMap")));
    // Accent materials can be recoloured through a property block at runtime.
    if(entry==null||original.name=="LG_Accent")continue;
@@ -60,6 +60,9 @@ public static class MobileMaterialBuilder {
    if(!component)continue;
    var serialized=new SerializedObject(component);var property=serialized.GetIterator();bool changed=false;
    while(property.Next(true))if(property.propertyType==SerializedPropertyType.ObjectReference&&property.objectReferenceValue is Material original){
+    // Explicit sharing can be cheaper when another shader already requires the
+    // original image; also ignore an older generated variant for such materials.
+    if(string.Equals(original.GetTag("KeepSourceTexture",false),"True",StringComparison.OrdinalIgnoreCase))continue;
     string guid=AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(original));
     if(variants.TryGetValue(guid,out var replacement)){property.objectReferenceValue=replacement;changed=true;count++;}
    }

@@ -16,12 +16,15 @@ namespace WhatTheFish {
   readonly System.Random kickoffRandom=new();
   static uint nextRoundRevision;uint publishedRevision,observedRuleRevision=uint.MaxValue;
   FootballMatchPhase publishedPhase;
+  public const double GoalFollowThroughSeconds=.65;
+  double goalFollowThroughUntil;
   public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.FixedTime:Time.fixedTimeAsDouble;
   public bool Authority=>ball&&ball.HasAuthority;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Football&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
   public FootballMatchSnapshot Snapshot=>Authority?Capture():NetworkAthlete.HostPlayer?NetworkAthlete.HostPlayer.Match.Value:default;
   public static bool BlocksMovement=>Instance&&Instance.Context&&(Instance.Snapshot.phase==FootballMatchPhase.Kickoff||Instance.Snapshot.phase==FootballMatchPhase.GoalReset);
   public static bool BlocksActions=>Instance&&Instance.Context&&Instance.Snapshot.phase!=FootballMatchPhase.Idle&&!Instance.Running;
+  public static bool GoalFollowThrough {get{if(!Instance||!Instance.Context)return false;var s=Instance.Snapshot;return (s.phase==FootballMatchPhase.GoalReset||s.phase==FootballMatchPhase.Finished)&&s.deadline>Instance.Now;}}
   public bool Running=>Snapshot.phase==FootballMatchPhase.Regulation||Snapshot.phase==FootballMatchPhase.Overtime;
   public double Remaining {get{var s=Snapshot;return s.phase==FootballMatchPhase.Regulation||s.phase==FootballMatchPhase.Overtime||s.phase==FootballMatchPhase.Kickoff||s.phase==FootballMatchPhase.TeamSelection?Math.Max(0,s.deadline-Now):s.remaining;}}
   public int EligiblePlayers=>Eligible().Count();
@@ -37,7 +40,7 @@ namespace WhatTheFish {
     bool continuous=publishedPhase==FootballMatchPhase.Regulation&&State.Phase==FootballMatchPhase.Overtime;
     observedRuleRevision=State.Revision;publishedPhase=State.Phase;if(!continuous)publishedRevision=++nextRoundRevision;
    }
-   return new FootballMatchSnapshot{phase=State.Phase,result=State.Result,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,remaining=State.Running||State.Phase==FootballMatchPhase.Kickoff||State.Phase==FootballMatchPhase.TeamSelection?0:State.Remaining(Now),revision=publishedRevision,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),teamCapacity=Selection.Capacity};
+   return new FootballMatchSnapshot{phase=State.Phase,result=State.Result,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=goalFollowThroughUntil>0?goalFollowThroughUntil:State.Deadline,remaining=State.Running||State.Phase==FootballMatchPhase.Kickoff||State.Phase==FootballMatchPhase.TeamSelection?0:State.Remaining(Now),revision=publishedRevision,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),teamCapacity=Selection.Capacity};
   }
   void Publish(){if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.Match.Value=Capture();}
   public FootballTeam TeamOf(Athlete actor){if(!actor)return FootballTeam.None;var net=actor.GetComponent<NetworkAthlete>();return net&&net.IsSpawned?net.Team.Value:Selection.TeamOf(PlayerId(actor));}
@@ -53,7 +56,7 @@ namespace WhatTheFish {
    participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);SyncTeams();
    goals=new FootballGoalDetector[ball.GoalCount];
    for(int i=0;i<goals.Length;i++){int sign=ball.GoalSign(i);float paintedEdge=(sign>0?ball.PitchBounds.max.z:ball.PitchBounds.min.z)+sign*rules.goalLineWidth*.5f;float line=sign*Mathf.Max(sign*paintedEdge,sign*ball.GoalFront(i));goals[i]=new FootballGoalDetector(ball.GoalBounds(i),line,sign);}
-   State.SelectTeams(Now,rules.teamSelectionSeconds,rules.regulationSeconds,rules.overtimeSeconds,rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();return true;
+   goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,rules.regulationSeconds,rules.overtimeSeconds,rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();return true;
   }
   public bool ChooseTeam(Athlete actor,FootballTeam team,uint selectionRevision){
    if(!Authority||!Context||!actor||State.Phase!=FootballMatchPhase.TeamSelection||Now>=State.Deadline||selectionRevision!=Snapshot.revision)return false;
@@ -63,7 +66,7 @@ namespace WhatTheFish {
    var actor=AppRoot.Instance.LocalAthlete;if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();
    if(net&&net.IsSpawned){if(net.IsOwner)net.ChooseFootballTeamRpc(team,Snapshot.revision);}else ChooseTeam(actor,team,Snapshot.revision);
   }
-  public void ClearMatch(){State.Clear();goals=null;participants.Clear();Selection.Clear();foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.Team.Value=FootballTeam.None;}ClearInputs();ball.ResetBall();Publish();}
+  public void ClearMatch(){goalFollowThroughUntil=0;State.Clear();goals=null;participants.Clear();Selection.Clear();foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.Team.Value=FootballTeam.None;}ClearInputs();ball.ResetBall();Publish();}
   void ClearInputs(){PlayerView.Instance?.ClearMatchInput();foreach(var actor in Athlete.Active){actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();}}
   public bool TryKickoffPose(FootballTeam team,int teamSize,int slot,out Vector3 position,out Quaternion rotation){
    position=default;rotation=Quaternion.identity;var formation=rules.Formation(teamSize);
@@ -131,13 +134,14 @@ namespace WhatTheFish {
     var r=new Vector3(radius/Mathf.Abs(scale.x),radius/Mathf.Abs(scale.y),radius/Mathf.Abs(scale.z));
     for(int i=0;i<goals.Length;i++)if(goals[i].Sample(point,r,now,out double crossedAt)){
      if(crossedAt>=State.Deadline)State.Advance(crossedAt);
-     if(State.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt))break;
+     if(State.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt)){goalFollowThroughUntil=now+GoalFollowThroughSeconds;ClearInputs();break;}
     }
    }
-   if(State.Phase==FootballMatchPhase.GoalReset){if(!ResetRound()){ClearMatch();return;}State.ResetCompleted(now);}
+   if(State.Phase==FootballMatchPhase.GoalReset&&now>=goalFollowThroughUntil){goalFollowThroughUntil=0;if(!ResetRound()){ClearMatch();return;}State.ResetCompleted(now);}
+   if(State.Phase==FootballMatchPhase.Finished&&now>=goalFollowThroughUntil)goalFollowThroughUntil=0;
    var before=State.Phase;State.Advance(now);
    if(before==FootballMatchPhase.Kickoff&&State.Running){ClearInputs();ResetDetection();}
-   // No reset, freeze, input clear, detector reset or ball mutation on overtime/finish.
+   // Regulation -> overtime remains continuous; a winning goal gets the same net follow-through.
    Publish();
   }
  }
