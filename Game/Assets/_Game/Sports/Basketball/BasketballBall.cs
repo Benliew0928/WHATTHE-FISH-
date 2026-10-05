@@ -4,11 +4,14 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public struct BasketballSnapshot:INetworkSerializable,IEquatable<BasketballSnapshot> {
-  public bool valid,held,queued;public ulong holder;public Vector3 position;public Quaternion rotation;public uint reset,shots,passes;public double time;public float dribble,cadence;
+  public bool valid,held,queued;public ulong holder;public Vector3 position;public Quaternion rotation;public uint reset,shots,passes,steals;public double time,stealTime;public float dribble,cadence;
+  public BasketballFinishNotice finish;public BasketballCharge charge;public BasketballScore score;public BasketballNetHit northNet,southNet;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {
    s.SerializeValue(ref valid);s.SerializeValue(ref held);s.SerializeValue(ref queued);s.SerializeValue(ref holder);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref reset);s.SerializeValue(ref shots);s.SerializeValue(ref passes);s.SerializeValue(ref dribble);s.SerializeValue(ref cadence);s.SerializeValue(ref time);
+   s.SerializeValue(ref finish);s.SerializeValue(ref charge);s.SerializeValue(ref score);s.SerializeValue(ref northNet);s.SerializeValue(ref southNet);
+   s.SerializeValue(ref steals);s.SerializeValue(ref stealTime);
   }
-  public bool Equals(BasketballSnapshot b)=>valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time;
+  public bool Equals(BasketballSnapshot b)=>valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time&&finish.Equals(b.finish)&&charge.Equals(b.charge)&&score.Equals(b.score)&&northNet.Equals(b.northNet)&&southNet.Equals(b.southNet)&&steals==b.steals&&stealTime==b.stealTime;
  }
 
  // One arena-local ball. Only the host (or offline player) owns physical simulation.
@@ -16,13 +19,14 @@ namespace WhatTheFish {
  [RequireComponent(typeof(Rigidbody),typeof(SphereCollider))]
  [DefaultExecutionOrder(50)]
  public sealed partial class BasketballBall:MonoBehaviour {
-  public const float Radius=.12f;
+  public const float Radius=.15f;
   public Rigidbody Body {get;private set;}
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
   public bool Simulating {get;private set;}
+  public uint PresentationReset=>Authority?reset:haveTarget?target.reset:0;
   Vector3 home;Quaternion homeRotation;float sendAt,receivedAt;bool initialized,wasConnected,wasAuthority,wasPlaying;
   uint reset;BasketballSnapshot previous,target;bool haveTarget;
-  void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;initialized=true;}
+  void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;home.y=Mathf.Max(home.y,Radius+.002f);homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;PrepareHoops();BasketballBoundaryVisual.Attach(this);initialized=true;}
   void OnEnable(){Active=this;if(initialized)ResetHome();}
   void OnDisable(){ClearPossession();if(Active==this)Active=null;if(Body){Body.isKinematic=true;Simulating=false;}haveTarget=false;wasPlaying=false;}
   void SetPose(Vector3 position,Quaternion rotation){
@@ -48,8 +52,8 @@ namespace WhatTheFish {
    bool playing=Playing;
    // Freeze clients even while their player/network variables are still arriving.
    bool simulate=authority&&playing&&(!connected||(host&&host.IsSpawned));
-   if(connected!=wasConnected||authority!=wasAuthority||playing!=wasPlaying){ResetHome();wasConnected=connected;wasAuthority=authority;wasPlaying=playing;}
-   if(simulate)StepInteraction();
+   if(connected!=wasConnected||authority!=wasAuthority||playing!=wasPlaying){ResetCourtPlayers();if(authority)ResetSessionScore();ResetHome();wasConnected=connected;wasAuthority=authority;wasPlaying=playing;}
+   if(simulate){StepShotPhysics();StepSteals();StepInteraction();}
    bool dynamic=simulate&&!Held;
    if(Body.isKinematic==dynamic)Body.isKinematic=!dynamic;
    Simulating=simulate;Body.detectCollisions=authority&&!Held;
@@ -57,7 +61,7 @@ namespace WhatTheFish {
    if(simulate&&(transform.localPosition.y < -3||transform.localPosition.y>25||Mathf.Abs(transform.localPosition.x)>35||Mathf.Abs(transform.localPosition.z)>45))ResetHome();
    if(connected&&authority&&host&&host.IsSpawned&&Time.unscaledTime>=sendAt){
     sendAt=Time.unscaledTime+.05f;
-    host.Basketball.Value=new BasketballSnapshot{valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time};
+    host.Basketball.Value=new BasketballSnapshot{valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,steals=steals,stealTime=stealTime,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time,finish=finishNotice,charge=Charge,score=score,northNet=baskets[0]?baskets[0].Hit:default,southNet=baskets[1]?baskets[1].Hit:default};
    }
   }
   void Update(){
@@ -66,6 +70,7 @@ namespace WhatTheFish {
    if(!haveTarget||next.time!=target.time){
     bool snap=!haveTarget||next.reset!=target.reset;previous=target;target=next;receivedAt=Time.unscaledTime;
     if(snap){previous=target;SetPose(target.position,target.rotation);}haveTarget=true;
+    if(baskets[0])baskets[0].Receive(next.northNet);if(baskets[1])baskets[1].Receive(next.southNet);
    }
    float duration=Mathf.Clamp((float)(target.time-previous.time),.02f,.2f);
    float alpha=Mathf.Clamp01((Time.unscaledTime-receivedAt)/duration);

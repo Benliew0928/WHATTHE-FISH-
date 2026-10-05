@@ -1,5 +1,232 @@
 # Build size — measured release records
 
+## Untimed finishes and shot fallback — 6 October 2026
+
+Fresh AndroidSubmission completed at **01:09:38 Malaysia time**:
+**89,798,556 → 89,803,004 bytes (+4,448)**. Strict-limit headroom is
+**10,196,996 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,803,004 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**B4052AD336371FC3120C5CB572B8F691168E161E06875F9DEB47961A3F358685**.
+
+Protocol **28** extends eligible approaches to 4 m, removes finish timing,
+guarantees an unblocked dunk and gives layups one host-side 85% make roll.
+Unavailable gestures release ordinary shots with the existing charge phase.
+The gather retains a valid approach while the ball returns from a bounce, and
+the jump and palm rollover are retimed for the wider range. The feature reuses
+the existing character rig and physical ball; no art or runtime dependency was
+added. [Rules](BASKETBALL-FINISHES.md) and
+[packing audit](APK-SIZE-AUDIT.md#untimed-finishes-and-shot-fallback--6-october-2026).
+
+The complete **01:04:56 Windows player** is delivered in
+`Builds/WindowsFinal/`, with **811 passing assertions and zero failures**.
+All **315 files** matched the tested candidate by SHA-256 during promotion at
+**01:11 Malaysia time**, before updating its delivery note. Windows and Android
+use protocol **28**, requiring matching peers. Existing menu, Golf, charging
+and steal work is preserved.
+
+Across Android packaging, **3,048 of 3,050** checked source/asset/config inputs
+remain byte-identical; runtime scripts and scenes are unchanged. Format-aware
+comparison proves the regenerated Golf prefab retains all properties and
+reference topology; the other difference is two platform URP runtime
+registrations. Evidence, source manifests, preview and audit snapshots are
+under `Builds/BasketballGestureFixQA/`.
+[Verification and archive batches](VERIFICATION.md#untimed-finishes-and-shot-fallback--6-october-2026).
+No phone was connected; Android appearance, physical touch, FPS, thermals and
+WAN timing remain unverified.
+
+## Basketball layups and dunks — 5 October 2026
+
+Fresh AndroidSubmission completed at **21:03:16 Malaysia time**:
+**89,780,060 → 89,798,556 bytes (+18,496)**. Strict-limit headroom is
+**10,201,444 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,798,556 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**B338305A08FFB2EE0E9F9FE9F2CE1E6CD45C348EA87FE3B32D8EDE20D1A0F3AB**.
+
+Protocol **27** adds up/down finish selection on the existing Shoot button,
+host-validated approach and jump clearance, and procedural gather, takeoff,
+layup/dunk release and landing. The ball uses the existing physical scoring
+rules. All poses reuse the shared character rig; no imported art, animation,
+audio, material, texture or runtime dependency was added.
+[Controls and calculations](BASKETBALL-FINISHES.md) and
+[packing audit](APK-SIZE-AUDIT.md#basketball-layups-and-dunks--5-october-2026).
+
+The complete **20:57:41 Windows player** is delivered in
+`Builds/WindowsFinal/`, with **994 passing assertions** across the final suites.
+All **315 files** matched the tested candidate by SHA-256 during promotion at
+**21:08 Malaysia time**, before the delivery note was updated. Both builds use
+protocol **27** and require matching peers. The source preserves the existing
+Storybook menu, Golf and basketball work.
+
+Across Android packaging, **3,048 of 3,050** checked source/asset/config inputs
+remain byte-identical. Runtime scripts and scenes are unchanged. Format-aware
+comparison proves the remaining changes are equivalent Golf prefab object IDs
+and platform URP registrations. Evidence, source manifests, current video and
+audit snapshots are under `Builds/BasketballFinishQA/`.
+[Verification and archive batches](VERIFICATION.md#basketball-layups-and-dunks--5-october-2026).
+No phone was connected; Android appearance, touch, FPS, thermals and WAN timing
+remain unverified.
+
+## Basketball charging and energy boundary — 5 October 2026
+
+Fresh AndroidSubmission completed at **17:43:26 Malaysia time**:
+**89,762,748 → 89,780,060 bytes (+17,312)**. Strict-limit headroom is
+**10,219,940 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,780,060 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**E17FFB1658C16209CFAADD66ECE0496E36E7F20DAE3FA37407DC03B4FCA0CDE0**.
+
+Protocol **26** adds a looping distance-based power meter, half-speed movement
+while charging, replicated aiming poses, football-style cancellation and a
+translucent court barrier with player/ball ripples. The barrier shares the
+football material and shader, generating only 16 vertices at runtime. No
+imported art, animation, audio, texture, material or package was added.
+[Controls and calculations](BASKETBALL-GAMEPLAY.md) and
+[packing audit](APK-SIZE-AUDIT.md#basketball-charging-and-energy-boundary--5-october-2026).
+
+The complete **17:38:12 Windows player** is delivered in
+`Builds/WindowsFinal/`, with **575 passing assertions** and a final rendered
+check of corrected scoreboard text. All **315 files** matched the tested
+candidate by SHA-256 during promotion at **19:53 Malaysia time**. The previous
+player was archived after the user authorized closing its running game.
+The current Windows player and APK use protocol **26** and must be paired with
+matching builds. Source includes the existing Storybook menu, Golf and
+basketball steal work.
+
+Across final Android packaging, **3,040 of 3,042** source/asset/config inputs
+remain byte-identical. Runtime code is unchanged. The other two contain
+equivalent regenerated Golf prefab IDs and platform URP registrations.
+Evidence, signatures, source manifests and the delivery status are under
+`Builds/BasketballChargeQA/`.
+[Verification and archive batches](VERIFICATION.md#basketball-charging-and-energy-boundary--5-october-2026).
+No phone was connected; Android appearance, touch, FPS, thermals and WAN timing
+remain unverified.
+
+## Refined basketball steal animation — 5 October 2026
+
+Fresh AndroidSubmission completed at **15:31:44 Malaysia time**:
+**89,758,540 → 89,762,748 bytes (+4,208)**. Strict-limit headroom is
+**10,237,252 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,762,748 bytes**. The budget gate and independent APK v2 signature check
+pass. SHA-256:
+**3DFEED06576E7F06310D6C71309FF3778B2876586C552AE7BDF0712530F21371**.
+
+This release refines the swipe and lost-ball reaction with a planted step,
+weight transfer, a curved hand sweep, shoulder recoil and recovery. It adds no
+imported animation, texture, mesh, material, audio or package. See the
+[animation notes](BASKETBALL-ANIMATION.md#steal-and-stripped-reaction) and
+[packing audit](APK-SIZE-AUDIT.md#refined-basketball-steal-animation--5-october-2026).
+
+The complete **15:25:12 Windows player**, protocol **25**, is promoted to
+`Builds/WindowsFinal/`; all **314 files** were hash-checked before updating its
+delivery note. **366 assertions pass** across fixed-rate pose reviews,
+portability, real input, multiplayer stealing and existing basketball motions.
+Evidence and the 17.33-second gameplay/pose preview are under
+`Builds/BasketballStealAnimationQA/`.
+[Verification and archive batches](VERIFICATION.md#refined-basketball-steal-animation--5-october-2026).
+
+Across Android packaging, **3,032 of 3,034** source/asset/config inputs remain
+byte-identical. The other two contain equivalent regenerated Golf prefab IDs
+and platform URP registrations. Runtime scripts and scenes match the tested
+Windows source. No phone was connected; Android appearance, FPS, thermals and
+touch feel remain unverified.
+
+## Basketball steals and loose-ball contests — 5 October 2026
+
+Fresh primary AndroidSubmission completed at **14:07:22 Malaysia time**:
+**89,744,112 → 89,758,540 bytes (+14,428)**. Strict-limit headroom is
+**10,241,460 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,758,540 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**630BA97FAF4B1F0D4C65329D24C28F9E5271F554808FA7B5F03B83592EBDAA34**.
+
+The **protocol 25** build adds repeatable Steal/F input, authoritative reach,
+facing, shielding and dribble-timing checks, a swipe and stripped reaction, and
+physical unowned deflections that anyone can recover. Both poses reuse the
+existing rig. No imported art, animation clip, audio, material or package was
+added. See [controls and calculations](BASKETBALL-GAMEPLAY.md#stealing-and-loose-ball-contests)
+and [packing audit](APK-SIZE-AUDIT.md#basketball-steals-and-loose-ball-contests--5-october-2026).
+
+The complete tested **14:03:09 Windows player** is promoted to
+`Builds/WindowsFinal/`, including all **314 files** and the existing launchers.
+**517 assertions pass**, including 69 steal checks, 31 portability checks and
+417 shooting/passing/physics/motion/jump regressions.
+[Verification](VERIFICATION.md#basketball-steals-and-loose-ball-contests--5-october-2026) and current evidence live under
+`Builds/BasketballStealQA/`. The APK is `Builds/Android/WhatTheFish-release.apk`;
+the current audit is retained in that task's `FinalSizeAudit/`.
+
+Across Android packaging, **3,028 of 3,030** checked source/asset/config inputs
+remained byte-identical. Only equivalent regenerated Golf ball prefab IDs and
+platform URP registrations changed. Runtime scripts and scenes match the tested
+Windows source. No phone was connected; touch feel, Android rendering/FPS,
+thermals and WAN timing remain unverified.
+
+Reviewed superseded APK/audit: `Legacy/20261005-140452-410-basketball-steal-before-release/`.
+Superseded complete Windows delivery: `Legacy/20261005-140636-398-basketball-steal-windows-delivery/`.
+Earlier test iterations and the copied portable fixture:
+`Legacy/20261005-140731-651-basketball-steal-iterations/`.
+Final captures, logs, signatures, source manifests and promotion hashes remain
+under `Builds/`. No staging, commit or push was performed.
+
+## Storybook Cove menu and teammate integration — 5 October 2026
+
+The selected first menu direction is implemented with the official logo, four
+cartoon islands, complete room/setup/settings/help pages and native interaction
+feedback. Pulled `26a0bf1` and `af02ea7` by fast-forward, preserving local basketball
+work through a reviewed three-way merge. The final combined source includes the
+concurrent basketball pace/boundary changes and uses **protocol 24**.
+[Menu implementation](STORYBOOK-MENU.md) and [verification](VERIFICATION.md#storybook-cove-menu-and-teammate-integration--5-october-2026).
+
+Fresh primary AndroidSubmission completed at **13:19:09 Malaysia time**:
+**86,791,760 → 89,744,112 bytes (+2,952,352)**. This comparison starts at the actual
+pre-pull APK, so its increase includes the incoming Golf integration and basketball
+work as well as the menu. Strict-limit headroom: **10,255,888 bytes**. The
+**75,000,000-byte development target remains exceeded by 14,744,112 bytes**.
+The strict build gate and independent APK v2 signature verification pass.
+SHA-256: **D0C2860AFA93F2F0F01DFAAC8F86F14DC114DC54E1B11B9E6DDBCD48C882ECBC**.
+
+Current output is `Builds/Android/WhatTheFish-release.apk`; fresh audit is
+`Builds/SizeAudit/latest/`, retained in `Builds/StorybookMenuQA/FinalSizeAudit/`.
+The complete tested **13:14:48 Windows player** is in `Builds/WindowsFinal/`, with
+all runtime files and the Golf, Fishing and Sky-Sail launchers. See its updated
+`LATEST-BUILD.txt` and the task's `windows-promotion.json` for package hashes.
+
+Across Android packaging, **3,020 of 3,022 source/asset/config files remained
+byte-identical**. The two changes are reviewed generated state: the Golf ball
+prefab has equivalent properties and references with regenerated local IDs;
+URP registrations return to the pulled Android configuration. Runtime source,
+scenes, menu textures and fonts remain identical. [Packing detail](APK-SIZE-AUDIT.md#storybook-cove-menu-and-teammate-integration--5-october-2026).
+
+Superseded baseline APK/audit: `Legacy/20261005-131618-369-storybook-before-release/`.
+Superseded complete Windows delivery: `Legacy/20261005-132228-234-storybook-windows-delivery/`.
+Reviewed menu iterations and portable fixture are recorded in
+`Builds/StorybookMenuQA/archive-iterations.txt`; the hash-matched duplicate test
+player is in `Legacy/20261005-132634-167-storybook-tested-candidate/`.
+Recovery stash and pre-merge
+files are retained. No staging, commit or push was performed. Phone touch,
+rendering, sustained FPS, thermals and different-network WAN remain unverified.
+
+## Basketball pace and player boundaries — 5 October 2026
+
+Fresh AndroidSubmission completed at **12:56:34 Malaysia time**: **86,791,760 → 89,260,934 bytes (+2,469,174)**. Strict-limit headroom is **10,739,066 bytes**. The **75,000,000-byte development target remains exceeded by 14,260,934 bytes**. The hard budget gate and independent APK v2 signature verification passed. SHA-256: **48EAEF354F940AFC8B0B6F375A0D07D4D7BAED4330B56C36B424CA5C72666594**.
+
+The before value is the actual APK measured at task start, before the repository received the Golf/football integration in `af02ea7`. The tested build includes that integration and the preserved basketball physics, faster shot preparation and player boundary. Most asset growth comes from the incoming Golf equipment/course; this basketball change adds no imported art, audio or package. See [the packing comparison](APK-SIZE-AUDIT.md#basketball-pace-and-player-boundaries--5-october-2026).
+
+The matched **protocol 23** Android and Windows players are retained in **`Builds/BasketballPaceQA/Release/`**. They were built in an isolated validation checkout to exclude concurrent unfinished Storybook menu changes. These measurements do not validate the later combined menu source or an older APK in `Builds/Android/`. The main source uses **protocol 24** for its additional menu network field and rejects connections to these protocol 23 players.
+
+Of **277 checked script, shader, prefab and scene inputs**, 276 were unchanged through the final Android build. The regenerated Golf ball prefab differed only in local object IDs and document ordering; a canonical comparison confirmed identical properties and reference topology. Source snapshots, both release players, signature, manifests, audit and [479 passing checks](VERIFICATION.md#basketball-pace-and-player-boundaries--5-october-2026) are under `Builds/BasketballPaceQA/`. No Android device was connected; phone rendering, touch feel, sustained FPS, thermals and WAN timing remain unverified. Earlier sections describe historical builds.
+
+## Basketball physics and net response — 4 October 2026
+
+Measured release: **86,774,768 → 86,791,760 bytes (+16,992)**. Strict-limit headroom: **13,208,240 bytes**. The **75,000,000-byte development target remains unmet by 11,791,760 bytes**. The baseline is the actual APK measured before this task. No imported mesh, texture, animation clip, audio or dependency was added.
+
+The main-project `Tools/Build/Build.ps1 -Target AndroidSubmission` passed with Unity 6000.3.20f1, release IL2CPP ARM64, at **23:45 Malaysia time**. Process-local TEMP/TMP used ignored `Builds/JdkTmp/`. The hard budget gate and APK v2 signature verification passed. Current output: `Builds/Android/WhatTheFish-release.apk`; retained task copy: `Builds/BasketballPhysicsQA/WhatTheFish-release.apk`. SHA-256: **861647E6075987EEF909558F86B0E76C0C590DBCEB74049694539FECD44AB626**.
+
+The 30 cm ball scales the existing two LOD meshes. Both responsive nets generate 1,152 vertices at runtime and reuse the existing material; idle nets stop rewriting their mesh. The power meter and score HUD use existing UI rendering. ZIP growth is principally IL2CPP **+14,294** and metadata **+2,390 bytes**. The largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. No unexpected art/dependency growth was found. Serialized packed assets total **151,510,681 bytes**, which is a different measurement from APK size.
+
+All **238 checked script, shader, prefab and scene inputs** remained unchanged through the Android build. Exact measurements, signature, source manifest, per-asset estimates and ZIP comparisons are under `Builds/BasketballPhysicsQA/`, including `FinalSizeAudit/`. [Controls and calculations](BASKETBALL-GAMEPLAY.md) and [396 passing Windows checks, visual review and cleanup](VERIFICATION.md#basketball-physics-and-net-response--4-october-2026) describe validation. No Android device was connected; phone appearance, touch feel, sustained FPS, thermals and WAN timing remain unverified. Earlier sections describe historical builds.
+
 ## GitHub Golf and football integration — 5 October 2026
 
 Combines local Golf commit `26a0bf1` with upstream `a98d75f`. Eight merge

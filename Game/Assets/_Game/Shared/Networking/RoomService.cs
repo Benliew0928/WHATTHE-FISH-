@@ -13,7 +13,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed class RoomService:MonoBehaviour,IRoomService {
-  public const ushort ProtocolVersion=22;
+  public const ushort ProtocolVersion=28;
   public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   public bool Host=>Connected&&NetworkManager.Singleton.IsHost;
@@ -38,8 +38,8 @@ namespace WhatTheFish {
    Session=await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions{MaxPlayers=Capacity,IsPrivate=true,Name=Sport+" • "+LocalProfile.ForSport(Sport).title}.WithRelayNetwork());
    Bind();
   });}
-  public async Task Join(string code){await Run(async()=>{
-   code=code.Trim().ToUpperInvariant();if(code.Length<4||code.Length>12||!code.All(char.IsLetterOrDigit))throw new InvalidOperationException("Enter the room code shared by your host.");
+  public async Task Join(string code){if(Connected)return;await Run(async()=>{
+   code=StorybookMenu.NormalizeCode(code);if(!StorybookMenu.ValidCode(code))throw new InvalidOperationException("Enter the room code shared by your host.");
    await Initialize();Session=await MultiplayerService.Instance.JoinSessionByCodeAsync(code);Bind();
   });}
   void Bind(){Session.Deleted+=Closed;Session.RemovedFromSession+=Closed;Session.SessionHostChanged+=HostChanged;Changed?.Invoke();}

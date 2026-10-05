@@ -1,6 +1,6 @@
 # Basketball model and physics foundation — 1 October 2026
 
-The basketball is imported into the existing Rally arena as one reusable rigid prop. This report records the model, physical contacts and synchronized movement foundation. The subsequent [pickup and shooting implementation](BASKETBALL-GAMEPLAY.md) adds automatic possession and player-controlled assisted shots. Dribbling, scoring, sound and particles remain deferred.
+This historical report records the original model, physical contacts and synchronized movement foundation. The current [basketball gameplay](BASKETBALL-GAMEPLAY.md) adds dribbling, hold-and-release shooting, scoring, miss detection and responsive nets. The current prefab enlarges the original 0.24 m meshes to a 0.30 m ball with a matching collider; the source art and historical measurements below are unchanged.
 
 ## Source and delivery
 

@@ -1,7 +1,7 @@
-param([ValidateSet('Offline','Local')][string]$Mode='Offline',[int]$Port=7897)
+param([ValidateSet('Offline','Local')][string]$Mode='Offline',[int]$Port=7897,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-$player=Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'
+$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
 $out=Join-Path $root ('Builds/BasketballGameplayQA/'+$Mode+'-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $processes=@();$folders=@()

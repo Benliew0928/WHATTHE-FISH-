@@ -37,6 +37,7 @@ public static class BasketballBallBuilder {
   rubber.bounciness=.78f;rubber.bounceCombine=PhysicsMaterialCombine.Maximum;rubber.dynamicFriction=.55f;rubber.staticFriction=.65f;rubber.frictionCombine=PhysicsMaterialCombine.Average;EditorUtility.SetDirty(rubber);
   var root=new GameObject("Basketball");
   var visual=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Art+"Basketball.fbx"));visual.name="Visual";visual.transform.SetParent(root.transform,false);
+  visual.transform.localScale=Vector3.one*(BasketballBall.Radius/.12f);
   var renderers=visual.GetComponentsInChildren<MeshRenderer>(true);foreach(var r in renderers){r.sharedMaterial=material;r.gameObject.SetActive(true);r.enabled=true;}
   var lod=root.AddComponent<LODGroup>();lod.SetLODs(new[]{new LOD(.03f,new Renderer[]{renderers.Single(r=>r.name=="Basketball_LOD0")}),new LOD(.001f,new Renderer[]{renderers.Single(r=>r.name=="Basketball_LOD1")})});lod.RecalculateBounds();
   var collider=root.AddComponent<SphereCollider>();collider.radius=BasketballBall.Radius;collider.sharedMaterial=rubber;collider.contactOffset=.002f;
@@ -57,8 +58,9 @@ public static class BasketballBallBuilder {
   if(existing.Length>1)throw new Exception("More than one basketball in the arena.");
   if(existing.Length==0){
    var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);if(!prefab)throw new Exception("Prepare the basketball prefab before rebuilding the arena.");
-   var ball=(GameObject)PrefabUtility.InstantiatePrefab(prefab);ball.transform.SetParent(arena.transform,false);ball.transform.localPosition=new Vector3(0,.122f,-1.5f);ball.transform.localRotation=Quaternion.Euler(10,20,15);
+   var ball=(GameObject)PrefabUtility.InstantiatePrefab(prefab);ball.transform.SetParent(arena.transform,false);ball.transform.localPosition=new Vector3(0,BasketballBall.Radius+.002f,-1.5f);ball.transform.localRotation=Quaternion.Euler(10,20,15);
   }
+  foreach(var ball in arena.GetComponentsInChildren<BasketballBall>(true)){var p=ball.transform.localPosition;p.y=Mathf.Max(p.y,BasketballBall.Radius+.002f);ball.transform.localPosition=p;}
   foreach(var hoop in arena.GetComponentsInChildren<Transform>(true).Where(t=>t.name=="Hoop_North"||t.name=="Hoop_South").ToArray()){
    if(hoop.Find("BallCollision"))continue;
    var proxy=new GameObject("BallCollision");proxy.layer=8;proxy.transform.SetParent(hoop,false);
@@ -80,8 +82,9 @@ public static class BasketballBallBuilder {
   var meshes=prefab.GetComponentsInChildren<MeshFilter>(true);var body=prefab.GetComponent<Rigidbody>();var sphere=prefab.GetComponent<SphereCollider>();
   if(meshes.Length!=2||meshes.Any(m=>Vector3.Distance(m.sharedMesh.bounds.size,Vector3.one*.24f)>.0001f))throw new Exception("Ball import scale mismatch");
   if(meshes.Single(m=>m.name=="Basketball_LOD0").sharedMesh.triangles.Length/3!=2976)throw new Exception("Wrong LOD0 topology");
-  if(prefab.GetComponentsInChildren<Collider>(true).Length!=1||sphere.center!=Vector3.zero||Mathf.Abs(sphere.radius-.12f)>.00001f||body.mass!=.62f||body.collisionDetectionMode!=CollisionDetectionMode.ContinuousSpeculative)throw new Exception("Invalid ball physics prefab");
-  File.WriteAllText(Output+"unity-import-audit.txt","PASS two centred 0.24 m meshes; 2976 / 720 triangles\nPASS one material, normal map and 1024x512 colour map\nPASS single sphere collider, radius 0.12 m; mass 0.62 kg; continuous collision\nPASS one ball per basketball scene; two 32-segment rim colliders and backboard collision\n");
+  if(prefab.GetComponentsInChildren<Collider>(true).Length!=1||sphere.center!=Vector3.zero||Mathf.Abs(sphere.radius-BasketballBall.Radius)>.00001f||body.mass!=.62f||body.collisionDetectionMode!=CollisionDetectionMode.ContinuousSpeculative)throw new Exception("Invalid ball physics prefab");
+  if(Mathf.Abs(prefab.transform.Find("Visual").localScale.x*meshes[0].sharedMesh.bounds.size.x-2*BasketballBall.Radius)>.0001f)throw new Exception("Visual/collider radius mismatch");
+  File.WriteAllText(Output+"unity-import-audit.txt","PASS two centred 0.24 m source meshes scaled to 0.30 m; 2976 / 720 triangles\nPASS one material, normal map and 1024x512 colour map\nPASS single sphere collider, radius 0.15 m; mass 0.62 kg; continuous collision\nPASS one ball per basketball scene; two 32-segment rim colliders and backboard collision\n");
  }
  public static void BuildWindows(){Prepare();ProjectBuilder.BuildCurrentWindows();}
 }

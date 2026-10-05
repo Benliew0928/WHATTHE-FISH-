@@ -14,9 +14,10 @@ namespace WhatTheFish {
    foreach(var renderer in accentRenderers)if(renderer)renderer.SetPropertyBlock(accents);
    if(title)title.text=appearance.title.ToUpperInvariant();
    if(subtitle){
-    subtitle.text=appearance.screen==0?"MAKE YOURSELF AT HOME":"WELCOME, TEAM "+new[]{"MINT","ROSE","LILAC","GOLD"}[appearance.palette];
+    subtitle.text=appearance.screen==0?new[]{"PLAY TOGETHER  •  SUNNY DAYS","ONE TEAM  /  GOOD ENERGY","MOVE • PLAY • REPEAT"}[appearance.design]:"WELCOME, TEAM "+new[]{"MINT","ROSE","LILAC","GOLD"}[appearance.palette];
     subtitle.color=LocalProfile.Teams[appearance.palette];
    }
+   foreach(var sign in GetComponentsInChildren<StadiumSign>(true))sign.Apply(appearance);
   }
  }
 }

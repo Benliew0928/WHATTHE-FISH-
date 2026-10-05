@@ -1,5 +1,219 @@
 # APK size audit — measured release records
 
+## Untimed finishes and shot fallback — 6 October 2026
+
+Actual signed APK: **89,798,556 → 89,803,004 bytes (+4,448)**. Hard-limit
+headroom is **10,196,996 bytes**; the 75 MB development target is exceeded by
+**14,803,004 bytes**. [Build, delivery and hash](BUILD-SIZE.md#untimed-finishes-and-shot-fallback--6-october-2026).
+
+Compressed ZIP entries grow **4,448 bytes**, with unchanged container/signing
+overhead. IL2CPP grows **4,065 bytes**, managed metadata **384 bytes**, and the
+net remainder shrinks **1 byte**. Two renamed entries retain their compressed
+lengths. Serialized assets remain **156,285,237 bytes**, unchanged; this is
+separate from the compressed APK measurement.
+
+The rules, input feedback and retimed motions reuse the shared character rig,
+meshes, materials and ball. The layup outcome is rolled once by the host and
+the existing snapshot carries the motion. No imported texture, mesh, animation
+clip, audio, material or package was added. Development review code is excluded
+from Android release execution. The latest packed-asset and ZIP-entry audits
+show no unexpected asset growth or unused new dependency to remove.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**,
+Golf structures **1.981 MB**, character mesh **1.588 MB**, football stadium
+**1.556 MB**, basketball stadium **1.348 MB** and idle animation **1.096 MB**.
+These per-asset DEFLATE estimates do not partition shared APK chunks exactly.
+The 75 MB development target remains unmet and the reserve is constrained.
+
+Evidence under `Builds/BasketballGestureFixQA/`: `before.json`, `release.json`,
+`apk-before-entries.json`, `apk-entry-delta.csv`, `asset-estimates.csv`,
+`packing-summary.json`, `apk-signature.txt`, `BeforeSizeAudit/`,
+`FinalSizeAudit/` and `generated-input-verification.json`.
+
+## Basketball layups and dunks — 5 October 2026
+
+Actual signed APK: **89,780,060 → 89,798,556 bytes (+18,496)**. Hard-limit
+headroom is **10,201,444 bytes**; the 75 MB development target is exceeded by
+**14,798,556 bytes**. [Build, delivery status and hash](BUILD-SIZE.md#basketball-layups-and-dunks--5-october-2026).
+
+Compressed ZIP entries grow **18,494 bytes**, with **2 bytes** of additional
+container/signing overhead. IL2CPP grows **16,024 bytes**, managed metadata
+**2,213 bytes**, and the Unity native library **219 bytes**; the net remainder
+is **38 bytes**. Renamed entries are paired through the full entry comparison.
+Serialized assets grow **216 bytes** to **156,285,237 bytes**; this is separate
+from the compressed APK measurement.
+
+The new motions reuse the character skeleton, meshes, materials and existing
+ball. Swept body and ball checks run when an action is accepted; held poses and
+incremental collision-aware motion run during that action. Finish parameters
+join the existing action snapshot, without per-frame finish RPCs. Development
+review code is excluded from Android release execution. No imported texture,
+mesh, animation clip, audio, material or package was introduced, and no
+unexpected large asset growth or unused new dependency was found.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**,
+Golf structures **1.981 MB**, character mesh **1.588 MB**, football stadium
+**1.556 MB**, basketball stadium **1.348 MB** and the existing idle animation
+**1.096 MB**. These per-asset DEFLATE estimates do not partition shared APK
+chunks exactly. The 75 MB development target remains unmet; the existing
+reserve is constrained despite this feature's small increase.
+
+Evidence: `Builds/BasketballFinishQA/before.json`, `release.json`,
+`apk-before-entries.json`, `apk-entry-delta.csv`, `asset-estimates.csv`,
+`apk-signature.txt`, `BeforeSizeAudit/`, `FinalSizeAudit/` and
+`generated-input-verification.json`.
+
+## Basketball charging and energy boundary — 5 October 2026
+
+Actual signed APK: **89,762,748 → 89,780,060 bytes (+17,312)**. Hard-limit
+headroom is **10,219,940 bytes**; the 75 MB development target is exceeded by
+**14,780,060 bytes**. [Build, delivery status and hash](BUILD-SIZE.md#basketball-charging-and-energy-boundary--5-october-2026).
+
+Compressed ZIP entries grow **17,310 bytes**, with **2 bytes** of additional
+container/signing overhead. IL2CPP grows **14,614 bytes**, managed metadata
+**1,607 bytes**, and the shared boundary shader **882 bytes**. Renamed entries
+with equal compressed lengths cancel in the comparison. No imported texture,
+mesh, material, audio, animation clip or dependency was introduced.
+Serialized assets grow **1,972 bytes** to **156,285,021 bytes**; this is not the
+compressed APK measurement.
+
+Basketball reuses football's material/shader with per-renderer tint and impact
+properties. Four static quads use 16 vertices and one material; four bounded
+ripples animate in the shader, whose expired pulses take a cheap early exit.
+The aiming/cancel poses reuse the existing rig. Charge phase joins the existing
+ball snapshot; cosmetic barrier contacts do not add RPCs. No unexpected large
+asset contributor or avoidable new dependency was found.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**,
+Golf structures **1.981 MB**, character mesh **1.588 MB**, football stadium
+**1.556 MB** and basketball stadium **1.348 MB**. These DEFLATE estimates and
+Unity's serialized asset totals are separate from actual APK length. The
+development reserve remains constrained and the 75 MB target is unmet.
+
+Evidence: `Builds/BasketballChargeQA/before.json`, `release.json`,
+`apk-entry-delta.csv`, `asset-estimates.csv`, `packing-top.txt`,
+`apk-signature.txt`, `BeforeSizeAudit/`, `FinalSizeAudit/` and
+`generated-input-verification.json`.
+
+## Refined basketball steal animation — 5 October 2026
+
+Actual signed APK: **89,758,540 → 89,762,748 bytes (+4,208)**. Hard-limit
+headroom is **10,237,252 bytes**; the 75 MB development target is exceeded by
+**14,762,748 bytes**. [Build and hash](BUILD-SIZE.md#refined-basketball-steal-animation--5-october-2026).
+
+Compressed ZIP entries grow **4,210 bytes**, while container/signing overhead
+shrinks **2 bytes**. IL2CPP grows **3,906 bytes**, managed metadata **244 bytes**,
+and the net remainder **60 bytes**. Two renamed entries keep their compressed
+lengths. Serialized assets are **156,283,049 bytes**, up **120 bytes**; this is
+not the APK measurement. No art or runtime dependency was added. The animation
+uses the existing rig and character LODs; development review code is excluded
+from the Android release except for small Unity script metadata.
+
+Leading art estimates remain timber **2.247 MB**, character albedo **1.993 MB**,
+Golf structures **1.981 MB**, character mesh **1.588 MB**, football stadium
+**1.556 MB**, and basketball stadium **1.348 MB**. There is no unexpected asset
+growth or new dependency to remove from this refinement. Per-asset DEFLATE
+estimates do not partition shared APK chunks exactly. The development target
+remains unmet and reserve is constrained.
+
+Evidence: `Builds/BasketballStealAnimationQA/release.json`, `apk-entry-delta.csv`,
+`asset-estimates.csv`, `apk-signature.txt`, `BeforeSizeAudit/`, `FinalSizeAudit/`
+and `generated-input-verification.json`.
+
+## Basketball steals and loose-ball contests — 5 October 2026
+
+Actual signed APK: **89,744,112 → 89,758,540 bytes (+14,428)**. Hard-limit
+headroom: **10,241,460 bytes**; development-target overrun: **14,758,540 bytes**.
+[Build and hash](BUILD-SIZE.md#basketball-steals-and-loose-ball-contests--5-october-2026).
+
+Actual compressed ZIP entries grow **14,425 bytes**, with **3 bytes** of
+additional container/signing overhead. IL2CPP grows **13,466 bytes**, managed
+metadata **891 bytes**, and the net remainder is **68 bytes**. Two renamed data
+entries preserve their compressed lengths. Serialized assets measure
+**156,282,929 bytes**, only **324** more than the preceding release; this is a
+different measurement from APK length. No new imported art, animation, audio or
+runtime package ships. The two procedural actions reuse the existing character
+rig, and the button/HUD reuse existing UI resources.
+
+Leading estimated art contributors remain timber **2.247 MB**, character albedo
+**1.993 MB**, Golf structures **1.981 MB**, character mesh **1.588 MB**, football
+stadium **1.556 MB**, and basketball stadium **1.348 MB**. There is no unexpected
+asset or dependency growth to remove in this task. These per-asset DEFLATE
+estimates are not exact allocations of shared APK chunks. The 75 MB working
+target remains unmet and the remaining hard-limit reserve is still constrained.
+
+Evidence: `Builds/BasketballStealQA/release.json`, `apk-entry-delta.csv`,
+`asset-estimates.csv`, `packing-top.txt`, `apk-signature.txt`, `BeforeSizeAudit/`
+and `FinalSizeAudit/`. Runtime source is unchanged through Android packaging;
+canonical inspection confirms identical properties/reference topology in the
+regenerated Golf ball prefab. [Functional checks and limits](VERIFICATION.md#basketball-steals-and-loose-ball-contests--5-october-2026).
+
+## Storybook Cove menu and teammate integration — 5 October 2026
+
+Signed APK: **86,791,760 → 89,744,112 bytes (+2,952,352)**. Headroom below the
+strict limit: **10,255,888 bytes**; development-target overrun: **14,744,112 bytes**.
+The baseline predates the teammate's Golf integration; the full growth is not a
+menu-only cost. The independently measured concurrent basketball/Golf build was
+89,260,934 bytes, making this combined menu package **483,178 bytes larger**,
+with source/build differences documented in the respective release records.
+[Exact build and hash](BUILD-SIZE.md#storybook-cove-menu-and-teammate-integration--5-october-2026).
+
+| New menu asset | Serialized bytes | Estimated ZIP bytes |
+| --- | ---: | ---: |
+| Shared four-island atlas | 467,980 | 307,208 |
+| Official logo delivery texture | 123,784 | 74,225 |
+| Cove Display font | 32,442 | 17,724 |
+| Cove Text font | 32,474 | 17,645 |
+| OFL license | 4,412 | 1,969 |
+| Total | 661,092 | 418,771 |
+
+The atlas imports to Android at 1024 pixels and the logo at 512, both ASTC 6×6
+without mipmaps. Four sprites share one atlas. Font subsets retain 64,108 source
+bytes across two weights; full editable originals and design boards stay outside
+the Unity player. Panels, clouds, water and icons are runtime UI meshes; tap sound
+is synthesized. No UI/animation package, new scene, full-screen bitmap per page,
+imported audio or duplicate island texture is added. Venue previews reuse one
+768×432 render texture and release it when closed.
+
+Actual compressed ZIP entries grow **2,948,227 bytes**, with **4,125 bytes** of
+additional signing/container overhead. Across the entire merged game, IL2CPP
+grows **154,698 bytes**. The largest new contributors from the pre-pull baseline
+are the Golf cart mesh and maps, followed by the menu atlas. Leading existing
+art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, Golf
+structures **1.981 MB**, character mesh **1.588 MB** and football stadium
+**1.556 MB**. No unexpected menu dependency appears. Serialized assets total
+**156,282,605 bytes**, a different measurement from compressed APK length.
+
+Fresh populated packing offsets support these per-asset estimates; shared ZIP
+chunks mean they are not exact asset allocations. Evidence:
+`Builds/StorybookMenuQA/release.json`, `apk-entry-delta.csv`, `packing-top.txt`,
+`apk-signature.txt`, `FinalSizeAudit/` and source hash/canonical comparisons.
+The 75 MB working target is still unmet; current headroom is not spare capacity
+to spend without further optimization. No lossy change to existing world art
+was made for this menu. [Functional limits](VERIFICATION.md#storybook-cove-menu-and-teammate-integration--5-october-2026).
+
+## Basketball pace and player boundaries — 5 October 2026
+
+Actual signed APK: **86,791,760 → 89,260,934 bytes (+2,469,174)**. Hard-limit headroom: **10,739,066 bytes**; development-target overrun: **14,260,934 bytes**. The strict gate and APK v2 signature pass. [Build scope and exact hash](BUILD-SIZE.md#basketball-pace-and-player-boundaries--5-october-2026).
+
+The measured starting APK predates the incoming Golf/football integration. The final build includes that integration plus basketball work, so the full increase must not be attributed to the timing/boundary change. No basketball mesh, texture, audio, animation pack or dependency was added. The player fence uses movement constraints without a rendered wall or physical ball collider. The final unreachable-rebound recovery fix increased the preceding diagnostic APK by **1,744 bytes**.
+
+Leading estimated asset increases against the starting APK are Golf cart mesh **909,743**, cart normal **621,270**, cart base color **498,110**, club normal **131,740**, club base color **129,848**, club mesh **123,767**, and course sector 07 **120,273 bytes**. The old ball normal and Golf terrain estimates decreased by **596,010** and **400,567 bytes** respectively. Actual ZIP entry growth includes IL2CPP **102,662** and metadata **15,857 bytes** across the integrated game. No unexpected new basketball art or package contributor was found.
+
+Largest art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, Golf structures **1.981 MB**, character mesh **1.588 MB** and football stadium **1.556 MB**. Serialized packed assets total **155,621,029 bytes**, up from **151,510,681**. These asset estimates and serialized sizes are distinct from the measured compressed APK length. The development reserve remains insufficient; being below the hard limit does not satisfy the 75 MB working target.
+
+Evidence is retained under `Builds/BasketballPaceQA/`: `before.json`, `release.json`, `apk-entry-delta.csv`, `asset-estimate-delta.csv`, `asset-estimates.csv`, `apk-signature.txt`, `BeforeSizeAudit/` and `FinalSizeAudit/`. Matched isolated Android/Windows players are in `Release/`; concurrent menu work is excluded. [Functional checks and remaining limits](VERIFICATION.md#basketball-pace-and-player-boundaries--5-october-2026).
+
+## Basketball physics and net response — 4 October 2026
+
+Actual signed AndroidSubmission APK: **86,774,768 → 86,791,760 bytes (+16,992)**. Hard-limit headroom: **13,208,240 bytes**; development-target overrun: **11,791,760 bytes**. [Build provenance and SHA-256](BUILD-SIZE.md#basketball-physics-and-net-response--4-october-2026).
+
+Ball enlargement changes prefab scale, collider radius, inertia and hand targets, retaining the original FBX, both LODs, rubber maps and editable masters. Each responsive net uses a small runtime mesh with the existing net material, and sleeps its mesh updates after the damped response. The hold/release meter, score feedback, host rules and replicated net events add no imported art, audio, middleware or animation pack.
+
+Actual ZIP deltas are IL2CPP **+14,294 bytes**, metadata **+2,390**, and the remaining **+308 bytes** across other entries/container overhead. The largest unchanged art estimates remain timber **2.247 MB**, character albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.574 MB** and football stadium **1.556 MB**. Per-asset estimates come from fresh populated packing offsets; they are not exact allocations of shared compressed chunks. Serialized asset bytes increased by **404**, to **151,510,681**, separately from APK bytes.
+
+Evidence: `Builds/BasketballPhysicsQA/apk-before.json`, `apk-after.json`, `apk-entry-delta.csv`, `asset-estimates.csv`, `apk-signature.txt` and `FinalSizeAudit/`. **396 Windows assertions** cover physics/scoring, hold/release input, net response, player motion, host/guest state and shared jumping. No phone was connected. [Verification and remaining limits](VERIFICATION.md#basketball-physics-and-net-response--4-october-2026).
+
 ## GitHub Golf and football integration — 5 October 2026
 
 Fresh combined primary AndroidSubmission at **00:07:25 Malaysia time**:

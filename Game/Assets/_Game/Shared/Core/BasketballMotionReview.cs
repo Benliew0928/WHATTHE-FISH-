@@ -25,10 +25,23 @@ namespace WhatTheFish {
   IEnumerator Segment(string label,float duration,PlayerCommand command){
    stage=label;contactError=reachError=maximumStep=0;minBall=100;maxBall=0;havePrevious=haveGather=false;gatherSpin=0;
    DevelopmentProbe.TurnCommand=command;float end=Time.time+duration;
-   while(Time.time<end){yield return new WaitForEndOfFrame();Sample();}
+   double requested=BasketballMotion.Clock,started=0;float release=-1,recovered=-1;
+   while(Time.time<end){
+    yield return new WaitForEndOfFrame();Sample();var motion=actor.BasketballMotion;
+    if(label.Contains("shoot")){
+     if(motion.Busy&&started==0)started=motion.State.started;
+     if(started>0&&!ball.Held&&release<0)release=motion.Elapsed;
+     if(started>0&&!motion.Busy&&recovered<0)recovered=motion.Elapsed;
+    }
+   }
    Check(float.IsFinite(maximumStep)&&maximumStep<.5f,label+" bounded joint displacement "+maximumStep.ToString("F3")+"m/frame");
    Check(reachError<.065f,label+" hand reach error "+reachError.ToString("F3")+"m");
    if(label.Contains("shoot")||label=="pass")Check(gatherSpin<1,label+" ball stays gripped during gather; spin="+gatherSpin.ToString("F3"));
+   if(label.Contains("shoot")){
+    Check(started>0&&started-requested<=.34f+2f/rate,label+" faster bounce-to-gather wait="+(started-requested).ToString("F3")+"s");
+    Check(release>=.308f-.001f&&release<=.308f+Time.fixedDeltaTime+2f/rate,label+" retimed physical release="+release.ToString("F3")+"s");
+    Check(recovered>=.686f-.001f&&recovered<=.686f+2f/rate,label+" retimed recovery="+recovered.ToString("F3")+"s");
+   }
    if(label.Contains("dribble")){Check(contactError<.025f,label+" palm contact "+contactError.ToString("F3")+"m");Check(maxBall-minBall>.55f,label+" ball completes a bounce");}
   }
   IEnumerator Start(){
@@ -54,7 +67,7 @@ namespace WhatTheFish {
    yield return Segment("stop-dribble",.9f,default);
    yield return Segment("turn-dribble",.8f,new PlayerCommand{move=Vector2.down,sprint=true});
    yield return Segment("settle-dribble",.8f,default);
-   uint shots=ball.ShotCount;app.view.yaw=0;app.view.RequestShoot();
+   uint shots=ball.ShotCount;app.view.yaw=0;ball.TryShoot(actor,0);
    yield return Segment("shoot",1.55f,default);
    Check(ball.ShotCount==shots+1&&!ball.Held,"one shot releases on animation timeline");
    Check(!actor.BasketballMotion.Busy,"shoot follow-through recovers");
@@ -67,7 +80,7 @@ namespace WhatTheFish {
    Check(!actor.Airborne&&ball.Holder==actor,"jump keeps possession and lands");
    DevelopmentProbe.TurnCommand=default;Place(new Vector3(0,.07f,-4));ball.ResetHome();yield return Pickup();
    var lod=actor.visual.GetComponent<LODGroup>();lod.ForceLOD(1);
-   yield return Segment("lod1-side-dribble",.9f,default);app.view.RequestShoot();
+   yield return Segment("lod1-side-dribble",.9f,default);ball.TryShoot(actor,0);
    yield return Segment("lod1-side-shoot",1.55f,default);lod.ForceLOD(-1);
    shots=ball.ShotCount-1;
    Place(new Vector3(0,.07f,-4));yield return Pickup();

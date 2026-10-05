@@ -18,6 +18,7 @@ namespace WhatTheFish {
   public bool Presenting=>Preparing||Airborne||Landing<LandingDuration;
   float buffer,grace;bool launched;
   public void Reset(){Velocity=-2;Airborne=Preparing=false;LoadElapsed=0;Landing=LandingDuration;buffer=grace=0;launched=false;Sequence++;}
+  public void Launch(float velocity){Preparing=false;Airborne=launched=true;Velocity=velocity;LoadElapsed=0;buffer=grace=0;Landing=LandingDuration;Sequence++;}
   public void Request(){buffer=BufferDuration;}
   public float Step(bool supported,bool allowed,float dt){
    Landing=Mathf.Min(LandingDuration,Landing+dt);

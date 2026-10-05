@@ -1,0 +1,23 @@
+{
+  "selectedOn": "2026-10-04",
+  "referenceBase": "This directory",
+  "image": "little-island-club-selected.png",
+  "sha256": "A24BCAA1532E41D4CEBADB90097B6CF71220291F45771D28FA36FDCB442F7964",
+  "direction": "Little Island Club",
+  "status": "User selected first refined direction for native Unity implementation",
+  "userFeedback": "Keep the No. 2 idea and template, make it less simple, explore three refined styles and focus on every subpage.",
+  "retain": [
+    "Four-island map",
+    "Sport labels anchored to islands",
+    "Right-side room actions",
+    "Cute cartoon tone",
+    "Official logo",
+    "One room and shared travel"
+  ],
+  "generator": "Built-in image_gen",
+  "productionAsset": false,
+  "refinementSelectedOn": "2026-10-05",
+  "refinedDirection": "01 / Storybook Cove",
+  "implementation": "../../../STORYBOOK-MENU.md",
+  "refinedReference": "../StorybookCove/01-storybook-cove-home.png"
+}

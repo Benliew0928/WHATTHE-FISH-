@@ -13,6 +13,8 @@ The football stadium now uses the editable modular [Sunvale asset](../../ArtSour
 
 ## Style target
 
+The menu keeps the [selected Little Island Club layout](Menu/References/little-island-club-selected.png): four sport islands and a room-action panel on the right. The user selected the first refined style, [Storybook Cove](Menu/StorybookCove/01-storybook-cove-home.png), for implementation. [Menu behavior, subpages and asset provenance](../STORYBOOK-MENU.md) describe the native Unity UI; the linked concept boards remain design references rather than runtime screenshots.
+
 The [football animation implementation and design](../FOOTBALL-ANIMATION.md) covers movement, dribbling, stopping, direction changes, kicking, tackles, directional falls and recovery for the existing Rainbow Sprinter. It includes 26 saved pose takes, the runtime layer, editing commands and measured review limits.
 
 Build an **inhabitable animated sports world**, not a miniature copy of real stadiums or a realistic child. Quality should come from excellent silhouettes, intentional shape design, clean color composition, appealing animation, and art-directed light.

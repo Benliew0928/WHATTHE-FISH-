@@ -26,7 +26,7 @@ namespace WhatTheFish {
    ball.autoPickup=false; // Isolate the existing material/contact tests from possession.
    yield return new WaitForFixedUpdate();
    Check(app.stadium.GetComponentsInChildren<BasketballBall>().Length==1,"one ball in active basketball arena");
-   Check(ball.GetComponentsInChildren<Collider>().Length==1&&ball.GetComponent<SphereCollider>().radius==.12f,"one analytical sphere collider at 0.12 m radius");
+   Check(ball.GetComponentsInChildren<Collider>().Length==1&&ball.GetComponent<SphereCollider>().radius==BasketballBall.Radius,"one analytical sphere collider at authored radius");
    Check(ball.GetComponentsInChildren<SkinnedMeshRenderer>().Length==0,"rigid mesh has no skeleton");
    Check(ball.GetComponent<LODGroup>().GetLODs().Length==2,"two delivery LODs");
    Check(app.stadium.GetComponentsInChildren<CapsuleCollider>().Count(c=>c.name.StartsWith("Rim segment"))==64,"both rims have 32 physical segments");

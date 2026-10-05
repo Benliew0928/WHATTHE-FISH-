@@ -1,7 +1,7 @@
-param([string]$OutputName=('Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss')),[ValidateSet(20,30,60,120)][int]$Fps=30,[switch]$NoCapture)
+param([string]$OutputName=('Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss')),[ValidateSet(20,30,60,120)][int]$Fps=30,[switch]$NoCapture,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-$player=Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'
+$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
 $out=Join-Path $root ('Builds/BasketballMotionQA/'+$OutputName)
 New-Item -ItemType Directory -Force -Path $out | Out-Null
 $arguments=@('-batchmode','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2','-probe','-sport','Basketball','-offline','-basketballMotionReview',('"'+$out+'"'),'-report',('"'+(Join-Path $out 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $out 'player.log')+'"'),'-exitAfter','120')

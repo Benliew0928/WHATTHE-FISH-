@@ -1,5 +1,474 @@
 # Verification records
 
+## Untimed finishes and shot fallback — 6 October 2026
+
+The failed-looking up/down gesture was an unavailable finish entering the old
+cancel/recovery path. Mouse and touch routing through Unity's input module
+was intact. A rejected finish now releases an ordinary shot with the original
+charge phase. Ready finishes hide the timing meter: **up is an unblocked 100%
+dunk; down is a layup with one host-side 85% make roll**. Eligibility extends
+to 4 m and checks grounding, approach, actual run-up and jump clearance.
+The gather brakes while the ball returns from a bounce and keeps a short
+planting allowance. [Rules and motion design](BASKETBALL-FINISHES.md).
+
+The complete **01:04:56 Malaysia time**, protocol **28** Windows player passed
+**811 assertions with zero failures** across the final retained suites:
+
+| Suite | Passes | Evidence |
+| --- | ---: | --- |
+| Both hoops/hands, LOD1, standing layup, immediate release, wider approaches, planting grace, blocked jumps, reset, duplicate commands and both physical layup outcomes at 20 and 30 FPS | 368 | `Builds/BasketballFinishQA/Reviews/Offline-20261006-010545-675/`, `Offline-20261006-010546-202/` |
+| Mouse/touch through StandaloneInputModule at 120 FPS: off-button release, immediate ready finishes, cancellation, gesture ownership and far-range shot fallback with preserved power | 76 | `Builds/BasketballFinishQA/Reviews/Offline-20261006-010546-584/` |
+| Host dunk, guest layup make/miss, replicated pose, physical score and host-only outcome authority | 24 | `Builds/BasketballFinishQA/Reviews/Local-20261006-010544-866/` |
+| Complete copied player and default launcher paths with spaces, invoked from an unrelated working directory; gesture checks at 20 FPS | 76 | `Builds/BasketballGestureFixQA/PortableEvidence/` |
+| Basketball physics, power, scoring, net response and HUD | 81 | `Builds/BasketballPhysicsQA/FinishRules-20261006/` |
+| Looping charge, aiming, cancellation and court boundary regression | 46 | `Builds/BasketballChargeQA/Reviews/FinishRules-20261006/` |
+| Shared jump, recovery and two-player movement regression | 140 | `Builds/JumpQA/Run-20261006-010721/` |
+
+`Builds/BasketballGestureFixQA/checks.json` records every final report. The
+input tests supply mouse and touch states through a BaseInput override to the
+actual Unity input module; they do not establish physical phone touch behavior.
+The portability fixture verifies script-relative defaults and the complete
+copied player, rather than a fresh-clone Unity build.
+
+The **26.8-second** `Builds/BasketballGestureFixQA/finish-rules-review.mp4`
+shows an untimed dunk, a successful layup, a wider planted approach and the
+layup miss branch, each at normal and half speed. The inspected storyboard
+shows gather, takeoff, release and landing. Final raw frames and telemetry
+remain in the 30 FPS report folder. Maximum sampled held-ball palm error
+during an active finish is **2.1 cm**; sampled architecture overlap is zero.
+Each successful action releases once and recovers to the ground. The ready
+control capture hides the timing bar and identifies the 85% layup rule;
+fallback captures retain the ordinary meter and explain the normal shot.
+Controlled random seeds verify both physical outcomes and exactly one host
+roll, not an empirical sample estimate of the configured 85% probability.
+No defensive block mechanic is added; released balls remain physical.
+
+Fresh AndroidSubmission completed at **01:09:38 Malaysia time**, passing the
+strict budget gate and independent APK v2 signature verification:
+**89,798,556 → 89,803,004 bytes (+4,448)**, with **10,196,996 bytes** of hard-limit
+headroom. The 75 MB development target remains exceeded by **14,803,004 bytes**.
+[Packing audit and hash](BUILD-SIZE.md#untimed-finishes-and-shot-fallback--6-october-2026).
+The existing Android Debug signing identity is retained. No phone was
+connected; Android appearance, physical touch, FPS, thermals and WAN timing
+remain unverified.
+
+Across Android packaging, **3,048 of 3,050** source/asset/config inputs remain
+byte-identical; runtime scripts and scenes are unchanged. Format-aware
+comparison confirms the regenerated Golf prefab's 14-object graph retains all
+properties and reference topology. The other difference removes two SSAO
+entries from the Android URP runtime registration list while preserving their
+definitions. Evidence is in `windows-source.json`, `android-source.json` and
+`generated-input-verification.json` under `Builds/BasketballGestureFixQA/`.
+
+At **01:11 Malaysia time**, the complete tested player was promoted to
+`Builds/WindowsFinal/`. All **315 files** matched the candidate by SHA-256 before
+updating `LATEST-BUILD.txt`. The delivery preserves the existing menu, Golf,
+charging and steal work. The previous delivery note was checked before
+replacement; no newer concurrent delivery was overwritten. Promotion and
+final file hashes are retained under `Builds/BasketballGestureFixQA/`.
+Rooms require matching protocol **28** builds.
+
+Reviewed superseded local output was archived with recovery manifests:
+
+- `Legacy/20261006-003811-039-basketball-gesture-diagnostic/` — initial diagnostic player, 313 files, 593.55 MB.
+- `Legacy/20261006-010732-484-basketball-finish-rules-apk/` — previous APK, 1 file, 89.80 MB.
+- `Legacy/20261006-011150-658-basketball-finish-rules-windows/` — previous complete Windows player, 315 files, 593.55 MB.
+- `Legacy/20261006-011943-417-basketball-finish-rules-iterations/` — superseded reviews and duplicate player fixtures, 2,313 files, 2,183.96 MB.
+
+Current validation, reproduction evidence, media, source snapshots and size
+audits remain under ignored `Builds/`. No active art, authoring master or Unity
+cache was archived. No staging, commit, push or history rewrite was performed.
+Final readiness evidence is `Builds/BasketballGestureFixQA/task-ready.txt`.
+
+## Basketball layups and dunks — 5 October 2026
+
+The existing Shoot control selects **Dunk on an upward drag**, **Layup on a
+downward drag**, and a normal shot on return to centre. Keyboard players hold
+**E** and choose with the arrow keys. The host validates possession, grounding,
+distance, approach, actual movement and clearance before committing the
+gather, jump, release and landing. Wider timing windows reward a valid close
+approach; every basket still requires the free physical ball to cross the rim.
+[Controls, rules and animation design](BASKETBALL-FINISHES.md).
+
+The complete **20:57:41 Malaysia time**, protocol **27** Windows player passed
+**994 assertions with zero failures** across the final retained suites:
+
+| Suite | Passes | Evidence |
+| --- | ---: | --- |
+| Both hoops/hands, LOD1, standing layup, motion contacts, approach rejection, blocked jumps, reset, duplicate commands, gesture selection and mistimed rebound at 20, 30 and 120 FPS | 384 | `Builds/BasketballFinishQA/Reviews/Offline-20261005-205814-781/`, `Offline-20261005-205814-782/`, `Offline-20261005-205814-786/` |
+| Host dunk, guest layup, replicated pose, physical score and authority | 17 | `Builds/BasketballFinishQA/Reviews/Local-20261005-205919-063/` |
+| Copied player and default launcher paths containing spaces, invoked from an unrelated working directory | 128 | `Builds/BasketballFinishQA/PortableEvidence/` |
+| Basketball physics, power, scoring, net response and HUD | 81 | `Builds/BasketballPhysicsQA/Finish-Final/` |
+| Offline shooting, passing, boundaries, travel and recovery | 98 | `Builds/BasketballGameplayQA/Offline-20261005-205920/` |
+| Existing dribble, shot, pass and character motion regression at 20 FPS | 62 | `Builds/BasketballMotionQA/Finish-Final/` |
+| Host/guest steals, shielding, loose-ball contests and charge cancellation | 38 | `Builds/BasketballStealQA/Local-20261005-210043-085/` |
+| Looping charge, aiming, cancellation and court boundary regression | 46 | `Builds/BasketballChargeQA/Reviews/Finish-Final/` |
+| Shared jump, recovery and two-player movement regression | 140 | `Builds/JumpQA/Run-20261005-210042/` |
+
+The result registry is `Builds/BasketballFinishQA/checks.json`. The portability
+fixture verifies script-relative defaults and the copied complete player; it
+is not a fresh-clone Unity build.
+
+Actual rendered gather, plant, takeoff, ball release and landing were inspected
+at both hoops and with both hands. The **26.93-second**
+`Builds/BasketballFinishQA/finish-review.mp4` shows four finish sequences at
+normal and half speed; `finish-storyboard.jpg` and the final 30 FPS run retain
+the frame evidence and contact telemetry. The final controls capture keeps
+Cancel clear of the up/down drag route. Sampled held-ball architecture overlap
+was zero, grounded recovery completed, and each successful action produced
+exactly one physical release/attempt. The largest sampled palm error in the
+30 FPS finish review was **2.1 cm** on the deliberately mistimed dunk. Fixed
+capture rates and Windows renders do not establish phone performance or touch
+ergonomics. No new defensive action is included.
+
+Fresh AndroidSubmission completed at **21:03:16 Malaysia time**, passing the
+strict budget gate and independent APK v2 signature verification:
+**89,780,060 → 89,798,556 bytes (+18,496)**, with **10,201,444 bytes** of hard-limit
+headroom. The 75 MB development target remains exceeded by **14,798,556 bytes**.
+[Packing audit and hash](BUILD-SIZE.md#basketball-layups-and-dunks--5-october-2026).
+The existing Android Debug signing identity is retained. No phone was
+connected; Android appearance, touch, FPS, thermals and WAN timing remain
+unverified.
+
+Across Android packaging, **3,048 of 3,050** source/asset/config inputs remained
+byte-identical; runtime scripts and scenes are unchanged. Format-aware
+comparison confirms the regenerated Golf prefab's 14-object graph retains all
+properties and reference topology. The other difference removes two SSAO
+entries from the Android URP runtime registration list while preserving their
+definitions. Evidence is in `windows-source.json`, `android-source.json` and
+`generated-input-verification.json` under `Builds/BasketballFinishQA/`.
+
+At **21:08 Malaysia time**, the complete tested player was promoted to
+`Builds/WindowsFinal/`. All **315 files** matched the candidate by SHA-256
+before updating `LATEST-BUILD.txt`. The source preserves the existing menu,
+Golf, charging and steal work. The former delivery's timestamp was checked
+before replacement; no newer concurrent delivery was overwritten.
+`Builds/BasketballFinishQA/windows-promotion.json` records the promotion and
+`candidate-player-hashes.json` retains the tested-file hashes. Rooms require
+matching protocol **27** builds.
+
+Reviewed superseded local output was archived with recovery manifests:
+
+- `Legacy/20261005-210031-681-basketball-finishes-apk/` — previous APK, 1 file, 89.78 MB.
+- `Legacy/20261005-210752-218-basketball-finishes-windows/` — previous complete Windows player, 315 files, 593.50 MB.
+- `Legacy/20261005-211139-959-basketball-finishes-iterations/` — earlier captures/reviews and duplicate player fixtures, 3,796 files, 3,081.83 MB.
+
+Current tests, media, source snapshots and size audits remain under ignored
+`Builds/`. No active art, authoring master or Unity cache was archived. No
+staging, commit, push or history rewrite was performed. Final readiness evidence
+is retained in `Builds/BasketballFinishQA/task-ready.txt`.
+
+## Basketball charging and energy boundary — 5 October 2026
+
+The power needle now loops through repeated release windows, accelerating with
+distance to a basket locked at charge start. Moving changes the integrated
+phase continuously. Charging halves walking/sprint speed and gathers the ball
+into a visible two-handed aiming pose, replicated to opponents. Drag-to-Cancel,
+clicking Cancel or **X** lowers it back into the dribble without firing. The
+translucent teal/gold court perimeter uses football's energy pattern with
+expanding, fading player/ball contact ripples.
+[Rules, calculations and controls](BASKETBALL-GAMEPLAY.md).
+
+**575 assertions pass**, with no failing assertions in the retained suites:
+
+| Suite | Passes | Evidence |
+| --- | ---: | --- |
+| Charging, half-speed movement, loops, target lock, cancellation, aim contacts and barrier | 46 | `Builds/BasketballChargeQA/Reviews/Final/` |
+| Same new review through its default launcher in a path with spaces, from an unrelated working directory | 46 | `Builds/BasketballChargeQA/PortableReview/` |
+| Physics, power, scoring, net response and final rendered HUD | 81 | `Builds/BasketballPhysicsQA/Charge-Delivery/` |
+| Offline input, shots at both hoops, boundaries, travel and recovery | 98 | `Builds/BasketballGameplayQA/Offline-20261005-172820/` |
+| Host/guest charging, visible remote aim, cancellation, shots, scoring and passes | 39 | `Builds/BasketballGameplayQA/Local-20261005-172921/` |
+| Two-player stealing, secured charge, deflection and charge cancellation on strip | 38 | `Builds/BasketballStealQA/Local-20261005-172631-779/` |
+| Existing motions and both character LODs at the 20 FPS review cap | 62 | `Builds/BasketballMotionQA/Charge-Final-20/` |
+| Shared football boundary, kick feedback and cancellation regression | 25 | `Builds/FootballFeedbackQA/Run-20261005-172632/` |
+| Shared jump and two-player movement regression | 140 | `Builds/JumpQA/Run-20261005-173045/` |
+
+Measured charging walk speed is **4.00 → 2.00 m/s**. The moving aiming palm
+stayed within the 4 cm contact tolerance (measured error rounded to **0.000 m**),
+with a maximum sampled ball movement of **0.034 m/frame**. At 4, 12 and 22 m,
+four successive green-window opportunities were observed without auto-fire.
+Holding beyond five seconds remained active, and a later-cycle green release
+scored. The authoritative release power matched the displayed value within
+0.018, using host phase history rather than a client-supplied power.
+
+Rendered close aim, player contact, ball ripple/fade, the whole court and the
+power/cancel HUD were inspected. A premature capture initially sampled before
+the procedural LateUpdate pose; the review now captures at end of frame and
+asserts real palm contact. Visual review also found four malformed separator
+characters in the existing scoreboard; they were corrected and the final
+Windows player reran all 81 physics/HUD checks. The remaining gameplay source
+is unchanged from the other passing suites. Football retained its translucent
+look and unobstructed goal openings. These Windows observations do not certify
+physical-phone visuals, touch or frame rate.
+
+Fresh AndroidSubmission completed at **17:43:26 Malaysia time**, passing the
+strict budget gate and independent APK v2 verification:
+**89,762,748 → 89,780,060 bytes (+17,312)**, with **10,219,940 bytes** of hard-limit
+headroom. The 75 MB working target remains exceeded by **14,780,060 bytes**.
+[Packing audit and hash](BUILD-SIZE.md#basketball-charging-and-energy-boundary--5-october-2026).
+Across packaging, 3,040 of 3,042 checked inputs remain identical. Canonical
+comparison proves the regenerated Golf prefab has equivalent properties and
+reference topology; the other change removes desktop-only URP registrations.
+
+The complete **17:38:12 protocol 26 Windows player** is delivered under
+`Builds/WindowsFinal/`, including the basketball launcher. After the user
+authorized closing the old game, promotion completed at **19:53 Malaysia time**.
+All **315 files** matched the tested candidate by SHA-256; the complete previous
+314-file protocol 25 player was archived. Evidence is retained in
+`Builds/BasketballChargeQA/windows-promotion.json`. Current source preserves
+the menu, Golf and earlier basketball work. No staging, commit or push was
+performed.
+
+Reviewed obsolete output was moved to these archive batches:
+
+- `Legacy/20261005-173200-338-basketball-charge-before-release/` — 11 files, 93.15 MB.
+- `Legacy/20261005-174031-057-basketball-charge-diagnostic-apk/` — 21 files, 96.58 MB.
+- `Legacy/20261005-174313-257-basketball-charge-iterations/` — 377 files, 629.94 MB.
+- `Legacy/20261005-195311-178-basketball-charge-windows-delivery/` — 314 files, 593.45 MB.
+
+Current captures, players, checks, source manifests and package audit remain
+under `Builds/`. The earlier failed Windows archive attempt created only an
+inventory; the successful delivery archive above supersedes that attempt.
+No active art, authoring master or Unity cache was archived.
+`Check-TaskReady.ps1 -RequireApk` passed, including the portable-path and Git LFS
+checks. The publishable candidate set and Git diff were reviewed; nothing was
+staged. The complete Windows delivery and its updated build note are verified.
+
+## Refined basketball steal animation — 5 October 2026
+
+The **15:25:12 Malaysia time**, protocol **25** Windows player passed
+**366 assertions with zero failures**. The complete player is promoted to
+`Builds/WindowsFinal/`; a hash comparison verified all **314 files**, including
+the preserved SkySail launcher, before the delivery note was updated.
+Results are indexed by `Builds/BasketballStealAnimationQA/check-counts.json`.
+
+| Check | Passing assertions |
+| --- | ---: |
+| Challenge poses at fixed 20, 30, 60 and 120 FPS | 188 |
+| Copied player/default paths, checkout path with spaces, unrelated working directory | 47 |
+| Dribble, run, stop, shoot, pass, jump, LOD and release regression | 62 |
+| Real-time held/released steal input and geometry/deflection rules | 31 |
+| Two-player host/guest stealing and reactions | 38 |
+| **Total** | **366** |
+
+Pose coverage includes left/right hands, low/high contacts, mirrored victim
+reactions, movement, repeated swipes, full recovery and the lower-detail model.
+The largest sampled planted-support-foot drift is **1.6 mm**; bone lengths
+remain fixed and arm reach correction stays within the configured bound.
+The fixed-clock fixture schedules repeated poses on simulation time; the
+separate input suite tests actual UI hold/release using its real-time clock.
+Close and side frames were inspected. The **17.33-second**
+`Builds/BasketballStealAnimationQA/steal-animation-preview.mp4` includes actual
+two-player ball knockaways at normal speed and half speed, plus isolated pose
+review. Captures are review evidence, not an FPS benchmark.
+
+Current evidence: `Release-20/`, `Release-30/`, `Release-60/`, `Release-120/`,
+`PortableEvidence/`, `promotion-hashes.json` and `windows-source.json` under
+`Builds/BasketballStealAnimationQA/`; basketball motion regression under
+`Builds/BasketballMotionQA/StealAnimationRelease-30/`; steal checks under
+`Builds/BasketballStealQA/Offline-20261005-152726-201/` and
+`Local-20261005-152713-115/`.
+
+Fresh **15:31:44** AndroidSubmission passes the hard budget and independent v2
+signature check: **89,758,540 → 89,762,748 bytes**, with **10,237,252 bytes** of
+headroom. The 75 MB working target remains exceeded by **14,762,748 bytes**.
+The Android build preserves **3,032 of 3,034** recorded inputs exactly;
+format-aware text comparison confirms that the regenerated Golf prefab retains
+its properties and references, and URP returns to the repository's Android
+settings. Runtime scripts and scenes match the tested Windows source. No phone
+was connected; physical-device appearance/FPS, thermals, touch feel and WAN
+latency are unverified.
+
+Reviewed local archives, with sizes, hashes and recovery paths:
+
+- `Legacy/20261005-151802-842-basketball-steal-animation-iteration/`
+- `Legacy/20261005-152321-289-basketball-steal-animation-refinement/`
+- `Legacy/20261005-152652-548-basketball-steal-animation-snapshot/`
+- `Legacy/20261005-152845-910-basketball-steal-animation-before-release/`
+- `Legacy/20261005-153142-243-basketball-steal-animation-windows-delivery/`
+- `Legacy/20261005-153421-641-basketball-steal-animation-evidence-cleanup/`
+
+## Basketball steals and loose-ball contests — 5 October 2026
+
+The final **protocol 25**, **14:03:09 Malaysia time** Windows player passed
+**517 assertions with zero failures** and was promoted in full to
+`Builds/WindowsFinal/`. Package hash comparison covers **314 files**. Current
+results are indexed by `Builds/BasketballStealQA/check-counts.json`:
+
+| Check | Passing assertions |
+| --- | ---: |
+| Steal controls and geometry, offline | 31 |
+| Stealing, host / guest | 32 / 6 |
+| Steal script in a path with spaces, unrelated working directory | 31 |
+| Existing basketball gameplay, offline / host / guest | 98 / 22 / 14 |
+| Basketball physics, scoring and net response | 81 |
+| Basketball motion at simulated 20 FPS | 62 |
+| Shared jump/momentum, offline / host / guest | 132 / 3 / 5 |
+
+Steal checks exercise held-button repeats, repeated-request recovery, touch
+ownership, release/drag/focus/disable cancellation, jumping and Free roam
+exclusion, close/far/height/facing/shielded contacts, dribble exposure and secure
+grips, walls, escape during windup, possession reset, host/guest owner input,
+both replicated animations, real body collisions, loose-ball velocity/spin,
+shot-charge cancellation, pickup grace and recovery by the original carrier.
+Velocity checks cover both players' movement, opposite swipe hands, rising vs
+falling dribbles, speed bounds and translated/rotated contact geometry.
+
+Final two-player renders and telemetry are in
+`Builds/BasketballStealQA/Local-20261005-140328-419/host/`.
+Frames around contacts **92** and **107** show the swipe/reaction and loose-ball
+flight. The maximum recorded arm target correction after clamping was **2 mm**;
+this is an IK limit metric, not proof of exact palm/ball surface coincidence.
+The final in-game HUD screenshot is
+`Builds/BasketballGameplayQA/Offline-20261005-140328/offline/carry-controls.png`.
+Close frames and control placement were visually inspected. Early checks found
+a touch-test source mismatch and a jump request tested before simulation;
+the final fixtures exercise real pointer ownership and the simulated jump.
+Review also corrected outgoing player collisions and fitted palm targets.
+
+The [fresh signed AndroidSubmission](BUILD-SIZE.md#basketball-steals-and-loose-ball-contests--5-october-2026) measures
+**89,758,540 bytes**, up **14,428**, with **10,241,460 bytes** below the hard limit.
+The 75 MB development target remains exceeded. Android packaging preserved
+**3,028 of 3,030** checked inputs byte-for-byte; the two exceptions are reviewed
+platform URP registrations and equivalent generated Golf prefab IDs. C# source
+and scenes match the final Windows validation snapshot. Source manifests,
+canonical verification, the APK signature and both packing audits are retained.
+
+Superseded APK/audit and complete Windows deliveries were archived with hashes
+and recovery paths in `Legacy/20261005-140452-410-basketball-steal-before-release/`
+and `Legacy/20261005-140636-398-basketball-steal-windows-delivery/`.
+Intermediate tests/logs and the portable fixture are in
+`Legacy/20261005-140731-651-basketball-steal-iterations/`; its passing results
+remain in `Builds/BasketballStealQA/PortablePathEvidence/`.
+The hash-matched duplicate candidate is retained in
+`Legacy/20261005-141102-934-basketball-steal-tested-candidate/`.
+`Check-TaskReady.ps1 -RequireApk` passes, including the portable-text, Unity
+metadata, LFS, whitespace and candidate-file checks; its output is retained in
+`Builds/BasketballStealQA/task-ready.txt`. No binary art or active asset dependency was edited for the feature. Existing
+nonfunctional art-provenance exceptions are unchanged. Git publication remains
+with the user. Physical-phone touch, Android appearance/FPS/thermals and WAN
+latency remain unverified; local Windows captures do not qualify them.
+
+## Storybook Cove menu and teammate integration — 5 October 2026
+
+The first selected direction is now the native game menu: illustrated island
+selection, Create/Join, live lobby, real match conditions, football/basketball
+venue editing, settings and all four sport help pages. All navigation buttons
+have hold compression, release feedback, cancellation, disabled/focus states and
+one-shot activation. Sliders animate their thumb without shifting their input
+track. Pages crossfade/slide with input gated, and gameplay arrival fades in.
+Reduced motion keeps colour/focus feedback while suppressing movement.
+[Behaviour and source guide](STORYBOOK-MENU.md).
+
+**1,658 feature assertions pass** across the following retained Windows suites:
+
+| Suite | Passing assertions | Evidence |
+| --- | ---: | --- |
+| Final offline menu, pointer/keyboard states, inputs, layout, settings, preview/save/discard | 694 | `Builds/StorybookMenuQA/FinalReview/offline/` |
+| Final host/guest lobby, conditions, permissions, ready resets, departure/return | 138 (70/68) | `Builds/StorybookMenuQA/FinalReview/host/`, `client/` |
+| Football gameplay, clock, physics and network regressions | 532 | `Builds/FootballMatchQA/Run-20261005-125217/` |
+| Basketball physics, scoring, charging and net response | 81 | `Builds/BasketballPhysicsQA/StorybookMerge/` |
+| Basketball host/guest input, possession, scoring, free roam and permissions | 38 | `Builds/BasketballGameplayQA/Local-20261005-130919/` |
+| Golf offline and host/guest match regression | 175 | `Builds/GolfMiniGameQA/Run-20261005-130812/` |
+
+The final menu player includes the last visual, slider, focus and clipboard
+refinements. Earlier sport suites cover unchanged gameplay sources; the menu
+refinements did not alter those mechanics. Combined network layout is **protocol
+24**. The pulled Golf/cart work and preserved local basketball work both pass.
+No conflict markers or unmerged index entries remain; the pre-merge recovery
+stash and hashed files are retained. Nothing was staged, committed or pushed.
+
+Two fresh anonymous players also used the **real Unity cloud session/Relay**
+service to create/join one private room, become ready, depart and return together,
+then leave. Evidence: `Builds/StorybookMenuQA/CloudReview/` and `cloud-final.txt`.
+Both players shared one internet connection; this is not different-network WAN
+or Android-device qualification. Create/join completed without connection errors.
+On host deletion, the guest logged a handled `lobby not found` warning during
+cleanup; both players disconnected and returned to offline state.
+
+All final copy/paste and typing checks pass. Earlier Windows clipboard writes
+intermittently returned empty, reproduced separately by PowerShell outside Unity;
+the final OS roundtrip succeeded. Copy retries briefly and announces success only
+after readback; failure leaves the displayed room code and typing fallback usable.
+Earlier failure evidence is retained in `ClipboardInvestigation/` without recording
+user clipboard contents. Android clipboard/keyboard behaviour still needs a phone.
+
+Rendered captures were visually reviewed for home, lobby, conditions, actual
+football screen/basketball court previews and settings. Bounds, button raycasts,
+label width and text height pass. Actual Windows sizes checked: **1600×900,
+1280×800 and 1920×1080**. The requested 2340×1080 window was clamped to 1920×1080
+by this display, so ultra-wide support is not claimed as tested. Two-player
+network review passes another **138 assertions** from a copied default player tree
+containing spaces, launched from an unrelated working directory. The font
+generator produces identical hashes from that portable fixture. Evidence:
+`PortableNetwork/`, `portable-menu.txt` and `portable-font-check.json`.
+
+Fresh AndroidSubmission and APK v2 signature pass: **89,744,112 bytes**, with
+**10,255,888 bytes** hard-limit headroom; the 75 MB development target is unmet.
+Source manifests cover 3,022 files, with only equivalent generated Golf IDs and
+platform URP registration changes. [Size and delivery](BUILD-SIZE.md#storybook-cove-menu-and-teammate-integration--5-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#storybook-cove-menu-and-teammate-integration--5-october-2026).
+No physical Android device was connected. Phone touch feel, appearance, sustained
+FPS, thermals and WAN timing remain unverified.
+
+The complete tested player, including all runtime DLLs/data and existing launchers,
+was promoted to **`Builds/WindowsFinal/`**. Updated `LATEST-BUILD.txt`, file-hash
+promotion evidence, current screenshots, test logs and audit remain under `Builds/`.
+Reviewed obsolete outputs were archived with recovery inventories; see
+`archive-baseline.txt`, `archive-windows.txt`, `archive-iterations.txt` and `archive-candidate.txt` in
+`Builds/StorybookMenuQA/`. No active art or master was removed.
+
+## Basketball pace and player boundaries — 5 October 2026
+
+Basketball charging and shot preparation now take **30% less time**: full charge **1.20 → 0.84 s**, ideal release **0.78 → 0.546 s**, shot animation release **0.44 → 0.308 s**, and full shot action **0.98 → 0.686 s**. Queued dribble preparation and authored shot poses use the same time scale. Pass timing and the green power band are retained. [Controls and implementation](BASKETBALL-GAMEPLAY.md).
+
+An invisible movement boundary keeps the complete player capsule inside the painted court during basketball play. Input and velocity projection preserve smooth sliding along sidelines, including diagonal movement. The ball can leave the court and remains physical. A loose ball stranded beyond the painted boundary near the floor returns after **0.75 s**, while airborne apron excursions retain the wider recovery envelope. **Free roam** deliberately releases the boundary and ball possession for station travel; **Play basketball** restores play. Host authority, replicated free-roam state, arrivals and session resets are covered.
+
+**479 assertions passed** with no failing assertions:
+
+| Suite | Passing assertions | Retained evidence |
+| --- | ---: | --- |
+| Offline input, charging, shots, boundaries, sliding, free roam and rebound recovery | 98 | `Builds/BasketballPaceQA/QA/Offline/` |
+| Host/guest possession, charge, scoring, net events and court/free-roam state | 36 (22 host, 14 guest) | `Builds/BasketballPaceQA/QA/Local/` |
+| Motion timing, dribble, hand contact and both character LODs at 30/20 FPS caps | 124 (62 each) | `Builds/BasketballPaceQA/QA/Motion-30/`, `QA/Motion-20/` |
+| Shot physics, faster power timing, score/miss decisions, nets and portable launch | 81 | `Builds/BasketballPaceQA/QA/Physics-Portable/` |
+| Shared jumping and two-player regression | 140 | `Builds/BasketballPaceQA/QA/Jump/` |
+
+The rendered motion review checked gather/release hand contact, first-/third-person views, green meter feedback, sidelines and deliberate free-roam exit. Maximum measured action hand reach error was **25 mm**. Observed frame-sampled release/recovery times stayed within the expected render/fixed-step allowance around the new authored times. Net displacements in the physics samples reached approximately **6.3–7.4 cm**, with fixed upper attachments and a return to rest. Deliberately weak/strong shots missed; well-timed two/three-pointers scored. The portable suite ran from a copied tree containing spaces, launched from an unrelated working directory.
+
+Tests exposed two issues that were fixed before release: repeated loss of diagonal sliding speed when constraining velocity alone, and a loose ball resting on an unreachable apron inside the old wider recovery envelope. The final offline/network rerun includes both fixes and additional airborne/apron recovery cases. The earlier motion/physics/jump checks cover unchanged timing and shared mechanics; the final Windows player contains all fixes.
+
+During work the primary checkout received `af02ea7` and concurrent Storybook menu changes. Preserved basketball work was applied to that integration and tested in an isolated checkout, excluding the unfinished menu. The matched tested players in **`Builds/BasketballPaceQA/Release/` use protocol 23**. The main source uses **protocol 24** for its later menu network field. These results do not certify the combined unfinished menu build, and an older primary APK is not evidence for the new source.
+
+The prescribed AndroidSubmission build passed at **12:56:34 Malaysia time**: **86,791,760 → 89,260,934 bytes**, leaving **10,739,066 bytes** below the strict limit and exceeding the 75 MB working target by **14,260,934 bytes**. APK v2 signature verification passed. Of 277 checked inputs, 276 remained unchanged during the build; the Golf ball prefab regenerated equivalent local IDs/document order only, confirmed by canonical property/reference comparison. [Detailed size audit](APK-SIZE-AUDIT.md#basketball-pace-and-player-boundaries--5-october-2026). No physical phone was connected; Android touch, appearance, FPS, thermals and WAN timing remain unverified.
+
+Reviewed temporary logs, superseded test runs and the completed portable fixture were archived to **`Legacy/20261005-125501-976-basketball-pace/`** (**368 files, 607.76 MB**) with hashes and recovery paths. Current release/evidence remain under `Builds/BasketballPaceQA/`. No active art or authoring master was archived. The isolated build passed `Check-TaskReady.ps1 -RequireApk`; the primary checkout also passed repository hygiene, with its APK freshness separately qualified above. Git staging, commit and push remain with the user.
+
+## Basketball physics and net response — 4 October 2026
+
+The basketball now has a 30 cm visual/physical diameter (25% larger), fitted palm contacts, a hold/release power meter, deterministic ballistic launches, shared 2/3-point practice scoring, missed-shot outcomes and responsive nets. [Implementation, equations and controls](BASKETBALL-GAMEPLAY.md).
+
+**396 Windows assertions passed** across these retained suites:
+
+| Suite | Passing assertions | Local evidence |
+| --- | ---: | --- |
+| Shot physics, power, scoring, net response and portable execution | 79 | `Builds/BasketballPhysicsQA/FinalReview/` |
+| Offline shooting, rebound pickup, collision, recovery and streaming | 67 | `Builds/BasketballGameplayQA/Offline-20261004-233337/` |
+| Host/guest charge edges, scoring, net events, passes and lifecycle | 32 (20 host, 12 guest) | `Builds/BasketballGameplayQA/Local-20261004-233711/` |
+| Dribble, enlarged-ball palm contact, gather, release and both character LODs | 56 | `Builds/BasketballMotionQA/Physics-Initial/` |
+| Ball drop, spin, both rims and 35 m/s floor/backboard contacts | 22 | `Builds/BasketballModel/20261001/Offline-233712/` |
+| Shared jump/input and two-player regression | 140 | `Builds/JumpQA/Run-20261004-234309/` |
+
+The focused suite exercises complete downward passage, upward and side rejection, fast crossings, incomplete rim exits, three-point/corner lines, foreign-pointer release rejection, touch cancellation, clean timed two/three-pointers at both hoops, deliberately short/long shots, timeout, one outcome per attempt and session clearing. Scored nets reached approximately **5.6–6.3 cm** displacement in the measured samples; their upper attachments stayed fixed, and the mesh returned to rest. Outside-net touch moved the net without awarding a basket. Host and guest agreed on two three-pointers and received the authoritative net events. The regression suite also retains real descending rim crossings at **2, 5, 10, 18 and 24 m**.
+
+Rendered Windows views of the larger ball beside the character, dribble/contact poses, first-/third-person and elevated cameras, the green power meter, both scored nets and exterior net touch were inspected. The rig retained bounded hand reach and contact errors; the two-metre drop and 35 m/s floor/backboard probes remained above the floor. These observations do not certify physical-phone visuals, touch or frame rate. The existing scoreboard architecture is decorative; the new HUD tracks shared practice, without basketball teams, a match clock or foul rules. Net response is a bounded procedural approximation with soft resistance, not full cloth simulation.
+
+An early test found that the Unity hoop's inward court axis is positive local Z; the three-point calculation was corrected. Synchronous screenshot readback inside a timed hold then skewed the test's release, so UI capture was separated from the actual timing assertions. The corrected suite passed from a copied player/script tree named `Portable Basketball Physics`, launched from an unrelated temporary working directory. Its evidence was preserved in `FinalReview/` before archiving the fixture. All **137 checked documentation links** resolved. New scripts derive their root from their own location. Source FBX, Blender and texture bytes were not changed; their previously recorded nonfunctional provenance exceptions remain as documented in [the model report](BASKETBALL-BALL.md).
+
+The prescribed AndroidSubmission build passed at **23:45 Malaysia time**: **86,774,768 → 86,791,760 bytes**, with **13,208,240 bytes** of hard-limit headroom. The 75 MB development target is still exceeded by **11,791,760 bytes**. APK v2 verification passed; 238 checked script/shader/prefab/scene inputs did not change during that build. [Size audit and exact artifact hash](BUILD-SIZE.md#basketball-physics-and-net-response--4-october-2026). Windows player: `Builds/WindowsFinal/`; Android player: `Builds/Android/WhatTheFish-release.apk`. Protocol **19** requires matching builds. No Android device was attached; phone performance and WAN hold timing remain unverified.
+
+Reviewed failed trials, superseded build logs and the completed portable fixture were moved with the archive tool to **`Legacy/20261004-234732-924-basketball-physics/`** (339 files, 594.35 MB), with hashes and recovery paths. No active art or authoring master was archived. Existing menu-design work was preserved. `Check-TaskReady.ps1 -RequireApk` passed, including publishable path scanning and Git/LFS hygiene; evidence is in `Builds/BasketballPhysicsQA/task-ready.txt`. These checks are read-only; Git staging, commit and push remain with the user.
+
 ## GitHub Golf and football integration — 5 October 2026
 
 The combined Windows player built at **00:02:12 Malaysia time** passes

@@ -56,7 +56,7 @@ namespace WhatTheFish {
    participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);SyncTeams();
    goals=new FootballGoalDetector[ball.GoalCount];
    for(int i=0;i<goals.Length;i++){int sign=ball.GoalSign(i);float paintedEdge=(sign>0?ball.PitchBounds.max.z:ball.PitchBounds.min.z)+sign*rules.goalLineWidth*.5f;float line=sign*Mathf.Max(sign*paintedEdge,sign*ball.GoalFront(i));goals[i]=new FootballGoalDetector(ball.GoalBounds(i),line,sign);}
-   goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,rules.regulationSeconds,rules.overtimeSeconds,rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();return true;
+   goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,MenuMatchRules.RegulationSeconds(rules.regulationSeconds),rules.overtimeSeconds,rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();return true;
   }
   public bool ChooseTeam(Athlete actor,FootballTeam team,uint selectionRevision){
    if(!Authority||!Context||!actor||State.Phase!=FootballMatchPhase.TeamSelection||Now>=State.Deadline||selectionRevision!=Snapshot.revision)return false;

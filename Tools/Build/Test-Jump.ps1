@@ -1,7 +1,7 @@
-param([int]$Port=7806)
+param([int]$Port=7806,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-$player=Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'
+$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
 $out=Join-Path $root ('Builds/JumpQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $processes=@()
