@@ -1,5 +1,74 @@
 # Verification records
 
+## Basketball defense — 6 October 2026
+
+[Implemented controls and success rules](BASKETBALL-DEFENSE.md) cover pressure
+guarding, grounded hand blocks and physical jump blocks. The motions reuse
+the shared rig with lowered stance, alternating lateral steps, shoulder-led
+reach, a balancing arm, takeoff load and landing absorption. The host resolves
+contact from the same bounded palm path used by the pose.
+
+The selected final feature and regression suite contains **978 passing
+assertions in 22 reports, zero failures**, inventoried in
+`Builds/BasketballDefenseQA/checks.json`. It covers:
+
+- Offline defense at 20/30/60 FPS, both hands, both character LODs, continuous
+  joints, palm/contact agreement, real jump height and grounded recovery.
+- Rendered host/guest guarding, limited strafe speed, pressure and wall
+  occlusion; dribble, ordinary shot and released-pass blocks; torso shielding,
+  range misses, repeated inputs, stale requests, reset and possession changes.
+- Owner RPC jump blocks against layups and dunks at both baskets, with
+  interrupted releases occurring at most once and both players landing.
+- Existing shot charging, physical scoring and nets, passes, steals, finishes,
+  mouse/touch gesture routing, free roam, disconnect, room restart and shared
+  jump behavior.
+- Two final multiplayer gameplay runs confirming the guest's displayed
+  release power matches host evaluation within **0.00001** and **0.00004**.
+
+Slow rendered capture exposed a network timing defect: Netcode updates its
+clock after Unity's catch-up physics. Extrapolating the action clock at each
+fixed step keeps jump movement, held-ball motion and block windows together.
+A further regression exposed the case where a received charge sample is ahead
+of the guest's buffered clock. Release now uses that displayed sample's time,
+while retaining the host's bounded timestamp validation. Earlier failed
+fixtures and diagnostics were archived; they are not counted as passing runs.
+The final network corrections were checked separately from the unchanged
+offline pose and physics checks.
+
+Evidence and presentation:
+
+- `Builds/BasketballDefenseQA/defense-review.mp4`: sampled gameplay and clear
+  jump-form capture at normal and half speed; `defense-storyboard.jpg` provides
+  representative stance, reach and recovery frames.
+- `Reviews/Local-30-20261006-223631-615/host/` under that evidence folder holds
+  the rendered contact trace, motion samples and attacker/defender UI captures.
+- `PortableEvidence/` and `portable-test.txt` record the review script running
+  from a path containing spaces, with an unrelated working directory and its
+  default complete-player path. This checks script/runtime path resolution,
+  not a fresh-clone Unity build.
+- The complete Windows player was promoted to `Builds/WindowsFinal/` at
+  **22:54–22:55 Malaysia time**. All **315 files**, including preserved portable
+  launchers, match the candidate hashes apart from `LATEST-BUILD.txt`.
+- Fresh signed AndroidSubmission: **89,825,364 bytes**, **+22,360 bytes**, with
+  **10,174,636 bytes** of hard-limit headroom. The 75 MB target remains exceeded.
+  [Size and signature](BUILD-SIZE.md#basketball-defense--6-october-2026).
+- Final Android packaging preserves 3,061/3,062 source inputs byte-for-byte;
+  the regenerated Golf prefab's 14 objects retain all properties and reference
+  topology. Runtime scripts and scenes are identical across packaging.
+
+Reviewed local archives, all under ignored `Legacy/`:
+`20261006-222935-294-basketball-defense-apk`,
+`20261006-224938-264-basketball-defense-interim-apk`,
+`20261006-225026-615-basketball-defense-portability`,
+`20261006-225403-689-basketball-defense-windows` and
+`20261006-225606-927-basketball-defense-iterations`. Manifests retain recovery
+paths, sizes and hashes. Current APK, complete player and useful validation
+evidence remain under `Builds/`. No game asset was archived.
+
+Protocol **29** requires matching peers. No phone was connected; physical
+Android touch, appearance, FPS, thermals and WAN timing remain unverified.
+Git publishing remains with the user.
+
 ## Untimed finishes and shot fallback — 6 October 2026
 
 The failed-looking up/down gesture was an unavailable finish entering the old

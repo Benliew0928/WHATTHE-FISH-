@@ -67,7 +67,7 @@ the make trajectory; otherwise it releases wide into a physical rebound.
 The roll is independent of hold duration and power, and unavailable requests
 do not consume it. There are no automatic points or corrections after release.
 This keeps the ball available for future defensive blocks before it crosses
-the rim. Defensive blocking is not implemented in this change.
+the rim. [Defensive blocks](BASKETBALL-DEFENSE.md) can now interrupt the exposed airborne carry or deflect a released shot.
 
 ## Source and validation
 
@@ -76,7 +76,7 @@ the rim. Defensive blocking is not implemented in this change.
 - [Gesture handling](../Game/Assets/_Game/Shared/UI/BasketballShootButton.cs)
 - [Repeatable player review](../Tools/Build/Test-BasketballFinish.ps1)
 
-Rooms require matching **protocol 28** builds so every peer uses the same
+Rooms require matching **protocol 29** builds so every peer uses the same
 finish timelines and outcome rules. The review covers both hoops,
 both hands, fallback shooting, cancellation, both layup outcomes, recovery and
 host/guest input. `-GestureOnly` exercises mouse and touch through Unity's

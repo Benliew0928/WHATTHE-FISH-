@@ -51,7 +51,7 @@ namespace WhatTheFish {
   Collider ignoredStealer;uint steals;double stealTime=-100;
   public uint StealCount=>Authority?steals:haveTarget?target.steals:0;
   public double StealTime=>Authority?stealTime:haveTarget?target.stealTime:-100;
-  public bool CanSteal(Athlete actor)=>Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump;
+  public bool CanSteal(Athlete actor)=>Held&&Role(actor)==BasketballRole.Defense&&Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump;
   public bool TrySteal(Athlete actor,float heading){
    if(!Authority||!CanSteal(actor)||!Eligible(actor)||!float.IsFinite(heading)||!actor.Grounded||Outside(actor.transform.position)||!actor.BasketballMotion||actor.BasketballMotion.Busy)return false;
    heading%=360;var facing=Quaternion.Euler(0,heading,0);
@@ -87,7 +87,7 @@ namespace WhatTheFish {
   void KnockLoose(Athlete actor,Vector3 point,float quality,bool secured){
    var victim=holder;var motion=actor.BasketballMotion;
    var velocity=BasketballStealRules.Deflection(actor.transform.position,point,victim.Motor.Velocity,actor.Motor.Velocity,DribblePhase,dribbleCadence,secured,motion.State.leftHand,quality,point.y-victim.transform.position.y);
-   CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passing=false;
+   NewDefensePlay();CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passing=false;
    motion.ContactPoint(point);
    victim.BasketballMotion.BeginChallenge(BasketballAction.Stripped,victim.transform.eulerAngles.y,point);
    holder=null;lastShooter=victim;pickupAt=Time.time+BasketballStealRules.PickupDelay;shooterPickupAt=Time.time+BasketballStealRules.VictimDelay;looseFor=outsideFor=0;

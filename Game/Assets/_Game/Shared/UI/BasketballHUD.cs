@@ -40,7 +40,9 @@ namespace WhatTheFish {
    bool charging=view.ShotCharging,timing=view.ShotNeedsTiming;bool fresh=BasketballMotion.Clock-score.changed<2.5;
    bool roaming=view.target&&view.target.BasketballFreeRoam;
    roamLabel.text=roaming?"Play basketball":"Free roam";roamControl.interactable=ball.Playing&&view.target&&!view.target.inTransit;
-   feedback.text=roaming?"FREE ROAM  ·  WALK TO SKY-SAIL":ball.StealCount>0&&BasketballMotion.Clock-ball.StealTime<1.4?"BALL LOOSE  ·  CHASE IT":charging?"RELEASE IN THE GREEN":score.result==BasketballResult.Flying?"SHOT IN FLIGHT":fresh&&score.result==BasketballResult.Scored?"BASKET!  +"+score.lastPoints:fresh&&score.result==BasketballResult.Missed?"MISSED  ·  GET THE REBOUND":"SHARED COURT PRACTICE";
+   feedback.text=ball.Defense.blocks>0&&BasketballMotion.Clock-ball.Defense.time<1.4?"BLOCKED  ·  BALL LIVE":roaming?"FREE ROAM  ·  WALK TO SKY-SAIL":ball.StealCount>0&&BasketballMotion.Clock-ball.StealTime<1.4?"BALL LOOSE  ·  CHASE IT":charging?"RELEASE IN THE GREEN":score.result==BasketballResult.Flying?"SHOT IN FLIGHT":fresh&&score.result==BasketballResult.Scored?"BASKET!  +"+score.lastPoints:fresh&&score.result==BasketballResult.Missed?"MISSED  ·  GET THE REBOUND":"SHARED COURT PRACTICE";
+   if(!charging&&view.GuardHeld)feedback.text="GUARDING  ·  STAY IN FRONT";
+   if(!charging&&view.BasketballRole==BasketballRole.Loose&&score.result!=BasketballResult.Scored&&BasketballMotion.Clock-ball.Defense.time>1.4)feedback.text="BALL LOOSE  ·  CHASE IT";
    if(ball.FinishNoticeFor(view.target)&&!charging)feedback.text=BasketballFinishRules.Hint(ball.FinishNotice.reason);
    if(charging&&view.ShotFinish!=BasketballFinish.Shot)feedback.text=view.ShotFinish.ToString().ToUpperInvariant()+" - "+(timing?BasketballFinishRules.Hint(view.FinishAvailability):"RELEASE NOW");
    if(view.target&&view.target.BasketballMotion.Finishing)feedback.text=view.target.BasketballMotion.Action.ToString().ToUpperInvariant()+" - FINISHING";
@@ -52,7 +54,7 @@ namespace WhatTheFish {
    greenBand.sizeDelta=new Vector2(720*view.ShotWindow,15);
    fill.rectTransform.sizeDelta=new Vector2(360*power,15);marker.anchoredPosition=new Vector2(360*(power-.5f),4);
    fill.color=sweet?new Color(.3f,1,.63f):power>BasketballBall.SweetSpot?new Color(1,.43f,.3f):new Color(1,.73f,.28f);
-   hint.text=(sweet?"Release!":"Wait for green")+" - "+view.ShotDistance.ToString("F1")+" m - "+(Application.isMobilePlatform?"Slide up / down; left to Cancel":"E + Up: dunk / Down: layup; X: cancel");
+   hint.text=(sweet?"Release!":view.ShotWindow<BasketballBall.SweetWindow-.001f?"Contested - wait for green":"Wait for green")+" - "+view.ShotDistance.ToString("F1")+" m - "+(Application.isMobilePlatform?"Slide up / down; left to Cancel":"E + Up: dunk / Down: layup; X: cancel");
   }
  }
 }

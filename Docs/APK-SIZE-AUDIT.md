@@ -1,5 +1,33 @@
 # APK size audit — measured release records
 
+## Basketball defense — 6 October 2026
+
+Actual signed APK: **89,803,004 → 89,825,364 bytes (+22,360)**. Hard-limit
+headroom is **10,174,636 bytes**; the 75 MB development target is exceeded by
+**14,825,364 bytes**. [Delivery and hash](BUILD-SIZE.md#basketball-defense--6-october-2026).
+
+Compressed ZIP entries grow **22,361 bytes**; container/signing overhead
+shrinks **1 byte**. IL2CPP grows **21,345 bytes** and managed metadata grows
+**3,610 bytes**. The generated Burst library shrinks **1,530 bytes**, the Unity
+library shrinks **1,040 bytes**, and the net remainder shrinks **24 bytes**.
+Renamed entries with equal compressed lengths cancel in the comparison.
+Serialized assets grow **336 bytes** to **156,285,573 bytes**; this is separate
+from the actual compressed APK measurement.
+
+The largest individual compressed entries remain IL2CPP **11.338 MB**, Unity
+native code **9.070 MB**, managed metadata **2.624 MB** and Android Java code
+**2.354 MB**. Shared art is split across smaller archive entries. The packed
+asset comparison shows no new texture, mesh, animation clip, material, audio
+or package. Defense reuses the character rig and ball; diagnostic traces and
+review fixtures are excluded from release execution. No avoidable new asset
+dependency or unexpected large packing increase was found. The existing 75 MB
+target shortfall remains unresolved and the development reserve is constrained.
+
+Evidence under `Builds/BasketballDefenseQA/`: `before.json`, `release.json`,
+`apk-before-entries.json`, `apk-entry-delta.csv`, `packing-summary.json`,
+`apk-signature.txt`, `BeforeSizeAudit/`, `FinalSizeAudit/` and
+`generated-input-verification.json`.
+
 ## Untimed finishes and shot fallback — 6 October 2026
 
 Actual signed APK: **89,798,556 → 89,803,004 bytes (+4,448)**. Hard-limit

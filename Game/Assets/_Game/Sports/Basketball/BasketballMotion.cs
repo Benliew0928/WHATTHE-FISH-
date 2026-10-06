@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace WhatTheFish {
- public enum BasketballAction:byte { None,Shoot,Pass,Steal,Stripped,Charge,Cancel,Layup,Dunk }
+ public enum BasketballAction:byte { None,Shoot,Pass,Steal,Stripped,Charge,Cancel,Layup,Dunk,Guard,GuardRecover,Block,JumpBlock,Blocked }
  public struct BasketballMotionState:INetworkSerializable,IEquatable<BasketballMotionState> {
   public BasketballAction action;public uint sequence;public double started;public float heading,startYaw,ballSpin;public Vector3 gather,rightStart,leftStart,rightPole,leftPole,contact;public Quaternion rightRotation,leftRotation;public bool leftHand,prepared;public Vector3 finishOrigin,finishTarget;public float finishJump;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref action);s.SerializeValue(ref sequence);s.SerializeValue(ref started);s.SerializeValue(ref heading);s.SerializeValue(ref startYaw);s.SerializeValue(ref ballSpin);s.SerializeValue(ref gather);s.SerializeValue(ref rightStart);s.SerializeValue(ref leftStart);s.SerializeValue(ref rightPole);s.SerializeValue(ref leftPole);s.SerializeValue(ref rightRotation);s.SerializeValue(ref leftRotation);s.SerializeValue(ref contact);s.SerializeValue(ref leftHand);s.SerializeValue(ref prepared);s.SerializeValue(ref finishOrigin);s.SerializeValue(ref finishTarget);s.SerializeValue(ref finishJump);}
@@ -17,7 +17,19 @@ namespace WhatTheFish {
  public sealed partial class BasketballMotion:MonoBehaviour {
   public const float ShotTimeScale=.70f;
   public const float ShotRelease=.44f*ShotTimeScale,PassRelease=.30f,ShotDuration=.98f*ShotTimeScale,PassDuration=.70f;
-  public static double Clock=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
+  static NetworkManager sampledNetwork;static double sampledServerTime,sampledUnityTime;
+  // Netcode advances its clock in PreUpdate, after Unity's catch-up physics.
+  // Extrapolate each fixed step from the previous rendered frame so contact
+  // windows, held-ball poses and gravity advance together during a hitch.
+  public static double Clock {
+   get {
+    var network=NetworkManager.Singleton;if(!network||!network.IsListening)return Time.timeAsDouble;
+    if(Time.inFixedTimeStep&&network==sampledNetwork&&Math.Abs(network.ServerTime.Time-sampledServerTime)<.5)
+     return sampledServerTime+Time.fixedUnscaledTimeAsDouble-sampledUnityTime;
+    return network.ServerTime.Time;
+   }
+  }
+  static void SampleClock(){var network=NetworkManager.Singleton;if(network&&network.IsListening){sampledNetwork=network;sampledServerTime=network.ServerTime.Time;sampledUnityTime=Time.unscaledTimeAsDouble;}else sampledNetwork=null;}
   public BasketballMotionState State {get;private set;}
   public BasketballAction Action=>Elapsed<Duration(State.action)?State.action:BasketballAction.None;
   public float Elapsed=>Mathf.Max(0,(float)(Clock-State.started));
@@ -25,9 +37,9 @@ namespace WhatTheFish {
   // Public release times and replicated timestamps remain real seconds.
   float PoseElapsed=>Charging?Mathf.Min(Elapsed,.27f):Elapsed/TimeScale(State.action);
   public bool Charging=>Action==BasketballAction.Charge;
-  public bool CarryingPose=>Charging||Busy&&!Challenging;
-  public bool Busy=>Action!=BasketballAction.None&&Action!=BasketballAction.Charge;
-  public bool Challenging=>Action==BasketballAction.Steal||Action==BasketballAction.Stripped;
+  public bool CarryingPose=>Charging||Busy&&!Challenging&&!Defensive;
+  public bool Busy=>Action!=BasketballAction.None&&Action!=BasketballAction.Charge&&Action!=BasketballAction.Guard;
+  public bool Challenging=>Action==BasketballAction.Steal||Action==BasketballAction.Stripped||Blocking||Action==BasketballAction.Blocked;
   public bool BeforeRelease=>Charging||Busy&&Elapsed<ReleaseTime(Action);
   public bool RigReady {get;private set;}
   public float MaximumReachError {get;private set;}
@@ -35,7 +47,7 @@ namespace WhatTheFish {
   public Vector3 RightPalm=>Palm(right);
   public Vector3 LeftPalm=>Palm(left);
   public float Weight=>weight;
-  public static float Duration(BasketballAction a)=>a switch{BasketballAction.Shoot=>ShotDuration,BasketballAction.Pass=>PassDuration,BasketballAction.Steal=>BasketballStealRules.Duration,BasketballAction.Stripped=>BasketballStealRules.Reaction,BasketballAction.Charge=>float.PositiveInfinity,BasketballAction.Cancel=>.22f,BasketballAction.Layup=>BasketballFinishRules.Duration(a),BasketballAction.Dunk=>BasketballFinishRules.Duration(a),_=>0};
+  public static float Duration(BasketballAction a)=>a switch{BasketballAction.Shoot=>ShotDuration,BasketballAction.Pass=>PassDuration,BasketballAction.Steal=>BasketballStealRules.Duration,BasketballAction.Stripped=>BasketballStealRules.Reaction,BasketballAction.Charge=>float.PositiveInfinity,BasketballAction.Cancel=>.22f,BasketballAction.Layup=>BasketballFinishRules.Duration(a),BasketballAction.Dunk=>BasketballFinishRules.Duration(a),BasketballAction.Guard=>float.PositiveInfinity,BasketballAction.GuardRecover=>.22f,BasketballAction.Block=>BasketballDefenseRules.BlockDuration,BasketballAction.JumpBlock=>BasketballDefenseRules.JumpDuration,BasketballAction.Blocked=>BasketballDefenseRules.Recovery,_=>0};
   public static float ReleaseTime(BasketballAction a)=>BasketballFinishRules.IsFinish(a)?BasketballFinishRules.Release(a):a==BasketballAction.Shoot?ShotRelease:a==BasketballAction.Steal?BasketballStealRules.Windup:PassRelease;
   public static float TimeScale(BasketballAction a)=>a==BasketballAction.Shoot?ShotTimeScale:1;
   static float PoseReleaseTime(BasketballAction a)=>ReleaseTime(a)/TimeScale(a);
@@ -70,7 +82,7 @@ namespace WhatTheFish {
    rightFoot=placement?placement.right.initialPosition:transform.InverseTransformPoint(rightLeg.end.position);
    leftFootRotation=placement?placement.left.initialRotation:Quaternion.Inverse(transform.rotation)*leftLeg.end.rotation;
    rightFootRotation=placement?placement.right.initialRotation:Quaternion.Inverse(transform.rotation)*rightLeg.end.rotation;
-   sourcePositions=new Vector3[bones.Length];sourceRotations=new Quaternion[bones.Length];RigReady=true;previousPosition=transform.position;
+   sourcePositions=new Vector3[bones.Length];sourceRotations=new Quaternion[bones.Length];RigReady=true;CalibrateDefense();previousPosition=transform.position;
   }
   public void Begin(BasketballAction action,float heading,Vector3 gather){
    // Carry the gather around with the turning body. Interpolating between two
@@ -87,10 +99,10 @@ namespace WhatTheFish {
    value.leftHand=Vector3.Dot(point-transform.position,Quaternion.Euler(0,heading,0)*Vector3.right)<0;State=value;
   }
   public void ContactPoint(Vector3 point){var value=State;value.contact=point;State=value;}
-  public void ResetPose(){Restore();if(BasketballBall.Active)BasketballBall.Active.CancelAction(athlete);State=new BasketballMotionState{sequence=State.sequence+1};weight=run=lean=brake=actionBlend=possessionBlend=stanceBlend=previousSpeed=0;previousPosition=transform.position;}
+  public void ResetPose(){guardBlend=0;guardPrevious=transform.position;Restore();if(BasketballBall.Active)BasketballBall.Active.CancelAction(athlete);State=new BasketballMotionState{sequence=State.sequence+1};weight=run=lean=brake=actionBlend=possessionBlend=stanceBlend=previousSpeed=0;previousPosition=transform.position;}
   void OnDisable(){Restore();}
   void Restore(){if(!applied)return;for(int i=0;i<bones.Length;i++)if(bones[i]){bones[i].localPosition=sourcePositions[i];bones[i].localRotation=sourceRotations[i];}applied=false;}
-  void Update(){Restore();}
+  void Update(){SampleClock();Restore();}
   public static Vector3 DribbleOffset(float phase){
    phase=Mathf.Repeat(phase,1);float u=phase<.46f?phase/.46f:(1-phase)/.54f;
    return new Vector3(.34f,.065f+.67f*(1-u*u),.32f+.045f*Mathf.Sin(phase*Mathf.PI));
@@ -132,6 +144,7 @@ namespace WhatTheFish {
    float stand=stanceBlend*ground;
    MaximumReachError=ContactError=0;
    if(Finishing){FinishPose(Elapsed);return;}
+   if(Defensive){possessionBlend=Damp(possessionBlend,0,20);DefensePose(Elapsed,ground);return;}
    if(Challenging){
     // Defensive actions have their own weight transfer and hand keys. Do not
     // soften the strike with the shot's gather or its second action envelope.
@@ -207,7 +220,7 @@ namespace WhatTheFish {
    if(CarryingPose&&PoseElapsed<.14f){float gather=Ease(PoseElapsed/.14f);palm=Vector3.Lerp(transform.position+PoseFacing*(arm==right?State.rightStart:State.leftStart),palm,gather);rotation=Quaternion.Slerp(PoseFacing*(arm==right?State.rightRotation:State.leftRotation),rotation,gather);}
    if(CarryingPose&&PoseElapsed<.20f)pole=Vector3.Slerp(PoseFacing*(arm==right?State.rightPole:State.leftPole),pole,Ease(PoseElapsed/.20f));
    Vector3 wrist=palm-rotation*Vector3.Scale(arm.palmOffset,arm.end.lossyScale);
-   if(Challenging||Finishing&&!BeforeRelease)wrist=arm.upper.position+Vector3.ClampMagnitude(wrist-arm.upper.position,Vector3.Distance(arm.upper.position,arm.lower.position)+Vector3.Distance(arm.lower.position,arm.end.position)-.013f);
+   if(Challenging||Defensive||Finishing&&!BeforeRelease)wrist=arm.upper.position+Vector3.ClampMagnitude(wrist-arm.upper.position,Vector3.Distance(arm.upper.position,arm.lower.position)+Vector3.Distance(arm.lower.position,arm.end.position)-.013f);
    MaximumReachError=Mathf.Max(MaximumReachError,Solve(arm,wrist,pole,rotation,blend));
    // Relax and spread the imported fingers around the surface instead of a
    // rigid open paddle. The thumb retains its opposed rest orientation.

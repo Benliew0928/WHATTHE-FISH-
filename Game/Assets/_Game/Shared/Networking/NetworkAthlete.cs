@@ -47,10 +47,10 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server)] public void ReadyRpc(bool value){Ready.Value=value;}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseFootballTeamRpc(FootballTeam team,uint selectionRevision){if(IsSpawned&&FootballMatch.Instance)FootballMatch.Instance.ChooseTeam(athlete,team,selectionRevision);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void TravelReadyRpc(uint sequence){if(HostPlayer&&HostPlayer.WorldTravel.Value.phase==SkySailPhase.Preparing&&HostPlayer.WorldTravel.Value.sequence==sequence)TravelReady.Value=sequence;}
-  [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool charging,uint round){
+  [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool charging,bool guard,uint defensePlay,uint round){
    if(float.IsNaN(move.x)||float.IsNaN(move.y)||float.IsNaN(heading)||float.IsInfinity(heading)||float.IsInfinity(move.x)||float.IsInfinity(move.y))return;
    if(!AcceptRound(round))return;
-   command=new PlayerCommand{move=Vector2.ClampMagnitude(move,1),heading=heading%360,sprint=sprint,charging=charging};lastInput=Time.time;
+   command=new PlayerCommand{move=Vector2.ClampMagnitude(move,1),heading=heading%360,sprint=sprint,charging=charging,guard=guard&&BasketballBall.Active&&defensePlay==BasketballBall.Active.Defense.play,defensePlay=defensePlay};lastInput=Time.time;
   }
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void TackleRpc(uint round){if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryTackle();}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void KickRpc(float charge,uint round){if(float.IsNaN(charge)||float.IsInfinity(charge))return;if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryKick(Mathf.Clamp01(charge));}
@@ -60,6 +60,7 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void ShotChargeRpc(bool cancel,float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active){if(cancel)BasketballBall.Active.CancelShotCharge(athlete);else BasketballBall.Active.BeginShotCharge(athlete,heading);}}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void ShootRpc(float heading,double releasedAt,BasketballFinish finish){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.ReleaseShotCharge(athlete,heading,releasedAt,finish);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void StealRpc(float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TrySteal(athlete,heading);}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void BlockRpc(float heading,bool jumping,uint play){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryBlock(athlete,heading,jumping,play);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void PassRpc(float heading){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryPass(athlete,heading);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void BasketballFreeRoamRpc(bool enabled){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.SetFreeRoam(athlete,enabled);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfCartRpc(GolfCartAction action,ulong cartOwner){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf)GolfCartWorld.Execute(athlete,action,cartOwner);}
@@ -70,7 +71,8 @@ namespace WhatTheFish {
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
     if(!exploring)c.move=Vector2.zero;
     // Reliable action edges are sent this frame, independently of movement throttling.
-    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.pass||c.kick||c.cartAction!=GolfCartAction.None){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.charging&&exploring,MatchRevision);}
+    if((sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.pass||c.kick||c.cartAction!=GolfCartAction.None){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.charging&&exploring,c.guard&&exploring,c.defensePlay,MatchRevision);}
+    if((c.block||c.jumpBlock)&&exploring)BlockRpc(c.heading,c.jumpBlock,c.defensePlay);
     if(c.steal&&exploring)StealRpc(c.heading);
     if(c.shotBegin&&exploring)ShotChargeRpc(false,c.heading);if(c.shotCancel)ShotChargeRpc(true,c.heading);
     if(c.kick&&exploring)KickRpc(c.kickCharge,MatchRevision);if(c.jump&&exploring)JumpRpc(MatchRevision);if(c.tackle&&exploring)TackleRpc(MatchRevision);if(c.shoot&&exploring)ShootRpc(c.heading,c.shotReleasedAt,c.finish);else if(c.pass&&exploring)PassRpc(c.heading);
@@ -81,6 +83,6 @@ namespace WhatTheFish {
    }
    if(!IsServer){GolfCartWorld.Receive(athlete,Cart.Value);athlete.BasketballFreeRoam=BasketballFreeRoam.Value;athlete.BasketballMotion.Receive(BasketballPose.Value);athlete.FootballMotion.Receive(FootballPose.Value);athlete.GolfClubMotion.Receive(GolfPose.Value);athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}
   }
-  void FixedUpdate(){if(!IsSpawned||!IsServer)return;Cart.Value=GolfCartWorld.State(athlete);if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value){c.move=Vector2.zero;c.charging=false;}athlete.Simulate(c,Time.fixedDeltaTime);BasketballFreeRoam.Value=athlete.BasketballFreeRoam;Cart.Value=GolfCartWorld.State(athlete);BasketballPose.Value=athlete.BasketballMotion.State;FootballPose.Value=athlete.FootballMotion.State;GolfPose.Value=athlete.GolfClubMotion.State;Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
+  void FixedUpdate(){if(!IsSpawned||!IsServer)return;Cart.Value=GolfCartWorld.State(athlete);if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling){command=default;return;}var c=command;if(Time.time-lastInput>.25f||!HostPlayer||!HostPlayer.Exploring.Value){c.move=Vector2.zero;c.charging=c.guard=false;}athlete.Simulate(c,Time.fixedDeltaTime);BasketballFreeRoam.Value=athlete.BasketballFreeRoam;Cart.Value=GolfCartWorld.State(athlete);BasketballPose.Value=athlete.BasketballMotion.State;FootballPose.Value=athlete.FootballMotion.State;GolfPose.Value=athlete.GolfClubMotion.State;Jump.Value=athlete.JumpState();Motion.Value=athlete.Snapshot(NetworkManager.ServerTime.Time);Football.Value=athlete.FootballState(NetworkManager.ServerTime.Time);}
  }
 }

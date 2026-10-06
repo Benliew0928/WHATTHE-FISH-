@@ -50,7 +50,7 @@ namespace WhatTheFish {
   }
   public bool CanShoot(Athlete athlete)=>Playing&&athlete&&!athlete.inTransit&&!athlete.BasketballFreeRoam&&!ActionQueued&&(!athlete.BasketballMotion||!athlete.BasketballMotion.Busy)&&Held&&(Authority?holder==athlete:PlayerId(athlete)==target.holder);
   public void CancelAction(Athlete athlete){if(Authority&&holder==athlete){pendingAction=BasketballAction.None;CancelShotCharge(athlete);}}
-  void ClearPossession(){approachActor=null;ClearSteals();ResetShotTracking();passing=false;if(holder&&holder.BasketballMotion)holder.BasketballMotion.ResetPose();pendingAction=BasketballAction.None;holder=null;lastShooter=null;RestoreShooterCollision();if(Body){Body.linearDamping=restDamping;RestoreFloorContacts();}}
+  void ClearPossession(){ClearDefense();approachActor=null;ClearSteals();ResetShotTracking();passing=false;if(holder&&holder.BasketballMotion)holder.BasketballMotion.ResetPose();pendingAction=BasketballAction.None;holder=null;lastShooter=null;RestoreShooterCollision();if(Body){Body.linearDamping=restDamping;RestoreFloorContacts();}}
   void RestoreFloorContacts(){shotFlying=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;}
   void RestoreShooterCollision(){if(ignoredShooter){Physics.IgnoreCollision(GetComponent<SphereCollider>(),ignoredShooter,false);ignoredShooter=null;}}
   bool Outside(Vector3 world){var p=transform.parent?transform.parent.InverseTransformPoint(world):world;return Mathf.Abs(p.x)>courtLimits.x||Mathf.Abs(p.z)>courtLimits.y;}
@@ -124,7 +124,7 @@ namespace WhatTheFish {
    else Consider(AppRoot.Instance.LocalAthlete);
    if(!nearest)return;
    ResetShotTracking();
-   RestoreShooterCollision();RestoreStealerCollision();RestoreFloorContacts();holder=nearest;dribblePhase=0;pendingAction=BasketballAction.None;Body.linearDamping=restDamping;Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;reset++;looseFor=outsideFor=0;Follow(holder);sendAt=0;
+   NewDefensePlay();passing=false;RestoreShooterCollision();RestoreStealerCollision();RestoreFloorContacts();holder=nearest;dribblePhase=0;pendingAction=BasketballAction.None;Body.linearDamping=restDamping;Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;reset++;looseFor=outsideFor=0;Follow(holder);sendAt=0;
   }
   public Transform SelectHoop(Vector3 origin,float heading){
    if(!float.IsFinite(heading))return null;
@@ -153,7 +153,7 @@ namespace WhatTheFish {
    var motion=athlete.BasketballMotion;if(!motion)return false;
    var start=CarryPosition(athlete);
    if(action==BasketballAction.Shoot){var hoop=SelectHoop(start,heading);if(!hoop)return false;heading=Quaternion.LookRotation(Vector3.ProjectOnPlane(hoop.position-athlete.transform.position,Vector3.up)).eulerAngles.y;}
-   pendingAction=action;pendingHeading=heading;pendingShotHoop=action==BasketballAction.Shoot?SelectHoop(start,heading):null;
+   pendingWindow=BasketballDefenseRules.Window(ShotPressure(athlete,SelectHoop(start,heading)));pendingAction=action;pendingHeading=heading;pendingShotHoop=action==BasketballAction.Shoot?SelectHoop(start,heading):null;
    chargingAthlete=null;chargingHoop=null;
    sendAt=0;return true;
   }
@@ -166,7 +166,7 @@ namespace WhatTheFish {
     if(BasketballFinishRules.IsFinish(action)){
      if(!FinishVelocity(athlete,action,start,hoop,out velocity)){InterruptFinish(athlete);return;}
     }else if(!SolveShot(start,goal,arcHeight+distance*arcPerMetre,maxShotSpeed,out velocity)){athlete.BasketballMotion.ResetPose();return;}
-    if(!BasketballFinishRules.IsFinish(action))velocity=ApplyShotPower(velocity,pendingPower);shotHoop=hoop;
+    if(!BasketballFinishRules.IsFinish(action))velocity=ApplyShotPower(velocity,pendingPower,pendingWindow);shotHoop=hoop;
     if(velocity.magnitude>maxShotSpeed){athlete.BasketballMotion.ResetPose();return;}
    }else velocity=PassVelocity(athlete,start,pendingHeading);
    // Reject an obstructed release instead of materializing inside architecture.

@@ -14,7 +14,7 @@ namespace WhatTheFish {
   public bool SetFreeRoam(Athlete actor,bool enabled){
    if(!Authority||!Playing||!actor||actor.inTransit)return false;
    actor.BasketballFreeRoam=enabled;
-   if(enabled){CancelShotCharge(actor);if(holder==actor)ResetHome();}
+   if(enabled){actor.BasketballMotion?.EndGuard();CancelShotCharge(actor);if(holder==actor)ResetHome();}
    return true;
   }
   void ResetCourtPlayers(){if(Authority)foreach(var actor in Athlete.Active)actor.BasketballFreeRoam=false;}

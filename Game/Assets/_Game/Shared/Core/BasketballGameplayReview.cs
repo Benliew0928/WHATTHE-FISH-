@@ -173,7 +173,10 @@ namespace WhatTheFish {
    float deadline=Time.time+7;while(ball.ShotCount<2&&Time.time<deadline)yield return null;
    Check(ball.ShotCount==2&&!ball.Held,"guest reliable owner RPC launches one host-simulated shot");
    yield return new WaitForSeconds(3);
-   Check(ball.Score.made==2&&ball.Score.missed==0,"guest basket counted by host");
+   Check(ball.Score.made==2&&ball.Score.missed==0,"guest basket counted by host: power="+ball.LastReleasePower.ToString("F4")+" velocity="+ball.LastLaunchVelocity.ToString("F3")+" result="+ball.Score.result);
+   var guestReport=File.ReadAllText(Path.Combine(Directory.GetParent(folder).FullName,"guest","results.txt"));var releaseLine=guestReport.Split('\n').First(l=>l.StartsWith("INFO guest release power="));
+   float displayed=float.Parse(releaseLine.Split('=')[1].Split(' ')[0],System.Globalization.CultureInfo.InvariantCulture);
+   Check(Mathf.Abs(displayed-ball.LastReleasePower)<.005f,"host release matches guest displayed phase: difference="+Mathf.Abs(displayed-ball.LastReleasePower).ToString("F5"));
    PlaceActor(actor,new Vector3(0,.07f,-2));PlaceActor(guest,new Vector3(0,.07f,3),180);ball.ResetHome();yield return WaitHeld(actor);
    Check(ball.TryPass(actor,0)&&!ball.TryPass(actor,0),"host pass accepts one edge and rejects a duplicate");
    deadline=Time.time+5;while(ball.Holder!=guest&&Time.time<deadline)yield return null;
@@ -211,7 +214,7 @@ namespace WhatTheFish {
     if(ball.Held){
      var holder=ball.Holder;if(holder){maxCarryError=Mathf.Max(maxCarryError,Vector3.Distance(ball.transform.position,ball.CarryPosition(holder)));}
      if(ball.HolderId==0){sawAim|=ball.Holder&&ball.Holder.BasketballMotion.Charging;sawCharge|=ball.Charge.active;sawHost=true;CheckOnceCapture();}
-     if(ball.CanShoot(actor)&&ball.ShotCount==1&&!sent){sawGuest=true;yield return new WaitForSeconds(.6f);app.view.BeginShot();yield return WaitGreen();app.view.EndShot();sent=true;}
+     if(ball.CanShoot(actor)&&ball.ShotCount==1&&!sent){sawGuest=true;yield return new WaitForSeconds(.6f);app.view.BeginShot();yield return WaitGreen();File.AppendAllText(Path.Combine(folder,"results.txt"),"INFO guest release power="+app.view.ShotPower.ToString("F4")+" phase="+ball.PresentedChargePhase.ToString("F4")+" time="+BasketballMotion.Clock.ToString("F4")+"\n");app.view.EndShot();sent=true;}
      if(ball.CanShoot(actor)&&ball.PassCount==1&&!sentPass){app.view.yaw=180;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=180};app.view.RequestPass();sentPass=true;}
      foreach(var player in FindObjectsByType<Athlete>(FindObjectsSortMode.None))sawWindup|=player.BasketballMotion&&player.BasketballMotion.Busy;
      if(ball.CanShoot(actor)&&ball.ShotCount==2&&ball.PassCount==3){

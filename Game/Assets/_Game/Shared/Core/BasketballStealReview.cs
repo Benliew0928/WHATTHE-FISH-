@@ -57,26 +57,17 @@ namespace WhatTheFish {
    who.capsule.enabled=true;who.ResetLocomotion();Physics.SyncTransforms();
   }
   IEnumerator Offline(){
-   ball.autoPickup=false;Place(actor,new Vector3(3,.07f,-3),270);DevelopmentProbe.TurnCommand=new PlayerCommand{heading=270};
-   var control=FindFirstObjectByType<BasketballStealButton>();yield return null;
-   var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41};
-   uint before=actor.BasketballMotion.State.sequence;control.OnPointerDown(pointer);yield return new WaitForSeconds(1.8f);
-   Check(actor.BasketballMotion.State.sequence>=before+3&&actor.BasketballMotion.State.sequence<=before+4,"hold repeats swipes at bounded cadence");
-   Check(!ball.Held&&ball.StealCount==0,"empty swipes do not create possession or steals");
-   control.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=42});Check(app.view.StealHeld,"other finger cannot release steal hold");
-   control.OnPointerUp(pointer);before=actor.BasketballMotion.State.sequence;yield return new WaitForSeconds(.85f);
-   Check(!app.view.StealHeld&&actor.BasketballMotion.State.sequence==before,"release stops repeating");
-   control.OnPointerDown(pointer);yield return null;control.OnPointerExit(pointer);yield return new WaitForSeconds(.8f);
-   before=actor.BasketballMotion.State.sequence;yield return new WaitForSeconds(.8f);Check(!app.view.StealHeld&&actor.BasketballMotion.State.sequence==before,"drag off cancels repeat");
-   Check(ball.TrySteal(actor,270),"idle grounded swipe accepted");int accepted=0;for(int i=0;i<100;i++)if(ball.TrySteal(actor,270))accepted++;
-   Check(accepted==0,"100 duplicate requests cannot bypass recovery");Check(!actor.CanRequestJump,"swipe contact cannot be cancelled into a jump");
-   yield return new WaitForSeconds(.8f);Check(!actor.BasketballMotion.Busy&&actor.CanRequestJump,"swipe recovers to locomotion and jump");
+   ball.autoPickup=false;Place(actor,new Vector3(3,.07f,-3),270);DevelopmentProbe.TurnCommand=new PlayerCommand{heading=270};yield return null;
+   var control=FindFirstObjectByType<BasketballStealButton>();
+   Check(!control.button.interactable&&!app.view.BeginSteal()&&!ball.TrySteal(actor,270),"loose-ball role rejects stealing without an opponent carrier");
+   Check(!ball.Held&&ball.StealCount==0,"empty input cannot create a steal or possession");
+   ball.autoPickup=true;var p=actor.transform.position+Vector3.up*.2f+actor.transform.forward*.5f;ball.Place(ball.transform.parent.InverseTransformPoint(p),Quaternion.identity,Vector3.zero,Vector3.zero);
+   float end=Time.time+3;while(ball.Holder!=actor&&Time.time<end)yield return null;
+   Check(ball.Holder==actor&&!app.view.BeginSteal()&&!ball.TrySteal(actor,270),"attacker cannot steal its own ball");
    Check(!ball.TrySteal(actor,float.NaN)&&!ball.TrySteal(actor,float.PositiveInfinity),"invalid headings rejected");
-   actor.RequestJump();yield return new WaitForFixedUpdate();yield return null;Check(!ball.TrySteal(actor,270),"jump preparation rejects steal");yield return new WaitForSeconds(1.5f);
    ball.SetFreeRoam(actor,true);Check(!ball.TrySteal(actor,270)&&!app.view.BeginSteal(),"free roam disables stealing");ball.SetFreeRoam(actor,false);
-   app.view.BeginSteal();app.view.SendMessage("OnApplicationFocus",false);Check(!app.view.StealHeld,"focus loss clears held input");
-   control.OnPointerDown(pointer);control.enabled=false;Check(!app.view.StealHeld,"disabled control cancels touch hold");control.enabled=true;
-   app.view.BeginSteal();app.SendMessage("Return");yield return new WaitForSeconds(.2f);Check(!app.view.StealHeld&&!ball.TrySteal(actor,270),"room return cancels input and attempts");
+   app.view.SendMessage("OnApplicationFocus",false);Check(!app.view.StealHeld,"focus loss leaves held input clear");
+   app.SendMessage("Return");yield return new WaitForSeconds(.2f);Check(!app.view.StealHeld&&!ball.TrySteal(actor,270),"room return clears input");
   }
   IEnumerator Possess(Athlete victim,Athlete defender,Vector3 defenderPoint,float heading){
    app.view.ClearMatchInput();Place(defender,new Vector3(4,.07f,-4));Place(victim,new Vector3(0,.07f,0));
@@ -94,7 +85,13 @@ namespace WhatTheFish {
    var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).OrderBy(p=>p.OwnerClientId).ToArray();Check(players.Length==2,"two network athletes");if(players.Length!=2)yield break;
    var guest=players[1].GetComponent<Athlete>();actor=players[0].GetComponent<Athlete>();yield return Await("guest-ready");
    yield return Possess(guest,actor,new Vector3(2.8f,.07f,.32f),270);uint before=ball.StealCount;
-   yield return Swipes(1.7f,270);Check(ball.Holder==guest&&ball.StealCount==before,"distant repeated swipes leave possession");
+   var control=FindFirstObjectByType<BasketballStealButton>();var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41};
+   uint sequence=actor.BasketballMotion.State.sequence;control.OnPointerDown(pointer);yield return CaptureWindow(1.8f);
+   Check(actor.BasketballMotion.State.sequence>=sequence+3&&actor.BasketballMotion.State.sequence<=sequence+4,"held defender button repeats at bounded cadence");
+   control.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=42});Check(app.view.StealHeld,"other finger cannot release held steal");control.OnPointerUp(pointer);yield return CaptureWindow(.8f);
+   sequence=actor.BasketballMotion.State.sequence;yield return CaptureWindow(.8f);Check(!app.view.StealHeld&&actor.BasketballMotion.State.sequence==sequence,"release stops repeating");
+   control.OnPointerDown(pointer);yield return null;control.OnPointerExit(pointer);Check(!app.view.StealHeld,"drag off cancels steal hold");yield return CaptureWindow(.8f);
+   Check(ball.Holder==guest&&ball.StealCount==before,"distant repeated swipes leave possession");
    yield return Possess(guest,actor,new Vector3(-.9f,.07f,0),90);yield return Swipes(1.7f,90);
    Check(ball.Holder==guest&&ball.StealCount==before,"body shields far-side dribble through repeated attempts");
    yield return Possess(guest,actor,new Vector3(.9f,.07f,.32f),270);

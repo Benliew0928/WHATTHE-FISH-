@@ -2,6 +2,23 @@
 
 Basketball adds a procedural pose layer to the existing Rainbow Sprinter rig. It reuses the authored running and jumping clips, both character LODs, the basketball mesh and all existing materials. No animation package, texture or duplicate character mesh is required. The current 30 cm ball has updated dribble positions, palm contacts and two-handed grips; [shot physics and net response](BASKETBALL-GAMEPLAY.md) describe the hold/release controls and scoring.
 
+## Guard, block and jump block
+
+[Defense](BASKETBALL-DEFENSE.md) adds a lowered guarding stance and short
+lateral steps while keeping the chest toward the carrier. Each standing block
+loads the shoulder, reaches with one hand, counterbalances with the other arm
+and withdraws into recovery. A jump block bends the knees before takeoff,
+raises the striking hand, keeps the other arm lower and absorbs the landing.
+The interrupted attacker uses a restrained high-ball recoil and retains gravity.
+
+The contact path and visible palm share the same rig-calibrated shoulder and
+arm reach. The solver does not lengthen the short arms to reach high balls;
+the actual capsule jump supplies height. Staggered feet, bounded lateral
+strides and smooth pose envelopes prevent crossed legs and abrupt transitions.
+The 2.20 m root rise matches this game's stylized dunk height. Both sides and
+the distant character LOD are covered by the defense review. No new imported
+clip, mesh, texture, material or runtime package is needed.
+
 ## Close finishes
 
 [Layups and dunks](BASKETBALL-FINISHES.md) add a committed gather and plant,

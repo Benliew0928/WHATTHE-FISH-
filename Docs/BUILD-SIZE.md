@@ -1,5 +1,38 @@
 # Build size — measured release records
 
+## Basketball defense — 6 October 2026
+
+Fresh AndroidSubmission completed at **22:51:12 Malaysia time**:
+**89,803,004 → 89,825,364 bytes (+22,360)**. Strict-limit headroom is
+**10,174,636 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,825,364 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**BBBE8DF5E83ED48C0D9340A77758968E3B39F4D96A3FCD39CF2AB4BA893198A5**.
+
+Protocol **29** adds pressure guarding, standing and jump blocks, possession
+based controls and rig-driven defensive poses. Swept hand contact determines
+success; the host checks timing, reach, direction and obstructions. It also
+keeps action time aligned with catch-up physics and guest shot releases aligned
+with the displayed charge sample. No imported art or runtime package was added.
+[Rules and controls](BASKETBALL-DEFENSE.md) and
+[packing audit](APK-SIZE-AUDIT.md#basketball-defense--6-october-2026).
+
+The complete Windows player in `Builds/WindowsFinal/` uses the **22:46:50**
+managed build and the complete **21:54:15** player asset build. All **315 files**
+match the validated candidate after preserving the existing portable launchers;
+only the delivery note changes. The selected feature and regression suite has
+**978 passing assertions in 22 reports, zero failures**. Use matching protocol
+29 Windows/Android peers.
+
+Across final Android packaging, **3,061 of 3,062** source/asset/config inputs
+remain byte-identical. Format-aware comparison proves the regenerated Golf
+prefab retains every property and reference relationship. Runtime scripts,
+scenes and URP settings are unchanged. Evidence, source manifests, control
+captures and animation preview are under `Builds/BasketballDefenseQA/`.
+[Verification and archives](VERIFICATION.md#basketball-defense--6-october-2026).
+No phone was connected; physical touch, Android appearance/FPS, thermals and
+WAN latency remain unverified.
+
 ## Untimed finishes and shot fallback — 6 October 2026
 
 Fresh AndroidSubmission completed at **01:09:38 Malaysia time**:

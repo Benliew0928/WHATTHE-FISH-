@@ -63,6 +63,7 @@ namespace WhatTheFish {
    if(FootballMatch.BlocksActions){command.kick=command.tackle=command.jump=command.shoot=command.pass=command.steal=command.charging=false;}
    if(FootballBall.Instance)FootballBall.Instance.RefreshControl(this);
    if(command.jump)RequestJump();
+   if(BasketballBall.Active){BasketballBall.Active.SetGuard(this,command.guard&&command.defensePlay==BasketballBall.Active.Defense.play,command.heading);if(command.block||command.jumpBlock)BasketballBall.Active.TryBlock(this,command.heading,command.jumpBlock,command.defensePlay);}
    if(BasketballBall.Active){if(command.steal)BasketballBall.Active.TrySteal(this,command.heading);if(command.shotBegin)BasketballBall.Active.BeginShotCharge(this,command.heading);if(command.shotCancel)BasketballBall.Active.CancelShotCharge(this);if(command.shoot)BasketballBall.Active.ReleaseShotCharge(this,command.heading,command.shotReleasedAt>0?command.shotReleasedAt:double.NaN,command.finish);else if(command.pass)BasketballBall.Active.TryPass(this,command.heading);}
    if(GolfMatchManager.Instance&&(!Unity.Netcode.NetworkManager.Singleton||!Unity.Netcode.NetworkManager.Singleton.IsListening))GolfMatchManager.Instance.SetCharging(this,command.golfCharging,command.golfBallOwner,command.heading,command.golfRound);
    if(command.golfSwing&&GolfMatchManager.Instance)GolfMatchManager.Instance.TrySwing(this,command.golfBallOwner,command.heading,command.golfCharge,command.golfRound);
@@ -94,11 +95,13 @@ namespace WhatTheFish {
    if(football)requestedSpeed*=football.MovementMultiplier;
    if(BasketballBall.Active&&BasketballBall.Active.IsCharging(this))requestedSpeed*=.5f;
    if(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))requestedSpeed*=BasketballMotion.Action==BasketballAction.Stripped?.55f:.65f;
-   float vertical=Jump.Step(grounded,CanRequestJump,dt);
+   bool defense=BasketballMotion&&(BasketballMotion.Guarding||BasketballMotion.Blocking||BasketballMotion.Action==BasketballAction.GuardRecover);
+   if(defense)requestedSpeed=BasketballMotion.Guarding?BasketballDefenseRules.GuardSpeed:2.2f;
+   float vertical=BasketballMotion&&BasketballMotion.JumpBlocking?BasketballMotion.StepDefenseJump(dt):Jump.Step(grounded,CanRequestJump,dt);
    // Preserve the running impulse even if the stick is released during the
    // grounded jump preparation; air control also starts on the takeoff step.
-   if(normalTime>0)displacement+=Motor.Step(direction,requestedSpeed,grounded&&!Jump.Preparing&&!Jump.Airborne,normalTime);
-   if(BasketballMotion&&(BasketballMotion.Busy||BasketballMotion.Charging))Motor.FaceBasketball(BasketballMotion.State.heading,dt/basketballTimeScale);
+   if(normalTime>0)displacement+=defense?Motor.Strafe(direction,requestedSpeed,grounded&&!Jump.Airborne,BasketballMotion.State.heading,normalTime):Motor.Step(direction,requestedSpeed,grounded&&!Jump.Preparing&&!Jump.Airborne,normalTime);
+   if(!defense&&BasketballMotion&&(BasketballMotion.Busy||BasketballMotion.Charging))Motor.FaceBasketball(BasketballMotion.State.heading,dt/basketballTimeScale);
    if(GolfClubMotion&&(GolfClubMotion.Busy||GolfClubMotion.State.action==GolfClubAction.Charge))Motor.FaceGolf(GolfClubMotion.AddressHeading);
    if(golfContact){displacement.x=displacement.z=0;}
    capsule.stepOffset=Jump.Airborne?0:.3f;
@@ -131,7 +134,7 @@ namespace WhatTheFish {
   void Update(){
    if(!animator)return;
    if(inTransit){if(jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);jumpWeight=0;animator.SetFloat("Speed",0);animator.SetBool("Turning",false);animator.SetBool("Launching",false);if(turnLayer>=0)animator.SetLayerWeight(turnLayer,0);if(footballLayer>=0)animator.SetLayerWeight(footballLayer,0);return;}
-   bool turning=!(BasketballMotion&&BasketballMotion.Finishing)&&!Airborne&&Phase==LocomotionPhase.Turning;
+   bool turning=!(BasketballMotion&&(BasketballMotion.Finishing||BasketballMotion.Defensive))&&!Airborne&&Phase==LocomotionPhase.Turning;
    float angle=remote?received.angle:Motor.TurnAngle;
    float progress=LocomotionMotor.PoseProgress(remote?received.startYaw:Motor.TurnStartYaw,angle,transform.eulerAngles.y);
    PresentedTurnProgress=Mathf.Clamp01(progress);
@@ -145,7 +148,7 @@ namespace WhatTheFish {
    if(jumpLayer>=0){
     float pose=JumpPose;
     bool presenting=PresentingJump;
-    jumpWeight=Mathf.MoveTowards(jumpWeight,presenting&&Action==FootballAction.None&&!(BasketballMotion&&BasketballMotion.Finishing)?1:0,Time.deltaTime*18);
+    jumpWeight=Mathf.MoveTowards(jumpWeight,presenting&&Action==FootballAction.None&&!(BasketballMotion&&(BasketballMotion.Finishing||BasketballMotion.JumpBlocking))?1:0,Time.deltaTime*18);
     animator.SetFloat("JumpTime",pose);animator.SetLayerWeight(jumpLayer,jumpWeight);
    }
    if(footballLayer>=0){

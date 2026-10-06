@@ -58,7 +58,7 @@ namespace WhatTheFish {
     // captureFramerate changes simulation time, not the UI's unscaled clock.
     // Drive pose repetition on this fixed clock; Test-BasketballSteal covers
     // real held/released button input at normal wall-clock speed.
-    if(label=="lod1-repeat"&&Time.time>=next){ball.TrySteal(actor,0);next=Time.time+BasketballStealRules.Repeat;}
+    if(label=="lod1-repeat"&&Time.time>=next){actor.BasketballMotion.BeginChallenge(BasketballAction.Steal,0,actor.transform.position+new Vector3(.24f,.35f,.65f));next=Time.time+BasketballStealRules.Repeat;}
     yield return new WaitForEndOfFrame();Sample(stationary);
    }
    Check(float.IsFinite(jointStep)&&jointStep<.34f,label+" bounded joint step "+jointStep.ToString("F3"));

@@ -34,8 +34,8 @@ namespace WhatTheFish {
   double chargePhase,chargeSampled;
   float chargePeriod=ChargeDuration;
   Transform chargingHoop,pendingShotHoop;
-  readonly System.Collections.Generic.List<(double time,double phase)> chargeHistory=new();
-  float pendingPower=SweetSpot;
+  readonly System.Collections.Generic.List<(double time,double phase,float pressure)> chargeHistory=new();
+  float pendingPower=SweetSpot,pendingWindow=SweetWindow;
 
   // One-way sweeps get progressively faster from close shots to the far court.
   // Integrate phase when moving, rather than rescaling elapsed time and jumping
@@ -43,18 +43,22 @@ namespace WhatTheFish {
   public static float ChargePeriod(float distance)=>ChargeDuration/Mathf.Lerp(1,2,Mathf.SmoothStep(0,1,Mathf.InverseLerp(4,22,distance)));
   public static float PowerAtPhase(double phase)=>Mathf.PingPong((float)(Math.Max(0,phase)%2),1);
   public bool IsCharging(Athlete actor)=>actor&&Held&&Holder==actor&&(Authority?chargingAthlete==actor:haveTarget&&target.charge.active);
-  public BasketballCharge Charge=>Authority?new BasketballCharge{active=chargingAthlete,phase=chargePhase,time=chargeSampled,period=chargePeriod,hoop=chargingHoop&&chargingHoop.name=="Hoop_South"?(byte)1:(byte)0}:haveTarget?target.charge:default;
+  public BasketballCharge Charge=>Authority?new BasketballCharge{active=chargingAthlete,phase=chargePhase,time=chargeSampled,period=chargePeriod,pressure=ShotPressure(chargingAthlete,chargingHoop),hoop=chargingHoop&&chargingHoop.name=="Hoop_South"?(byte)1:(byte)0}:haveTarget?target.charge:default;
   public Transform ChargeHoop(Athlete actor,float heading){
    if(IsCharging(actor)){var c=Charge;if(Authority)return chargingHoop;int index=c.hoop<2?c.hoop:0;return baskets[index]?baskets[index].transform:null;}
    return actor?SelectHoop(actor.transform.position,heading):null;
   }
   public float ChargeDistance(Athlete actor,float heading){var hoop=ChargeHoop(actor,heading);return hoop&&actor?Vector3.ProjectOnPlane(hoop.position-actor.transform.position,Vector3.up).magnitude:4;}
-  public double PresentedChargePhase=>Charge.phase+Math.Max(0,BasketballMotion.Clock-Charge.time)/Mathf.Max(.1f,Charge.period);
+  // A freshly received sample can be ahead of a client's buffered server
+  // clock. Its visible phase and release timestamp must describe the same
+  // instant; otherwise an edge-of-green release is scored at an older phase.
+  public double PresentedChargeTime=>Math.Max(BasketballMotion.Clock,Charge.time);
+  public double PresentedChargePhase=>Charge.phase+(PresentedChargeTime-Charge.time)/Mathf.Max(.1f,Charge.period);
   void AdvanceCharge(){
    if(!chargingAthlete)return;
    double now=BasketballMotion.Clock;chargePhase+=Math.Max(0,now-chargeSampled)/chargePeriod;chargeSampled=now;
    chargePeriod=ChargePeriod(ChargeDistance(chargingAthlete,chargingAthlete.transform.eulerAngles.y));
-   if(chargeHistory.Count==0||now>chargeHistory[^1].time){chargeHistory.Add((now,chargePhase));while(chargeHistory.Count>2&&chargeHistory[1].time<now-.5)chargeHistory.RemoveAt(0);}
+   if(chargeHistory.Count==0||now>chargeHistory[^1].time){chargeHistory.Add((now,chargePhase,ShotPressure(chargingAthlete,chargingHoop)));while(chargeHistory.Count>2&&chargeHistory[1].time<now-.5)chargeHistory.RemoveAt(0);}
   }
   double ReleasePhase(double time){
    // Timestamp is an input edge, never a supplied power/velocity. Bound rewind
@@ -65,6 +69,13 @@ namespace WhatTheFish {
    return chargePhase;
   }
 
+  float ReleaseWindow(double time){
+   double now=BasketballMotion.Clock;
+   if(double.IsNaN(time)||double.IsInfinity(time))time=now;
+   time=Math.Clamp(time,Math.Max(chargeStarted,now-.25),now);
+   for(int i=chargeHistory.Count-1;i>=0;i--)if(chargeHistory[i].time<=time)return BasketballDefenseRules.Window(chargeHistory[i].pressure);
+   return BasketballDefenseRules.Window(ShotPressure(chargingAthlete,chargingHoop));
+  }
   void PrepareHoops(){
    if(!transform.parent)return;
    foreach(var t in transform.parent.GetComponentsInChildren<Transform>(true)){
@@ -76,7 +87,7 @@ namespace WhatTheFish {
    if(!Authority||!CanShoot(athlete)||!Eligible(athlete)||chargingAthlete)return false;
    if(float.IsNaN(heading))heading=athlete.transform.eulerAngles.y;if(!float.IsFinite(heading))return false;
    chargingHoop=SelectHoop(athlete.transform.position,heading);if(!chargingHoop)return false;
-   chargingAthlete=athlete;chargeStarted=chargeSampled=BasketballMotion.Clock;chargePhase=0;chargePeriod=ChargePeriod(ChargeDistance(athlete,heading));chargeHistory.Clear();chargeHistory.Add((chargeStarted,0));sendAt=0;return true;
+   chargingAthlete=athlete;chargeStarted=chargeSampled=BasketballMotion.Clock;chargePhase=0;chargePeriod=ChargePeriod(ChargeDistance(athlete,heading));chargeHistory.Clear();chargeHistory.Add((chargeStarted,0,ShotPressure(athlete,chargingHoop)));sendAt=0;return true;
   }
   public void CancelShotCharge(Athlete athlete){if(Authority&&chargingAthlete==athlete&&athlete){chargingAthlete=null;chargingHoop=null;sendAt=0;if(athlete.BasketballMotion&&athlete.BasketballMotion.Charging){var start=CarryPosition(athlete);athlete.BasketballMotion.Begin(BasketballAction.Cancel,athlete.transform.eulerAngles.y,Quaternion.Inverse(athlete.transform.rotation)*(start-athlete.transform.position));dribblePhase=0;}}}
   public bool ReleaseShotCharge(Athlete athlete,float heading,double releasedAt=double.NaN,BasketballFinish kind=BasketballFinish.Shot){
@@ -84,14 +95,14 @@ namespace WhatTheFish {
    if(!float.IsFinite(heading)||!chargingHoop){CancelShotCharge(athlete);return false;}
    AdvanceCharge();float power=PowerAtPhase(ReleasePhase(releasedAt));var hoop=chargingHoop;
    heading=Quaternion.LookRotation(Vector3.ProjectOnPlane(hoop.position-athlete.transform.position,Vector3.up)).eulerAngles.y;
-   if(kind!=BasketballFinish.Shot)return TryFinish(athlete,kind,hoop,power);
-   bool fired=TryShoot(athlete,heading,power);if(fired)pendingShotHoop=hoop;else CancelShotCharge(athlete);return fired;
+   if(kind!=BasketballFinish.Shot){float finishWindow=ReleaseWindow(releasedAt);bool accepted=TryFinish(athlete,kind,hoop,power);if(accepted)pendingWindow=finishWindow;return accepted;}
+   float window=ReleaseWindow(releasedAt);bool fired=TryShoot(athlete,heading,power);if(fired){pendingShotHoop=hoop;pendingWindow=window;}else CancelShotCharge(athlete);return fired;
   }
   // Distance/height determine the ideal ballistic arc. Timing perturbs launch
   // velocity, never the in-flight position; there is no magnetism at the hoop.
-  public static Vector3 ApplyShotPower(Vector3 ideal,float power){
+  public static Vector3 ApplyShotPower(Vector3 ideal,float power,float window=SweetWindow){
    float error=Mathf.Clamp01(power)-SweetSpot;
-   error=Mathf.Sign(error)*Mathf.Max(0,Mathf.Abs(error)-SweetWindow);
+   error=Mathf.Sign(error)*Mathf.Max(0,Mathf.Abs(error)-Mathf.Clamp(window,.025f,SweetWindow));
    return new Vector3(ideal.x*(1+error*.8f),ideal.y*(1+error*.14f),ideal.z*(1+error*.8f));
   }
   // Match the authored 7.239 m arc and 6.7056 m corner lines. The line
@@ -118,7 +129,7 @@ namespace WhatTheFish {
    foreach(var basket in baskets)if(basket)basket.ResetCrossing();
   }
   void ResetSessionScore(){
-   score=default;finishNotice=default;attemptedHoop=null;chargingAthlete=null;samplingFlight=false;
+   blocks=0;blockTime=-100;score=default;finishNotice=default;attemptedHoop=null;chargingAthlete=null;samplingFlight=false;
    foreach(var basket in baskets)if(basket)basket.ResetNet();
   }
   void StepShotPhysics(){
@@ -136,6 +147,7 @@ namespace WhatTheFish {
   }
   void ShotContact(Collision collision){
    if(!Authority||Held)return;
+   if(passing)for(int i=0;i<collision.contactCount;i++)if(collision.GetContact(i).normal.y>.45f){passing=false;sendAt=0;break;}
    var basket=collision.collider.GetComponentInParent<BasketballHoop>();
    if(basket&&collision.contactCount>0)basket.RimContact(collision.GetContact(0).point,collision.relativeVelocity);
    if(score.result!=BasketballResult.Flying)return;

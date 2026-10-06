@@ -101,6 +101,14 @@ namespace WhatTheFish {
    // erase rapid up/down input, so ease speed only and use the latest direction.
    return wanted*((previousSpeed+nextSpeed)*.5f*dt);
   }
+  public Vector3 Strafe(Vector3 input,float speed,bool grounded,float heading,float dt){
+   input=Vector3.ClampMagnitude(input,1);input.y=0;
+   var before=Velocity;Velocity=Vector3.MoveTowards(before,input*speed,(grounded?24:7)*dt);
+   Yaw=Mathf.MoveTowardsAngle(Yaw,heading,360*dt);yawVelocity=actionYawVelocity=0;
+   var phase=Velocity.sqrMagnitude>.01f?LocomotionPhase.Moving:LocomotionPhase.Idle;
+   if(Phase!=phase)Enter(phase,0);Elapsed+=dt;
+   return (before+Velocity)*(.5f*dt);
+  }
   public void FaceBasketball(float heading,float dt){Yaw=Mathf.SmoothDampAngle(Yaw,heading,ref actionYawVelocity,.105f,900,dt);}
   public void FaceGolf(float heading){Yaw=heading;yawVelocity=actionYawVelocity=0;}
   void Face(Vector3 direction,float dt){
