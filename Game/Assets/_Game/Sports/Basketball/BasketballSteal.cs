@@ -87,7 +87,7 @@ namespace WhatTheFish {
   void KnockLoose(Athlete actor,Vector3 point,float quality,bool secured){
    var victim=holder;var motion=actor.BasketballMotion;
    var velocity=BasketballStealRules.Deflection(actor.transform.position,point,victim.Motor.Velocity,actor.Motor.Velocity,DribblePhase,dribbleCadence,secured,motion.State.leftHand,quality,point.y-victim.transform.position.y);
-   NewDefensePlay();CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passing=false;
+   NewDefensePlay();CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passAim=default;passing=false;
    motion.ContactPoint(point);
    victim.BasketballMotion.BeginChallenge(BasketballAction.Stripped,victim.transform.eulerAngles.y,point);
    holder=null;lastShooter=victim;pickupAt=Time.time+BasketballStealRules.PickupDelay;shooterPickupAt=Time.time+BasketballStealRules.VictimDelay;looseFor=outsideFor=0;

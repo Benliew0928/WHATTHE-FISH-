@@ -46,6 +46,7 @@ After reviewing the changes, the user runs:
 
 ```powershell
 git add .
+./Tools/Build/Check-PortablePaths.ps1 -Staged
 git diff --cached --stat
 git commit -m "Describe the completed task"
 git push
@@ -98,3 +99,19 @@ Retained the current Android APK and complete Windows player, `SizeAudit/latest/
 The existing APK remained **86,498,912 bytes**, with **13,501,088 bytes** to the strict 100,000,000-byte ceiling and **11,498,912 bytes above** the development target. SHA-256 remained `6EB19CFA79CF55571963DA49DFE687B6402E6F7A675A375B9C1503C9D0F91418`. This housekeeping task did not rebuild or rerun gameplay tests; the retained merged reports contain 367 passing checks. See [the current build record](BUILD-SIZE.md) for the release's verification limits.
 
 The detailed keep/archive inventory, dependency checks, hash verification and readiness output are local evidence under `Builds/Housekeeping/20261002T081405Z-cleanup/`. No Git staging, commit, push, reset or merge was performed.
+
+## Cleanup completed on 7 October 2026
+
+Batch: `Legacy/20261007-190844-392-teammate-handoff/`.
+
+Archived **13 files / 83,495 bytes**. Seven tracked tools were completed, one-time migration helpers: `Archive-CoastalLegacy.ps1`, `Archive-LegacyAssets.ps1`, `Archive-RefinedIslandLegacy.ps1`, `inventory_coastal_legacy.py`, `prepare_island_archive.py`, `finalize_coastal_review.py` and `write_refined_island_report.py`. Their retired source/manifests and historical build prerequisites were checked; no active build caller uses them. The general archive tool remains available. The other six files were ignored, task-specific report/preview helpers from the basketball passing, fishing presentation, menu and broadcast-camera deliveries. Their finalized reports, validation records and media remain available.
+
+Every archived file was verified against its recorded byte count and SHA-256 after relocation. All pre-existing gameplay, assets, authoring masters, package locks, useful references, reusable tests/generators, dependency audits and Unity metadata remain intact. The 61 pre-existing modified/untracked feature files were preserved byte-for-byte. The current Android and complete Windows delivery, including its build note, also remain byte-identical. Unity and installed-tool caches stay in place. Archival changes no Git history and frees no disk space.
+
+Updated the root README and setup guide for protocol **32**, current passing/shot-odds/camera behavior, Git LFS setup and the AndroidSubmission budget gate. [Build tool navigation](../Tools/Build/README.md) explains the retained build, test, audit and review scripts. All local Markdown links in README, Docs and ArtSource resolve. All **481** LFS files are hydrated and match their recorded SHA-256 and sizes; this verifies local content, not a fresh remote clone or opaque asset dependency paths.
+
+After fetching `origin`, `main` and `origin/main` both identify `c167c4c`, with **zero commits ahead or behind**. The pending basketball/camera work and this cleanup are ready for user review and staging; the index remains untouched. The read-only readiness check and working-file portability check pass. After staging, the user must still run `Check-PortablePaths.ps1 -Staged` against the exact indexed content before committing.
+
+This housekeeping task does not rebuild or retest the game. The retained measured APK is unchanged: **89,864,908 → 89,864,908 bytes**, leaving **10,135,092 bytes** below the strict ceiling and remaining **14,864,908 bytes above** the development target. Its hash is `EC2D59AAC704AC726A83D3D02DAF12AAB80C52968C7A1D9979410013C06FF00E`. [The latest build record](BUILD-SIZE.md#perspective-broadcast-cameras--7-october-2026) describes gameplay validation and the remaining phone-testing limits.
+
+Detailed inventories, baseline hashes, archive verification, LFS checks, preservation checks and Git/readiness snapshots are local evidence under `Builds/Housekeeping/20261007-teammate-handoff/`. No staging, commit, push, reset or history rewrite was performed.

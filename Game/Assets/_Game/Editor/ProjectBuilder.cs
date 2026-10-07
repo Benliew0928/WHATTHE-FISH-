@@ -233,6 +233,7 @@ public static partial class ProjectBuilder {
   UnityEditor.Rendering.CoreBuildData.instance.Dispose();
   var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport});
   if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);
+  if(target==BuildTarget.StandaloneWindows64&&(options&BuildOptions.Development)!=0)WhatTheFish.Editor.BasketballDefenseBuild.Geometry(Path.GetDirectoryName(path));
   Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);
   if(target==BuildTarget.Android){BuildSizeAudit.Write(report,"latest");BuildSizeAudit.CheckApk(path,false);}
  }

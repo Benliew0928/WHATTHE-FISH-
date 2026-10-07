@@ -1,4 +1,4 @@
-param([ValidateSet('Offline','Local')][string]$Mode='Offline',[int]$Port=7909,[string]$PlayerPath,[switch]$NoCapture,[ValidateSet(20,30,60,120)][int]$Fps=30)
+param([ValidateSet('Offline','Local')][string]$Mode='Offline',[int]$Port=7909,[string]$PlayerPath,[switch]$NoCapture,[switch]$PassOnly,[ValidateSet(20,30,60,120)][int]$Fps=30)
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
@@ -9,6 +9,7 @@ try {
  foreach($role in $(if($Mode -eq 'Local'){@('host','guest')}else{@('offline')})){
   $folder=Join-Path $out $role;New-Item -ItemType Directory -Path $folder | Out-Null;$folders+=$folder
   $arguments=@('-batchmode','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2','-probe','-sport','Basketball','-basketballDefenseReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'),'-exitAfter','180','-defenseRate',$Fps)
+  if($PassOnly){$arguments+='-defensePassOnly'}
   if($NoCapture){$arguments+=@('-nographics','-defenseNoCapture')}
   if($role -eq 'offline'){$arguments+='-offline'}else{$arguments+=@($(if($role -eq 'host'){'-localHost'}else{'-localClient'}),'-port',$Port,'-expected','2','-startAt','12','-returnAt','175')}
   $processes+=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru

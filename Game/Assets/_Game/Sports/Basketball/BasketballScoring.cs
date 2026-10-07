@@ -84,7 +84,7 @@ namespace WhatTheFish {
    }
   }
   public bool BeginShotCharge(Athlete athlete,float heading=float.NaN){
-   if(!Authority||!CanShoot(athlete)||!Eligible(athlete)||chargingAthlete)return false;
+   if(!Authority||!CanShoot(athlete)||!Eligible(athlete)||chargingAthlete||IsPassAiming(athlete))return false;
    if(float.IsNaN(heading))heading=athlete.transform.eulerAngles.y;if(!float.IsFinite(heading))return false;
    chargingHoop=SelectHoop(athlete.transform.position,heading);if(!chargingHoop)return false;
    chargingAthlete=athlete;chargeStarted=chargeSampled=BasketballMotion.Clock;chargePhase=0;chargePeriod=ChargePeriod(ChargeDistance(athlete,heading));chargeHistory.Clear();chargeHistory.Add((chargeStarted,0,ShotPressure(athlete,chargingHoop)));sendAt=0;return true;
@@ -97,13 +97,6 @@ namespace WhatTheFish {
    heading=Quaternion.LookRotation(Vector3.ProjectOnPlane(hoop.position-athlete.transform.position,Vector3.up)).eulerAngles.y;
    if(kind!=BasketballFinish.Shot){float finishWindow=ReleaseWindow(releasedAt);bool accepted=TryFinish(athlete,kind,hoop,power);if(accepted)pendingWindow=finishWindow;return accepted;}
    float window=ReleaseWindow(releasedAt);bool fired=TryShoot(athlete,heading,power);if(fired){pendingShotHoop=hoop;pendingWindow=window;}else CancelShotCharge(athlete);return fired;
-  }
-  // Distance/height determine the ideal ballistic arc. Timing perturbs launch
-  // velocity, never the in-flight position; there is no magnetism at the hoop.
-  public static Vector3 ApplyShotPower(Vector3 ideal,float power,float window=SweetWindow){
-   float error=Mathf.Clamp01(power)-SweetSpot;
-   error=Mathf.Sign(error)*Mathf.Max(0,Mathf.Abs(error)-Mathf.Clamp(window,.025f,SweetWindow));
-   return new Vector3(ideal.x*(1+error*.8f),ideal.y*(1+error*.14f),ideal.z*(1+error*.8f));
   }
   // Match the authored 7.239 m arc and 6.7056 m corner lines. The line
   // belongs to the two-point region; use the shooter's feet at release.

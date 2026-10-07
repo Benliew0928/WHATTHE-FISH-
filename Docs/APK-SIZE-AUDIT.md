@@ -1,5 +1,120 @@
 # APK size audit — measured release records
 
+## Perspective broadcast cameras — 7 October 2026
+
+Actual signed APK: **89,861,552 → 89,864,908 bytes (+3,356)**. Strict-limit
+headroom: **10,135,092 bytes**. The 75 MB development target is still exceeded
+by **14,864,908 bytes**. [Release and hash](BUILD-SIZE.md#perspective-broadcast-cameras--7-october-2026).
+
+Compressed ZIP entries grow **3,359 bytes**, offset by **3 bytes** less
+container/signing overhead. IL2CPP grows **3,222 bytes**, Unity native code
+**1,175 bytes**, and managed metadata **454 bytes**. Burst shrinks **1,478
+bytes**; remaining entries shrink **14 bytes** net. Equal-sized renamed
+entries cancel. No new mesh, material, texture, animation, shader, audio or
+runtime package is shipped. Serialized assets are unchanged at
+**156,297,785 bytes**, a separate measurement from compressed APK bytes.
+
+Largest compressed entries remain IL2CPP **11,364,204 bytes**, Unity native
+code **9,071,480 bytes**, and managed metadata **2,627,201 bytes**. No unexpected
+large contributor or avoidable new asset dependency was found. The existing
+75 MB development-target shortfall remains unresolved.
+
+Evidence under `Builds/BroadcastCameraQA/`: `before.json`, `release.json`,
+`apk-before-entries.csv`, `apk-entry-delta.csv`, `packing-summary.json`,
+`apk-signature.txt`, `size-before/`, `size-final/`, `source-windows.csv`,
+`source-android.json` and `source-verification.json`.
+
+## Stadium camera framing — 7 October 2026
+
+Actual signed APK: **89,847,792 → 89,861,552 bytes (+13,760)**. Hard-limit
+headroom is **10,138,448 bytes**; the development target is exceeded by
+**14,861,552 bytes**.
+[Delivery and hash](BUILD-SIZE.md#stadium-camera-framing--7-october-2026).
+
+Compressed ZIP entries grow **13,758 bytes**, with **2 bytes** of container
+and signing growth. IL2CPP grows **10,190 bytes**, Burst **1,530 bytes**,
+managed metadata **1,212 bytes**, Unity native code **325 bytes**, and the
+existing basketball pass shader **253 bytes**; the remaining entries grow
+**248 bytes** net. Renamed entries with equal lengths cancel.
+
+Serialized assets grow **688 bytes** to **156,297,785 bytes**, a separate
+measurement from APK size. The changes comprise existing basketball
+shader/material updates and small script metadata records. The development
+camera review's script metadata is 104 bytes; its execution code is excluded
+from the release APK. This release includes the basketball trajectory and
+shot-odds work already present in the workspace before the camera task.
+The measured increase cannot be attributed solely to the camera change.
+
+Largest compressed entries remain IL2CPP **11.361 MB**, Unity native code
+**9.070 MB**, managed metadata **2.627 MB**, and Android Java **2.354 MB**.
+The camera reuses the playing surfaces and introduces no mesh, texture,
+animation, audio, shader, material or package. No unexpected large packing
+growth or avoidable new art dependency was found. The existing 75 MB target
+shortfall remains unresolved; this is still a constrained development reserve.
+
+The basketball trajectory update reuses the existing pass material and replaces
+the simple lane with one cached 130-vertex procedural ribbon. It adds no
+imported mesh, texture, animation clip, audio or runtime package. Its independent
+comparison confirms the same 13,760-byte combined APK increase and v2 signature.
+The pass shader grows 253 compressed bytes and its material grows 4 bytes.
+Before/after APK entries, source manifests and signature evidence also remain
+under `Builds/BasketballTrajectoryQA/`; this is the same signed release, not a
+second APK measurement.
+
+Evidence under `Builds/StadiumCameraQA/`: `before.json`, `release.json`,
+`apk-entry-delta.csv`, `packing-summary.json`, `apk-signature.txt`,
+`size-before/`, `size-final/`, `source-windows.csv`, `source-android.json`,
+`source-verification.json` and `inputs-since-previous-apk.json`.
+
+## Shared basketball passing — 7 October 2026
+
+Actual signed APK: **89,829,116 → 89,847,792 bytes (+18,676)**. Hard-limit
+headroom is **10,152,208 bytes**; the development target is exceeded by
+**14,847,792 bytes**. [Delivery and hash](BUILD-SIZE.md#shared-basketball-passing--7-october-2026).
+
+Compressed ZIP entries grow **18,331 bytes**, plus **345 bytes** of container
+and signing overhead. IL2CPP grows **9,361 bytes**, the new pass shader uses
+**7,100 compressed bytes**, its material **232 bytes**, and managed metadata
+grows **1,514 bytes**. The remaining entries change by **124 bytes** net;
+renamed entries with equal sizes cancel. Serialized assets grow **11,524 bytes**
+to **156,297,097 bytes**, a separate measurement from APK size.
+
+Largest compressed entries remain IL2CPP **11.351 MB**, Unity native code
+**9.070 MB**, metadata **2.626 MB**, and Android Java code **2.354 MB**. The
+lane uses one reused procedural quad and material instance. No texture, mesh
+asset, animation clip, audio or package was added. The Windows head-surface
+fixture and development review code are absent from the release player.
+No unexpected large packing growth or avoidable new asset dependency was found.
+The existing 75 MB development target shortfall remains unresolved.
+
+Evidence: `Builds/BasketballPassQA/` contains `before.json`, `release.json`,
+`apk-entry-delta.csv`, `packing-summary.json`, `apk-signature.txt`,
+`size-before/`, `size-final/` and both source manifests.
+
+## Defense motion refinement — 7 October 2026
+
+Actual signed APK: **89,825,364 → 89,829,116 bytes (+3,752)**. Hard-limit
+headroom is **10,170,884 bytes**; the development target is exceeded by
+**14,829,116 bytes**. [Delivery and hash](BUILD-SIZE.md#defense-motion-refinement--7-october-2026).
+
+Compressed entries grow **3,753 bytes** and signing/container overhead shrinks
+**1 byte**. IL2CPP grows **3,642 bytes**, managed metadata grows **115 bytes**,
+and the remaining entries shrink by **4 bytes** net. Renamed entries with the
+same lengths cancel. Serialized assets remain **156,285,573 bytes**, unchanged.
+The largest individual compressed entries remain IL2CPP **11.341 MB**, Unity
+native code **9.070 MB**, metadata **2.624 MB** and Android Java **2.354 MB**.
+No animation, texture, mesh, material, audio or runtime package was added.
+
+The head/arm geometry index fixture is generated beside development Windows
+players for surface-level animation inspection. It is not a runtime dependency
+and is absent from the release APK. Review code is excluded from release
+execution. The measured increase is code/metadata; no avoidable new asset
+packing growth was found. The existing 75 MB target shortfall remains unresolved.
+
+Evidence: `Builds/BasketballDefensePolishQA/` contains `before.json`,
+`release.json`, `apk-entry-delta.csv`, `packing-summary.json`,
+`apk-signature.txt`, `size-before/`, `size-final/` and source manifests.
+
 ## Basketball defense — 6 October 2026
 
 Actual signed APK: **89,803,004 → 89,825,364 bytes (+22,360)**. Hard-limit

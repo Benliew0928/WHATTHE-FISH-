@@ -25,7 +25,7 @@ namespace WhatTheFish {
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    float end=Time.realtimeSinceStartup+80;
    while((!(app=AppRoot.Instance)||!app.Exploring||app.SelectedSport!=SportId.Basketball)&&Time.realtimeSinceStartup<end)yield return null;
-   ball=BasketballBall.Active;actor=app?app.LocalAthlete:null;
+   ball=BasketballBall.Active;if(ball&&ball.Authority)ball.ReviewShotRoll=()=>0;actor=app?app.LocalAthlete:null;
    if(!ball||!actor){Check(false,"basketball and player initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.5f);
    Check(FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass),"minimal Shoot control present");
@@ -99,7 +99,7 @@ namespace WhatTheFish {
    app.EnterOffline();yield return new WaitForSeconds(.5f);Check(!ball.Held&&!ball.Body.isKinematic&&!actor.BasketballFreeRoam,"new offline session starts with loose ball and court boundary");
    app.SelectSport(SportId.Football);yield return new WaitForSeconds(.3f);var stream=app.environments.GetComponent<SkySailStreaming>();while(stream.Busy)yield return null;app.Show("stadium");
    Check(!BasketballBall.Active&&!FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass),"leaving island removes ball and Shoot control");
-   yield return stream.Prepare(SportId.Basketball);app.SelectSport(SportId.Basketball);app.EnterOffline();yield return new WaitForSeconds(.4f);ball=BasketballBall.Active;
+   yield return stream.Prepare(SportId.Basketball);app.SelectSport(SportId.Basketball);app.EnterOffline();yield return new WaitForSeconds(.4f);ball=BasketballBall.Active;if(ball&&ball.Authority)ball.ReviewShotRoll=()=>0;
    Check(FindObjectsByType<BasketballBall>(FindObjectsSortMode.None).Length==1&&!ball.Held,"returning island creates one fresh ball");
    Check(!BasketballBall.SolveShot(Vector3.zero,Vector3.up*3,1,1,out _)&&!BasketballBall.SolveShot(Vector3.zero,new Vector3(float.NaN,0,0),1,24,out _),"trajectory rejects impossible speed and invalid target");
   }
@@ -185,7 +185,7 @@ namespace WhatTheFish {
    Check(ball.PassCount==2&&ball.Holder==actor,"guest reliable pass returns to host");
    PlaceActor(actor,new Vector3(0,.07f,-4));PlaceActor(guest,new Vector3(0,.07f,7),180);
    ball.Place(actor.transform.position+Vector3.forward*.6f+Vector3.up*.1f,Quaternion.identity,Vector3.zero,Vector3.zero);yield return WaitHeld(actor);
-   Check(ball.TryPass(actor,0),"long chest pass starts");deadline=Time.time+3;
+   Check(ball.BeginPassCharge(actor,0,ball.Defense.play),"long chest pass charge starts");yield return new WaitForSeconds(.9f);Check(ball.ReleasePassCharge(actor,0,ball.Defense.play,ball.PassClock),"long chest pass releases");deadline=Time.time+3;
    while(ball.Holder!=guest&&Time.time<deadline)yield return null;
    Check(ball.PassCount==3&&ball.Holder==guest,"11 metre pass arrives and is caught before recovery timeout");
    // The guest drives into a sideline, explicitly leaves play, then disconnects.

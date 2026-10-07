@@ -146,11 +146,12 @@ namespace WhatTheFish {
    }
   }
   void ApplyBlock(Athlete defender,Vector3 point,Vector3 hand,Vector3 handVelocity){
+   passBounceArmed=false;
    var victim=holder;var forward=defender.BasketballMotion.Facing*Vector3.forward;
    var incoming=victim?victim.Motor.Velocity+Vector3.up*victim.Jump.Velocity:Body.linearVelocity;
    var velocity=BasketballDefenseRules.Deflect(incoming,handVelocity,point-hand,forward);
    if(victim){
-    CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passing=false;
+    CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passAim=default;passing=false;
     victim.BasketballMotion.BeginDefense(BasketballAction.Blocked,victim.transform.eulerAngles.y,point);
     holder=null;lastShooter=victim;shooterPickupAt=Time.time+.70f;
    }

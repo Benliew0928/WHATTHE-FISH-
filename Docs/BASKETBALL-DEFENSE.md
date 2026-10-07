@@ -13,7 +13,7 @@ The button positions stay fixed and switch handlers with the possession role.
 | Slot | Carrier | Defender |
 | --- | --- | --- |
 | Main / E | Hold Shoot; up Dunk, down Layup | Tap Block; drag up and release for Jump Block |
-| Secondary / Q | Pass | Hold Defend |
+| Secondary / Q | Hold Pass, aim with camera, release to throw | Hold Defend |
 | Third / F | Hidden | Hold Steal |
 | Jump / Space | Ordinary jump | Immediate Jump Block |
 
@@ -24,6 +24,9 @@ role changes cancel that gesture, and releasing it cannot activate a newly
 assigned button. The block gesture tracks its original finger outside the
 button; guard and steal holds cancel when dragged off. Focus loss, disabled
 controls and session changes clear input.
+
+The [shared pass lane](BASKETBALL-PASSING.md) shows the carrier's direction and
+charge to all players. Defenders can use that cue to anticipate an interception.
 
 ## Guarding and pressure
 
@@ -100,16 +103,40 @@ short lateral steps, shoulder-led standing reach, one raised blocking hand,
 balancing off-hand, takeoff load, landing absorption and a high-ball recoil.
 They add no imported animation, mesh, texture, material or runtime package.
 
+The 7 October refinement fits the large-head, short-arm rig. Guard hands sit
+below the face. A high contest rises outside the cheek with the other hand
+lowered; it does not sweep inward across the eyes. Reach is measured to the
+wrist before adding the palm offset. Hands turn with the body, and a stable
+rearward elbow guide avoids bend-direction flips. Recovery blends completed
+local poses into the basketball running/crouching pose. Moving takeoff and
+interrupted finishes retain the starting feet; those foot poses are replicated
+so guests do not snap to a generic jump stance.
+
+A defender must put the outside hand into the shot's path. A ball behind the
+defender's head is not within that hand's reach simply because it is close to
+the player's centre. The active windows and contact radii remain unchanged.
+
 - [Rules and host contact resolution](../Game/Assets/_Game/Sports/Basketball/BasketballDefense.cs)
 - [Guard, block and jump poses](../Game/Assets/_Game/Sports/Basketball/BasketballDefenseMotion.cs)
 - [Input ownership](../Game/Assets/_Game/Shared/Player/BasketballDefenseInput.cs)
 - [Context buttons](../Game/Assets/_Game/Shared/UI/BasketballDefenseButton.cs)
 - [Repeatable defense review](../Tools/Build/Test-BasketballDefense.ps1)
 
-Run the defense review offline at 20/30/60 FPS and with `-Mode Local` for two
+Run the defense review offline at 20/30/60/120 FPS and with `-Mode Local` for two
 processes. `-PlayerPath` selects a task candidate; omitting it uses the complete
 WindowsFinal player. Captures and reports are written under ignored
 `Builds/BasketballDefenseQA/`. Existing finish, charge, steal, physics,
 gameplay and jump reviews cover regressions. Rooms require matching
-**protocol 29** builds. Windows captures do not qualify physical phone touch,
+**protocol 32** builds. Windows captures do not qualify physical phone touch,
 Android appearance/FPS, thermals or internet latency.
+
+Development Windows builds write `defense-geometry.json` next to the player.
+This generated test fixture contains head triangle and arm vertex indices for
+both existing LODs. The review CPU-skins the character and checks the hands and
+forearms against the head surface, including hair, with a 3 mm penetration
+tolerance. It also checks joint continuity, grounded feet, hand/contact
+agreement, guard transitions, turns, running jump blocks and blocked airborne
+dunks. Front, side and oblique captures accompany rendered offline runs.
+Use `-PassOnly` for the added pass hold, push and cancel surface checks.
+The fixture is external to the game data and is not included in the release
+APK. Keep it with a development Windows player when running this review.

@@ -4,11 +4,12 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace WhatTheFish {
- public enum BasketballAction:byte { None,Shoot,Pass,Steal,Stripped,Charge,Cancel,Layup,Dunk,Guard,GuardRecover,Block,JumpBlock,Blocked }
+ public enum BasketballAction:byte { None,Shoot,Pass,Steal,Stripped,Charge,Cancel,Layup,Dunk,Guard,GuardRecover,Block,JumpBlock,Blocked,PassCharge,PassCancel }
  public struct BasketballMotionState:INetworkSerializable,IEquatable<BasketballMotionState> {
   public BasketballAction action;public uint sequence;public double started;public float heading,startYaw,ballSpin;public Vector3 gather,rightStart,leftStart,rightPole,leftPole,contact;public Quaternion rightRotation,leftRotation;public bool leftHand,prepared;public Vector3 finishOrigin,finishTarget;public float finishJump;
-  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref action);s.SerializeValue(ref sequence);s.SerializeValue(ref started);s.SerializeValue(ref heading);s.SerializeValue(ref startYaw);s.SerializeValue(ref ballSpin);s.SerializeValue(ref gather);s.SerializeValue(ref rightStart);s.SerializeValue(ref leftStart);s.SerializeValue(ref rightPole);s.SerializeValue(ref leftPole);s.SerializeValue(ref rightRotation);s.SerializeValue(ref leftRotation);s.SerializeValue(ref contact);s.SerializeValue(ref leftHand);s.SerializeValue(ref prepared);s.SerializeValue(ref finishOrigin);s.SerializeValue(ref finishTarget);s.SerializeValue(ref finishJump);}
-  public bool Equals(BasketballMotionState b)=>action==b.action&&sequence==b.sequence&&started==b.started&&heading==b.heading&&startYaw==b.startYaw&&ballSpin==b.ballSpin&&gather==b.gather&&rightStart==b.rightStart&&leftStart==b.leftStart&&rightPole==b.rightPole&&leftPole==b.leftPole&&rightRotation.Equals(b.rightRotation)&&leftRotation.Equals(b.leftRotation)&&contact==b.contact&&leftHand==b.leftHand&&prepared==b.prepared&&finishOrigin==b.finishOrigin&&finishTarget==b.finishTarget&&finishJump==b.finishJump;
+  public Vector3 leftFootStart,rightFootStart;public Quaternion leftFootRotation,rightFootRotation;public BasketballPassArms passArms;public float passBend;
+  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref action);s.SerializeValue(ref sequence);s.SerializeValue(ref started);s.SerializeValue(ref heading);s.SerializeValue(ref startYaw);s.SerializeValue(ref ballSpin);s.SerializeValue(ref gather);s.SerializeValue(ref rightStart);s.SerializeValue(ref leftStart);s.SerializeValue(ref rightPole);s.SerializeValue(ref leftPole);s.SerializeValue(ref rightRotation);s.SerializeValue(ref leftRotation);s.SerializeValue(ref contact);s.SerializeValue(ref leftHand);s.SerializeValue(ref prepared);s.SerializeValue(ref finishOrigin);s.SerializeValue(ref finishTarget);s.SerializeValue(ref finishJump);s.SerializeValue(ref leftFootStart);s.SerializeValue(ref rightFootStart);s.SerializeValue(ref leftFootRotation);s.SerializeValue(ref rightFootRotation);if(action==BasketballAction.Pass||action==BasketballAction.PassCharge||action==BasketballAction.PassCancel){s.SerializeValue(ref passArms);s.SerializeValue(ref passBend);}else {passArms=default;passBend=0;}}
+  public bool Equals(BasketballMotionState b)=>passBend==b.passBend&&passArms.Equals(b.passArms)&&action==b.action&&sequence==b.sequence&&started==b.started&&heading==b.heading&&startYaw==b.startYaw&&ballSpin==b.ballSpin&&gather==b.gather&&rightStart==b.rightStart&&leftStart==b.leftStart&&rightPole==b.rightPole&&leftPole==b.leftPole&&rightRotation.Equals(b.rightRotation)&&leftRotation.Equals(b.leftRotation)&&contact==b.contact&&leftHand==b.leftHand&&prepared==b.prepared&&finishOrigin==b.finishOrigin&&finishTarget==b.finishTarget&&finishJump==b.finishJump&&leftFootStart==b.leftFootStart&&rightFootStart==b.rightFootStart&&leftFootRotation.Equals(b.leftFootRotation)&&rightFootRotation.Equals(b.rightFootRotation);
  }
 
  // A compact basketball layer over the existing in-place gait and jump. The
@@ -16,7 +17,7 @@ namespace WhatTheFish {
  [DefaultExecutionOrder(40)]
  public sealed partial class BasketballMotion:MonoBehaviour {
   public const float ShotTimeScale=.70f;
-  public const float ShotRelease=.44f*ShotTimeScale,PassRelease=.30f,ShotDuration=.98f*ShotTimeScale,PassDuration=.70f;
+  public const float ShotRelease=.44f*ShotTimeScale,PassRelease=.30f,ShotDuration=.98f*ShotTimeScale,PassDuration=.82f;
   static NetworkManager sampledNetwork;static double sampledServerTime,sampledUnityTime;
   // Netcode advances its clock in PreUpdate, after Unity's catch-up physics.
   // Extrapolate each fixed step from the previous rendered frame so contact
@@ -35,19 +36,20 @@ namespace WhatTheFish {
   public float Elapsed=>Mathf.Max(0,(float)(Clock-State.started));
   // Keep the authored hand, foot and ball keys together when retiming a shot.
   // Public release times and replicated timestamps remain real seconds.
-  float PoseElapsed=>Charging?Mathf.Min(Elapsed,.27f):Elapsed/TimeScale(State.action);
+  float PoseElapsed=>PassCharging?Mathf.Min(Elapsed,.27f):Charging?Mathf.Min(Elapsed,.27f):Elapsed/TimeScale(State.action);
   public bool Charging=>Action==BasketballAction.Charge;
-  public bool CarryingPose=>Charging||Busy&&!Challenging&&!Defensive;
-  public bool Busy=>Action!=BasketballAction.None&&Action!=BasketballAction.Charge&&Action!=BasketballAction.Guard;
+  public bool PassCharging=>Action==BasketballAction.PassCharge;
+  public bool CarryingPose=>Charging||PassCharging||Busy&&!Challenging&&!Defensive;
+  public bool Busy=>Action!=BasketballAction.None&&Action!=BasketballAction.Charge&&Action!=BasketballAction.PassCharge&&Action!=BasketballAction.Guard;
   public bool Challenging=>Action==BasketballAction.Steal||Action==BasketballAction.Stripped||Blocking||Action==BasketballAction.Blocked;
-  public bool BeforeRelease=>Charging||Busy&&Elapsed<ReleaseTime(Action);
+  public bool BeforeRelease=>Charging||PassCharging||Busy&&Elapsed<ReleaseTime(Action);
   public bool RigReady {get;private set;}
   public float MaximumReachError {get;private set;}
   public float ContactError {get;private set;}
   public Vector3 RightPalm=>Palm(right);
   public Vector3 LeftPalm=>Palm(left);
   public float Weight=>weight;
-  public static float Duration(BasketballAction a)=>a switch{BasketballAction.Shoot=>ShotDuration,BasketballAction.Pass=>PassDuration,BasketballAction.Steal=>BasketballStealRules.Duration,BasketballAction.Stripped=>BasketballStealRules.Reaction,BasketballAction.Charge=>float.PositiveInfinity,BasketballAction.Cancel=>.22f,BasketballAction.Layup=>BasketballFinishRules.Duration(a),BasketballAction.Dunk=>BasketballFinishRules.Duration(a),BasketballAction.Guard=>float.PositiveInfinity,BasketballAction.GuardRecover=>.22f,BasketballAction.Block=>BasketballDefenseRules.BlockDuration,BasketballAction.JumpBlock=>BasketballDefenseRules.JumpDuration,BasketballAction.Blocked=>BasketballDefenseRules.Recovery,_=>0};
+  public static float Duration(BasketballAction a)=>a switch{BasketballAction.Shoot=>ShotDuration,BasketballAction.Pass=>PassDuration,BasketballAction.Steal=>BasketballStealRules.Duration,BasketballAction.Stripped=>BasketballStealRules.Reaction,BasketballAction.Charge=>float.PositiveInfinity,BasketballAction.PassCharge=>float.PositiveInfinity,BasketballAction.Cancel=>.22f,BasketballAction.PassCancel=>.32f,BasketballAction.Layup=>BasketballFinishRules.Duration(a),BasketballAction.Dunk=>BasketballFinishRules.Duration(a),BasketballAction.Guard=>float.PositiveInfinity,BasketballAction.GuardRecover=>.22f,BasketballAction.Block=>BasketballDefenseRules.BlockDuration,BasketballAction.JumpBlock=>BasketballDefenseRules.JumpDuration,BasketballAction.Blocked=>BasketballDefenseRules.Recovery,_=>0};
   public static float ReleaseTime(BasketballAction a)=>BasketballFinishRules.IsFinish(a)?BasketballFinishRules.Release(a):a==BasketballAction.Shoot?ShotRelease:a==BasketballAction.Steal?BasketballStealRules.Windup:PassRelease;
   public static float TimeScale(BasketballAction a)=>a==BasketballAction.Shoot?ShotTimeScale:1;
   static float PoseReleaseTime(BasketballAction a)=>ReleaseTime(a)/TimeScale(a);
@@ -88,11 +90,11 @@ namespace WhatTheFish {
    // Carry the gather around with the turning body. Interpolating between two
    // world-space hand positions across a 180-degree turn cuts through the torso.
    gather=Quaternion.Inverse(transform.rotation)*Quaternion.Euler(0,heading,0)*gather;
-   bool prepared=Charging&&action==BasketballAction.Shoot;
+   bool prepared=Charging&&action==BasketballAction.Shoot||PassCharging&&action==BasketballAction.Pass;
    var inverse=Quaternion.Inverse(transform.rotation);
-   State=new BasketballMotionState{action=action,prepared=prepared,heading=heading,startYaw=transform.eulerAngles.y,ballSpin=BasketballBall.Active?BasketballBall.Active.DribblePhase:0,started=Clock,gather=gather,sequence=State.sequence+1,rightStart=inverse*(RightPalm-transform.position),leftStart=inverse*(LeftPalm-transform.position),rightPole=RigReady?inverse*(right.lower.position-right.upper.position):Vector3.right,leftPole=RigReady?inverse*(left.lower.position-left.upper.position):Vector3.left,rightRotation=RigReady?inverse*right.end.rotation:Quaternion.identity,leftRotation=RigReady?inverse*left.end.rotation:Quaternion.identity};
+   State=new BasketballMotionState{action=action,passBend=BasketballBall.Active?BasketballBall.Active.PassAim.bend:0,passArms=action==BasketballAction.Pass||action==BasketballAction.PassCharge||action==BasketballAction.PassCancel?CapturePassArms():default,prepared=prepared,heading=heading,startYaw=transform.eulerAngles.y,ballSpin=BasketballBall.Active?BasketballBall.Active.DribblePhase:0,started=Clock,gather=gather,sequence=State.sequence+1,rightStart=inverse*(RightPalm-transform.position),leftStart=inverse*(LeftPalm-transform.position),rightPole=RigReady?inverse*(right.lower.position-right.upper.position):Vector3.right,leftPole=RigReady?inverse*(left.lower.position-left.upper.position):Vector3.left,rightRotation=RigReady?inverse*right.end.rotation:Quaternion.identity,leftRotation=RigReady?inverse*left.end.rotation:Quaternion.identity};
   }
-  public void AimHeading(float heading){if(Charging){var state=State;state.heading=heading;State=state;}}
+  public void AimHeading(float heading){if(Charging||PassCharging){var state=State;state.heading=heading;if(PassCharging&&BasketballBall.Active)state.passBend=BasketballBall.Active.PassAim.bend;State=state;}}
   public void Receive(BasketballMotionState value){State=value;}
   public void BeginChallenge(BasketballAction action,float heading,Vector3 point){
    Begin(action,heading,Vector3.zero);var value=State;value.contact=point;
@@ -112,6 +114,9 @@ namespace WhatTheFish {
    if(BasketballFinishRules.IsFinish(State.action))return FinishBall(elapsed);
    Vector3 pocket=new(.07f,.70f,.32f);
    if(State.action==BasketballAction.Charge)return Vector3.Lerp(State.gather,new Vector3(.10f,.99f,.39f),Ease(elapsed/.20f));
+   if(State.action==BasketballAction.PassCharge)return Vector3.Lerp(State.gather,PassPocket,Ease(elapsed/.24f));
+   if(State.action==BasketballAction.Pass&&State.prepared)return Vector3.Lerp(State.gather,PassReleasePoint(State.passBend),Ease(elapsed/PassRelease));
+   if(State.action==BasketballAction.PassCancel)return Vector3.Lerp(State.gather,DribbleOffset(0),Ease(elapsed/.32f));
    if(State.action==BasketballAction.Cancel)return Vector3.Lerp(State.gather,DribbleOffset(0),Ease(elapsed/.22f));
    if(State.action==BasketballAction.Shoot){
     if(State.prepared)return Vector3.Lerp(State.gather,new Vector3(.09f,1.19f,.43f),Ease(elapsed/.44f));
@@ -119,17 +124,17 @@ namespace WhatTheFish {
     if(elapsed<.29f)return Vector3.Lerp(pocket,new Vector3(.10f,.97f,.39f),Ease((elapsed-.14f)/.15f));
     return Vector3.Lerp(new Vector3(.10f,.97f,.39f),new Vector3(.09f,1.19f,.43f),Ease((elapsed-.29f)/.15f));
    }
-   if(elapsed<.14f)return Vector3.Lerp(State.gather,new Vector3(0,.80f,.30f),Ease(elapsed/.14f));
-   return Vector3.Lerp(new Vector3(0,.80f,.30f),new Vector3(0,.88f,.46f),Ease((elapsed-.14f)/.16f));
+   if(elapsed<.14f)return Vector3.Lerp(State.gather,PassPocket,Ease(elapsed/.14f));
+   return Vector3.Lerp(PassPocket,PassReleasePoint(State.passBend),Ease((elapsed-.14f)/.16f));
   }
   public Quaternion Facing=>Quaternion.Euler(0,State.heading,0);
-  public Quaternion PoseFacing=>Finishing?Facing:Quaternion.Slerp(transform.rotation,Facing,Ease((PoseElapsed-.16f)/.20f));
+  public Quaternion PoseFacing=>PassingPose?transform.rotation:Finishing?Facing:Quaternion.Slerp(transform.rotation,Facing,Ease((PoseElapsed-.16f)/.20f));
   public Vector3 ReleasePosition=>transform.position+Facing*BallOffset(ReleaseTime(State.action));
   Vector3 Palm(Limb arm)=>RigReady?arm.end.TransformPoint(arm.palmOffset):transform.position;
   void LateUpdate(){
    if(!RigReady)return;
    var ball=BasketballBall.Active;bool playing=ball&&ball.Playing&&!athlete.inTransit;
-   bool held=playing&&ball.Holder==athlete;bool acting=playing&&(Busy||Charging);
+   bool held=playing&&ball.Holder==athlete;bool acting=playing&&(Busy||Charging||PassCharging);
    weight=Damp(weight,playing?1:0,14);if(weight<.001f)return;
    for(int i=0;i<bones.Length;i++){sourcePositions[i]=bones[i].localPosition;sourceRotations[i]=bones[i].localRotation;}applied=true;
    float dt=Mathf.Max(Time.deltaTime,.001f);float speed=athlete.speed;
@@ -152,13 +157,13 @@ namespace WhatTheFish {
     ChallengePose(t,ground,stand);return;
    }
    Vector3 lp=leftLeg.end.position,rp=rightLeg.end.position;Quaternion lr=leftLeg.end.rotation,rr=rightLeg.end.rotation;
-   float dip=Charging?.055f:acting?(Action==BasketballAction.Shoot?(State.prepared?.035f:.10f)*Mathf.Sin(Mathf.PI*Mathf.Clamp01(t/.36f)):.05f*Mathf.Sin(Mathf.PI*Mathf.Clamp01(t/.30f))):held&&ball.IsCharging(athlete)?.025f:0;
+   float dip=PassCharging?.025f:Charging?.055f:acting?(Action==BasketballAction.Shoot?(State.prepared?.035f:.10f)*Mathf.Sin(Mathf.PI*Mathf.Clamp01(t/.36f)):.05f*Mathf.Sin(Mathf.PI*Mathf.Clamp01(t/.30f))):held&&ball.IsCharging(athlete)?.025f:0;
    float rise=acting&&Action==BasketballAction.Shoot?.035f*Ease((t-.29f)/.15f)*(1-Ease((t-.55f)/.22f)):0;
    hips.position+=transform.up*((-.035f-.025f*run-.05f*brake-dip+rise)*ground*weight);
    lean=Damp(lean,held?8+run*5:3+run*4,12);
    float pitch=(lean-brake*11)*(1-actionBlend)-4*actionBlend;
    Rotate(spine,transform.right,pitch*.45f*weight);Rotate(chest,transform.right,pitch*.55f*weight);Rotate(head,transform.right,-pitch*.65f*weight);
-   if(acting){
+   if(acting&&!PassingPose){
     float yaw=Mathf.Clamp(Mathf.DeltaAngle(transform.eulerAngles.y,State.heading),-65,65)*actionBlend*weight;
     Rotate(spine,Vector3.up,yaw*.4f);Rotate(chest,Vector3.up,yaw*.6f);
    }
@@ -167,7 +172,7 @@ namespace WhatTheFish {
    if(ground>0){
     var l=transform.TransformPoint(leftFoot+new Vector3(-.025f,0,-.025f));var r=transform.TransformPoint(rightFoot+new Vector3(.025f,0,.025f));
     var lrot=transform.rotation*leftFootRotation;var rrot=transform.rotation*rightFootRotation;
-    if(acting&&Mathf.Abs(Mathf.DeltaAngle(State.startYaw,State.heading))>20){
+    if(acting&&!PassCharging&&Mathf.Abs(Mathf.DeltaAngle(State.startYaw,State.heading))>20){
      ActionFoot(leftFoot+new Vector3(-.025f,0,-.025f),leftFootRotation,true,t,out l,out lrot);
      ActionFoot(rightFoot+new Vector3(.025f,0,.025f),rightFootRotation,false,t,out r,out rrot);
     }
@@ -183,16 +188,16 @@ namespace WhatTheFish {
    if(!acting&&held&&(athlete.Airborne||athlete.LoadingJump)){
     Arm(right,center+side*.125f-forward*.075f,-side,forward,side*.6f,arms);
     Arm(left,center-side*.125f-forward*.075f,side,forward,-side*.6f,arms);
-   }else if(acting){
+   }else if(acting&&Action!=BasketballAction.PassCancel){
     bool shooting=Action==BasketballAction.Shoot||Charging||Action==BasketballAction.Cancel;
-    float release=Charging||Action==BasketballAction.Cancel?0:Ease((t-PoseReleaseTime(Action))/.12f);
+    float release=Charging||PassCharging||Action==BasketballAction.Cancel?0:Ease((t-PoseReleaseTime(Action))/.12f);
     Vector3 rightContact=center+(shooting?-Vector3.up*.13125f-forward*.01875f:(-forward*.06875f+side*.11875f));
     Vector3 leftContact=center+(shooting?-side*.12f-Vector3.up*.09f:-forward*.06875f-side*.11875f);
-    if(!Charging&&Action!=BasketballAction.Cancel&&t>=PoseReleaseTime(Action)){
+    if(!Charging&&!PassCharging&&Action!=BasketballAction.Cancel&&t>=PoseReleaseTime(Action)){
      rightContact+=shooting?-forward*(.08f*release)-Vector3.up*.12f*release:side*.035f*release;
      leftContact+=shooting?-side*.05f*release-Vector3.up*.12f*release:-side*.035f*release;
     }
-    float push=Ease((t-.14f)/.16f);
+    float push=PassCharging?0:Ease((t-PoseReleaseTime(Action))/.12f);
     Arm(right,rightContact,shooting?Vector3.Lerp(Vector3.up,forward,release):Vector3.Slerp(-side,forward,push),shooting?Vector3.Lerp(forward,Vector3.down,release):Vector3.up,side*.45f-forward*.1f-Vector3.up*.7f,arms);
     Arm(left,leftContact,shooting?side:Vector3.Slerp(side,forward,push),shooting?Vector3.up*.8f+forward*.6f:Vector3.up,-side*.45f-forward*.1f-Vector3.up*.7f,arms);
    }else{
@@ -202,7 +207,8 @@ namespace WhatTheFish {
     Arm(right,palm,Vector3.down,forward,side*.6f-forward*.12f,arms);
     Vector3 guard=transform.TransformPoint(new Vector3(-.23f,.77f+.025f*Mathf.Sin(phase*Mathf.PI*2),.29f));
     Arm(left,guard,side,forward,-side*.6f-forward*.1f,arms*.82f);
-    if(contact>.99f)ContactError=Vector3.Distance(RightPalm,center+Vector3.up*(BasketballBall.Radius-.005f));
+    if(Action==BasketballAction.PassCancel)BlendPassCancel();
+    if(contact>.99f&&Action!=BasketballAction.PassCancel)ContactError=Vector3.Distance(RightPalm,center+Vector3.up*(BasketballBall.Radius-.005f));
    }
   }
   void ActionFoot(Vector3 foot,Quaternion rest,bool leftSide,float time,out Vector3 target,out Quaternion rotation){
@@ -212,13 +218,14 @@ namespace WhatTheFish {
   }
   static void Rotate(Transform bone,Vector3 axis,float angle){bone.rotation=Quaternion.AngleAxis(angle,axis)*bone.rotation;}
   void Arm(Limb arm,Vector3 palm,Vector3 normal,Vector3 fingers,Vector3 pole,float blend){
+   if(PassingPose){PassArm(arm,palm,normal,fingers,PoseFacing*Vector3.right*(arm==right?.35f:-.35f)-PoseFacing*Vector3.forward*.75f-Vector3.up*.45f);return;}
    normal.Normalize();
    fingers=Vector3.ProjectOnPlane(fingers,normal).normalized;
    if(fingers.sqrMagnitude<.001f)fingers=Vector3.ProjectOnPlane(transform.up,normal).normalized;
    if(fingers.sqrMagnitude<.001f)fingers=Vector3.ProjectOnPlane(transform.forward,normal).normalized;
    Quaternion rotation=Quaternion.LookRotation(fingers,normal)*Quaternion.Inverse(Quaternion.LookRotation(arm.fingerAxis,arm.palmAxis));
-   if(CarryingPose&&PoseElapsed<.14f){float gather=Ease(PoseElapsed/.14f);palm=Vector3.Lerp(transform.position+PoseFacing*(arm==right?State.rightStart:State.leftStart),palm,gather);rotation=Quaternion.Slerp(PoseFacing*(arm==right?State.rightRotation:State.leftRotation),rotation,gather);}
-   if(CarryingPose&&PoseElapsed<.20f)pole=Vector3.Slerp(PoseFacing*(arm==right?State.rightPole:State.leftPole),pole,Ease(PoseElapsed/.20f));
+   if(CarryingPose&&Action!=BasketballAction.PassCancel&&PoseElapsed<.14f){float gather=Ease(PoseElapsed/.14f);palm=Vector3.Lerp(transform.position+PoseFacing*(arm==right?State.rightStart:State.leftStart),palm,gather);rotation=Quaternion.Slerp(PoseFacing*(arm==right?State.rightRotation:State.leftRotation),rotation,gather);}
+   if(CarryingPose&&Action!=BasketballAction.PassCancel&&PoseElapsed<.20f)pole=Vector3.Slerp(PoseFacing*(arm==right?State.rightPole:State.leftPole),pole,Ease(PoseElapsed/.20f));
    Vector3 wrist=palm-rotation*Vector3.Scale(arm.palmOffset,arm.end.lossyScale);
    if(Challenging||Defensive||Finishing&&!BeforeRelease)wrist=arm.upper.position+Vector3.ClampMagnitude(wrist-arm.upper.position,Vector3.Distance(arm.upper.position,arm.lower.position)+Vector3.Distance(arm.lower.position,arm.end.position)-.013f);
    MaximumReachError=Mathf.Max(MaximumReachError,Solve(arm,wrist,pole,rotation,blend));

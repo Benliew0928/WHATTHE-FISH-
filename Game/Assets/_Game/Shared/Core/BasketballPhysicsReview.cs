@@ -93,7 +93,7 @@ namespace WhatTheFish {
    Finish();
   }
   IEnumerator Trial(BasketballHoop hoop,float distance,float power,bool shouldScore){
-   yield return Pickup(hoop,distance);var before=ball.Score;uint shots=ball.ShotCount;
+   yield return Pickup(hoop,distance);ball.ReviewShotRoll=()=>shouldScore?0:1;var before=ball.Score;uint shots=ball.ShotCount;
    if(shouldScore){
     Check(app.view.BeginShot(),"begin timed shot");yield return WaitGreen();
     app.view.EndShot();
@@ -108,7 +108,7 @@ namespace WhatTheFish {
     if(ball.Score.result!=BasketballResult.Flying&&Time.time-(float)ball.Score.changed>.65f)break;
    }
    Check(ball.Score.attempts==before.attempts+1,"one registered attempt");
-   Check(shouldScore?ball.Score.made==before.made+1&&ball.Score.missed==before.missed:ball.Score.missed==before.missed+1&&ball.Score.made==before.made,"timing outcome "+hoop.name+" "+distance+"m power="+power+" result="+ball.Score.result);
+   Check(shouldScore?ball.Score.made==before.made+1&&ball.Score.missed==before.missed:ball.Score.missed==before.missed+1&&ball.Score.made==before.made,"host-selected physical outcome "+hoop.name+" "+distance+"m power="+power+" result="+ball.Score.result);
    if(shouldScore){Check(ball.Score.points==before.points+(distance>7.3f?3:2),"correct 2/3 point award");Check(peak>.035f&&peak<.3f&&hoop.AnchorDisplacement<.00001f,"scored net stretches and stays attached; peak="+peak.ToString("F3"));}
    yield return new WaitForSeconds(.8f);Check(ball.Score.attempts==ball.Score.made+ball.Score.missed,"rebound cannot add another outcome");
   }

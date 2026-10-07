@@ -41,7 +41,7 @@ namespace WhatTheFish {
     if(world.Exploring.Value!=lastExploring){lastExploring=world.Exploring.Value;Exploring=lastExploring;Show(Exploring?"stadium":"room");}
    }
    view.target=LocalAthlete;view.active=Exploring&&(!Menu||!Menu.IsTransitioning);
-   if(controlHint)controlHint.text=GolfCartWorld.Allowed&&GolfCartWorld.Driving(LocalAthlete)?"Left stick: drive & steer • Drag right to look":"Drag right to look • Push stick fully to run";
+   if(controlHint)controlHint.text=GolfCartWorld.Allowed&&GolfCartWorld.Driving(LocalAthlete)?"Left stick: drive & steer • Drag right to look":view.mode==2&&!(LocalAthlete&&LocalAthlete.inTransit)&&(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)?SelectedSport==SportId.Basketball?"Drag right to aim • Push stick fully to run":"Broadcast view • Push stick fully to run":"Drag right to look • Push stick fully to run";
    if(Exploring&&!rooms.Connected&&LocalAthlete&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
    if(!Exploring&&LocalAthlete)LocalAthlete.HideHead(false);
    if((rosterTimer-=Time.deltaTime)<0){rosterTimer=.5f;RefreshRoster();if(fps)fps.text=$"{Mathf.RoundToInt(1/Mathf.Max(Time.smoothDeltaTime,.001f))} FPS   •   {(rooms.Connected?"ONLINE":"OFFLINE")}";}
@@ -129,10 +129,14 @@ namespace WhatTheFish {
     cancel.gameObject.AddComponent<Button>().onClick.AddListener(control.CancelGesture);cancel.gameObject.SetActive(false);
    }
    if(SelectedSport==SportId.Basketball){
-    var rect=Panel(page,new Vector2(1175,285),new Vector2(200,105),LocalProfile.Hex("F0B956"));rect.name="Pass button";
+    var rect=Panel(page,new Vector2(1175,285),new Vector2(200,105),LocalProfile.Hex("54D7C4"));rect.name="Pass button";
     var control=rect.gameObject.AddComponent<BasketballShootButton>();control.pass=true;control.button=rect.gameObject.AddComponent<Button>();
     control.label=Label(rect,"Pass [Q]",0,Vector2.zero,new Vector2(190,90),23,ink);
     control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
+    var cancel=Panel(page,new Vector2(915,285),new Vector2(190,92),cream);cancel.name="Basketball pass cancel area";
+    control.cancelArea=cancel;control.cancelLabel=Label(cancel,"Cancel",0,Vector2.zero,new Vector2(190,82),23,ink);
+    control.cancelLabel.alignment=TextAnchor.MiddleCenter;control.cancelLabel.rectTransform.anchorMin=control.cancelLabel.rectTransform.anchorMax=control.cancelLabel.rectTransform.pivot=new Vector2(.5f,.5f);
+    cancel.gameObject.AddComponent<Button>().onClick.AddListener(control.CancelGesture);cancel.gameObject.SetActive(false);
    }
    if(SelectedSport==SportId.Basketball){
     var rect=Panel(page,new Vector2(1175,155),new Vector2(200,105),mint);rect.name="Steal button";

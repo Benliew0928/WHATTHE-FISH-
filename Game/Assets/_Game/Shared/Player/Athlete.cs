@@ -64,7 +64,7 @@ namespace WhatTheFish {
    if(FootballBall.Instance)FootballBall.Instance.RefreshControl(this);
    if(command.jump)RequestJump();
    if(BasketballBall.Active){BasketballBall.Active.SetGuard(this,command.guard&&command.defensePlay==BasketballBall.Active.Defense.play,command.heading);if(command.block||command.jumpBlock)BasketballBall.Active.TryBlock(this,command.heading,command.jumpBlock,command.defensePlay);}
-   if(BasketballBall.Active){if(command.steal)BasketballBall.Active.TrySteal(this,command.heading);if(command.shotBegin)BasketballBall.Active.BeginShotCharge(this,command.heading);if(command.shotCancel)BasketballBall.Active.CancelShotCharge(this);if(command.shoot)BasketballBall.Active.ReleaseShotCharge(this,command.heading,command.shotReleasedAt>0?command.shotReleasedAt:double.NaN,command.finish);else if(command.pass)BasketballBall.Active.TryPass(this,command.heading);}
+   if(BasketballBall.Active){if(command.steal)BasketballBall.Active.TrySteal(this,command.heading);if(command.passBegin)BasketballBall.Active.BeginPassCharge(this,command.heading,command.passPlay);if(command.passCancel)BasketballBall.Active.CancelPassCharge(this,command.passPlay);BasketballBall.Active.AimPass(this,command.heading,command.passBend);if(command.shotBegin)BasketballBall.Active.BeginShotCharge(this,command.heading);if(command.shotCancel)BasketballBall.Active.CancelShotCharge(this);if(command.shoot)BasketballBall.Active.ReleaseShotCharge(this,command.heading,command.shotReleasedAt>0?command.shotReleasedAt:double.NaN,command.finish);else if(command.pass)BasketballBall.Active.ReleasePassCharge(this,command.heading,command.passPlay,command.passReleasedAt,command.passBend);}
    if(GolfMatchManager.Instance&&(!Unity.Netcode.NetworkManager.Singleton||!Unity.Netcode.NetworkManager.Singleton.IsListening))GolfMatchManager.Instance.SetCharging(this,command.golfCharging,command.golfBallOwner,command.heading,command.golfRound);
    if(command.golfSwing&&GolfMatchManager.Instance)GolfMatchManager.Instance.TrySwing(this,command.golfBallOwner,command.heading,command.golfCharge,command.golfRound);
    // Bounded sweeps keep low frame rates and short hitches from skipping ceilings.
@@ -93,7 +93,7 @@ namespace WhatTheFish {
    FootballMotion?.Charging(Charging);
    float requestedSpeed=FootballBall.Instance&&FootballBall.Allowed?FootballBall.Instance.MovementSpeed(this,command.sprint,Charging):(command.sprint?7:4);
    if(football)requestedSpeed*=football.MovementMultiplier;
-   if(BasketballBall.Active&&BasketballBall.Active.IsCharging(this))requestedSpeed*=.5f;
+   if(BasketballBall.Active&&(BasketballBall.Active.IsCharging(this)||BasketballBall.Active.IsPassAiming(this)))requestedSpeed*=.5f;
    if(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))requestedSpeed*=BasketballMotion.Action==BasketballAction.Stripped?.55f:.65f;
    bool defense=BasketballMotion&&(BasketballMotion.Guarding||BasketballMotion.Blocking||BasketballMotion.Action==BasketballAction.GuardRecover);
    if(defense)requestedSpeed=BasketballMotion.Guarding?BasketballDefenseRules.GuardSpeed:2.2f;
@@ -101,7 +101,7 @@ namespace WhatTheFish {
    // Preserve the running impulse even if the stick is released during the
    // grounded jump preparation; air control also starts on the takeoff step.
    if(normalTime>0)displacement+=defense?Motor.Strafe(direction,requestedSpeed,grounded&&!Jump.Airborne,BasketballMotion.State.heading,normalTime):Motor.Step(direction,requestedSpeed,grounded&&!Jump.Preparing&&!Jump.Airborne,normalTime);
-   if(!defense&&BasketballMotion&&(BasketballMotion.Busy||BasketballMotion.Charging))Motor.FaceBasketball(BasketballMotion.State.heading,dt/basketballTimeScale);
+   if(!defense&&BasketballMotion&&(BasketballMotion.Busy||BasketballMotion.Charging||BasketballMotion.PassCharging))Motor.FaceBasketball(BasketballMotion.State.heading,dt/basketballTimeScale);
    if(GolfClubMotion&&(GolfClubMotion.Busy||GolfClubMotion.State.action==GolfClubAction.Charge))Motor.FaceGolf(GolfClubMotion.AddressHeading);
    if(golfContact){displacement.x=displacement.z=0;}
    capsule.stepOffset=Jump.Airborne?0:.3f;

@@ -5,13 +5,13 @@ using UnityEngine;
 namespace WhatTheFish {
  public struct BasketballSnapshot:INetworkSerializable,IEquatable<BasketballSnapshot> {
   public bool valid,held,queued;public ulong holder;public Vector3 position;public Quaternion rotation;public uint reset,shots,passes,steals;public double time,stealTime;public float dribble,cadence;
-  public BasketballDefenseSnapshot defense;public BasketballFinishNotice finish;public BasketballCharge charge;public BasketballScore score;public BasketballNetHit northNet,southNet;
+  public BasketballPassAim passAim;public BasketballDefenseSnapshot defense;public BasketballFinishNotice finish;public BasketballCharge charge;public BasketballScore score;public BasketballNetHit northNet,southNet;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {
    s.SerializeValue(ref valid);s.SerializeValue(ref held);s.SerializeValue(ref queued);s.SerializeValue(ref holder);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref reset);s.SerializeValue(ref shots);s.SerializeValue(ref passes);s.SerializeValue(ref dribble);s.SerializeValue(ref cadence);s.SerializeValue(ref time);
-   s.SerializeValue(ref defense);s.SerializeValue(ref finish);s.SerializeValue(ref charge);s.SerializeValue(ref score);s.SerializeValue(ref northNet);s.SerializeValue(ref southNet);
+   s.SerializeValue(ref passAim);s.SerializeValue(ref defense);s.SerializeValue(ref finish);s.SerializeValue(ref charge);s.SerializeValue(ref score);s.SerializeValue(ref northNet);s.SerializeValue(ref southNet);
    s.SerializeValue(ref steals);s.SerializeValue(ref stealTime);
   }
-  public bool Equals(BasketballSnapshot b)=>defense.Equals(b.defense)&&valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time&&finish.Equals(b.finish)&&charge.Equals(b.charge)&&score.Equals(b.score)&&northNet.Equals(b.northNet)&&southNet.Equals(b.southNet)&&steals==b.steals&&stealTime==b.stealTime;
+  public bool Equals(BasketballSnapshot b)=>passAim.Equals(b.passAim)&&defense.Equals(b.defense)&&valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time&&finish.Equals(b.finish)&&charge.Equals(b.charge)&&score.Equals(b.score)&&northNet.Equals(b.northNet)&&southNet.Equals(b.southNet)&&steals==b.steals&&stealTime==b.stealTime;
  }
 
  // One arena-local ball. Only the host (or offline player) owns physical simulation.
@@ -26,7 +26,7 @@ namespace WhatTheFish {
   public uint PresentationReset=>Authority?reset:haveTarget?target.reset:0;
   Vector3 home;Quaternion homeRotation;float sendAt,receivedAt;bool initialized,wasConnected,wasAuthority,wasPlaying;
   uint reset;BasketballSnapshot previous,target;bool haveTarget;
-  void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;home.y=Mathf.Max(home.y,Radius+.002f);homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;PrepareHoops();BasketballBoundaryVisual.Attach(this);initialized=true;}
+  void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;home.y=Mathf.Max(home.y,Radius+.002f);homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;PrepareHoops();BasketballBoundaryVisual.Attach(this);gameObject.AddComponent<BasketballPassVisual>();initialized=true;}
   void OnEnable(){Active=this;if(initialized)ResetHome();}
   void OnDisable(){ClearPossession();if(Active==this)Active=null;if(Body){Body.isKinematic=true;Simulating=false;}haveTarget=false;wasPlaying=false;}
   void SetPose(Vector3 position,Quaternion rotation){
@@ -61,7 +61,7 @@ namespace WhatTheFish {
    if(simulate&&(transform.localPosition.y < -3||transform.localPosition.y>25||Mathf.Abs(transform.localPosition.x)>35||Mathf.Abs(transform.localPosition.z)>45))ResetHome();
    if(connected&&authority&&host&&host.IsSpawned&&Time.unscaledTime>=sendAt){
     sendAt=Time.unscaledTime+.05f;
-    host.Basketball.Value=new BasketballSnapshot{valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,steals=steals,stealTime=stealTime,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time,defense=Defense,finish=finishNotice,charge=Charge,score=score,northNet=baskets[0]?baskets[0].Hit:default,southNet=baskets[1]?baskets[1].Hit:default};
+    host.Basketball.Value=new BasketballSnapshot{valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,steals=steals,stealTime=stealTime,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time,passAim=passAim,defense=Defense,finish=finishNotice,charge=Charge,score=score,northNet=baskets[0]?baskets[0].Hit:default,southNet=baskets[1]?baskets[1].Hit:default};
    }
   }
   void Update(){

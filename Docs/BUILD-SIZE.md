@@ -1,5 +1,125 @@
 # Build size — measured release records
 
+## Perspective broadcast cameras — 7 October 2026
+
+Fresh AndroidSubmission completed at **18:45:24 Malaysia time**:
+**89,861,552 → 89,864,908 bytes (+3,356)**. Strict-limit headroom is
+**10,135,092 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,864,908 bytes**. The build budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**EC2D59AAC704AC726A83D3D02DAF12AAB80C52968C7A1D9979410013C06FF00E**.
+
+This revision replaces the earlier flat stadium cameras with perspective,
+separate football/basketball angles, smooth pan and distance changes, and
+basket-aware framing. At 16:9 midfield, football covers about 40% of the lawn
+and basketball about 53% of the court. First person and default third person
+retain their framing. [Camera design and references](STADIUM-CAMERAS.md).
+No art or package is added; serialized assets remain **156,297,785 bytes**.
+[Detailed packing audit](APK-SIZE-AUDIT.md#perspective-broadcast-cameras--7-october-2026).
+
+The complete Windows player uses full assets built at **18:13:45**, with final
+managed scripts built at **18:39:14**. The existing basketball loft/bounce
+passes, shot odds, defense and protocol **32** are retained. Windows/Android
+manifests match on **3,089 of 3,090 inputs, including metadata**. The generated
+Golf prefab differs only in IDs/order; all 14 objects retain their properties
+and reference topology. Evidence: `Builds/BroadcastCameraQA/`.
+[Final verification](VERIFICATION.md#perspective-broadcast-cameras--7-october-2026).
+No physical Android device was tested.
+
+## Stadium camera framing — 7 October 2026
+
+Fresh AndroidSubmission completed at **17:27:00 Malaysia time**:
+**89,847,792 → 89,861,552 bytes (+13,760)**. Strict-limit headroom is
+**10,138,448 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,861,552 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**E17B46A6A487C318567FB0ACC9311A0EE65C80F172420D2FB38AC5112D71113A**.
+
+Football now uses a high horizontal stadium view covering about 40% of the
+lawn at midfield; basketball uses a closer view covering about 52% of its
+painted court. Field-based panning leaves edge players off centre and clear
+of the HUD. First person and the default third person retain their framing.
+[Camera behavior](STADIUM-CAMERAS.md),
+[packing audit](APK-SIZE-AUDIT.md#stadium-camera-framing--7-october-2026).
+The camera change adds no art or runtime package. This build also preserves
+the workspace's existing basketball trajectory/shot-odds changes and uses
+protocol **32**, so use matching Windows/Android peers. The measured delta
+includes those existing changes; it is not a camera-only size comparison.
+
+The basketball work in this same release adds [loft/bounce passes](BASKETBALL-PASSING.md)
+and [continuous shot chances](BASKETBALL-SHOT-ODDS.md). Its separate feature
+review passes 828 assertions on the original basketball candidate and 328
+additional assertions on the delivered combined candidate. The full combined
+manifest, including metadata, matches on 3,089 of 3,090 inputs; only the
+equivalent generated Golf prefab differs. Manifest provenance and feature
+evidence are retained under `Builds/BasketballTrajectoryQA/`.
+
+The complete **316-file** Windows player is delivered in `Builds/WindowsFinal/`.
+Its full assets were built at **17:13:54**, with final managed scripts at
+**17:22:50**. Camera checks cover three landscape aspect ratios, a complete
+portable copy in a path containing spaces, and an unrelated working directory.
+Football match and basketball passing/trajectory regressions also pass.
+Windows/Android manifests agree on **1,520 of 1,521 non-metadata** source,
+asset and configuration inputs. The sole difference is regenerated Golf
+prefab IDs/order; format-aware comparison confirms all 14 objects preserve
+their properties and reference topology. Evidence is under
+`Builds/StadiumCameraQA/`.
+[Verification](VERIFICATION.md#stadium-camera-framing--7-october-2026).
+No physical Android device was tested.
+
+## Shared basketball passing — 7 October 2026
+
+Fresh AndroidSubmission completed at **16:14:52 Malaysia time**:
+**89,829,116 → 89,847,792 bytes (+18,676)**. Strict-limit headroom is
+**10,152,208 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,847,792 bytes**. The build budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**81D8491272C83470C545600BDAB1E45EE8043E6AD01F4DF1BD7AEFF562A159DE**.
+
+Protocol **31** adds a shared teal/amber pass lane, host-measured charge,
+directional chest passes and smooth held, release and cancel poses.
+[Controls and behavior](BASKETBALL-PASSING.md),
+[packing audit](APK-SIZE-AUDIT.md#shared-basketball-passing--7-october-2026).
+One small shader and material were added; no imported animation, texture, mesh,
+audio or runtime package was added.
+
+The complete **316-file** Windows player is in `Builds/WindowsFinal/`, including
+the existing portable launchers and development geometry fixture. Its full
+assets were built at **15:07:32**, with final managed scripts at **16:11:57**.
+It passed the portable delivery check from a path containing spaces and an
+unrelated working directory. Final Windows and Android manifests agree on
+**3,077 of 3,078** source/configuration inputs. The sole difference is generated
+Golf prefab identifiers/order; all 14 objects retain their properties and
+reference relationships. Evidence is under `Builds/BasketballPassQA/`.
+[Verification](VERIFICATION.md#shared-basketball-passing--7-october-2026).
+No physical Android device was tested.
+
+## Defense motion refinement — 7 October 2026
+
+Fresh AndroidSubmission completed at **12:58:22 Malaysia time**:
+**89,825,364 → 89,829,116 bytes (+3,752)**. Strict-limit headroom is
+**10,170,884 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,829,116 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**5D0E552F9FE2C55ECBE82C1689328AAF416DE3A3F09C82AA305AB7A428265822**.
+
+Protocol **30** refines defensive hand paths, elbow guides, guard stance,
+moving takeoff, interrupted dunk recovery and pose blending. Starting foot
+poses now replicate to guests. No imported animation or art was added.
+[Motion and testing](BASKETBALL-DEFENSE.md#motion-and-validation) and
+[packing audit](APK-SIZE-AUDIT.md#defense-motion-refinement--7-october-2026).
+
+The complete Windows player is delivered in `Builds/WindowsFinal/`, with its
+development-only surface-check fixture and existing portable launchers.
+The final Windows and Android source manifests agree on all release gameplay,
+art, scenes and configuration. A development-only review file was subsequently
+fixed to publish test checkpoint files atomically; that entire file is excluded
+from the release APK. The regenerated Golf prefab preserves all properties
+and reference relationships. Evidence and source manifests are retained under
+`Builds/BasketballDefensePolishQA/`.
+[Verification](VERIFICATION.md#defense-motion-refinement--7-october-2026).
+No physical Android device was tested.
+
 ## Basketball defense — 6 October 2026
 
 Fresh AndroidSubmission completed at **22:51:12 Malaysia time**:

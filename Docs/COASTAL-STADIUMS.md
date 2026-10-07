@@ -32,6 +32,6 @@ Current raw evidence is in `Docs/VisualDirection/CoastalStadiums/GameReview/`; b
 
 ## Archive policy
 
-`CoastalLegacyAudit` checks all Unity scene, active prefab and Resources dependency roots before identifying the retired roof/rig/scoreboard library. `inventory_coastal_legacy.py` inventories authored files, build outputs and tools, retaining uncertain material and historically linked reports. `Archive-CoastalLegacy.ps1` verifies hashes and the passing EXE review before moving each confirmed candidate into a new timestamped `Legacy` batch.
+`CoastalLegacyAudit` checks all Unity scene, active prefab and Resources dependency roots before identifying the retired roof/rig/scoreboard library. The completed migration used `inventory_coastal_legacy.py` and `Archive-CoastalLegacy.ps1` to inventory dependencies, verify hashes and archive confirmed candidates after the passing EXE review. Those one-time migration helpers were archived during the [7 October repository cleanup](REPOSITORY-HYGIENE.md#cleanup-completed-on-7-october-2026); they are no longer active build tools. Future reviewed cleanup uses [Archive-LocalArtifacts.ps1](../Tools/Build/Archive-LocalArtifacts.ps1).
 
 Unity assets travel with their `.meta` files. Each batch retains relative paths, SHA-256 hashes, sizes, reasons, completed-move records and restoration instructions. Git internals, Unity-generated caches, current sources, rebuild tools, selected concepts and latest review evidence are excluded. Rebuild and executable checks are repeated after archival.

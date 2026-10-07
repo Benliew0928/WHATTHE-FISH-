@@ -47,14 +47,22 @@ namespace WhatTheFish {
    if(charging&&view.ShotFinish!=BasketballFinish.Shot)feedback.text=view.ShotFinish.ToString().ToUpperInvariant()+" - "+(timing?BasketballFinishRules.Hint(view.FinishAvailability):"RELEASE NOW");
    if(view.target&&view.target.BasketballMotion.Finishing)feedback.text=view.target.BasketballMotion.Action.ToString().ToUpperInvariant()+" - FINISHING";
    feedback.color=fresh&&score.result==BasketballResult.Scored?new Color(.4f,1,.7f):Color.white;
-   meter.gameObject.SetActive(timing);hint.gameObject.SetActive(charging);
+   if(view.PassCharging){
+    float passPower=view.PassPower;feedback.text=BasketballPassRules.Name(view.PassBend).ToUpperInvariant()+" PASS  ·  VISIBLE TO EVERYONE";feedback.color=new Color(.3f,1,.85f);
+    meter.gameObject.SetActive(true);hint.gameObject.SetActive(true);greenBand.gameObject.SetActive(false);
+    fill.rectTransform.sizeDelta=new Vector2(360*passPower,15);marker.anchoredPosition=new Vector2(360*(passPower-.5f),4);fill.color=Color.Lerp(new Color(.12f,.9f,.8f),new Color(1,.72f,.22f),passPower);
+    hint.text=$"{BasketballPassRules.Range(passPower,view.PassBend):F1} m · "+(Application.isMobilePlatform?"Swipe up / down; left to Cancel":"Up / Down: arc · Q release · X cancel");return;
+   }
+   if(ball.PassAim.phase==1&&ball.Held){feedback.text=BasketballPassRules.Name(ball.PassAim.bend).ToUpperInvariant()+" PASS BEING AIMED  ·  WATCH THE CURVE";feedback.color=new Color(.3f,1,.85f);}
+   greenBand.gameObject.SetActive(true);meter.gameObject.SetActive(timing);hint.gameObject.SetActive(charging);
    if(!charging)return;
    if(!timing){hint.text=view.ShotFinish==BasketballFinish.Dunk?"No timing - guaranteed when unblocked":"No timing - 85% make chance";return;}
    float power=view.ShotPower;bool sweet=Mathf.Abs(power-BasketballBall.SweetSpot)<=view.ShotWindow;
    greenBand.sizeDelta=new Vector2(720*view.ShotWindow,15);
    fill.rectTransform.sizeDelta=new Vector2(360*power,15);marker.anchoredPosition=new Vector2(360*(power-.5f),4);
    fill.color=sweet?new Color(.3f,1,.63f):power>BasketballBall.SweetSpot?new Color(1,.43f,.3f):new Color(1,.73f,.28f);
-   hint.text=(sweet?"Release!":view.ShotWindow<BasketballBall.SweetWindow-.001f?"Contested - wait for green":"Wait for green")+" - "+view.ShotDistance.ToString("F1")+" m - "+(Application.isMobilePlatform?"Slide up / down; left to Cancel":"E + Up: dunk / Down: layup; X: cancel");
+   float chance=BasketballShotOdds.Chance(view.ShotDistance,power,view.ShotWindow);
+   hint.text=(sweet?"Best timing":view.ShotWindow<BasketballBall.SweetWindow-.001f?"Contested":"Aim for green")+$" · {chance*100:F1}% shot chance · {view.ShotDistance:F1} m";
   }
  }
 }

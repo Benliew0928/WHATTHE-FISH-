@@ -20,7 +20,7 @@ namespace WhatTheFish {
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");float end=Time.realtimeSinceStartup+80;
    while((!(app=AppRoot.Instance)||!app.Exploring||app.SelectedSport!=SportId.Basketball)&&Time.realtimeSinceStartup<end)yield return null;
-   ball=BasketballBall.Active;actor=app?app.LocalAthlete:null;if(!ball||!actor){Check(false,"initialized");Finish();yield break;}
+   ball=BasketballBall.Active;if(ball)ball.ReviewShotRoll=()=>0;actor=app?app.LocalAthlete:null;if(!ball||!actor){Check(false,"initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.4f);
    hoop=app.stadium.GetComponentsInChildren<Transform>().Single(t=>t.name=="Hoop_North");
    camera=new GameObject("Charge review camera").AddComponent<Camera>();camera.CopyFrom(Camera.main);camera.enabled=false;
@@ -62,7 +62,7 @@ namespace WhatTheFish {
    yield return Green();float displayed=app.view.ShotPower;app.view.EndShot();end=Time.time+2;while(ball.ShotCount==shots&&Time.time<end)yield return null;
    Check(ball.ShotCount==shots+1&&Mathf.Abs(ball.LastReleasePower-displayed)<.018f,"release uses displayed needle phase without an extra input-frame penalty");
    end=Time.time+6;while(ball.Score.result==BasketballResult.Flying&&Time.time<end)yield return null;Check(ball.Score.result==BasketballResult.Scored,"later-cycle green release scores through physical hoop");
-   yield return Pickup(5);app.view.BeginShot();yield return new WaitForSeconds(.7f);uint passes=ball.PassCount;app.view.RequestPass();end=Time.time+2;while(ball.PassCount==passes&&Time.time<end)yield return null;Check(ball.PassCount==passes+1&&!ball.IsCharging(actor),"pass cleanly replaces a charged aim");
+   yield return Pickup(5);app.view.BeginShot();yield return new WaitForSeconds(.7f);uint passes=ball.PassCount;Check(!app.view.BeginPass(),"pass cannot replace an active shot gesture");app.view.CancelShot();yield return new WaitForSeconds(.4f);app.view.RequestPass();end=Time.time+2;while(ball.PassCount==passes&&Time.time<end)yield return null;Check(ball.PassCount==passes+1&&!ball.IsCharging(actor),"pass begins after shot cancellation settles");
    yield return Boundary();Finish();
   }
   IEnumerator Boundary(){

@@ -1,5 +1,292 @@
 # Verification records
 
+## Perspective broadcast cameras — 7 October 2026
+
+The revised [stadium cameras](STADIUM-CAMERAS.md) use different perspective
+angles for football and basketball, continuous pan and distance changes,
+field-aware boundaries and screen-relative movement. Basketball includes
+nearby rim framing from the baseline and corners, with influence fading in
+smoothly near midcourt. First/third-person framing and lenses are restored
+when leaving stadium mode; Golf and disabling the view are also checked.
+
+The complete **316-file** player is delivered in `Builds/WindowsFinal/`.
+Full assets were built at **18:13:45** and final scripts at **18:39:14**.
+The final candidate passes **1,016 assertions in 10 reports**, with no
+selected failures:
+
+- Camera reviews: **139 each** at 1280x720, 1600x720 and 960x720.
+- Portable player in a path containing spaces: **139** at 1024x768.
+- Copied launcher under a separate root containing spaces, using its default
+  player path from an unrelated working directory: **139** at 1024x768.
+- Football match: **259 offline, 16 host, 15 client**.
+- Basketball shared loft/bounce passing: **31 host/guest**.
+
+The camera suite measures actual perspective playing-surface coverage and
+viewport occupancy at centre, edges and corners, checks player/HUD separation
+and nearby-rim visibility, and records continuous travel through both ends.
+It checks movement through the real motor, stable framing while jumping and
+changing action aim, projection/lens restoration and outside-field exploration.
+At 16:9 midfield, measured coverage is **40.04% football / 53.03% basketball**.
+The final motion runs keep the player visible without camera cuts. Rendered
+full-HUD captures were inspected; the 16-second preview is an automated
+framing sweep, not a phone-performance recording.
+
+All **315 runtime/support files** match the validated portable copy; the
+updated delivery note is excluded. Windows/Android manifests match on
+**3,089/3,090 inputs including metadata**. Format-aware comparison confirms
+the sole regenerated Golf prefab retains all 14 objects' properties and
+reference relationships. The existing basketball features and protocol **32**
+remain included. No gameplay source changed after the APK build.
+
+Fresh AndroidSubmission completed at **18:45:24**. The APK grows
+**89,861,552 → 89,864,908 bytes (+3,356)**, leaving **10,135,092 bytes** below
+the hard limit. The 75 MB development target remains exceeded by **14,864,908
+bytes**. Budget and independent v2 signature checks pass; serialized assets
+are unchanged. [Size and signature hash](BUILD-SIZE.md#perspective-broadcast-cameras--7-october-2026).
+
+Current evidence: `Builds/BroadcastCameraQA/checks.json`, `Reviews/`,
+`PortableReview/`, `stadium-camera-preview.mp4`, `preview.json`,
+`validated-player-hashes.csv`, `delivery-verification.json`, source manifests,
+release/audit records and build logs. Regression evidence is in
+`Builds/FootballMatchQA/Run-20261007-184256/` and
+`Builds/BasketballPassQA/Reviews/Local-30-20261007-184329-038/`.
+Superseded player/APK, reviewed iterations and the duplicate portable player
+were archived with recovery hashes in
+`Legacy/20261007-184908-013-broadcast-camera-delivery/`.
+No physical Android appearance, touch, FPS/thermal or WAN testing was performed.
+Git publishing remains with the user.
+
+
+## Loft and bounce passes; shot chances — 7 October 2026
+
+Protocol **32** adds [vertical pass selection](BASKETBALL-PASSING.md), a shared
+curved ribbon and [continuous distance/timing shot odds](BASKETBALL-SHOT-ODDS.md).
+Up selects blue loft; down selects orange bounce; the centre restores teal
+chest passing. A separate Cancel target sits left of Pass. Keyboard Q with
+Up/Down selects the equivalent paths; X cancels. The original finger owns the
+gesture, and reliable release carries its final pass type.
+
+The original 17:07 basketball candidate passes **828 assertions in 14 reports**,
+with zero failures. Checks cover touch selection, lateral cancel, fixed-step
+physical trajectories, actual floor contact, wall interruption, replicated
+curves, descending loft/bounce catches, host-only shot outcomes, duplicate
+release rejection, defense, charge, physics, dunk/layup and session flow.
+Chest/loft preview error was **0.000 m**; bounce error was at most **0.072 m**
+in the tested trajectories. Each odds suite checks 400,000 seeded samples,
+monotonic range/timing behavior and nine physical make/miss branches, including
+perfect close misses and imperfect full-court makes. Deflections and valid
+downward hoop crossings still determine actual scores.
+
+Held, cancelled and released chest/loft/bounce poses were reviewed visually and
+against both head LODs at 20/120 FPS. **1,831 head-surface samples** had zero
+hand/forearm penetrations beyond the 3 mm tolerance. Joint continuity checks
+pass. The motion keeps the gather below the face and smoothly returns to the
+dribble. A 16.2-second preview is retained at
+`Builds/BasketballTrajectoryQA/loft-bounce-passing.mp4`.
+
+The subsequent camera build contains the same basketball changes. Its final
+17:22:50 managed player passes **328 additional assertions in four reports**:
+offline trajectory/odds, host/guest authority and a complete portable copy in
+a path containing spaces, invoked from an unrelated working directory with
+the test script's default player location. All **315 gameplay/runtime files**
+match `Builds/WindowsFinal/`; only its delivery note is excluded. The complete
+316-file player and 17:27 AndroidSubmission include both features. The earlier
+rendered animation preview and broad regressions predate the camera change;
+the four combined-build reports are recorded separately.
+
+The APK is **89,861,552 bytes**, **+13,760** over the 89,847,792-byte baseline,
+with **10,138,448 bytes** of hard-limit headroom. It remains **14,861,552 bytes**
+above the development target. This is the same combined release recorded below.
+Independent signature and packing checks pass. The composed Windows manifest
+uses the final camera source/configuration snapshot and the earlier metadata
+snapshot, with provenance recorded explicitly: **3,089 of 3,090 inputs** match
+Android. The sole difference is generated Golf prefab IDs/order; all 14 objects
+retain their properties and reference relationships. No runtime source changed
+after the release. Phone touch, appearance, FPS/thermals and WAN latency remain
+unverified.
+
+Evidence under `Builds/BasketballTrajectoryQA/`: `checks.json`,
+`combined-checks.json`, original/combined player hashes, `release.json`,
+`generated-input-verification.json`, `source-manifest-provenance.json`,
+packing/signature audits, reports and captures. Reviewed superseded players,
+iteration captures and helpers were archived with recovery hashes under
+`Legacy/20261007-172822-647-basketball-trajectory-iterations`,
+`Legacy/20261007-173123-245-basketball-trajectory-players` and
+`Legacy/20261007-173258-941-basketball-trajectory-portable`.
+No stage, commit, push, reset or history rewrite was performed.
+
+## Stadium camera framing — 7 October 2026
+
+[Camera design and controls](STADIUM-CAMERAS.md) and
+[measured build](BUILD-SIZE.md#stadium-camera-framing--7-october-2026).
+
+Rendered development-player reviews at **1280×720, 1600×720 and 960×720**
+pass **107 assertions each**. They cover both fields at the centre, every
+edge and every corner; actual ground-ray measurements confirm football's
+40% and basketball's 52% midfield coverage. Goal-to-goal alignment remains
+horizontal, players remain visible and off centre near lines, and the playing
+surface retains the majority of the viewport. Full HUD captures were reviewed
+to keep the player clear of the controls. Jump height and action aim do not
+bob or rotate the stadium view. Screen-relative input is tested through the
+real player motor. First/third-person framing, Golf perspective, menu projection
+restoration and walking outside the field pass.
+
+The complete portable Windows player also passes the camera review from a
+path containing spaces and an unrelated temporary working directory. All
+316 candidate files match the portable copy by SHA-256. The complete player
+was then promoted to `Builds/WindowsFinal/`; delivery verification compares
+every file, allowing only the updated `LATEST-BUILD.txt` note. Existing
+portable launchers and the development geometry fixture are preserved.
+The delivered player passes another 107-assertion camera review from an
+unrelated temporary working directory. Across the six rendered camera reviews
+and six selected regression reports, **1,102 assertions pass with zero failures**.
+
+Selected regressions pass: football match **259 offline, 16 host and 15 client
+assertions**; basketball shared passing **31 host/guest assertions**; and
+basketball trajectory/shot-odds **139 offline assertions**. Camera rendering
+uses Windows D3D11. No phone was tested, so Android appearance, physical touch,
+FPS/thermals and WAN latency remain unverified.
+
+The build preserves all pre-existing uncommitted work and uses protocol **32**.
+This task changes no network payload. Final Windows/Android source manifests
+match on **1,520 of 1,521 non-metadata inputs**. The regenerated Golf prefab
+is the sole byte difference; all 14 objects have equal properties and reference
+relationships after canonicalizing internal identifiers. All release gameplay,
+scenes, art and configuration match. No gameplay code changed after the APK.
+
+Evidence: camera reports/captures, source manifests, packing/signature audits
+and delivery hashes are in `Builds/StadiumCameraQA/`; regressions are in
+`Builds/FootballMatchQA/Run-20261007-172516/`,
+`Builds/BasketballPassQA/Reviews/Local-30-20261007-172105-904/` and
+`Builds/BasketballTrajectoryQA/Reviews/Offline-30-20261007-172948-311/`.
+
+Reviewed obsolete outputs were archived with hash/recovery manifests under
+`Legacy/20261007-172411-858-stadium-camera-apk`,
+`Legacy/20261007-172617-581-stadium-camera-iterations` and
+`Legacy/20261007-173003-580-stadium-camera-windows` and
+`Legacy/20261007-173400-301-stadium-camera-candidates`. Current validation evidence
+remains under ignored `Builds/`. No Git publishing action was performed.
+
+## Shared basketball passing — 7 October 2026
+
+Implemented [charged directional passing](BASKETBALL-PASSING.md) with a teal
+court lane, flowing chevrons, amber charge accents and a brief release pulse.
+The host replicates intent to every peer. Q/touch hold charges 4–10 m over
+0.8 seconds; camera heading aims, release throws, and X/drag-to-Cancel retains
+possession. Launch direction matches the lane without hidden receiver snapping.
+Protocol **31** includes pass intent and captured starting arm poses.
+
+The character finishes its dribble, gathers below the chin, pushes with both
+hands and blends back into movement. Complete local arm poses remove elbow
+flips; stable recovery offsets avoid wrist quaternion flips. Camera changes
+turn the hands with the body. Cancel blends back to the actual dribble pose.
+
+The selected suite has **365 passing assertions in 12 reports, zero failures**:
+
+- Rendered offline controls at 60 FPS: quick tap, full charge cap, aiming,
+  release direction, cancel, original-finger ownership, mutually exclusive
+  shot/pass charging, stale/nonfinite requests and possession loss.
+- Pass hold, push and cancel geometry at 20 and 120 FPS, both head LODs:
+  **935 sampled poses**, zero hand/forearm vertices inside the head beyond
+  the 3 mm tolerance. Arm and joint continuity bounds pass.
+- Rendered host/guest pass cues and steering, authoritative release and
+  noncolliding guest physics. Separate gameplay checks cover short catches,
+  return passes, longer catches, scoring, free roam and reconnect/session flow.
+- Rendered defense checks cover pressure, standing/dribble/shot/pass blocks,
+  missed reaches, shielding, walls, both-hoop jump blocks and role switching.
+  Separate host/guest finish checks preserve dunk, layup and host make/miss rules.
+- The complete player was copied to a path with spaces and tested from an
+  unrelated working directory using the script's default player location.
+  This final run also checks cancellation after release but before input
+  dispatch, same-frame shot/pass exclusion and active aim before possession loss.
+
+The review caught and corrected a shader compilation error, gather/recovery
+snaps and an aim-turn hand snap. Cancelling a queued release now also clears
+the host's aim, and queued shot/pass releases cannot race each other.
+A cancellation fixture now holds a real ball
+and waits for pickup to settle. Network fixtures wait for observed charge and
+shot gather, use velocity-based pass interception placement, and place shot/
+layup defenders clearly inside the existing contact reach. Earlier boundary
+misses remain documented; gameplay contact radii and defense success rules
+were not relaxed to satisfy the tests. Concise iteration diagnostics remain
+under `Builds/BasketballPassQA/Iterations/`.
+
+Fresh AndroidSubmission: **89,847,792 bytes**, **+18,676** over the prior APK;
+hard-limit headroom **10,152,208 bytes**. APK v2 signature and size gate pass.
+The 75 MB development target remains exceeded by **14,847,792 bytes**.
+[Packing details](APK-SIZE-AUDIT.md#shared-basketball-passing--7-october-2026).
+
+Delivered the complete **316-file** Windows player in `Builds/WindowsFinal/`:
+full assets built **15:07:32**, final scripts **16:11:57 Malaysia time**.
+Its hash inventory matches the validated portable copy; only the delivery note
+was subsequently updated. Windows/Android manifests agree on all gameplay,
+scene, art and configuration inputs except regenerated Golf prefab IDs/order;
+format-aware comparison confirms all 14 objects and reference relationships.
+
+Current evidence is under `Builds/BasketballPassQA/`: `checks.json`, source and
+player manifests, size audits, signature result, `basketball-passing.mp4` and
+`passing-preview.jpg`. Superseded players, duplicate delivery output and
+reviewed draft captures were archived in
+`Legacy/20261007-155538-088-basketball-passing` (**2,176 files, 2,092.72 MB**).
+The provisional APK and its audit were archived in
+`Legacy/20261007-161247-302-basketball-pass-final` (11 files, 93.25 MB).
+The redundant final portable player/test copy was archived in
+`Legacy/20261007-161434-693-basketball-pass-portable` (321 files, 595.26 MB),
+after preserving its passing report and complete hash inventory.
+Active source/art remains in place. No Git staging or publishing was performed.
+Physical Android appearance, touch, FPS/thermals and WAN latency remain untested.
+
+## Defense motion refinement — 7 October 2026
+
+Refined the guard, standing/high blocks, jump blocks and blocked-shot recovery
+on the existing short-arm, large-head character. Hands rise outside the face,
+the opposite hand balances lower, wrist-based reach avoids double clamping,
+and a rearward elbow guide removes bend flips. Whole local poses blend into
+the normal basketball crouch/run. Captured feet ease through moving takeoff
+and blocked dunk recovery, including on guests. Protocol **30** is required.
+No imported animation, texture or mesh was added.
+
+The selected suite contains **895 passing assertions across 11 reports**, with
+zero failures. It covers 20/30/60/120 FPS motion; both hands and LODs; guard
+entry/release, turns, running jump blocks and airborne dunk interruptions;
+actual two-process standing, pass, shot, layup and dunk blocks; role/button
+switching; pressure; host authority; finish, charge and steal regressions.
+The final player also passes from a directory containing spaces, launched
+from an unrelated working directory with the test script's default player
+path. Detailed report paths are in `Builds/BasketballDefensePolishQA/checks.json`.
+
+Across **5,764 sampled poses**, the CPU-skinned hand and forearm vertices have
+**zero head-surface penetrations exceeding 3 mm**. The same geometric check
+reproduces the original clipping in both jump blocks and high contests. The
+fixture accounts for the imported renderer's scale and checks world dimensions;
+the head mesh includes hair. Running shoe tips and arm continuity use separate
+bounds so normal running does not conceal an elbow flip. Front, side and
+oblique views were reviewed, including normal and half-speed playback.
+
+Current evidence under `Builds/BasketballDefensePolishQA/` includes
+`defense-refined.mp4`, `before-after.jpg`, `preview.json`, `checks.json`,
+`PortableReview/`, the APK audit/signature and source/player hash manifests.
+The development-only host/guest review now publishes immutable command files
+atomically after a Windows file-sharing race was reproduced. That final test
+harness fix is excluded from the release APK; every release gameplay script,
+scene, art asset and configuration agrees between the delivered Windows and
+Android source snapshots. The Golf prefab's regenerated local IDs retain the
+same properties and reference graph.
+
+Fresh signed AndroidSubmission: **89,825,364 → 89,829,116 bytes (+3,752)**;
+hard-limit headroom **10,170,884 bytes**. The 75 MB development target remains
+exceeded by **14,829,116 bytes**. [Size record](BUILD-SIZE.md#defense-motion-refinement--7-october-2026).
+The full validated Windows player, runtime files, development geometry fixture
+and portable launchers are promoted together to `Builds/WindowsFinal/`.
+No physical Android device, phone FPS/thermals or WAN connection was tested.
+Git staging, commits and pushes remain with the user.
+
+Archive batch `Legacy/20261007-130618-782-defense-motion-polish` contains the
+superseded complete Windows player and reviewed intermediate builds/captures:
+4,626 files, 2,957.97 MB. Its manifest records recovery paths and SHA-256 hashes.
+Current comparison evidence, final reports and complete delivery stay under
+ignored `Builds/`; no active game asset or authoring master was archived.
+
 ## Basketball defense — 6 October 2026
 
 [Implemented controls and success rules](BASKETBALL-DEFENSE.md) cover pressure

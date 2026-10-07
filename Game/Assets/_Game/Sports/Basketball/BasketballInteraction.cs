@@ -49,14 +49,14 @@ namespace WhatTheFish {
    return null;
   }
   public bool CanShoot(Athlete athlete)=>Playing&&athlete&&!athlete.inTransit&&!athlete.BasketballFreeRoam&&!ActionQueued&&(!athlete.BasketballMotion||!athlete.BasketballMotion.Busy)&&Held&&(Authority?holder==athlete:PlayerId(athlete)==target.holder);
-  public void CancelAction(Athlete athlete){if(Authority&&holder==athlete){pendingAction=BasketballAction.None;CancelShotCharge(athlete);}}
-  void ClearPossession(){ClearDefense();approachActor=null;ClearSteals();ResetShotTracking();passing=false;if(holder&&holder.BasketballMotion)holder.BasketballMotion.ResetPose();pendingAction=BasketballAction.None;holder=null;lastShooter=null;RestoreShooterCollision();if(Body){Body.linearDamping=restDamping;RestoreFloorContacts();}}
+  public void CancelAction(Athlete athlete){if(Authority&&holder==athlete){pendingAction=BasketballAction.None;passAim=default;CancelShotCharge(athlete);}}
+  void ClearPossession(){passBounceArmed=false;passAim=default;ClearDefense();approachActor=null;ClearSteals();ResetShotTracking();passing=false;if(holder&&holder.BasketballMotion)holder.BasketballMotion.ResetPose();pendingAction=BasketballAction.None;holder=null;lastShooter=null;RestoreShooterCollision();if(Body){Body.linearDamping=restDamping;RestoreFloorContacts();}}
   void RestoreFloorContacts(){shotFlying=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;}
   void RestoreShooterCollision(){if(ignoredShooter){Physics.IgnoreCollision(GetComponent<SphereCollider>(),ignoredShooter,false);ignoredShooter=null;}}
   bool Outside(Vector3 world){var p=transform.parent?transform.parent.InverseTransformPoint(world):world;return Mathf.Abs(p.x)>courtLimits.x||Mathf.Abs(p.z)>courtLimits.y;}
   public Vector3 CarryPosition(Athlete athlete){
    var motion=athlete.BasketballMotion;bool action=motion&&motion.CarryingPose;
-   Vector3 offset=action?motion.BallOffset(motion.Charging||motion.Action==BasketballAction.Cancel?motion.Elapsed:Mathf.Min(motion.Elapsed,BasketballMotion.ReleaseTime(motion.Action))):BasketballMotion.DribbleOffset(DribblePhase);
+   Vector3 offset=action?motion.BallOffset(motion.Charging||motion.PassCharging||(motion.Action==BasketballAction.Cancel||motion.Action==BasketballAction.PassCancel)?motion.Elapsed:Mathf.Min(motion.Elapsed,BasketballMotion.ReleaseTime(motion.Action))):BasketballMotion.DribbleOffset(DribblePhase);
    if(!action&&(athlete.Airborne||athlete.LoadingJump))offset=carryOffset;
    var origin=athlete.transform.position+Vector3.up*offset.y;
    var desired=athlete.transform.position+(action?motion.PoseFacing:athlete.transform.rotation)*offset;
@@ -66,7 +66,7 @@ namespace WhatTheFish {
    return desired;
   }
   void Follow(Athlete athlete){
-   var motion=athlete.BasketballMotion;float spin=motion&&(motion.Busy||motion.Charging)?motion.State.ballSpin:DribblePhase;
+   var motion=athlete.BasketballMotion;float spin=motion&&(motion.Busy||motion.Charging||motion.PassCharging)?motion.State.ballSpin:DribblePhase;
    var position=CarryPosition(athlete);var rotation=athlete.transform.rotation*Quaternion.Euler(spin*360,0,0)*homeRotation;
    Body.position=position;Body.rotation=rotation;transform.SetPositionAndRotation(position,rotation);
   }
@@ -75,11 +75,12 @@ namespace WhatTheFish {
    // Sweep the airborne sphere against thin rim segments. Speculative CCD
    // can invent an upward contact on their inflated bounds at shot speed.
    // Return to the proven speculative mode before the first floor bounce.
-   if(shotFlying&&Body.linearVelocity.y<=0&&transform.localPosition.y<1.8f)RestoreFloorContacts();
+   if(shotFlying&&!passBounceArmed&&Body.linearVelocity.y<=0&&transform.localPosition.y<1.8f)RestoreFloorContacts();
    if(ignoredShooter&&Time.time>=pickupAt&&(ignoredShooter.ClosestPoint(Body.position)-Body.position).sqrMagnitude>Radius*Radius*2)RestoreShooterCollision();
    if(ignoredStealer&&Time.time>=pickupAt&&(ignoredStealer.ClosestPoint(Body.position)-Body.position).sqrMagnitude>Radius*Radius*2)RestoreStealerCollision();
    if(holder){
     if(!Eligible(holder)||Outside(holder.transform.position)||!Finite(holder.transform.position)){ResetHome();return;}
+    StepPassCharge();
     dribbleCadence=Mathf.Lerp(1.65f,2.15f,Mathf.Clamp01(holder.speed/7));
     if((pendingAction==BasketballAction.Shoot||chargingAthlete==holder)&&holder.BasketballMotion&&!holder.BasketballMotion.CarryingPose)dribbleCadence/=BasketballMotion.ShotTimeScale;
     if(!holder.BasketballMotion.CarryingPose)dribblePhase=Mathf.Repeat(dribblePhase+dribbleCadence*Time.fixedDeltaTime,1);
@@ -94,7 +95,7 @@ namespace WhatTheFish {
      else if(!motion.Busy){
       // Finish the free bounce before gathering. Never pull a ball from the
       // floor into unreachable hands halfway through a shot windup.
-      if(motion.Charging||DribblePhase>.90f||DribblePhase<.10f||holder.Airborne||holder.LoadingJump){
+      if(motion.Charging||motion.PassCharging||DribblePhase>.90f||DribblePhase<.10f||holder.Airborne||holder.LoadingJump){
        if(BasketballFinishRules.IsFinish(pendingAction))StartFinish(holder);
        else {var start=CarryPosition(holder);motion.Begin(pendingAction,pendingHeading,Quaternion.Inverse(Quaternion.Euler(0,pendingHeading,0))*(start-holder.transform.position));}
       }
@@ -124,13 +125,13 @@ namespace WhatTheFish {
    else Consider(AppRoot.Instance.LocalAthlete);
    if(!nearest)return;
    ResetShotTracking();
-   NewDefensePlay();passing=false;RestoreShooterCollision();RestoreStealerCollision();RestoreFloorContacts();holder=nearest;dribblePhase=0;pendingAction=BasketballAction.None;Body.linearDamping=restDamping;Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;reset++;looseFor=outsideFor=0;Follow(holder);sendAt=0;
+   NewDefensePlay();passBounceArmed=false;passAim=default;passing=false;RestoreShooterCollision();RestoreStealerCollision();RestoreFloorContacts();holder=nearest;dribblePhase=0;pendingAction=BasketballAction.None;Body.linearDamping=restDamping;Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;reset++;looseFor=outsideFor=0;Follow(holder);sendAt=0;
   }
   public Transform SelectHoop(Vector3 origin,float heading){
    if(!float.IsFinite(heading))return null;
    if(hoops.Count==0&&transform.parent)foreach(var t in transform.parent.GetComponentsInChildren<Transform>())if(t.name=="Hoop_North"||t.name=="Hoop_South")hoops.Add(t);
    var forward=Quaternion.Euler(0,heading,0)*Vector3.forward;Transform best=null;float score=float.PositiveInfinity;
-   foreach(var hoop in hoops){if(!hoop)continue;var delta=hoop.position-origin;delta.y=0;float value=delta.sqrMagnitude+(Vector3.Dot(delta,forward)<0?10000:0);if(value<score){score=value;best=hoop;}}
+   foreach(var hoop in hoops){if(!hoop)continue;var delta=hoop.position-origin;delta.y=0;float value=delta.sqrMagnitude+(Vector3.Dot(delta,forward)<0?10000:0)+(hoop.InverseTransformPoint(origin).z<0?10000:0);if(value<score){score=value;best=hoop;}}
    return best;
   }
   public static bool SolveShot(Vector3 start,Vector3 target,float clearance,float speedLimit,out Vector3 velocity){
@@ -147,7 +148,7 @@ namespace WhatTheFish {
    if(!TryAction(athlete,heading,BasketballAction.Shoot))return false;
    pendingPower=power;return true;
   }
-  public bool TryPass(Athlete athlete,float heading){return TryAction(athlete,heading,BasketballAction.Pass);}
+  public bool TryPass(Athlete athlete,float heading){return CommitPass(athlete,heading,0);}
   bool TryAction(Athlete athlete,float heading,BasketballAction action){
    if(!Authority||!CanShoot(athlete)||!Eligible(athlete)||!float.IsFinite(heading))return false;
    var motion=athlete.BasketballMotion;if(!motion)return false;
@@ -165,10 +166,10 @@ namespace WhatTheFish {
     var goal=hoop.TransformPoint(new Vector3(0,3.048f,0));float distance=Vector3.ProjectOnPlane(start-goal,Vector3.up).magnitude;
     if(BasketballFinishRules.IsFinish(action)){
      if(!FinishVelocity(athlete,action,start,hoop,out velocity)){InterruptFinish(athlete);return;}
-    }else if(!SolveShot(start,goal,arcHeight+distance*arcPerMetre,maxShotSpeed,out velocity)){athlete.BasketballMotion.ResetPose();return;}
-    if(!BasketballFinishRules.IsFinish(action))velocity=ApplyShotPower(velocity,pendingPower,pendingWindow);shotHoop=hoop;
+    }else if(!ShotVelocity(athlete,start,hoop,out velocity)){athlete.BasketballMotion.ResetPose();return;}
+    shotHoop=hoop;
     if(velocity.magnitude>maxShotSpeed){athlete.BasketballMotion.ResetPose();return;}
-   }else velocity=PassVelocity(athlete,start,pendingHeading);
+   }else {launchedPass=BasketballPassPath.Create(start,pendingHeading,pendingPassPower,passAim.bend,PassFloor(start));velocity=launchedPass.velocity;}
    // Reject an obstructed release instead of materializing inside architecture.
    if(Physics.CheckSphere(start,Radius+.015f,1<<8,QueryTriggerInteraction.Ignore)||Physics.Linecast(athlete.transform.position+Vector3.up*1.1f,start,1<<8,QueryTriggerInteraction.Ignore)){if(BasketballFinishRules.IsFinish(action))InterruptFinish(athlete);else athlete.BasketballMotion.ResetPose();return;}
    Body.position=start;transform.position=start;holder=null;lastShooter=athlete;pickupAt=Time.time+(action==BasketballAction.Pass?.12f:releaseGrace);shooterPickupAt=Time.time+shooterGrace;looseFor=outsideFor=0;
@@ -177,22 +178,8 @@ namespace WhatTheFish {
    Body.linearVelocity=velocity;Body.angularVelocity=Vector3.Cross(Vector3.up,Vector3.ProjectOnPlane(velocity,Vector3.up).normalized)*-backspin;
    LastLaunchVelocity=velocity;LastReleasePower=pendingPower;
    if(shotHoop)BeginAttempt(shotHoop,athlete,start);
-   passing=action==BasketballAction.Pass;Body.WakeUp();reset++;if(shotHoop)shotCount++;else passCount++;sendAt=0;
+   passing=action==BasketballAction.Pass;passBounceArmed=passing&&launchedPass.Bounces;passLaunchedAt=BasketballMotion.Clock;if(passing){passAim.phase=3;passAim.origin=start;passAim.released=BasketballMotion.Clock;}else passAim=default;Body.WakeUp();reset++;if(shotHoop)shotCount++;else passCount++;sendAt=0;
   }
-  Vector3 PassVelocity(Athlete passer,Vector3 start,float heading){
-   var forward=Quaternion.Euler(0,heading,0)*Vector3.forward;Athlete receiver=null;float best=float.PositiveInfinity;
-   if(Connected)foreach(var client in NetworkManager.Singleton.ConnectedClientsList){
-    var candidate=client.PlayerObject?client.PlayerObject.GetComponent<Athlete>():null;if(candidate==passer||!Eligible(candidate)||Outside(candidate.transform.position))continue;
-    var delta=Vector3.ProjectOnPlane(candidate.transform.position-start,Vector3.up);float distance=delta.magnitude;
-    if(distance<1.2f||distance>12||Vector3.Dot(forward,delta.normalized)<.78f)continue;
-    var point=candidate.transform.position+Vector3.up*1.05f;if(Physics.Linecast(start,point,1<<8,QueryTriggerInteraction.Ignore))continue;
-    float score=distance+8*(1-Vector3.Dot(forward,delta.normalized));if(score<best){best=score;receiver=candidate;}
-   }
-   Vector3 target=receiver?receiver.transform.position+Vector3.up*1.05f:start+forward*7-Vector3.up*.2f;
-   float duration=Mathf.Clamp(Vector3.ProjectOnPlane(target-start,Vector3.up).magnitude/8.5f,.24f,1.3f);
-   if(receiver)target+=Vector3.ClampMagnitude(receiver.Motor.Velocity*duration,1.5f);
-   return (target-start)/duration-Physics.gravity*(duration*.5f+Time.fixedDeltaTime*.5f);
-  }
-  void OnCollisionEnter(Collision collision){if(Authority){ShotContact(collision);Body.linearDamping=restDamping;passing=false;}}
+  void OnCollisionEnter(Collision collision){if(Authority){if(BouncePassContact(collision))return;ShotContact(collision);Body.linearDamping=restDamping;passing=false;}}
  }
 }
