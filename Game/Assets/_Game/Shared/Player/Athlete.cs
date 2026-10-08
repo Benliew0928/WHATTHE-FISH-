@@ -24,7 +24,7 @@ namespace WhatTheFish {
   public bool PresentingJump=>remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
   public float JumpPose=>remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
   public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
-  public bool CanRequestJump=>!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
+  public bool CanRequestJump=>!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
   public JumpSnapshot JumpState()=>new JumpSnapshot{airborne=Jump.Airborne,preparing=Jump.Preparing,load=Jump.LoadElapsed,velocity=Jump.Velocity,landing=Jump.Landing,sequence=Jump.Sequence};
   public void ApplyJump(JumpSnapshot value){receivedJump=value;}
@@ -59,6 +59,7 @@ namespace WhatTheFish {
   public void ApplySnapshot(LocomotionSnapshot value){remote=true;received=value;speed=value.speed;}
   public void Simulate(PlayerCommand command,float dt){
    if(!initialized)Setup();if(inTransit||dt<=0){FootballEffort.Stop();return;}
+   if(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this)){command.move=Vector2.zero;command.jump=false;command.cartAction=GolfCartAction.None;}
    if(command.cartAction!=GolfCartAction.None)GolfCartWorld.Execute(this,command.cartAction,command.cartOwner);
    if(GolfCartWorld.Simulate(this,command,dt))return;
    if(!capsule.enabled)return;remote=false;
@@ -85,7 +86,7 @@ namespace WhatTheFish {
    // Flight retains the shared jump motor's steering and momentum.
    float basketballTimeScale=BasketballMotion?WhatTheFish.BasketballMotion.TimeScale(BasketballMotion.Action):1;
    if(grounded&&!Jump.Preparing&&BasketballMotion&&BasketballMotion.Busy&&!BasketballMotion.Challenging&&BasketballMotion.Action!=BasketballAction.Cancel&&BasketballMotion.Elapsed<WhatTheFish.BasketballMotion.ReleaseTime(BasketballMotion.Action)+.08f*basketballTimeScale)direction*=1-WhatTheFish.BasketballMotion.Ease(BasketballMotion.Elapsed/(.12f*basketballTimeScale));
-   bool golfContact=GolfClubMotion&&GolfClubMotion.Busy&&GolfClubMotion.Elapsed<WhatTheFish.GolfClubMotion.ContactTime+.08f;
+   bool golfContact=GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this)||GolfClubMotion&&GolfClubMotion.Busy&&GolfClubMotion.Elapsed<WhatTheFish.GolfClubMotion.ContactTime+.08f;
    if(golfContact||BasketballBall.Active&&BasketballBall.Active.GatheringFinish(this))direction=Vector3.zero;
    if(BasketballBall.Active)direction=BasketballBall.Active.ConstrainPlayerInput(this,direction);
    if(command.tackle)TryTackle();

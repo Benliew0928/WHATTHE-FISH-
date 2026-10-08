@@ -21,7 +21,7 @@ public static class GolfCourseBuilder {
   public Vector3 p,n;public Vector4 tangent;public Vector2 uv,uv2;public Color color;
   public static Vertex Lerp(Vertex a,Vertex b,float t)=>new Vertex{p=Vector3.LerpUnclamped(a.p,b.p,t),n=Vector3.LerpUnclamped(a.n,b.n,t).normalized,tangent=Vector4.LerpUnclamped(a.tangent,b.tangent,t),uv=Vector2.LerpUnclamped(a.uv,b.uv,t),uv2=Vector2.LerpUnclamped(a.uv2,b.uv2,t),color=Color.LerpUnclamped(a.color,b.color,t)};
  }
- public static string Evidence=>Path.GetFullPath(Path.Combine(Application.dataPath,"../../Builds/GolfCourseRefinementQA"));
+ public static string Evidence=>Path.GetFullPath(Path.Combine(Application.dataPath,"../../Builds/GolfPlayabilityQA/Map"));
  static string Disk(string assetPath)=>Path.Combine(Application.dataPath,assetPath.Substring("Assets/".Length));
  static T Save<T>(T asset,string path) where T:Object {
   Directory.CreateDirectory(Path.GetDirectoryName(Disk(path)));AssetDatabase.Refresh();
@@ -30,6 +30,8 @@ public static class GolfCourseBuilder {
   AssetDatabase.CreateAsset(asset,path);return asset;
  }
  static Material Mat(string name,Color tint){
+  // Reuse the authored material, including its validated URP keywords/pass state.
+  var existing=AssetDatabase.LoadAssetAtPath<Material>(Art+"Materials/"+name+".mat");if(existing)return existing;
   var material=new Material(Shader.Find("Universal Render Pipeline/Lit"));material.name=name;
   material.SetColor("_BaseColor",tint);material.SetFloat("_Smoothness",.12f);material.enableInstancing=true;
   if(material.HasProperty("_BaseMap"))material.SetTexture("_MainTex",material.GetTexture("_BaseMap"));
@@ -61,6 +63,26 @@ public static class GolfCourseBuilder {
   }
  }
  public static bool IsCourseGrass(Mesh mesh)=>AssetDatabase.GetAssetPath(mesh).StartsWith(Art+"Meshes/Grass/",StringComparison.Ordinal);
+ static float ShapedHeight(float x,float z,GolfGreen[] greens){
+  float height=(float)MobileIslandGrass.Height(x,z,true);foreach(var green in greens)height=green.Height(x,z,height);return height;
+ }
+ static float HeightDelta(float x,float z,GolfGreen[] greens)=>ShapedHeight(x,z,greens)-(float)MobileIslandGrass.Height(x,z,true);
+ static Mesh Shape(Mesh source,Matrix4x4 toIsland,GolfGreen[] greens,bool grass){
+  var points=source.vertices;var normals=source.normals;var inverse=toIsland.inverse;bool changed=false;
+  for(int i=0;i<points.Length;i++){
+   var p=toIsland.MultiplyPoint3x4(points[i]);float height=p.y;
+   if(grass)height+=HeightDelta(p.x,p.z,greens);else foreach(var green in greens)height=green.Height(p.x,p.z,height);
+   if(Mathf.Abs(height-p.y)<.000001f)continue;changed=true;p.y=height;points[i]=inverse.MultiplyPoint3x4(p);
+   if(!grass&&normals.Length==points.Length){
+    var normal=toIsland.MultiplyVector(normals[i]);
+    float dx=(HeightDelta(p.x+.05f,p.z,greens)-HeightDelta(p.x-.05f,p.z,greens))/.1f;
+    float dz=(HeightDelta(p.x,p.z+.05f,greens)-HeightDelta(p.x,p.z-.05f,greens))/.1f;
+    normals[i]=inverse.MultiplyVector(new Vector3(normal.x-normal.y*dx,normal.y,normal.z-normal.y*dz).normalized).normalized;
+   }
+  }
+  if(!changed)return null;
+  var mesh=Object.Instantiate(source);mesh.name=source.name;mesh.vertices=points;if(!grass)mesh.normals=normals;mesh.RecalculateBounds();return mesh;
+ }
  public static void Attach(GameObject island){
   var layout=JsonUtility.FromJson<Layout>(AssetDatabase.LoadAssetAtPath<TextAsset>(Config).text);
   if(layout.holes.Length!=5||layout.holes.Select(h=>h.number).Distinct().Count()!=5)throw new Exception("Expected five distinct course holes.");
@@ -70,6 +92,16 @@ public static class GolfCourseBuilder {
    RestoreTerrain(island);Physics.SyncTransforms();
    var terrain=island.GetComponentsInChildren<MeshCollider>(true).Where(c=>c.name.StartsWith("Terrain__")).ToArray();
    var root=new GameObject(Group);root.transform.SetParent(island.transform,false);var course=root.AddComponent<GolfCourse>();var holes=new List<GolfHole>();
+   course.greens=layout.holes.Select(h=>{
+    var p=Floor(island,h.cup,terrain);
+    var slope=new Vector2((Floor(island,h.cup+Vector3.right,terrain).y-Floor(island,h.cup-Vector3.right,terrain).y)*.5f,(Floor(island,h.cup+Vector3.forward,terrain).y-Floor(island,h.cup-Vector3.forward,terrain).y)*.5f);
+    return new GolfGreen{centre=p,slope=Vector2.ClampMagnitude(slope*.15f,.012f),radius=h.greenRadius,blend=6};
+   }).ToArray();
+   foreach(var collider in terrain){
+    var filter=collider.GetComponent<MeshFilter>();var shaped=Shape(filter.sharedMesh,island.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix,course.greens,false);
+    if(shaped){filter.sharedMesh=shaped;collider.sharedMesh=shaped;}
+   }
+   Physics.SyncTransforms();
    var aqua=AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/RefinedIslands/Shared/Materials/RI_Teal.mat");
    var white=Mat("Ivory lining",new Color(.93f,.91f,.83f));var dark=Mat("Cup interior",new Color(.045f,.055f,.043f));
    PrepareFlag(white,aqua);
@@ -90,7 +122,7 @@ public static class GolfCourseBuilder {
     Node("Cup lining",hole.transform,Save(Mesh("Hole "+h.number+" lining",lining,wallTriangles),Art+"Meshes/Cups/"+h.number+"-lining.asset"),white,true);
     Node("Cup rim",hole.transform,Save(Mesh("Hole "+h.number+" rim",rim,rimTriangles),Art+"Meshes/Cups/"+h.number+"-rim.asset"),white);
     var floor=Disc("Cup floor",layout.cupRadius,32);var baseNode=Node("Cup floor",hole.transform,Save(floor,Art+"Meshes/Shared/CupFloor.asset"),dark,true);baseNode.transform.localPosition=Vector3.down*layout.cupDepth;
-    // The original terrain and meadow remain the putting surface; clear only each cup opening.
+    // The green is part of the original terrain, with the same turf material and UVs.
     var flag=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(FlagPrefab));flag.transform.SetParent(hole.transform,false);flag.transform.localRotation=Quaternion.Euler(0,35,0);
     var number=Save(Digit(h.number),Art+"Meshes/Shared/Number"+h.number+".asset");
     foreach(float side in new[]{-.021f,.021f}){var label=Node("Flag number "+h.number,flag.transform,number,white);label.transform.localPosition=new Vector3(.48f,2.48f,side);if(side>0){label.transform.localRotation=Quaternion.Euler(0,180,0);label.transform.localPosition+=Vector3.right*.24f;}}
@@ -101,8 +133,10 @@ public static class GolfCourseBuilder {
    }
    course.holes=holes.ToArray();
    foreach(var filter in terrain.Select(c=>c.GetComponent<MeshFilter>())){
-    var cut=Cut(filter.sharedMesh,island.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix,layout.holes,layout.cupRadius,false);
-    if(!cut)continue;filter.sharedMesh=Save(cut,Art+"Meshes/Terrain/"+filter.name+".asset");filter.GetComponent<MeshCollider>().sharedMesh=filter.sharedMesh;
+    var working=filter.sharedMesh;var cut=Cut(working,island.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix,layout.holes,layout.cupRadius,false);
+    if(!cut&&AssetDatabase.Contains(working))continue;
+    filter.sharedMesh=Save(cut?cut:working,Art+"Meshes/Terrain/"+filter.name+".asset");filter.GetComponent<MeshCollider>().sharedMesh=filter.sharedMesh;
+    if(cut&&!AssetDatabase.Contains(working))Object.DestroyImmediate(working);
    }
    TrimGrass(island,layout);
    // Previous flags remain scenery and have no GolfHole record. New aqua numbered flags own the course.
@@ -132,13 +166,16 @@ public static class GolfCourseBuilder {
   return Mesh("Flag number "+number,p,t);
  }
  static void TrimGrass(GameObject island,Layout layout){
+  var greens=island.GetComponentInChildren<GolfCourse>(true).greens;
   var original=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Art/RefinedIslands/Golf/Grass.fbx").GetComponentsInChildren<MeshFilter>(true).ToDictionary(f=>f.name,f=>f.sharedMesh);
   foreach(var f in island.GetComponentsInChildren<MeshFilter>(true))if(original.TryGetValue(f.name,out var source)){
-   f.sharedMesh=source;var trimmed=Cut(source,island.transform.worldToLocalMatrix*f.transform.localToWorldMatrix,layout.holes,layout.cupRadius+.1f,true);
-   if(trimmed)f.sharedMesh=Save(trimmed,Art+"Meshes/Grass/"+f.name+".asset");
+   var matrix=island.transform.worldToLocalMatrix*f.transform.localToWorldMatrix;var shaped=Shape(source,matrix,greens,true);var working=shaped?shaped:source;
+   var trimmed=Cut(working,matrix,layout.holes,0,true,greens);
+   f.sharedMesh=trimmed||shaped?Save(trimmed?trimmed:shaped,Art+"Meshes/Grass/"+f.name+".asset"):source;
+   if(trimmed&&shaped)Object.DestroyImmediate(shaped);
   }
  }
- static Mesh Cut(Mesh source,Matrix4x4 localToIsland,Hole[] holes,float radius,bool grass){
+ static Mesh Cut(Mesh source,Matrix4x4 localToIsland,Hole[] holes,float radius,bool grass,GolfGreen[] greens=null){
   var pos=source.vertices;var normal=source.normals;var uv=source.uv;var uv2=source.uv2;var tangent=source.tangents;var colors=source.colors;
   var vertices=new List<Vertex>();for(int i=0;i<pos.Length;i++)vertices.Add(new Vertex{p=pos[i],n=normal.Length==pos.Length?normal[i]:Vector3.up,uv=uv.Length==pos.Length?uv[i]:Vector2.zero,uv2=uv2.Length==pos.Length?uv2[i]:Vector2.zero,tangent=tangent.Length==pos.Length?tangent[i]:Vector4.zero,color=colors.Length==pos.Length?colors[i]:Color.white});
   var submeshes=new List<int>[source.subMeshCount];int changed=0;
@@ -146,10 +183,10 @@ public static class GolfCourseBuilder {
    var output=submeshes[sub]=new List<int>();var indices=source.GetTriangles(sub);
    for(int i=0;i<indices.Length;i+=3){
     var a=vertices[indices[i]];var b=vertices[indices[i+1]];var c=vertices[indices[i+2]];var pa=localToIsland.MultiplyPoint3x4(a.p);var pb=localToIsland.MultiplyPoint3x4(b.p);var pc=localToIsland.MultiplyPoint3x4(c.p);
-    var nearby=holes.Where(h=>Mathf.Max(pa.x,Mathf.Max(pb.x,pc.x))>=h.cup.x-radius&&Mathf.Min(pa.x,Mathf.Min(pb.x,pc.x))<=h.cup.x+radius&&Mathf.Max(pa.z,Mathf.Max(pb.z,pc.z))>=h.cup.z-radius&&Mathf.Min(pa.z,Mathf.Min(pb.z,pc.z))<=h.cup.z+radius).ToArray();
+    var nearby=holes.Where(h=>{float r=grass?h.greenRadius:radius;return Mathf.Max(pa.x,Mathf.Max(pb.x,pc.x))>=h.cup.x-r&&Mathf.Min(pa.x,Mathf.Min(pb.x,pc.x))<=h.cup.x+r&&Mathf.Max(pa.z,Mathf.Max(pb.z,pc.z))>=h.cup.z-r&&Mathf.Min(pa.z,Mathf.Min(pb.z,pc.z))<=h.cup.z+r;}).ToArray();
     if(nearby.Length==0){output.AddRange(new[]{indices[i],indices[i+1],indices[i+2]});continue;}
     if(grass){
-     bool remove=nearby.Any(h=>new[]{pa,pb,pc}.Any(p=>new Vector2(p.x-h.cup.x,p.z-h.cup.z).sqrMagnitude<radius*radius));
+     bool remove=new[]{pa,pb,pc}.Any(p=>greens.Any(g=>g.ClearsGrass(p.x,p.z)));
      if(remove)changed++;else output.AddRange(new[]{indices[i],indices[i+1],indices[i+2]});continue;
     }
     var pieces=new List<List<Vertex>>{new List<Vertex>{a,b,c}};

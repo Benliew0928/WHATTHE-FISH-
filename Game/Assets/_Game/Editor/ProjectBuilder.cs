@@ -202,6 +202,10 @@ public static partial class ProjectBuilder {
   var outputDirectory=Path.GetDirectoryName(playerPath);
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Fishing.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Golf.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-Basketball.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Basketball -offline\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-SkySail.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -skyStation\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Review-Fishing-Rods.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Fishing -fishingRodPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Review-Golf-Equipment.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Golf -golfEquipmentPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade, detailed exterior and walkable routes\nBasketball: B1 open-air coastal arena and walkable routes\nGolf: G2 Limestone Cove Links, detailed coastal materials, pavilion and walking routes\nFishing: L2 Limestone Garden Lagoon, five modular coloured stations and shelter; exploration only\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildFootballMatchVerification(){Build(BuildTarget.StandaloneWindows64,"../Builds/FootballMatchQA/Player/WhatTheFish.exe");}

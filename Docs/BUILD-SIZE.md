@@ -1,5 +1,75 @@
 # Build size — measured release records
 
+## Golf cycling power and accurate shot guide — 9 October 2026
+
+Fresh AndroidSubmission completed at **01:14:05 Malaysia time**:
+**88,554,742 → 88,560,698 bytes (+5,956)**.
+Strict-limit headroom is **11,439,302 bytes**. The
+**75,000,000-byte development target remains exceeded by 13,560,698
+bytes**. Budget enforcement and independent APK v2 signature verification pass.
+SHA-256: **F0599E23425ADC27CAF3BCFF4F7249809D9B53E914C910BE8738B203F8FDA259**.
+
+Power cycles continuously while held. The host automatically selects Putt near
+the ball owner's cup and Swing farther away. A continuous mint/ivory path ends
+at a gold glow: first touchdown for swings, stopping point for putts. Preview
+and authoritative travel share the terrain-aware trajectory. Landing slowdown
+keeps full shots bounded. No terrain, texture, model, audio or package was added.
+The existing guide shader/material is reused, and the old readout is removed.
+[Controls](GOLF-MINIGAME.md#controls-and-display),
+[packing audit](APK-SIZE-AUDIT.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+
+The complete **317-file** Windows delivery contains **316 runtime/support files**
+verified against the portable test copy. Full desktop assets and scripts built at **01:22:22**. Verification totals **1,137 passing assertions
+in 14 selected reports**, plus **13,122 unchanged base-terrain samples**.
+Matching **protocol 37** peers required. Obsolete players and backups are in
+Legacy; equipment/rod review launchers now use the complete current player.
+[Evidence and cleanup](VERIFICATION.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+No Android phone was attached; phone visuals, touch and FPS remain unverified.
+
+## Golf aiming lock and shot guide — 8 October 2026
+
+Fresh AndroidSubmission completed at **21:24:55 Malaysia time**:
+**88,531,618 → 88,554,742 bytes (+23,124)**. Strict-limit headroom is
+**11,445,258 bytes**. The **75,000,000-byte development target remains exceeded
+by 13,554,742 bytes**. Budget enforcement and independent APK v2 signing pass.
+SHA-256: **BFE19E496E6564D1284102CC04F701608B9645D7BE7F723B41BB681243E65B02**.
+
+Aim now takes a safe stance within three metres, locks movement and supports
+explicit Cancel. A procedural ivory/gold guide shows launch and estimated rollout.
+Existing island terrain and original art remain unchanged. One reusable runtime
+mesh, one shader and one material; no imported texture, model, animation or audio.
+[Controls](GOLF-MINIGAME.md#controls-and-display),
+[packing audit](APK-SIZE-AUDIT.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+The complete **316-file** Windows player is delivered in `Builds/WindowsFinal/`,
+built at **21:17:53**. All **315 runtime/support files** match the tested portable
+copy. Selected verification totals **811 passing assertions in 12 reports**,
+plus 13,122 unchanged base-terrain samples. Matching **protocol 36** peers required.
+[Evidence and archives](VERIFICATION.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+No physical Android device was attached; phone quality/FPS/touch remain unverified.
+
+## Golf playability and integrated greens — 8 October 2026
+
+Fresh AndroidSubmission completed at **19:48:25 Malaysia time**:
+**88,529,938 → 88,531,618 bytes (+1,680)**. Strict-limit headroom is
+**11,468,382 bytes**. The **75,000,000-byte development target remains exceeded
+by 13,531,618 bytes**. Budget enforcement and independent APK v2 signing pass.
+SHA-256: **1DC92C06D4E11F8A7944A23CB08E586F6309F7805B11F9941E1CD765418E8CD0**.
+
+Grounded balls receive rolling resistance on slopes, with green/fairway/rough/sand
+profiles and finer putting control. Five greens gently reshape the existing terrain;
+Holes 4 and 5 move to gentler positions. Original turf, coastline and island silhouette
+remain. No texture, model, animation, shader, audio or package was imported.
+[Course](GOLF-COURSE.md), [physics](GOLF-MINIGAME.md),
+[packing audit](APK-SIZE-AUDIT.md#golf-playability-and-integrated-greens--8-october-2026).
+
+The complete **316-file** Windows player is delivered in `Builds/WindowsFinal/`,
+built at **19:40:04**. All **315 runtime/support files** match the tested portable
+copy. Selected verification totals **1,594 passing assertions in 15 reports**,
+plus 13,122 base-terrain reference samples. Matching **protocol 35** peers required.
+[Evidence, source limits and archives](VERIFICATION.md#golf-playability-and-integrated-greens--8-october-2026).
+No physical Android device was attached; phone quality/FPS/touch remain unverified.
+
 ## Simple maps, round controls and resource cleanup — 8 October 2026
 
 Fresh AndroidSubmission completed at **15:14:47 Malaysia time**:

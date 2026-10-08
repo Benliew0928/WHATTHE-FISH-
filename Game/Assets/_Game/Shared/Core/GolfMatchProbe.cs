@@ -164,10 +164,10 @@ namespace WhatTheFish {
    var material=lods[0].renderers[0].sharedMaterial;Check(material.GetTexture("_BaseMap") is Texture2D color&&color.width==512&&material.GetTexture("_BumpMap") is Texture2D normal&&normal.width==512&&material.GetTexture("_MetallicGlossMap") is Texture2D mask&&mask.width==256,"CLUB_RETAINS_COLOR_NORMAL_AND_METAL_SMOOTHNESS_2D_MAPS");
    Check(club.Club.GetComponentsInChildren<Collider>().Length==0&&club.Club.GetComponentsInChildren<Rigidbody>().Length==0,"VISUAL_CLUB_ADDS_NO_DUPLICATE_BALL_PHYSICS");
    yield return PoseFrame();LogClub(a,"carry");Check(!club.TwoHanded&&club.GripError<.025f&&Physics.Raycast(club.Club.head.position+Vector3.up*.5f,Vector3.down,out var clubGround,2,1<<8,QueryTriggerInteraction.Ignore)&&club.Club.head.position.y>clubGround.point.y+.04f,"SINGLE_RIGHT_HAND_CARRY_WITH_HEAD_CLEAR_OF_FLOOR");CaptureClub("carry");
-   Check(app.view.BeginGolfSwing(42),"CLUB_CHARGE_BEGINS_IN_REACH");yield return null;yield return new WaitForSeconds(.30f);yield return PoseFrame();LogClub(a,"charge");
+   Check(app.view.BeginGolfAim()&&app.view.BeginGolfSwing(42),"CLUB_CHARGE_BEGINS_AFTER_AIM");yield return null;yield return new WaitForSeconds(.30f);yield return PoseFrame();LogClub(a,"charge");
    Check(club.TwoHanded&&club.GripError<.025f&&club.State.action==GolfClubAction.Charge&&club.Elapsed>.20f,"BOTH_PALMS_STAY_ON_CLUB_GRIP_DURING_CHARGE");CaptureClub("charge");
    var head=a.visual.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mixamorig:Head");var headScale=head.localScale;app.view.mode=0;app.view.pitch=42;yield return PoseFrame();LogClub(a,"first-person");
-   Check(head.localScale.magnitude<.01f&&a.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(r=>r.enabled)&&club.TwoHanded&&club.GripError<.025f,"FIRST_PERSON_KEEPS_GRIPPING_ARMS_VISIBLE_AND_HIDES_LOCAL_HEAD");
+   Check(Vector3.Distance(head.localScale,headScale)<.0001f&&a.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(r=>r.enabled)&&club.TwoHanded&&club.GripError<.025f,"AIM_OVERRIDES_ROAM_CAMERA_AND_KEEPS_FULL_GOLFER_VISIBLE");
    if(args.Contains("-golfMatchCapture"))FindFirstObjectByType<DevelopmentProbe>()?.CaptureFrame(Path.ChangeExtension(report,"club-first-person.png"));
    app.view.mode=1;app.view.pitch=14;yield return PoseFrame();Check(Vector3.Distance(head.localScale,headScale)<.0001f,"THIRD_PERSON_RESTORES_CHARACTER_HEAD");
    app.view.CancelGolfSwing(42);yield return new WaitForSeconds(.15f);yield return PoseFrame();
@@ -194,7 +194,7 @@ namespace WhatTheFish {
    var arrow=FindObjectsByType<GolfArrowGraphic>(FindObjectsSortMode.None).Single(g=>g.name=="Your target hole");
    Check(Mathf.Abs(Mathf.DeltaAngle(arrow.transform.localEulerAngles.z,GolfTargetIndicator.Bearing(a.transform.position,match.Target(a).cup.position,180)))<.1f,"INDICATOR_USES_PRESENTED_CAMERA_INCLUDING_REVERSE_VIEW");app.view.enabled=true;
    var own=match.Ball(a);var ownSite=Floor(new Vector3(-40,0,-100));own.Place(ownSite+Vector3.up*(GolfBall.Radius+.002f),true);Place(a,ownSite+Vector3.back*.9f+Vector3.up*.04f);app.view.yaw=0;yield return new WaitForSeconds(.1f);
-   var swing=FindFirstObjectByType<GolfSwingButton>();var pointer=new PointerEventData(EventSystem.current){pointerId=17,button=PointerEventData.InputButton.Left};swing.OnPointerDown(pointer);yield return new WaitForSeconds(.08f);swing.OnPointerUp(pointer);yield return new WaitForSeconds(.15f);Check(match.Player(a).TotalStroke==2,"TOUCH_HOLD_RELEASE_COMMAND_COUNTS_ONCE");
+   Check(app.view.BeginGolfAim(),"TOUCH_TEST_ENTERS_AIM");yield return null;var swing=FindFirstObjectByType<GolfSwingButton>();var pointer=new PointerEventData(EventSystem.current){pointerId=17,button=PointerEventData.InputButton.Left};swing.OnPointerDown(pointer);yield return new WaitForSeconds(.08f);swing.OnPointerUp(pointer);yield return new WaitForSeconds(.15f);Check(match.Player(a).TotalStroke==2,"TOUCH_HOLD_RELEASE_COMMAND_COUNTS_ONCE");
    swing.OnPointerDown(pointer);yield return null;swing.OnPointerExit(pointer);swing.OnPointerUp(pointer);yield return new WaitForSeconds(.1f);Check(match.Player(a).TotalStroke==2&&!app.view.GolfCharging,"CANCELLED_TOUCH_NEVER_COUNTS");
    for(int hole=2;hole<=5;hole++)yield return Drop(ball,hole);
    Check(match.Player(b).IsFinished&&match.State.Phase==GolfMatchPhase.FinalCountdown&&match.Remaining>29&&match.Remaining<=30,"FIRST_ACTUAL_FINISH_CONTINUES_MATCH_FOR_THIRTY completed="+match.Player(b).CompletedHoleCount+" phase="+match.State.Phase+" remaining="+match.Remaining);
@@ -252,7 +252,7 @@ namespace WhatTheFish {
     CheckBallVisual(match.Ball(0));
     Check(match.State.Players.All(p=>match.Tee(p.PlayerId))&&FindObjectsByType<GolfTee>(FindObjectsSortMode.None).Length==2,"CLIENT_DISPLAYS_BOTH_PLAYERS_FIXED_OPENING_TEES");
     yield return new WaitForSeconds(.2f);Check(Athlete.Active.Where(a=>match.Player(a)!=null).All(a=>a.GolfClubMotion.Equipped),"CLIENT_SEES_CLUB_ON_EVERY_MATCH_PLAYER");
-    Check(app.view.BeginGolfSwing(42),"CLIENT_STARTS_RELIABLE_GOLF_CHARGE");yield return new WaitForSeconds(.35f);yield return PoseFrame();Check(app.LocalAthlete.GolfClubMotion.TwoHanded&&app.LocalAthlete.GolfClubMotion.GripError<.025f,"CLIENT_LOCAL_TWO_HAND_GRIP");
+    Check(app.view.BeginGolfAim(),"CLIENT_REQUESTS_AIM_LOCK");yield return new WaitForSeconds(.3f);Check(app.view.BeginGolfSwing(42),"CLIENT_STARTS_RELIABLE_GOLF_CHARGE");yield return new WaitForSeconds(.35f);yield return PoseFrame();Check(app.LocalAthlete.GolfClubMotion.TwoHanded&&app.LocalAthlete.GolfClubMotion.GripError<.025f,"CLIENT_LOCAL_TWO_HAND_GRIP");
     if(args.Contains("-golfSideSwing")){
      var actor=app.LocalAthlete;var direction=Vector3.ProjectOnPlane(match.Ball(0).Body.position-actor.transform.position,Vector3.up);
      File.AppendAllText(report,$"SIDE_ADDRESS position={actor.transform.position} ball={match.Ball(0).Body.position} yaw={actor.transform.eulerAngles.y:F3} error={Vector3.Angle(actor.transform.forward,direction):F3}\n");

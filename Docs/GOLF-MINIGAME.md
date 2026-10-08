@@ -25,44 +25,69 @@ material and tiny texture; no new ball, scoring rule or network field is added.
 - There is no global, single-hole, AFK or maximum-duration timer before the first finisher.
 - Finished players rank ahead of DNF, by total strokes ascending, then elapsed finish time ascending. Equal strokes and equal finish time share a rank and a Tie marker. DNF remains in roster order and receives no competitive rank.
 
-The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **21**; older builds cannot join this build.
+The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **37**; older builds cannot join this build.
 
 ## Controls and display
 
-Use the existing stick/WASD to move and right-side drag/right mouse to look. Approach a ball, hold **Swing / F** to charge, then release. Short charges putt; stronger charges lift the ball. Dragging off the touch button cancels that charge. F is reserved for golf swings during a live round; station travel buttons continue to use the existing group-travel checks.
+Use the existing stick/WASD to move and right-side drag/right mouse to look.
+Walk within **3 metres** of a visible, nearly stationary ball and tap **Aim / G**.
+The host checks a safe side-on stance beside that ball, including ground support,
+clearance, the path to the stance and nearby players. A blocked approach cannot
+teleport through a wall. When the side stance is obstructed, a safe stance toward
+the approach is used instead.
 
-Swing becomes available within **1.1 metres horizontally** of a visible ball,
-including close, side and rear approaches. Pressing Swing turns the golfer
-toward that ball while keeping the feet in place. Camera aim still determines
-the shot direction. The selected ball stays locked for the whole charge;
-leaving its range cancels the charge even if another ball is nearby. The
-charge duration remains 1.3 seconds. Swing strength now ranges from a 1.2 m/s
-putt to an **18 m/s horizontal launch**, with up to 1.8 m/s lift at full charge.
-The previous five-metre range cap is removed. Flight and fast rolling use normal
-physics; the existing slow rolling, slope settling and resting rules determine
-when the ball stops. Travel depends on charge, terrain, impacts and rolling
-resistance. Launch parameters are grouped in the persistent Golf Ball Physics
-Inspector asset below.
+Aim locks that selected ball and plants the golfer's feet. Movement, sprint,
+jump and cart commands cannot move the golfer out of range. Drag right/right
+mouse to adjust direction. Hold **F** (or the shot button): power repeatedly
+sweeps from 0% to 100% and back over **2.6 seconds**. Release on either sweep
+when the guide reaches the desired spot. Release uses the last displayed power
+and heading. **Cancel / X** (or Escape while aiming) cancels any charge without
+a stroke and restores walking. Dragging off the shot button cancels only the
+charge, keeping the stance. An accepted shot exits aiming; ball movement/reset,
+round end, menu/focus changes and travel clear stale locks. The host enforces the
+lock; the UI waits for acknowledgement before enabling the shot button.
+
+The shot button automatically reads **Putt** within **12 horizontal metres** of
+that ball owner's current cup and **Swing** farther away. The host fixes this mode
+when taking aim. Holding longer changes power, never shot type. Putts use
+**0.35–7.5 m/s** along the ground; swings use **3–17 m/s** horizontal speed with
+**2.8–8.5 m/s** vertical lift. A helper uses the struck ball owner's cup distance.
+
+A continuous mint/ivory path ends at one pulsing gold target. For Swing this is
+**first touchdown**, followed by normal physical run-out. For Putt it is the
+**stopping point**. The idle guide previews 30% power. No rollout diagram,
+physics readout, extra mode panel, dot trail or distance estimate is displayed.
+The existing procedural shader/material and one reusable mesh provide the effect;
+no texture, model, audio or package was added.
+
+`GolfShotPlan` sweeps the ball against the actual course colliders in 20 ms
+samples, following turf, slope and resistance for putts. The authority follows the
+same trajectory shown by the guide, then returns to ordinary Rigidbody physics
+at a swing's first impact or a putt's rest. First turf contact retains 78% of
+tangential speed, reducing excessive run-out after the higher arc. Other moving balls and gameplay
+impulses interrupt planned travel and restore physical collision response; those
+future interventions can change the result. Invalid off-course trajectories do
+not claim a ground target. Clients use the host's locked origin and mode, and
+receive the existing position/rotation snapshots.
 
 The aqua arrow continuously points toward the local player's own target hole. A gold marker shows the location and distance of their own ball, including off-screen directions. The upper-right leaderboard displays player name, completed holes out of five, total strokes, status and finish time. The final countdown remains hidden until someone finishes and displays “A player has finished!”; the first finisher is not announced as the winner. Results display ranks only after settlement.
 
-Starting a live round keeps the normal centred third-person camera. Tap
-**瞄准** beside Camera to enter the existing closer shoulder view, with the
-character on the left; tap **取消瞄准** to return. This is a local camera toggle
-and is not required to Swing. Switching camera modes, driving, leaving or
-restarting clears it. `PlayerView.golfShoulderOffset` and `golfViewDistance`
-retain the previous aiming angle and distance. First-person, elevated views
-and driving retain their existing camera rules. The
-ball's final LOD stays rendered instead of culling at a small screen size. The
-gold indicator uses a screen-space gap above the ball so its arrow does not
-cover the actual sphere, including at different camera distances.
+Starting a live round keeps the normal roaming camera. Aim temporarily uses a
+ball-centred shoulder camera from any of the three roaming modes, keeping the
+ball and guide visible. Cancel restores the selected roaming mode. Camera
+switching during aim is ignored. Driving retains its existing camera rules.
+The ball's final LOD stays rendered instead of culling at a small screen size.
+The gold ball indicator keeps a screen-space gap above the actual sphere.
 
 Live balls use one authoritative Rigidbody and sphere collider. Characters
 (including late arrivals and re-enabled controllers) and carts remain excluded.
-Only ball motion changes: `GolfBall` now uses Flying, FastRolling, SlowRolling
-and Resting. Flying keeps the existing gravity, damping and launch velocity.
-Fast slopes remain free; existing near-level rolling resistance is retained.
-Below the slow threshold on supported ground, extra tangential resistance ramps
+`GolfBall` uses Flying, FastRolling, SlowRolling
+and Resting. Outside planned shot travel, Flying uses gravity and damping.
+All supported slopes receive surface-dependent tangential resistance. Greens,
+fairways, rough and sand use 1.15, 3.3, 4.5 and 8 m/s² respectively, with smooth
+fringe transitions. Rolling spin tracks the reduced ground speed so it cannot
+restore energy removed by turf resistance.
+Below the slow threshold on supported ground, additional settling resistance ramps
 up as speed falls, and tangential gravity is cancelled. The settling speed ceiling
 converges smoothly to its configured band rather than snapping the entry speed.
 Normal-to-ground motion is preserved. Below the stop threshold continuously for
@@ -77,16 +102,22 @@ in the Project window to edit persistent Inspector settings for all match balls:
 
 | Inspector field | Default | Effect |
 | --- | ---: | --- |
-| Minimum Swing Speed | 1.2 m/s | Horizontal speed at zero charge |
-| Maximum Swing Speed | 18 m/s | Horizontal speed at full charge |
-| Maximum Swing Lift | 1.8 m/s | Vertical speed at full charge |
+| Minimum Swing Speed | 3 m/s | Swing horizontal speed at zero charge |
+| Maximum Swing Speed | 17 m/s | Horizontal speed at full charge |
+| Minimum Swing Lift | 2.8 m/s | Swing lift at zero charge |
+| Maximum Swing Lift | 8.5 m/s | Swing lift at full charge |
+| Landing Speed Retention | 0.78 | Tangential speed retained at a swing’s first turf impact |
+| Minimum Putt Speed | 0.35 m/s | Ground speed at zero charge |
+| Maximum Putt Speed | 7.5 m/s | Ground speed at full charge |
 | Slow Rolling Threshold | 2 m/s | Enter extra ground resistance below this speed |
 | Stop Speed Threshold | 0.25 m/s | Speed must remain below this before rest |
 | Stop Delay | 0.5 s | Continuous supported low-speed time needed |
 | Settling Max Speed | 1 m/s | Slow-mode speed band; entry converges smoothly |
 | Rolling Resistance Strength | 1.8 m/s² | Extra ground deceleration, ramped with slowing |
-| Level Rolling Resistance | 1.35 m/s² | Existing normal rolling on nearly level ground |
-| Level Ground Degrees | 0.5° | Existing near-level tolerance |
+| Green Resistance | 1.15 m/s² | Ground resistance on every green slope |
+| Fairway Resistance | 3.3 m/s² | Ground resistance on the fairway |
+| Rough Resistance | 4.5 m/s² | Ground resistance in the meadow |
+| Sand Resistance | 8 m/s² | Ground resistance inside bunkers |
 | External Velocity Change | 0.2 m/s | Significant new force detection during slow roll |
 | New Force Grace Period | 0.12 s | Extra resistance stays off briefly after a fresh impulse |
 
@@ -101,9 +132,9 @@ changes are detected too; stationary terrain support is not a new hit.
 
 Start testing with a light putt ending on a gentle slope: it should roll, slow,
 then remain still for at least 10 seconds. Swing again with high power to verify
-immediate release and normal flight. Repeat downhill above 2 m/s, and collide
-another ball with the resting one. Check both Host and Client views. No map,
-terrain, hole, character-movement, scoreboard or countdown settings are changed.
+immediate release and normal flight. Repeat downhill above 2 m/s to check bounded rolling, and collide
+another ball with the resting one. Check both Host and Client views. The course adjustments are described in
+[GOLF-COURSE.md](GOLF-COURSE.md); movement, scoreboard and countdown rules remain unchanged.
 
 ## Extension points
 
@@ -125,11 +156,11 @@ travelling or outside the match; restarting reuses one club per avatar.
 Input eligibility uses ball proximity rather than the previous hand pose or
 the golfer's exact facing angle. The grip adapts to the addressed ball.
 Releasing a valid shot starts the backswing-to-contact animation; the host
-applies ball velocity at 0.10 seconds. Feet stay planted through contact and
+starts authoritative shot travel at 0.10 seconds. Feet stay planted through contact and
 control resumes during follow-through. Recovery lasts 0.74 seconds and prevents
 duplicate strokes. Round changes and ball resets cancel queued contacts. Charge,
 heading, round, sequence and server start time synchronize the presentation;
-protocol 22 requires matching host/client players. Ball ownership, scoring,
+protocol 37 requires matching host/client players. Ball ownership, scoring,
 cup order and the shared final countdown retain their existing rules.
 
 See [source, regeneration and tuning](../ArtSource/Golf/Club/README.md).
@@ -145,11 +176,22 @@ See [source, regeneration and tuning](../ArtSource/Golf/Club/README.md).
 | [GolfSnapshots](../Game/Assets/_Game/Shared/Networking/GolfSnapshots.cs) | Authoritative match, player and ball network snapshots |
 | [GolfTargetIndicator](../Game/Assets/_Game/Shared/UI/GolfTargetIndicator.cs) | Local target and own-ball indicators |
 | [GolfLeaderboardUI](../Game/Assets/_Game/Shared/UI/GolfLeaderboardUI.cs) | Read-only leaderboard, countdown and results |
-| [GolfSwingButton](../Game/Assets/_Game/Shared/UI/GolfSwingButton.cs) | Touch charge/cancel, local Aim display and start/restart commands; no scoring decisions |
+| [GolfSwingButton](../Game/Assets/_Game/Shared/UI/GolfSwingButton.cs) | Aim/Cancel, automatic button label, cycling charge/release and match controls |
+| [GolfAiming](../Game/Assets/_Game/Sports/Golf/GolfAiming.cs) | Authoritative stance entry, movement lock and stale-ball cleanup |
+| [GolfAimInput](../Game/Assets/_Game/Shared/Player/GolfAimInput.cs) | Local aim request/acknowledgement, cancellation and preview lifecycle |
+| [GolfShotPlan](../Game/Assets/_Game/Sports/Golf/GolfShotPlan.cs) | Shared swept trajectory, automatic shot rules and cycling power |
+| [GolfShotPreview](../Game/Assets/_Game/Sports/Golf/GolfShotPreview.cs) | Continuous trajectory ribbon and procedural landing glow |
 
 [GolfCourse](../Game/Assets/_Game/Sports/Golf/GolfCourse.cs) retains the map's existing serialized `GolfHole` records. In play it adds a manager, which attaches lightweight capture triggers to those five cups. No scene regeneration is required. Live balls share the existing equipment ball's meshes, material and two LODs. The [supplied rounded ball](../ArtSource/Golf/Ball/README.md) is displayed and collides at **3× its previous size: 129 mm diameter, 64.5 mm radius**. `GolfBall.VisualScale` configures this relative to the unchanged 21.5 mm source-model radius. `GolfBallBuilder` scales the visual child, preserves the prefab identity and matches its sphere collider; tee height, rolling rotation and cup entry use the same radius. The existing 285 mm cups need no enlargement. Near-view dimples and a lightweight round far silhouette share their existing meshes. Native UI arrows need no texture or shader asset. Balls ignore the character's shoreline wall layer so they can actually leave the island. Character containment remains unchanged. See [map authoring](GOLF-COURSE.md) and [carts](GOLF-CART.md).
 
 ## Verification
+
+The [Shot accuracy suite](../Tools/Build/Test-GolfShot.ps1) measures actual ball
+positions against the rendered guide mesh on all five holes, for both modes
+and multiple powers. It exercises repeated charge cycles, descending release,
+mode distance boundaries, collision/impulse interruption, reset and an actual
+putt into a cup. Use `-PlayerPath` and `-Render` for captures. The Aim suite also
+checks replicated Putt mode and host/client stopping targets.
 
 The [Swing interaction suite](../Tools/Build/Test-GolfSwing.ps1) accepts
 `-PlayerPath` and `-Render`. It checks readiness from all directions, touch
@@ -177,3 +219,14 @@ cups and checks next-tee support, finish and restart. Reports and native capture
 `Builds/GolfBallPhysicsQA/`; the fixture is absent from release gameplay.
 
 Current task evidence is under ignored `Builds/GolfMiniGameQA/`. Release size and device-testing limits are recorded in [BUILD-SIZE](BUILD-SIZE.md) and [VERIFICATION](VERIFICATION.md). Windows validation does not establish physical-phone touch, quality/FPS or WAN behavior.
+
+## Aiming interaction verification
+
+Run `Tools/Build/Test-GolfAim.ps1 -Render` against a fresh development player.
+It exercises real Aim and Swing controls offline and in a host/client room:
+entry beyond the old swing range, safe stance, movement/jump/cart lock, direction
+changes, charge cancellation, restored walking, pointer ownership, single-stroke
+release, camera modes, stale-ball resets, obstruction, all five authored tees and
+round cleanup. Rendered captures include the full HUD and both putt/chip guides.
+Evidence is retained under `Builds/GolfAimQA/`. No test fixture ships in release
+play, and Windows rendering does not qualify physical Android performance.

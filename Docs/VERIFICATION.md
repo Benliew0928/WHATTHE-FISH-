@@ -1,5 +1,248 @@
 # Verification records
 
+## Golf cycling power and accurate shot guide — 9 October 2026
+
+Delivered automatic Putt/Swing modes, repeated power sweeps and one accurate
+landing/stopping guide. Aim/Cancel, stationary stance, scoring and four-island
+travel remain intact. Near the ball owner's current cup (12 horizontal metres)
+the button reads Putt; farther away it reads Swing. Only the button names the
+mode. Releasing freezes the last displayed power and heading. A continuous
+mint/ivory ribbon and pulsing gold target replace the dashed rollout and readout.
+
+The same swept trajectory drives the preview and authoritative shot. Putts
+follow turf and stop at the glow; swings end their guide at first touchdown and
+then roll physically. First turf impact retains 78% of tangential speed. A new
+ball impact or gameplay impulse interrupts planned travel and restores ordinary
+Rigidbody response. Future interference can change the outcome. No island art,
+terrain, model, texture or audio changes were made in this iteration.
+
+**1,137 passing assertions in 14 selected reports**, recorded in
+`Builds/GolfShotQA/selected-checks.json`:
+
+| Coverage | Evidence |
+| --- | --- |
+| All five holes, two modes, rendered path vs live ball, cycling/descending release, distance boundary, collision/impulse/reset, actual putt into cup | `Builds/GolfShotQA/Run-20261009-012252/` |
+| Final portable player, path with spaces, unrelated working directory | `Builds/GolfAimQA/Run-20261009-012254/` |
+| Final mobile geometry, rendered Putt/Swing captures | `Builds/GolfShotQA/Run-20261009-011310/` |
+| Offline Aim, host/client mode replication and actual putt stopping target | `Builds/GolfAimQA/Run-20261009-012254/` |
+| Close stance, touch release, club contact and two-hand grip | `Builds/GolfSwingQA/Run-20261009-005547/` |
+| Match scoring, ownership, cups, deadlines, host/client | `Builds/GolfMiniGameQA/Run-20261009-005549/` |
+| Rendered ball/tee, physical slopes, rest, forces and launch | `Builds/GolfBallPhysicsQA/Run-20261009-010437/` |
+| All-sport HUD roles and touch targets | `Builds/SportsHudQA/Reviews/Offline-20261009-012513-195/` |
+| Surface resistance and actual full shots across all five holes | `Builds/GolfPlayabilityQA/Run-20261009-005408/` |
+| Retained golf equipment and fishing rod review tools | `Builds/GolfShotQA/equipment-desktop-final/`, `rods-desktop-final/` |
+
+The selected shot cases report path/contact error rounded to **0.00000 m**;
+assertion bounds are **0.08 m for the live path** and **0.02 m at contact**.
+Host/client putts also report **0.00000 m** final error (0.08 m assertion bound).
+Full-charge shots travel **37.88–62.07 m** across the five authored tees and
+settle in **4.22–6.58 seconds**, without recovery. Mobile terrain validation
+checks **13,122** unchanged base samples (maximum error **1.78e−15 m**).
+Windows captures do not establish phone FPS, visuals or touch behavior.
+
+Earlier iterations exposed a test entering aim before the menu transition,
+an obsolete charge-dependent putt expectation, excessive full-shot run-out,
+and a retained equipment review checking the old ball radius. The test waits
+for control, checks distance-based modes, measures the actual shot path, and
+uses the current radius; landing slowdown bounds run-out. Failed iteration
+logs remain diagnostics, not final validation.
+
+**Delivery:** full Windows assets and scripts **01:22:22**, final
+AndroidSubmission **01:14:05**, all on 9 October 2026 Malaysia time. The complete
+`Builds/WindowsFinal/` player has **317 files**, including **316 matching runtime/
+support hashes**. Current equipment/rod review launchers are included, and the
+builder now regenerates them. Unity's explicitly marked non-runtime Burst text
+disassembly is archived. Desktop/mobile game assemblies match. Protocol **37**.
+Fresh APK **88,560,698 bytes**, **11,439,302 bytes** of strict-limit
+headroom; the 75 MB development target is still exceeded. Signature v2 passes;
+no Android device attached. [Size details](BUILD-SIZE.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+
+Final source hashes match **all 3,186 inputs** captured before the complete
+final desktop build. All Android production inputs are unchanged; the only
+later source difference is removal of a temporary editor-only scripts-build
+helper. A package-size audit caught that scripts-only builds can reuse the last
+mobile asset cache. The provisional player was archived and replaced with the
+fresh full desktop build; no scripts-only update followed it. Final desktop
+runtime/support files total **593,742,855 bytes** (not an APK measurement).
+
+The generated URP runtime-registration list is restored to its pre-build source.
+A format-aware YAML check confirms all 14 ball-prefab objects retain properties/
+reference topology; original generated IDs/order restored. Source and delivery
+proof is in `source-verification.json`, `prefab-equivalence.json`,
+`runtime-manifest.json` and `delivery-verification.json`.
+
+Cleanup moved eight reviewed obsolete development players (**4,764,942,952 bytes**),
+superseded deliveries/APKs, task player copies and source backups to recovery
+batches below. Active source, editable masters, shared materials, needed Unity
+metadata, current captures/reports and installed caches remain. The old golf
+readout and obsolete blended charge setting were removed in place; no new art
+asset was made obsolete. Publishable candidates contain no builds or archives.
+
+- `Legacy/20261009-005752-310-golf-shot-obsolete-players/`
+- `Legacy/20261009-005852-461-golf-shot-old-mobile/`
+- `Legacy/20261009-010100-561-golf-shot-old-android/`
+- `Legacy/20261009-010510-771-golf-shot-debug-sidecars/`
+- `Legacy/20261009-011209-356-golf-shot-validation-apk/`
+- `Legacy/20261009-011438-598-golf-shot-old-windows/`
+- `Legacy/20261009-011848-903-golf-shot-task-copies/`
+- `Legacy/20261009-012641-109-golf-shot-replaced-cache-player/`
+- `Legacy/20261009-012858-139-golf-shot-final-player-copies/`
+
+`Check-TaskReady.ps1 -RequireApk` checks the final publishable candidate set.
+Git staging, commit, push and history remain untouched. After staging, the user
+should run `Tools/Build/Check-PortablePaths.ps1 -Staged` before committing.
+
+## Golf aiming lock and shot guide — 8 October 2026
+
+Delivered a dedicated golf aiming interaction and procedural shot guide:
+
+- Aim within 3 m of a visible, nearly stationary ball. The host validates safe
+  ground, stance clearance, travel path and other players before placing feet.
+- Movement, sprint, jump and cart input cannot break the lock. Direction and
+  charge remain adjustable. Cancel / X or Escape cancels without a stroke;
+  release swings once. Another nearby ball cannot change the selected ball.
+- Ivory flight arc, dashed gold rollout estimate and endpoint rings update with
+  the same launch profile as the shot. The readout labels distance as estimated.
+- Shot camera supports all roaming camera modes, with a clear side-on stance.
+  Ball reset/movement, focus/menu changes, travel and round cleanup release locks.
+- Terrain, original art, existing physics tuning and four-island travel remain.
+
+**811 passing assertions across 12 selected reports**, plus **13,122 independent
+base-terrain samples** (maximum error 1.78e−15 m). The complete selection and
+counts are in `Builds/GolfAimQA/selected-checks.json`:
+
+| Coverage | Current evidence |
+| --- | --- |
+| Desktop Aim, input lock, cancel, release, host/client | `Builds/GolfAimQA/Run-20261008-211859/` |
+| Close approaches, club contact and two-hand grips | `Builds/GolfSwingQA/Run-20261008-211859/` |
+| Offline scoring, cups, host/client ownership and deadline | `Builds/GolfMiniGameQA/Run-20261008-212004/` |
+| Rendered ball visibility, slopes, rest, impulses and launch | `Builds/GolfBallPhysicsQA/Run-20261008-212004/` |
+| All-sport HUD roles, touch targets and control styles | `Builds/SportsHudQA/Reviews/Offline-20261008-211900-034/` |
+| Actual course charge distances and directional putts | `Builds/GolfPlayabilityQA/Run-20261008-212817/` |
+| Rendered mobile geometry Aim and putt/chip captures | `Builds/GolfAimQA/Run-20261008-212317/` |
+| Portable path with spaces, launched from unrelated working directory | `Builds/GolfAimQA/Run-20261008-212553/` |
+
+The first iterations exposed a disabled-camera HUD null reference and an
+insufficient contact margin in the initial stance. The final code guards the
+inactive view and uses a safe 0.85 m stance; both regressions pass. Earlier failed
+logs and iteration captures remain diagnostic evidence, not delivery validation.
+
+**Delivery:** full Windows build at **21:17:53 Malaysia time**, all 315 runtime
+and support files verified against both the tested candidate and portable copy,
+then promoted together to `Builds/WindowsFinal/`. The 316th file is the updated
+`LATEST-BUILD.txt`. AndroidSubmission completed **21:24:55** and independently
+verified APK v2 signing. Matching protocol **36** peers are required.
+
+**APK:** **88,531,618 → 88,554,742 bytes (+23,124)**; hard-limit headroom
+**11,445,258 bytes**. The 75 MB development target remains exceeded by
+**13,554,742 bytes**. [Hash and release](BUILD-SIZE.md#golf-aiming-lock-and-shot-guide--8-october-2026),
+[packing analysis](APK-SIZE-AUDIT.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+**Source evidence:** manifests were recorded before Windows, before mobile
+preview, before Android and after Android/final restoration. Pre-Windows/final
+match **3,180 of 3,182 inputs**. Differences are generated URP global settings
+(final matches the repository baseline) and generated golf-ball prefab object
+IDs/order. A format-aware comparison proves all 14 prefab objects retain their
+properties and reference topology across baseline, Windows, mobile and Android;
+original IDs were restored. All runtime source hashes are unchanged after the
+validated Windows build. Desktop/mobile-preview `Assembly-CSharp.dll` hashes
+match: `819EE36C31E59FC44D32DF8645230235C5BF4CE662F282442488CA5862B14451`.
+Evidence: `source-verification.json`, `prefab-equivalence.json`,
+`delivery-verification.json` and `runtime-manifest.json` under `Builds/GolfAimQA/`.
+
+**Cleanup:** reviewed obsolete output was archived with hashes and recovery paths:
+
+- `Legacy/20261008-212035-784-golf-aim-old-mobile/` — previous mobile preview.
+- `Legacy/20261008-212300-046-golf-aim-android/` — previous signed APK/output.
+- `Legacy/20261008-212908-471-golf-aim-windows/` — previous complete Windows player.
+- `Legacy/20261008-213022-394-golf-aim-player-copies/` — verified redundant candidate/portable players.
+
+Existing editable masters and active source assets remain; this change makes no
+old source asset obsolete. No staging, commit, push, reset or history rewrite.
+The repository readiness check and portable text scan pass. No physical Android
+device was attached; phone FPS, touch and visual quality remain unverified.
+The rollout guide is a terrain-aware estimate, not an exact collision simulation.
+
+## Golf playability and integrated greens — 8 October 2026
+
+Delivered the complete **316-file** Windows player in `Builds/WindowsFinal/`.
+Full build completed at **19:40:04 Malaysia time**; every one of its **315
+runtime/support files** matches the validated candidate and portable copy.
+The portable copy passed the golf playability suite from a path containing spaces
+while invoked from an unrelated working directory. Launchers and runtime folders
+are retained together. Matching **protocol 35** peers are required.
+
+The final change applies surface-dependent resistance to every supported slope,
+keeps airborne motion free of ground resistance, synchronizes rolling spin, and
+reserves the first 45% of charge for 0.65–4.5 m/s putts. Maximum shot speed is
+17 m/s with 5.2 m/s vertical lift. Scoring, permanent ball ownership, countdown,
+cart behaviour and group island travel remain intact.
+
+Five small greens are shaped inside the existing terrain, with the original
+material and UVs. Inner collider slopes measure **0.32–0.53 degrees**; sampled
+height changes at the greens stay below **0.25 m**. The near-cup plane transitions
+smoothly into the surrounding contours. Outer samples match the original terrain
+within **0.05 mm**. Hole 4 moves from (107, -80) to (111, -70); Hole 5 moves from
+(-6, 146) to (-10, 126), in island-local X/Z metres. The original cup locations
+are restored when generation starts from the FBX master. No duplicate ground
+surface, new terrain collider, texture or imported art is added. Desktop and mobile
+grass use the same green shapes and restrained irregular clearing.
+
+Selected evidence contains **1,594 PASS assertions across 15 reports**, plus
+**13,122** unchanged analytic base-terrain samples. It covers scene/prefab/repeat
+and saved-scene geometry, actual ball visibility/flight/collision/rest, all five
+tees at three charges, twenty directional putts, four surface types, offline and
+host/client scoring, carts, shoreline containment, fairway/bunker traversal,
+mobile geometry, and portable delivery. The exact report list is in
+`Builds/GolfPlayabilityQA/selected-checks.json`.
+
+On the actual course, 3 m/s putts travelled **3.18–3.46 m**, settled in
+**2.22–2.36 s**, and stayed still. Full shots from Holes 1–5 respectively travelled
+**64.06 / 36.36 / 43.19 / 37.09 / 37.37 m**, settling in **4.26–6.84 s**.
+Greater charge produced greater distance at every tee; none of these shots needed
+forced recovery. These are measured trials, not universal distance guarantees.
+A full shot deliberately overhits the short opening hole.
+
+Close views of all five greens and distant overviews were inspected in Unity;
+mobile grass and course views were inspected in the Android-geometry Windows
+player. Captures are in `Builds/GolfPlayabilityQA/Map/` and
+`Builds/GolfG2QA-20261008-194522/`. No physical Android device was attached;
+phone touch, appearance, FPS and thermals are unverified.
+
+Fresh AndroidSubmission completed at **19:48:25** and passes the hard budget
+and independent v2 signature check: **88,531,618 bytes**, **+1,680 bytes**,
+**11,468,382 bytes** of hard-limit headroom. The 75 MB target remains exceeded.
+[Size and packing](BUILD-SIZE.md#golf-playability-and-integrated-greens--8-october-2026).
+
+Source manifests were captured after the desktop build/mobile preparation and
+before Android, rather than before the first desktop import. Final/pre-Android
+hashes match **3,166 of 3,170 inputs**. Differences are generated URP settings,
+ball-material serialization, ball-prefab identifiers/order, and restoration of
+legacy Ultra MSAA after URP synchronized it from the unchanged pipeline. All 14
+ball-prefab objects preserve their properties and reference topology. Desktop and
+mobile-preview runtime assembly hashes match exactly. No gameplay code changed
+after the final builds. These source-snapshot limits are recorded in
+`Builds/GolfPlayabilityQA/source-verification.json` and `LATEST-BUILD.txt`.
+
+Earlier diagnostic runs are retained: the known headless match pose check sampled
+before LateUpdate; the rendered run passed all 135 offline assertions. A D3D12
+island wrapper reported failure after its assertions completed; the final D3D11
+rendered mobile and headless island runs passed. The island test now explicitly
+uses D3D11, consistent with the other rendered review tools.
+
+Cleanup found no unreferenced generated course terrain/grass assets; active art
+and editable masters remain in Git. Reviewed superseded output and redundant
+player copies were archived with sizes, SHA-256 and recovery paths in:
+
+- `Legacy/20261008-194208-872-golf-playability-old-preview/`
+- `Legacy/20261008-194618-455-golf-playability-android/`
+- `Legacy/20261008-195623-742-golf-playability-windows/`
+- `Legacy/20261008-195716-953-golf-playability-player-copies/`
+
+Current evidence stays in ignored `Builds/`. No staging, commit, push, reset or
+history changes were performed. Readiness checks include the actual APK budget;
+they do not substitute for device testing.
+
 ## Simple maps, round controls and resource cleanup — 8 October 2026
 
 The new plain HUD and resource cleanup pass **1,801 assertions in

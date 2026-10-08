@@ -25,7 +25,7 @@ namespace WhatTheFish {
     var bounds=BoundsOf(name);var ray=new Ray(new Vector3(bounds.center.x,bounds.min.y+1,bounds.center.z),Vector3.down);
     var hits=Physics.RaycastAll(ray,3,1<<8).Where(h=>h.collider.name.StartsWith("Terrain__")).OrderBy(h=>h.distance).ToArray();Check(hits.Length>0&&Mathf.Abs(bounds.min.y-hits[0].point.y)<.065f,name+" supported by practice terrain");
    }
-   var ball=equipment.Find("Ball");Check(ball&&ball.GetComponent<SphereCollider>()&&Mathf.Abs(ball.GetComponent<SphereCollider>().radius-.0215f)<.00001f,"ball collider radius 21.5 mm");
+   var ball=equipment.Find("Ball");Check(ball&&ball.GetComponent<SphereCollider>()&&Mathf.Abs(ball.GetComponent<SphereCollider>().radius-GolfBall.Radius)<.00001f,"ball collider matches current gameplay radius");
    app.enabled=false;app.view.enabled=false;camera=Camera.main;camera.nearClipPlane=.004f;
    foreach(var canvas in FindObjectsByType<Canvas>(FindObjectsSortMode.None))if(canvas.renderMode!=RenderMode.WorldSpace)canvas.enabled=false;
    app.LocalAthlete.gameObject.SetActive(false);yield return new WaitForSeconds(.5f);

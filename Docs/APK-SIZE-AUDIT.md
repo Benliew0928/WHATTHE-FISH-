@@ -1,5 +1,98 @@
 # APK size audit — measured release records
 
+## Golf cycling power and accurate shot guide — 9 October 2026
+
+Actual signed APK: **88,554,742 → 88,560,698 bytes
+(+5,956)**. Headroom: **11,439,302 bytes**.
+The 75 MB target remains exceeded by **13,560,698 bytes**.
+[Release/hash](BUILD-SIZE.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+
+Serialized assets grow **1,428 bytes**, from **153,636,165 to 153,637,593**.
+The reused procedural guide shader grows **1,236 serialized bytes**; two small
+script records add **184 bytes**, and the shared physics settings add **8**.
+Development-only test behavior is stripped from release; its MonoScript record
+can remain. The guide material and all island, character, prop, texture, audio
+and other rendering assets have unchanged serialized sizes.
+
+Exact compressed ZIP entries grow **5,962 bytes**; container/signing overhead
+shrinks **6 bytes**. IL2CPP adds **3,931 compressed bytes**, guide shader data
+**1,044**, and metadata **822**. The largest compressed contributors remain
+IL2CPP **11,406,190 bytes**, Unity native code **9,071,934**, metadata **2,632,590**,
+and Java code **2,353,575**. No large new dependency or duplicate asset appeared.
+The existing material loads the same guide shader; no new bitmap or model is used.
+Legacy rollout/readout code and the blended charge setting were replaced in place.
+The other sports' guides and editable authoring masters remain actively required.
+
+Evidence: `Builds/GolfShotQA/before.json`, `release.json`, `packing-summary.json`,
+`apk-entry-delta.csv`, `apk-signature.txt`, `asset-preservation.json`,
+`source-verification.json`, `size-before/` and `size-final/`.
+The earlier validation APK was archived after the final development review fix;
+these figures describe the freshly rebuilt final source.
+
+## Golf aiming lock and shot guide — 8 October 2026
+
+Actual signed APK: **88,531,618 → 88,554,742 bytes (+23,124)**.
+Hard-limit headroom: **11,445,258 bytes**. The 75 MB target remains exceeded
+by **13,554,742 bytes**. [Release/hash](BUILD-SIZE.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+Serialized assets grow **7,116 bytes**, from **153,629,049 to 153,636,165**.
+The new procedural guide shader accounts for **6,756 serialized bytes**, its
+material **80 bytes**, script records **272 bytes**, and the network athlete
+prefab **8 bytes**. Development test logic is compiled out of the release;
+its tiny MonoScript record can still appear in the packed-asset report.
+These are serialized measurements, distinct from the compressed APK.
+
+Exact compressed ZIP entries grow **22,776 bytes**, with another **348 bytes**
+of container/signing overhead. IL2CPP grows **16,605 compressed bytes**, managed
+metadata **1,349**, and Unity native code **454**; Java code is unchanged.
+The new shader data entry is **3,823 compressed bytes**. The new guide uses
+no texture or imported mesh; a single mesh is created and reused at runtime.
+
+All existing terrain, grass, character, structure, equipment and texture asset
+serialized sizes are unchanged. The previously largest retained art contributors
+remain unchanged; no large new dependency or avoidable duplicate was introduced.
+The original basketball/football guides remain active in their sports. The
+Chinese cart-label font remains required by both cart controls. No existing source
+asset was made obsolete by replacing the old camera-only Aim behavior.
+
+Evidence: `Builds/GolfAimQA/before.json`, `release.json`, `packing-summary.json`,
+`apk-entry-delta.csv`, `apk-signature.txt`, `source-verification.json`,
+`size-before/` and `size-final/`. Superseded deliveries and redundant test-player
+copies were archived; [recovery batches](VERIFICATION.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+## Golf playability and integrated greens — 8 October 2026
+
+Actual signed APK: **88,529,938 → 88,531,618 bytes (+1,680)**.
+Hard-limit headroom: **11,468,382 bytes**. The 75 MB development target is still
+exceeded by **13,531,618 bytes**. [Release/hash](BUILD-SIZE.md#golf-playability-and-integrated-greens--8-october-2026).
+
+Total serialized assets decrease **252 bytes**, from **153,629,301 to 153,629,049**.
+The combined course and original terrain decrease **372 serialized bytes**;
+their independent per-asset ZIP estimates change **1,494,590 → 1,497,012 bytes**.
+These estimates do not allocate Unity's shared compressed chunks exactly.
+The exact compressed ZIP-entry delta is **+1,680 bytes**; container/signing
+overhead is unchanged. IL2CPP grows **806 bytes**, managed metadata **258 bytes**.
+Native Unity and Java code remain unchanged.
+
+All sixteen existing terrain sectors/colliders remain. Eight sectors now reference
+active derived meshes, replacing their original sector meshes in the scene. Grass
+derivatives are desktop-only: **zero derived course grass assets are packed in
+the APK**. Android still instantiates the existing shared patch library and applies
+the same small green deformation. No new texture, imported model, material,
+shader, animation, audio or runtime package was added. The original Blender/FBX
+masters, textures, macro-colour patterns and travel components are unchanged.
+A GUID-reference scan found no unused generated terrain/grass assets. The active
+originals remain necessary for authoring and repeatable generation.
+
+The largest retained estimates remain shared timber **2.247 MB**, character
+albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.588 MB**,
+and football stadium **1.556 MB**. No unexpected large contributor or avoidable
+new dependency was found. The pre-existing 75 MB target shortfall remains.
+
+Evidence: `Builds/GolfPlayabilityQA/before.json`, `release.json`,
+`packing-summary.json`, `apk-entry-delta.csv`, `asset-estimates-final.csv`,
+`apk-signature.txt`, `unused-derived-candidates.json`, `size-before/`, `size-final/`.
+
 ## Simple maps, round controls and resource cleanup — 8 October 2026
 
 Actual signed APK: **89,894,276 → 88,529,938 bytes (−1,364,338)**.

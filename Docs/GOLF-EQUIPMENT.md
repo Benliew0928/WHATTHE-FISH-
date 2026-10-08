@@ -4,7 +4,7 @@ The Meshy ball, driver, iron and putter are reusable Unity prefabs, placed besid
 
 ## Open the actual game
 
-Run `Builds/GolfEquipment/Preview/Review-Golf-Equipment.cmd`. This retained copy of the tested Windows player opens on the equipment with seven review buttons and a walk-around option. Regeneration also writes the launcher under `Builds/WindowsFinal/`. The launcher uses a development-only camera; the models and placement are the same scene assets used by normal gameplay and the Android release. Captures under `Builds/GolfEquipment/20261001/Player-ColourCorrected/` are actual Windows player images, not generated mockups.
+Run `Builds/WindowsFinal/Review-Golf-Equipment.cmd`. The current complete Windows player opens on the equipment with seven review buttons and a walk-around option. Regeneration also writes the launcher under `Builds/WindowsFinal/`. The launcher uses a development-only camera; the models and placement are the same scene assets used by normal gameplay and the Android release. Captures under `Builds/GolfEquipment/20261001/Player-ColourCorrected/` are actual Windows player images, not generated mockups.
 
 ## Sources, fixes and limits
 

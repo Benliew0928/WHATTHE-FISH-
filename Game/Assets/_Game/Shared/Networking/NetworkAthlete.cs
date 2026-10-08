@@ -33,6 +33,8 @@ namespace WhatTheFish {
   public NetworkList<GolfPlayerRecord> GolfPlayers=new();
   public NetworkVariable<GolfBallSnapshot> GolfBall=new();
   public NetworkVariable<GolfClubState> GolfPose=new();
+  public NetworkVariable<GolfAimState> GolfAim=new();
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfAimRpc(bool enabled,ulong owner,uint round,float heading){if(IsSpawned&&GolfMatchManager.Instance)GolfMatchManager.Instance.SetAim(athlete,enabled,owner,round,heading);}
   bool sentGolfCharge;uint sentGolfRound;float sentGolfHeading;
   Athlete athlete; PlayerCommand command; float lastInput; float sendTimer;
   public override void OnNetworkSpawn(){
@@ -65,7 +67,7 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void PassChargeRpc(bool cancel,float heading,uint play){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active){if(cancel)BasketballBall.Active.CancelPassCharge(athlete,play);else BasketballBall.Active.BeginPassCharge(athlete,heading,play);}}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void PassRpc(float heading,uint play,double releasedAt,float bend){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.ReleasePassCharge(athlete,heading,play,releasedAt,bend);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void BasketballFreeRoamRpc(bool enabled){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.SetFreeRoam(athlete,enabled);}
-  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfCartRpc(GolfCartAction action,ulong cartOwner){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf)GolfCartWorld.Execute(athlete,action,cartOwner);}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfCartRpc(GolfCartAction action,ulong cartOwner){if(IsSpawned&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(athlete))&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf)GolfCartWorld.Execute(athlete,action,cartOwner);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfSwingRpc(ulong ballOwner,float heading,float charge,uint round){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf&&GolfMatchManager.Instance)GolfMatchManager.Instance.TrySwing(athlete,ballOwner,heading,charge,round);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfChargeRpc(bool charging,ulong ballOwner,float heading,uint round){if(IsSpawned&&GolfMatchManager.Instance)GolfMatchManager.Instance.SetCharging(athlete,charging,ballOwner,heading,round);}
   void Update(){if(!IsSpawned)return;

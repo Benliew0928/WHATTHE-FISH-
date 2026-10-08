@@ -54,9 +54,8 @@ namespace WhatTheFish {
    string sport=environment?environment.layout.sport:coast.basketball?"Basketball":"Football";
    var placements=environment?environment.layout.instances.Where(p=>p.module.StartsWith("Grass_")).ToArray():Array.Empty<IslandPlacement>();
    var course=golf?GetComponentInChildren<GolfCourse>(true):null;
-   // Preserve the authored meadow; clear only the actual cup opening, not a putting-green disc.
-   // Snapshot Unity transforms before starting the pure geometry worker. z stores squared clearance radius.
-   var greens=course?course.holes.Select(h=>{var p=transform.InverseTransformPoint(h.cup.position);float radius=h.cupRadius+.1f;return new Vector3(p.x,p.z,radius*radius);}).ToArray():Array.Empty<Vector3>();
+   // Pure island-local data; never access scene objects from the worker.
+   var greens=course?(GolfGreen[])course.greens.Clone():Array.Empty<GolfGreen>();
    var coastal=coast?library.coastal.Where(p=>p.sport==sport).ToArray():null;
    var patches=library.patches;cancellation=new CancellationTokenSource();var token=cancellation.Token;
    var clock=System.Diagnostics.Stopwatch.StartNew();
@@ -98,7 +97,7 @@ namespace WhatTheFish {
    }
    return cells.Values.ToList();
   }
-  static List<Cell> Generate(IslandPlacement[] placements,MobileGrassLibrary.Patch[] patches,bool golf,Vector3[] greens,CancellationToken token){
+  static List<Cell> Generate(IslandPlacement[] placements,MobileGrassLibrary.Patch[] patches,bool golf,GolfGreen[] greens,CancellationToken token){
    var cells=new Dictionary<(int,int),Cell>();int bladeNumber=0;float extent=golf?220:70;var points=new Vector3[5];
    foreach(var placement in placements){
     token.ThrowIfCancellationRequested();
@@ -111,8 +110,9 @@ namespace WhatTheFish {
      for(int i=0;i<points.Length;i++){
       var p=points[i];float x=placement.position.x+placement.scale*(p.x*cos-p.z*sin),z=placement.position.z+placement.scale*(p.x*sin+p.z*cos);
       if(golf)foreach(var bunker in Bunkers)if(BunkerDistance(x,z,bunker)<=1.02){allowed=false;break;}
-      foreach(var green in greens)if((x-green.x)*(x-green.x)+(z-green.y)*(z-green.y)<green.z){allowed=false;break;}
-      points[i]=new Vector3(x,(float)Height(x,z,golf)+p.y*placement.scale-.01f,z);
+      float ground=(float)Height(x,z,golf);
+      foreach(var green in greens){if(green.ClearsGrass(x,z))allowed=false;ground=green.Height(x,z,ground);}
+      points[i]=new Vector3(x,ground+p.y*placement.scale-.01f,z);
      }
      if(!allowed)continue;
      cell.lod[0].Add(points,blade.light);
@@ -127,6 +127,7 @@ namespace WhatTheFish {
   static double Square(double a)=>a*a;
   static double Smooth(double a,double b,double x){double t=Math.Max(0,Math.Min(1,(x-a)/(b-a)));return t*t*(3-2*t);}
   static double BunkerDistance(double x,double y,double[] b){double u=(x-b[0])*Math.Cos(b[4])+(y-b[1])*Math.Sin(b[4]),v=-(x-b[0])*Math.Sin(b[4])+(y-b[1])*Math.Cos(b[4]);return Math.Sqrt(Square(u/b[2])+Square(v/b[3]))*(1+.08*Math.Sin(Math.Atan2(v/b[3],u/b[2])*3+.6));}
+  public static float GolfSand(float x,float z){double distance=double.MaxValue;foreach(var b in Bunkers)distance=Math.Min(distance,BunkerDistance(x,z,b));return (float)(1-Smooth(.9,1.08,distance));}
   // Same analytic surfaces as build_refined_islands.py; no extra height textures.
   public static double Height(double x,double y,bool golf){
    double r=Math.Sqrt(x*x+y*y),a=Math.Atan2(golf?y:x,golf?x:y);
