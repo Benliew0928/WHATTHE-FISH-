@@ -6,12 +6,13 @@ namespace WhatTheFish {
  public sealed class BasketballDefenseButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,IInitializePotentialDragHandler,IBeginDragHandler,IDragHandler {
   public Button button;public Text label;public bool guard;
   bool pressed,jumping;int pointer;Vector2 origin;
-  void Update(){
+  void Update()=>Refresh();
+  public void Refresh(){
    var view=PlayerView.Instance;var ball=BasketballBall.Active;
    button.interactable=view&&view.active&&ball&&ball.Role(view.target)==BasketballRole.Defense&&(guard||ball.CanBlock(view.target));
    if(!button.interactable&&pressed)Clear();
-   label.fontSize=20;
-   label.text=guard?(view&&view.GuardHeld?"Guarding":"Hold Defend"+(Application.isMobilePlatform?"":" [Q]")):jumping?"Release: jump block":button.interactable?(Application.isMobilePlatform?"Block\nUP Jump Block":"Block [E]\nUP Jump Block"):"Recovering";
+   label.fontSize=22;
+   label.text=guard?(view&&view.GuardHeld?"Guarding":GameButtonStyle.Caption("Guard","Q")):jumping?"Jump block\nRelease":Application.isMobilePlatform?"Block":"Block\nE";
   }
   public void OnPointerDown(PointerEventData data){
    if(data.button!=PointerEventData.InputButton.Left||pressed||!button.interactable)return;
@@ -39,6 +40,7 @@ namespace WhatTheFish {
  }
  // Keep the slots fixed. Disabling the old handler cancels its captured finger
  // before its new role can accept a fresh pointer-down.
+ [DefaultExecutionOrder(-40)]
  public sealed class BasketballActionSlot:MonoBehaviour {
   BasketballShootButton attack;BasketballDefenseButton defense;CanvasGroup group;
   public static void Attach(Transform parent){
@@ -49,8 +51,10 @@ namespace WhatTheFish {
   }
   void Update(){
    var view=PlayerView.Instance;var role=view?view.BasketballRole:BasketballRole.Inactive;
-   bool offense=role==BasketballRole.Attack,defending=role==BasketballRole.Defense;
-   attack.enabled=offense;defense.enabled=defending;group.alpha=offense||defending?1:0;group.blocksRaycasts=offense||defending;
+   bool offense=view&&SportsPossession.Attacking(view.target,SportId.Basketball),defending=!offense&&role!=BasketballRole.Inactive;
+   bool changed=attack.enabled!=offense||defense.enabled!=defending;attack.enabled=offense;defense.enabled=defending;
+   if(changed){if(offense)attack.Refresh();else if(defending)defense.Refresh();}
+   group.alpha=offense||defending?1:0;group.blocksRaycasts=offense||defending;
   }
  }
 }

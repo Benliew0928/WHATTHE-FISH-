@@ -10,7 +10,7 @@ namespace WhatTheFish {
   void Update(){
    var view=PlayerView.Instance;var match=GolfMatchManager.Instance;
    button.interactable=view&&view.active&&match&&match.Strikeable(view.target);
-   label.text=view&&view.GolfCharging?$"Swing {Mathf.RoundToInt(view.GolfCharge*100)}%":(Application.isMobilePlatform?"Swing":"Swing [F]")+"\n"+(match&&view&&match.CanSwing(view.target)&&!button.interactable?"Move closer to ball":"Hold to charge");
+   label.text=view&&view.GolfCharging?$"Swing\n{Mathf.RoundToInt(view.GolfCharge*100)}%":match&&view&&match.CanSwing(view.target)&&!button.interactable?"Move closer":GameButtonStyle.Caption("Swing","F");
    if(holding&&(!button.interactable||!view.GolfCharging))Cancel();
    if(aimButton){aimButton.gameObject.SetActive(view&&view.CanAimGolf);aimButton.interactable=view&&view.CanAimGolf;aimLabel.text=view&&view.GolfAiming?"取消瞄准":"瞄准";}
    if(startButton){startButton.gameObject.SetActive(match&&match.Authority&&match.Context&&!match.State.Running);startButton.interactable=match&&match.CanStart;startLabel.text=match&&match.State.Phase==GolfMatchPhase.Ended?"New golf match":"Start golf match";}

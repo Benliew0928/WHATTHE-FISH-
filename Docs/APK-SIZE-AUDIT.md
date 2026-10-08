@@ -1,5 +1,98 @@
 # APK size audit — measured release records
 
+## Simple maps, round controls and resource cleanup — 8 October 2026
+
+Actual signed APK: **89,894,276 → 88,529,938 bytes (−1,364,338)**.
+Hard-limit headroom: **11,470,062 bytes**. The 75 MB development target is still
+exceeded by **13,529,938 bytes**. [Release/hash](BUILD-SIZE.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+
+Seven animation imports account for the major saving. Conservative keyframe
+reduction lowers their editor curve key count **235,550 → 68,811**. Their packed
+serialized data drops **2,676,924 bytes**; independent per-asset ZIP estimates
+drop **1,528,989 → 221,381 bytes**. Estimates are not exact allocations of the
+APK's shared compressed chunks. All 39 character transforms were compared at
+120 Hz, including endpoints, with a maximum position difference of **0.714 mm**.
+Duration and loop flags match. Original FBXs and masters are unchanged.
+
+Total serialized assets fall **156,298,585 → 153,629,301 bytes (−2,669,284)**.
+The shared built-in asset block grows **7,640 serialized bytes**; engine-selected
+dependencies remain included after removing two unused forced shader entries.
+No mesh, texture, audio or package was added. The largest retained art estimates
+remain shared timber **2.247 MB**, character albedo **1.993 MB**, golf structures
+**1.981 MB**, character mesh **1.588 MB** and football stadium **1.556 MB**.
+They are active assets, not cleanup candidates.
+
+Exact compressed ZIP entries fall **1,363,845 bytes**; signing/container overhead
+falls another **493 bytes**. IL2CPP falls **4,802 bytes**, managed metadata
+**224 bytes**. Unity native code and Java code are unchanged. The largest
+compressed entries are IL2CPP **11,384,848 bytes**, Unity **9,071,480 bytes**,
+managed metadata **2,630,161 bytes** and Java **2,353,575 bytes**.
+
+The unused imported club material was already excluded from the old APK; its
+archive is not counted as APK savings. Font licences and active runtime Resources
+are retained. [Full dependency and regeneration rationale](HUD-RESOURCE-CLEANUP.md).
+The development target still needs further deliberate optimization.
+
+Evidence: `Builds/SimpleHudQA/before.json`, `release.json`, `packing-summary.json`,
+`apk-entry-delta.csv`, both `asset-estimates-*.csv`, `animation-key-validation.csv`,
+`material-textures.tsv`, `scene-resource-dependencies.txt`, `forced-shaders.txt`,
+`unused-material-proof.json`, `apk-signature.txt`, `size-before/`, `size-final/`.
+
+## Team controls, pocket maps and Cove buttons — 8 October 2026
+
+Actual signed APK: **89,878,628 → 89,894,276 bytes (+15,648)**. Strict-limit
+headroom: **10,105,724 bytes**. The 75 MB development target remains exceeded
+by **14,894,276 bytes**. [Release and hash](BUILD-SIZE.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+
+Compressed ZIP entries grow **15,645 bytes**, plus **3 bytes** of additional
+container/signing overhead. IL2CPP grows **13,819 bytes**, managed metadata
+**1,362 bytes**, and remaining entries **464 bytes net** after equal-sized
+renamed entries cancel. Unity native code and Java code remain unchanged.
+Largest compressed entries are IL2CPP **11,389,650 bytes**, Unity native code
+**9,071,480 bytes**, managed metadata **2,630,385 bytes** and Java code
+**2,353,575 bytes**.
+
+Serialized assets grow **488 bytes** to **156,298,585 bytes**: 104 bytes for
+football action-slot metadata and 96 bytes each for the shared possession,
+button style, minimap and development-review script records. Review execution
+code is excluded from release. The maps, symbols and button faces use generated
+UI vertices and existing fonts. No imported mesh, texture, animation, shader,
+audio or package is added. Inspection found no unexpected large contributor
+or avoidable new art dependency. The existing development-target shortfall
+remains unresolved; the reserve is still constrained.
+
+Evidence under `Builds/SportsHudQA/`: `before.json`, `release.json`,
+`apk-entry-delta.csv`, `packing-summary.json`, `apk-signature.txt`,
+`size-before/`, `size-final/`, `source-windows.json`, `source-android.json`,
+`source-verification.json`, and `golf-prefab-equivalence.json`.
+
+## Football pace, stamina and pressure — 8 October 2026
+
+Actual signed APK: **89,864,908 → 89,878,628 bytes (+13,720)**. Strict-limit
+headroom: **10,121,372 bytes**. The 75 MB development target is exceeded by
+**14,878,628 bytes**. [Release and hash](BUILD-SIZE.md#football-pace-stamina-and-pressure--8-october-2026).
+
+Compressed ZIP entries grow **13,723 bytes**, offset by **3 bytes** less
+container/signing overhead. IL2CPP grows **11,627 bytes**, managed metadata
+**1,822 bytes**, and remaining entries **274 bytes net** after equal-sized
+renamed entries cancel. Unity native code is unchanged. The largest compressed
+entries are IL2CPP **11,375,831 bytes**, Unity native code **9,071,480 bytes**,
+managed metadata **2,629,023 bytes** and Java code **2,353,575 bytes**.
+
+Serialized assets grow **312 bytes** to **156,298,097 bytes**: 96 bytes for
+football effort script metadata, 104 for its HUD, 104 for development-review
+script metadata and 8 for the serialized network player. Review execution
+code is excluded from release builds. There is no new imported mesh, texture,
+animation, shader, audio or runtime package. Bars use existing UI graphics;
+pressure and faster gait use the existing rig. No unexpected large contributor
+or avoidable new art dependency was found. The pre-existing development-target
+shortfall remains unresolved and the remaining reserve is constrained.
+
+Evidence under `Builds/FootballPaceQA/`: `before.json`, `release.json`,
+`apk-entry-delta.csv`, `packing-summary.json`, `apk-signature.txt`,
+`size-before/`, `size-final/`, `source-windows.json`, `source-android.json`,
+`source-verification.json` and `golf-prefab-equivalence.json`.
+
 ## Perspective broadcast cameras — 7 October 2026
 
 Actual signed APK: **89,861,552 → 89,864,908 bytes (+3,356)**. Strict-limit

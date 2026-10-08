@@ -1,5 +1,86 @@
 # Build size — measured release records
 
+## Simple maps, round controls and resource cleanup — 8 October 2026
+
+Fresh AndroidSubmission completed at **15:14:47 Malaysia time**:
+**89,894,276 → 88,529,938 bytes (−1,364,338)**. Strict-limit headroom is
+**11,470,062 bytes**. The **75,000,000-byte development target remains exceeded
+by 13,529,938 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**96112520F055A49E1253A1D3EA720D60439105B3D382C06EF2F2B03CCB49199D**.
+
+Both maps are small bordered boards. Gameplay controls are round, text-only
+thumb targets with press/release animation and fixed hit areas. Team possession,
+automatic basketball teams, football pace/stamina and all action gestures remain.
+[HUD guide](SPORTS-HUD.md), [resource decisions](HUD-RESOURCE-CLEANUP.md),
+[packing audit](APK-SIZE-AUDIT.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+
+The complete player delivered in `Builds/WindowsFinal/` has **316 files**, including **315 runtime
+and support files** verified against a portable copy. Full assets finished at
+**15:04:47**, final scripts at **15:08:22**. Verification totals **1,801
+passing assertions in 21 selected reports**.
+[Delivery, source limits and archives](VERIFICATION.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+Evidence: `Builds/SimpleHudQA/`. Matching **protocol 34** peers are required.
+No physical Android device was attached; phone quality/FPS/touch remain unverified.
+
+## Team controls, pocket maps and Cove buttons — 8 October 2026
+
+Fresh AndroidSubmission completed at **14:12:47 Malaysia time**:
+**89,878,628 → 89,894,276 bytes (+15,648)**. Strict-limit headroom is
+**10,105,724 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,894,276 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**A56A4EBDA9A7F34C2FE63F249FDDFB9EED3BFC1FB43C213ED4CE0C691C4073DD**.
+
+Football/basketball action slots now follow team possession. Both sports have
+bottom-centre maps with blue teammates and red opponents. Basketball squads
+alternate automatically as players join. Cove button styling covers all four
+sports and Sky-Sail travel. The existing football speed/stamina changes remain.
+[Controls and design](SPORTS-HUD.md),
+[detailed packing audit](APK-SIZE-AUDIT.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+Serialized assets increase **488 bytes** to **156,298,585 bytes**, separate from
+the compressed APK measurement. No imported art or runtime package is added.
+
+The complete **316-file** Windows player is in `Builds/WindowsFinal/`.
+Full assets completed at **13:50:48**, final scripts at **14:09:56**.
+All **315 runtime/support files** match the tested candidate and portable copy.
+Selected verification totals **1,005 passing assertions in 19 reports**.
+[Coverage, source-snapshot limits and archives](VERIFICATION.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+Windows/Android manifests agree on **3,111 of 3,112 inputs**, including metadata.
+The generated Golf ball prefab differs only in IDs/order; all 14 objects retain
+their properties and reference topology. Original IDs were restored after
+format-aware verification. Matching **protocol 34** peers are required.
+No physical Android device was attached; phone qualification remains unverified.
+Evidence: `Builds/SportsHudQA/`.
+
+## Football pace, stamina and pressure — 8 October 2026
+
+Fresh AndroidSubmission completed at **13:01:42 Malaysia time**:
+**89,864,908 → 89,878,628 bytes (+13,720)**. Strict-limit headroom is
+**10,121,372 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,878,628 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**27A407964D31D0F5C0BEDC707AC48715EF35B774008D23935802E17C19FA0E1A**.
+
+Football now has 150% walking/running speed, 140% ball launch speed, stamina,
+dash, directional defensive pressure and overhead bars. It reuses existing
+UI and character assets. [Controls and tuning](FOOTBALL-PACE-AND-PRESSURE.md),
+[detailed packing audit](APK-SIZE-AUDIT.md#football-pace-stamina-and-pressure--8-october-2026).
+Serialized assets increase only **312 bytes** to **156,298,097 bytes**;
+this is separate from the compressed APK measurement.
+
+The complete **316-file** Windows player is in `Builds/WindowsFinal/`.
+Full assets completed at **12:43:12**, with final scripts at **12:57:31**.
+All **315 runtime/support files** match both the validated candidate and its
+portable copy. Selected verification totals **1,348 passing assertions in
+14 reports**. [Verification and archives](VERIFICATION.md#football-pace-stamina-and-pressure--8-october-2026).
+Windows/Android manifests agree on **3,099 of 3,100 inputs, including metadata**.
+The generated Golf ball prefab differs only in IDs/order; all 14 objects
+retain their properties and reference topology. Its original identifiers
+were restored after format-aware verification. Use matching protocol **33**
+peers. No physical Android device was available; phone qualification remains
+unverified. Evidence: `Builds/FootballPaceQA/`.
+
 ## Perspective broadcast cameras — 7 October 2026
 
 Fresh AndroidSubmission completed at **18:45:24 Malaysia time**:

@@ -32,7 +32,7 @@ namespace WhatTheFish {
    actor=app?app.LocalAthlete:null;ball=BasketballBall.Active;if(!actor||!ball){Check(false,"court initialized");Finish();yield break;}
    lane=ball.GetComponent<BasketballPassVisual>();DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    review=new GameObject("Pass review camera").AddComponent<Camera>();review.CopyFrom(Camera.main);review.enabled=false;capture&=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;
-   Check(RoomService.ProtocolVersion==32,"matching pass protocol 32");if(capture)Check(Resources.Load<Material>("BasketballPassAim").shader.isSupported,"pass shader supported by rendered player");
+   Check(RoomService.ProtocolVersion==34,"matching pass protocol 34");if(capture)Check(Resources.Load<Material>("BasketballPassAim").shader.isSupported,"pass shader supported by rendered player");
    if(app.rooms.Connected){if(ball.Authority)yield return Host();else yield return Guest();}else yield return Offline();Finish();
   }
   IEnumerator Observe(float seconds,string stage){

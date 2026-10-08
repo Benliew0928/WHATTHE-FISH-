@@ -142,6 +142,7 @@ namespace WhatTheFish {
    while(match.Now<match.State.Deadline-.06)yield return new WaitForFixedUpdate();
    actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(ball.Pitch.TransformPoint(new Vector3(0,ball.PitchBounds.max.y+.07f,-1)),ball.Pitch.rotation);actor.ResetLocomotion();actor.capsule.enabled=true;
    ball.Body.position=actor.transform.position+actor.transform.forward*.9f+Vector3.up*.25f;ball.Body.linearVelocity=actor.transform.forward*2;ball.Body.angularVelocity=new Vector3(2,3,4);Physics.SyncTransforms();
+   ball.RefreshControl(actor);Check(ball.CurrentController==actor,"POSSESSION_BEFORE_OVERTIME_CHARGE");
    Check(PlayerView.Instance.BeginKick(),"CHARGE_BEFORE_OVERTIME");uint liveRevision=match.Snapshot.revision;var actorBefore=actor.transform.position;
    while(match.State.Phase==FootballMatchPhase.Regulation)yield return new WaitForFixedUpdate();
    Check(match.State.Phase==FootballMatchPhase.Overtime&&!FootballMatch.BlocksMovement&&!FootballMatch.BlocksActions,"SEAMLESS_OVERTIME_NO_FREEZE");

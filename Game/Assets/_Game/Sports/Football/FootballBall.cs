@@ -43,7 +43,7 @@ namespace WhatTheFish {
     mustApproach.Remove(actor);
    }
    var offset=Body.position-(actor.transform.position+Vector3.up*WorldRadius);var horizontal=Vector3.ProjectOnPlane(offset,Vector3.up);
-   return horizontal.magnitude<=controlDistance&&Vector3.ProjectOnPlane(Body.position-FootPosition(actor),Vector3.up).magnitude<=footControlDistance&&Mathf.Abs(offset.y)<=.5f&&Vector3.Angle(actor.transform.forward,horizontal)<=controlAngle&&Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).magnitude<=controlSpeed&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,Body.position,1<<8,QueryTriggerInteraction.Ignore);
+   return horizontal.magnitude<=controlDistance&&Vector3.ProjectOnPlane(Body.position-FootPosition(actor),Vector3.up).magnitude<=footControlDistance&&Mathf.Abs(offset.y)<=.5f&&Vector3.Angle(actor.transform.forward,horizontal)<=controlAngle&&Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).magnitude<=controlSpeed*FootballEffort.BallPace&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,Body.position,1<<8,QueryTriggerInteraction.Ignore);
   }
   public void RefreshControl(Athlete candidate=null){
    if(!HasAuthority)return;
@@ -59,7 +59,7 @@ namespace WhatTheFish {
   public float MovementSpeed(Athlete actor,bool sprint,bool charging){
    RefreshControl(actor);
    // Charging replaces the possession penalty; both use the original base speed.
-   return charging&&InKickRange(actor)?4*chargeMovementMultiplier:(sprint?7:4)*(CurrentController==actor?dribbleMovementMultiplier:1);
+   return FootballEffort.PlayerPace*(charging&&InKickRange(actor)?4*chargeMovementMultiplier:(sprint?7:4)*(CurrentController==actor?dribbleMovementMultiplier:1));
   }
   public void ForgetPlayer(Athlete actor){if(controller==actor)ReleaseControl();mustApproach.Remove(actor);}
   void ReleaseControl(Athlete excluded=null){
@@ -69,7 +69,7 @@ namespace WhatTheFish {
   public void ReleaseFromTackle(Athlete victim,Athlete tackler,Vector3 direction){
    if(!HasAuthority||controller!=victim||!Allowed)return;
    ReleaseControl(victim);if(tackler){mustApproach.Add(tackler);tackler.GetComponent<FootballTackle>()?.ClaimBallContact();}
-   Body.WakeUp();Body.linearVelocity=Vector3.ProjectOnPlane(direction,Vector3.up).normalized*tackleBallSpeed+Vector3.up*tackleBallLift;Body.angularVelocity=Vector3.zero;impulsePending=true;
+   Body.WakeUp();Body.linearVelocity=Vector3.ProjectOnPlane(direction,Vector3.up).normalized*tackleBallSpeed*FootballEffort.BallPace+Vector3.up*tackleBallLift*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;impulsePending=true;
   }
   public Vector3 FootPosition(Athlete actor){
    var position=actor.transform.position+actor.transform.forward*Mathf.Max(footOffset,WorldRadius+(actor.capsule?actor.capsule.radius+actor.capsule.skinWidth:0)+.02f);
@@ -334,7 +334,7 @@ namespace WhatTheFish {
    float maximum=Mathf.Max(0,kickSpeed),speed=Mathf.Lerp(Mathf.Clamp(minimumKickSpeed,0,maximum),maximum,Mathf.Clamp01(charge));
    ReleaseControl(actor);impulsePending=true;Body.WakeUp();
    // Subsequent callbacks see this velocity immediately instead of stacking deferred AddForce.
-   Body.linearVelocity=direction*speed+Vector3.up*.25f;Body.angularVelocity=Vector3.zero;return true;
+   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;return true;
   }
   bool SlideContact(Athlete actor){
    if(!HasAuthority||Body.isKinematic||!Allowed||!actor||actor.Action!=FootballAction.Slide)return false;
@@ -343,9 +343,10 @@ namespace WhatTheFish {
     ReleaseControl();
     var incoming=Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up);float speed=incoming.magnitude;
     var direction=slide.Direction;Vector3 result;
-    if(speed<=tackleBallSpeed)result=Vector3.ClampMagnitude(direction*tackleBallSpeed+(incoming-direction*Vector3.Dot(incoming,direction))*.25f,tackleBallSpeed);
-    else result=Vector3.ClampMagnitude(incoming*tackleIncomingRetention+direction*Mathf.Min(tackleBallSpeed,speed*.2f),speed*Mathf.Min(.95f,tackleIncomingRetention+.2f));
-    Body.WakeUp();Body.linearVelocity=result+Vector3.up*tackleBallLift;
+    float tackleSpeed=tackleBallSpeed*FootballEffort.BallPace;
+    if(speed<=tackleSpeed)result=Vector3.ClampMagnitude(direction*tackleSpeed+(incoming-direction*Vector3.Dot(incoming,direction))*.25f,tackleSpeed);
+    else result=Vector3.ClampMagnitude(incoming*tackleIncomingRetention+direction*Mathf.Min(tackleSpeed,speed*.2f),speed*Mathf.Min(.95f,tackleIncomingRetention+.2f));
+    Body.WakeUp();Body.linearVelocity=result+Vector3.up*tackleBallLift*FootballEffort.BallPace;
     Body.angularVelocity=Vector3.Cross(Vector3.up,result)/(sphere.radius*transform.lossyScale.x);impulsePending=true;
    }
    return true; // Subsequent callbacks from the same slide cannot hit or push again.

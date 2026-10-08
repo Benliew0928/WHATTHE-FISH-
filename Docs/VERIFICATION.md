@@ -1,5 +1,190 @@
 # Verification records
 
+## Simple maps, round controls and resource cleanup — 8 October 2026
+
+The new plain HUD and resource cleanup pass **1,801 assertions in
+21 selected reports**. The exact index is
+`Builds/SimpleHudQA/selected-checks.json`.
+
+- Rendered HUD at 1280×720, 1600×720 and 1024×768: all four sports, small map
+  bounds, text-only circular controls, no button overlaps, visible press/release
+  feedback, fixed hit targets and pointer ownership. Reviewed football,
+  basketball, golf, fishing and station captures.
+- Three basketball peers: carrier, teammate, opponent and loose-ball roles;
+  team colours, alternating join teams and cancellation on possession changes.
+- Football motion/source-clip comparison, networking, stamina/pressure,
+  match authority, ball physics, kick charge/cancel and interaction regression.
+- Network basketball defense and loft/bounce pass regressions.
+- Rendered golf match: **135 passes**, including first-person club/head pose,
+  retained materials, grip, swing and ball behavior. An initial headless run
+  sampled the pose before LateUpdate and failed that visibility assertion;
+  the rendered rerun passes. Both records are preserved.
+- Complete 315-file runtime/support set matches a portable copy, which passed
+  the HUD suite when launched from an unrelated directory and a path with spaces.
+- Seven compressed clips compare all 39 transforms at 120 Hz against original
+  uncompressed imports. Timing and loop flags match; largest position difference
+  is **0.714 mm**. Runtime motion, turns, tackles and falls pass.
+
+Full Windows assets finished at **15:04:47**, final scripts at **15:08:22**.
+The recorded Windows and pre-Android snapshots agree on **3,113 retained input
+hashes**. The Windows snapshot was taken after its build and removal of the
+unused material folder's metadata; that removal does not affect runtime assets.
+Android's build
+processor subsequently regenerated 13 mobile material assets and Golf ball
+prefab identifiers. Those mobile variants belong to the Android rendering path;
+Windows uses the desktop materials. Golf's **14 objects** have equivalent
+properties and reference topology despite changed IDs/order. Original prefab
+IDs were restored after format-aware comparison. No gameplay edit followed the
+final APK. Source manifests and comparisons are in `Builds/SimpleHudQA/`.
+
+Fresh AndroidSubmission: **88,529,938 bytes**, verified APK v2 signature,
+**11,470,062 bytes** hard-limit headroom. [Measurements](BUILD-SIZE.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+The 75 MB development target remains unmet. No physical phone was attached;
+phone rendering, touch, FPS/thermals and WAN latency are unverified. Protocol **34**.
+
+Delivery and archive details are recorded in `Builds/WindowsFinal/LATEST-BUILD.txt`
+and `Builds/SimpleHudQA/delivery-verification.json`. The repository is left
+unstaged; no commit, push, reset or history rewrite is performed.
+
+The complete **316-file** Windows delivery is now in `Builds/WindowsFinal/`;
+all **315 runtime/support files** match both tested copies. Current evidence is
+retained under `Builds/`. Recovery batches:
+
+- `Legacy/20261008-150142-537-simple-hud-unused-material/` and
+  `Legacy/20261008-150842-655-simple-hud-empty-folder/`: unused imported material
+  and its empty folder/metadata.
+- `Legacy/20261008-151201-889-simple-hud-android/`: previous APK and size audit.
+- `Legacy/20261008-152539-903-simple-hud-windows-delivery/`: complete previous
+  Windows player, replaced after the user closed it. The earlier locked attempt
+  at `Legacy/20261008-152013-477-simple-hud-windows/` retained an inventory only;
+  it moved no files.
+- `Legacy/20261008-152502-293-simple-hud-qa-cleanup/` and
+  `Legacy/20261008-152653-895-simple-hud-player-copies/`: superseded captures,
+  editing helper/log and duplicate tested player copies.
+
+## Team controls, pocket maps and Cove buttons — 8 October 2026
+
+Delivered the complete Windows player and a freshly built AndroidSubmission.
+[Behavior and controls](SPORTS-HUD.md). Windows full assets finished at
+**13:50:48**, final scripts at **14:09:56** Malaysia time. All **315 runtime and
+support files** match the validated candidate and its portable copy; the
+316th file is the delivery note.
+
+Selected results: **1,005 PASS, zero selected failures, 19 reports**.
+The exact report list is `Builds/SportsHudQA/selected-checks.json`.
+
+- Final HUD checks at **1280×720**, **1600×720**, and **1024×768** cover all four
+  sports, a station card, role swaps, same-frame labels/eligibility, map bounds,
+  all active players, disabled controls and cancellation of a held touch on
+  turnover. Captures were visually reviewed. Safe-edge anchoring keeps controls
+  at the sides on wider phones and labels at the top on taller tablets.
+- A three-peer basketball review covers the carrier, same-team noncarrier,
+  opponent and loose-ball views. Teammates see offensive slots but cannot
+  shoot, steal or block another teammate's ball. Local-relative map colours
+  use the same squad relation as the rules.
+- Football match/offline/network/physics regressions: **260 + 16 + 15 + 199 +
+  26 + 17** assertions. Charge/cancel gestures, two-finger isolation, overtime,
+  attached possession, speeds, field boundaries and replicated ball state pass.
+  The overtime fixture now explicitly acquires the ball before beginning a
+  charge, matching the new possession requirement.
+- Football effort offline and host/guest checks retain faster movement, stamina,
+  dash, pressure, input expiry, teammate rejection and travel/reset cancellation.
+- Basketball host/guest defense and passing regressions pass.
+- The final Windows player also passed from a complete copy in a path containing
+  spaces, launched through the review script from an unrelated working directory.
+  Hashes confirm that the candidate, portable copy and delivered player agree.
+
+The broad gameplay regressions ran before the final change to **AppRoot HUD
+anchoring only**. The final three-aspect HUD checks, portable review and
+three-peer basketball UI review ran after that change. This source limit is
+recorded in `regression-source-delta.json`; it does not change gameplay rules.
+No gameplay code changed after Android compilation. Windows/Android manifests
+match on **3,111/3,112 inputs**, including metadata. The only difference is the
+generated Golf ball prefab: all **14 objects** have equivalent properties and
+reference topology after remapping IDs. Original identifiers were restored
+after verification, preventing an unrelated generated diff.
+
+The fresh signed APK at **14:12:47** is **89,894,276 bytes**, up **15,648 bytes**
+from **89,878,628**; hard-limit headroom is **10,105,724 bytes**. The **75 MB**
+development target is still exceeded by **14,894,276 bytes**. APK v2 signature
+verification and the AndroidSubmission budget gate pass. See
+[measured size](BUILD-SIZE.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026) and
+[packing audit](APK-SIZE-AUDIT.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+
+Current evidence is retained in ignored `Builds/SportsHudQA/`, with referenced
+football/basketball review reports in their existing ignored QA folders.
+Superseded output and temporary edit scripts were archived with explicit lists:
+
+- `Legacy/20261008-141028-211-sports-hud-android/` — previous APK, packing audit and build log.
+- `Legacy/20261008-141221-288-sports-hud-windows/` — previous complete Windows player.
+- `Legacy/20261008-141654-902-sports-hud-cleanup/` — duplicate tested players, superseded HUD captures and completed edit helpers.
+
+No physical Android device was attached. Phone touch, appearance, FPS/thermals,
+and WAN latency remain unverified. No Git staging, commit, push, reset or history
+rewrite was performed.
+
+## Football pace, stamina and pressure — 8 October 2026
+
+[Football controls and rules](FOOTBALL-PACE-AND-PRESSURE.md) now include 150%
+walking/running, 140% ball launches, host-owned stamina and dash, and directional
+pressure against opposing carriers. The complete **316-file** Windows player
+is delivered in `Builds/WindowsFinal/`; full assets completed **12:43:12** and
+final managed scripts **12:57:31 Malaysia time**. All **315 runtime/support
+files** match the candidate and portable copy, including launchers and the
+existing basketball review fixture. The build note is the remaining file.
+
+Selected evidence has **1,348 passes across 14 reports, zero failures**:
+
+| Check | Passing assertions |
+| --- | ---: |
+| New effort rules, real movement/ball physics, touch holds and visible HUD | 77 |
+| Complete portable player, default script path, spaces and unrelated working directory | 77 |
+| Host/guest dash, stamina replication, pressure, teammate immunity and expired input | 25 |
+| Football rig, fast gait, dash dribble, floor clearance, recovery and both LODs at 30/60 FPS | 606 |
+| Offline and network match rules | 290 |
+| Football physics, kicks, possession, boundaries and nets | 199 |
+| Final host/guest football ball replication | 43 |
+| Basketball shared passing regression | 31 |
+
+Reports are indexed in `Builds/FootballPaceQA/selected-checks.json`.
+Feature tuning and older test-expectation failures are retained as iteration
+evidence; the final network ball run updates the old speed expectations.
+The final assembly changes only those development-only assertions after the
+passing motion build. No gameplay code changed after APK packaging.
+
+The effort rules test 20/30/60/120 Hz drain and recovery, stationary holds,
+exhaustion/release gating, charging cancellation and pressure precedence.
+Runtime checks measure walking at **6 m/s**, running at **10.5 m/s**, dash at
+**15.225 m/s** and dash dribbling at **11.419 m/s**. Partial/full kicks are
+checked at their new speeds. Pressure tests cover facing, distance, elevation,
+world obstruction, sideways escape, retreat and non-stacking containment.
+Host/guest checks use the actual command RPC and replicated state, including
+an intentionally silent guest. Pointer identity, pointer exit, menu/reset and
+travel cancellation are checked.
+
+Rendered captures cover third person, first person and stadium cameras at
+16:9, 20:9 and 4:3. Overhead bars clear the head and separate in crowded views;
+first person retains the local meter. Final 30/60 FPS motion checks retain
+bone lengths, bounded reach and floor clearance, without relaxing existing
+joint-speed or contact-error thresholds. These are Windows checks, not phone
+FPS claims. ADB listed no connected physical device. Android touch, appearance,
+performance/thermals and WAN latency remain unverified.
+
+Fresh signed AndroidSubmission completed **13:01:42**. The measured APK is
+**89,878,628 bytes**, up **13,720**, leaving **10,121,372 bytes** below the hard
+limit; the 75 MB development target is still exceeded. The budget gate and
+independent v2 signature verification pass. [Size audit](APK-SIZE-AUDIT.md#football-pace-stamina-and-pressure--8-october-2026).
+Protocol **33** is required on all peers. Windows/Android inputs agree on
+**3,099/3,100 hashes**; format-aware comparison proves the generated Golf ball
+prefab's 14 objects and reference relationships are equivalent. Original
+prefab IDs were restored to avoid unrelated generated churn.
+
+The previous Windows player, APK and size audit were archived in
+`Legacy/20261008-125934-707-football-pace-delivery/`. Duplicate test players and
+temporary edit scripts were archived in
+`Legacy/20261008-130544-128-football-pace-cleanup/`. Current reports, captures, hashes and source manifests
+remain under ignored `Builds/`. No Git publishing action was performed.
+
 ## Perspective broadcast cameras — 7 October 2026
 
 The revised [stadium cameras](STADIUM-CAMERAS.md) use different perspective

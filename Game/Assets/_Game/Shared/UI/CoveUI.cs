@@ -109,10 +109,13 @@ namespace WhatTheFish {
  }
 
  public sealed class CoveFeedback : MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerEnterHandler,IPointerExitHandler,ISelectHandler,IDeselectHandler,ICancelHandler {
+  public float pressScale=.966f,releaseBounce=.026f;
   public CovePlate plate;Selectable control;Transform visual;bool hover,focused,held;int pointer=int.MinValue;Vector3 rest;Color tint;float pulse,bounce,scale=1;
   void Awake(){control=GetComponent<Selectable>();visual=control is Slider slider&&slider.handleRect?slider.handleRect:transform;rest=visual.localScale;if(plate)tint=plate.color;}
   void Start(){if(plate)tint=plate.color;}
+  public void UseVisual(Transform target){visual=target;rest=target.localScale;}
   public void Pulse(){pulse=.07f;bounce=.24f;}
+  public void SetTint(Color value){tint=value;if(plate)plate.color=control&&control.IsInteractable()?tint:Color.Lerp(tint,CoveUI.Cream,.6f);}
   public void OnPointerDown(PointerEventData e){if(e.button!=PointerEventData.InputButton.Left||!control||!control.IsInteractable()||pointer!=int.MinValue)return;pointer=e.pointerId;held=true;}
   public void OnPointerUp(PointerEventData e){if(e.pointerId!=pointer)return;if(held)bounce=.18f;held=false;pointer=int.MinValue;}
   public void OnPointerEnter(PointerEventData e){hover=true;}
@@ -127,7 +130,7 @@ namespace WhatTheFish {
   void Update(){
    if(!control)return;bool active=control.IsInteractable();if(!active){held=false;pointer=int.MinValue;}
    pulse=Mathf.Max(0,pulse-Time.unscaledDeltaTime);bounce=Mathf.Max(0,bounce-Time.unscaledDeltaTime);
-   float target=MenuPreferences.ReducedMotion?1:active?(held||pulse>0?.966f:bounce>0?1+.026f*Mathf.Sin(Mathf.Clamp01(bounce/.18f)*Mathf.PI):hover?1.018f:1):1;
+   float target=MenuPreferences.ReducedMotion?1:active?(held||pulse>0?pressScale:bounce>0?1+releaseBounce*Mathf.Sin(Mathf.Clamp01(bounce/.18f)*Mathf.PI):hover?1.018f:1):1;
    scale=Mathf.Lerp(scale,target,1-Mathf.Exp(-24*Time.unscaledDeltaTime));if(visual)visual.localScale=rest*scale;
    if(plate){bool newFocus=active&&focused;float pressure=held?1:0;bool changed=plate.focus!=newFocus||plate.pressure!=pressure;plate.focus=newFocus;plate.pressure=pressure;
     plate.color=!active?Color.Lerp(tint,CoveUI.Cream,.6f):held?Color.Lerp(tint,CoveUI.Ink,.12f):hover?Color.Lerp(tint,Color.white,.13f):tint;

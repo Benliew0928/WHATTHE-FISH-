@@ -24,7 +24,7 @@ namespace WhatTheFish {
     if(clientCharging&&!clientKick&&elapsed>=clientChargeStart+ball.maximumChargeTime*.5f){app.view.EndKick();clientKick=true;TurnCommand=default;Check(clientControlSeen,"CLIENT_CONTROLLER_ID_REPLICATES_WHILE_CHARGING");}
     if(snapshot.valid&&(app.rooms.Host?arranged&&!hostKick:clientCharging||clientKick)){clientTravel=Mathf.Max(clientTravel,Vector3.Distance(ball.Body.position,centre));if(app.rooms.Host&&!ball.Body.isKinematic)clientPeak=Mathf.Max(clientPeak,ball.Body.linearVelocity.magnitude);}
     if(app.rooms.Host&&!hostKick&&elapsed>start+6){
-     Check(serverChargeSeen&&chargeMovePeak>.4f&&chargeMovePeak<=.49f,"SERVER_CHARGING_MOVEMENT_PENALTY_NO_SPRINT");Record("MEASURE network chargeMovePeak="+chargeMovePeak);Check(clientTravel>2,"CLIENT_RPC_MOVES_AUTHORITATIVE_BALL");Check(clientPeak>ball.minimumKickSpeed+1&&clientPeak<ball.kickSpeed-1,"CLIENT_HALF_CHARGE_REACHES_SERVER");ball.ResetBall();centre=ball.Body.position;
+     Check(serverChargeSeen&&chargeMovePeak>.6f&&chargeMovePeak<=.735f,"SERVER_CHARGING_MOVEMENT_PENALTY_NO_SPRINT");Record("MEASURE network chargeMovePeak="+chargeMovePeak);Check(clientTravel>2,"CLIENT_RPC_MOVES_AUTHORITATIVE_BALL");Check(clientPeak>ball.minimumKickSpeed*FootballEffort.BallPace+1&&clientPeak<ball.kickSpeed*FootballEffort.BallPace-1,"CLIENT_HALF_CHARGE_REACHES_SERVER");ball.ResetBall();centre=ball.Body.position;
      foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?0:4,-.22f,p.OwnerClientId==0?-.9f:-4);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
      hostKick=true;
     }

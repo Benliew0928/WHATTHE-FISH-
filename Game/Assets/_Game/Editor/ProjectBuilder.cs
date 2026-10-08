@@ -46,7 +46,7 @@ public static partial class ProjectBuilder {
   // The animation-only FBX has one root. Retain it so curve paths match the
   // mesh FBX's RainbowSprinterRig/... hierarchy instead of starting at Hips.
   idleImporter.preserveHierarchy=true;
-  idleImporter.animationCompression=ModelImporterAnimationCompression.Off;
+  AnimationDeliveryOptimizer.Configure(idleImporter);
   var idleTakes=idleImporter.defaultClipAnimations;
   if(idleTakes.Length!=1)throw new Exception("Rainbow Sprinter idle must contain exactly one take.");
   idleTakes[0].name="Idle_Playful";idleTakes[0].loopTime=true;idleTakes[0].loopPose=false;
@@ -58,7 +58,7 @@ public static partial class ProjectBuilder {
    if(!importer)throw new Exception("Export turn_rainbow_sprinter.py before rebuilding: "+turnName);
    importer.globalScale=1;importer.useFileScale=true;importer.preserveHierarchy=true;importer.animationType=ModelImporterAnimationType.Generic;
    importer.importAnimation=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;
-   importer.animationCompression=ModelImporterAnimationCompression.Off;
+   AnimationDeliveryOptimizer.Configure(importer);
    var takes=importer.defaultClipAnimations;if(takes.Length!=1)throw new Exception("Turn must contain one take");
    takes[0].name=turnName;takes[0].loopTime=false;takes[0].loopPose=false;importer.clipAnimations=takes;importer.SaveAndReimport();
    turnClips.Add(turnName,AssetDatabase.LoadAllAssetsAtPath(turnPath).OfType<AnimationClip>().Single(c=>c.name==turnName));
@@ -68,7 +68,7 @@ public static partial class ProjectBuilder {
    var path=Root+"Art/RainbowSprinter"+name+".fbx";var importer=AssetImporter.GetAtPath(path) as ModelImporter;
    if(!importer)throw new Exception("Export tackle_rainbow_sprinter.py before rebuilding: "+name);
    importer.globalScale=1;importer.useFileScale=true;importer.preserveHierarchy=true;importer.animationType=ModelImporterAnimationType.Generic;
-   importer.importAnimation=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.animationCompression=ModelImporterAnimationCompression.Off;
+   importer.importAnimation=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;AnimationDeliveryOptimizer.Configure(importer);
    var takes=importer.defaultClipAnimations;if(takes.Length!=1)throw new Exception("Football action must have one take");
    takes[0].name=name;takes[0].loopTime=false;takes[0].loopPose=false;importer.clipAnimations=takes;importer.SaveAndReimport();
    footballClips.Add(name,AssetDatabase.LoadAllAssetsAtPath(path).OfType<AnimationClip>().Single(c=>c.name==name));
