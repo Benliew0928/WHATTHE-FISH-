@@ -1,6 +1,40 @@
 # Build size — measured release records
 
+## Integrated main — 9 October 2026
+
+Fresh AndroidSubmission completed at **15:25:34 Malaysia time**:
+**90,051,054 → 88,742,452 bytes (−1,308,602)**. Headroom to the strict
+100,000,000-byte boundary is **11,257,548 bytes**. The **75,000,000-byte
+development target remains exceeded by 13,742,452 bytes**. Budget enforcement
+and independent APK v2 signature verification pass. SHA-256:
+**C7271C20F50308032F62CA6E2CE85169B467F5C72998EE05961D115B296B8A45**.
+
+The combined source retains centre-reticle fishing, six fish per pier, clearer
+Lagoon Stickers lettering and tuned reeling, alongside teammate football
+pace/stamina/pressure, possession controls, sports maps, animation compression
+and Golf Aim/Cancel, cycling power and the physical shot guide. Matching peers
+require **protocol 38**. Four islands, shared room travel and editable art
+masters remain. [Packing audit](APK-SIZE-AUDIT.md#integrated-main--9-october-2026).
+
+A **complete full Windows build**, finished at **15:12:50**, is delivered in
+`Builds/WindowsFinal/`: **318 files**, including **317 runtime/support files**
+and its delivery note. Selected checks pass **1,504 assertions across 18
+reports**, plus a separate five-player room integration run. Earlier short
+Golf timing/distance observations failed under concurrent test load; identical
+player repeats passed, and the failed evidence remains an explicit limit.
+[Checks, source differences and cleanup](VERIFICATION.md#integrated-main--9-october-2026).
+Evidence: `Builds/Publish/20261009-131113/`.
+
+This comparison uses the actual local pre-merge fishing APK (**90,051,054
+bytes**, protocol 35). The teammate branch's **88,560,698-byte** protocol 37
+APK was a parallel branch delivery; its original records are retained below.
+Neither old APK is used as validation of the combined build. Physical Android
+visuals, touch/FPS and separate-network play remain unverified. The 75 MB
+shortfall remains unresolved; the reserve still requires deliberate optimization.
+
 ## Fishing aim and readability — 9 October 2026
+
+**Historical local fishing branch build (protocol 35), before main integration.**
 
 Fresh AndroidSubmission completed at **10:58:13 Malaysia time**:
 **90,047,202 → 90,051,054 bytes (+3,852)**. Headroom to the strict
@@ -51,6 +85,159 @@ five-player room and portable-launch checks pass. Physical Android visuals,
 touch/FPS and internet latency remain untested. [Verification](VERIFICATION.md#lagoon-stickers-fishing--9-october-2026),
 [packing audit](APK-SIZE-AUDIT.md#lagoon-stickers-fishing--9-october-2026).
 Current evidence is under `Builds/FishingUXQA/` and `Builds/FishingGameplayQA/`.
+
+## Golf cycling power and accurate shot guide — 9 October 2026
+
+**Historical teammate branch build (protocol 37), before fishing integration.**
+
+Fresh AndroidSubmission completed at **01:14:05 Malaysia time**:
+**88,554,742 → 88,560,698 bytes (+5,956)**.
+Strict-limit headroom is **11,439,302 bytes**. The
+**75,000,000-byte development target remains exceeded by 13,560,698
+bytes**. Budget enforcement and independent APK v2 signature verification pass.
+SHA-256: **F0599E23425ADC27CAF3BCFF4F7249809D9B53E914C910BE8738B203F8FDA259**.
+
+Power cycles continuously while held. The host automatically selects Putt near
+the ball owner's cup and Swing farther away. A continuous mint/ivory path ends
+at a gold glow: first touchdown for swings, stopping point for putts. Preview
+and authoritative travel share the terrain-aware trajectory. Landing slowdown
+keeps full shots bounded. No terrain, texture, model, audio or package was added.
+The existing guide shader/material is reused, and the old readout is removed.
+[Controls](GOLF-MINIGAME.md#controls-and-display),
+[packing audit](APK-SIZE-AUDIT.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+
+The complete **317-file** Windows delivery contains **316 runtime/support files**
+verified against the portable test copy. Full desktop assets and scripts built at **01:22:22**. Verification totals **1,137 passing assertions
+in 14 selected reports**, plus **13,122 unchanged base-terrain samples**.
+Matching **protocol 37** peers required. Obsolete players and backups are in
+Legacy; equipment/rod review launchers now use the complete current player.
+[Evidence and cleanup](VERIFICATION.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+No Android phone was attached; phone visuals, touch and FPS remain unverified.
+
+## Golf aiming lock and shot guide — 8 October 2026
+
+Fresh AndroidSubmission completed at **21:24:55 Malaysia time**:
+**88,531,618 → 88,554,742 bytes (+23,124)**. Strict-limit headroom is
+**11,445,258 bytes**. The **75,000,000-byte development target remains exceeded
+by 13,554,742 bytes**. Budget enforcement and independent APK v2 signing pass.
+SHA-256: **BFE19E496E6564D1284102CC04F701608B9645D7BE7F723B41BB681243E65B02**.
+
+Aim now takes a safe stance within three metres, locks movement and supports
+explicit Cancel. A procedural ivory/gold guide shows launch and estimated rollout.
+Existing island terrain and original art remain unchanged. One reusable runtime
+mesh, one shader and one material; no imported texture, model, animation or audio.
+[Controls](GOLF-MINIGAME.md#controls-and-display),
+[packing audit](APK-SIZE-AUDIT.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+The complete **316-file** Windows player is delivered in `Builds/WindowsFinal/`,
+built at **21:17:53**. All **315 runtime/support files** match the tested portable
+copy. Selected verification totals **811 passing assertions in 12 reports**,
+plus 13,122 unchanged base-terrain samples. Matching **protocol 36** peers required.
+[Evidence and archives](VERIFICATION.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+No physical Android device was attached; phone quality/FPS/touch remain unverified.
+
+## Golf playability and integrated greens — 8 October 2026
+
+Fresh AndroidSubmission completed at **19:48:25 Malaysia time**:
+**88,529,938 → 88,531,618 bytes (+1,680)**. Strict-limit headroom is
+**11,468,382 bytes**. The **75,000,000-byte development target remains exceeded
+by 13,531,618 bytes**. Budget enforcement and independent APK v2 signing pass.
+SHA-256: **1DC92C06D4E11F8A7944A23CB08E586F6309F7805B11F9941E1CD765418E8CD0**.
+
+Grounded balls receive rolling resistance on slopes, with green/fairway/rough/sand
+profiles and finer putting control. Five greens gently reshape the existing terrain;
+Holes 4 and 5 move to gentler positions. Original turf, coastline and island silhouette
+remain. No texture, model, animation, shader, audio or package was imported.
+[Course](GOLF-COURSE.md), [physics](GOLF-MINIGAME.md),
+[packing audit](APK-SIZE-AUDIT.md#golf-playability-and-integrated-greens--8-october-2026).
+
+The complete **316-file** Windows player is delivered in `Builds/WindowsFinal/`,
+built at **19:40:04**. All **315 runtime/support files** match the tested portable
+copy. Selected verification totals **1,594 passing assertions in 15 reports**,
+plus 13,122 base-terrain reference samples. Matching **protocol 35** peers required.
+[Evidence, source limits and archives](VERIFICATION.md#golf-playability-and-integrated-greens--8-october-2026).
+No physical Android device was attached; phone quality/FPS/touch remain unverified.
+
+## Simple maps, round controls and resource cleanup — 8 October 2026
+
+Fresh AndroidSubmission completed at **15:14:47 Malaysia time**:
+**89,894,276 → 88,529,938 bytes (−1,364,338)**. Strict-limit headroom is
+**11,470,062 bytes**. The **75,000,000-byte development target remains exceeded
+by 13,529,938 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**96112520F055A49E1253A1D3EA720D60439105B3D382C06EF2F2B03CCB49199D**.
+
+Both maps are small bordered boards. Gameplay controls are round, text-only
+thumb targets with press/release animation and fixed hit areas. Team possession,
+automatic basketball teams, football pace/stamina and all action gestures remain.
+[HUD guide](SPORTS-HUD.md), [resource decisions](HUD-RESOURCE-CLEANUP.md),
+[packing audit](APK-SIZE-AUDIT.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+
+The complete player delivered in `Builds/WindowsFinal/` has **316 files**, including **315 runtime
+and support files** verified against a portable copy. Full assets finished at
+**15:04:47**, final scripts at **15:08:22**. Verification totals **1,801
+passing assertions in 21 selected reports**.
+[Delivery, source limits and archives](VERIFICATION.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+Evidence: `Builds/SimpleHudQA/`. Matching **protocol 34** peers are required.
+No physical Android device was attached; phone quality/FPS/touch remain unverified.
+
+## Team controls, pocket maps and Cove buttons — 8 October 2026
+
+Fresh AndroidSubmission completed at **14:12:47 Malaysia time**:
+**89,878,628 → 89,894,276 bytes (+15,648)**. Strict-limit headroom is
+**10,105,724 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,894,276 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**A56A4EBDA9A7F34C2FE63F249FDDFB9EED3BFC1FB43C213ED4CE0C691C4073DD**.
+
+Football/basketball action slots now follow team possession. Both sports have
+bottom-centre maps with blue teammates and red opponents. Basketball squads
+alternate automatically as players join. Cove button styling covers all four
+sports and Sky-Sail travel. The existing football speed/stamina changes remain.
+[Controls and design](SPORTS-HUD.md),
+[detailed packing audit](APK-SIZE-AUDIT.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+Serialized assets increase **488 bytes** to **156,298,585 bytes**, separate from
+the compressed APK measurement. No imported art or runtime package is added.
+
+The complete **316-file** Windows player is in `Builds/WindowsFinal/`.
+Full assets completed at **13:50:48**, final scripts at **14:09:56**.
+All **315 runtime/support files** match the tested candidate and portable copy.
+Selected verification totals **1,005 passing assertions in 19 reports**.
+[Coverage, source-snapshot limits and archives](VERIFICATION.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+Windows/Android manifests agree on **3,111 of 3,112 inputs**, including metadata.
+The generated Golf ball prefab differs only in IDs/order; all 14 objects retain
+their properties and reference topology. Original IDs were restored after
+format-aware verification. Matching **protocol 34** peers are required.
+No physical Android device was attached; phone qualification remains unverified.
+Evidence: `Builds/SportsHudQA/`.
+
+## Football pace, stamina and pressure — 8 October 2026
+
+Fresh AndroidSubmission completed at **13:01:42 Malaysia time**:
+**89,864,908 → 89,878,628 bytes (+13,720)**. Strict-limit headroom is
+**10,121,372 bytes**. The **75,000,000-byte development target remains exceeded
+by 14,878,628 bytes**. The hard budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**27A407964D31D0F5C0BEDC707AC48715EF35B774008D23935802E17C19FA0E1A**.
+
+Football now has 150% walking/running speed, 140% ball launch speed, stamina,
+dash, directional defensive pressure and overhead bars. It reuses existing
+UI and character assets. [Controls and tuning](FOOTBALL-PACE-AND-PRESSURE.md),
+[detailed packing audit](APK-SIZE-AUDIT.md#football-pace-stamina-and-pressure--8-october-2026).
+Serialized assets increase only **312 bytes** to **156,298,097 bytes**;
+this is separate from the compressed APK measurement.
+
+The complete **316-file** Windows player is in `Builds/WindowsFinal/`.
+Full assets completed at **12:43:12**, with final scripts at **12:57:31**.
+All **315 runtime/support files** match both the validated candidate and its
+portable copy. Selected verification totals **1,348 passing assertions in
+14 reports**. [Verification and archives](VERIFICATION.md#football-pace-stamina-and-pressure--8-october-2026).
+Windows/Android manifests agree on **3,099 of 3,100 inputs, including metadata**.
+The generated Golf ball prefab differs only in IDs/order; all 14 objects
+retain their properties and reference topology. Its original identifiers
+were restored after format-aware verification. Use matching protocol **33**
+peers. No physical Android device was available; phone qualification remains
+unverified. Evidence: `Builds/FootballPaceQA/`.
 
 ## Simple lagoon fishing — 7 October 2026
 
@@ -151,6 +338,39 @@ their properties and reference topology. Evidence is under
 [Verification](VERIFICATION.md#stadium-camera-framing--7-october-2026).
 No physical Android device was tested.
 
+## Fresh clone validation — 7 October 2026
+
+The first local AndroidSubmission build from commit `0cbecdf` completed at
+**16:22:25 Malaysia time**. No local APK existed before setup. Compared with
+the previous documented release, **89,803,004 → 89,800,008 bytes (-2,996)**.
+Strict-limit headroom is **10,199,992 bytes**. The **75,000,000-byte development
+target remains exceeded by 14,800,008 bytes**. The hard budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**97F67F1EBD601E6A6B945439B4F75A7A4963180DCB5A0FD3A9034A31A61C1485**.
+
+This is a local setup validation build, signed with this developer's Android
+debug certificate. Package `com.umpsa.whatthefish`, version `0.3.0`, uses ARM64,
+minimum API 26 and target API 36. It does not establish store publishing or
+physical-phone qualification. [Packing audit](APK-SIZE-AUDIT.md#fresh-clone-validation--7-october-2026).
+
+The complete **15:50 Windows player** is in `Builds/WindowsFinal/`, with its
+data, runtime files and Golf/Fishing/Sky-Sail launchers together. The offline
+Storybook menu suite passed **694 assertions**, with zero failures, including
+offline gameplay handoff; its rendered menu captures were inspected. The
+complete **314-file** player has a SHA-256 inventory. Both players retain
+protocol **28**. These checks do not replace the historical sport suites,
+multiplayer testing or physical touch/FPS/thermal checks.
+
+No gameplay code, authored scenes, art or package pins were changed. Of
+**3,050** recorded Game inputs, **3,002** stayed byte-identical during the
+builds; **47** changes were line endings, and one regenerated Golf prefab
+retained all properties, reference topology and **24 incoming references**.
+The original files were restored after verification, leaving no tracked Game
+content diff. Evidence is in `Builds/LocalSetup/` and
+`Builds/StorybookMenuQA/LocalSetup-20261007/`; current packing reports are in
+`Builds/SizeAudit/latest/`. Phone and internet-room tests remain unverified on
+this laptop. No previous local APK was available for a binary entry comparison.
+
 ## Shared basketball passing — 7 October 2026
 
 Fresh AndroidSubmission completed at **16:14:52 Malaysia time**:
@@ -236,39 +456,6 @@ captures and animation preview are under `Builds/BasketballDefenseQA/`.
 [Verification and archives](VERIFICATION.md#basketball-defense--6-october-2026).
 No phone was connected; physical touch, Android appearance/FPS, thermals and
 WAN latency remain unverified.
-
-## Fresh clone validation — 7 October 2026
-
-The first local AndroidSubmission build from commit `0cbecdf` completed at
-**16:22:25 Malaysia time**. No local APK existed before setup. Compared with
-the previous documented release, **89,803,004 → 89,800,008 bytes (-2,996)**.
-Strict-limit headroom is **10,199,992 bytes**. The **75,000,000-byte development
-target remains exceeded by 14,800,008 bytes**. The hard budget gate and
-independent APK v2 signature verification pass. SHA-256:
-**97F67F1EBD601E6A6B945439B4F75A7A4963180DCB5A0FD3A9034A31A61C1485**.
-
-This is a local setup validation build, signed with this developer's Android
-debug certificate. Package `com.umpsa.whatthefish`, version `0.3.0`, uses ARM64,
-minimum API 26 and target API 36. It does not establish store publishing or
-physical-phone qualification. [Packing audit](APK-SIZE-AUDIT.md#fresh-clone-validation--7-october-2026).
-
-The complete **15:50 Windows player** is in `Builds/WindowsFinal/`, with its
-data, runtime files and Golf/Fishing/Sky-Sail launchers together. The offline
-Storybook menu suite passed **694 assertions**, with zero failures, including
-offline gameplay handoff; its rendered menu captures were inspected. The
-complete **314-file** player has a SHA-256 inventory. Both players retain
-protocol **28**. These checks do not replace the historical sport suites,
-multiplayer testing or physical touch/FPS/thermal checks.
-
-No gameplay code, authored scenes, art or package pins were changed. Of
-**3,050** recorded Game inputs, **3,002** stayed byte-identical during the
-builds; **47** changes were line endings, and one regenerated Golf prefab
-retained all properties, reference topology and **24 incoming references**.
-The original files were restored after verification, leaving no tracked Game
-content diff. Evidence is in `Builds/LocalSetup/` and
-`Builds/StorybookMenuQA/LocalSetup-20261007/`; current packing reports are in
-`Builds/SizeAudit/latest/`. Phone and internet-room tests remain unverified on
-this laptop. No previous local APK was available for a binary entry comparison.
 
 ## Untimed finishes and shot fallback — 6 October 2026
 
@@ -657,7 +844,6 @@ The interrupted initial player and old isolated APK/audit are recoverable in
 `Legacy/20261004-211127-929-golf-swing-old-clone-apk/`. Git publishing remains
 with the user.
 
-
 ## Golf wooden opening tee — 4 October 2026
 
 Opening APK: **89,000,984 bytes**. Delivered measured APK: **89,022,058 bytes
@@ -780,7 +966,6 @@ records remain in `Builds/GolfSettlingQA/archive-*.txt`. The final redundant
 isolated player is recorded in `archive-final-player-copy.txt` there.
 Git staging, commit and push remain with the user.
 
-
 ## Golf 3x ball and optional Aim — 4 October 2026
 
 Opening APK: **88,984,188 bytes**. Final measured APK: **89,000,984 bytes
@@ -866,7 +1051,6 @@ initial diagnostic player is in
 The redundant isolated final player is archived under the `golf-grip-player-copy`
 batch recorded in `Builds/GolfGripSlopeQA/archive-player-copy.txt`.
 Git staging, commit and push remain with the user.
-
 
 ## Golf ball visibility and free physics — 4 October 2026
 

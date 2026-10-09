@@ -7,24 +7,30 @@ The Golf island has five new cups with aqua flags numbered **1–5**, putting su
 | 1 — Welcome Green | Southern entrance fairway | 8 / −106 | −8 / −141 | 38 m | 3 |
 | 2 — Sand Garden | Western grassland beyond the bunkers | −103 / 10 | −22 / −46 | 98 m | 3 |
 | 3 — Winding Fairway | Northeastern grassland | 68 / 100 | −14 / 39 | 102 m | 4 |
-| 4 — Coastal Approach | Southeastern coast | 107 / −80 | 115 / 21 | 101 m | 3 |
-| 5 — High Green | Northern raised green | −6 / 146 | 8 / 55 | 92 m | 4 |
+| 4 — Coastal Approach | Southeastern coast | 111 / −70 | 115 / 21 | 91 m | 3 |
+| 5 — High Green | Northern raised green | −10 / 126 | 8 / 55 | 73 m | 4 |
 
-Coordinates use the island's local metre space. Heights are sampled from the original terrain. Distances and pars describe this compact game layout, not a regulation course. Holes 1, 2 and 3 are **161–215 m apart**; the closest pair anywhere is approximately **87 m apart**. All new greens clear the coastal promenade, bunkers and existing palm gardens.
+Coordinates use the island's local metre space. Heights are sampled from the original terrain. Distances and pars describe this compact game layout, not a regulation course. Holes 1, 2 and 3 are **161–215 m apart**; the closest pair anywhere is approximately **82 m apart**. All new greens clear the coastal promenade, bunkers and existing palm gardens.
 
 Cups are **0.285 m in diameter**, exactly **1.5×** the initial 0.19 m opening, and remain **0.18 m deep**. Each terrain opening has a collidable inner lining and recessed floor. Flagpoles are approximately 3 m high, with a shared aqua pennant and white numbers visible on both sides.
 
 ## Editing and regeneration
 
-Edit [FiveHoleCourse.json](../Game/Assets/_Game/Sports/Golf/FiveHoleCourse.json), then run **WHATTHE FISH? → Golf → Place five-hole course** in Unity. **Place, audit and capture five holes** checks the actual scene/prefab colliders and repeated generation; **Audit and capture saved five holes** reviews the serialized scene in a fresh editor without regenerating geometry. Both write Unity renders to ignored `Builds/GolfCourseRefinementQA/`. [GolfCourseBuilder](../Game/Assets/_Game/Editor/GolfCourseBuilder.cs) also runs from the ordinary refined-island generator, so rebuilding the world retains the course.
+Edit [FiveHoleCourse.json](../Game/Assets/_Game/Sports/Golf/FiveHoleCourse.json), then run **WHATTHE FISH? → Golf → Place five-hole course** in Unity. **Place, audit and capture five holes** checks the actual scene/prefab colliders and repeated generation; **Audit and capture saved five holes** reviews the serialized scene in a fresh editor without regenerating geometry. Both write Unity renders to ignored `Builds/GolfPlayabilityQA/Map/`. [GolfCourseBuilder](../Game/Assets/_Game/Editor/GolfCourseBuilder.cs) also runs from the ordinary refined-island generator, so rebuilding the world retains the course.
 
-Keep the configuration, generator, generated [course mesh/material assets](../Game/Assets/_Game/Art/Golf/FiveHoleCourse), [flag prefab](../Game/Assets/_Game/Prefabs/Golf/HoleFlag.prefab), scene, environment prefab and their `.meta` files in Git. The original Blender/FBX terrain masters remain editable and unchanged. Derived terrain sectors contain the cup openings; repeated generation restores the original terrain before cutting. Shared poles, cloth, cup floors and tee meshes reuse existing material/shader families and add no imported texture or font. **The original terrain itself is the putting surface**: it retains its `Golf_Terrain` material, texture coordinates and slopes. There is no separate green overlay or colour patch.
+Keep the configuration, generator, generated [course mesh/material assets](../Game/Assets/_Game/Art/Golf/FiveHoleCourse), [flag prefab](../Game/Assets/_Game/Prefabs/Golf/HoleFlag.prefab), scene, environment prefab and their `.meta` files in Git. The original Blender/FBX terrain masters remain editable and unchanged. Derived terrain sectors contain the cup openings; repeated generation restores the original terrain before cutting. Shared poles, cloth, cup floors and tee meshes reuse existing material/shader families and add no imported texture or font. **The existing terrain mesh remains the putting surface**: it retains its `Golf_Terrain` material and texture coordinates. Small local height adjustments give the immediate cup surrounds a gentle slope; a quintic falloff reconnects them to the original hillside. There is no separate green overlay, colour patch, new texture or additional terrain collider.
 
-Grass retains the original meadow distribution from before the five-hole addition. Only each cup's radius plus 0.10 m is cleared; the previous large circular putting-green clearings are removed. Android replaces both original and derived baked grass with the existing shared grass library; its worker snapshots the five cup positions and the same small opening clearance. The original macro-colour/control textures, terrain height function and four-island travel/streaming model are retained. Existing painted fairway and practice-green colours belong to the original map and remain intact.
+Grass keeps its meadow distribution outside the five greens. A small irregular fringe clears tall blades around the cups, and the remaining blades follow the local height adjustment. Android uses the same green records with the existing shared grass library; desktop uses derived grass meshes. The original macro-colour/control textures, base terrain height function and four-island travel/streaming model are retained. Existing painted fairway and practice-green colours belong to the original map and remain intact.
 
-This update adds map geometry and course metadata. Golf shot controls, scoring and hole progression are separate features.
+The 8 October playability update also adds surface-dependent rolling resistance and a finer putting charge range; see [gameplay tuning](GOLF-MINIGAME.md). Hole 4 moves 10.8 m onto a gentler coastal position; Hole 5 moves 20.4 m toward the raised plateau. Other cup and tee positions remain unchanged. The old positions are restored to continuous terrain when the generator starts from the original master.
 
-## Validation
+## Current playability verification
+
+Current [measured release and evidence](VERIFICATION.md#golf-playability-and-integrated-greens--8-october-2026) records inner slopes of 0.32–0.53 degrees and no new imported art.
+
+Run [Test-GolfPlayability.ps1](../Tools/Build/Test-GolfPlayability.ps1) against the current player. It measures actual rolling distances on four surface types, putts in four directions around every cup, and three charge levels from each tee. Run the existing physics, match, island and cart checks as regressions. The editor review checks inner cup slopes, surrounding collision continuity, original UVs, unchanged outer terrain and repeat generation. Mobile geometry requires its own preview checks; Windows renders do not qualify phone performance.
+
+## Earlier map validation
 
 Run the course editor review, rebuild the Windows player, then run [Test-GolfIsland.ps1](../Tools/Build/Test-GolfIsland.ps1). The golf probe checks the five numbered flags, real recessed cup floors and grounded tees alongside the existing spawn, shore, fairway, bunker, camera and island-switch checks. For Android grass geometry on Windows, build with `MobileOptimizationValidation.BuildPreview` and run the same `-golfAudit` probe against that player. Windows rendering does not establish phone quality or FPS.
 

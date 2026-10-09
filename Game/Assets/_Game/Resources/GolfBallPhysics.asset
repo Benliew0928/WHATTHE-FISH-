@@ -12,15 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3d77cd26809473d9a42d66cf15f097d, type: 3}
   m_Name: GolfBallPhysics
   m_EditorClassIdentifier:
-  minimumSwingSpeed: 1.2
-  maximumSwingSpeed: 18
-  maximumSwingLift: 1.8
+  minimumSwingSpeed: 3
+  maximumSwingSpeed: 17
+  minimumSwingLift: 2.8
+  maximumSwingLift: 8.5
+  landingSpeedRetention: 0.78
+  minimumPuttSpeed: 0.35
+  maximumPuttSpeed: 7.5
   slowRollingThreshold: 2
   stopSpeedThreshold: 0.25
   stopDelay: 0.5
   settlingMaxSpeed: 1
   rollingResistanceStrength: 1.8
-  levelRollingResistance: 1.35
-  levelGroundDegrees: 0.5
+  greenResistance: 1.15
+  fairwayResistance: 3.3
+  roughResistance: 4.5
+  sandResistance: 8
   externalVelocityChange: 0.2
   newForceGracePeriod: 0.12

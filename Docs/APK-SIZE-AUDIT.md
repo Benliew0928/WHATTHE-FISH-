@@ -1,6 +1,45 @@
 # APK size audit — measured release records
 
+## Integrated main — 9 October 2026
+
+Actual fresh signed APK: **90,051,054 → 88,742,452 bytes (−1,308,602)**.
+Strict-boundary headroom is **11,257,548 bytes**. The 75 MB development target
+remains exceeded by **13,742,452 bytes**.
+[Release, hash and baseline](BUILD-SIZE.md#integrated-main--9-october-2026).
+The comparison is against the local fishing branch APK; the teammate protocol
+37 records below describe a separate historical branch.
+
+Exact compressed ZIP entries shrink **1,308,454 bytes**, with another
+**148 bytes** less signing/container overhead. The largest compressed entries
+are IL2CPP **11,492,196 bytes**, Unity native code **9,094,267**, managed
+metadata **2,641,881** and Java **2,353,635**. These are APK-entry measurements,
+not source folder sizes or estimates of uncompressed assets.
+
+Serialized assets decrease **156,394,629 → 153,734,377 bytes (−2,660,252)**,
+a different measurement from compressed APK length. Seven shared character
+animation imports save **2,676,924 serialized bytes**: idle **1,942,528** and
+six turn/tackle clips **734,396** together. The retained import optimizer uses
+conservative keyframe reduction; original FBXs and editable masters remain.
+See [compression/dependency rationale](HUD-RESOURCE-CLEANUP.md).
+
+The original Golf terrain FBX shrinks **275,780 serialized bytes**, while
+three active derived terrain sectors add the same **275,780**. This substitutes
+delivery geometry rather than claiming the whole source terrain was removed.
+The Golf guide shader adds **7,992 serialized bytes**, its material **80**,
+and shared built-in dependencies grow **7,640**. Small script/settings changes
+account for the remaining net change. Fishing reuses its existing fish meshes,
+LODs, fonts and compressed HUD sprites. No large new art pack or runtime
+package appears in the audit. The development target is still unmet.
+
+Current evidence: `Builds/SizeAudit/latest/` and
+`Builds/Publish/20261009-131113/After/SizeAudit/`, plus `release.json`,
+`apk-entry-delta.csv`, `serialized-asset-delta.csv` and `apk-signature.txt`.
+The superseded local APK/audit is recoverable in
+`Legacy/20261009-151219-684-publish-main-before-android/`.
+
 ## Fishing aim and readability — 9 October 2026
+
+**Historical local fishing branch build (protocol 35), before main integration.**
 
 Actual signed APK: **90,047,202 → 90,051,054 bytes (+3,852)**. Headroom to
 the strict limit is **9,948,946 bytes**; the 75 MB development target remains
@@ -59,6 +98,194 @@ limited reserve. Current records: `Builds/FishingUXQA/Before/`, `After/SizeAudit
 `release.json`, `serialized-asset-delta.csv`, `apk-signature.txt`, source and
 delivery verification. The superseded intermediate APK is recoverable in
 `Legacy/20261009-015307-440-fishing-intermediate-apk/`.
+
+## Golf cycling power and accurate shot guide — 9 October 2026
+
+**Historical teammate branch build (protocol 37), before fishing integration.**
+
+Actual signed APK: **88,554,742 → 88,560,698 bytes
+(+5,956)**. Headroom: **11,439,302 bytes**.
+The 75 MB target remains exceeded by **13,560,698 bytes**.
+[Release/hash](BUILD-SIZE.md#golf-cycling-power-and-accurate-shot-guide--9-october-2026).
+
+Serialized assets grow **1,428 bytes**, from **153,636,165 to 153,637,593**.
+The reused procedural guide shader grows **1,236 serialized bytes**; two small
+script records add **184 bytes**, and the shared physics settings add **8**.
+Development-only test behavior is stripped from release; its MonoScript record
+can remain. The guide material and all island, character, prop, texture, audio
+and other rendering assets have unchanged serialized sizes.
+
+Exact compressed ZIP entries grow **5,962 bytes**; container/signing overhead
+shrinks **6 bytes**. IL2CPP adds **3,931 compressed bytes**, guide shader data
+**1,044**, and metadata **822**. The largest compressed contributors remain
+IL2CPP **11,406,190 bytes**, Unity native code **9,071,934**, metadata **2,632,590**,
+and Java code **2,353,575**. No large new dependency or duplicate asset appeared.
+The existing material loads the same guide shader; no new bitmap or model is used.
+Legacy rollout/readout code and the blended charge setting were replaced in place.
+The other sports' guides and editable authoring masters remain actively required.
+
+Evidence: `Builds/GolfShotQA/before.json`, `release.json`, `packing-summary.json`,
+`apk-entry-delta.csv`, `apk-signature.txt`, `asset-preservation.json`,
+`source-verification.json`, `size-before/` and `size-final/`.
+The earlier validation APK was archived after the final development review fix;
+these figures describe the freshly rebuilt final source.
+
+## Golf aiming lock and shot guide — 8 October 2026
+
+Actual signed APK: **88,531,618 → 88,554,742 bytes (+23,124)**.
+Hard-limit headroom: **11,445,258 bytes**. The 75 MB target remains exceeded
+by **13,554,742 bytes**. [Release/hash](BUILD-SIZE.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+Serialized assets grow **7,116 bytes**, from **153,629,049 to 153,636,165**.
+The new procedural guide shader accounts for **6,756 serialized bytes**, its
+material **80 bytes**, script records **272 bytes**, and the network athlete
+prefab **8 bytes**. Development test logic is compiled out of the release;
+its tiny MonoScript record can still appear in the packed-asset report.
+These are serialized measurements, distinct from the compressed APK.
+
+Exact compressed ZIP entries grow **22,776 bytes**, with another **348 bytes**
+of container/signing overhead. IL2CPP grows **16,605 compressed bytes**, managed
+metadata **1,349**, and Unity native code **454**; Java code is unchanged.
+The new shader data entry is **3,823 compressed bytes**. The new guide uses
+no texture or imported mesh; a single mesh is created and reused at runtime.
+
+All existing terrain, grass, character, structure, equipment and texture asset
+serialized sizes are unchanged. The previously largest retained art contributors
+remain unchanged; no large new dependency or avoidable duplicate was introduced.
+The original basketball/football guides remain active in their sports. The
+Chinese cart-label font remains required by both cart controls. No existing source
+asset was made obsolete by replacing the old camera-only Aim behavior.
+
+Evidence: `Builds/GolfAimQA/before.json`, `release.json`, `packing-summary.json`,
+`apk-entry-delta.csv`, `apk-signature.txt`, `source-verification.json`,
+`size-before/` and `size-final/`. Superseded deliveries and redundant test-player
+copies were archived; [recovery batches](VERIFICATION.md#golf-aiming-lock-and-shot-guide--8-october-2026).
+
+## Golf playability and integrated greens — 8 October 2026
+
+Actual signed APK: **88,529,938 → 88,531,618 bytes (+1,680)**.
+Hard-limit headroom: **11,468,382 bytes**. The 75 MB development target is still
+exceeded by **13,531,618 bytes**. [Release/hash](BUILD-SIZE.md#golf-playability-and-integrated-greens--8-october-2026).
+
+Total serialized assets decrease **252 bytes**, from **153,629,301 to 153,629,049**.
+The combined course and original terrain decrease **372 serialized bytes**;
+their independent per-asset ZIP estimates change **1,494,590 → 1,497,012 bytes**.
+These estimates do not allocate Unity's shared compressed chunks exactly.
+The exact compressed ZIP-entry delta is **+1,680 bytes**; container/signing
+overhead is unchanged. IL2CPP grows **806 bytes**, managed metadata **258 bytes**.
+Native Unity and Java code remain unchanged.
+
+All sixteen existing terrain sectors/colliders remain. Eight sectors now reference
+active derived meshes, replacing their original sector meshes in the scene. Grass
+derivatives are desktop-only: **zero derived course grass assets are packed in
+the APK**. Android still instantiates the existing shared patch library and applies
+the same small green deformation. No new texture, imported model, material,
+shader, animation, audio or runtime package was added. The original Blender/FBX
+masters, textures, macro-colour patterns and travel components are unchanged.
+A GUID-reference scan found no unused generated terrain/grass assets. The active
+originals remain necessary for authoring and repeatable generation.
+
+The largest retained estimates remain shared timber **2.247 MB**, character
+albedo **1.993 MB**, golf structures **1.981 MB**, character mesh **1.588 MB**,
+and football stadium **1.556 MB**. No unexpected large contributor or avoidable
+new dependency was found. The pre-existing 75 MB target shortfall remains.
+
+Evidence: `Builds/GolfPlayabilityQA/before.json`, `release.json`,
+`packing-summary.json`, `apk-entry-delta.csv`, `asset-estimates-final.csv`,
+`apk-signature.txt`, `unused-derived-candidates.json`, `size-before/`, `size-final/`.
+
+## Simple maps, round controls and resource cleanup — 8 October 2026
+
+Actual signed APK: **89,894,276 → 88,529,938 bytes (−1,364,338)**.
+Hard-limit headroom: **11,470,062 bytes**. The 75 MB development target is still
+exceeded by **13,529,938 bytes**. [Release/hash](BUILD-SIZE.md#simple-maps-round-controls-and-resource-cleanup--8-october-2026).
+
+Seven animation imports account for the major saving. Conservative keyframe
+reduction lowers their editor curve key count **235,550 → 68,811**. Their packed
+serialized data drops **2,676,924 bytes**; independent per-asset ZIP estimates
+drop **1,528,989 → 221,381 bytes**. Estimates are not exact allocations of the
+APK's shared compressed chunks. All 39 character transforms were compared at
+120 Hz, including endpoints, with a maximum position difference of **0.714 mm**.
+Duration and loop flags match. Original FBXs and masters are unchanged.
+
+Total serialized assets fall **156,298,585 → 153,629,301 bytes (−2,669,284)**.
+The shared built-in asset block grows **7,640 serialized bytes**; engine-selected
+dependencies remain included after removing two unused forced shader entries.
+No mesh, texture, audio or package was added. The largest retained art estimates
+remain shared timber **2.247 MB**, character albedo **1.993 MB**, golf structures
+**1.981 MB**, character mesh **1.588 MB** and football stadium **1.556 MB**.
+They are active assets, not cleanup candidates.
+
+Exact compressed ZIP entries fall **1,363,845 bytes**; signing/container overhead
+falls another **493 bytes**. IL2CPP falls **4,802 bytes**, managed metadata
+**224 bytes**. Unity native code and Java code are unchanged. The largest
+compressed entries are IL2CPP **11,384,848 bytes**, Unity **9,071,480 bytes**,
+managed metadata **2,630,161 bytes** and Java **2,353,575 bytes**.
+
+The unused imported club material was already excluded from the old APK; its
+archive is not counted as APK savings. Font licences and active runtime Resources
+are retained. [Full dependency and regeneration rationale](HUD-RESOURCE-CLEANUP.md).
+The development target still needs further deliberate optimization.
+
+Evidence: `Builds/SimpleHudQA/before.json`, `release.json`, `packing-summary.json`,
+`apk-entry-delta.csv`, both `asset-estimates-*.csv`, `animation-key-validation.csv`,
+`material-textures.tsv`, `scene-resource-dependencies.txt`, `forced-shaders.txt`,
+`unused-material-proof.json`, `apk-signature.txt`, `size-before/`, `size-final/`.
+
+## Team controls, pocket maps and Cove buttons — 8 October 2026
+
+Actual signed APK: **89,878,628 → 89,894,276 bytes (+15,648)**. Strict-limit
+headroom: **10,105,724 bytes**. The 75 MB development target remains exceeded
+by **14,894,276 bytes**. [Release and hash](BUILD-SIZE.md#team-controls-pocket-maps-and-cove-buttons--8-october-2026).
+
+Compressed ZIP entries grow **15,645 bytes**, plus **3 bytes** of additional
+container/signing overhead. IL2CPP grows **13,819 bytes**, managed metadata
+**1,362 bytes**, and remaining entries **464 bytes net** after equal-sized
+renamed entries cancel. Unity native code and Java code remain unchanged.
+Largest compressed entries are IL2CPP **11,389,650 bytes**, Unity native code
+**9,071,480 bytes**, managed metadata **2,630,385 bytes** and Java code
+**2,353,575 bytes**.
+
+Serialized assets grow **488 bytes** to **156,298,585 bytes**: 104 bytes for
+football action-slot metadata and 96 bytes each for the shared possession,
+button style, minimap and development-review script records. Review execution
+code is excluded from release. The maps, symbols and button faces use generated
+UI vertices and existing fonts. No imported mesh, texture, animation, shader,
+audio or package is added. Inspection found no unexpected large contributor
+or avoidable new art dependency. The existing development-target shortfall
+remains unresolved; the reserve is still constrained.
+
+Evidence under `Builds/SportsHudQA/`: `before.json`, `release.json`,
+`apk-entry-delta.csv`, `packing-summary.json`, `apk-signature.txt`,
+`size-before/`, `size-final/`, `source-windows.json`, `source-android.json`,
+`source-verification.json`, and `golf-prefab-equivalence.json`.
+
+## Football pace, stamina and pressure — 8 October 2026
+
+Actual signed APK: **89,864,908 → 89,878,628 bytes (+13,720)**. Strict-limit
+headroom: **10,121,372 bytes**. The 75 MB development target is exceeded by
+**14,878,628 bytes**. [Release and hash](BUILD-SIZE.md#football-pace-stamina-and-pressure--8-october-2026).
+
+Compressed ZIP entries grow **13,723 bytes**, offset by **3 bytes** less
+container/signing overhead. IL2CPP grows **11,627 bytes**, managed metadata
+**1,822 bytes**, and remaining entries **274 bytes net** after equal-sized
+renamed entries cancel. Unity native code is unchanged. The largest compressed
+entries are IL2CPP **11,375,831 bytes**, Unity native code **9,071,480 bytes**,
+managed metadata **2,629,023 bytes** and Java code **2,353,575 bytes**.
+
+Serialized assets grow **312 bytes** to **156,298,097 bytes**: 96 bytes for
+football effort script metadata, 104 for its HUD, 104 for development-review
+script metadata and 8 for the serialized network player. Review execution
+code is excluded from release builds. There is no new imported mesh, texture,
+animation, shader, audio or runtime package. Bars use existing UI graphics;
+pressure and faster gait use the existing rig. No unexpected large contributor
+or avoidable new art dependency was found. The pre-existing development-target
+shortfall remains unresolved and the remaining reserve is constrained.
+
+Evidence under `Builds/FootballPaceQA/`: `before.json`, `release.json`,
+`apk-entry-delta.csv`, `packing-summary.json`, `apk-signature.txt`,
+`size-before/`, `size-final/`, `source-windows.json`, `source-android.json`,
+`source-verification.json` and `golf-prefab-equivalence.json`.
 
 ## Simple lagoon fishing — 7 October 2026
 
@@ -160,6 +387,37 @@ Evidence under `Builds/StadiumCameraQA/`: `before.json`, `release.json`,
 `size-before/`, `size-final/`, `source-windows.csv`, `source-android.json`,
 `source-verification.json` and `inputs-since-previous-apk.json`.
 
+## Fresh clone validation — 7 October 2026
+
+Actual new APK: **89,800,008 bytes**, compared with the previous documented
+**89,803,004 bytes (-2,996)**. Hard-limit headroom is **10,199,992 bytes**;
+the 75 MB development target is exceeded by **14,800,008 bytes**.
+[Build, signature and source limits](BUILD-SIZE.md#fresh-clone-validation--7-october-2026).
+No previous APK existed locally, so an exact entry-by-entry delta is unavailable.
+
+The largest compressed entries are IL2CPP **11,313,392 bytes**, Unity native
+code **9,071,018 bytes**, managed metadata **2,620,296 bytes** and Java code
+**2,353,635 bytes**. Serialized assets total **156,285,329 bytes**, 92 bytes
+above the historical report; this is separate from compressed APK length.
+No new gameplay code, asset or dependency was introduced by local setup, and
+the new measured APK has no overall growth. Resources-only dependencies
+include the existing Golf equipment and menu assets; that report alone is not
+evidence that those assets are unused.
+
+Current per-asset DEFLATE estimates lead with timber **2.258 MB**, Golf
+structures **2.112 MB**, character albedo **2.006 MB**, character mesh
+**1.718 MB**, football stadium **1.568 MB**, basketball stadium **1.373 MB**
+and idle animation **1.088 MB**. These estimates do not partition shared APK
+chunks exactly and are not exact before/after asset deltas. The 75 MB target
+remains unmet; the existing development reserve is constrained.
+
+Evidence: `Builds/LocalSetup/apk-before.json`, `apk-release.json`,
+`apk-signature.txt`, `apk-badging.txt`, `asset-estimates.csv`,
+`generated-input-verification.json`, `source-reconciliation.json` and
+`windows-player-files.json`, plus `Builds/SizeAudit/latest/`. The AndroidSubmission
+gate and independent v2 signature verification passed. Physical-phone testing
+and fresh internet-room testing remain pending.
+
 ## Shared basketball passing — 7 October 2026
 
 Actual signed APK: **89,829,116 → 89,847,792 bytes (+18,676)**. Hard-limit
@@ -236,37 +494,6 @@ Evidence under `Builds/BasketballDefenseQA/`: `before.json`, `release.json`,
 `apk-before-entries.json`, `apk-entry-delta.csv`, `packing-summary.json`,
 `apk-signature.txt`, `BeforeSizeAudit/`, `FinalSizeAudit/` and
 `generated-input-verification.json`.
-
-## Fresh clone validation — 7 October 2026
-
-Actual new APK: **89,800,008 bytes**, compared with the previous documented
-**89,803,004 bytes (-2,996)**. Hard-limit headroom is **10,199,992 bytes**;
-the 75 MB development target is exceeded by **14,800,008 bytes**.
-[Build, signature and source limits](BUILD-SIZE.md#fresh-clone-validation--7-october-2026).
-No previous APK existed locally, so an exact entry-by-entry delta is unavailable.
-
-The largest compressed entries are IL2CPP **11,313,392 bytes**, Unity native
-code **9,071,018 bytes**, managed metadata **2,620,296 bytes** and Java code
-**2,353,635 bytes**. Serialized assets total **156,285,329 bytes**, 92 bytes
-above the historical report; this is separate from compressed APK length.
-No new gameplay code, asset or dependency was introduced by local setup, and
-the new measured APK has no overall growth. Resources-only dependencies
-include the existing Golf equipment and menu assets; that report alone is not
-evidence that those assets are unused.
-
-Current per-asset DEFLATE estimates lead with timber **2.258 MB**, Golf
-structures **2.112 MB**, character albedo **2.006 MB**, character mesh
-**1.718 MB**, football stadium **1.568 MB**, basketball stadium **1.373 MB**
-and idle animation **1.088 MB**. These estimates do not partition shared APK
-chunks exactly and are not exact before/after asset deltas. The 75 MB target
-remains unmet; the existing development reserve is constrained.
-
-Evidence: `Builds/LocalSetup/apk-before.json`, `apk-release.json`,
-`apk-signature.txt`, `apk-badging.txt`, `asset-estimates.csv`,
-`generated-input-verification.json`, `source-reconciliation.json` and
-`windows-player-files.json`, plus `Builds/SizeAudit/latest/`. The AndroidSubmission
-gate and independent v2 signature verification passed. Physical-phone testing
-and fresh internet-room testing remain pending.
 
 ## Untimed finishes and shot fallback — 6 October 2026
 
@@ -587,7 +814,6 @@ Current fresh audit: `Builds/SizeAudit/latest/`; exact retained audit and APK:
 [release and archives](BUILD-SIZE.md#reliable-golf-swing-proximity--4-october-2026)
 and [feature checks](VERIFICATION.md#reliable-golf-swing-proximity--4-october-2026).
 
-
 ## Golf wooden opening tee — 4 October 2026
 
 Measured APK: **89,000,984 → 89,022,058 bytes (+21,074)**. Strict-limit
@@ -676,7 +902,6 @@ cart/locomotion changes are outside this original-map snapshot. See
 [hash, input scope and delivery](BUILD-SIZE.md#golf-slope-settling-and-resting--4-october-2026)
 and [physics and gameplay checks](VERIFICATION.md#golf-slope-settling-and-resting--4-october-2026).
 
-
 ## Golf 3x ball and optional Aim — 4 October 2026
 
 Fresh APK: **89,000,984 bytes**, **+16,796** from the recorded **88,984,188-byte**
@@ -728,7 +953,6 @@ Retained fresh audit: `Builds/GolfGripSlopeQA/Release/SizeAudit/`; shared audit:
 `Builds/SizeAudit/latest/`. See
 [hash, snapshot scope and archives](BUILD-SIZE.md#golf-closed-grip-and-raised-carry-angle--4-october-2026)
 and [172-check gameplay verification](VERIFICATION.md#golf-closed-grip-and-raised-carry-angle--4-october-2026).
-
 
 ## Golf ball visibility and free physics — 4 October 2026
 

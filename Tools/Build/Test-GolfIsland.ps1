@@ -4,7 +4,7 @@ $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $out=Join-Path $root ('Builds\GolfG2QA-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out | Out-Null
 if(-not $PlayerPath){$PlayerPath=Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'}
-$argsList=@('-batchmode','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-probe','-sport','Golf','-golfAudit','-report',('"'+$out+'\island.txt"'),'-exitAfter','75','-logFile',('"'+$out+'\player.log"'))
+$argsList=@('-batchmode','-force-d3d11','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-probe','-sport','Golf','-golfAudit','-report',('"'+$out+'\island.txt"'),'-exitAfter','75','-logFile',('"'+$out+'\player.log"'))
 if($Headless){$argsList+='-nographics'}
 $p=Start-Process -FilePath $PlayerPath -ArgumentList $argsList -WindowStyle Hidden -PassThru
 $null=$p.Handle

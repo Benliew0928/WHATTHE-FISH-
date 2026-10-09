@@ -55,9 +55,9 @@ namespace WhatTheFish {
   public BasketballDefenseSnapshot Defense=>Authority?new BasketballDefenseSnapshot{blocks=blocks,play=defensePlay,time=blockTime,blocker=blocker,originator=lastShooter?PlayerId(lastShooter):ulong.MaxValue,passing=passing,contact=blockContact}:haveTarget?target.defense:default;
   public BasketballRole Role(Athlete actor){
    if(!Playing||!actor||actor.inTransit||actor.BasketballFreeRoam)return BasketballRole.Inactive;
-   if(Held)return Holder==actor?BasketballRole.Attack:BasketballRole.Defense;
+   if(Held)return SportsPossession.SameTeam(Holder,actor,SportId.Basketball)?BasketballRole.Attack:BasketballRole.Defense;
    bool flight=Score.result==BasketballResult.Flying||Defense.passing;
-   bool own=Authority?lastShooter==actor:Defense.originator==PlayerId(actor);
+   bool own=Authority?SportsPossession.SameTeam(lastShooter,actor,SportId.Basketball):Defense.originator!=ulong.MaxValue&&SportsPossession.BasketballTeam(Defense.originator)==SportsPossession.TeamOf(actor,SportId.Basketball);
    return flight&&!own?BasketballRole.Defense:BasketballRole.Loose;
   }
   public bool CanBlock(Athlete actor)=>Role(actor)==BasketballRole.Defense&&actor.BasketballMotion&&!actor.BasketballMotion.Busy&&!actor.Airborne&&!actor.LoadingJump;
@@ -73,7 +73,7 @@ namespace WhatTheFish {
   public float ShotPressure(Athlete shooter,Transform hoop){
    if(!shooter||!hoop)return 0;float pressure=0;
    foreach(var defender in Athlete.Active){
-    if(defender==shooter||!defender.gameObject.activeInHierarchy||defender.inTransit||defender.BasketballFreeRoam||!defender.BasketballMotion||!defender.BasketballMotion.Guarding||defender.Airborne)continue;
+    if(SportsPossession.SameTeam(defender,shooter,SportId.Basketball)||!defender.gameObject.activeInHierarchy||defender.inTransit||defender.BasketballFreeRoam||!defender.BasketballMotion||!defender.BasketballMotion.Guarding||defender.Airborne)continue;
     float candidate=BasketballDefenseRules.Pressure(defender.transform.position,defender.transform.forward,shooter.transform.position,hoop.position);
     if(candidate<=pressure||Physics.Linecast(defender.transform.position+Vector3.up,shooter.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore))continue;
     pressure=candidate;
@@ -103,7 +103,7 @@ namespace WhatTheFish {
    BlockAttempt winner=null;float earliest=float.PositiveInfinity;Vector3 hit=default,handHit=default,handVelocity=default;
    for(int i=blockAttempts.Count-1;i>=0;i--){
     var attempt=blockAttempts[i];var actor=attempt.actor;var motion=actor?actor.BasketballMotion:null;
-    if(!actor||!Eligible(actor)||!motion||motion.State.sequence!=attempt.sequence||!motion.Blocking||attempt.play!=defensePlay||Holder==actor||actor.BasketballFreeRoam){blockAttempts.RemoveAt(i);continue;}
+    if(!actor||!Eligible(actor)||!motion||motion.State.sequence!=attempt.sequence||!motion.Blocking||attempt.play!=defensePlay||Role(actor)!=BasketballRole.Defense||actor.BasketballFreeRoam){blockAttempts.RemoveAt(i);continue;}
     float now=motion.Elapsed,start=motion.JumpBlocking?BasketballDefenseRules.JumpStart:BasketballDefenseRules.BlockStart,end=motion.JumpBlocking?BasketballDefenseRules.JumpEnd:BasketballDefenseRules.BlockEnd;
     var palm=motion.DefensePalm(now);float dt=Mathf.Max(.0001f,now-attempt.elapsed);
     if(now>=start&&attempt.elapsed<=end&&(Held||Score.result==BasketballResult.Flying||passing)){

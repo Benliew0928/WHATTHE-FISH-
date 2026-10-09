@@ -6,7 +6,7 @@
     { "number": 1, "par": 3, "title": "Welcome Green", "cup": { "x": 8, "y": 0, "z": -106 }, "tee": { "x": -8, "y": 0, "z": -141 }, "greenRadius": 5.5 },
     { "number": 2, "par": 3, "title": "Sand Garden", "cup": { "x": -103, "y": 0, "z": 10 }, "tee": { "x": -22, "y": 0, "z": -46 }, "greenRadius": 6 },
     { "number": 3, "par": 4, "title": "Winding Fairway", "cup": { "x": 68, "y": 0, "z": 100 }, "tee": { "x": -14, "y": 0, "z": 39 }, "greenRadius": 7 },
-    { "number": 4, "par": 3, "title": "Coastal Approach", "cup": { "x": 107, "y": 0, "z": -80 }, "tee": { "x": 115, "y": 0, "z": 21 }, "greenRadius": 6 },
-    { "number": 5, "par": 4, "title": "High Green", "cup": { "x": -6, "y": 0, "z": 146 }, "tee": { "x": 8, "y": 0, "z": 55 }, "greenRadius": 6 }
+    { "number": 4, "par": 3, "title": "Coastal Approach", "cup": { "x": 111, "y": 0, "z": -70 }, "tee": { "x": 115, "y": 0, "z": 21 }, "greenRadius": 6 },
+    { "number": 5, "par": 4, "title": "High Green", "cup": { "x": -10, "y": 0, "z": 126 }, "tee": { "x": 8, "y": 0, "z": 55 }, "greenRadius": 6 }
   ]
 }

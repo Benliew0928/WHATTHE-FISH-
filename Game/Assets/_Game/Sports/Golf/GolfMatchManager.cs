@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WhatTheFish {
  [DefaultExecutionOrder(60)]
- public sealed class GolfMatchManager:MonoBehaviour {
+ public sealed partial class GolfMatchManager:MonoBehaviour {
   public static GolfMatchManager Instance {get;private set;}
   public GolfMatchState State {get;}=new GolfMatchState();
   public GolfCourse Course {get;private set;}
@@ -16,7 +16,7 @@ namespace WhatTheFish {
   readonly Dictionary<ulong,Athlete> actors=new();readonly Dictionary<ulong,GolfBall> balls=new();
   readonly Dictionary<ulong,GolfTee> tees=new();
   readonly List<PendingContact> contacts=new();
-  struct PendingContact {public Athlete actor;public GolfBall ball;public uint round,sequence,reset;public double at;public Vector3 velocity;}
+  struct PendingContact {public Athlete actor;public GolfBall ball;public uint round,sequence,reset;public double at;public GolfShotPlan shot;}
   GameObject ballTemplate;float publishAt;bool wasContext;
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
   public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.FixedTime:Time.fixedTimeAsDouble;
@@ -44,6 +44,10 @@ namespace WhatTheFish {
   public GolfTee Tee(ulong owner)=>tees.TryGetValue(owner,out var tee)?tee:null;
   public GolfBall Ball(Athlete actor){var player=Player(actor);return player!=null?Ball(player.PlayerId):null;}
   public GolfHole Target(Athlete actor){var p=Player(actor);return p==null||p.IsFinished||p.IsDNF?null:Course.holes.FirstOrDefault(h=>h.number==p.CurrentHole);}
+  public GolfShotMode ShotMode(GolfBall ball){
+   var player=ball?State.Player(ball.Owner):null;var hole=player==null?null:Course.holes.FirstOrDefault(h=>h.number==player.CurrentHole);
+   return hole!=null&&Vector3.ProjectOnPlane(ball.Body.position-hole.cup.position,Vector3.up).sqrMagnitude<=GolfShotRules.PuttDistance*GolfShotRules.PuttDistance?GolfShotMode.Putt:GolfShotMode.Swing;
+  }
   public bool StartMatch(){
    if(!CanStart)return false;
    return Begin(Eligible().Select(a=>(GolfCartWorld.Key(a),a,a.GetComponent<NetworkAthlete>()?(GolfCartWorld.Key(a)==0?"Host":"Player "+GolfCartWorld.Key(a)):"You")).ToArray());
@@ -101,11 +105,13 @@ namespace WhatTheFish {
    State.Advance(Now);var ball=Ball(owner);if(!CanStrike(hitter,ball)){Publish();return false;}
    if(!State.RecordSwing(Player(hitter).PlayerId,Now))return false;
    var direction=Quaternion.Euler(0,heading%360,0)*Vector3.forward;
-   // Charge controls a putt or lofted shot with Inspector-configured speed.
-   var velocity=ball.PhysicsSettings.SwingVelocity(direction,charge);
-   hitter.GolfClubMotion.Address(ball.Body.position);
+   // Mode is chosen by the authority when taking aim, never by charge. Use
+   // the locked ball origin so a peer's preview and contact share that origin.
+   var aim=Aim(hitter);var shot=new GolfShotPlan();
+   shot.Build(aim.active&&aim.owner==owner?aim.ballPosition:ball.Body.position,direction,charge,aim.active&&aim.owner==owner?aim.mode:ShotMode(ball),Course,ball.PhysicsSettings);
+   ReleaseAim(hitter);hitter.GolfClubMotion.Address(ball.Body.position);
    hitter.GolfClubMotion.Swing(heading%360,charge,ball.Body.position,Round);
-   contacts.Add(new PendingContact{actor=hitter,ball=ball,round=Round,sequence=hitter.GolfClubMotion.State.sequence,reset=ball.ResetSequence,at=hitter.GolfClubMotion.State.started+GolfClubMotion.ContactTime,velocity=velocity});Publish();return true;
+   contacts.Add(new PendingContact{actor=hitter,ball=ball,round=Round,sequence=hitter.GolfClubMotion.State.sequence,reset=ball.ResetSequence,at=hitter.GolfClubMotion.State.started+GolfClubMotion.ContactTime,shot=shot});Publish();return true;
   }
   public GolfHoleResult EnterHole(GolfBall ball,int hole){
    if(!Authority||!Context||!ball||Ball(ball.Owner)!=ball||!ball.Live)return GolfHoleResult.Ignored;
@@ -124,7 +130,7 @@ namespace WhatTheFish {
    return !inside;
   }
   public void ClearMatch(){State.Clear();Round=++nextRound;ClearViews();ClearInputs();Publish();}
-  void ClearViews(){contacts.Clear();foreach(var actor in actors.Values)if(actor&&actor.GolfClubMotion)actor.GolfClubMotion.ResetPose();foreach(var ball in balls.Values)if(ball){ball.SetLive(false);Destroy(ball.gameObject);}foreach(var tee in tees.Values)if(tee)Destroy(tee.gameObject);tees.Clear();balls.Clear();actors.Clear();}
+  void ClearViews(){ClearAims();contacts.Clear();foreach(var actor in actors.Values)if(actor&&actor.GolfClubMotion)actor.GolfClubMotion.ResetPose();foreach(var ball in balls.Values)if(ball){ball.SetLive(false);Destroy(ball.gameObject);}foreach(var tee in tees.Values)if(tee)Destroy(tee.gameObject);tees.Clear();balls.Clear();actors.Clear();}
   void ClearInputs(){PlayerView.Instance?.ClearMatchInput();foreach(var a in actors.Values)if(a)a.GetComponent<NetworkAthlete>()?.ClearMatchInput();}
   void ApplyLive(){foreach(var item in balls){var p=State.Player(item.Key);item.Value.SetLive(Context&&State.Running&&p!=null&&!p.IsFinished&&!p.IsDNF);}}
   void Publish(){
@@ -146,11 +152,11 @@ namespace WhatTheFish {
   void FixedUpdate(){
    if(!Authority){if(Context)Receive();return;}
    if(!Context){if(wasContext||State.Phase!=GolfMatchPhase.Idle)ClearMatch();wasContext=false;return;}wasContext=true;
-   var phase=State.Phase;State.Advance(Now);ApplyLive();if(phase!=State.Phase)ClearInputs();
+   ValidateAims();var phase=State.Phase;State.Advance(Now);ApplyLive();if(phase!=State.Phase)ClearInputs();
    for(int i=contacts.Count-1;i>=0;i--){var c=contacts[i];var p=Player(c.actor);
     bool valid=State.Running&&c.round==Round&&c.actor&&c.actor.isActiveAndEnabled&&!c.actor.inTransit&&!GolfCartWorld.Driving(c.actor)&&c.actor.GolfClubMotion.State.sequence==c.sequence&&p!=null&&!p.IsFinished&&!p.IsDNF&&c.ball&&c.ball.Live&&c.ball.ResetSequence==c.reset;
     if(!valid){contacts.RemoveAt(i);continue;}
-    if(GolfClubMotion.Clock>=c.at){c.ball.Strike(c.velocity);contacts.RemoveAt(i);}
+    if(GolfClubMotion.Clock>=c.at){c.ball.Strike(c.shot);contacts.RemoveAt(i);}
    }
    foreach(var actor in actors.Values)if(actor&&actor.GolfClubMotion.State.action==GolfClubAction.Charge){var ball=Strikeable(actor);if(!ball)actor.GolfClubMotion.Charge(false,0,Vector3.zero,Round);}
    if(Time.unscaledTime>=publishAt){publishAt=Time.unscaledTime+.05f;Publish();}

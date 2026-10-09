@@ -13,6 +13,13 @@ namespace WhatTheFish {
   public bool Live {get;private set;}
   public GolfBallMotion Motion {get;private set;}=GolfBallMotion.Flying;
   public bool IsGrounded {get;private set;}
+  public bool ReadyToAim=>Live&&shot==null&&(match.Authority?Body.linearVelocity.sqrMagnitude<.04f:!received||Vector3.Distance(before.position,target.position)<.015f);
+  public bool FollowingShot=>shot!=null;
+  public Vector3 Velocity=>shot!=null?shotVelocity:Body.linearVelocity;
+  public Vector3 LastGuideContact {get;private set;}
+  public uint GuideContactSequence {get;private set;}
+  GolfShotPlan shot;float shotTime;int shotIndex;Vector3 shotVelocity;
+  readonly RaycastHit[] movingHits=new RaycastHit[16];
   public float StopTimer {get;private set;}
   public GolfBallPhysicsSettings PhysicsSettings {get;private set;}
   float freeUntil,settlingCeiling;Vector3 expectedVelocity;bool hasExpectedVelocity;
@@ -32,7 +39,7 @@ namespace WhatTheFish {
    IgnorePlayers();
   }
   void IgnorePlayers(){foreach(var actor in Athlete.Active)if(actor&&actor.capsule&&actor.capsule.enabled)Physics.IgnoreCollision(shape,actor.capsule);}
-  internal void SetLive(bool live){Live=live;bool dynamic=live&&match.Authority;if(dynamic){Body.isKinematic=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;}else{Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;Body.isKinematic=true;ResetMotion();}Body.detectCollisions=dynamic;}
+  internal void SetLive(bool live){Live=live;bool dynamic=live&&match.Authority;if(dynamic&&shot==null){Body.isKinematic=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;}else if(!dynamic){ResetMotion();Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;Body.isKinematic=true;}Body.detectCollisions=dynamic;}
   internal void Place(Vector3 position,bool newAnchor){
    if(!match.Authority)return;
    ResetMotion();Body.isKinematic=false;Body.linearVelocity=Body.angularVelocity=Vector3.zero;
@@ -40,8 +47,35 @@ namespace WhatTheFish {
    Body.position=position;Body.rotation=Quaternion.identity;transform.SetPositionAndRotation(position,Quaternion.identity);Body.interpolation=interpolation;
    previous=position;if(newAnchor)LastShotPosition=position;ResetSequence++;SetLive(Live);
   }
-  void ResetMotion(){Motion=GolfBallMotion.Flying;StopTimer=0;IsGrounded=false;hasExpectedVelocity=false;freeUntil=Time.fixedTime+PhysicsSettings.newForceGracePeriod;Body.useGravity=true;}
+  void ResetMotion(){
+   if(shot!=null){shot=null;Body.isKinematic=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;Body.linearVelocity=shotVelocity;Body.angularVelocity=Vector3.Cross(Vector3.up,shotVelocity)/Radius;}
+   Motion=GolfBallMotion.Flying;StopTimer=0;IsGrounded=false;hasExpectedVelocity=false;freeUntil=Time.fixedTime+PhysicsSettings.newForceGracePeriod;Body.useGravity=true;
+  }
   internal void Strike(Vector3 velocity){ResetMotion();LastShotPosition=Body.position;previous=Body.position;Body.isKinematic=false;Body.linearVelocity=velocity;Body.angularVelocity=Vector3.Cross(Vector3.up,velocity)/Radius;Body.WakeUp();}
+  internal void Strike(GolfShotPlan plan){
+   ResetMotion();LastShotPosition=Body.position;previous=Body.position;shot=plan;shotTime=0;shotIndex=0;shotVelocity=plan.LaunchVelocity;
+   Body.linearVelocity=Body.angularVelocity=Vector3.zero;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;Body.isKinematic=true;Body.useGravity=false;
+  }
+  void FollowShot(){
+   shotTime=Mathf.Min(shotTime+Time.fixedDeltaTime,shot.Duration);shot.Sample(shotTime,ref shotIndex,out var next,out var velocity);
+   var delta=next-Body.position;
+   // Moving balls are intentionally not baked into the guide. Hand them back
+   // to PhysX before impact so opponents can still knock one another's balls.
+   if(delta.sqrMagnitude>1e-9f){
+    int count=Physics.SphereCastNonAlloc(Body.position,Radius,delta.normalized,movingHits,delta.magnitude+.015f,1,QueryTriggerInteraction.Ignore);
+    for(int i=0;i<count;i++)if(movingHits[i].rigidbody&&movingHits[i].rigidbody!=Body&&movingHits[i].rigidbody.GetComponent<GolfBall>()){ResetMotion();return;}
+   }
+   shotVelocity=velocity;IsGrounded=shot.Mode==GolfShotMode.Putt&&Mathf.Abs(velocity.y)<.5f;
+   Motion=IsGrounded?(velocity.magnitude<PhysicsSettings.slowRollingThreshold?GolfBallMotion.SlowRolling:GolfBallMotion.FastRolling):GolfBallMotion.Flying;
+   var rotation=Quaternion.AngleAxis(delta.magnitude/Radius*Mathf.Rad2Deg,Vector3.Cross(Vector3.up,delta).normalized)*Body.rotation;
+   if(shotTime<shot.Duration){Body.MovePosition(next);Body.MoveRotation(rotation);return;}
+   bool rest=shot.Resting;var normal=shot.Normal;bool contact=shot.HasTarget;
+   // Resolve the contact at the exact swept point, then let the normal turf
+   // rolling code handle a swing's run-out. The target is touchdown, not run-out.
+   ResetMotion();Body.position=next;Body.rotation=rotation;Body.linearVelocity=velocity;Body.angularVelocity=Vector3.Cross(normal,velocity)/Radius;
+   if(contact){LastGuideContact=next;GuideContactSequence++;}
+   if(rest){Motion=GolfBallMotion.Resting;IsGrounded=true;StopTimer=PhysicsSettings.stopDelay;Body.linearVelocity=Body.angularVelocity=Vector3.zero;Body.useGravity=false;Body.Sleep();}
+  }
   // Gameplay integrations should use this entry point so even a small impulse
   // clears a nearly completed stop timer before physics evaluates it.
   public void ApplyGameplayImpulse(Vector3 impulse){if(!bound||!match.Authority||!Live||!float.IsFinite(impulse.sqrMagnitude))return;ResetMotion();Body.WakeUp();Body.AddForce(impulse,ForceMode.Impulse);}
@@ -63,7 +97,7 @@ namespace WhatTheFish {
    if(match.OutsideCourse(position)){Recover();return;}
    foreach(var hole in match.HoleTriggers)if(hole.Contains(position)||hole.Crossed(previous,position)){match.EnterHole(this,hole.Hole.number);previous=Body.position;return;}
    previous=position;
-   GroundMotion(position);
+   if(shot!=null)FollowShot();else GroundMotion(position);
   }
   void GroundMotion(Vector3 position){
    var settings=PhysicsSettings;float dt=Time.fixedDeltaTime;
@@ -85,15 +119,18 @@ namespace WhatTheFish {
     Motion=speed<settings.slowRollingThreshold?GolfBallMotion.SlowRolling:GolfBallMotion.FastRolling;
     if(Motion==GolfBallMotion.SlowRolling)settlingCeiling=tangent.magnitude;
    }
+   float surfaceResistance=match.Course.RollingResistance(hit.point,settings);
    if(Motion==GolfBallMotion.FastRolling){
     StopTimer=0;
-    // Preserve the existing level-ground roll; high-speed slopes and flight
-    // keep their ordinary damping, gravity and collision response.
-    if(normal.y>=Mathf.Cos(settings.levelGroundDegrees*Mathf.Deg2Rad))Body.linearVelocity=Vector3.Project(velocity,normal)+Vector3.MoveTowards(tangent,Vector3.zero,settings.levelRollingResistance*dt);
+    // Turf resistance acts on every supported slope. Airborne shots are untouched.
+    tangent=Vector3.MoveTowards(tangent,Vector3.zero,surfaceResistance*dt);
+    Body.linearVelocity=Vector3.Project(velocity,normal)+tangent;
+    // Do not leave stored rolling spin to accelerate the ball again at contact.
+    Body.angularVelocity=Vector3.Cross(normal,tangent)/Radius+Vector3.Project(Body.angularVelocity,normal);
     return;
    }
    float progress=1-Mathf.Clamp01(tangent.magnitude/settings.slowRollingThreshold);
-   float resistance=settings.rollingResistanceStrength*Mathf.Lerp(.35f,1,progress);
+   float resistance=surfaceResistance+settings.rollingResistanceStrength*progress;
    // Cancel only downhill gravity during settling; leave the normal component
    // for contact support. Never pull an airborne ball toward the ground.
    settlingCeiling=Mathf.Max(settings.settlingMaxSpeed,settlingCeiling-resistance*dt);

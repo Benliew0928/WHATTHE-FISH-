@@ -3,7 +3,7 @@
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **35** players. The room shares one activity and travels together.
+protocol **38** players. The room shares one activity and travels together.
 Fishing supports **two to five friends**, with solo free practice and a solo
 timed practice option. Walk to the end of any of the five coloured piers.
 Each pier has **six fish: two small, two medium and two large**, for **30 fish**

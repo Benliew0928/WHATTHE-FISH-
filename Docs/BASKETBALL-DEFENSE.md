@@ -1,25 +1,28 @@
 # Basketball defense
 
-Basketball remains shared court practice. The carrier attacks; other active
-players defend. A released shot or pass retains its attacking originator until
-the flight ends or someone recovers the ball. An ordinary loose ball uses
-recovery controls. Free roam and travel clear the basketball inputs. There are
-no basketball team assignments or foul/possession penalties.
+Basketball has automatically alternating squads, assigned by stable network
+join ID. The carrier's whole team sees attack controls; the other team sees
+defense. A loose or released ball shows defense by default. Only the carrier
+can shoot/pass, and teammates cannot steal, block or pressure one another.
+Released-shot/pass defense still excludes the originating squad. Free roam
+and travel clear inputs. Scoring remains shared court practice, without foul
+penalties or a timed team match. See [team controls and maps](SPORTS-HUD.md).
 
 ## Controls
 
 The button positions stay fixed and switch handlers with the possession role.
 
-| Slot | Carrier | Defender |
+| Slot | Attacking team | Defending team |
 | --- | --- | --- |
 | Main / E | Hold Shoot; up Dunk, down Layup | Tap Block; drag up and release for Jump Block |
-| Secondary / Q | Hold Pass, aim with camera, release to throw | Hold Defend |
+| Secondary / Q | Hold Pass, aim with camera, release to throw | Hold Guard |
 | Third / F | Hidden | Hold Steal |
 | Jump / Space | Ordinary jump | Immediate Jump Block |
 
-Shoot and Pass are hidden from defenders. Steal, Block and Defend are hidden
-from the carrier. During loose-ball recovery only the shared movement, jump,
-camera and court controls remain. A finger belongs to the action it started:
+Shoot and Pass are hidden from defenders. Steal, Block and Guard are hidden
+from the attacking team. During loose-ball recovery the defensive slots remain
+visible; actions requiring possession are disabled. Movement, jump, camera
+and court controls remain available. A finger belongs to the action it started:
 role changes cancel that gesture, and releasing it cannot activate a newly
 assigned button. The block gesture tracks its original finger outside the
 button; guard and steal holds cancel when dragged off. Focus loss, disabled

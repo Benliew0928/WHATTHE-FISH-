@@ -45,19 +45,34 @@ public static class GolfCourseReview {
     Check(Mathf.Abs(h.cupRadius-.1425f)<.00001f&&Mathf.Abs(floor.sharedMesh.bounds.extents.x-h.cupRadius)<.00001f,label+" hole "+h.number+" 1.5x opening diameter, 0.285 m");
     Check(terrain.Any(c=>c.Raycast(new Ray(h.tee.position+Vector3.up,Vector3.down),out _,2)),label+" hole "+h.number+" grounded tee");
     Check(!h.cup.Find("Putting green")&&terrain.All(c=>c.GetComponent<MeshRenderer>().sharedMaterial==terrainMaterial),label+" hole "+h.number+" original grass surface without a colour overlay");
-    float positionError=0,uvError=0,normalError=0;int samples=0;
-    foreach(float radius in new[]{h.cupRadius+.07f,h.greenRadius*.6f,h.greenRadius})for(int i=0;i<16;i++){
+    float positionError=0,uvError=0,maximumSlope=0,heightError=0;int samples=0;
+    foreach(float radius in new[]{h.cupRadius+.07f,h.greenRadius*.3f,h.greenRadius})for(int i=0;i<16;i++){
      float a=i*Mathf.PI*2/16;var sample=p+new Vector3(Mathf.Cos(a)*radius,10,Mathf.Sin(a)*radius);var sampleRay=new Ray(sample,Vector3.down);
      var current=terrain.Select(c=>c.Raycast(sampleRay,out var hit,20)?(RaycastHit?)hit:null).FirstOrDefault(hit=>hit.HasValue);
      var original=sourceTerrain.Select(c=>c.Raycast(sampleRay,out var hit,20)?(RaycastHit?)hit:null).FirstOrDefault(hit=>hit.HasValue);
      if(!current.HasValue||!original.HasValue)continue;samples++;
-     positionError=Mathf.Max(positionError,Vector3.Distance(current.Value.point,original.Value.point));uvError=Mathf.Max(uvError,Vector2.Distance(current.Value.textureCoord,original.Value.textureCoord));normalError=Mathf.Max(normalError,Vector3.Distance(current.Value.normal,original.Value.normal));
+     positionError=Mathf.Max(positionError,Vector3.Distance(current.Value.point,original.Value.point));uvError=Mathf.Max(uvError,Vector2.Distance(current.Value.textureCoord,original.Value.textureCoord));
+     var localPoint=island.transform.InverseTransformPoint(current.Value.point);var green=course.greens[h.number-1];
+     float plane=green.centre.y+green.slope.x*(localPoint.x-green.centre.x)+green.slope.y*(localPoint.z-green.centre.z);
+     if(radius<h.greenRadius*.8f){maximumSlope=Mathf.Max(maximumSlope,Vector3.Angle(current.Value.normal,Vector3.up));heightError=Mathf.Max(heightError,Mathf.Abs(localPoint.y-plane));}
     }
-    results.Add($"INFO {label} hole {h.number} original surface samples={samples}/48 positionError={positionError:R} uvError={uvError:R} normalError={normalError:R}");
-    Check(samples>=46&&positionError<.001f&&normalError<.001f,label+" hole "+h.number+" original terrain slopes and ground height retained");
+    results.Add($"INFO {label} hole {h.number} green samples={samples}/48 maximumHeightChange={positionError:R} uvError={uvError:R} innerSlope={maximumSlope:R} planeError={heightError:R}");
+    Check(samples>=46&&positionError<.7f&&maximumSlope<1&&heightError<.005f,label+" hole "+h.number+" gentle integrated green with restrained height change");
     Check(uvError<.0001f,label+" hole "+h.number+" original terrain texture coordinates retained");
     Check(h.cup.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterials.All(m=>m&&m.shader)),label+" hole "+h.number+" complete render dependencies");
     var local=island.transform.InverseTransformPoint(p);results.Add($"INFO hole {h.number} cup={local} tee={island.transform.InverseTransformPoint(h.tee.position)} greenRadius={h.greenRadius} par={h.par}");
+    float joinSlope=0,originalJoinSlope=0,outerError=0;int outsideSamples=0;
+    for(int ring=0;ring<4;ring++)for(int j=0;j<32;j++){
+     float angle=j*Mathf.PI*2/32,r=h.greenRadius+2+ring*2.5f;
+     var sampleRay=new Ray(p+new Vector3(Mathf.Cos(angle)*r,20,Mathf.Sin(angle)*r),Vector3.down);
+     var current=terrain.Select(c=>c.Raycast(sampleRay,out var hit,40)?(RaycastHit?)hit:null).FirstOrDefault(hit=>hit.HasValue);
+     var original=sourceTerrain.Select(c=>c.Raycast(sampleRay,out var hit,40)?(RaycastHit?)hit:null).FirstOrDefault(hit=>hit.HasValue);
+     if(!current.HasValue||!original.HasValue)continue;
+     joinSlope=Mathf.Max(joinSlope,Vector3.Angle(current.Value.normal,Vector3.up));
+     originalJoinSlope=Mathf.Max(originalJoinSlope,Vector3.Angle(original.Value.normal,Vector3.up));
+     if(ring==3){outerError=Mathf.Max(outerError,Vector3.Distance(current.Value.point,original.Value.point));outsideSamples++;}
+    }
+    Check(joinSlope<Mathf.Max(9,originalJoinSlope+.3f)&&outsideSamples==32&&outerError<.001f,$"{label} hole {h.number} seamless hillside blend slope={joinSlope:F3} originalSlope={originalJoinSlope:F3} outerError={outerError:R}");
    }
    }finally{Object.DestroyImmediate(reference);}
   }finally{island.SetActive(active);}
@@ -72,6 +87,13 @@ public static class GolfCourseReview {
  public static void PrepareAndCapture()=>Review(true);
  [MenuItem("WHATTHE FISH?/Golf/Audit and capture saved five holes")]
  public static void CaptureSavedMap()=>Review(false);
+ public static void Windows()=>ProjectBuilder.BuildWindowsPlayer("../Builds/GolfPlayabilityQA/Player/WhatTheFish.exe");
+ public static void PrepareAndBuild(){Review(true);Windows();}
+ public static void Mobile(){Review(false);MobileOptimizationValidation.BuildPreview();}
+ public static void Scripts(){
+  var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName="../Builds/GolfPlayabilityQA/Player/WhatTheFish.exe",target=BuildTarget.StandaloneWindows64,options=BuildOptions.Development|BuildOptions.BuildScriptsOnly|BuildOptions.CompressWithLz4HC});
+  if(report.summary.result!=UnityEditor.Build.Reporting.BuildResult.Succeeded)throw new Exception("Golf scripts build failed");
+ }
  static void Review(bool regenerate){
   Directory.CreateDirectory(GolfCourseBuilder.Evidence);results.Clear();
   string graphics=AssetDatabase.GetAssetPath(GraphicsSettings.defaultRenderPipeline),quality=AssetDatabase.GetAssetPath(QualitySettings.renderPipeline);

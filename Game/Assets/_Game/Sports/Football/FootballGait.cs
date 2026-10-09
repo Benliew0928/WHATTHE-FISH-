@@ -26,11 +26,13 @@ namespace WhatTheFish {
    Speed=Mathf.SmoothDamp(Speed,suspended?0:actual,ref speedVelocity,.055f,100,dt);
    Amount=Mathf.SmoothDamp(Amount,suspended?0:Ease(actual/.45f),ref amountVelocity,.10f,100,dt);
    Run=Mathf.SmoothDamp(Run,Ease((Speed-1.05f)/2.7f),ref runVelocity,.16f,10,dt);
-   Frequency=Mathf.Lerp(1.35f,2.65f,Mathf.Sqrt(Mathf.Clamp01(Speed/7)));
+   Frequency=Mathf.Min(3f,Mathf.Lerp(1.35f,2.65f,Mathf.Sqrt(Mathf.Clamp01(Speed/7)))*Mathf.Sqrt(Mathf.Clamp(Speed/7,1,2.2f)));
    float stride=Mathf.Max(.22f,actual/Frequency);
-   Phase=Mathf.Repeat(Phase+Mathf.Min(3.2f,actual/stride)*dt,1);
-   float reach=Mathf.Lerp(.095f,.135f,Run);
-   Duty=Mathf.Clamp(2*reach*Frequency/Mathf.Max(.05f,Speed),.10f,.60f);
+   Phase=Mathf.Repeat(Phase+Mathf.Min(4.2f,actual/stride)*dt,1);
+   // At dash pace the short-legged rig has a brief, compact contact window.
+   // A minimum 10% stance held a foot too far behind a fast-moving hip.
+   float reach=Mathf.Lerp(.095f,.125f,Run)*Mathf.Pow(Mathf.Min(1,7/Mathf.Max(.05f,Speed)),1.5f);
+   Duty=Mathf.Clamp(2*reach*Frequency/Mathf.Max(.05f,Speed),.015f,.60f);
    var wanted=actual>.05f?displacement.normalized:facing*Vector3.forward;
    Direction=Vector3.Slerp(Direction,wanted,1-Mathf.Exp(-22*dt));
    if(Direction.sqrMagnitude<.01f)Direction=facing*Vector3.forward;

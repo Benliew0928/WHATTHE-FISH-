@@ -143,13 +143,13 @@ Cup results. Render real score changes, row reordering, high-tension release
 and a full catch, including repeated rounds and island travel.
 
 Reuse existing fish, rods and character assets. Avoid new imported art packs
-or UI middleware. Matching multiplayer players now require protocol **35**.
-The fresh aiming/readability release measures **90,051,054 bytes**, versus
-90,047,202 before this change (**+3,852**), with **9,948,946 bytes** to the
-strict 100,000,000-byte boundary. The 75,000,000-byte development target remains
-exceeded by **15,051,054 bytes**. [Measured build record](BUILD-SIZE.md#fishing-aim-and-readability--9-october-2026)
-and [packing audit](APK-SIZE-AUDIT.md#fishing-aim-and-readability--9-october-2026)
-cover the current reticle, fish count and tuning. The complete validated player
-is promoted to `Builds/WindowsFinal/`; see
-[verification](VERIFICATION.md#fishing-aim-and-readability--9-october-2026).
+or UI middleware. Matching multiplayer players now require protocol **38**.
+The fresh integrated release measures **88,742,452 bytes**, versus
+90,051,054 before merging the teammate updates (**−1,308,602**), with
+**11,257,548 bytes** to the strict 100,000,000-byte boundary. The
+75,000,000-byte development target remains exceeded by **13,742,452 bytes**.
+[Measured build record](BUILD-SIZE.md) and [packing audit](APK-SIZE-AUDIT.md)
+cover the current reticle, fish count, tuning and integrated gameplay.
+The complete validated player is in `Builds/WindowsFinal/`; see
+[verification](VERIFICATION.md).
 A Windows render does not qualify phone performance or real internet latency.

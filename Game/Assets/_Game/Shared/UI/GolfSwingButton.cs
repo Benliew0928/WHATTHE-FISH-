@@ -9,10 +9,11 @@ namespace WhatTheFish {
   bool holding;int pointer;
   void Update(){
    var view=PlayerView.Instance;var match=GolfMatchManager.Instance;
-   button.interactable=view&&view.active&&match&&match.Strikeable(view.target);
-   label.text=view&&view.GolfCharging?$"Swing {Mathf.RoundToInt(view.GolfCharge*100)}%":(Application.isMobilePlatform?"Swing":"Swing [F]")+"\n"+(match&&view&&match.CanSwing(view.target)&&!button.interactable?"Move closer to ball":"Hold to charge");
+   button.interactable=view&&view.GolfAiming&&match&&match.CanStrike(view.target,match.Ball(view.AimedGolfOwner));
+   string shot=view&&view.GolfMode==GolfShotMode.Putt?"Putt":"Swing";
+   label.text=view&&view.GolfCharging?$"{shot}\n{Mathf.RoundToInt(view.GolfDisplayedCharge*100)}%":view&&view.GolfAimRequested?GameButtonStyle.Caption(shot,"F"):"Aim first";
    if(holding&&(!button.interactable||!view.GolfCharging))Cancel();
-   if(aimButton){aimButton.gameObject.SetActive(view&&view.CanAimGolf);aimButton.interactable=view&&view.CanAimGolf;aimLabel.text=view&&view.GolfAiming?"取消瞄准":"瞄准";}
+   if(aimButton){aimButton.gameObject.SetActive(match&&match.Context&&match.State.Running);aimButton.interactable=view&&(view.GolfAimRequested||view.CanAimGolf);aimLabel.text=view&&view.GolfAimRequested?(Application.isMobilePlatform?"Cancel":"Cancel\nX"):view&&view.CanAimGolf?(Application.isMobilePlatform?"Aim":"Aim\nG"):"Near ball\nto aim";}
    if(startButton){startButton.gameObject.SetActive(match&&match.Authority&&match.Context&&!match.State.Running);startButton.interactable=match&&match.CanStart;startLabel.text=match&&match.State.Phase==GolfMatchPhase.Ended?"New golf match":"Start golf match";}
   }
   public void OnPointerDown(PointerEventData e){if(holding||e.button!=PointerEventData.InputButton.Left||!button.interactable||!PlayerView.Instance)return;pointer=e.pointerId;holding=PlayerView.Instance.BeginGolfSwing(pointer);}

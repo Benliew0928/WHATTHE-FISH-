@@ -33,7 +33,7 @@ namespace WhatTheFish {
   readonly Vector3[] footTarget=new Vector3[2],footVelocity=new Vector3[2];bool feetInitialized;
   readonly Vector3[] displayedFeet=new Vector3[2],settleFrom=new Vector3[2];readonly float[] touchWeights=new float[2];float settleAt=-10,wallFreedom=1,groundOffset,jumpTime;int receiveFoot,settleLead;
   bool applied,heldBefore,received,haveLast;uint receivedSequence;float weight,phase,previousSpeed,previousYaw,brake,startAccent,turn,bank,receiveAt=-10;
-  readonly FootballGait gait=new();float transitionAge=1,contactBlend,actionAge=10,actionDuration,armActionWeight;int mode,lastMode=-1,fallVariant;FootballAction lastAction,previousAction;
+  readonly FootballGait gait=new();float effortBlend,transitionAge=1,contactBlend,actionAge=10,actionDuration,armActionWeight;int mode,lastMode=-1,fallVariant;FootballAction lastAction,previousAction;
   Vector3 smoothBody,smoothPelvis,bodyVelocity,pelvisVelocity;Quaternion chestReference;float smoothedYaw,yawVelocity;
   double resultAt;FootballMatchPhase lastMatchPhase;Vector3 previousPosition;FootballPose pose;
   sealed class Limb {public Transform upper,lower,end,toe;public float upperLength,lowerLength;public Quaternion wristRest,palmRest,upperBasis,lowerBasis;public Vector3 toeOffset;}
@@ -108,6 +108,10 @@ namespace WhatTheFish {
    pose.head+=new Vector3(-2*gait.Run,turn*6-wave*1.5f*gait.Amount,bank*2);
    pose.pelvis.y-=brake*.025f;
    if(athlete.WhiffRemaining>0){pose.body.x+=5;pose.pelvis.y-=.012f;Performance="WhiffRecover";}
+   effortBlend=Smooth(effortBlend,athlete.FootballEffort.Pressuring?1:0,12,dt);
+   pose.pelvis.y-=.045f*effortBlend;pose.body.x+=8*effortBlend;pose.chest.x-=4*effortBlend;
+   if(effortBlend>.5f)Performance="Pressure";
+   if(athlete.FootballEffort.Dashing){pose.body.x+=4*gait.Amount;Performance="Dash";}
    float receive=1-Ease((Time.time-receiveAt)/.24f);
    if(receive>0){pose.chest.y-=5*receive;Performance="Receive";}
    if(State.charging&&!reacting){
@@ -157,7 +161,7 @@ namespace WhatTheFish {
      if(held&&!reacting&&!State.charging&&!gesture&&speed>.2f){
       // Touch only in the forward part of THIS foot's swing, never on its
       // supporting step. Arms use precisely the same phase below.
-      float u=gait.Swing(i);contact=FootballGait.Ease((u-.32f)/.32f)*(1-FootballGait.Ease((u-.77f)/.23f));
+      float u=gait.Swing(i);contact=FootballGait.Ease((u-.28f)/.36f)*(1-FootballGait.Ease((u-.72f)/.28f));
       var ball=FootballBall.Instance;
       if(ball&&contact>0){var touchRotation=transform.rotation*footRotation[i];target=Vector3.Lerp(target,ContactAnkle(i,ball.FootPosition(athlete),touchRotation),contact);rotation=Quaternion.Slerp(rotation,touchRotation,contact);}
      }
@@ -175,7 +179,7 @@ namespace WhatTheFish {
       if(gait.Planted[i]){footTarget[i]=local;footVelocity[i]=-transform.InverseTransformVector(displacement/dt);}
       else {
        float landing=FootballGait.Ease((gait.Swing(i)-.70f)/.30f);
-       float damping=held?Mathf.Lerp(.008f,.045f,Mathf.Abs(turn)*(1-contact)):Mathf.Lerp(.038f,.008f,Mathf.Max(contact,landing));
+       float damping=held?Mathf.Lerp(.0105f,.045f,Mathf.Abs(turn)*(1-contact)):Mathf.Lerp(.038f,.008f,Mathf.Max(Mathf.InverseLerp(7,10,gait.Speed),Mathf.Max(contact,landing)));
        // SmoothDamp's speed clamp is multiplied by smoothTime, not deltaTime.
        // With an 8ms contact response it truncated legitimate 50ms frames,
        // leaving the shoe behind the ball. Damping and IK bound the motion.
@@ -264,7 +268,7 @@ namespace WhatTheFish {
    // The heel is partly weighted to the shin. Deep crouches deform it below
    // the rigid sole plane; this measured clearance also covers that skin.
    var leg=legs[side];float folded=Vector3.Distance(leg.upper.position,target)/(leg.upperLength+leg.lowerLength);
-   float heel=.024f*FootballGait.Ease((.85f-folded)/.45f);
+   float heel=.030f*FootballGait.Ease((.85f-folded)/.45f);
    target.y=Mathf.Max(target.y,floor.point.y-min+heel);
   }
   void Rotate(Transform bone,Vector3 angles){bone.rotation=transform.rotation*Quaternion.Euler(angles)*Quaternion.Inverse(transform.rotation)*bone.rotation;}
@@ -291,7 +295,7 @@ namespace WhatTheFish {
    l.lower.rotation=Quaternion.LookRotation(a+axis*length-joint,normal)*l.lowerBasis;l.end.rotation=endRotation;
    MaximumReachError=Mathf.Max(MaximumReachError,Mathf.Max(0,reach-length));
   }
-  public void ResetPose(){Restore();State=new(){sequence=State.sequence+1};weight=phase=previousSpeed=brake=startAccent=turn=bank=0;receiveAt=settleAt=-10;wallFreedom=1;heldBefore=haveLast=feetInitialized=false;gait.Reset();lastMode=-1;actionAge=10;lastAction=previousAction=FootballAction.None;smoothBody=smoothPelvis=bodyVelocity=pelvisVelocity=Vector3.zero;yawVelocity=0;previousPosition=transform.position;smoothedYaw=previousYaw=transform.eulerAngles.y;lastMatchPhase=FootballMatchPhase.Idle;}
+  public void ResetPose(){Restore();State=new(){sequence=State.sequence+1};effortBlend=weight=phase=previousSpeed=brake=startAccent=turn=bank=0;receiveAt=settleAt=-10;wallFreedom=1;heldBefore=haveLast=feetInitialized=false;gait.Reset();lastMode=-1;actionAge=10;lastAction=previousAction=FootballAction.None;smoothBody=smoothPelvis=bodyVelocity=pelvisVelocity=Vector3.zero;yawVelocity=0;previousPosition=transform.position;smoothedYaw=previousYaw=transform.eulerAngles.y;lastMatchPhase=FootballMatchPhase.Idle;}
   public void Receive(FootballMotionState value){if(received&&unchecked((int)(value.sequence-receivedSequence))<0)return;received=true;receivedSequence=value.sequence;State=value;}
   public void Charging(bool active){
    if(active==State.charging)return;var s=State;s.sequence++;s.charging=active;

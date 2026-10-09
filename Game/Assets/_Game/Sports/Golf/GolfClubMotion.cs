@@ -108,7 +108,7 @@ namespace WhatTheFish {
    SetGrip(true);
    var view=PlayerView.Instance;bool localCharge=view&&view.target==athlete&&view.GolfCharging;
    bool charge=localCharge||InRound&&State.action==GolfClubAction.Charge;bool swing=Busy;
-   float amount=localCharge?view.GolfCharge:charge?Mathf.Clamp01(Elapsed/1.3f):State.charge;
+   float amount=localCharge?view.GolfDisplayedCharge:charge?GolfShotRules.Power(Elapsed):State.charge;
    twoHands=Mathf.MoveTowards(twoHands,charge||swing?1:0,Time.deltaTime*14);TwoHanded=twoHands>.99f;
    Vector3 target=State.target;
    if(localCharge){var ball=GolfMatchManager.Instance.Ball(view.GolfBallOwner);if(ball)target=ball.Body.position;}
@@ -167,7 +167,7 @@ namespace WhatTheFish {
    Club.transform.position+=RightPalm-Club.rightGrip.position;
    if(twoHands>0)Arm(left,Club.leftGrip.position,Club.transform.forward,Club.transform.right,-transform.right-Vector3.up*.7f,twoHands);
    GripError=Vector3.Distance(RightPalm,Club.rightGrip.position);if(TwoHanded)GripError=Mathf.Max(GripError,Vector3.Distance(LeftPalm,Club.leftGrip.position));
-   if(head&&view&&view.active&&view.target==athlete&&view.mode==0){headScale=head.localScale;head.localScale=Vector3.one*.001f;headHidden=true;}
+   if(head&&view&&view.active&&view.target==athlete&&view.mode==0&&!view.GolfAiming){headScale=head.localScale;head.localScale=Vector3.one*.001f;headHidden=true;}
   }
   void Arm(Limb a,Vector3 palm,Vector3 normal,Vector3 fingers,Vector3 pole,float blend){
    var rotation=HandRotation(a,normal,fingers);

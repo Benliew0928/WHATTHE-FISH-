@@ -147,14 +147,17 @@ namespace WhatTheFish {
    var safe=new GameObject("Safe",typeof(RectTransform));safe.transform.SetParent(ui.transform,false);var sr=safe.GetComponent<RectTransform>();var sa=Screen.safeArea;sr.anchorMin=new Vector2(sa.x/Screen.width,sa.y/Screen.height);sr.anchorMax=new Vector2(sa.xMax/Screen.width,sa.yMax/Screen.height);sr.offsetMin=sr.offsetMax=Vector2.zero;
    var panel=new GameObject("Journey card",typeof(RectTransform),typeof(Image));panel.transform.SetParent(safe.transform,false);var r=panel.GetComponent<RectTransform>();r.anchorMin=r.anchorMax=new Vector2(.5f,0);r.anchoredPosition=new Vector2(0,175);r.sizeDelta=new Vector2(680,160);panel.GetComponent<Image>().color=new Color(.035f,.16f,.18f,.93f);
    heading=Text(panel.transform,"SKY-SAIL CIRCUIT",22,new Vector2(0,52),new Vector2(650,32));caption=Text(panel.transform,"",18,new Vector2(0,20),new Vector2(650,35));
-   previous=TravelButton(panel.transform,-165,-37,-1);next=TravelButton(panel.transform,165,-37,1);
+   previous=TravelButton(panel.transform,-165,-37,-1);next=TravelButton(panel.transform,165,-37,1);GameButtonStyle.Apply(panel.transform);
    var bar=new GameObject("Journey progress",typeof(RectTransform),typeof(Image));bar.transform.SetParent(panel.transform,false);progressFill=bar.GetComponent<Image>();progressFill.color=new Color(.89f,.68f,.35f);var br=bar.GetComponent<RectTransform>();br.anchorMin=new Vector2(0,0);br.anchorMax=new Vector2(1,0);br.pivot=Vector2.zero;br.anchoredPosition=Vector2.zero;br.sizeDelta=new Vector2(0,4);
-   wayfinding=Text(safe.transform,"",20,new Vector2(0,350),new Vector2(650,35));
+   wayfinding=Text(safe.transform,"",17,new Vector2(0,350),new Vector2(500,35));
+   wayfinding.rectTransform.anchorMin=wayfinding.rectTransform.anchorMax=new Vector2(0,1);wayfinding.rectTransform.pivot=new Vector2(0,.5f);wayfinding.rectTransform.anchoredPosition=new Vector2(66,-192);wayfinding.alignment=TextAnchor.MiddleLeft;
   }
   Button TravelButton(Transform parent,float x,float y,int direction){var g=new GameObject("Travel",typeof(RectTransform),typeof(Image),typeof(Button));g.transform.SetParent(parent,false);var r=g.GetComponent<RectTransform>();r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(302,54);g.GetComponent<Image>().color=new Color(.12f,.40f,.42f,1);var b=g.GetComponent<Button>();b.onClick.AddListener(()=>RequestTravel(SkySailMap.Neighbor(app.SelectedSport,direction)));Text(g.transform,"",21,Vector2.zero,new Vector2(290,50));return b;}
   void UpdateUI(){
    if(!ui)return;ui.enabled=app.Exploring;if(!ui.enabled)return;
    float distance=Vector3.Distance(app.LocalAthlete.transform.position,SkySailMap.Port(app.SelectedSport));heading.transform.parent.gameObject.SetActive(Travelling||distance<28);
+   bool court=app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
+   ((RectTransform)heading.transform.parent).anchoredPosition=new Vector2(0,!Travelling&&court?570:175);
    wayfinding.text=Travelling?"Look around • Camera: cabin / chase / panorama":"SKY-SAIL STATION  ·  "+Mathf.RoundToInt(distance)+" m";
    wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing);
    previous.gameObject.SetActive(!Travelling);next.gameObject.SetActive(!Travelling);

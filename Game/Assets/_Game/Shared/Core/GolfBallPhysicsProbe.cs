@@ -13,7 +13,7 @@ namespace WhatTheFish {
   GolfBall launchBall;Rigidbody launchReference;bool launchAfterSettling;
   GolfBall monitoredSwing;float horizontalLaunch,horizontalLaunchPeak;
   void FixedUpdate(){
-   if(monitoredSwing){var horizontal=Vector3.ProjectOnPlane(monitoredSwing.Body.linearVelocity,Vector3.up).magnitude;
+   if(monitoredSwing){var horizontal=Vector3.ProjectOnPlane(monitoredSwing.Velocity,Vector3.up).magnitude;
     // Read after the manager's contact but before that step's collision solver.
     // A later landing can transfer angular/vertical energy into horizontal motion.
     if(horizontalLaunch==0&&monitoredSwing.Motion==GolfBallMotion.Flying&&horizontal>1)horizontalLaunch=horizontal;
@@ -60,9 +60,9 @@ namespace WhatTheFish {
    app.view.pitch=16;yield return new WaitForSeconds(.35f);yield return Frame();
    var swing=FindFirstObjectByType<GolfSwingButton>();var right=Quaternion.Euler(0,app.view.yaw,0)*Vector3.right;
    Check(!app.view.GolfAiming&&Mathf.Abs(Vector3.Dot(Camera.main.transform.position-actor.transform.position,right))<.001f,"MATCH_START_KEEPS_CENTRED_THIRD_PERSON_CAMERA");Capture("tee-default-centred");
-   Check(swing.aimButton.gameObject.activeSelf&&swing.aimButton.interactable&&swing.aimLabel.text=="瞄准"&&"瞄准取消".All(c=>swing.aimLabel.font.HasCharacter(c)),"AIM_BUTTON_HAS_SUPPORTED_CHINESE_LABEL_AND_IS_AVAILABLE");
+   Check(swing.aimButton.gameObject.activeSelf&&swing.aimButton.interactable&&swing.aimLabel.text.StartsWith("Aim"),"AIM_BUTTON_AVAILABLE_NEAR_BALL");
    swing.aimButton.onClick.Invoke();yield return new WaitForSeconds(.35f);yield return Frame();
-   Check(app.view.GolfAiming&&Mathf.Abs(Vector3.Dot(Camera.main.transform.position-actor.transform.position,right)-app.view.golfShoulderOffset)<.03f&&swing.aimLabel.text=="取消瞄准","AIM_BUTTON_ENTERS_EXISTING_LEFT_SHOULDER_FRAMING");
+   Check(app.view.GolfAiming&&Mathf.Abs(Vector3.Dot(Camera.main.transform.position-ball.Body.position,right)-app.view.golfShoulderOffset)<.03f&&swing.aimLabel.text.StartsWith("Cancel"),"AIM_BUTTON_LOCKS_BALL_AND_FRAMES_SHOT");
    foreach(float pitch in new[]{16f,25f}){
     app.view.pitch=pitch;yield return new WaitForSeconds(.35f);yield return Frame();
     Check(Physics.Linecast(Camera.main.transform.position,ball.Body.position,out var viewHit,(1<<0)|(1<<8),QueryTriggerInteraction.Ignore)&&viewHit.collider==ball.GetComponent<SphereCollider>(),"THIRD_PERSON_SEES_FOOT_BALL_WITHOUT_PLAYER_OCCLUSION_"+pitch);
@@ -71,10 +71,10 @@ namespace WhatTheFish {
    var mask=Camera.main.cullingMask;Camera.main.cullingMask=mask&~(1<<10);Capture("tee-without-grass");Camera.main.cullingMask=mask;
    swing.aimButton.onClick.Invoke();yield return new WaitForSeconds(.1f);yield return Frame();
    Check(!app.view.GolfAiming&&Mathf.Abs(Vector3.Dot(Camera.main.transform.position-actor.transform.position,right))<.001f,"SECOND_AIM_CLICK_RETURNS_TO_CENTRED_CAMERA");Capture("tee-aim-cancelled");
-   swing.aimButton.onClick.Invoke();app.view.mode=0;app.view.pitch=48;yield return Frame();yield return null;
-   Check(!app.view.GolfAiming&&!swing.aimButton.gameObject.activeSelf,"FIRST_PERSON_CLEARS_AIM_AND_KEEPS_EXISTING_CAMERA");Capture("tee-first-person");
+   app.view.mode=0;app.view.pitch=48;yield return Frame();yield return null;
+   Check(!app.view.GolfAiming&&swing.aimButton.gameObject.activeSelf,"FIRST_PERSON_ROAM_REMAINS_AVAILABLE_WITH_AIM_ENTRY");Capture("tee-first-person");
    app.view.mode=2;yield return Frame();yield return null;
-   Check(!app.view.GolfAiming&&!swing.aimButton.gameObject.activeSelf,"ELEVATED_VIEW_REMAINS_UNCHANGED");
+   Check(!app.view.GolfAiming&&swing.aimButton.gameObject.activeSelf,"ELEVATED_ROAM_REMAINS_AVAILABLE_WITH_AIM_ENTRY");
    app.view.mode=1;yield return Frame();swing.aimButton.onClick.Invoke();app.view.ClearMatchInput();yield return Frame();
    Check(!app.view.GolfAiming&&Mathf.Abs(Vector3.Dot(Camera.main.transform.position-actor.transform.position,right))<.001f,"ROUND_RESET_CLEARS_LOCAL_AIM_STATE");
    app.view.enabled=false;Camera.main.transform.position=ball.Body.position+new Vector3(.13f,.10f,.17f);Camera.main.transform.LookAt(ball.Body.position);Camera.main.nearClipPlane=.01f;yield return Frame();Capture("tee-close");
@@ -156,7 +156,7 @@ namespace WhatTheFish {
     Check(Vector3.Distance(anchored,ball.Body.position)<.001f&&!ball.Body.useGravity&&!ball.Body.isKinematic&&ball.Body.detectCollisions&&ball.Body.linearVelocity==Vector3.zero&&ball.Body.angularVelocity==Vector3.zero,"RESTING_SLOPE_BALL_STAYS_PUT_WITH_DYNAMIC_COLLISION_RESPONSE_"+angle);
     ball.Strike(downhill*5);Check(ball.Motion==GolfBallMotion.Flying&&ball.Body.useGravity&&ball.StopTimer==0,"NEW_STRIKE_IMMEDIATELY_RELEASES_REST_AND_SPEED_LIMIT_"+angle);
     yield return new WaitForSeconds(.5f);
-    Check(ball.Motion==GolfBallMotion.FastRolling&&ball.Body.linearVelocity.magnitude>4.5f,"FAST_DOWNHILL_BALL_REMAINS_FREE_"+angle);
+    Check(ball.Motion==GolfBallMotion.FastRolling&&ball.Body.linearVelocity.magnitude>2&&ball.Body.linearVelocity.magnitude<4.95f,"FAST_DOWNHILL_BALL_ROLLS_WITH_TURF_RESISTANCE_"+angle);
    }
    plate.transform.rotation=Quaternion.identity;Physics.SyncTransforms();
    ball.Place(Rest(),true);ball.Strike(Vector3.right*.08f);
@@ -194,18 +194,18 @@ namespace WhatTheFish {
    foreach(float charge in new[]{.08f,.8f}){
     ball.Place(Rest(),true);PlaceActor(actor,plate.transform.position+new Vector3(0,.14f,-.9f));yield return new WaitForSeconds(.2f);var count=match.Player(actor).TotalStroke;
     Check(match.TrySwing(actor,ball.Owner,0,charge,match.Round),"QUALIFIED_SWING_ACCEPTED_"+charge);var reset=ball.ResetSequence;float speed=0,peakY=ball.Body.position.y;var start=ball.Body.position;
-    float until=Time.time+.6f;while(Time.time<until){speed=Mathf.Max(speed,ball.Body.linearVelocity.magnitude);peakY=Mathf.Max(peakY,ball.Body.position.y);yield return new WaitForFixedUpdate();}
+    float until=Time.time+.6f;while(Time.time<until){speed=Mathf.Max(speed,ball.Velocity.magnitude);peakY=Mathf.Max(peakY,ball.Body.position.y);yield return new WaitForFixedUpdate();}
     File.AppendAllText(report,$"SWING charge={charge:F2} peakSpeed={speed:F3} heightGain={peakY-start.y:F3} travel={Vector3.Distance(start,ball.Body.position):F3} strokes={match.Player(actor).TotalStroke}\n");
     Check(match.Player(actor).TotalStroke==count+1&&ball.ResetSequence==reset&&Vector3.Distance(start,ball.Body.position)>.1f,"ONLY_SWING_COUNTS_ONCE_AND_MOVES_FREE_BALL_"+charge);
-    if(charge<.25f){puttSpeed=speed;Check(peakY-start.y<.1f&&speed>1,"LIGHT_SWING_PUTTS_ON_SURFACE");}else Check(speed>puttSpeed*2&&peakY-start.y>.05f,"SHORT_CHARGED_SWING_ACCELERATES_AND_LOFTS_BALL");
+    if(charge<.25f){puttSpeed=speed;Check(peakY-start.y>.25f&&speed>1,"LOW_POWER_DISTANCE_SWING_STILL_HAS_LOFT");}else Check(speed>puttSpeed*2&&peakY-start.y>.05f,"SHORT_CHARGED_SWING_ACCELERATES_AND_LOFTS_BALL");
     yield return new WaitForSeconds(.3f);
    }
    plate.transform.rotation=Quaternion.identity;Physics.SyncTransforms();ball.Place(Rest(),true);PlaceActor(actor,plate.transform.position+new Vector3(0,.14f,-.9f));yield return new WaitForSeconds(.3f);
    var fullStart=ball.Body.position;var fullCount=match.Player(actor).TotalStroke;var fullReset=ball.ResetSequence;horizontalLaunch=horizontalLaunchPeak=0;monitoredSwing=ball;
-   Check(match.TrySwing(actor,ball.Owner,0,1,match.Round),"FULL_CHARGE_EIGHTEEN_METRE_PER_SECOND_SWING_ACCEPTED");yield return new WaitForSeconds(.8f);monitoredSwing=null;
+   Check(match.TrySwing(actor,ball.Owner,0,1,match.Round),"FULL_CHARGE_SWING_ACCEPTED");yield return new WaitForSeconds(.8f);monitoredSwing=null;
    float fullTravel=Vector3.ProjectOnPlane(ball.Body.position-fullStart,Vector3.up).magnitude;
    File.AppendAllText(report,$"FULL_CHARGE launchHorizontal={horizontalLaunch:F5} subsequentHorizontalPeak={horizontalLaunchPeak:F5} travel={fullTravel:F5} state={ball.Motion} strokes={match.Player(actor).TotalStroke}\n");
-   Check(Mathf.Abs(horizontalLaunch-18f)<.001f,"FULL_CHARGE_CONTACT_LAUNCHES_AT_EIGHTEEN_METRES_PER_SECOND");
+   Check(Mathf.Abs(horizontalLaunch-ball.PhysicsSettings.maximumSwingSpeed)<.001f,"FULL_CHARGE_CONTACT_USES_CONFIGURED_HORIZONTAL_SPEED");
    Check(fullTravel>5.5f&&ball.Motion!=GolfBallMotion.Resting,"FULL_CHARGE_TRAVELS_BEYOND_PREVIOUS_FIVE_METRE_CAP");
    Check(match.Player(actor).TotalStroke==fullCount+1&&ball.ResetSequence==fullReset,"FULL_CHARGE_COUNTS_ONCE_WITHOUT_FORCED_RECOVERY");
    ball.Place(match.TeePosition(1,ball.Owner),true);Destroy(plate);yield return null;

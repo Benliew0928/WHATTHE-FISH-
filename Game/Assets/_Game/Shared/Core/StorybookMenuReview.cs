@@ -114,7 +114,7 @@ namespace WhatTheFish {
   IEnumerator Network(){
    yield return Wait(()=>app.rooms.Connected&&NetworkAthlete.HostPlayer&&FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Count(p=>p.IsSpawned)==2,"two matching protocol players connected",55);yield return Settled();
    if(!app.rooms.Connected)yield break;
-   Check(RoomService.ProtocolVersion==25,"basketball steal/golf/menu protocol 25");
+   Check(RoomService.ProtocolVersion==38,"combined sports/fishing protocol 38");
    var own=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
    if(role=="host"){
     Check(MenuMatchRules.SetMinutes(5),"host can set conditions");

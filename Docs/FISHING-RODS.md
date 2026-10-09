@@ -4,7 +4,7 @@ The blue/lime and teal/orange Meshy rods are independent Unity prefabs placed in
 
 ## View in the game
 
-Run `Builds/FishingRods/Preview/Review-Fishing-Rods.cmd` to open the retained Windows preview. Seven buttons show both rods, each reel, their reverse sides, guide loops, the distance LOD and the pier context. The walk-around button restores the normal player camera. Normal gameplay and Android use the same placed assets; only the review controls are development-only.
+Run `Builds/WindowsFinal/Review-Fishing-Rods.cmd` to open the current complete Windows player. Seven buttons show both rods, each reel, their reverse sides, guide loops, the distance LOD and the pier context. The walk-around button restores the normal player camera. Normal gameplay and Android use the same placed assets; only the review controls are development-only.
 
 Actual player captures are under `Builds/FishingRods/20261001/Player-Compact/`. These use Unity's Windows renderer, not Meshy or a generated mockup. They do not establish Android texture appearance or phone FPS.
 

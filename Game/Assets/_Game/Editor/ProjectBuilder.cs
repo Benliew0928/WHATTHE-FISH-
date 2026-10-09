@@ -46,7 +46,7 @@ public static partial class ProjectBuilder {
   // The animation-only FBX has one root. Retain it so curve paths match the
   // mesh FBX's RainbowSprinterRig/... hierarchy instead of starting at Hips.
   idleImporter.preserveHierarchy=true;
-  idleImporter.animationCompression=ModelImporterAnimationCompression.Off;
+  AnimationDeliveryOptimizer.Configure(idleImporter);
   var idleTakes=idleImporter.defaultClipAnimations;
   if(idleTakes.Length!=1)throw new Exception("Rainbow Sprinter idle must contain exactly one take.");
   idleTakes[0].name="Idle_Playful";idleTakes[0].loopTime=true;idleTakes[0].loopPose=false;
@@ -58,7 +58,7 @@ public static partial class ProjectBuilder {
    if(!importer)throw new Exception("Export turn_rainbow_sprinter.py before rebuilding: "+turnName);
    importer.globalScale=1;importer.useFileScale=true;importer.preserveHierarchy=true;importer.animationType=ModelImporterAnimationType.Generic;
    importer.importAnimation=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;
-   importer.animationCompression=ModelImporterAnimationCompression.Off;
+   AnimationDeliveryOptimizer.Configure(importer);
    var takes=importer.defaultClipAnimations;if(takes.Length!=1)throw new Exception("Turn must contain one take");
    takes[0].name=turnName;takes[0].loopTime=false;takes[0].loopPose=false;importer.clipAnimations=takes;importer.SaveAndReimport();
    turnClips.Add(turnName,AssetDatabase.LoadAllAssetsAtPath(turnPath).OfType<AnimationClip>().Single(c=>c.name==turnName));
@@ -68,7 +68,7 @@ public static partial class ProjectBuilder {
    var path=Root+"Art/RainbowSprinter"+name+".fbx";var importer=AssetImporter.GetAtPath(path) as ModelImporter;
    if(!importer)throw new Exception("Export tackle_rainbow_sprinter.py before rebuilding: "+name);
    importer.globalScale=1;importer.useFileScale=true;importer.preserveHierarchy=true;importer.animationType=ModelImporterAnimationType.Generic;
-   importer.importAnimation=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;importer.animationCompression=ModelImporterAnimationCompression.Off;
+   importer.importAnimation=true;importer.importCameras=false;importer.importLights=false;importer.materialImportMode=ModelImporterMaterialImportMode.None;AnimationDeliveryOptimizer.Configure(importer);
    var takes=importer.defaultClipAnimations;if(takes.Length!=1)throw new Exception("Football action must have one take");
    takes[0].name=name;takes[0].loopTime=false;takes[0].loopPose=false;importer.clipAnimations=takes;importer.SaveAndReimport();
    footballClips.Add(name,AssetDatabase.LoadAllAssetsAtPath(path).OfType<AnimationClip>().Single(c=>c.name==name));
@@ -202,7 +202,11 @@ public static partial class ProjectBuilder {
   var outputDirectory=Path.GetDirectoryName(playerPath);
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Fishing.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Golf.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
-  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade, detailed exterior and walkable routes\nBasketball: B1 open-air coastal arena and walkable routes\nGolf: G2 Limestone Cove Links, detailed coastal materials, pavilion and walking routes\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player); protocol 35\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-Basketball.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Basketball -offline\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-SkySail.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -skyStation\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Review-Fishing-Rods.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Fishing -fishingRodPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Review-Golf-Equipment.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Golf -golfEquipmentPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade with dash, pressure and sports minimap\nBasketball: B1 coastal arena with sports minimap\nGolf: G2 Limestone Cove Links with aim lock, cycling power and physical shot guide\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player)\nMultiplayer: combined protocol 38; matching builds required\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildFootballMatchVerification(){Build(BuildTarget.StandaloneWindows64,"../Builds/FootballMatchQA/Player/WhatTheFish.exe");}
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}

@@ -7,20 +7,17 @@ namespace WhatTheFish {
   public Button button;public Text label,cancelLabel;public RectTransform cancelArea;public bool pass;
   int pointer=int.MinValue;bool pressed,tracking;Vector2 pressPosition;
   public const float SelectDistance=48,ReturnDistance=26;
-  void Update(){
+  void Update()=>Refresh();
+  public void Refresh(){
    var view=PlayerView.Instance;var ball=BasketballBall.Active;
    button.interactable=view&&view.active&&ball&&ball.CanShoot(view.target)&&(pass?!view.ShotCharging:!view.PassCharging);
    bool holding=view&&(pass?view.PassCharging:view.ShotCharging);
    if(tracking&&(!button.interactable||!view))ResetGesture();else if(pressed&&!holding)CancelGesture();
    if(cancelArea)cancelArea.gameObject.SetActive(tracking||holding);
    if(!tracking&&holding&&cancelLabel)cancelLabel.text=Application.isMobilePlatform?"Cancel":"Cancel [X]";
-   if(pass){label.fontSize=18;label.text=holding?$"{BasketballPassRules.Name(view.PassBend)} {Mathf.RoundToInt(view.PassPower*100)}% · {BasketballPassRules.Range(view.PassPower,view.PassBend):F1} m\nUP Loft / DOWN Bounce\nRelease to pass":button.interactable?(Application.isMobilePlatform?"Hold to pass\nUP Loft / DOWN Bounce":"Hold Q to pass\nUP Loft / DOWN Bounce"):ball&&ball.ActionQueued?"Passing...":"Pass";return;}
-   bool charging=view&&view.ShotCharging;
-   string selected=charging?view.ShotFinish.ToString():"Shot";
-   var reason=charging&&view.ShotFinish!=BasketballFinish.Shot?view.FinishAvailability:BasketballFinishReason.Ready;
-   string release=view&&view.ShotFinish!=BasketballFinish.Shot?(reason==BasketballFinishReason.Ready?(view.ShotFinish==BasketballFinish.Dunk?"Release: dunk":"Release: 85% chance"):"Release: normal shot"):"Release in green";
-   if(!pass)label.fontSize=charging?18:20;
-   label.text=view&&view.target&&view.target.BasketballFreeRoam?"Free roam":button.interactable?(pass?(Application.isMobilePlatform?"Pass":"Pass [Q]"):charging?selected+": "+BasketballFinishRules.ShortHint(reason)+"\n"+release+"\nUP Dunk / DOWN Layup":(Application.isMobilePlatform?"Hold to shoot\nUP Dunk / DOWN Layup":"Hold E to shoot\nUP Dunk / DOWN Layup")):ball&&ball.ActionQueued?"Gathering...":ball&&ball.Held?"Ball held":"Walk to ball";
+   label.fontSize=22;
+   if(pass){label.text=holding?$"{BasketballPassRules.Name(view.PassBend)}\n{Mathf.RoundToInt(view.PassPower*100)}%":ball&&ball.ActionQueued?"Passing...":GameButtonStyle.Caption("Pass","Q");return;}
+   label.text=view&&view.target&&view.target.BasketballFreeRoam?"Free roam":holding?view.ShotFinish.ToString()+"\nRelease":ball&&ball.ActionQueued?"Gathering...":GameButtonStyle.Caption("Shoot","E");
   }
   public void OnPointerDown(PointerEventData data){if(data.button!=PointerEventData.InputButton.Left||!button.interactable||tracking||!PlayerView.Instance)return;if(pass?PlayerView.Instance.BeginPass(data.pointerId):PlayerView.Instance.BeginShot(data.pointerId)){pressed=tracking=true;pointer=data.pointerId;pressPosition=data.position;if(cancelLabel)cancelLabel.text="Cancel";if(cancelArea)cancelArea.gameObject.SetActive(true);}}
   public void OnInitializePotentialDrag(PointerEventData data){data.useDragThreshold=false;}
