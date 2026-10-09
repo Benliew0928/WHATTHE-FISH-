@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b1448a377ee9458f9806eec4c151d43a, type: 3}
+  m_Name: FishingUILayout
+  m_EditorClassIdentifier:
+  margin: 20
+  gap: 16
+  compactAspect: 1.45
+  portraitScale: 1.6
+  actionSize: {x: 235, y: 235}
+  cancelSize: {x: 150, y: 76}
+  clockSize: {x: 390, y: 174}
+  gaugeSize: {x: 574, y: 144}
+  cameraSize: {x: 148, y: 66}
+  jumpSize: {x: 172, y: 72}
+  returnSize: {x: 250, y: 62}
+  joystickSize: {x: 176, y: 176}
+  aimAnchor: {x: 0.5, y: 0.5}
+  aimSize: {x: 54, y: 54}
+  aimAcquireDegrees: 8
+  aimReleaseDegrees: 10

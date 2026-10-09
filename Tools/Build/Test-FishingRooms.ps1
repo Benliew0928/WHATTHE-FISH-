@@ -1,11 +1,12 @@
+param([string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $out=Join-Path $root ('Builds\FishingRoomsQA-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out | Out-Null
-$player=Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'
+$player=if($PlayerPath){$PlayerPath}else{Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'}
 $processes=[Collections.Generic.List[System.Diagnostics.Process]]::new()
 function Launch([string]$name,[string]$role,[string]$sport='Golf',[int]$duration=55){
- $arguments="-batchmode -nographics -job-worker-count 2 -probe -sport $sport $role -port 7906 -expected 5 -startAt 22 -returnAt 36 -report $out\$name.txt -exitAfter $duration -logFile $out\$name.log"
+ $arguments="-batchmode -nographics -job-worker-count 2 -probe -sport $sport $role -port 7906 -expected 5 -startAt 22 -returnAt 36 -report `"$out\$name.txt`" -exitAfter $duration -logFile `"$out\$name.log`""
  $processes.Add((Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru))
 }
 function Await([string]$name,[string]$pattern,[int]$seconds=30){

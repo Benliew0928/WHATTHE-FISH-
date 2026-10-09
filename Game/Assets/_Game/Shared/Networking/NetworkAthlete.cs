@@ -7,6 +7,7 @@ namespace WhatTheFish {
  public sealed class NetworkAthlete:NetworkBehaviour {
   public static NetworkAthlete HostPlayer;
   public NetworkVariable<bool> Ready=new(false);
+  public NetworkVariable<FixedString64Bytes> Nickname=new();
   public NetworkVariable<bool> Exploring=new(false);
   public NetworkVariable<int> FootballMinutes=new(0);
   public NetworkVariable<SportId> WorldSport=new(SportId.Football);
@@ -32,6 +33,9 @@ namespace WhatTheFish {
   public NetworkList<GolfPlayerRecord> GolfPlayers=new();
   public NetworkVariable<GolfBallSnapshot> GolfBall=new();
   public NetworkVariable<GolfClubState> GolfPose=new();
+  public NetworkVariable<FishingMatchSnapshot> FishingMatch=new();
+  public NetworkList<FishingPlayerRecord> FishingPlayers=new();
+  public NetworkList<FishingFishRecord> FishingFish=new();
   bool sentGolfCharge;uint sentGolfRound;float sentGolfHeading;
   Athlete athlete; PlayerCommand command; float lastInput; float sendTimer;
   public override void OnNetworkSpawn(){
@@ -39,12 +43,14 @@ namespace WhatTheFish {
    if(IsServer){athlete.capsule.enabled=false;var used=NetworkManager.ConnectedClientsList.Where(c=>c.ClientId!=OwnerClientId&&c.PlayerObject).Select(c=>c.PlayerObject.transform.position).ToArray();var spawns=AppRoot.Instance.environments.Definition(AppRoot.Instance.rooms.Sport).spawnPositions;var spawn=spawns.FirstOrDefault(p=>used.All(q=>Vector3.Distance(p,q)>1));if(spawn==Vector3.zero)spawn=spawns[0];transform.position=spawn;GetComponent<Unity.Netcode.Components.NetworkTransform>().Teleport(spawn,Quaternion.identity,Vector3.one);athlete.capsule.enabled=true;}
    if(OwnerClientId==NetworkManager.ServerClientId){HostPlayer=this;if(IsServer){FootballMinutes.Value=MenuMatchRules.OverrideMinutes;WorldSport.Value=AppRoot.Instance.rooms.Sport;WorldAppearance.Value=JsonUtility.ToJson(LocalProfile.ForSport(WorldSport.Value));}}
    AppearanceData.OnValueChanged+=OnAppearance;OnAppearance(default,AppearanceData.Value);
-   if(IsOwner){AppearanceRpc(JsonUtility.ToJson(LocalProfile.Character));AppRoot.Instance.LocalAthlete=athlete;}
+   if(IsOwner){AppearanceRpc(JsonUtility.ToJson(LocalProfile.Character));NicknameRpc(CleanNickname(PlayerPrefs.GetString("fishing.nickname",OwnerClientId==0?"HOST":"FRIEND "+OwnerClientId)));AppRoot.Instance.LocalAthlete=athlete;}
   }
   public override void OnNetworkDespawn(){GolfCartWorld.Forget(athlete);AppearanceData.OnValueChanged-=OnAppearance;if(HostPlayer==this)HostPlayer=null;}
   void OnAppearance(FixedString128Bytes oldValue,FixedString128Bytes newValue){if(newValue.Length>0)athlete.Appearance(JsonUtility.FromJson<CharacterAppearance>(newValue.ToString()));}
   [Rpc(SendTo.Server)] public void AppearanceRpc(FixedString128Bytes json){var a=JsonUtility.FromJson<CharacterAppearance>(json.ToString());a.Clamp();AppearanceData.Value=JsonUtility.ToJson(a);}
   [Rpc(SendTo.Server)] public void ReadyRpc(bool value){Ready.Value=value;}
+  public static string CleanNickname(string value)=>new string((value??"").Where(c=>char.IsLetterOrDigit(c)||c==' '||c=='_'||c=='-').Take(16).ToArray()).Trim();
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void NicknameRpc(FixedString64Bytes value){string text=CleanNickname(value.ToString());Nickname.Value=text.Length>0?text:OwnerClientId==0?"HOST":"FRIEND "+OwnerClientId;}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseFootballTeamRpc(FootballTeam team,uint selectionRevision){if(IsSpawned&&FootballMatch.Instance)FootballMatch.Instance.ChooseTeam(athlete,team,selectionRevision);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void TravelReadyRpc(uint sequence){if(HostPlayer&&HostPlayer.WorldTravel.Value.phase==SkySailPhase.Preparing&&HostPlayer.WorldTravel.Value.sequence==sequence)TravelReady.Value=sequence;}
   [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool charging,bool guard,uint defensePlay,uint round,float passBend){
@@ -67,6 +73,7 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfCartRpc(GolfCartAction action,ulong cartOwner){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf)GolfCartWorld.Execute(athlete,action,cartOwner);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfSwingRpc(ulong ballOwner,float heading,float charge,uint round){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf&&GolfMatchManager.Instance)GolfMatchManager.Instance.TrySwing(athlete,ballOwner,heading,charge,round);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfChargeRpc(bool charging,ulong ballOwner,float heading,uint round){if(IsSpawned&&GolfMatchManager.Instance)GolfMatchManager.Instance.SetCharging(athlete,charging,ballOwner,heading,round);}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void FishingRpc(FishingAction action,uint round,uint sequence,int fish=-1){if(IsSpawned&&FishingGame.Instance)FishingGame.Instance.Execute(athlete,action,round,sequence,fish);}
   void Update(){if(!IsSpawned)return;
    if(IsOwner){
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
@@ -81,6 +88,7 @@ namespace WhatTheFish {
     if(c.cartAction!=GolfCartAction.None&&exploring)GolfCartRpc(c.cartAction,c.cartOwner);
     bool golfCharge=c.golfCharging&&exploring;
     if(sentGolfCharge!=golfCharge||sentGolfRound!=c.golfRound||golfCharge&&Mathf.Abs(Mathf.DeltaAngle(sentGolfHeading,c.heading))>3){sentGolfCharge=golfCharge;sentGolfRound=c.golfRound;sentGolfHeading=c.heading;GolfChargeRpc(golfCharge,c.golfBallOwner,c.heading,c.golfRound);}
+    if(c.fishingAction!=FishingAction.None&&exploring)FishingRpc(c.fishingAction,c.fishingRound,c.fishingSequence,c.fishingFish);
     if(c.golfSwing&&exploring)GolfSwingRpc(c.golfBallOwner,c.heading,c.golfCharge,c.golfRound);
    }
    if(!IsServer){GolfCartWorld.Receive(athlete,Cart.Value);athlete.BasketballFreeRoam=BasketballFreeRoam.Value;athlete.BasketballMotion.Receive(BasketballPose.Value);athlete.FootballMotion.Receive(FootballPose.Value);athlete.GolfClubMotion.Receive(GolfPose.Value);athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}

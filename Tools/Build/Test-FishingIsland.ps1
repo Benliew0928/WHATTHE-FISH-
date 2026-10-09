@@ -1,12 +1,13 @@
-param([switch]$Headless,[switch]$WithoutPresentation)
+param([switch]$Headless,[switch]$WithoutPresentation,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $out=Join-Path $root ('Builds\FishingQA-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out | Out-Null
-$arguments=@('-batchmode','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-probe','-sport','Fishing','-fishingAudit','-report',"$out\fishing.txt",'-exitAfter','30','-logFile',"$out\player.log")
+if(!$PlayerPath){$PlayerPath=Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe'}
+$arguments=@('-batchmode','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-probe','-sport','Fishing','-fishingAudit','-report',"`"$out\fishing.txt`"",'-exitAfter','30','-logFile',"`"$out\player.log`"")
 if($Headless){$arguments+='-nographics'}
 if($WithoutPresentation){$arguments+='-withoutLagoonPresentation'}
-$process=Start-Process -FilePath (Join-Path $root 'Builds\WindowsFinal\WhatTheFish.exe') -ArgumentList $arguments -WindowStyle Hidden -PassThru
+$process=Start-Process -FilePath $PlayerPath -ArgumentList $arguments -WindowStyle Hidden -PassThru
 $null=$process.Handle
 try {
  if(!$process.WaitForExit(90000)){throw "Fishing audit exceeded 90 seconds: $out"}

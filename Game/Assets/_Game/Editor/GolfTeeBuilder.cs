@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using WhatTheFish;
@@ -27,7 +28,10 @@ public static class GolfTeeBuilder {
    float shade=.94f+.04f*wave+.035f*(fine-.5f)+.055f*(broad-.5f);
    grain.SetPixel(x,y,new Color(.98f,.80f,.52f)*shade);
   }
-  grain.Apply();File.WriteAllBytes(texturePath,grain.EncodeToPNG());UnityEngine.Object.DestroyImmediate(grain);AssetDatabase.ImportAsset(texturePath);
+  grain.Apply();var textureBytes=grain.EncodeToPNG();UnityEngine.Object.DestroyImmediate(grain);
+  // Leave an identical imported file in place: Windows can still map it during a refresh.
+  if(!File.Exists(texturePath)||!File.ReadAllBytes(texturePath).SequenceEqual(textureBytes))File.WriteAllBytes(texturePath,textureBytes);
+  AssetDatabase.ImportAsset(texturePath);
   var importer=(TextureImporter)AssetImporter.GetAtPath(texturePath);importer.textureType=TextureImporterType.Default;importer.sRGBTexture=true;importer.mipmapEnabled=true;importer.isReadable=false;importer.alphaSource=TextureImporterAlphaSource.None;importer.wrapMode=TextureWrapMode.Repeat;importer.maxTextureSize=128;importer.textureCompression=TextureImporterCompression.CompressedHQ;
   importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings{name="Android",overridden=true,maxTextureSize=128,format=TextureImporterFormat.ASTC_6x6,compressionQuality=100});importer.SaveAndReimport();
   var material=AssetDatabase.LoadAssetAtPath<Material>(Art+"WoodTee.mat");if(!material){material=new Material(Shader.Find("Universal Render Pipeline/Lit"));AssetDatabase.CreateAsset(material,Art+"WoodTee.mat");}

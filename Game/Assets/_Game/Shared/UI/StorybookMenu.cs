@@ -116,7 +116,7 @@ namespace WhatTheFish {
   void Footer(string value) {Text(content,value,150,830,1300,40,22,false,Ink,TextAnchor.MiddleCenter);}
   void CardTitle(Transform parent,string title,string caption,float y=28) {Text(parent,title,36,y,1100,49,32,true);if(!string.IsNullOrEmpty(caption))Text(parent,caption,36,y+51,1100,58,23,false,Muted);}
   void Badge(Transform parent,string text,float x,float y,float w,Color? color=null) {var p=Plate(parent,"Badge",x,y,w,39,color??Sky,18,0);Text(p.transform,text,10,0,w-20,39,19,true,null,TextAnchor.MiddleCenter);}
-  static string SportCaption(SportId sport)=>sport switch {SportId.Football=>"Team matches & kickabouts",SportId.Basketball=>"Dribble, pass & shoot",SportId.Golf=>"Five holes. Fewest strokes.",_=>"A peaceful place to explore"};
+  static string SportCaption(SportId sport)=>sport switch {SportId.Football=>"Team matches & kickabouts",SportId.Basketball=>"Dribble, pass & shoot",SportId.Golf=>"Five holes. Fewest strokes.",_=>"Cast, catch & compete with friends"};
   void Home() {
    Image(content,"Official logo",Resources.Load<Sprite>("Menu/WhatTheFishLogo"),26,14,230,200);
    Text(content,"Let's play!",285,19,700,112,70,true);Text(content,"Four little islands. One big day out.",292,131,700,43,27);
@@ -137,7 +137,7 @@ namespace WhatTheFish {
    var custom=Button(panel.transform,"Customize venue","Customize\nvenue",33,602,206,83,Color.white,()=>Go("custom"),CoveSymbol.Paint,23);custom.interactable=CanCustomize;
    Button(panel.transform,"How to play","How to\nplay",254,602,203,83,Color.white,()=>Go("help"),CoveSymbol.Book,23);
    Badge(panel.transform,"Selected: "+app.SelectedSport,33,722,424,Gold);
-   Footer(app.SelectedSport==SportId.Fishing?"Fishing is an exploration island for now. Meet, wander and ride the Sky-Sail together.":"Choose your island  •  Invite your friends  •  Travel together on the Sky-Sail");
+   Footer(app.SelectedSport==SportId.Fishing?"Fish together: a timed round, a three-round Cup or a shared Crew Catch.":"Choose your island  •  Invite your friends  •  Travel together on the Sky-Sail");
    if(!string.IsNullOrEmpty(app.rooms.Error))NoticeLater(app.rooms.Error);
   }
   void NoticeLater(string value){StartCoroutine(DeferredNotice(value));}
@@ -170,7 +170,7 @@ namespace WhatTheFish {
    message=Text(content,"",100,704,803,60,22,false,Muted);
    Footer("Your device hosts the room. Keep the game open while your friends play.");
   }
-  string RuleSummary()=>app.SelectedSport switch {SportId.Football=>MenuMatchRules.CurrentMinutes+" min match  •  1 min overtime  •  2–10 players",SportId.Basketball=>"Shared practice  •  2 and 3 point shots",SportId.Golf=>"5 holes  •  30-second finish countdown",_=>"Free exploration  •  No score or time limit"};
+  string RuleSummary()=>app.SelectedSport switch {SportId.Football=>MenuMatchRules.CurrentMinutes+" min match  •  1 min overtime  •  2–10 players",SportId.Basketball=>"Shared practice  •  2 and 3 point shots",SportId.Golf=>"5 holes  •  30-second finish countdown",_=>"3-minute rounds  •  Cup or Crew Catch  •  1–5 players"};
   void JoinRoom() {
    Heading("Meet your crew","Ask your host for the room code, then hop aboard.");
    var p=Plate(content,"Join invitation",105,184,1390,600,Cream,35,2,true);
@@ -235,7 +235,7 @@ namespace WhatTheFish {
     Detail(p.transform,"If it's a tie","One minute of overtime",40,382,788);
     Detail(p.transform,"Before kickoff","10 seconds to pick teams; then a 3-second countdown",40,464,788);
    }else{
-    var rows=app.SelectedSport==SportId.Basketball?new[]{("Play style","Shared practice. Dribble, shoot and pass."),("Points","2 inside the arc; 3 outside the arc."),("Shooting","Hold, aim for the sweet spot, then release."),("Free roam","Use Free roam to explore without the ball.")}:app.SelectedSport==SportId.Golf?new[]{("Course","Five holes; each player progresses independently."),("Finish","First finisher starts a shared 30-second countdown."),("Ranking","Fewest strokes, then the fastest finish time."),("Ball play","You can strike any active ball; only the hitter gains a stroke.")}:new[]{("Play style","Explore the lagoon, bridge and five fishing decks."),("Scoring","No score or time limit on this island."),("Travel","The host can take everyone to another island."),("Fishing","Fishing mechanics are not available yet.")};
+    var rows=app.SelectedSport==SportId.Basketball?new[]{("Play style","Shared practice. Dribble, shoot and pass."),("Points","2 inside the arc; 3 outside the arc."),("Shooting","Hold, aim for the sweet spot, then release."),("Free roam","Use Free roam to explore without the ball.")}:app.SelectedSport==SportId.Golf?new[]{("Course","Five holes; each player progresses independently."),("Finish","First finisher starts a shared 30-second countdown."),("Ranking","Fewest strokes, then the fastest finish time."),("Ball play","You can strike any active ball; only the hitter gains a stroke.")}:new[]{("Round & Cup","Highest score after 3 minutes. Cup combines three rounds."),("Fish & bonuses","Small / medium / large: 2 / 5 / 10 points. Wanted catch: +3 once per minute."),("Crew Catch","20 points per player, all three sizes and a catch from everyone."),("Ready together","Choose a mode at a deck. Everyone readies; the host starts.")};
     for(int i=0;i<rows.Length;i++)Detail(p.transform,rows[i].Item1,rows[i].Item2,40,126+i*97,790);
    }
    if(CanEdit&&app.SelectedSport==SportId.Football){
@@ -243,7 +243,7 @@ namespace WhatTheFish {
     ActionButton("Save conditions","Save conditions",1166,808,335,65,Mint,()=>{MenuMatchRules.SetMinutes(draftMinutes);if(history.Count>0)history.Pop();app.Show(returnFromRules);NoticeLater("Conditions saved. Everyone can ready up.");},CoveSymbol.Check,26);
    }else ActionButton("Done conditions","Done",1265,808,237,65,Mint,Back,CoveSymbol.Check);
   }
-  void Detail(Transform parent,string title,string value,float x,float y,float w) {Text(parent,title,x,y,w,32,25,true);Text(parent,value,x,y+35,w,49,23,false,Muted);}
+  void Detail(Transform parent,string title,string value,float x,float y,float w) {Text(parent,title,x,y,w,35,25,true);Text(parent,value,x,y+35,w,49,23,false,Muted);}
   void Customize() {
    if(!hasDraft){draft=app.CurrentAppearance;hasDraft=true;detailPreview=false;}
    Heading("Make it your home ground","Try a look. Preview your venue. Save when it feels right.");
@@ -315,7 +315,7 @@ namespace WhatTheFish {
    Detail(left.transform,"Look around","Drag on the right / hold right mouse and move.",34,242,594);
    Detail(left.transform,"Jump & camera","Jump / Space. Camera / C cycles your view.",34,368,594);
    var right=Plate(content,"Sport instructions",795,267,704,523,Cream,31,2,true);CardTitle(right.transform,app.SelectedSport.ToString(),"");
-   var rows=app.SelectedSport==SportId.Football?new[]{("Kick & tackle","Hold Kick / F, then release. Drag to Cancel to stop. Tackle / E challenges for the ball."),("Play a match","In a room, travel to the pitch. Host starts with 2–10 players in even teams."),("Choose your team","Pick a team before the 10-second countdown ends.")}:app.SelectedSport==SportId.Basketball?new[]{("Shoot","Hold Shoot / E. Release in green; the needle loops faster farther away. Drag to Cancel / X."),("Pass & steal","Q passes. Hold Steal / F to swipe repeatedly; chase the loose ball."),("Explore freely","Switch Free roam on to walk without picking up the ball.")}:app.SelectedSport==SportId.Golf?new[]{("Start & swing","Start golf match. Approach a ball, hold Swing / F, then release to hit."),("Aim & ride","Aim beside Camera adjusts your view. R summons a cart; E drives or leaves it."),("Finish the course","Complete five holes. Fewest strokes wins; the first finisher starts a 30-second countdown.")}:new[]{("Visit the lagoon","Wander the bridge, island and five colourful decks."),("Ride the Sky-Sail","Meet at the station. In a room, the host chooses the next stop for everyone."),("A quiet day out","This island is for exploration. Fishing mechanics will come later.")};
+   var rows=app.SelectedSport==SportId.Football?new[]{("Kick & tackle","Hold Kick / F, then release. Drag to Cancel to stop. Tackle / E challenges for the ball."),("Play a match","In a room, travel to the pitch. Host starts with 2–10 players in even teams."),("Choose your team","Pick a team before the 10-second countdown ends.")}:app.SelectedSport==SportId.Basketball?new[]{("Shoot","Hold Shoot / E. Release in green; the needle loops faster farther away. Drag to Cancel / X."),("Pass & steal","Q passes. Hold Steal / F to swipe repeatedly; chase the loose ball."),("Explore freely","Switch Free roam on to walk without picking up the ball.")}:app.SelectedSport==SportId.Golf?new[]{("Start & swing","Start golf match. Approach a ball, hold Swing / F, then release to hit."),("Aim & ride","Aim beside Camera adjusts your view. R summons a cart; E drives or leaves it."),("Finish the course","Complete five holes. Fewest strokes wins; the first finisher starts a 30-second countdown.")}:new[]{("Aim & hook","At a deck, drag Look to aim. A teal reticle marks your fish. Tap Cast / F, then Hook."),("Reel & release","Hold Reel / F to pull. Release in orange or red. Cancel / X frees the fish."),("Play with friends","Choose Round, Cup or Crew. Everyone readies; host starts. Wanted fish: +3.")};
    for(int i=0;i<rows.Length;i++){Text(right.transform,rows[i].Item1,34,111+i*130,635,35,26,true);Text(right.transform,rows[i].Item2,34,149+i*130,635,77,23,false,Muted);}
    if(!app.rooms.Connected)ActionButton("Try offline","Try it offline",1180,808,320,65,Mint,app.EnterOffline,CoveSymbol.Map,26);
    else Footer("Everyone stays on the same island. Ask the host when you're ready to travel.");

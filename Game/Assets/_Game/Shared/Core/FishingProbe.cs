@@ -19,8 +19,9 @@ namespace WhatTheFish {
    yield return new WaitForSeconds(2);var app=AppRoot.Instance;
    var streaming=app.environments.GetComponent<SkySailStreaming>();
    if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(SportId.Fishing);
-   app.SelectSport(SportId.Fishing);app.Show("sports");yield return null;
-   Check(FindObjectsByType<Text>(FindObjectsSortMode.None).Any(t=>t.text=="Fishing  /  Explore lagoon"),"FISHING_MENU_ENTRY");
+   app.SelectSport(SportId.Fishing);app.Show("sports");
+   while(app.Menu.IsTransitioning)yield return null;
+   Check(app.SelectedSport==SportId.Fishing&&app.Menu.Page=="home"&&app.Menu.Content.GetComponentsInChildren<Button>().Any(b=>b.name=="Island - Fishing"&&b.IsInteractable()),"FISHING_MENU_ENTRY");
    Capture(Path.ChangeExtension(output,"sports.png"));
    app.EnterOffline();yield return new WaitForSeconds(.4f);Physics.SyncTransforms();
    var lagoon=(FishingLagoonView)app.stadium;var def=app.environments.Current;
@@ -39,7 +40,9 @@ namespace WhatTheFish {
    Check(lagoon.GetComponentsInChildren<MeshRenderer>().All(r=>r.sharedMaterials.All(m=>m&&m.shader&&(!graphics||m.shader.isSupported))),graphics?"MATERIALS_SUPPORTED":"MATERIAL_REFERENCES_PRESENT_HEADLESS");
    for(int i=0;i<5;i++){
     var spawn=def.Spawn(i);var stand=lagoon.standingPositions[i];
-    Check(Physics.Raycast(spawn+Vector3.up,Vector3.down,out var floor,3,1<<8)&&Mathf.Abs(floor.point.y-1.2f)<.1f,"SPAWN_FLOOR_"+i);
+    bool supported=Physics.Raycast(spawn+Vector3.up,Vector3.down,out var floor,3,1<<8);
+    Record("SPAWN_SUPPORT_"+i+" hit="+(supported?floor.collider.name:"none")+" point="+floor.point);
+    Check(supported&&floor.normal.y>.9f&&spawn.y-floor.point.y>=-.08f&&spawn.y-floor.point.y<.25f,"SPAWN_FLOOR_"+i);
     IslandTeleport(spawn);Check(FishingWalk(stand),"DECK_ENTRY_"+i+" position="+app.LocalAthlete.transform.position);
     var inward=-new Vector3(stand.x,0,stand.z).normalized;
     for(int k=0;k<120;k++)app.LocalAthlete.Simulate(new PlayerCommand{move=Vector2.up,heading=Mathf.Atan2(inward.x,inward.z)*Mathf.Rad2Deg,sprint=true},.02f);
@@ -53,12 +56,19 @@ namespace WhatTheFish {
      Check(Mathf.Abs(local.x)<3&&app.LocalAthlete.transform.position.y>.9f,"DECK_SIDE_CONTAINMENT_"+i+"_"+side+" local="+local);
     }
    }
-   // Continuous circuit includes a straight crossing of the northern inlet.
-   var circuit=layout.routes.Single(r=>r.name=="Lagoon circuit").points;IslandTeleport(circuit[0]);bool loop=true;
+   // The later Sky-Sail gangway crosses the original scenic circuit. Walk its
+   // shoreward paving edge around the side railing; never teleport across it.
+   // The remaining circuit still includes the straight northern inlet crossing.
+   var circuit=layout.routes.Single(r=>r.name=="Lagoon circuit").points.Select(p=>p.x>34.5f&&Mathf.Abs(p.z)<4?new Vector3(34.5f,p.y,p.z):p).ToArray();IslandTeleport(circuit[0]);bool loop=true;
    foreach(var point in circuit){
-    if(!FishingWalk(point,140)){Record("LOOP_STUCK actual="+app.LocalAthlete.transform.position+" target="+point);loop=false;break;}
+    if(!FishingWalk(point,140)){
+     var actual=app.LocalAthlete.transform.position;
+     Record("LOOP_STUCK actual="+actual+" target="+point);
+     foreach(var blocker in Physics.OverlapSphere(actual+Vector3.up,2,1<<8,QueryTriggerInteraction.Ignore))Record("ROUTE_NEARBY "+blocker.name+" centre="+blocker.bounds.center+" size="+blocker.bounds.size);
+     loop=false;break;
+    }
    }
-   Check(loop,"FULL_COASTAL_LOOP_AND_BRIDGE");
+   Check(loop,"FULL_COASTAL_LOOP_AND_BRIDGE_VIA_STATION_BYPASS");
    for(int i=0;i<5;i++){
     float a=(216+i*72)*Mathf.Deg2Rad;var start=new Vector3(31*Mathf.Sin(a),1.35f,31*Mathf.Cos(a));
     if(i==2)start=new Vector3(0,1.35f,36); // The north gap is water; start on its bridge.

@@ -1,5 +1,99 @@
 # APK size audit — measured release records
 
+## Fishing aim and readability — 9 October 2026
+
+Actual signed APK: **90,047,202 → 90,051,054 bytes (+3,852)**. Headroom to
+the strict limit is **9,948,946 bytes**; the 75 MB development target remains
+exceeded by **15,051,054 bytes**.
+[Release and hash](BUILD-SIZE.md#fishing-aim-and-readability--9-october-2026).
+
+Compressed ZIP entries grow **3,853 bytes**; container/signing overhead shrinks
+**1 byte**. IL2CPP contributes **+3,325**, managed metadata **+374**, Unity
+native code **+123** and remaining data **+31 bytes**. Largest compressed
+entries are IL2CPP **11,450,589 bytes**, Unity **9,095,015 bytes**, metadata
+**2,639,186 bytes** and Java **2,353,635 bytes**. The new reticle and extra fish
+reuse existing code-native graphics and shared assets; no imported art or
+runtime dependency is added.
+
+Serialized assets grow **24 bytes**, from **156,394,605 to 156,394,629 bytes**,
+solely in `FishingUILayout.asset`. This is a different measurement from APK
+bytes. All **1,785 mesh report rows** are byte-identical; fonts and the six HUD
+sprites are unchanged. The sprites still total **88,988 serialized bytes**,
+including **84,336 bytes** of raw ASTC texture blocks. No avoidable large asset
+growth was found. The development target remains unmet.
+
+Current evidence: `Builds/SizeAudit/latest/`, copied to
+`Builds/FishingAimQA/After/SizeAudit/`, plus `release.json`,
+`apk-entry-delta.csv`, `serialized-asset-delta.csv` and `apk-signature.txt`.
+The reviewed previous APK/audit is recoverable in
+`Legacy/20261009-105020-349-fishing-aim-before-android/`.
+
+## Lagoon Stickers fishing — 9 October 2026
+
+Actual signed APK: **89,938,934 → 90,047,202 bytes (+108,268)**. Strict-limit
+headroom is **9,952,798 bytes**; the 75 MB development target remains exceeded
+by **15,047,202 bytes**. [Release and hash](BUILD-SIZE.md#lagoon-stickers-fishing--9-october-2026).
+
+Compressed ZIP entries grow **106,897 bytes**, with **1,371 bytes** of additional
+container/signing overhead. IL2CPP grows **39,653 bytes** and managed metadata
+**4,806 bytes**. Largest compressed entries remain IL2CPP **11,447,264 bytes**,
+Unity native code **9,094,892 bytes**, metadata **2,638,812 bytes** and Java
+**2,353,635 bytes**. The detailed entry comparison is retained in
+`Builds/FishingUXQA/apk-entry-delta.csv`.
+
+Serialized assets grow **93,472 bytes** to **156,394,605 bytes**, a different
+measurement from APK bytes. The six sprites account for **88,988 serialized
+bytes**, including sprite/texture headers. Their raw ASTC 6×6 texture blocks
+total **84,336 bytes**: 64-pixel flame, 128-pixel fish/fisher/clock badges and
+256-pixel frame/reel button. Mipmaps and CPU readability are disabled; Android
+import limits are saved in metadata. The importer and candidate builder enforce
+these limits, while the original 1254-pixel RGBA source PNGs stay editable.
+The shared custom line shader, smaller line material, layout configuration and
+script metadata account for the remaining net growth.
+
+The approved design reference is outside the Unity project. No new mesh,
+animation, audio, package or large shipped dependency appears in the packing
+audit. Existing fish/rod meshes, LODs, materials and Cove fonts are shared.
+The 75 MB shortfall remains unresolved; additional asset packs would consume a
+limited reserve. Current records: `Builds/FishingUXQA/Before/`, `After/SizeAudit/`,
+`release.json`, `serialized-asset-delta.csv`, `apk-signature.txt`, source and
+delivery verification. The superseded intermediate APK is recoverable in
+`Legacy/20261009-015307-440-fishing-intermediate-apk/`.
+
+## Simple lagoon fishing — 7 October 2026
+
+Actual signed APK: **89,865,804 → 89,938,934 bytes (+73,130)**. Strict-limit
+headroom: **10,061,066 bytes**. The 75 MB development target remains exceeded
+by **14,938,934 bytes**. [Release and hash](BUILD-SIZE.md#simple-lagoon-fishing--7-october-2026).
+
+Compressed ZIP entries grow **72,951 bytes**, plus **179 bytes** of container
+and signing overhead. IL2CPP grows **44,113 bytes**, Unity native code
+**22,010 bytes**, managed metadata **6,805 bytes**; Burst shrinks **2,097
+bytes**. Remaining entries grow **2,120 bytes** net. Equal-sized renamed
+entries cancel. Largest compressed entries are IL2CPP **11,407,611 bytes**,
+Unity native code **9,093,495 bytes**, managed metadata **2,634,006 bytes**
+and Android Java **2,353,635 bytes**.
+
+The final hand-grip handoff fix adds **2,396 bytes** to the intermediate
+89,936,538-byte APK, with no further serialized-asset growth. Its immediate
+before APK/record are retained under `Before/grip-handoff-before.*`.
+
+Serialized assets grow **3,256 bytes** to **156,301,133 bytes**. This comprises
+the untextured shared line material (**1,616**), lagoon shader (**876**), lagoon
+material properties (**76**), network-player serialization (**24**) and script
+metadata (**664 bytes**). Development probe execution is excluded from release.
+No imported mesh, texture, animation, audio or runtime package is added. Existing
+LOD meshes/materials are shared; swimming and rod poses use code and the current
+rig. The six-face 128-pixel reflection is captured once, with a sky fallback
+on unsupported devices. No large new dependency or avoidable art growth was found.
+
+The existing 75 MB target shortfall remains unresolved. Authoring masters and
+the current mobile art were preserved; this task does not justify spending the
+remaining reserve on additional asset downloads. Independent v2 verification
+passes. Evidence under `Builds/FishingGameplayQA/`: `Before/`, `After/SizeAudit/`,
+`release.json`, `apk-entry-delta.csv`, `serialized-asset-delta.csv`,
+`apk-signature.txt`, source manifests and source/delivery verification records.
+
 ## Perspective broadcast cameras — 7 October 2026
 
 Actual signed APK: **89,861,552 → 89,864,908 bytes (+3,356)**. Strict-limit
@@ -142,6 +236,37 @@ Evidence under `Builds/BasketballDefenseQA/`: `before.json`, `release.json`,
 `apk-before-entries.json`, `apk-entry-delta.csv`, `packing-summary.json`,
 `apk-signature.txt`, `BeforeSizeAudit/`, `FinalSizeAudit/` and
 `generated-input-verification.json`.
+
+## Fresh clone validation — 7 October 2026
+
+Actual new APK: **89,800,008 bytes**, compared with the previous documented
+**89,803,004 bytes (-2,996)**. Hard-limit headroom is **10,199,992 bytes**;
+the 75 MB development target is exceeded by **14,800,008 bytes**.
+[Build, signature and source limits](BUILD-SIZE.md#fresh-clone-validation--7-october-2026).
+No previous APK existed locally, so an exact entry-by-entry delta is unavailable.
+
+The largest compressed entries are IL2CPP **11,313,392 bytes**, Unity native
+code **9,071,018 bytes**, managed metadata **2,620,296 bytes** and Java code
+**2,353,635 bytes**. Serialized assets total **156,285,329 bytes**, 92 bytes
+above the historical report; this is separate from compressed APK length.
+No new gameplay code, asset or dependency was introduced by local setup, and
+the new measured APK has no overall growth. Resources-only dependencies
+include the existing Golf equipment and menu assets; that report alone is not
+evidence that those assets are unused.
+
+Current per-asset DEFLATE estimates lead with timber **2.258 MB**, Golf
+structures **2.112 MB**, character albedo **2.006 MB**, character mesh
+**1.718 MB**, football stadium **1.568 MB**, basketball stadium **1.373 MB**
+and idle animation **1.088 MB**. These estimates do not partition shared APK
+chunks exactly and are not exact before/after asset deltas. The 75 MB target
+remains unmet; the existing development reserve is constrained.
+
+Evidence: `Builds/LocalSetup/apk-before.json`, `apk-release.json`,
+`apk-signature.txt`, `apk-badging.txt`, `asset-estimates.csv`,
+`generated-input-verification.json`, `source-reconciliation.json` and
+`windows-player-files.json`, plus `Builds/SizeAudit/latest/`. The AndroidSubmission
+gate and independent v2 signature verification passed. Physical-phone testing
+and fresh internet-room testing remain pending.
 
 ## Untimed finishes and shot fallback — 6 October 2026
 

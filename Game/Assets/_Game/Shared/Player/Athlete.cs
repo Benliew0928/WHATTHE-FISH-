@@ -21,7 +21,7 @@ namespace WhatTheFish {
   public bool PresentingJump=>remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
   public float JumpPose=>remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
   public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
-  public bool CanRequestJump=>!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
+  public bool CanRequestJump=>!(FishingGame.Instance&&FishingGame.Instance.Busy(this))&&!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
   public JumpSnapshot JumpState()=>new JumpSnapshot{airborne=Jump.Airborne,preparing=Jump.Preparing,load=Jump.LoadElapsed,velocity=Jump.Velocity,landing=Jump.Landing,sequence=Jump.Sequence};
   public void ApplyJump(JumpSnapshot value){receivedJump=value;}
@@ -66,6 +66,7 @@ namespace WhatTheFish {
    if(BasketballBall.Active){BasketballBall.Active.SetGuard(this,command.guard&&command.defensePlay==BasketballBall.Active.Defense.play,command.heading);if(command.block||command.jumpBlock)BasketballBall.Active.TryBlock(this,command.heading,command.jumpBlock,command.defensePlay);}
    if(BasketballBall.Active){if(command.steal)BasketballBall.Active.TrySteal(this,command.heading);if(command.passBegin)BasketballBall.Active.BeginPassCharge(this,command.heading,command.passPlay);if(command.passCancel)BasketballBall.Active.CancelPassCharge(this,command.passPlay);BasketballBall.Active.AimPass(this,command.heading,command.passBend);if(command.shotBegin)BasketballBall.Active.BeginShotCharge(this,command.heading);if(command.shotCancel)BasketballBall.Active.CancelShotCharge(this);if(command.shoot)BasketballBall.Active.ReleaseShotCharge(this,command.heading,command.shotReleasedAt>0?command.shotReleasedAt:double.NaN,command.finish);else if(command.pass)BasketballBall.Active.ReleasePassCharge(this,command.heading,command.passPlay,command.passReleasedAt,command.passBend);}
    if(GolfMatchManager.Instance&&(!Unity.Netcode.NetworkManager.Singleton||!Unity.Netcode.NetworkManager.Singleton.IsListening))GolfMatchManager.Instance.SetCharging(this,command.golfCharging,command.golfBallOwner,command.heading,command.golfRound);
+   if(FishingGame.Instance&&(!Unity.Netcode.NetworkManager.Singleton||!Unity.Netcode.NetworkManager.Singleton.IsListening))FishingGame.Instance.Input(this,command);
    if(command.golfSwing&&GolfMatchManager.Instance)GolfMatchManager.Instance.TrySwing(this,command.golfBallOwner,command.heading,command.golfCharge,command.golfRound);
    // Bounded sweeps keep low frame rates and short hitches from skipping ceilings.
    int steps=Mathf.Max(1,Mathf.CeilToInt(Mathf.Min(dt,.25f)*60));
@@ -77,6 +78,7 @@ namespace WhatTheFish {
    if(Vector3.Distance(transform.position,lastPosition)>2)ResetLocomotion();
    if(BasketballMotion&&BasketballMotion.Finishing){SimulateFinish(dt);return;}
    var move=Vector2.ClampMagnitude(command.move,1);Vector3 direction=Quaternion.Euler(0,command.heading,0)*new Vector3(move.x,0,move.y);
+   bool fishing=FishingGame.Instance&&FishingGame.Instance.Busy(this);if(fishing)direction=Vector3.zero;
    bool grounded=!Jump.Airborne&&Grounded;
    // Gather on balanced feet, then immediately return control during recovery.
    // Flight retains the shared jump motor's steering and momentum.
@@ -103,6 +105,7 @@ namespace WhatTheFish {
    if(normalTime>0)displacement+=defense?Motor.Strafe(direction,requestedSpeed,grounded&&!Jump.Airborne,BasketballMotion.State.heading,normalTime):Motor.Step(direction,requestedSpeed,grounded&&!Jump.Preparing&&!Jump.Airborne,normalTime);
    if(!defense&&BasketballMotion&&(BasketballMotion.Busy||BasketballMotion.Charging||BasketballMotion.PassCharging))Motor.FaceBasketball(BasketballMotion.State.heading,dt/basketballTimeScale);
    if(GolfClubMotion&&(GolfClubMotion.Busy||GolfClubMotion.State.action==GolfClubAction.Charge))Motor.FaceGolf(GolfClubMotion.AddressHeading);
+   if(fishing){Motor.FaceGolf(FishingGame.Instance.Heading(this));displacement.x=displacement.z=0;}
    if(golfContact){displacement.x=displacement.z=0;}
    capsule.stepOffset=Jump.Airborne?0:.3f;
    var before=transform.position;
@@ -169,6 +172,6 @@ namespace WhatTheFish {
    // Preserve the profile/network call path while this baked Meshy look has no swap slots.
    data.Clamp();
   }
-  public void HideHead(bool hidden){if(bodyRenderers==null)Setup();bool golfBody=hidden&&GolfClubMotion&&GolfClubMotion.ShowBodyInFirstPerson&&PlayerView.Instance&&PlayerView.Instance.mode==0;foreach(var renderer in bodyRenderers)renderer.enabled=!hidden||golfBody;}
+  public void HideHead(bool hidden){if(bodyRenderers==null)Setup();bool golfBody=hidden&&(GolfClubMotion&&GolfClubMotion.ShowBodyInFirstPerson||GetComponent<FishingRodMotion>()&&GetComponent<FishingRodMotion>().Equipped)&&PlayerView.Instance&&PlayerView.Instance.mode==0;foreach(var renderer in bodyRenderers)renderer.enabled=!hidden||golfBody;}
  }
 }

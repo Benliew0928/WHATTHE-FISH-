@@ -1,5 +1,254 @@
 # Verification records
 
+## Fishing aim and readability — 9 October 2026
+
+The [fishing controls](FISHING-MINIGAME.md) now use a centre reticle and Cast
+confirmation, with six fish per pier (two of each size, 30 across five piers).
+All three cameras aim at visible fish bodies; terrain obstruction, range,
+claims and respawns remain enforced. The selected target stays fixed while a
+Cast request awaits the host. Matching peers require protocol **35**.
+
+Native HUD text no longer combines an extra bold style with stacked shadows
+and outlines. Smaller labels use the existing text font; white lettering has
+one restrained outline. No font or raster asset is added. Responsive landscape
+layouts and asymmetric safe areas are covered by captures and assertions.
+
+Reeling speed is **1.48 / 1.05 / 0.73 m/s** for small/medium/large fish; held
+strain grows 4% more slowly and the bite wait is 0.3 seconds shorter. At an 8 m
+cast, the deterministic controlled comparison measures:
+
+| Fish | Before, cast to land | After | Difference |
+| --- | ---: | ---: | ---: |
+| Small | 7.72 s | 6.56 s | −1.16 s |
+| Medium | 12.45 s | 10.99 s | −1.46 s |
+| Large | 20.16 s | 19.18 s | −0.98 s |
+
+Timing varies with range, surges and release decisions. The **471 rule checks**
+include 120 controlled catches and 40 continuously held large-fish cases that
+still snap the line; this preserves the need to manage tension. Comparison
+evidence is in `Builds/FishingAimQA/reeling-evidence.json` and its CSV records.
+
+The complete **314-file** Windows player in `Builds/WindowsFinal/` uses full
+assets built at **10:26:10** and final scripts at **10:38:43 Malaysia time**.
+All **313 runtime/support files** match both the tested candidate and portable
+copy; only `LATEST-BUILD.txt` is excluded from hashing.
+
+- Final rendered fishing: **660 passing offline assertions**, including the
+  471 rule checks, all **90 pier/camera/fish aiming combinations**, all 30 fish
+  swimming/containment, native typography, camera obstruction, claimed and
+  respawning targets, pending-Cast ownership, asymmetric safe-area aiming,
+  keyboard/touch actions, completed catches, animated ranks/Wanted/tension,
+  layout checks and Fishing/Golf/Fishing grip handoff.
+  Evidence: `Builds/FishingGameplayQA/Run-20261009-104400/`.
+- Two-player fishing: **21 host / 21 guest assertions** in
+  `Builds/FishingGameplayQA/Run-20261009-103459/`; the subsequent change only
+  adjusts leaderboard name spacing. The final complete player also passes
+  **21 host / 21 guest** in a folder with spaces using the default runner,
+  launched from an unrelated working directory:
+  `Builds/FishingAimQA/Portable Review/Builds/FishingGameplayQA/Run-20261009-105114/`.
+- Walking/controller regression: **53 assertions**, covering five pier
+  spawns, entrances/exits, containment, the bridge/coastal circuit and four
+  sport switches. Evidence: `Builds/FishingQA-20261009-104034/`.
+- Five-player local room: supported spawns, host-selected Fishing, sixth-player
+  rejection, shared start/return and guest permissions pass.
+  Evidence: `Builds/FishingRoomsQA-20261009-104742/`. This checks room
+  integration, rather than five simultaneous fishing catches on five devices.
+
+An initial final-player run made concurrently with walking/capture checks
+failed the transient `RANK_REORDER_AND_SCORE_POP` animation assertion:
+`Builds/FishingGameplayQA/Run-20261009-104039/`. The identical final binary
+passed all 660 assertions when run alone at 10:44. Both records are retained;
+the repeat does not establish a gameplay fix for the concurrent timing issue.
+Phone-sized frames and five-row ranks include identified UI fixtures, while
+selected-fish and completed-catch captures use actual gameplay. A portrait
+Windows resize remains a stress check; Android stays landscape only.
+
+Source manifests cover **3,135 inputs including metadata**. Final Windows
+scripts, Android and restored publishable source differ only in generated Golf
+prefab IDs/order; canonical inspection proves all **14 objects** retain their
+properties and reference topology. The original pre-task serialization is
+restored. Full Windows assets predate the final HUD/input/probe code edits,
+which are included in the final script compilation. Their desktop SSAO runtime
+resource list differs from Android by exactly two reconstructed resource IDs;
+authored settings match HEAD/Android. Source and complete-delivery proofs are
+in `Builds/FishingAimQA/source-verification.json` and
+`delivery-verification.json`. No later gameplay change is omitted.
+
+Fresh AndroidSubmission: **90,047,202 → 90,051,054 bytes (+3,852)**, leaving
+**9,948,946 bytes** to the hard boundary. Budget and independent v2 signature
+checks pass; the **75 MB development target is exceeded by 15,051,054 bytes**.
+[Measured release/hash](BUILD-SIZE.md#fishing-aim-and-readability--9-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#fishing-aim-and-readability--9-october-2026).
+Physical Android appearance, actual phone touch/FPS, internet latency and human
+balance/retention remain unverified.
+
+Reviewed obsolete trials, the prior APK/audit and the prior complete player
+are archived with recovery manifests in:
+`Legacy/20261009-102009-186-fishing-tuning-trials/`,
+`Legacy/20261009-105020-349-fishing-aim-before-android/` and
+`Legacy/20261009-110826-067-fishing-aim-final-player/`.
+Current validation evidence remains under ignored `Builds/`. Publishing is left
+to the user; unrelated workspace changes are preserved.
+The final readiness dry run initially encountered an empty, stale Git lock.
+No Git process was running and exclusive access succeeded; the lock is preserved
+with a recovery record in `Builds/FishingAimQA/lock-recovery.json`. The Git index
+hash is unchanged. Portable document links also pass from the folder with spaces.
+
+## Lagoon Stickers fishing — 9 October 2026
+
+The [approved fishing rules](FISHING-RULES-PROPOSAL.md) and
+[Lagoon Stickers direction](FISHING-UX-DIRECTION.md) are implemented. Competitive
+Round/Cup use three-minute scoring; Crew Catch needs 20 × starting players,
+all three fish sizes and a catch from everyone. Wanted awards +3 once per player
+per minute. Host authority, explicit chosen fish, ready/countdown, ties,
+disconnects, rematches and round/cast tokens are covered; matching peers need
+protocol **34**. [Controls and physical limits](FISHING-MINIGAME.md).
+
+The complete **314-file** Windows player in `Builds/WindowsFinal/` uses full
+assets built at **01:25:59** and final scripts compiled at **01:37:24** Malaysia
+time. All **313 runtime/support files** match the tested candidate and portable
+copy; only `LATEST-BUILD.txt` is excluded from hash comparison.
+
+- Current rendered fishing: **147 offline report assertions**, including rule
+  boundaries, all sizes/ranges, real touch/button and keyboard action paths,
+  supported piers, swimming, hand grip, three cameras, reflection/light,
+  selection after menu return, Wanted confirmation/preview, live score digits,
+  animated overtakes, tension gauges, safe-area/layout checks and Golf handoff.
+  Evidence: `Builds/FishingGameplayQA/Run-20261009-013910/`.
+- Current two-player fishing: **21 host / 21 guest report assertions**, covering
+  ready/start, chosen-target validation, Wanted catch scoring, overtakes,
+  replicated deadlines/results and clean rematch, in the same run.
+- Portable complete player/default runner, in a folder with spaces and launched
+  from an unrelated working directory: **21 host / 21 guest report assertions**.
+  Evidence: `Builds/FishingUXQA/Portable Review/Builds/FishingGameplayQA/Run-20261009-014416/`.
+- Island/controller walking: **53 assertions**, including all five supported
+  spawns, deck entrances/exits, containment, bridge/coastal circuit, accents
+  and four sport switches. Evidence: `Builds/FishingQA-20261009-012648/`.
+- Five-player local room: distinct supported spawns, host-selected Fishing,
+  sixth-player rejection, shared start/return and guest permissions pass.
+  Evidence: `Builds/FishingRoomsQA-20261009-013917/`. This is room integration,
+  rather than five simultaneous networked fishing catches.
+- Golf regression passed **135 rendered offline / 20 host / 20 guest** assertions
+  on the earlier candidate in `Builds/GolfMiniGameQA/Run-20261009-004355/`.
+  Subsequent changes affect fishing UI, menu text/layout and development probes;
+  Golf gameplay/assets are unchanged. Final-player Fishing/Golf/Fishing grip
+  and first-person handoff checks also pass.
+
+Real captures include the stopwatch/Wanted card, held rod and completed catches.
+The five-row leaderboard, extreme tension, phone-sized frames and Crew checklist
+also use explicitly identified development fixtures. These demonstrate UI
+layout/animation, not a five-device fishing session. Android is landscape only;
+a portrait Windows resize is a stress check, not an enabled mobile orientation.
+The UI is anchored inside the safe-area frame with Inspector-editable layout
+settings. Six transparent sprites have verified 64/128/256-pixel delivery limits.
+
+Initial checks exposed an arrival-readiness race in the probe, an obsolete menu
+label expectation, a fixed floor-height assumption and a scenic route crossing
+the later Sky-Sail gangway railing. Readiness now waits for gameplay control;
+the button stays disabled during arrival. Walking tests validate the actual
+paved floor and continuously walk the shoreward bypass around the railing.
+The original obstruction also reproduced with lagoon art disabled; no collider
+or island geometry was removed. A low-angle test target was hidden by the deck;
+the aiming check now tilts the look camera toward the water and waits for the
+actual visible fish. Terrain obstruction checks remain active. Newly inspected
+help/rules text is current and clipped menu headings were corrected.
+
+Source manifests cover **3,135 inputs including metadata**. Final Windows script
+source and Android match on **3,134**; the only raw difference is regenerated
+Golf prefab IDs/order. Canonical inspection proves all **14 objects** preserve
+properties/reference topology; the equivalent original serialization was
+restored, making the publishable source match all final Windows script inputs.
+The full Windows asset snapshot differs from final scripts in the later menu
+and development-probe edits, plus URP's stripped runtime list. The exact full
+Windows URP hash is reconstructed by adding only the two desktop SSAO resource
+IDs; all authored settings match Android/HEAD. Artwork PNGs retain alpha and
+contain no ancillary metadata/dependency paths. Records are under
+`Builds/FishingUXQA/`, including source/delivery verification and signature proof.
+
+Fresh AndroidSubmission: **89,938,934 → 90,047,202 bytes (+108,268)**, with
+**9,952,798 bytes** strict-limit headroom. Budget and independent v2 signature
+checks pass. The **75 MB development target is exceeded by 15,047,202 bytes**.
+[Measured release/hash](BUILD-SIZE.md#lagoon-stickers-fishing--9-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#lagoon-stickers-fishing--9-october-2026).
+Physical Android appearance, actual phone touch/FPS, internet latency and
+human retention/balance remain unverified.
+
+Reviewed obsolete files are archived with size/hash recovery inventories:
+`Legacy/20261009-003423-261-fishing-ui-portrait/` (unused portrait experiment),
+`Legacy/20261009-010106-563-fishing-lagoon-stickers/` (older player, discarded
+concepts and superseded runs), `Legacy/20261009-014243-715-fishing-final-player/`
+(superseded player copies) and `Legacy/20261009-015307-440-fishing-intermediate-apk/`.
+The approved reference, editable art, active generators/metadata and current
+validation evidence are preserved. No Git staging, commit or push was performed.
+
+## Simple lagoon fishing — 7 October 2026
+
+The [simple fishing game](FISHING-MINIGAME.md) reuses the existing five piers,
+two rod styles, three fish sizes and character grip socket. Free fishing starts
+on arrival; the host can begin a three-minute points contest. The host owns
+reservations, bite windows, progress, tension, deadlines and rewards. Owner-only
+actions carry round/cast tokens; peers must use protocol **33**.
+
+The complete **315-file** player in `Builds/WindowsFinal/` uses full assets built
+at **22:32:43** and final managed scripts built at **23:05:32**. Its
+**314 runtime/support files** match both the tested candidate
+and the portable copy; only the delivery note is excluded from hash comparison.
+Final checks pass:
+
+- Fishing rendered offline: **70 report assertions**, including all three fish
+  sizes, claim contention, stale/duplicate actions, disconnect/lease/deadline
+  boundaries, five supported piers, bounded swimming, touch catch/release/cancel,
+  keyboard action flow, hand alignment, three camera modes, light, reflection
+  and Fishing/Golf/Fishing transitions without losing the shared hand grip.
+- Fishing two-player local room: **8 host / 12 guest report assertions**, covering
+  owner scoring, replicated catches/results, guest restrictions and shared restart.
+- Portable default-path runner in a folder with spaces, launched from an unrelated
+  working directory: **8 host / 12 guest report assertions**.
+- Golf regression: **135 rendered offline** and **20 host / 20 guest report
+  assertions**. The earlier graphics-free offline check failed while reading the
+  first-person pose before `LateUpdate`; its rendered counterpart passes.
+- Sky-Sail walking: **34 checks**, including the actual controller traversing
+  each island's shore, gangway and boarding deck in both directions, on the
+  earlier complete candidate. Traversal code/assets were unchanged by the final
+  grip fix; the final rendered transition checks cover the affected handoff.
+
+Close-up hand grip, fishing poses and lagoon camera captures are retained in
+`Builds/FishingGameplayQA/Run-20261007-230635/`. The reflection uses explicit
+URP render requests, six faces captured once, mipmaps and restrained distortion;
+it reflects static scenery rather than moving players. This is arcade line
+tension and bounded fish movement, not a fluid or flexible-rope simulation.
+
+Source manifests include **3,110 inputs**. Final Windows script-source/Android
+match on **3,109**; the difference is generated Golf prefab IDs/order.
+The full Windows asset-source snapshot differs from the final script-source
+snapshot in the two subsequently updated code files, generated Golf IDs/order
+and URP's stripped runtime resource list. Asset/shader content is unchanged.
+The exact full-asset Windows URP hash was reconstructed by adding
+only the two desktop SSAO resource IDs to the Android/HEAD runtime list. All
+authored settings match. The regenerated Golf prefab preserves all **14 objects'
+properties and reference topology** against the retained original. Restoring
+its original IDs/order is the sole final-source change after Android building;
+gameplay code is unchanged. Records: `source-verification.json`,
+`urp-source-verification.json` and `golf-generated-equivalence.json`.
+
+The golf tee generator now avoids rewriting identical PNG bytes, resolving a
+Windows mapped-file failure during the full build. The wood texture is unchanged;
+both full Windows and Android builds pass. The previous setup-only player,
+initial discarded draft and one-use integration helper are recoverable under
+`Legacy/20261007-224018-816-fishing-gameplay/`. The preliminary fishing delivery,
+portable copy and first-release receipts are recoverable under
+`Legacy/20261007-230923-510-fishing-grip-handoff/`. An empty stale Git index lock
+was removed after confirming no Git process was running; the index hash remained
+unchanged. No Git publishing was performed.
+
+Fresh AndroidSubmission completed at **23:16:43**. Actual APK size is
+**89,938,934 bytes (+73,130)**, with **10,061,066 bytes** below the strict limit.
+The 75 MB development target remains exceeded by **14,938,934 bytes**. Budget
+and independent APK v2 signature checks pass. [Size and hash](BUILD-SIZE.md#simple-lagoon-fishing--7-october-2026).
+Current evidence remains under ignored `Builds/FishingGameplayQA/`; golf reports
+are under `Builds/GolfMiniGameQA/Run-20261007-232303/`.
+No physical phone, WAN room, sustained FPS or thermal performance was qualified.
+
 ## Perspective broadcast cameras — 7 October 2026
 
 The revised [stadium cameras](STADIUM-CAMERAS.md) use different perspective

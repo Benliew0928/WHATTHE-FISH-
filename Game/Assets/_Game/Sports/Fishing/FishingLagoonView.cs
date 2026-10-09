@@ -5,6 +5,7 @@ namespace WhatTheFish {
   public FishingModule[] playerStands;
   public Vector3[] standingPositions;
   public Material[] waterMaterials;
+  void Awake(){if(!GetComponent<FishingGame>())gameObject.AddComponent<FishingGame>();}
   public override void Apply(StadiumAppearance appearance){}
   // Water shader animates only ripples; the coast-aligned color map remains fixed.
  }

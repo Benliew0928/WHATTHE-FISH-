@@ -6,7 +6,7 @@ namespace WhatTheFish {
  public sealed class LagoonPresentation : MonoBehaviour {
   static readonly int Cutout=Shader.PropertyToID("_FishingLagoonCutout");
   public const float Radius=28f;
-  void OnEnable(){UpdateCutout();}
+  void OnEnable(){UpdateCutout();if(!GetComponent<LagoonReflection>())gameObject.AddComponent<LagoonReflection>();}
   void LateUpdate(){UpdateCutout();}
   void UpdateCutout(){var p=transform.position;Shader.SetGlobalVector(Cutout,new Vector4(p.x,p.z,Radius-.06f,1));}
   void OnDisable(){Shader.SetGlobalVector(Cutout,Vector4.zero);}

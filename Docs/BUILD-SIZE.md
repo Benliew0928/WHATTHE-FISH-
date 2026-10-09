@@ -1,5 +1,89 @@
 # Build size — measured release records
 
+## Fishing aim and readability — 9 October 2026
+
+Fresh AndroidSubmission completed at **10:58:13 Malaysia time**:
+**90,047,202 → 90,051,054 bytes (+3,852)**. Headroom to the strict
+100,000,000-byte boundary is **9,948,946 bytes**. The **75,000,000-byte
+development target remains exceeded by 15,051,054 bytes**. The build budget
+gate and independent APK v2 signature verification pass. SHA-256:
+**BAA48E2531C388F8B1F0897E3CCD909C2A87EF17F52B68292387B086F420B1ED**.
+
+The fishing HUD now uses clearer native lettering and a centre aiming reticle
+with explicit Cast confirmation. Each of the five piers has six swimming fish,
+reusing the existing meshes, materials and LODs. Reeling is modestly faster,
+held tension grows more slowly and bites arrive 0.3 seconds sooner. No font,
+texture, mesh, animation, audio or package is added. Serialized assets grow
+only **24 bytes** for the editable aiming layout; APK growth is predominantly
+compiled code. [Packing audit](APK-SIZE-AUDIT.md#fishing-aim-and-readability--9-october-2026).
+
+The complete **314-file** Windows player is delivered in `Builds/WindowsFinal/`:
+full assets built at **10:26:10**, final scripts compiled at **10:38:43**.
+All **313 runtime/support files** match the tested candidate and portable copy;
+the delivery note is excluded from that comparison. Matching peers require
+protocol **35**. Final rendered fishing, walking, five-player room and portable
+network checks pass. Evidence: `Builds/FishingAimQA/` and the runs linked in
+[verification](VERIFICATION.md#fishing-aim-and-readability--9-october-2026).
+Physical Android appearance, touch/FPS and internet latency remain untested.
+The 75 MB target shortfall is unresolved; the remaining reserve is constrained.
+
+## Lagoon Stickers fishing — 9 October 2026
+
+Fresh AndroidSubmission completed at **01:49:38 Malaysia time**:
+**89,938,934 → 90,047,202 bytes (+108,268)**. Strict-limit headroom is
+**9,952,798 bytes**. The **75,000,000-byte development target remains exceeded
+by 15,047,202 bytes**; this is a constrained reserve. The build budget gate
+and independent APK v2 signature verification pass. SHA-256:
+**01DDD02FC436ADA6B1E36B8BA0DDA9E8B82E2638DB2D6CDDAA6E097A639A98B0**.
+
+This release adds explicit fish selection, spring/drag reeling, three-minute
+Round, three-round Cup, Crew Catch (20 × starting players), Wanted bonuses and
+the approved animated Lagoon Stickers HUD. Existing fish, rods, rigs and
+islands are reused. Six illustrated sprites use 64/128/256-pixel Android
+imports with ASTC 6×6; their texture blocks total **84,336 bytes** before APK
+compression. Editable full-resolution sources are retained. No art pack,
+runtime package, mesh, animation or audio is added.
+
+The complete **314-file** Windows player is in `Builds/WindowsFinal/`, with
+full assets built at **01:25:59** and final scripts compiled at **01:37:24**.
+Protocol **34** is required for matching peers. Current fishing, walking,
+five-player room and portable-launch checks pass. Physical Android visuals,
+touch/FPS and internet latency remain untested. [Verification](VERIFICATION.md#lagoon-stickers-fishing--9-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#lagoon-stickers-fishing--9-october-2026).
+Current evidence is under `Builds/FishingUXQA/` and `Builds/FishingGameplayQA/`.
+
+## Simple lagoon fishing — 7 October 2026
+
+Fresh AndroidSubmission completed at **23:16:43 Malaysia time**:
+**89,865,804 → 89,938,934 bytes (+73,130)**. The before measurement is a fresh
+build of the pulled `1fcdd26` baseline. Strict-limit headroom is **10,061,066
+bytes**. The **75,000,000-byte development target remains exceeded by
+14,938,934 bytes**. The build budget gate and independent APK v2 signature
+verification pass. SHA-256:
+**AB60082F75449D149DCDD1BDBF2BD5D193153DCC7DE6F1BC5B4C7F71B69207A7**.
+
+The lagoon now has held rods, cast/bite/hook/tension reeling, swimming fish,
+shared catch points and a host-started three-minute contest. Existing fish,
+rods, piers, islands and authoring masters are reused. One small untextured
+line material is added; the environment reflection is generated at runtime.
+Serialized assets grow **3,256 bytes** to **156,301,133 bytes**, a different
+measurement from the APK. [Controls and limitations](FISHING-MINIGAME.md),
+[packing audit](APK-SIZE-AUDIT.md#simple-lagoon-fishing--7-october-2026).
+
+The complete **315-file** Windows player is delivered in `Builds/WindowsFinal/`;
+its full assets were built at **22:32:43** and final scripts at **23:05:32**.
+Protocol **33** is
+required for matching peers. Fishing, golf controls/networking, walking and
+portable launch checks pass. Final script-source/Android raw manifests match on
+**3,109/3,110 inputs**; the difference is generated Golf prefab IDs/order.
+The full Windows assets retain their desktop SSAO runtime resource list.
+Gameplay source matches;
+the original equivalent Golf prefab serialization was restored after building.
+Evidence: `Builds/FishingGameplayQA/`.
+[Verification](VERIFICATION.md#simple-lagoon-fishing--7-october-2026).
+No physical Android device or internet-hosted room was tested. The 75 MB target
+shortfall remains unresolved; the hard-limit headroom is a constrained reserve.
+
 ## Perspective broadcast cameras — 7 October 2026
 
 Fresh AndroidSubmission completed at **18:45:24 Malaysia time**:
@@ -152,6 +236,39 @@ captures and animation preview are under `Builds/BasketballDefenseQA/`.
 [Verification and archives](VERIFICATION.md#basketball-defense--6-october-2026).
 No phone was connected; physical touch, Android appearance/FPS, thermals and
 WAN latency remain unverified.
+
+## Fresh clone validation — 7 October 2026
+
+The first local AndroidSubmission build from commit `0cbecdf` completed at
+**16:22:25 Malaysia time**. No local APK existed before setup. Compared with
+the previous documented release, **89,803,004 → 89,800,008 bytes (-2,996)**.
+Strict-limit headroom is **10,199,992 bytes**. The **75,000,000-byte development
+target remains exceeded by 14,800,008 bytes**. The hard budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**97F67F1EBD601E6A6B945439B4F75A7A4963180DCB5A0FD3A9034A31A61C1485**.
+
+This is a local setup validation build, signed with this developer's Android
+debug certificate. Package `com.umpsa.whatthefish`, version `0.3.0`, uses ARM64,
+minimum API 26 and target API 36. It does not establish store publishing or
+physical-phone qualification. [Packing audit](APK-SIZE-AUDIT.md#fresh-clone-validation--7-october-2026).
+
+The complete **15:50 Windows player** is in `Builds/WindowsFinal/`, with its
+data, runtime files and Golf/Fishing/Sky-Sail launchers together. The offline
+Storybook menu suite passed **694 assertions**, with zero failures, including
+offline gameplay handoff; its rendered menu captures were inspected. The
+complete **314-file** player has a SHA-256 inventory. Both players retain
+protocol **28**. These checks do not replace the historical sport suites,
+multiplayer testing or physical touch/FPS/thermal checks.
+
+No gameplay code, authored scenes, art or package pins were changed. Of
+**3,050** recorded Game inputs, **3,002** stayed byte-identical during the
+builds; **47** changes were line endings, and one regenerated Golf prefab
+retained all properties, reference topology and **24 incoming references**.
+The original files were restored after verification, leaving no tracked Game
+content diff. Evidence is in `Builds/LocalSetup/` and
+`Builds/StorybookMenuQA/LocalSetup-20261007/`; current packing reports are in
+`Builds/SizeAudit/latest/`. Phone and internet-room tests remain unverified on
+this laptop. No previous local APK was available for a binary entry comparison.
 
 ## Untimed finishes and shot fallback — 6 October 2026
 

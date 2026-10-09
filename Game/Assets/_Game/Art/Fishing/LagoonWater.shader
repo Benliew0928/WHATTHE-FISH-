@@ -5,6 +5,8 @@ Shader "WhatTheFish/LagoonWater" {
   _Opacity("Underwater visibility",Range(0,1))=.28
   _WaveSpeed("Ripple speed",Float)=1
   _ShoreMap("Existing ocean colours",2D)="white"{}
+  _LagoonReflection("Captured island reflection",Cube)="black"{}
+  _ReflectionReady("Reflection ready",Float)=0
  }
  SubShader {
   Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent-20"}
@@ -17,8 +19,9 @@ Shader "WhatTheFish/LagoonWater" {
    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
    TEXTURE2D(_ShoreMap);SAMPLER(sampler_ShoreMap);
+   TEXTURECUBE(_LagoonReflection);SAMPLER(sampler_LagoonReflection);
    CBUFFER_START(UnityPerMaterial)
-   half4 _ShallowColor,_DeepColor;float _Opacity,_WaveSpeed;
+   half4 _ShallowColor,_DeepColor;float _Opacity,_WaveSpeed,_ReflectionReady;
    CBUFFER_END
    struct A {float4 p:POSITION;};
    struct V {float4 p:SV_POSITION;float3 world:TEXCOORD0;float2 local:TEXCOORD1;float fog:TEXCOORD2;};
@@ -45,6 +48,9 @@ Shader "WhatTheFish/LagoonWater" {
     half3 tint=lerp(_ShallowColor.rgb,_DeepColor.rgb,depth*.45);
     // Soft sky reflection stays legible on mobile without a second scene render.
     half3 sky=lerp(half3(.36,.66,.8),half3(.8,.91,.94),pow(saturate(n.z*.8+n.x*.35+.38),3));
+    float3 reflectionNormal=normalize(lerp(float3(0,1,0),n,.25));
+    half3 reflected=SAMPLE_TEXTURECUBE_LOD(_LagoonReflection,sampler_LagoonReflection,reflect(-v,reflectionNormal),2).rgb;
+    sky=lerp(sky,reflected,saturate(_ReflectionReady)*.65);
     half3 color=lerp(tint,sky,fresnel*.8)+(spec+broad)*sun.color;
     float edge=smoothstep(25.5,27.9,r);
     float foam=(1-smoothstep(.04,.22,abs(r-27.05-sin(p.x*.8+p.y*.7+t*.8)*.12)))*.13;
