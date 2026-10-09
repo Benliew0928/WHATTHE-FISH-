@@ -1,5 +1,49 @@
 # Verification records
 
+## Fishing timer spacing — 9 October 2026
+
+The complete new Windows player was fully built at **23:22:29
+Malaysia time**. Rendered fishing checks pass **876 assertions** in
+`Builds/FishingGameplayQA/Run-20261009-232300/`: gameplay inputs, all piers/cameras, Round/Cup/Crew states,
+timer/Wanted typography, four landscape resolutions and safe-area insets.
+Captured timer, Wanted and Crew views were reviewed. The clock illustration
+retains 76 × 83 design units; responsive canvas scaling remains in use.
+This layout refinement introduces no multiplayer message or physics change.
+
+The complete tested candidate directory was moved into `Builds/WindowsFinal/`,
+retaining all **317 runtime/support files**; the delivery note makes the complete
+folder **318 files**. A post-promotion SHA-256 manifest is retained in
+`runtime-manifest.json`; no before/after file-hash comparison is claimed.
+The final Android source manifest covers **3,233 inputs** and matches current
+Game inputs. The Windows/Android source snapshots differ in exactly
+**2 verified platform/generated files**:
+`Game/Assets/UniversalRenderPipelineGlobalSettings.asset`, `Game/Assets/_Game/Prefabs/Golf/Ball.prefab`.
+These differences are audited in `source-verification.json`: two desktop SSAO
+registrations and Golf prefab IDs/order with all 14 objects equivalent.
+Glass/lamp material source bytes and gameplay code match across platforms.
+Generated scene/cabin and packed Golf LOD ordering is reviewed against the
+pre-task commit in `generated-output-equivalence.json`; decoded geometry,
+attributes and reference graphs remain equivalent.
+
+Fresh AndroidSubmission finished at **23:31:12**: **88,760,152 bytes**,
+with **11,239,848 bytes** of strict-boundary headroom. The budget gate
+and APK v2 signature check pass. The 75 MB target remains exceeded by
+**13,760,152 bytes**. [Release](BUILD-SIZE.md#fishing-timer-spacing--9-october-2026),
+[packing](APK-SIZE-AUDIT.md#fishing-timer-spacing--9-october-2026). Physical Android appearance, touch/FPS
+and separate-network play remain unverified for this delivery; desktop checks
+do not establish those results. No new phone or actual network qualification
+is claimed for this layout-only refinement.
+
+Superseded player/APK/audit output is recoverable in these reviewed ignored
+archive batches, with original paths, sizes and hashes:
+
+- `Legacy/20261009-232406-908-timer-card-before-android/`
+- `Legacy/20261009-232539-244-timer-card-windows-delivery/`
+
+Current evidence stays under `Builds/TimerCardQA/Task-20261009-231529/`. The manual Cancel height 70 was
+preserved. Git publication follows the user's existing authorization to merge
+and push these fishing UI refinements directly to main.
+
 ## Fishing Hook cue and readable controls — 9 October 2026
 
 Final protocol **38** player checks pass **1,061 assertions across

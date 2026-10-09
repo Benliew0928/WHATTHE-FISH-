@@ -1,5 +1,27 @@
 # Build size — measured release records
 
+## Fishing timer spacing — 9 October 2026
+
+Fresh AndroidSubmission finished at **23:31:12 Malaysia time**:
+**88,758,740 → 88,760,152 bytes (+1,412)**. Strict 100,000,000-byte boundary
+headroom: **11,239,848 bytes**. The 75 MB development target remains
+exceeded by **13,760,152 bytes**. Budget enforcement and independent APK
+v2 signature verification pass. SHA-256: **3E859930C7FCEB8DBCCE131F6B6CD95FAE11521E5543D6827E9D3197E2299928**.
+
+The outside timer card is four canvas units shorter (**170 → 166**), and the
+digits sit four units lower. The clock icon keeps its **76 × 83** size and
+absolute top placement. The Wanted row stays in place, with less bottom
+padding; its position is editable in the shared layout asset. The user's
+existing Cancel height **70** is preserved. No art or package is added.
+[Manual layout settings](FISHING-HOOK-CUE.md#manually-adjust-the-timer).
+
+A complete full Windows player finished at **23:22:29** and is
+delivered in `Builds/WindowsFinal/` (**318 files**, including 317 runtime/support
+files and its note). Final rendered fishing checks pass **876 assertions**.
+Protocol **38**, four islands and shared travel remain.
+[Evidence and limits](VERIFICATION.md#fishing-timer-spacing--9-october-2026), [packing audit](APK-SIZE-AUDIT.md#fishing-timer-spacing--9-october-2026).
+The 75 MB shortfall and physical-phone qualification remain unresolved.
+
 ## Fishing Hook cue and readable controls — 9 October 2026
 
 Fresh AndroidSubmission completed at **22:36:40 Malaysia time**:

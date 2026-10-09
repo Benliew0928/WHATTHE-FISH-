@@ -17,15 +17,16 @@ MonoBehaviour:
   compactAspect: 1.45
   portraitScale: 1.6
   actionSize: {x: 235, y: 235}
-  cancelSize: {x: 150, y: 76}
-  clockSize: {x: 390, y: 170}
-  clockBadgePosition: {x: -139, y: 35}
-  clockTextPosition: {x: 34, y: 35}
+  cancelSize: {x: 150, y: 70}
+  clockSize: {x: 390, y: 166}
   gaugeSize: {x: 574, y: 144}
   cameraSize: {x: 104, y: 66}
   jumpSize: {x: 120, y: 72}
   returnSize: {x: 250, y: 62}
   joystickSize: {x: 176, y: 176}
+  clockBadgePosition: {x: -139, y: 33}
+  clockTextPosition: {x: 34, y: 29}
+  wantedCardPosition: {x: 0, y: -44}
   aimAnchor: {x: 0.5, y: 0.5}
   aimSize: {x: 54, y: 54}
   aimAcquireDegrees: 8

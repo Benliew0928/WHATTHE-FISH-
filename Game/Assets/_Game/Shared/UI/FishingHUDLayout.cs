@@ -6,8 +6,8 @@ namespace WhatTheFish {
   [Min(0)]public float margin=20,gap=16;
   [Min(.5f)]public float compactAspect=1.45f;
   [Range(1,2)]public float portraitScale=1.6f;
-  public Vector2 actionSize=new(235,235),cancelSize=new(150,76),clockSize=new(390,170),gaugeSize=new(574,144),cameraSize=new(104,66),jumpSize=new(120,72),returnSize=new(250,62),joystickSize=new(176,176);
-  public Vector2 clockBadgePosition=new(-139,35),clockTextPosition=new(34,35);
+  public Vector2 actionSize=new(235,235),cancelSize=new(150,76),clockSize=new(390,166),gaugeSize=new(574,144),cameraSize=new(104,66),jumpSize=new(120,72),returnSize=new(250,62),joystickSize=new(176,176);
+  public Vector2 clockBadgePosition=new(-139,33),clockTextPosition=new(34,29),wantedCardPosition=new(0,-44);
   public Vector2 aimAnchor=new(.5f,.5f),aimSize=new(54,54);
   [Range(2,15)]public float aimAcquireDegrees=8,aimReleaseDegrees=10;
   [Header("Readability and utility controls")]

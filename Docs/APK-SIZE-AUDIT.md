@@ -1,5 +1,26 @@
 # APK size audit — measured release records
 
+## Fishing timer spacing — 9 October 2026
+
+Fresh signed APK: **88,758,740 → 88,760,152 bytes (+1,412)**; headroom to the
+strict boundary is **11,239,848 bytes**. The 75 MB target remains exceeded
+by **13,760,152 bytes**. [Release and hash](BUILD-SIZE.md#fishing-timer-spacing--9-october-2026).
+
+Compressed ZIP entries change **+1,410 bytes**,
+with signing/container overhead **+2**.
+Largest compressed entries are IL2CPP **11,508,983**, Unity
+**9,094,267**, metadata **2,642,676**,
+and Java **2,353,635 bytes**. Serialized assets change
+**153,734,541 → 153,734,549 bytes**;
+this is a separate measurement from the actual APK length.
+
+All **1785 mesh report rows** retain identical field values.
+The same two Cove fonts and six compressed HUD sprites are unchanged;
+no packed asset path is added or removed. MobileURP is packed, with no
+unintended DesktopCoastURP/SSAO shader/blue-noise texture growth.
+Current evidence is `Builds/SizeAudit/latest/` and `Builds/TimerCardQA/Task-20261009-231529/After/SizeAudit/`,
+plus actual APK ZIP and serialized asset comparisons in `Builds/TimerCardQA/Task-20261009-231529/`.
+
 ## Fishing Hook cue and readable controls — 9 October 2026
 
 Actual fresh signed APK: **88,742,452 → 88,758,740 bytes (+16,288)**.

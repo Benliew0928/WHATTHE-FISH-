@@ -67,10 +67,12 @@ In the Inspector, **Clock Size / Y** controls the outside card height;
 **Clock Text Position / Y** controls the timer lettering. Smaller Y positions
 move the contents down within the card. Dimensions use responsive canvas units.
 
-The current card height is **170**, reduced from 174. Both clock row positions
-are **35**, reduced from 39. The card remains anchored to the top of the safe
-frame, so the combined adjustment moves the clock row down by two design units.
-Crew mode keeps its additional checklist space. The saved values are in
+The current card height is **166**, trimmed by four units from the previous
+170. Clock Badge Y is **33** and Clock Text Y is **29**: the clock illustration
+keeps its **76 × 83** size and previous absolute top placement, while the
+digits sit four units lower. **Wanted Card Position / Y** is **−44**, keeping
+its row in place while reducing the outer card's bottom padding. Crew mode
+keeps its additional checklist space. The saved values are in
 [`FishingUILayout.asset`](../Game/Assets/_Game/Resources/FishingUILayout.asset);
 [`FishingHUDLayout.cs`](../Game/Assets/_Game/Shared/UI/FishingHUDLayout.cs)
 provides fallback defaults, and
