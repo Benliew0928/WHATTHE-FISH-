@@ -33,7 +33,10 @@ individually reach 20.
    No invisible replacement target is allowed. Unavailable or camera-obscured
    fish are excluded from aiming. Cast commits the displayed fish, and aiming
    does not replace it while the line is active.
-3. When it bites, the Hook button and float/ring pulse. The player must tap
+3. When it bites, a clear gold **!** pops above the biting fish/float while the
+   Hook artwork pulses, with a shrinking gold deadline rim around the control.
+   Hook is immediately usable; the cue clears on accepted Hook or cancellation.
+   The player must tap
    Hook within the existing 1.8-second window. Keep that cue readable without
    a large sentence hovering over the lagoon. Bites arrive 0.3 seconds earlier
    than the previous release; the Hook reaction window is unchanged.

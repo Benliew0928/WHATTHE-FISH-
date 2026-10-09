@@ -206,15 +206,24 @@ public static partial class ProjectBuilder {
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-SkySail.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -skyStation\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Review-Fishing-Rods.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Fishing -fishingRodPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Review-Golf-Equipment.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Golf -golfEquipmentPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
-  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade with dash, pressure and sports minimap\nBasketball: B1 coastal arena with sports minimap\nGolf: G2 Limestone Cove Links with aim lock, cycling power and physical shot guide\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player)\nMultiplayer: combined protocol 38; matching builds required\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade with dash, pressure and sports minimap\nBasketball: B1 coastal arena with sports minimap\nGolf: G2 Limestone Cove Links with aim lock, cycling power and physical shot guide\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, animated Hook and fish ! bite cue, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player)\nMultiplayer: combined protocol 38; matching builds required\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildFootballMatchVerification(){Build(BuildTarget.StandaloneWindows64,"../Builds/FootballMatchQA/Player/WhatTheFish.exe");}
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}
  public static void SetupAndBuildWindows(){BuildWindows();}
+ static void SelectMobileRenderPipeline(){
+  const string path=Root+"Settings/MobileURP.asset";
+  var pipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(path);
+  if(!pipeline)throw new InvalidOperationException("Android build requires the mobile render pipeline: "+path);
+  // A stopped desktop build or editor preview can leave desktop resources selected.
+  GraphicsSettings.defaultRenderPipeline=pipeline;QualitySettings.renderPipeline=pipeline;
+  AssetDatabase.SaveAssets();
+ }
  [MenuItem("WHATTHE FISH?/Build Android development APK")]
- public static void BuildAndroid(){EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish.apk");}
+ public static void BuildAndroid(){SelectMobileRenderPipeline();EditorUserBuildSettings.buildAppBundle=false;Build(BuildTarget.Android,"../Builds/Android/WhatTheFish.apk");}
  [MenuItem("WHATTHE FISH?/Build Android release APK")]
  public static void BuildAndroidRelease(){
+  SelectMobileRenderPipeline();
   SkySailBuilder.PrepareMobileMeshes();
   MobileMaterialBuilder.Prepare();
   EditorUserBuildSettings.buildAppBundle=false;

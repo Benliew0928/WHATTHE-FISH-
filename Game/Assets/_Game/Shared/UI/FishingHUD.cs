@@ -12,12 +12,14 @@ namespace WhatTheFish {
    public ulong id;public RectTransform rect,popRect;public FishingStickerGraphic panel,avatar,flame,crown;
    public Text name,points,rank,pop,arrow;public uint award;public int score,order;public float displayed,pulse,popAge=3,milestoneAge=3,cueAge=3;public bool initialized,milestone;
   }
-  static readonly Color Ink=LocalProfile.Hex("143B50"),Cream=LocalProfile.Hex("FFF3D7"),Teal=LocalProfile.Hex("4CDED6"),Gold=LocalProfile.Hex("FFCB53"),Coral=LocalProfile.Hex("FF7659");
+  static readonly Color Ink=LocalProfile.Hex("143B50"),Cream=LocalProfile.Hex("FFF3D7"),Teal=LocalProfile.Hex("4CDED6"),Gold=LocalProfile.Hex("FFCB53"),Coral=LocalProfile.Hex("FF7659"),LocalBlue=LocalProfile.Hex("69C8F4"),CancelRed=LocalProfile.Hex("F7656A");
   readonly Dictionary<ulong,Row> rows=new();
   RectTransform page,board,drawer,gauges,clockCard,moveControl,lookControl,cameraControl,jumpControl,returnControl;FishingHUDLayout layout;readonly Dictionary<RectTransform,RectTransform> frames=new();Font font,legacyFont;Button action,start,cancel,ready,practice;Button[] modes;
-  Text actionLabel,startLabel,readyLabel,clock,wanted,bonus,footer,crew;InputField nickname;RectTransform clockBadge,wantedBadge;FishingStickerGraphic timerPlate,wantedPlate,bonusPlate;FishingStickerGraphic[] clockShines;
+  Text actionLabel,startLabel,readyLabel,clock,wanted,bonus,footer,crew;InputField nickname;RectTransform clockBadge,wantedBadge;FishingStickerGraphic timerPlate,wantedPlate;FishingStickerGraphic[] clockShines;
   FishingStickerGraphic catchGauge,tensionGauge,reelIcon,targetIcon;FishingStickerGraphic[] flames,sparkles;
   FishingStickerGraphic aim,aimTarget;
+  public FishingHookCue HookCue {get;private set;}
+  FishingGame cueGame;Athlete cueActor;bool cueContext,focused=true,paused;
   public Vector2 AimScreenPoint=>RectTransformUtility.WorldToScreenPoint(null,aim.rectTransform.position);
   public float AimAcquireDegrees=>layout.aimAcquireDegrees;
   public float AimReleaseDegrees=>Mathf.Max(layout.aimAcquireDegrees,layout.aimReleaseDegrees);
@@ -36,7 +38,7 @@ namespace WhatTheFish {
    var frame=GolfLeaderboardUI.Rect("Fishing HUD frame",page,Vector2.zero,Vector2.zero,Vector2.zero);frame.anchorMax=Vector2.one;frame.offsetMin=frame.offsetMax=Vector2.zero;
    var node=GolfLeaderboardUI.Rect("Fishing action",frame,Vector2.one,Vector2.zero,new Vector2(235,235));var ui=node.gameObject.AddComponent<FishingHUD>();Instance=ui;ui.page=frame;ui.layout=Resources.Load<FishingHUDLayout>("FishingUILayout");if(!ui.layout)ui.layout=ScriptableObject.CreateInstance<FishingHUDLayout>();
    ui.moveControl=movement;ui.lookControl=look;ui.cameraControl=camera;ui.jumpControl=jump;ui.returnControl=back;foreach(var control in new[]{movement,look,camera,jump,back})control.SetParent(frame,false);look.SetAsFirstSibling();look.anchorMin=Vector2.zero;look.anchorMax=Vector2.one;look.offsetMin=look.offsetMax=Vector2.zero;
-   ui.legacyFont=font;ui.font=Resources.Load<Font>("Menu/CoveDisplay")??font;ui.Build();ui.Layout();
+   ui.legacyFont=font;ui.font=Resources.Load<Font>("Menu/CoveDisplay")??font;ui.Build();ui.Layout();ui.HookCue=FishingHookCue.Create(frame,node,ui.layout);
   }
   RectTransform Rect(string name,Transform parent,Vector2 pos,Vector2 size,Vector2? anchor=null)=>GolfLeaderboardUI.Rect(name,parent,anchor??new Vector2(.5f,.5f),pos,size);
   FishingStickerGraphic Graphic(RectTransform node,FishingStickerGraphic.Kind kind,Color tint){var g=node.gameObject.AddComponent<FishingStickerGraphic>();g.kind=kind;g.tint=tint;g.raycastTarget=kind==FishingStickerGraphic.Kind.Panel||kind==FishingStickerGraphic.Kind.Gauge;g.Decorate();return g;}
@@ -45,11 +47,16 @@ namespace WhatTheFish {
    // overlapping shadow/outline copies close the counters in small labels.
    var t=Rect(value,parent,pos,size).gameObject.AddComponent<Text>();t.font=points<=23?CoveUI.TextFont??font:font;t.fontSize=points;t.text=value;t.fontStyle=FontStyle.Normal;t.color=color??Ink;t.alignment=TextAnchor.MiddleCenter;
    t.raycastTarget=false;t.supportRichText=false;t.horizontalOverflow=HorizontalWrapMode.Wrap;t.verticalOverflow=VerticalWrapMode.Truncate;
-   if(t.color==Color.white)InkOutline(t);return t;
+   return t;
   }
-  void InkOutline(Text text){var outline=text.GetComponent<Outline>()??text.gameObject.AddComponent<Outline>();outline.effectColor=Ink;outline.effectDistance=new Vector2(1,-1);}
+  void InkOutline(Text text,float width=1){var outline=text.GetComponent<Outline>()??text.gameObject.AddComponent<Outline>();outline.effectColor=Ink;outline.effectDistance=new Vector2(width,-width);}
+  void SingleLine(Text label,string value,int maxSize){
+   label.text=value;var settings=label.GetGenerationSettings(label.rectTransform.rect.size);settings.fontSize=maxSize;settings.resizeTextForBestFit=false;
+   float available=label.rectTransform.rect.width-4,preferred=label.cachedTextGeneratorForLayout.GetPreferredWidth(value,settings)/label.pixelsPerUnit;
+   label.fontSize=Mathf.Clamp(Mathf.FloorToInt(maxSize*available/Mathf.Max(available,preferred)),18,maxSize);
+  }
   Button Button(RectTransform node,string value,Color tint,out Text label){
-   var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.raycastTarget=true;var b=node.gameObject.AddComponent<Button>();b.targetGraphic=g;
+   var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.UseSolidPanel();g.raycastTarget=true;var b=node.gameObject.AddComponent<Button>();b.targetGraphic=g;
    b.transition=Selectable.Transition.None;label=Text(node,value,Vector2.zero,node.sizeDelta-new Vector2(16,6),25);
    var feedback=node.gameObject.AddComponent<CoveFeedback>();return b;
   }
@@ -59,10 +66,9 @@ namespace WhatTheFish {
    action=Button((RectTransform)transform,"AIM AT A FISH",Gold,out actionLabel);actionLabel.rectTransform.anchoredPosition=new Vector2(0,-58);actionLabel.rectTransform.sizeDelta=new Vector2(180,68);actionLabel.fontSize=28;actionLabel.color=Color.white;InkOutline(actionLabel);action.GetComponent<FishingStickerGraphic>().UseIllustration("ReelButton");
    reelIcon=Graphic(Rect("Reel badge",transform,new Vector2(0,29),new Vector2(100,72)),FishingStickerGraphic.Kind.Reel,Teal);reelIcon.gameObject.SetActive(false);
    actionLabel.resizeTextForBestFit=true;actionLabel.resizeTextMinSize=18;actionLabel.resizeTextMaxSize=28;
-   cancel=Button(Rect("Fishing cancel",page,Vector2.zero,layout.cancelSize),"CANCEL",Coral,out var cancelText);cancelText.fontSize=23;cancel.onClick.AddListener(()=>PlayerView.Instance?.CancelFishing());
+   cancel=Button(Rect("Fishing cancel",page,Vector2.zero,layout.cancelSize),"CANCEL",CancelRed,out var cancelText);cancel.GetComponent<FishingStickerGraphic>().UseSolidPanel();cancelText.fontSize=23;float crossSize=layout.cancelSize.y*.34f;cancelText.rectTransform.anchoredPosition=new Vector2(crossSize*.5f,0);cancelText.rectTransform.sizeDelta=new Vector2(layout.cancelSize.x-crossSize-18,layout.cancelSize.y-12);Graphic(Rect("Fishing cancel X",cancel.transform,new Vector2(-layout.cancelSize.x*.5f+crossSize*.8f,0),Vector2.one*crossSize),FishingStickerGraphic.Kind.Close,Ink).raycastTarget=false;cancel.onClick.AddListener(()=>PlayerView.Instance?.CancelFishing());
    board=Rect("Lagoon sticker leaderboard",page,new Vector2(20,-20),new Vector2(365,370),new Vector2(0,1));board.pivot=new Vector2(0,1);Graphic(board,FishingStickerGraphic.Kind.Panel,Cream);
-   var headerPlate=Rect("Lagoon header sticker",board,new Vector2(0,-31),new Vector2(351,57),new Vector2(.5f,1));Graphic(headerPlate,FishingStickerGraphic.Kind.Panel,Ink);
-   var header=Text(board,"LAGOON CUP",new Vector2(13,0),new Vector2(295,45),30,Color.white);header.rectTransform.anchorMin=header.rectTransform.anchorMax=new Vector2(.5f,1);header.rectTransform.anchoredPosition=new Vector2(14,-31);
+   var header=Text(board,"LAGOON CUP",new Vector2(13,0),new Vector2(295,45),30,Ink);header.rectTransform.anchorMin=header.rectTransform.anchorMax=new Vector2(.5f,1);header.rectTransform.anchoredPosition=new Vector2(14,-31);
    Graphic(Rect("Header fish",board,new Vector2(30,-32),new Vector2(49,42),new Vector2(0,1)),FishingStickerGraphic.Kind.Fish,Teal);
    footer=Text(board,"",Vector2.zero,new Vector2(343,60),21);footer.rectTransform.anchorMin=footer.rectTransform.anchorMax=new Vector2(.5f,1);
    drawer=Rect("Fishing match setup",board,Vector2.zero,new Vector2(343,160),new Vector2(.5f,1));
@@ -76,19 +82,19 @@ namespace WhatTheFish {
    nickname.onEndEdit.AddListener(value=>{string name=new string(value.Where(c=>char.IsLetterOrDigit(c)||c==' '||c=='_'||c=='-').Take(16).ToArray()).Trim();PlayerPrefs.SetString("fishing.nickname",name);PlayerPrefs.Save();var actor=PlayerView.Instance?PlayerView.Instance.target:null;var net=actor?actor.GetComponent<NetworkAthlete>():null;if(net&&net.IsOwner&&net.IsSpawned)net.NicknameRpc(name);});
    practice=Button(Rect("Return to free fishing",drawer,new Vector2(133,-51),new Vector2(67,44)),"FREE",Cream,out var pt);pt.fontSize=17;pt.font=CoveUI.TextFont??font;practice.onClick.AddListener(()=>FishingGame.Instance?.ReturnToPractice());
    var timeCard=clockCard=Rect("Fishing clock card",page,Vector2.zero,layout.clockSize);timerPlate=Graphic(timeCard,FishingStickerGraphic.Kind.Panel,Ink);
-   clockBadge=Rect("Stopwatch sticker",timeCard,new Vector2(-139,39),new Vector2(76,83));Graphic(clockBadge,FishingStickerGraphic.Kind.Fish,Gold).UseIllustration("ClockBadge");
-   clock=Text(timeCard,"FREE FISHING",new Vector2(34,39),new Vector2(240,65),44,Color.white);clock.resizeTextForBestFit=true;clock.resizeTextMinSize=22;clock.resizeTextMaxSize=44;
+   clockBadge=Rect("Stopwatch sticker",timeCard,layout.clockBadgePosition,new Vector2(76,83));Graphic(clockBadge,FishingStickerGraphic.Kind.Fish,Gold).UseIllustration("ClockBadge");
+   clock=Text(timeCard,"FREE FISHING",layout.clockTextPosition,new Vector2(240,65),44,Color.white);clock.resizeTextForBestFit=true;clock.resizeTextMinSize=22;clock.resizeTextMaxSize=44;
    var wantedCard=Rect("Wanted fish sticker",timeCard,new Vector2(0,-42),new Vector2(374,68));wantedPlate=Graphic(wantedCard,FishingStickerGraphic.Kind.Panel,Cream);
-   wantedBadge=Rect("Wanted fish illustration",wantedCard,new Vector2(-146,0),new Vector2(58,48));Graphic(wantedBadge,FishingStickerGraphic.Kind.Fish,Teal);
-   wanted=Text(wantedCard,"READY TO START",new Vector2(-17,0),new Vector2(190,57),23);wanted.resizeTextForBestFit=true;wanted.resizeTextMinSize=18;wanted.resizeTextMaxSize=23;
-   var reward=Rect("Wanted bonus badge",wantedCard,new Vector2(138,0),new Vector2(60,47));bonusPlate=Graphic(reward,FishingStickerGraphic.Kind.Panel,Gold);bonus=Text(reward,"+3",Vector2.zero,new Vector2(52,40),23);
+   float wantedWidth=wantedCard.sizeDelta.x;wantedBadge=Rect("Wanted fish illustration",wantedCard,new Vector2(-wantedWidth*.41f,0),new Vector2(50,48));Graphic(wantedBadge,FishingStickerGraphic.Kind.Fish,Teal);
+   wanted=Text(wantedCard,"READY TO START",new Vector2(-wantedWidth*.016f,0),new Vector2(wantedWidth*.57f,54),layout.wantedFontSize);wanted.name="Wanted target";wanted.horizontalOverflow=HorizontalWrapMode.Overflow;
+   var reward=Rect("Wanted bonus badge",wantedCard,new Vector2(wantedWidth*.39f,0),new Vector2(wantedWidth*.18f,54));bonus=Text(reward,"+3",Vector2.zero,reward.sizeDelta,layout.wantedBonusFontSize,Gold);bonus.name="Wanted bonus";InkOutline(bonus,layout.labelOutlineWidth);
    clockShines=new FishingStickerGraphic[2];for(int i=0;i<2;i++)clockShines[i]=Graphic(Rect("Timer glint "+i,timeCard,new Vector2(i==0?-172:164,65),new Vector2(15,18)),FishingStickerGraphic.Kind.Shine,Gold);
    crew=Text(timeCard,"",new Vector2(0,-95),new Vector2(360,38),23,Gold);crew.gameObject.SetActive(false);
    gauges=Rect("Fishing catch and tension",page,Vector2.zero,layout.gaugeSize);
    catchGauge=Graphic(Rect("Catch gauge",gauges,new Vector2(0,31),new Vector2(574,55)),FishingStickerGraphic.Kind.Gauge,Teal);
-   Text(catchGauge.transform,"CATCH 0%",Vector2.zero,new Vector2(480,40),25,Color.white);
+   InkOutline(Text(catchGauge.transform,"CATCH 0%",Vector2.zero,new Vector2(480,40),25,Color.white),layout.labelOutlineWidth);
    tensionGauge=Graphic(Rect("Tension gauge",gauges,new Vector2(0,-32),new Vector2(574,61)),FishingStickerGraphic.Kind.Gauge,Gold);
-   Text(tensionGauge.transform,"TENSION 0%",Vector2.zero,new Vector2(475,44),26,Color.white);
+   InkOutline(Text(tensionGauge.transform,"TENSION 0%",Vector2.zero,new Vector2(475,44),26,Color.white),layout.labelOutlineWidth);
    Graphic(Rect("Catch fish badge",catchGauge.transform,new Vector2(-260,0),new Vector2(49,40)),FishingStickerGraphic.Kind.Fish,Teal);
    targetIcon=Graphic(Rect("Danger warning",tensionGauge.transform,new Vector2(255,0),new Vector2(38,38)),FishingStickerGraphic.Kind.Warning,Gold);
    flames=new FishingStickerGraphic[4];sparkles=new FishingStickerGraphic[2];
@@ -101,15 +107,22 @@ namespace WhatTheFish {
     if(b==action||b==cancel||b==ready||b==start||b==practice||modes.Contains(b))continue;
      var image=b.GetComponent<Image>();if(!image)continue;image.enabled=false;var node=Rect("Sticker button skin",b.transform,Vector2.zero,((RectTransform)b.transform).sizeDelta);node.SetAsFirstSibling();var graphic=Graphic(node,FishingStickerGraphic.Kind.Panel,Cream);graphic.raycastTarget=true;b.targetGraphic=graphic;b.transition=Selectable.Transition.None;foreach(var label in b.GetComponentsInChildren<Text>()){label.font=font;label.fontStyle=FontStyle.Normal;label.color=Ink;foreach(var shadow in label.GetComponents<Shadow>())shadow.enabled=false;}
    }
+   IconControl(cameraControl,FishingStickerGraphic.Kind.Camera,"Fishing Camera icon");IconControl(jumpControl,FishingStickerGraphic.Kind.Jump,"Fishing Jump icon");
+  }
+  void IconControl(RectTransform control,FishingStickerGraphic.Kind kind,string name){
+   foreach(var label in control.GetComponentsInChildren<Text>())label.enabled=false;
+   var skin=control.GetComponentsInChildren<FishingStickerGraphic>().FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Panel);if(skin){skin.rectTransform.anchorMin=Vector2.zero;skin.rectTransform.anchorMax=Vector2.one;skin.rectTransform.offsetMin=skin.rectTransform.offsetMax=Vector2.zero;skin.cornerRadius=layout.utilityCornerRadius;skin.UseSolidPanel();}
+   float edge=Mathf.Min(control.sizeDelta.x,control.sizeDelta.y)*.68f;var size=kind==FishingStickerGraphic.Kind.Camera?new Vector2(edge*layout.cameraIconWidthScale,edge*.95f):Vector2.one*edge;
+   Graphic(Rect(name,control,Vector2.zero,size),kind,Ink).raycastTarget=false;
   }
   Row MakeRow(ulong id,int order){
    var rect=Rect("Catch row "+id,board,new Vector2(182,-87-order*58),new Vector2(341,52),new Vector2(0,1));
    var row=new Row{id=id,rect=rect,order=order};row.panel=Graphic(rect,FishingStickerGraphic.Kind.Panel,LocalProfile.Hex("A7EFF0"));
    row.rank=Text(rect,"",new Vector2(-148,0),new Vector2(33,42),29);row.rank.font=legacyFont;
    row.avatar=Graphic(Rect("Fisher avatar",rect,new Vector2(-109,0),new Vector2(49,49)),FishingStickerGraphic.Kind.Avatar,LocalProfile.Teams[(int)(id%4)]);row.avatar.accent=Gold;
-   row.name=Text(rect,"",new Vector2(-29,0),new Vector2(95,35),24);row.name.font=CoveUI.TextFont??font;row.name.resizeTextForBestFit=true;row.name.resizeTextMinSize=18;row.name.resizeTextMaxSize=24;
-   row.points=Text(rect,"0",new Vector2(119,0),new Vector2(64,52),32,Color.white);
-   row.popRect=Rect("Catch reward pop",rect,new Vector2(60,6),new Vector2(60,37));Graphic(row.popRect,FishingStickerGraphic.Kind.Panel,Coral);row.pop=Text(row.popRect,"",Vector2.zero,new Vector2(56,33),23,Color.white);
+   row.name=Text(rect,"",new Vector2(-29,0),new Vector2(95,35),layout.leaderboardNameFontSize);row.name.name="Player name";row.name.font=font;row.name.resizeTextForBestFit=true;row.name.resizeTextMinSize=18;row.name.resizeTextMaxSize=layout.leaderboardNameFontSize;
+   row.points=Text(rect,"0",new Vector2(119,0),new Vector2(64,52),32,Ink);
+   row.popRect=Rect("Catch reward pop",rect,new Vector2(60,6),new Vector2(60,42));row.pop=Text(row.popRect,"",Vector2.zero,row.popRect.sizeDelta,layout.scorePopFontSize,LocalProfile.Hex("F17C27"));row.pop.name="Award points";InkOutline(row.pop,layout.labelOutlineWidth);
    row.arrow=Text(rect,"",new Vector2(152,0),new Vector2(22,35),21);row.arrow.font=legacyFont;
    row.flame=Graphic(Rect("Twenty point flame",rect,new Vector2(160,11),new Vector2(29,49)),FishingStickerGraphic.Kind.Flame,Coral);row.flame.transform.SetAsFirstSibling();
    row.crown=Graphic(Rect("Winner crown",rect,new Vector2(-151,24),new Vector2(30,29)),FishingStickerGraphic.Kind.Crown,Gold);
@@ -132,7 +145,7 @@ namespace WhatTheFish {
     bool local=p.owner==FishingGame.Key(view.target);string name=game.PlayerName(p.owner);if(local&&(name=="HOST"||name.StartsWith("FRIEND")))name="YOU";row.name.text=name.Length>10?name.Substring(0,9)+"…":name;
     row.rank.text=team?(p.catches>0?"✓":"•"):(match.cupFinished?game.State.CupRank(p.owner):game.State.Rank(p.owner)).ToString();
     bool heat=p.score>=18&&p.score<20||row.milestoneAge<1.4f;row.flame.gameObject.SetActive(heat);row.flame.rectTransform.localScale=Vector3.one*(1+.12f*Mathf.Sin(Time.unscaledTime*9));
-    row.crown.gameObject.SetActive(!team&&row.rank.text=="1");row.panel.Refresh(1,heat?Gold:local?LocalProfile.Hex("9DECD4"):LocalProfile.Hex("C0EFF1"));var cg=row.rect.GetComponent<CanvasGroup>()??row.rect.gameObject.AddComponent<CanvasGroup>();cg.alpha=p.connected?1:.45f;row.score=p.score;
+    row.crown.gameObject.SetActive(!team&&row.rank.text=="1");row.panel.UseSolidPanel();row.panel.Refresh(1,local?LocalBlue:heat?Gold:LocalProfile.Hex("C0EFF1"));var cg=row.rect.GetComponent<CanvasGroup>()??row.rect.gameObject.AddComponent<CanvasGroup>();cg.alpha=p.connected?1:.45f;row.score=p.score;
    }
    foreach(var pair in rows)if(!ranked.Any(p=>p.owner==pair.Key))pair.Value.rect.gameObject.SetActive(false);
    int count=Math.Max(1,ranked.Length);bool setup=match.phase==FishingRoundPhase.Practice||match.phase==FishingRoundPhase.Ended;
@@ -146,20 +159,21 @@ namespace WhatTheFish {
    }else footer.text=team?"SHARED BASKET · EVERYONE CATCHES":match.mode==FishingMode.Cup?"CUP "+match.cupRound+"/3 · "+(game.Player(view.target)?.cupPoints??0)+" CUP PTS":game.ParticipantCount==1?(match.phase==FishingRoundPhase.Practice?"SOLO PRACTICE":"SOLO ROUND") :"CATCH POINTS · 2 / 5 / 10";
   }
   void Update(){
-   var game=FishingGame.Instance;var view=PlayerView.Instance;if(!game||!game.Context||!view)return;var p=game.Player(view.target);var match=game.State.Match;if(!game.Authority)chosenMode=match.mode;UpdateRows(game,view);
+   var game=FishingGame.Instance;var view=PlayerView.Instance;if(!game||!game.Context||!view){HookCue?.Clear();return;}var p=game.Player(view.target);var match=game.State.Match;if(!game.Authority)chosenMode=match.mode;UpdateRows(game,view);
    bool setup=match.phase==FishingRoundPhase.Practice||match.phase==FishingRoundPhase.Ended;bool countdown=match.phase==FishingRoundPhase.Countdown;
    start.gameObject.SetActive(game.Authority);start.interactable=game.CanStart(chosenMode);startLabel.text=chosenMode==FishingMode.Cup&&match.mode==FishingMode.Cup&&match.cupValid&&!match.cupFinished?"NEXT ROUND":"START";
    ready.interactable=setup&&p.HasValue&&!p.Value.Busy&&PlayerView.Instance&&PlayerView.Instance.active;readyLabel.text=p.HasValue&&p.Value.ready?"READY!":"READY";
    nickname.interactable=setup;practice.gameObject.SetActive(game.Authority&&match.phase==FishingRoundPhase.Ended);
    for(int i=0;i<modes.Length;i++){modes[i].interactable=game.Authority&&setup;var g=modes[i].GetComponent<FishingStickerGraphic>();g.Refresh(1,i==(int)chosenMode?Teal:Cream);}
    bool running=game.State.Running;var phase=p.HasValue?p.Value.phase:FishingPhase.Ready;bool fighting=p.HasValue&&phase==FishingPhase.Reeling;
-   action.interactable=view.active&&running&&p.HasValue&&(phase==FishingPhase.Ready&&!view.FishingCastPending&&game.CanCast(view.target,view.SelectedFishingFish)&&game.VisibleTarget(view.target,view.FishingCamera,view.SelectedFishingFish)||phase==FishingPhase.Bite||fighting);
+   bool hookReady=phase==FishingPhase.Bite&&p.HasValue&&game.Now<p.Value.hookUntil;
+   action.interactable=view.active&&focused&&!paused&&running&&p.HasValue&&(phase==FishingPhase.Ready&&!view.FishingCastPending&&game.CanCast(view.target,view.SelectedFishingFish)&&game.VisibleTarget(view.target,view.FishingCamera,view.SelectedFishingFish)||hookReady||fighting);
    cancel.interactable=p.HasValue&&p.Value.Busy;
    if(holding&&(!running||!fighting||!view.FishingHeld)){view.EndFishing(pointer);holding=false;}
    if(!p.HasValue)actionLabel.text=game.ParticipantCount>5?"MAX 5 PLAYERS":"NEXT ROUND";
    else if(countdown)actionLabel.text="GET READY!";
    else if(!running)actionLabel.text="ROUND OVER";
-   else if(phase==FishingPhase.Bite)actionLabel.text="HOOK!";
+   else if(phase==FishingPhase.Bite)actionLabel.text=hookReady?"HOOK!":"MISSED BITE";
    else if(fighting)actionLabel.text=p.Value.held&&p.Value.tension>.72f?"RELEASE!":"REEL";
    else if(view.FishingCastPending)actionLabel.text="CASTING…";
    else if(phase==FishingPhase.Casting)actionLabel.text="CASTING…";
@@ -177,11 +191,11 @@ namespace WhatTheFish {
    double remaining=Math.Max(0,match.deadline-game.Now);bool live=match.phase==FishingRoundPhase.Playing,urgent=live&&remaining<10;
    clock.text=countdown?Math.Max(1,Math.Ceiling(match.started-game.Now)).ToString():live?GolfLeaderboardUI.FinishTime(Math.Ceiling(remaining)):match.phase==FishingRoundPhase.Ended?"RESULTS":"FREE FISHING";
    int window=game.State.Window(game.Now),wantedSize=game.State.Wanted(game.Now);bool claimed=p.HasValue&&(p.Value.wantedMask&(1<<window))!=0,next=live&&window<2&&60-(game.Now-match.started)%60<8;
-   wanted.text=live||countdown?(next?"NEXT UP\n":"WANTED\n")+FishingState.SizeName(next?(wantedSize+1)%3:wantedSize):game.State.AllReady?"EVERYONE\nREADY!":match.phase==FishingRoundPhase.Ended?"READY TO\nREMATCH":"READY TO\nSTART";
-   bonus.text=live||countdown?claimed&&!next?"OK":"+3":"GO";bonusPlate.Refresh(1,claimed&&!next?Teal:Gold);wantedPlate.Refresh(1,next?LocalProfile.Hex("FFF0BC"):Cream);timerPlate.Refresh(1,urgent?LocalProfile.Hex("703F40"):Ink);
+   SingleLine(wanted,live||countdown?(next?"NEXT UP ":"WANTED ")+FishingState.SizeName(next?(wantedSize+1)%3:wantedSize):game.State.AllReady?"EVERYONE READY!":match.phase==FishingRoundPhase.Ended?"READY TO REMATCH":"READY TO START",layout.wantedFontSize);
+   bonus.text=live||countdown?claimed&&!next?"OK":"+3":"GO";bonus.color=claimed&&!next?Teal:Gold;wantedPlate.Refresh(1,next?LocalProfile.Hex("FFF0BC"):Cream);timerPlate.Refresh(1,urgent?LocalProfile.Hex("703F40"):Ink);
    float beat=Mathf.Exp(-Mathf.Repeat(Time.unscaledTime,1)*7);clockBadge.localScale=Vector3.one*(1+(countdown?.08f:urgent?.065f:.018f)*beat);clockBadge.localRotation=Quaternion.Euler(0,0,urgent?Mathf.Sin(Time.unscaledTime*12)*4:0);wantedBadge.localScale=Vector3.one*((.86f+wantedSize*.07f)+(next?.04f*Mathf.Sin(Time.unscaledTime*10):0));
    for(int i=0;i<clockShines.Length;i++)clockShines[i].rectTransform.localScale=Vector3.one*(.7f+.25f*Mathf.Sin(Time.unscaledTime*3+i));clock.color=urgent?LocalProfile.Hex("FFD65C"):Color.white;
-   bool team=match.mode==FishingMode.Crew&&!setup;crew.gameObject.SetActive(team);if(team)crew.text="CREW "+match.crewScore+" / "+match.crewTarget+" · "+((match.crewMask&1)!=0?"S+":"S-")+" "+((match.crewMask&2)!=0?"M+":"M-")+" "+((match.crewMask&4)!=0?"L+":"L-");clockCard.sizeDelta=layout.clockSize+new Vector2(0,team?56:0);float topShift=team?28:0;clockBadge.anchoredPosition=new Vector2(-139,39+topShift);clock.rectTransform.anchoredPosition=new Vector2(34,39+topShift);((RectTransform)wanted.transform.parent).anchoredPosition=new Vector2(0,-42+topShift);crew.rectTransform.anchoredPosition=new Vector2(0,-85);
+   bool team=match.mode==FishingMode.Crew&&!setup;crew.gameObject.SetActive(team);if(team)crew.text="CREW "+match.crewScore+" / "+match.crewTarget+" · "+((match.crewMask&1)!=0?"S+":"S-")+" "+((match.crewMask&2)!=0?"M+":"M-")+" "+((match.crewMask&4)!=0?"L+":"L-");clockCard.sizeDelta=layout.clockSize+new Vector2(0,team?56:0);float topShift=team?28:0;clockBadge.anchoredPosition=layout.clockBadgePosition+Vector2.up*topShift;clock.rectTransform.anchoredPosition=layout.clockTextPosition+Vector2.up*topShift;((RectTransform)wanted.transform.parent).anchoredPosition=new Vector2(0,-42+topShift);crew.rectTransform.anchoredPosition=new Vector2(0,-85);
    gauges.gameObject.SetActive(fighting);
    if(fighting){
     float dt=Time.unscaledDeltaTime;shownProgress=Mathf.Lerp(shownProgress,p.Value.progress,1-Mathf.Exp(-12*dt));shownTension=Mathf.Lerp(shownTension,p.Value.tension,1-Mathf.Exp(-25*dt));
@@ -191,7 +205,16 @@ namespace WhatTheFish {
     for(int i=0;i<sparkles.Length;i++){sparkles[i].rectTransform.anchoredPosition=new Vector2(Mathf.Lerp(-235,230,Mathf.Repeat(Time.unscaledTime*.33f+i*.5f,1)),31);sparkles[i].rectTransform.localScale=Vector3.one*(.7f+.25f*Mathf.Sin(Time.unscaledTime*6+i));}
    }
   }
-  void LateUpdate(){if(page){Layout();UpdateAim();}}
+  void LateUpdate(){if(page){Layout();UpdateAim();UpdateHookCue();}}
+  void UpdateHookCue(){
+   if(!HookCue)return;var game=FishingGame.Instance;var view=PlayerView.Instance;
+   bool context=game&&game.Context&&view&&view.target;
+   if(context!=cueContext||game!=cueGame||(view?view.target:null)!=cueActor){HookCue.ResetHistory();cueContext=context;cueGame=game;cueActor=view?view.target:null;}
+   if(!context){HookCue.Clear();return;}
+   var player=game.Player(view.target);bool eligible=view.active&&focused&&!paused&&game.State.Running&&player.HasValue&&player.Value.connected;
+   var point=player.HasValue&&player.Value.fish>=0&&game.Presentation?game.Presentation.HookPoint(player.Value):Vector3.zero;
+   HookCue.Tick(player,game.State.Match.round,game.Now,eligible,view.FishingCamera,point);
+  }
   void UpdateAim(){
    var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;
    bool visible=game&&game.Context&&view&&view.active&&game.State.Running&&p.HasValue&&p.Value.phase==FishingPhase.Ready&&game.NearestPier(view.target)>=0;
@@ -229,12 +252,14 @@ namespace WhatTheFish {
   }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public void ReviewFrameInsets(Vector2 min,Vector2 max){page.offsetMin=min;page.offsetMax=-max;}
-  public bool TypographyClean()=>page.GetComponentsInChildren<Text>(true).All(t=>t.fontStyle==FontStyle.Normal&&t.GetComponents<Shadow>().All(s=>!s.enabled||s is Outline&&Mathf.Abs(s.effectDistance.x)<=1&&Mathf.Abs(s.effectDistance.y)<=1));
+  public bool TypographyClean()=>page.GetComponentsInChildren<Text>(true).All(t=>t.fontStyle==FontStyle.Normal&&t.GetComponents<Shadow>().All(s=>!s.enabled||s is Outline&&Mathf.Abs(s.effectDistance.x)<=Mathf.Max(1,layout.labelOutlineWidth)&&Mathf.Abs(s.effectDistance.y)<=Mathf.Max(1,layout.labelOutlineWidth)));
 #endif
   public void OnPointerDown(PointerEventData e){if(holding||e.button!=PointerEventData.InputButton.Left||!action.interactable)return;pointer=e.pointerId;holding=PlayerView.Instance&&PlayerView.Instance.BeginFishing(pointer);}
   public void OnPointerUp(PointerEventData e){if(!holding||e.pointerId!=pointer)return;PlayerView.Instance?.EndFishing(pointer);holding=false;}
   public void OnPointerExit(PointerEventData e){if(holding&&e.pointerId==pointer){PlayerView.Instance?.EndFishing(pointer);holding=false;}}
-  void OnDisable(){if(holding)PlayerView.Instance?.EndFishing(pointer);holding=false;}
-  void OnDestroy(){if(Instance==this)Instance=null;if(board)Destroy(board.gameObject);if(gauges)Destroy(gauges.gameObject);}
+  void OnApplicationFocus(bool focus){focused=focus;if(!focus)HookCue?.Clear();}
+  void OnApplicationPause(bool pause){paused=pause;if(pause)HookCue?.Clear();}
+  void OnDisable(){if(holding)PlayerView.Instance?.EndFishing(pointer);holding=false;HookCue?.Clear();}
+  void OnDestroy(){if(Instance==this)Instance=null;if(HookCue)Destroy(HookCue.gameObject);if(board)Destroy(board.gameObject);if(gauges)Destroy(gauges.gameObject);}
  }
 }

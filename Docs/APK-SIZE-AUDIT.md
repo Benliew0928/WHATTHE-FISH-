@@ -1,5 +1,41 @@
 # APK size audit — measured release records
 
+## Fishing Hook cue and readable controls — 9 October 2026
+
+Actual fresh signed APK: **88,742,452 → 88,758,740 bytes (+16,288)**.
+Strict-boundary headroom is **11,241,260 bytes**; the 75 MB development
+target remains exceeded by **13,758,740 bytes**.
+[Release and hash](BUILD-SIZE.md#fishing-hook-cue-and-readable-controls--9-october-2026).
+
+Compressed ZIP entries grow **16,288 bytes**;
+signing/container overhead changes **+0 bytes**.
+Largest compressed entries: IL2CPP **11,507,560**, Unity
+native code **9,094,267**, metadata **2,642,733**
+and Java **2,353,635 bytes**. These are actual APK entries,
+not source-folder sizes or uncompressed Unity report totals.
+
+Serialized assets change **153,734,377 →
+153,734,541 bytes (+164)**,
+a different measurement. All **1,785 mesh report rows**
+remain byte-identical; the two Cove fonts and six HUD sprites are unchanged.
+Sprites still total **88,988 serialized bytes**, with **84,336 raw ASTC bytes**.
+The additional delivery cost comes from compiled code, small script metadata
+and editable layout settings. No new art pack or runtime dependency appears; the development
+target remains unmet.
+
+A rejected intermediate APK measured **91,235,832 bytes** because an
+interrupted desktop build left DesktopCoastURP selected. The audit exposed
+desktop SSAO and blue-noise resources in the mobile package. Android build
+entry points now explicitly require and save MobileURP before building.
+The final audit verifies those unintended desktop dependencies are absent;
+the rejected APK is archived as diagnostic evidence.
+
+Current evidence: `Builds/SizeAudit/latest/`, copied to
+`Builds/FishingRippleQA/Task-20261009-162733/After/SizeAudit/`, plus `release.json`, `apk-entry-delta.csv`,
+`serialized-asset-delta.csv`, `asset-invariance.json` and `apk-signature.txt`.
+Intermediate and original APK/player output is recoverable in the archive
+batches listed in [verification](VERIFICATION.md#fishing-hook-cue-and-readable-controls--9-october-2026).
+
 ## Integrated main — 9 October 2026
 
 Actual fresh signed APK: **90,051,054 → 88,742,452 bytes (−1,308,602)**.

@@ -39,7 +39,7 @@ namespace WhatTheFish {
   public bool BeginFishing(int source=int.MinValue){
    var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!active||!g||!g.Context||!p.HasValue||fishingHeld||pendingFishing!=FishingAction.None)return false;
    if(p.Value.phase==FishingPhase.Ready){if(FishingCastPending||!g.CanCast(target,SelectedFishingFish)||!g.VisibleTarget(target,cam,SelectedFishingFish))return false;QueueFishing(FishingAction.Cast);fishingAimFrozenUntil=Time.unscaledTime+1.5f;}
-   else if(p.Value.phase==FishingPhase.Bite)QueueFishing(FishingAction.Hook);
+   else if(p.Value.phase==FishingPhase.Bite){if(g.Now>=p.Value.hookUntil)return false;QueueFishing(FishingAction.Hook);}
    else if(p.Value.phase==FishingPhase.Reeling){fishingHeld=true;fishingSource=source;fishingRenewAt=Time.unscaledTime+.2f;QueueFishing(FishingAction.ReelStart);}
    else return false;
    return true;

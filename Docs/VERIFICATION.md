@@ -1,5 +1,95 @@
 # Verification records
 
+## Fishing Hook cue and readable controls — 9 October 2026
+
+Final protocol **38** player checks pass **1,061 assertions across
+8 selected reports**:
+
+| Coverage | Assertions | Evidence |
+| --- | ---: | --- |
+| Rendered fishing rules, all 30 fish across five piers/three cameras, touch/keyboard, bite deadline/lifecycle, readable controls, score animation, layouts and grip | 876 | `Builds/FishingGameplayQA/Run-20261009-220744/` |
+| Host/guest actual bites, hook timing, awards, reservations and rematch | 52 | `Builds/FishingGameplayQA/Run-20261009-221255/` |
+| Three-peer shared sports controls, possession, maps and original input roles | 81 | `Builds/SportsHudQA/Reviews/Local-20261009-221259-529/` |
+| Portable copied player, script-relative defaults from an unrelated working directory | 52 | `Builds/FishingRippleQA/Task-20261009-162733/Portable Review/Builds/FishingGameplayQA/Run-20261009-221439/` |
+
+Rendered views confirm navy score digits, the complete blue local row through
+milestones, solid red Cancel/X, native Camera/Jump symbols, a single-line
+Wanted label with naked yellow/navy **+3**, orange catch awards without boxes,
+plain title lettering and stronger catch/tension outlines. Decorations ignore
+raycasts; pointer targets and existing callbacks remain. Camera/Jump skins
+stretch with their narrower responsive frames. Lifecycle checks cover late,
+expired and repeated snapshots, focus/pause, offscreen cameras, round changes,
+foreign players, travel and reduced motion. No actionable runtime exceptions
+were found in these final reports.
+
+Earlier rank animation fixtures in `Run-20261009-202413/` and
+`Run-20261009-203628/` observed two updates in one rendered frame. The fixture
+now crosses a frame boundary before reading geometry, rank and score pulses;
+the final run passes. Those failed and intermediate reports remain ignored
+diagnostic evidence; no gameplay score correction is claimed for that fix.
+The intermediate `Run-20261009-214457/` passes its landscape typography cases
+but fails a forced portrait Wanted glyph check. Portrait is disabled by the
+product's orientation settings. Final coverage uses four landscape resolutions
+(844 × 390, 1024 × 768, 1920 × 810 and 1280 × 720), including safe-area insets.
+
+**Delivery and source:** the final Windows player was fully built at
+**22:07:12 Malaysia time**, with **318 complete files**, including
+**317 runtime/support files** and its note. File-by-file SHA-256 comparison
+confirms the tested candidate, promoted `Builds/WindowsFinal/` and portable
+copy match. The source manifests cover **3,233 Game inputs**; all current
+inputs match the final Android snapshot. Windows has exactly five verified
+platform/generated/editor differences: two desktop SSAO runtime registrations,
+regenerated Golf ball IDs/order with all **14 objects** equivalent,
+GraphicsSettings and QualitySettings
+select the desktop pipeline for the Windows snapshot and MobileURP for
+Android; ProjectBuilder additionally contains the Android-only mobile
+pipeline safeguard added after the Windows build. Windows build methods and
+all gameplay code match the tested full Windows snapshot. Glass and lamp
+material source bytes are also exact matches. Evidence:
+`source-verification.json`, `runtime-integrity.json`,
+`portable-integrity.json` and manifests under `Builds/FishingRippleQA/Task-20261009-162733/`.
+
+Regenerated scene IDs/order and packed mesh ordering were also reviewed against
+the pre-task commit: **7,411 scene/cabin objects** retain their property and
+reference graphs; Golf LOD keeps exactly the same decoded positions, winding,
+normals, colours and bounds across **111,302 triangles**. A raw submesh index
+range changed with vertex reordering; decoded geometry and attributes are
+unchanged. Format-aware proof: `generated-output-equivalence.json`.
+
+Fresh AndroidSubmission completed at **22:36:40**: **88,758,740 bytes**,
+up **16,288** from the actual pre-task APK. Strict-boundary headroom is
+**11,241,260 bytes**; budget enforcement and independent APK v2 signing
+pass. The 75 MB target remains exceeded by **13,758,740 bytes**.
+[Release](BUILD-SIZE.md#fishing-hook-cue-and-readable-controls--9-october-2026), [packing audit](APK-SIZE-AUDIT.md#fishing-hook-cue-and-readable-controls--9-october-2026).
+Physical Android appearance, touch/multitouch, sustained FPS and
+separate-network play remain untested. Desktop/loopback evidence does not
+establish those results.
+
+Reviewed superseded output, discarded task drafts and duplicate validation
+players are recoverable in these ignored batches, each with sizes, hashes and
+original recovery paths:
+
+- `Legacy/20261009-163904-596-hook-alert-design-refinement/`
+- `Legacy/20261009-201759-878-hook-alert-before-windows/`
+- `Legacy/20261009-203128-363-hook-alert-timer-refinement/`
+- `Legacy/20261009-203655-886-hook-alert-before-android/`
+- `Legacy/20261009-204003-839-hook-alert-review-seed/`
+- `Legacy/20261009-204805-206-hook-alert-promote-tested/`
+- `Legacy/20261009-210558-418-hook-alert-hud-refinement-apk/`
+- `Legacy/20261009-210852-689-hook-alert-before-hud-code/`
+- `Legacy/20261009-211729-105-hook-alert-final-hud-promotion/`
+- `Legacy/20261009-212238-725-hook-alert-portable-refresh/`
+- `Legacy/20261009-213331-261-hook-alert-typography-refinement/`
+- `Legacy/20261009-214852-745-hook-alert-setup-surface-refinement/`
+- `Legacy/20261009-215900-330-hook-alert-friend-surface-refinement/`
+- `Legacy/20261009-221118-755-hook-alert-final-readability-delivery/`
+- `Legacy/20261009-222045-463-hook-alert-portable-validation-complete/`
+- `Legacy/20261009-222840-324-hook-alert-desktop-dependency-rejection/`
+
+Current player/APK, raw validation reports and source/asset audit evidence stay
+under ignored `Builds/`. Active assets, editable masters and approved design
+references remain publishable. No Git history is rewritten.
+
 ## Integrated main — 9 October 2026
 
 The combined protocol **38** player retains fishing reticle selection and

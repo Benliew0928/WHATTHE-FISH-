@@ -20,8 +20,9 @@ across the lagoon. The schools reuse the existing three fish models and material
    swings the rod and throws the line/float in an arc. A fish already claimed
    by someone else cannot be taken; aim at another fish or wait. Casting commits
    the highlighted fish; camera movement does not switch it during the catch.
-3. **Hook:** watch the float and pulsing **HOOK!** button, then tap it or
-   press **F** within **1.8 seconds** of the bite.
+3. **Hook:** a [gold ! cue](FISHING-HOOK-CUE.md) appears above the biting fish
+   and **HOOK!** pulses, with a gold rim showing the remaining time. Tap it or press
+   **F** within **1.8 seconds** of the bite; input is available immediately.
 4. **Reel:** hold the button or **F** to draw the fish closer. Release when
    tension turns warm/red, then resume when it eases. The catch gauge tracks
    the fish approaching the pier; the tension gauge follows line stretch and

@@ -1,5 +1,38 @@
 # Build size — measured release records
 
+## Fishing Hook cue and readable controls — 9 October 2026
+
+Fresh AndroidSubmission completed at **22:36:40 Malaysia time**:
+**88,742,452 → 88,758,740 bytes (+16,288)**. Headroom to the strict
+100,000,000-byte boundary is **11,241,260 bytes**. The **75,000,000-byte
+development target remains exceeded by 13,758,740 bytes**. The hard budget
+gate and independent APK v2 signature verification pass. SHA-256:
+**D2BC0DA872FDCF492EFCEC0A2E9D976E78D703CDE91619A693E4064E9986A77C**.
+
+A gold **!** marks the local biting fish, the illustrated **HOOK!** control
+pulses, and its shrinking rim follows the actual 1.8-second deadline. Scores
+are navy, the local row is blue, Cancel is red with an X, and Camera/Jump use
+narrower rounder icon controls. Wanted details fit one line with a large
+yellow/navy **+3**; catch awards float as orange text without boxes. Heavier
+existing name lettering, stronger gauge outlines and a plain title improve
+readability. [Controls and manual timer tuning](FISHING-HOOK-CUE.md).
+
+No texture, font, mesh, animation, audio, shader or package is added. Native
+graphics reuse the existing UI material and responsive frames. Protocol **38**,
+four islands and shared room travel remain. [Packing audit](APK-SIZE-AUDIT.md#fishing-hook-cue-and-readable-controls--9-october-2026).
+
+The complete **318-file** Windows player in `Builds/WindowsFinal/` was fully
+built at **22:07:12** and validated before promotion. All **317 runtime/
+support files** match the tested candidate and portable copy; the note is
+excluded. Final checks pass **1,061 assertions across 8 reports**.
+[Verification, source differences and archives](VERIFICATION.md#fishing-hook-cue-and-readable-controls--9-october-2026).
+Evidence: `Builds/FishingRippleQA/Task-20261009-162733/`.
+
+This comparison uses the actual pre-task **88,742,452-byte** integrated-main
+APK. Intermediate builds are retained as historical evidence and are not used
+to validate the final typography. Physical Android rendering, touch/FPS and
+separate-network play remain unverified. The 75 MB shortfall remains unresolved.
+
 ## Integrated main — 9 October 2026
 
 Fresh AndroidSubmission completed at **15:25:34 Malaysia time**:
