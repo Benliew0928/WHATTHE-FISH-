@@ -1,5 +1,40 @@
 # APK size audit — measured release records
 
+## Golf sticker HUD — 10 October 2026
+
+Actual fresh signed APK: **88,760,152 → 88,812,118 bytes (+51,966)**.
+Strict-boundary headroom: **11,187,882 bytes**. The 75 MB development target
+remains exceeded by **13,812,118 bytes**.
+[Release and hash](BUILD-SIZE.md#golf-sticker-hud--10-october-2026).
+
+Compressed ZIP entries grow **51,449 bytes**, with **517 bytes** more
+container/signature overhead. The largest compressed entries are IL2CPP
+**11,528,808**, Unity **9,094,267**, metadata **2,646,195** and Java
+**2,353,635 bytes**. The two new texture ZIP entries total **27,394 bytes**.
+These are actual APK measurements, separate from source PNG lengths.
+
+Serialized assets change **153,734,549 → 153,774,361 bytes (+39,812)**.
+Two Golf sprites contribute **30,536 + 8,580 = 39,116 bytes**; the editable
+layout contributes **336**, and four MonoScript metadata rows add **360**.
+Binary Texture2D inspection confirms **256/128 pixels**, **ASTC 6×6**,
+one mip level and no CPU readability, with **37,328 raw image bytes** total.
+Full-resolution masters and the approved preview stay outside Unity and do
+not ship. Existing fonts, portraits, frames, clock and icons are reused.
+
+All **1,785 mesh report rows** are identical. Both Cove fonts and all six
+Fishing sprites retain their serialized sizes and packed payload SHA-256.
+MobileURP is packed, with **no DesktopCoastURP, SSAO shader or BlueNoise256
+assets**. The existing **336-byte SSAO script metadata** and **4,220-byte
+BlueNoise64 texture** remain unchanged; those are not new desktop effects.
+
+Current evidence is `Builds/SizeAudit/latest/` and
+`Builds/GolfHUDQA/Task-20261010-125740/AfterComparison/`: exact APK ZIP and
+serialized asset deltas, texture inspection, retained-asset hashes and pipeline
+checks. Independent APK v2 verification is in the task's `apk-signature.txt`.
+The baseline APK/audit is recoverable in
+`Legacy/20261010-141911-246-golf-hud-before-android/`.
+The hard budget passes; the 75 MB development target remains unmet.
+
 ## Fishing timer spacing — 9 October 2026
 
 Fresh signed APK: **88,758,740 → 88,760,152 bytes (+1,412)**; headroom to the

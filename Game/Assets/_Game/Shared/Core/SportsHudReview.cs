@@ -29,6 +29,7 @@ namespace WhatTheFish {
   Athlete Partner(Vector3 point,FootballTeam team=FootballTeam.None){var actor=Instantiate(app.athletePrefab).GetComponent<Athlete>();actor.Setup();actor.BasketballPracticeTeam=team;Place(actor,point);return actor;}
   void StyleChecks(SportId sport){
    if(sport==SportId.Fishing){FishingStyleChecks();return;}
+   if(sport==SportId.Golf){GolfStyleChecks();return;}
    var buttons=FindObjectsByType<Button>(FindObjectsInactive.Include,FindObjectsSortMode.None).Where(b=>b.GetComponent<GameButtonStyle>()).ToArray();
    Check(buttons.Length>=3,sport+" game controls have Cove skin");
    Check(buttons.All(b=>b.targetGraphic is CovePlate&&b.GetComponent<CoveFeedback>()&&b.transition==Selectable.Transition.None),sport+" plates use interactive feedback");
@@ -45,6 +46,21 @@ namespace WhatTheFish {
    var face=(CovePlate)button.targetGraphic;Check(!face.raycastTarget&&face.shadow&&face.border>0,sport+" visual does not resize touch target");feedback.OnPointerUp(pointer);
   }
   Button[] FishingButtons()=>FindObjectsByType<Button>(FindObjectsInactive.Include,FindObjectsSortMode.None).Where(b=>b.targetGraphic is FishingStickerGraphic).ToArray();
+  void GolfStyleChecks(){
+   Canvas.ForceUpdateCanvases();var hud=GolfHUD.Instance;var table=FindFirstObjectByType<GolfLeaderboardUI>();var buttons=FishingButtons();
+   Check(hud&&table&&buttons.Length>=7,"Golf uses native illustrated controls and scorecard");if(!hud||!table)return;
+   Check(buttons.All(b=>!b.GetComponent<GameButtonStyle>()&&b.GetComponent<CoveFeedback>()&&b.transition==Selectable.Transition.None),"Golf keeps native skins and pointer feedback");
+   Check(hud.ActionRect.GetComponentsInChildren<Image>(true).Any(i=>i.enabled&&i.sprite&&i.name=="Golf swing illustration"),"Golf primary control retains club and ball illustration");
+   Check(hud.FitsSafeFrame()&&hud.RegionsSeparate()&&table.FitsSafeFrame(),"Golf frames fit without overlapping on "+Screen.width+"x"+Screen.height);
+   Check(hud.TypographyClean(),"Golf text uses native weights without stacked shadows");Check(table.DividersVisible(),"Golf scorecard has visible column separators");
+   foreach(var button in buttons.Where(b=>b.IsActive()&&b.GetComponentsInParent<CanvasGroup>().All(g=>g.alpha>.05f))){
+    var rect=(RectTransform)button.transform;var corners=new Vector3[4];rect.GetWorldCorners(corners);
+    Check(corners.All(c=>c.x>=-.5f&&c.x<=Screen.width+.5f&&c.y>=-.5f&&c.y<=Screen.height+.5f),"Golf target fits screen: "+button.name);
+    foreach(var text in button.GetComponentsInChildren<Text>().Where(t=>t.isActiveAndEnabled&&!string.IsNullOrEmpty(t.text))){
+     text.rectTransform.GetWorldCorners(corners);Check(corners.All(c=>{var p=rect.InverseTransformPoint(c);return p.x>=rect.rect.xMin-.5f&&p.x<=rect.rect.xMax+.5f&&p.y>=rect.rect.yMin-.5f&&p.y<=rect.rect.yMax+.5f;})&&text.cachedTextGenerator.vertexCount>0,"Golf label renders inside control: "+text.text.Replace('\n',' '));
+    }
+   }
+  }
   void FishingStyleChecks(){
    Canvas.ForceUpdateCanvases();var hud=FindFirstObjectByType<FishingHUD>();var buttons=FishingButtons();
    Check(hud&&buttons.Length>=8,"Fishing uses its illustrated controls");
@@ -56,7 +72,7 @@ namespace WhatTheFish {
    foreach(var b in buttons.Where(b=>b.IsActive())){
     var rect=(RectTransform)b.transform;var corners=new Vector3[4];rect.GetWorldCorners(corners);
     Check(corners.All(c=>c.x>=-.5f&&c.x<=Screen.width+.5f&&c.y>=-.5f&&c.y<=Screen.height+.5f),"Fishing target fits screen: "+b.name);
-    foreach(var text in b.GetComponentsInChildren<Text>().Where(t=>!string.IsNullOrEmpty(t.text))){
+    foreach(var text in b.GetComponentsInChildren<Text>().Where(t=>t.isActiveAndEnabled&&!string.IsNullOrEmpty(t.text))){
      text.rectTransform.GetWorldCorners(corners);
      Check(corners.All(c=>{var p=rect.InverseTransformPoint(c);return p.x>=rect.rect.xMin-.5f&&p.x<=rect.rect.xMax+.5f&&p.y>=rect.rect.yMin-.5f&&p.y<=rect.rect.yMax+.5f;})&&text.cachedTextGenerator.vertexCount>0,"Fishing label renders inside control: "+text.text.Replace('\n',' '));
     }
@@ -71,6 +87,7 @@ namespace WhatTheFish {
   }
   IEnumerator FeedbackChecks(){
    if(app.SelectedSport==SportId.Fishing){yield return FishingFeedbackChecks();yield break;}
+   if(app.SelectedSport==SportId.Golf){yield return GolfFeedbackChecks();yield break;}
    var button=FindObjectsByType<Button>(FindObjectsSortMode.None).First(b=>b.IsActive()&&b.IsInteractable()&&b.GetComponent<GameButtonStyle>());
    var feedback=button.GetComponent<CoveFeedback>();var visual=button.transform.Find("Button visual");var rect=(RectTransform)button.transform;
    var corners=new Vector3[4];rect.GetWorldCorners(corners);var pointer=new PointerEventData(EventSystem.current){pointerId=81,button=PointerEventData.InputButton.Left};
@@ -89,6 +106,14 @@ namespace WhatTheFish {
    feedback.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=82});yield return new WaitForSeconds(.08f);
    Check(MenuPreferences.ReducedMotion||Mathf.Abs(button.transform.localScale.x-held)<.008f,"another finger cannot release Fishing press feedback");
    feedback.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);Check(Mathf.Abs(button.transform.localScale.x-rest)<.005f,"Fishing release returns native control to rest");
+  }
+  IEnumerator GolfFeedbackChecks(){
+   var button=GolfHUD.Instance.CameraButton;var feedback=button.GetComponent<CoveFeedback>();var visual=button.transform.Find("Golf button visual");var rect=(RectTransform)button.transform;
+   Check(button.interactable&&feedback&&visual,"Golf Camera has native pointer feedback");if(!feedback||!visual)yield break;
+   var before=new Vector3[4];rect.GetWorldCorners(before);float rest=visual.localScale.x;var pointer=new PointerEventData(EventSystem.current){pointerId=81,button=PointerEventData.InputButton.Left};feedback.OnPointerDown(pointer);yield return new WaitForSeconds(.16f);
+   float held=visual.localScale.x;Check(MenuPreferences.ReducedMotion||held<rest*.99f,"Golf press compresses its illustration");feedback.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=82});yield return new WaitForSeconds(.08f);
+   Check(MenuPreferences.ReducedMotion||Mathf.Abs(visual.localScale.x-held)<.008f,"another finger cannot release Golf feedback");var after=new Vector3[4];rect.GetWorldCorners(after);Check(before.Zip(after,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.01f),"Golf press keeps the touch target fixed");
+   feedback.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);Check(Mathf.Abs(visual.localScale.x-rest)<.005f,"Golf release returns its illustration to rest");
   }
   void FootballPickup(Athlete actor){var ball=FootballBall.Instance;ball.ResetBall();ball.Body.position=ball.FootPosition(actor);ball.Body.linearVelocity=Vector3.zero;Physics.SyncTransforms();ball.RefreshControl(actor);Check(ball.CurrentController==actor,"football possession fixture");}
   IEnumerator Football(){

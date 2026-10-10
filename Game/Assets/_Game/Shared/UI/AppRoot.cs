@@ -58,8 +58,8 @@ namespace WhatTheFish {
   public void Show(string which){
    screen=which;
    if(which=="stadium"&&!pendingSelection.HasValue){if(Menu)Menu.Hide();Clear();HUD();
-    // Fishing owns its illustrated skins, typography and responsive frames.
-    if(SelectedSport==SportId.Fishing){foreach(var button in page.GetComponentsInChildren<Button>(true))if(!button.GetComponent<CoveFeedback>())button.gameObject.AddComponent<CoveFeedback>();}
+    // Illustrated island HUDs own their skins and safe-area layout frames.
+    if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf){foreach(var button in page.GetComponentsInChildren<Button>(true))if(!button.GetComponent<CoveFeedback>())button.gameObject.AddComponent<CoveFeedback>();}
     else GameButtonStyle.Apply(page);
     if(Menu)Menu.ArriveInWorld(page);
     return;
@@ -97,12 +97,15 @@ namespace WhatTheFish {
     swing.startButton=startRect.gameObject.AddComponent<Button>();swing.startButton.onClick.AddListener(()=>GolfMatchManager.Instance?.StartMatch());
     swing.startLabel=Label(startRect,"Start golf match",0,Vector2.zero,new Vector2(250,60),23,ink);
     swing.startLabel.alignment=TextAnchor.MiddleCenter;swing.startLabel.rectTransform.anchorMin=swing.startLabel.rectTransform.anchorMax=swing.startLabel.rectTransform.pivot=new Vector2(.5f,.5f);
+    var cartControls=new System.Collections.Generic.List<GolfCartButton>();
     foreach(bool summon in new[]{true,false}){
      var rect=Panel(page,new Vector2(1300,summon?340:165),new Vector2(138,138),summon?mint:LocalProfile.Hex("F0B956"));rect.name=summon?"Golf cart summon button":"Golf cart drive button";
      var control=rect.gameObject.AddComponent<GolfCartButton>();control.summon=summon;control.button=rect.gameObject.AddComponent<Button>();
+     cartControls.Add(control);
      control.label=Label(rect,summon?"召唤":"驾驶",0,Vector2.zero,new Vector2(210,90),27,ink);control.label.font=Resources.Load<Font>("GolfCartLabels");
      control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
     }
+    GolfHUD.Create(page,font,bg,look,(RectTransform)cameraControl.transform,jumpRect,(RectTransform)returnButton.transform,swing,cartControls.ToArray());
    }
    if(SelectedSport==SportId.Football){
     FootballMatchHUD.Create(page,font);FootballEffortHUD.Create(this,page,font);
@@ -151,9 +154,9 @@ namespace WhatTheFish {
    if(SelectedSport==SportId.Football)FootballActionSlot.Attach(page);
    if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)SportsMiniMap.Create(page,SelectedSport);
    var stadiumName=rooms.Connected&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.WorldAppearance.Value.Length>0?JsonUtility.FromJson<StadiumAppearance>(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString()).title:CurrentAppearance.title;
-   if(SelectedSport!=SportId.Fishing)Pill(stadiumName.ToUpperInvariant(),new Vector2(252,818),new Vector2(400,62));fps=Label(page,"",0,new Vector2(66,742),new Vector2(380,44),18,Color.white);if(SelectedSport==SportId.Fishing)fps.gameObject.SetActive(false);
+   if(SelectedSport!=SportId.Fishing&&SelectedSport!=SportId.Golf)Pill(stadiumName.ToUpperInvariant(),new Vector2(252,818),new Vector2(400,62));fps=Label(page,"",0,new Vector2(66,742),new Vector2(380,44),18,Color.white);if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf)fps.gameObject.SetActive(false);
    controlHint=Label(page,"Drag right to look • Push stick fully to run",0,new Vector2(530,72),new Vector2(570,40),21,Color.white);
-   if(SelectedSport==SportId.Fishing)controlHint.gameObject.SetActive(false);
+   if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf)controlHint.gameObject.SetActive(false);
    if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball){controlHint.rectTransform.anchorMin=controlHint.rectTransform.anchorMax=new Vector2(.5f,0);controlHint.rectTransform.anchoredPosition=new Vector2(-285,SelectedSport==SportId.Football?193:148);controlHint.alignment=TextAnchor.MiddleCenter;controlHint.fontSize=18;}
   }
   void Pill(string s,Vector2 p,Vector2 size){var r=Panel(page,p,size,cream);var t=Label(r,s,0,Vector2.zero,size,23,ink);t.alignment=TextAnchor.MiddleCenter;var rt=t.rectTransform;rt.anchorMin=rt.anchorMax=new Vector2(.5f,.5f);rt.pivot=new Vector2(.5f,.5f);}

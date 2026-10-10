@@ -1,5 +1,35 @@
 # Build size — measured release records
 
+## Golf sticker HUD — 10 October 2026
+
+Fresh AndroidSubmission APK written at **14:31:19 Malaysia time**:
+**88,760,152 → 88,812,118 bytes (+51,966)**. Headroom to the strict
+100,000,000-byte boundary is **11,187,882 bytes**. The **75,000,000-byte
+development target remains exceeded by 13,812,118 bytes**. The hard budget
+gate and independent APK v2 signature verification pass. SHA-256:
+**7C8B2CEAAC5CD83F8BEBB061428876A617311C644F9504E71A0064E189D210BF**.
+
+Golf combines A's illustrated cream/navy/gold controls, C's scorecard column
+lines and B's framed hold/release hint with **!**. Native fonts, frames,
+portraits, clock and utility icons reuse Fishing resources. Only two compressed
+sprites are new: **256 × 256** and **128 × 128**, with **37,328 raw ASTC 6×6
+bytes** and **39,116 serialized bytes** together. These are different
+measurements from actual APK growth. Full-quality masters remain outside Unity.
+Five-hole rules, ranking, final countdown, physics, input handlers and world
+animations retain their existing behavior.
+
+The complete **318-file** Windows player in `Builds/WindowsFinal/` was fully
+built at **14:37:46** and validated before promotion. All **317 runtime/support
+files** match the tested candidate and independent portable copy. Selected
+final checks pass **1,549 assertions across ten reports**, plus 56 portable
+launcher assertions. The eight Golf reports account for **516** assertions.
+
+[Presentation and editable layout](GOLF-UI.md),
+[packing audit](APK-SIZE-AUDIT.md#golf-sticker-hud--10-october-2026),
+[verification and delivery](VERIFICATION.md#golf-sticker-hud--10-october-2026).
+Physical-phone appearance, touch/FPS and separate-network qualification remain
+unverified. The development size target still requires further reductions.
+
 ## Fishing timer spacing — 9 October 2026
 
 Fresh AndroidSubmission finished at **23:31:12 Malaysia time**:

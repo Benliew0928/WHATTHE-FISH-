@@ -159,7 +159,8 @@ namespace WhatTheFish {
    bool court=app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
    ((RectTransform)heading.transform.parent).anchoredPosition=new Vector2(0,!Travelling&&court?570:175);
    wayfinding.text=Travelling?"Look around • Camera: cabin / chase / panorama":"SKY-SAIL STATION  ·  "+Mathf.RoundToInt(distance)+" m";
-   wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing);
+   // Golf displays this same distance inside its course badge.
+   wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing&&app.SelectedSport!=SportId.Golf);
    previous.gameObject.SetActive(!Travelling);next.gameObject.SetActive(!Travelling);
    if(Travelling){heading.text=Journey.from.ToString().ToUpperInvariant()+"  →  "+Journey.to.ToString().ToUpperInvariant();caption.text=Journey.phase switch{SkySailPhase.Preparing=>"Preparing your island • Everyone travels together",SkySailPhase.Boarding=>"Doors closing • Enjoy the journey",SkySailPhase.Docking=>"Welcome to "+Journey.to+" • Doors opening",_=>"Over the sea • "+Mathf.CeilToInt((1-Progress)*Journey.duration)+" seconds to arrival"};}
    else{heading.text="SKY-SAIL CIRCUIT";caption.text=Message.Length>0?Message:Authority?"Choose your next island • Everyone boards together":"Your host chooses the next island";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+(Application.isMobilePlatform||app.SelectedSport==SportId.Fishing?" →":" → [F]");previous.interactable=Authority&&!streaming.Busy;next.interactable=Authority&&!streaming.Busy;}

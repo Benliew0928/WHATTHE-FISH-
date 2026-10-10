@@ -43,7 +43,7 @@ or court lines. The board is **204 × 114** design units, down from 326 × 216
 
 ## Button treatment
 
-Football, basketball and golf use plain text controls in a round
+Football and basketball use plain text controls in a round
 cluster near the right thumb. Primary actions are 160 units across; supporting
 actions are 132–138 units. Utility and Sky-Sail controls use rounded pills.
 There are no button icons or decorative highlights. Short labels show the
@@ -57,6 +57,16 @@ suppress scaling. Offensive shared slots use gold and defensive slots use
 sky blue. Existing hold, swipe and cancel gestures remain intact.
 The special Chinese cart/aim font is preserved. This generic control skin uses
 existing fonts and generated UI geometry.
+
+Golf uses the selected **A** cream/navy/gold stickers, **C** scorecard column
+lines and **B** framed hold/release hint with a native **!**. Its illustrated
+Swing/Putt button retains the existing live power caption and press/release
+feedback; Aim becomes red Cancel/X. Camera/Jump use shared native icons, and
+the complete local scorecard row is blue. Five-hole rules, rankings, the
+conditional final countdown, shot guide, input handlers and cart animations
+remain unchanged. New artwork is compressed to 256/128-pixel sprites; frames,
+fonts, portraits and clock reuse Fishing resources. See
+[Golf presentation and editable layout](GOLF-UI.md).
 
 Fishing retains its **Lagoon Stickers** HUD: illustrated frames and reel button,
 native lettering, centre aiming reticle, animated rankings and catch/tension

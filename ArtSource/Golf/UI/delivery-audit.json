@@ -1,0 +1,98 @@
+{
+  "base": "repository root",
+  "generation": "built-in image_gen with approved reference and transparent_background=true",
+  "delivery": "Aspect-preserving Lanczos premultiplied-alpha downsample with transparent edge padding, optimized lossless PNG; Android ASTC 6x6",
+  "apk_size_note": "Raw ASTC and PNG lengths are not actual APK growth; measure a fresh AndroidSubmission build.",
+  "assets": [
+    {
+      "name": "GolfShotBadge",
+      "master": {
+        "path": "ArtSource/Golf/UI/GolfShotBadge-master.png",
+        "bytes": 1528243,
+        "sha256": "f903031d815e2d1f899cc75e9737f029592c639ef7ac15eeb50a02310333e232",
+        "dimensions": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          0,
+          56,
+          1253,
+          1224
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/GolfShotBadge.png",
+        "bytes": 91848,
+        "sha256": "fb90ed76244af9e9536c7443d2b50e9839ec780db4db080254b83fbca66ee3b0",
+        "dimensions": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          2,
+          11,
+          254,
+          248
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 29584
+    },
+    {
+      "name": "GolfCourseBadge",
+      "master": {
+        "path": "ArtSource/Golf/UI/GolfCourseBadge-master.png",
+        "bytes": 1208653,
+        "sha256": "ef50a99dd35b16e23c46df657af21f156200c99fb7332df5ea49e6d96b0b47f3",
+        "dimensions": [
+          1476,
+          1066
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          114,
+          19,
+          1384,
+          995
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/GolfCourseBadge.png",
+        "bytes": 18679,
+        "sha256": "33253c1259e3662484ddd0bbdfe067f92fd3926d5556db3b0787e12688db6adc",
+        "dimensions": [
+          128,
+          128
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          10,
+          22,
+          121,
+          104
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 7744
+    }
+  ],
+  "total_delivery_png_bytes": 110527,
+  "total_android_astc_6x6_raw_bytes": 37328
+}

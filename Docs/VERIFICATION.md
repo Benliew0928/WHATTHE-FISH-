@@ -1,5 +1,79 @@
 # Verification records
 
+## Golf sticker HUD — 10 October 2026
+
+The complete final Windows player was fully built at **14:37:46 Malaysia
+time**. Selected final checks pass **1,549 assertions across ten reports**:
+
+| Coverage | Assertions | Evidence |
+| --- | ---: | --- |
+| Native HUD, actual raycast routing, hold/release/cancel, ten-row scorecard, typography, dividers, landscape safe frames, countdown and tied/DNF results | 56 | `Builds/GolfHUDQA/Run-20261010-143850/` |
+| Aim stance, cancellation, guide, original input semantics and local host/guest | 96 | `Builds/GolfAimQA/Run-20261010-144227/` |
+| Five-hole progression, strokes, ranking, finish times, countdown and local host/guest match | 177 | `Builds/GolfMiniGameQA/Run-20261010-144304/` |
+| Physical shot profiles and guide behavior | 187 | `Builds/GolfShotQA/Run-20261010-144408/` |
+| Shared Football/Basketball/Golf/Fishing controls, original gestures, maps and native skins | 157 | `Builds/SportsHudQA/Reviews/Offline-20261010-144444-352/` |
+| Rendered Fishing gameplay, controls, Hook cue, all piers/cameras, rules, typography and landscapes | 876 | `Builds/FishingGameplayQA/Run-20261010-144503/` |
+
+The Golf captures show A's cream/navy/gold treatment, C's table divider lines
+and B's framed **! Hold, then release** cue. Reviewed layouts include 16:9,
+4:3 and wide landscape with asymmetric safe-area insets. Native fonts render
+all captions; illustrations contain no baked text. The complete local row is
+blue. Existing power cycling, stroke/ranking rules, club/cart animation,
+camera/jump eligibility and input handlers remain. Ten-row table fixtures
+are synthetic UI data, not ten-device multiplayer qualification.
+
+The complete tested directory was moved into `Builds/WindowsFinal/`, with
+**317 runtime/support files plus its note (318 total)**. Every runtime/support
+SHA-256 matches the tested candidate. An independent complete player copy
+under a different root containing spaces also matches all hashes. The new
+Golf launcher passes another **56 assertions/eight captures** using its default
+script-relative player path from an unrelated temporary working directory.
+Portable artwork regeneration also preserves both delivery PNG hashes.
+Evidence is under `Builds/GolfHUDQA/Task-20261010-125740/`, including
+`runtime-integrity.json`, `portable-player-integrity.json`,
+`portable-generator-check.json`, `validation-index.json` and manifests.
+
+**Source and failed observations:** the old shared Fishing diagnostic required
+glyphs from intentionally disabled Camera/Jump labels. Both the prior player
+and first candidate fail those same two checks. The corrected development-only
+review filters active/enabled text; actual Fishing behavior is unchanged.
+AndroidSubmission excludes this review, and both review types are absent from
+the release IL2CPP metadata. Production feature/art inputs match across builds.
+The post-build source manifest identifies the single excluded diagnostic edit;
+it is not a complete pre-build input snapshot. Generated Golf Ball IDs/order
+were restored only after all **14 Unity objects** and external references
+matched. The mobile URP runtime list was restored after the desktop build added
+two required SSAO containers; the tested Windows player retains its desktop
+resources. Other URP definitions/settings are unchanged.
+
+A short Aim shot-distance observation failed in
+`Builds/GolfAimQA/Run-20261010-143921/`; the same unchanged final player repeat
+passes. No cause is established. A Fishing Hook pulse observation failed while
+Android was building in `Builds/FishingGameplayQA/Run-20261010-142430/`; the
+final isolated run passes all 876 checks. Those failed reports remain diagnostic
+evidence. Early HUD captures also exposed a clipped **!**, an unwanted shine
+line and a ball-caption overlap; the final player includes the visual fixes.
+
+Fresh AndroidSubmission is **88,812,118 bytes (+51,966)**, with **11,187,882
+bytes** below the strict boundary. Budget enforcement and independent v2
+signature verification pass. The 75 MB target remains exceeded by
+**13,812,118 bytes**. [Release](BUILD-SIZE.md#golf-sticker-hud--10-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#golf-sticker-hud--10-october-2026).
+Physical Android rendering, touch/FPS and separate-network qualification remain
+unverified; Windows review does not establish those results.
+
+Superseded players and the baseline APK/audit are recoverable in these reviewed
+ignored archive batches with original paths, sizes and hashes:
+
+- `Legacy/20261010-140923-350-golf-hud-initial-player/`
+- `Legacy/20261010-141911-246-golf-hud-before-android/`
+- `Legacy/20261010-143242-960-golf-hud-before-fixture-fix/`
+- `Legacy/20261010-144857-949-golf-hud-windows-delivery/`
+- `Legacy/20261010-145426-948-golf-hud-portable-player/`
+
+Implementation was initially handed back unstaged. The user subsequently
+authorized publishing these Golf HUD changes directly to `main`.
+
 ## Fishing timer spacing — 9 October 2026
 
 The complete new Windows player was fully built at **23:22:29
