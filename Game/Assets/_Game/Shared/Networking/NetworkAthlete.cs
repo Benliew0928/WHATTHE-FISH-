@@ -20,6 +20,10 @@ namespace WhatTheFish {
   public NetworkVariable<FootballSnapshot> Football=new();
   public NetworkVariable<FootballEffortSnapshot> Effort=new(new FootballEffortSnapshot{stamina=100});
   public NetworkVariable<BasketballSnapshot> Basketball=new();
+  public NetworkVariable<SportsPropSlot> BasketballProp=new();
+  [Rpc(SendTo.NotServer,InvokePermission=RpcInvokePermission.Server)] public void BasketballAudioRpc(BasketballAudioEvent sound){if(IsSpawned&&this==HostPlayer)WhatTheFish.BasketballAudio.Receive(sound,NetworkObjectId);}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void UseBasketballPropRpc(uint revision){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Basketball&&BasketballBall.Active){if(!BasketballBall.Active.TryUseProp(athlete,revision))BasketballPropRejectedRpc();}}
+  [Rpc(SendTo.Owner,InvokePermission=RpcInvokePermission.Server)] void BasketballPropRejectedRpc(){BasketballAudio.PlayMenu(BasketballSound.UIError);}
   public NetworkVariable<FootballBallSnapshot> Ball=new();
   public NetworkVariable<FootballMatchSnapshot> Match=new();
   public NetworkVariable<FootballTeam> Team=new(FootballTeam.None);

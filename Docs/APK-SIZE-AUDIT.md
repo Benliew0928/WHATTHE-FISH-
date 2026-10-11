@@ -1,5 +1,201 @@
 # APK size audit — measured release records
 
+## Basketball gameplay audio — 11 October 2026
+
+Fresh signed APK: **89,542,916 bytes**, **+340,662 bytes** from the measured
+start-of-integration APK. Hard-boundary headroom: **10,457,084 bytes**; the
+75 MB working target remains exceeded. [Release and hash](BUILD-SIZE.md#basketball-gameplay-audio--11-october-2026).
+
+Compressed ZIP entries increase **319,573 bytes**, and container overhead
+increases **21,089 bytes**. Entry count rises **657 → 773** with the separate
+audio resources. The largest new resource is coastal air at **88,320 bytes**;
+the next two are Turbo and rolling textures at **14,944** and **11,456 bytes**.
+IL2CPP increases **24,726 bytes**. Largest compressed entries remain IL2CPP
+**11,611,854**, Unity **9,105,512**, metadata **2,660,208** and Java
+**2,353,575 bytes**. No unexplained bulk growth.
+
+Serialized assets increase **154,297,738 → 154,581,754 bytes (+284,016)**,
+which is a separate measurement from compressed APK size. The 58 audio clips
+account for **283,696 bytes**; three script records account for the remaining
+320 bytes. Mono 32 kHz Vorbis at quality 0.65 preserves the approved mix;
+normalization is disabled. Reusing bounce variants at different gains and
+combining actual rim/net events avoids redundant soft/hard/dunk recordings.
+All **1,788 mesh rows** match, and existing texture/animation records are
+unchanged. The retained source packs, previews, reels and unused alternatives
+are outside Unity and excluded from the APK.
+
+Evidence: `Builds/SizeAudit/latest/`, `Builds/BasketballAudioQA/Before/`,
+`apk-comparison.json`, `asset-comparison.json` and `apk-signature.txt`.
+Source comparison matches **3,445 / 3,447 Game inputs**. Only generated Golf
+ball prefab serialization and URP resource registration differ between Windows
+and Android generation; runtime C#, audio bytes and import settings match.
+Superseded APK/audit and successful regeneration fixture are preserved at
+`Legacy/20261011-191701-160-basketball-audio-before-android/`.
+
+## Basketball inbound and touch fixes — 11 October 2026
+
+Fresh signed APK: **89,202,254 bytes**, **+1,928 bytes** from the measured
+start-of-task APK. Hard-boundary headroom: **10,797,746 bytes**; the 75 MB
+working target remains exceeded. [Hash and release](BUILD-SIZE.md#basketball-inbound-and-touch-fixes--11-october-2026).
+
+Compressed ZIP entries increase **1,929 bytes**; container overhead decreases
+one byte. Largest changes: IL2CPP **+983**, metadata **+607**, icon data **+242**
+bytes. Largest compressed entries are IL2CPP **11,587,128**, Unity **9,103,972**,
+metadata **2,655,751** and Java **2,353,575 bytes**. Hashed asset entry renames
+have equal sizes and do not add delivery content. No unexplained bulk growth.
+
+Serialized assets increase **154,297,626 → 154,297,738 bytes (+112)**, a
+separate measurement from compressed APK size. The added record is the inbound
+review script's tiny asset record; development review code is conditionally
+excluded from the release. The icon atlas stays **118,456 bytes**, using the
+same ASTC 6×6 import with no mipmaps or CPU copy. All **1,788 mesh rows** match
+when sorted; their report order changes. No new font, package, model, texture
+sheet, animation or audio is introduced. Largest existing serialized assets
+remain the golf/fishing terrain control maps, not this UI update.
+
+Evidence: `Builds/SizeAudit/latest/` and `Builds/BasketballInboundQA/Before/`,
+`apk-comparison.json`, `asset-comparison.json`, `apk-signature.txt` and
+`android-build.txt`. Source comparison matches **3,318 / 3,320 Game inputs**;
+only generated Golf ball prefab serialization and URP resource registration
+change between Windows and Android generation. Runtime C#, UI art and fonts match.
+
+## Basketball mobile controls — 11 October 2026
+
+Fresh signed APK: **89,200,326 bytes**. Increase from the start-of-task
+APK: **83,674 bytes**; increase from the intervening camera release:
+**21,748 bytes**. Hard-boundary headroom: **10,799,674 bytes**.
+[Release and hash](BUILD-SIZE.md#basketball-mobile-controls--11-october-2026).
+The 75 MB development target remains exceeded.
+
+Compared with the camera release, compressed ZIP entries grow **22,089
+bytes** and container overhead shrinks **341 bytes**. IL2CPP grows **25,446** and
+metadata **4,390 bytes**; the icon data entry shrinks **7,534 bytes**. Largest
+compressed entries are IL2CPP **11,586,145**, Unity **9,103,972**, metadata
+**2,655,144** and Java **2,353,575 bytes**. Other differences are retained in
+`Builds/BasketballUIQA/apk-comparison.json`.
+
+Serialized assets change **154,528,410 → 154,297,626 bytes
+(−230,784)**, a different measurement from compressed APK size. The atlas changes
+**349,672 → 118,456 bytes (−231,216)** through ASTC 6×6, no mipmaps and no CPU copy.
+Four tiny script records add 432 bytes. All **1,788 mesh rows** match. The packing
+still excludes DesktopCoastURP, BlueNoise256 and the SSAO shader; existing package
+script records are distinct from the excluded shader. No new font or UI package
+is added. Frames, shadows, paths and meters use procedural geometry.
+
+Evidence: `Builds/SizeAudit/latest/`, `Builds/BasketballUIQA/Before/`,
+`PreRelease/`, `apk-comparison.json`, `apk-signature.txt`, `windows-source.json`
+and `source-delta.json`. All runtime code, UI art and fonts match between the
+validated Windows inputs and final Android source. Two generated inputs differ:
+the Golf ball prefab and URP resource registration. These are recorded as build
+source limits, not claimed to be byte-identical. Previous release/audit:
+`Legacy/20261011-171516-579-basketball-ui-before-android/`.
+
+## Ball-first Stadium camera — 11 October 2026
+
+Fresh signed APK: **89,116,652 → 89,178,578 bytes (+61,926)**. Strict-boundary
+headroom: **10,821,422 bytes**; development target exceeded by **14,178,578 bytes**.
+[Release, snapshot limits and hash](BUILD-SIZE.md#ball-first-stadium-camera--11-october-2026).
+
+Compressed ZIP entries grow **61,410 bytes**; container overhead adds 516.
+Largest compressed entries: IL2CPP **11,560,699**, Unity **9,103,263**, metadata
+**2,650,754**, Java **2,353,575 bytes**. The largest increase is the new icon
+sheet data entry (**57,436 bytes**); IL2CPP grows **2,361 bytes**. The camera
+introduces no texture, font or imported mesh. Its arrow is generated UI geometry.
+
+Serialized assets change **154,178,410 → 154,528,410 bytes (+350,000)**. This is
+**349,672 bytes** for `Resources/BasketballUI/Icons.png`, created by concurrent UI
+work before the final Windows build, plus **328 bytes** of script records.
+That sheet is retained so the Android snapshot matches the tested Windows
+inputs; the subsequent UI source edits are excluded. All **1,788 mesh records**
+match the baseline. Mobile packing excludes DesktopCoastURP, BlueNoise256 and
+the SSAO shader. No model or texture was degraded for this camera change.
+
+Evidence: `Builds/BallCameraQA/apk-comparison.json`, `apk-signature.txt`,
+`BeforeAudit/`, `windows-source.json`, `snapshot-verification.json`,
+`android-source-delta.json`, `generated-source-check.json`, and
+`Builds/SizeAudit/latest/`. Runtime code matches across both builds; generated
+Golf prefab IDs/order are semantically identical and Android restores mobile
+rendering registrations. Shared concurrent source was not normalized or reset.
+Prior release/audit: `Legacy/20261011-164821-353-ball-camera-before-android/`.
+
+## Centre-line prop countdown — 11 October 2026
+
+Fresh signed APK: **89,113,480 → 89,116,652 bytes (+3,172)**. Strict-boundary
+headroom: **10,883,348 bytes**; development target exceeded by **14,116,652 bytes**.
+[Release and hash](BUILD-SIZE.md#centre-line-prop-countdown--11-october-2026).
+
+Compressed ZIP entries grow **3,174 bytes**, with two fewer bytes of container
+overhead. Largest entries: IL2CPP **11,558,338**, Unity **9,103,347**, metadata
+**2,650,706**, Java **2,353,575 bytes**. One serialized data entry grows 2,009
+compressed bytes; Burst grows 545, metadata 541 and IL2CPP 120 bytes. Other entry
+changes are recorded in `Builds/BasketballSpawnQA/apk-comparison.json`.
+
+Serialized assets change **154,175,974 → 154,178,410 bytes (+2,436)**, entirely
+the shared prop effect shader (**8,032 → 10,468 bytes**). All **1,788 mesh records**
+match the baseline; only report row order differs. No textures, fonts or new
+packed meshes are added. Five small digit meshes are generated once at runtime;
+there is only one active pickup or countdown. Mobile packing still excludes
+DesktopCoastURP, BlueNoise256 and the SSAO shader.
+
+Evidence: `Builds/SizeAudit/latest/`, `Builds/BasketballSpawnQA/Before/`,
+`apk-comparison.json` and `apk-signature.txt`. Prior APK/audit:
+`Legacy/20261011-155414-437-basketball-countdown-before-android/`.
+
+## Visible basketball props and ability tuning — 11 October 2026
+
+Fresh signed APK: **89,109,564 → 89,113,480 bytes (+3,916)**. Strict-boundary
+headroom: **10,886,520 bytes**. Development target exceeded by **14,113,480 bytes**.
+[Release and hash](BUILD-SIZE.md#visible-basketball-props-and-ability-tuning--11-october-2026).
+
+Compressed ZIP entries grow **3,920 bytes**; container/signature overhead shrinks
+four bytes. IL2CPP accounts for **3,885 bytes** of growth. Largest entries:
+IL2CPP **11,558,218**, Unity **9,103,347**, metadata **2,650,165**, Java
+**2,353,575 bytes**. There is no new shipped art or dependency.
+
+Serialized assets stay at **154,175,974 bytes**, with every per-asset size
+unchanged. All **1,788 mesh report rows** are identical. The prop import settings
+are retained; the fix preserves FBX unit scale during runtime animation.
+Mobile packing still excludes DesktopCoastURP, BlueNoise256 and the SSAO shader.
+
+Evidence: `Builds/SizeAudit/latest/` and `Builds/BasketballPropFixQA/` files
+`apk-comparison.json`, `Before/` and `apk-signature.txt`. Prior APK/audit:
+`Legacy/20261011-140500-474-basketball-prop-fix-before-android/`.
+
+## Basketball props — 11 October 2026
+
+Fresh signed APK: **88,560,698 → 89,109,564 bytes (+548,866)**. Strict-boundary
+headroom is **10,890,436 bytes**; the 75 MB target remains exceeded by
+**14,109,564 bytes**. The old local APK predates newer source and HUD work;
+the difference from the last documented 88,812,118-byte release is 297,446 bytes.
+[Release and hash](BUILD-SIZE.md#basketball-props--11-october-2026).
+
+Compressed ZIP entries grow **543,870 bytes**, with **4,996 bytes** more
+container/signature overhead. The largest entries remain IL2CPP **11,554,333**,
+Unity **9,103,347**, metadata **2,650,185** and Java **2,353,575 bytes**.
+
+Serialized assets change **153,637,593 → 154,175,974 bytes (+538,381)**.
+New prop resources total **374,449 bytes**: **260,493** for the three models,
+**92,956** for the three sprites, **8,032** for the portal shader and **12,968**
+for shared materials. The trail also adds **26,840 bytes** of the URP unlit
+particle shader. These figures are not compressed APK measurements.
+
+The model importers use medium mesh compression and disable animation and CPU
+readability. Icon importers cap Android at 256 pixels, ASTC 6×6, without mipmaps.
+There are at most two world pickups, using shared meshes/materials, two reused
+portal planes and one small procedural effect shader. No effects package,
+portal capture cameras, full-resolution icon masters or Blender scenes ship.
+
+All **1,785 existing mesh report rows are unchanged**; three prop meshes bring
+the total to **1,788**. MobileURP is packed; no DesktopCoastURP, BlueNoise256 or
+SSAO shader appears. Baseline-to-current Fishing/Golf sprite changes are the
+pre-existing source/delivery gap, not part of this feature's source edits.
+
+Evidence: `Builds/SizeAudit/latest/`, `Builds/BasketballPropsQA/apk-comparison.json`,
+`retained-meshes.json`, `asset-audit.json` and `apk-signature.txt` in that task's
+QA directory. The previous APK/audit is recoverable from
+`Legacy/20261011-125700-224-basketball-props-before-android/`.
+The hard gate passes; the development target remains unmet.
+
 ## Golf sticker HUD — 10 October 2026
 
 Actual fresh signed APK: **88,760,152 → 88,812,118 bytes (+51,966)**.

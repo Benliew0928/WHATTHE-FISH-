@@ -4,13 +4,14 @@ using UnityEngine.UI;
 
 namespace WhatTheFish {
  public sealed class BasketballDefenseButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,IInitializePotentialDragHandler,IBeginDragHandler,IDragHandler {
-  public Button button;public Text label;public bool guard;
+  public Button button;public Text label;public bool guard,illustrated;
   bool pressed,jumping;int pointer;Vector2 origin;
   void Update()=>Refresh();
   public void Refresh(){
    var view=PlayerView.Instance;var ball=BasketballBall.Active;
-   button.interactable=view&&view.active&&ball&&ball.Role(view.target)==BasketballRole.Defense&&(guard||ball.CanBlock(view.target));
+   button.interactable=view&&view.active&&!view.InputBlocked&&ball&&ball.Role(view.target)==BasketballRole.Defense&&(guard||ball.CanBlock(view.target));
    if(!button.interactable&&pressed)Clear();
+   if(illustrated){label.fontSize=guard?34:jumping?30:42;label.text=guard?"Guard":jumping?"Jump Block":"Block";return;}
    label.fontSize=22;
    label.text=guard?(view&&view.GuardHeld?"Guarding":GameButtonStyle.Caption("Guard","Q")):jumping?"Jump block\nRelease":Application.isMobilePlatform?"Block":"Block\nE";
   }
@@ -46,7 +47,7 @@ namespace WhatTheFish {
   public static void Attach(Transform parent){
    foreach(var attack in parent.GetComponentsInChildren<BasketballShootButton>(true)){
     var slot=attack.gameObject.AddComponent<BasketballActionSlot>();slot.attack=attack;slot.group=attack.gameObject.AddComponent<CanvasGroup>();
-    slot.defense=attack.gameObject.AddComponent<BasketballDefenseButton>();slot.defense.button=attack.button;slot.defense.label=attack.label;slot.defense.guard=attack.pass;slot.defense.enabled=false;
+    slot.defense=attack.gameObject.AddComponent<BasketballDefenseButton>();slot.defense.button=attack.button;slot.defense.label=attack.label;slot.defense.guard=attack.pass;slot.defense.illustrated=attack.illustrated;slot.defense.enabled=false;
    }
   }
   void Update(){

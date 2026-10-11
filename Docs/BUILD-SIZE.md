@@ -1,5 +1,155 @@
 # Build size — measured release records
 
+## Basketball gameplay audio — 11 October 2026
+
+Fresh AndroidSubmission APK written at **19:19:05 Malaysia time**:
+**89,202,254 → 89,542,916 bytes (+340,662)**. Headroom to the strict
+100,000,000-byte boundary: **10,457,084 bytes**. The **75 MB development
+target remains exceeded by 14,542,916 bytes**. The enforced size gate and
+independent APK v2 signature verification pass. SHA-256:
+**E4704628F47E0CEFF0CAAC4B03055D4BFE648D2EEC77501D012E90F55F6EB7D9**.
+
+This release integrates the approved 58-clip basketball bank, lowers the
+two-second Lock-on aim by 7.96 dB and reduces its pitch, synchronizes physical
+contacts/props/movement/UI, and adds four volume controls. Protocol **43**
+requires matching room builds. Selected audio occupies **283,696 serialized
+bytes** using mono 32 kHz Vorbis; raw packs and audition alternatives stay
+outside Unity. All **1,788 mesh records** match the baseline; no world texture
+or animation is degraded. No unexplained bulk growth was found.
+
+[Packing audit](APK-SIZE-AUDIT.md#basketball-gameplay-audio--11-october-2026),
+[Windows delivery and verification](VERIFICATION.md#basketball-gameplay-audio--11-october-2026),
+[audio mapping and sources](BASKETBALL-AUDIO.md).
+No Android device was connected. Phone audio latency/speakers, appearance,
+touch and FPS remain unverified; final gameplay listening is for user review.
+
+## Basketball inbound and touch fixes — 11 October 2026
+
+Fresh AndroidSubmission APK written at **18:34:40 Malaysia time**:
+**89,200,326 → 89,202,254 bytes (+1,928)**. Headroom to the strict
+100,000,000-byte boundary: **10,797,746 bytes**. The **75 MB development
+target remains exceeded by 14,202,254 bytes**. The enforced size gate and
+independent APK v2 signature verification pass. SHA-256:
+**13AA2D4A5D6AD29193677C45B58268398AB352CE9C354A119B3109133C266086**.
+
+This release adds a regular eight-tooth gear, court-line containment, two-second
+solo inbound restarts, release-only Cancel, 0.4-second pass charging and 1.5×
+horizontal pass velocity. Faster bounce passes retain their catch window after
+the planned rebound. Protocol **42** requires matching room builds.
+
+The existing 512-pixel ASTC icon atlas remains **118,456 serialized bytes**.
+All **1,788 mesh records** match; no world texture, animation or audio is degraded.
+[Packing audit](APK-SIZE-AUDIT.md#basketball-inbound-and-touch-fixes--11-october-2026),
+[verification and Windows delivery](VERIFICATION.md#basketball-inbound-and-touch-fixes--11-october-2026).
+Physical Android touch latency, appearance, reach and FPS remain unverified;
+ADB reported no connected device.
+
+## Basketball mobile controls — 11 October 2026
+
+Fresh AndroidSubmission APK written at **17:24:14 Malaysia time**:
+**89,116,652 → 89,200,326 bytes (+83,674)** from the recorded
+start-of-task APK. The camera release delivered during this task was
+89,178,578 bytes; this final build is **21,748 bytes** larger.
+The initial-to-final increase includes that concurrent release.
+
+Headroom to the strict 100,000,000-byte boundary: **10,799,674 bytes**.
+The **75 MB development target remains exceeded by 14,200,326
+bytes**. The enforced budget gate and independent APK v2 signature check pass.
+SHA-256: **25EC7AD13D4D565D1DF05108109185CB7608931491008CACA721445885AB5555**.
+
+The approved mobile buttons, same-finger drag paths, attached timing arcs,
+camera/settings pages and illustrated guide are implemented. One 512-pixel
+ASTC 6×6 atlas uses the approved SVG masters; existing fonts and procedural
+frames are reused. No model, world texture, animation or audio was degraded.
+Protocol **41** and the existing props / ball-first camera are retained.
+
+[Packing audit](APK-SIZE-AUDIT.md#basketball-mobile-controls--11-october-2026),
+[implementation](BasketballUI/README.md),
+[Windows delivery and verification](VERIFICATION.md#basketball-mobile-controls--11-october-2026).
+Physical Android appearance, reach, touch latency/FPS and WAN qualification remain unverified.
+
+## Ball-first Stadium camera — 11 October 2026
+
+Fresh AndroidSubmission finished at **16:57:15 Malaysia time**. Actual APK:
+**89,116,652 → 89,178,578 bytes (+61,926)**. Headroom to the strict
+100,000,000-byte boundary: **10,821,422 bytes**. The **75 MB development target
+remains exceeded by 14,178,578 bytes**. The enforced size gate and independent
+APK v2 signature verification pass. SHA-256:
+**83A0A64C50E597DB00B9B6476865309460F03861E30DC09E8931A0AEF1C90009**.
+
+The camera and edge marker use code and procedural UI geometry. Most growth
+comes from the concurrent basketball icon sheet already present during the
+validated Windows build. Later, incomplete basketball UI source edits blocked
+the shared workspace's Android compile. The release was therefore built using
+`Tools/Build/Build.ps1 -Target AndroidSubmission` in an ignored snapshot matching
+all **3,304 Game inputs** of the tested Windows source. Those later edits remain
+untouched and are excluded from this release. Protocol **41** is unchanged.
+
+[Packing audit](APK-SIZE-AUDIT.md#ball-first-stadium-camera--11-october-2026),
+[Windows delivery and verification](VERIFICATION.md#ball-first-stadium-camera--11-october-2026),
+[camera behaviour](STADIUM-CAMERA.md).
+Physical Android appearance, touch/FPS and WAN qualification remain unverified.
+
+## Centre-line prop countdown — 11 October 2026
+
+Fresh AndroidSubmission finished at **15:56:46 Malaysia time**. Actual APK:
+**89,113,480 → 89,116,652 bytes (+3,172)**. Strict 100,000,000-byte boundary
+headroom: **10,883,348 bytes**. The **75 MB development target remains exceeded
+by 14,116,652 bytes**. The enforced size gate and independent APK v2 signature
+verification pass. SHA-256:
+**80351DE9BCB091279A5FD0BC225267917F2B241FED38517C24318380EADF8240**.
+
+One pickup chooses a fixed left/right centre-line location, excludes the previous
+prop type, and appears after a translucent blue 3D five-second countdown.
+Tiny procedural digit meshes reuse the prop effect material. No new textures,
+fonts, art packages or dependencies ship. Protocol **41** is required on all peers.
+
+[Packing audit](APK-SIZE-AUDIT.md#centre-line-prop-countdown--11-october-2026),
+[Windows delivery and verification](VERIFICATION.md#centre-line-prop-countdown--11-october-2026).
+Physical Android appearance, touch/FPS and WAN qualification remain unverified.
+
+## Visible basketball props and ability tuning — 11 October 2026
+
+Fresh AndroidSubmission finished at **14:07:11 Malaysia time**. Actual APK:
+**89,109,564 → 89,113,480 bytes (+3,916)**. Headroom to the strict
+100,000,000-byte boundary: **10,886,520 bytes**. The **75,000,000-byte working
+target remains exceeded by 14,113,480 bytes**. The enforced size gate and
+independent APK v2 signature check pass. SHA-256:
+**890C714E6F9750024132AC2269C51CBC76D61C2E3C5CACE646DCFC1E796CD860**.
+
+Spawned props preserve imported FBX scale, Team Turbo is **1.5× normal movement
+for five seconds**, and Lock-on aims for **two seconds**. No art is added;
+all serialized asset sizes and mesh audit rows are unchanged. Protocol **40**
+prevents mixing players with older movement rules.
+
+[Packing audit](APK-SIZE-AUDIT.md#visible-basketball-props-and-ability-tuning--11-october-2026),
+[Windows delivery and verification](VERIFICATION.md#visible-basketball-props-and-ability-tuning--11-october-2026).
+Physical-phone rendering, touch/FPS and WAN qualification remain unverified.
+
+## Basketball props — 11 October 2026
+
+Fresh AndroidSubmission finished at **13:22:20 Malaysia time**. Actual local
+APK: **88,560,698 → 89,109,564 bytes (+548,866)**. Headroom to the strict
+100,000,000-byte boundary is **10,890,436 bytes**. The **75,000,000-byte
+working target is still exceeded by 14,109,564 bytes**. The enforced size gate
+and independent APK v2 signature verification pass. SHA-256:
+**E6505135809CC247834A609CEE6B29E0599B1E39DFF280378E808145C97A08DB**.
+
+The local pre-task APK was an older protocol-37 delivery. Current source already
+contained newer Fishing/Golf HUD work; its documented prior release was
+88,812,118 bytes. The new APK is 297,446 bytes larger than that documented
+release. The full local before/after increase must not be attributed only to props.
+
+Three reusable meshes, three 256-pixel icons, shared materials and a procedural
+portal shader add 374,449 serialized asset bytes, a separate measurement from
+compressed APK growth. Editable masters and the approved concept stay outside
+Unity. Protocol **39** is required on all peers.
+
+[Ability rules and implementation](BASKETBALL-PROPS.md),
+[packing audit](APK-SIZE-AUDIT.md#basketball-props--11-october-2026),
+[Windows delivery and verification](VERIFICATION.md#basketball-props--11-october-2026).
+Physical Android touch, appearance/FPS and WAN qualification remain unverified.
+
 ## Golf sticker HUD — 10 October 2026
 
 Fresh AndroidSubmission APK written at **14:31:19 Malaysia time**:

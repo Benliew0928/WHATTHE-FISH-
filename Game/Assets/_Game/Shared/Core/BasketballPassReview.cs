@@ -32,7 +32,7 @@ namespace WhatTheFish {
    actor=app?app.LocalAthlete:null;ball=BasketballBall.Active;if(!actor||!ball){Check(false,"court initialized");Finish();yield break;}
    lane=ball.GetComponent<BasketballPassVisual>();DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    review=new GameObject("Pass review camera").AddComponent<Camera>();review.CopyFrom(Camera.main);review.enabled=false;capture&=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;
-   Check(RoomService.ProtocolVersion==38,"matching pass protocol 38");if(capture)Check(Resources.Load<Material>("BasketballPassAim").shader.isSupported,"pass shader supported by rendered player");
+   Check(RoomService.ProtocolVersion==42,"matching pass protocol 42");if(capture)Check(Resources.Load<Material>("BasketballPassAim").shader.isSupported,"pass shader supported by rendered player");
    if(app.rooms.Connected){if(ball.Authority)yield return Host();else yield return Guest();}else yield return Offline();Finish();
   }
   IEnumerator Observe(float seconds,string stage){
@@ -42,7 +42,7 @@ namespace WhatTheFish {
      float dt=Time.time-armTime;
      for(int i=0;i<armJoints.Length;i++){var p=actor.transform.InverseTransformPoint(armJoints[i].position);if(armTime>0&&dt<.1f){float excess=Vector3.Distance(p,armPrevious[i])-(6*dt+.012f);if(excess>armExcess){armExcess=excess;armWorst=stage+" "+armJoints[i].name+" "+actor.BasketballMotion.Elapsed.ToString("F3");}}armPrevious[i]=p;}armTime=Time.time;
     }
-    File.AppendAllText(Path.Combine(folder,"samples.csv"),$"{frame},{stage},{aim.phase},{aim.bend:F3},{aim.heading:F2},{ball.PassPower:F3},{lane.Visible},{lane.Length:F3},{actor.BasketballMotion.Action},{actor.BasketballMotion.MaximumReachError:F4}\n");
+    File.AppendAllText(Path.Combine(folder,"samples.csv"),$"{frame},{stage},{aim.phase},{aim.bend:F3},{aim.heading:F2},{ball.PassPower:F3},{lane.Visible},{lane.Length:F3},{ball.Body.position:F3},{ball.Body.linearVelocity:F3},{ball.Defense.passing},{ball.autoPickup},{ball.Holder},{ball.PassBounces},{Vector3.Distance(ball.Body.position,actor.transform.position):F3},{actor.BasketballMotion.Action},{actor.BasketballMotion.MaximumReachError:F4}\n");
     if(capture&&frame%2==0){Capture(stage,"lane",new Vector3(-5,7,-6),4);Capture(stage,"front",new Vector3(0,1.4f,4.4f),.9f);Capture(stage,"side",new Vector3(4.4f,1.4f,0),.9f);}frame++;
    }
   }
@@ -67,7 +67,7 @@ namespace WhatTheFish {
    var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=12,position=RectTransformUtility.WorldToScreenPoint(null,control.transform.position)};
    control.OnPointerDown(pointer);yield return new WaitForSeconds(.2f);control.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=13});Check(app.view.PassCharging,"second finger cannot release pass");
    pointer.position=RectTransformUtility.WorldToScreenPoint(null,control.cancelArea.position);control.OnDrag(pointer);control.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);Check(!app.view.PassCharging&&ball.PassCount==count&&ball.Held,"drag cancel does not throw");
-   app.view.RequestPass();float end=Time.time+2;while(ball.PassCount==count&&Time.time<end)yield return null;Check(ball.PassCount==count+1&&ball.PassAim.power<.05f,"quick tap releases a four metre chest pass");yield return Observe(.6f,"quick-pass");
+   app.view.RequestPass();float end=Time.time+2;while(ball.PassCount==count&&Time.time<end)yield return null;Check(ball.PassCount==count+1&&ball.PassAim.power<.05f,"quick tap releases a six metre chest pass");yield return Observe(.6f,"quick-pass");
    yield return Possess(actor,new Vector3(0,.07f,-5));Check(app.view.BeginPass(),"full pass begins");yield return Observe(.95f,"full-charge");
    Check(ball.PassPower>.99f&&ball.Held,"full charge caps without automatic throw");
    app.view.yaw=45;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=45};yield return Observe(.5f,"aim-turn");Check(Mathf.Abs(Mathf.DeltaAngle(ball.PassAim.heading,45))<.1f,"held aim follows camera input");
@@ -83,9 +83,9 @@ namespace WhatTheFish {
    Place(guest,new Vector3(2,.07f,1));yield return Possess(actor,new Vector3(0,.07f,-5));Check(app.view.BeginPass(),"host pass starts");app.view.SelectPass(1);yield return Observe(.7f,"host-charge");
    app.view.yaw=25;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=25};yield return Observe(.5f,"host-turn");yield return Await("saw-host-lane");yield return Release(1,25);
    yield return Await("saw-host-release");Place(actor,new Vector3(-5,.07f,0));yield return Possess(guest,new Vector3(0,.07f,-5));Signal("guest-turn");
-   float end=Time.time+10;while(!ball.IsPassAiming(guest)&&Time.time<end)yield return null;Check(ball.IsPassAiming(guest),"reliable guest begin accepted by host");yield return Observe(.55f,"guest-charge");Check(lane.Visible&&Mathf.Abs(Mathf.DeltaAngle(ball.PassAim.heading,70))<.1f,"host sees guest steering direction");Check(ball.PassAim.bend<-.95f&&lane.Path.Bounces,"host sees guest bounce trajectory");
-   var receive=BasketballPassPath.Create(lane.Path.start,70,1,-1,BasketballBall.PassFloor(lane.Path.start));var receiver=receive.Point(receive.duration);receiver.x=Mathf.Clamp(receiver.x,-6.9f,6.9f);receiver.y=.07f;Place(actor,receiver,250);Signal("host-saw-guest");
-   yield return Await("guest-released");yield return Observe(.8f,"guest-release");Check(ball.PassCount==2,"guest release processed once by host");Check(ball.Holder==actor&&ball.PassBounces==1,"receiver catches guest bounce after real floor rebound");Check(Vector3.Dot(Vector3.ProjectOnPlane(ball.LastLaunchVelocity,Vector3.up).normalized,Quaternion.Euler(0,70,0)*Vector3.forward)>.999f,"guest pass follows its shared lane");Place(actor,new Vector3(-5,.07f,0));
+   float end=Time.time+10;while(!ball.IsPassAiming(guest)&&Time.time<end)yield return null;Check(ball.IsPassAiming(guest),"reliable guest begin accepted by host");yield return Observe(.55f,"guest-charge");Check(lane.Visible&&Mathf.Abs(Mathf.DeltaAngle(ball.PassAim.heading,35))<.1f,"host sees guest steering direction");Check(ball.PassAim.bend<-.95f&&lane.Path.Bounces,"host sees guest bounce trajectory");
+   var receive=BasketballPassPath.Create(lane.Path.start,35,1,-1,BasketballBall.PassFloor(lane.Path.start));var receiver=receive.Point(receive.duration);receiver.x=Mathf.Clamp(receiver.x,-6.9f,6.9f);receiver.y=.07f;Place(actor,receiver,215);Signal("host-saw-guest");
+   yield return Await("guest-released");yield return Observe(.8f,"guest-release");Check(ball.PassCount==2,"guest release processed once by host");Check(ball.Holder==actor&&ball.PassBounces==1,"receiver catches guest bounce after real floor rebound; holder="+ball.Holder+" bounces="+ball.PassBounces+" position="+ball.Body.position+" velocity="+ball.Body.linearVelocity);Check(Vector3.Dot(Vector3.ProjectOnPlane(ball.LastLaunchVelocity,Vector3.up).normalized,Quaternion.Euler(0,35,0)*Vector3.forward)>.999f,"guest pass follows its shared lane");Place(actor,new Vector3(-5,.07f,0));
    if(trajectory)yield return HostOdds(guest);Signal("host-done");yield return Await("guest-done");
   }
   IEnumerator Guest(){
@@ -94,7 +94,7 @@ namespace WhatTheFish {
    Check(lane.Visible&&ball.PassPower>.75f,"observer sees host direction and charge");Check(ball.PassAim.bend>.95f&&lane.Path.Point(lane.Path.duration*.5f).y-lane.Path.start.y>1,"observer sees host loft arc");Signal("saw-host-lane");yield return Observe(.2f,"remote-host-lane");
    end=Time.time+8;while(ball.PassCount<1&&Time.time<end)yield return null;Check(ball.PassCount==1,"guest receives host pass result");Signal("saw-host-release");yield return Await("guest-turn");
    end=Time.time+4;while(ball.Holder!=actor&&Time.time<end)yield return null;yield return new WaitForSeconds(.2f);
-   app.view.yaw=70;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=70};Check(app.view.BeginPass(),"guest starts through normal input");app.view.SelectPass(-1);yield return Await("host-saw-guest");yield return Observe(.35f,"guest-local-lane");Check(lane.Visible&&ball.PassPower>.95f,"guest receives authoritative full charge");app.view.EndPass();
+   app.view.yaw=35;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=35};Check(app.view.BeginPass(),"guest starts through normal input");app.view.SelectPass(-1);yield return Await("host-saw-guest");yield return Observe(.35f,"guest-local-lane");Check(lane.Visible&&ball.PassPower>.95f,"guest receives authoritative full charge");app.view.EndPass();
    end=Time.time+4;while(ball.PassCount<2&&Time.time<end)yield return null;Check(ball.PassCount==2,"guest release yields exactly one pass");Signal("guest-released");if(trajectory)yield return GuestOdds();yield return Await("host-done");Check(ball.Body.isKinematic&&!ball.Body.detectCollisions,"guest remains a noncolliding replica");Signal("guest-done");
   }
   void Capture(string stage,string view,Vector3 offset,float focus){

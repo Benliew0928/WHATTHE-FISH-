@@ -3,14 +3,9 @@ using UnityEngine;
 namespace WhatTheFish {
  public sealed partial class BasketballBall {
   // Rally's painted 15.24 x 28.6512 m court, in the ball's arena frame.
-  // The wider courtLimits apron belongs only to loose-ball recovery.
-  public static readonly Vector2 PlayerCourtLimits=new(7.62f,14.3256f);
-  bool OutsideCourtNearFloor(Vector3 world){
-   var point=transform.parent?transform.parent.InverseTransformPoint(world):world;
-   // An apron rebound must not strand the ball beyond the fenced player's
-   // reach. Preserve airborne excursions until the ball comes back down.
-   return point.y<=pickupHeight&&(Mathf.Abs(point.x)>PlayerCourtLimits.x+Radius||Mathf.Abs(point.z)>PlayerCourtLimits.y+Radius);
-  }
+  // The visual wall and player containment share the painted lines.
+  public static readonly Vector2 PaintedCourtLimits=new(7.62f,14.3256f);
+  public static readonly Vector2 PlayerCourtLimits=PaintedCourtLimits;
   public bool SetFreeRoam(Athlete actor,bool enabled){
    if(!Authority||!Playing||!actor||actor.inTransit)return false;
    actor.BasketballFreeRoam=enabled;
@@ -32,6 +27,7 @@ namespace WhatTheFish {
    limits-=new Vector2(radius/Mathf.Abs(scale.x),radius/Mathf.Abs(scale.z));return true;
   }
   public Vector3 ConstrainPlayerInput(Athlete actor,Vector3 direction){
+   if(IsInbound(actor))return Vector3.zero;
    if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return direction;
    var local=arena?arena.InverseTransformDirection(direction):direction;
    // Stop accelerating into a contacted wall. Projecting velocity alone makes
@@ -41,6 +37,7 @@ namespace WhatTheFish {
    return arena?arena.TransformDirection(local):local;
   }
   public Vector3 ConstrainPlayerMotion(Athlete actor,Vector3 displacement){
+   if(IsInbound(actor)){displacement.x=displacement.z=0;return displacement;}
    if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return displacement;
    var target=point+(arena?arena.InverseTransformVector(displacement):displacement);
    float x=Mathf.Clamp(target.x,-limits.x,limits.x),z=Mathf.Clamp(target.z,-limits.y,limits.y);

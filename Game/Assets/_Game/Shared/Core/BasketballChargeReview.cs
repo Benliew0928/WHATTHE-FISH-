@@ -66,21 +66,22 @@ namespace WhatTheFish {
    yield return Boundary();Finish();
   }
   IEnumerator Boundary(){
-   app.view.ClearMatchInput();ball.autoPickup=false;ball.ResetHome();var arena=ball.transform.parent;var limits=BasketballBall.PlayerCourtLimits;Place(arena.TransformPoint(new Vector3(5,.07f,0)),90);yield return new WaitForSeconds(.3f);
+   app.view.ClearMatchInput();ball.autoPickup=false;ball.ResetHome();var arena=ball.transform.parent;var limits=BasketballBall.PlayerCourtLimits;Place(arena.TransformPoint(new Vector3(limits.x-2,.07f,0)),90);yield return new WaitForSeconds(.3f);
    var wall=arena.GetComponentInChildren<BasketballBoundaryVisual>();Check(wall&&wall.GetComponent<MeshFilter>().sharedMesh.vertexCount==16&&wall.GetComponents<Collider>().Length==0,"lightweight four-panel translucent boundary has no physics collider");
    Check(wall.GetComponent<MeshRenderer>().sharedMaterial==Resources.Load<Material>("FootballBoundary"),"basketball shares football energy material and shader");
    foreach(float side in new[]{-1f,1f}){
-    Check(BasketballBoundaryVisual.Crossed(new Vector3(side*6,1,0),new Vector3(side*9,1,0),out var hit)&&Mathf.Abs(hit.x-side*limits.x)<.001f,"fast sideline crossing sampled "+side);
-    Check(BasketballBoundaryVisual.Crossed(new Vector3(0,1,side*13),new Vector3(0,1,side*16),out hit)&&Mathf.Abs(hit.z-side*limits.y)<.001f,"fast baseline crossing sampled "+side);
+    Check(BasketballBoundaryVisual.Crossed(new Vector3(side*6,1,0),new Vector3(side*(limits.x+1),1,0),out var hit)&&Mathf.Abs(hit.x-side*limits.x)<.001f,"fast sideline crossing sampled "+side);
+    Check(BasketballBoundaryVisual.Crossed(new Vector3(0,1,side*13),new Vector3(0,1,side*(limits.y+1)),out hit)&&Mathf.Abs(hit.z-side*limits.y)<.001f,"fast baseline crossing sampled "+side);
    }
-   Check(!BasketballBoundaryVisual.Crossed(new Vector3(6,3,0),new Vector3(9,3,0),out _),"ball over top does not flash untouched wall");
+   Check(!BasketballBoundaryVisual.Crossed(new Vector3(6,3,0),new Vector3(limits.x+1,3,0),out _),"ball over top does not flash untouched wall");
    uint contacts=wall.PlayerPulses;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,heading=90,sprint=true};yield return new WaitForSeconds(.65f);DevelopmentProbe.TurnCommand=new PlayerCommand{heading=90};
    Check(wall.PlayerPulses>contacts&&actor.transform.position.x<limits.x,"player contact creates an expanding pulse while motor holds boundary");
    yield return new WaitForEndOfFrame();Capture("barrier-player-contact",arena.TransformPoint(new Vector3(3.8f,2.3f,4.2f)),arena.TransformPoint(new Vector3(7.4f,.8f,0)));
    Place(arena.TransformPoint(new Vector3(4,.07f,-5)),90);yield return new WaitForSeconds(.3f);uint crossings=wall.BallPulses;
-   ball.Body.useGravity=false;ball.Place(new Vector3(6.4f,1.1f,0),Quaternion.identity,arena.TransformDirection(Vector3.right*9),Vector3.zero);
+   // The enlarged wall meets the scorer table at z=0; use its clear side gap.
+   ball.Body.useGravity=false;ball.Place(new Vector3(limits.x-1.2f,1.1f,3),Quaternion.identity,arena.TransformDirection(Vector3.right*9),Vector3.zero);
    yield return new WaitForSeconds(.22f);Check(wall.BallPulses>crossings&&ball.transform.localPosition.x>limits.x,"flying basketball passes through and leaves an animated ripple");
-   yield return new WaitForEndOfFrame();Capture("barrier-ball-ripple",arena.TransformPoint(new Vector3(3.8f,2.3f,4.2f)),arena.TransformPoint(new Vector3(7.4f,.8f,0)));
+   yield return new WaitForEndOfFrame();Capture("barrier-ball-ripple",arena.TransformPoint(new Vector3(4.5f,2.3f,6)),arena.TransformPoint(new Vector3(limits.x,.8f,3)));
    crossings=wall.BallPulses;ball.ResetHome();yield return new WaitForSeconds(.15f);Check(wall.BallPulses==crossings,"ball recovery teleport does not create a false crossing");ball.Body.useGravity=true;
    for(int i=0;i<12;i++){yield return new WaitForSeconds(.1f);yield return new WaitForEndOfFrame();Capture("barrier-fade-"+i.ToString("D2"),arena.TransformPoint(new Vector3(3.8f,2.3f,4.2f)),arena.TransformPoint(new Vector3(7.4f,.8f,0)));}
    yield return new WaitForEndOfFrame();Capture("court-wide",arena.TransformPoint(new Vector3(4,7,-12)),arena.TransformPoint(new Vector3(0,.5f,2)));

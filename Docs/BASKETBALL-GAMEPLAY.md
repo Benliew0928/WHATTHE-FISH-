@@ -1,6 +1,10 @@
 # Basketball pickup, shot physics, scoring and passing
 
-Choose **Basketball > Explore offline**, or create a basketball room and start exploration. Walk within about one metre of the loose ball to pick it up automatically. The player dribbles automatically with synchronized hand and body motion. **Hold E** on desktop or **hold the Shoot button**, then release in the meter's green band. The needle sweeps back and forth, so holding through a missed window gives another chance. Lower power falls short; higher power adds excess force. Actual contacts decide the outcome, so a mistimed shot can still make a legitimate bank or rim bounce. **Drag the same finger into Cancel**, click Cancel, or press **X** to lower the ball without firing. **Q** or **Pass** performs a chest pass toward a teammate in front, or into open court. Move with WASD/left stick; aim toward either end using right-mouse drag/right-side touch look. At charge start the camera-facing hoop is preferred, with the nearer hoop as the fallback, and that target stays locked until release or cancellation.
+Current ability rules and the expanded courtside collection boundary are in
+[Basketball props](BASKETBALL-PROPS.md). The prop system uses protocol 39;
+older delivery notes below describe their original snapshots.
+
+Choose **Basketball > Explore offline**, or create a basketball room and start exploration. Walk within about one metre of the loose ball to pick it up automatically. The player dribbles automatically with synchronized hand and body motion. **Hold E** on desktop or **hold the Shoot button**, then release in the meter's green band. The needle sweeps back and forth, so holding through a missed window gives another chance. Lower power falls short; higher power adds excess force. Actual contacts decide the outcome, so a mistimed shot can still make a legitimate bank or rim bounce. **Release the same finger inside Cancel**, or press **X** to lower the ball without firing. **Q** or **Pass** performs a chest pass toward a teammate in front, or into open court. Move with WASD/left stick; aim toward either end using right-mouse drag/right-side touch look. At charge start the camera-facing hoop is preferred, with the nearer hoop as the fallback, and that target stays locked until release or cancellation.
 
 The HUD shows shared practice points, made baskets / attempts, shot results and the power meter. The action slots switch with possession: Shoot/Block (E), Pass/hold Defend (Q), and a defender-only Steal (F). Space/Jump becomes Jump Block while defending. Shift/sprint and C/Camera retain their roles; holding Defend limits movement to a 3 m/s strafe. See [defense controls and contact rules](BASKETBALL-DEFENSE.md). Released shots use rigid-body flight, backspin, floor bounce, rim and backboard contacts. Both nets respond to contact and scored shots. This is shared shooting practice; team assignment, match timers and fouls are not implemented for basketball. The large architectural scoreboard remains decorative. [Basketball animation](BASKETBALL-ANIMATION.md) describes the stopping stance, running overlay, dribble, shooting and passing timelines.
 
@@ -23,11 +27,11 @@ physical rim crossing; missed finishes rebound normally. See the
 
 ## Charging, distance and cancellation
 
-Charging halves the requested movement speed: walking **4 → 2 m/s**, sprinting **7 → 3.5 m/s**, with the existing acceleration and airborne momentum rules. The current bounce finishes into a two-handed aiming pose that remains visible to opponents for the whole hold. A prepared release lifts directly from that grip; cancellation lowers the ball smoothly back into the dribble. Passing can replace the charged aim. Possession loss, travel and session changes cancel charging.
+Charging halves the requested movement speed: walking **4 → 2 m/s**, sprinting **7 → 3.5 m/s**, with the existing acceleration and airborne momentum rules. The current bounce finishes into a two-handed aiming pose that remains visible to opponents for the whole hold. A prepared release lifts directly from that grip; cancellation lowers the ball smoothly back into the dribble. Finish or cancel the current shot gesture before starting a pass. Possession loss, travel and session changes cancel charging.
 
 A one-way needle sweep takes **0.84 s at 4 m or closer**, gradually shortening to **0.42 s at 22 m or farther**. The green band remains at **60.5–69.5%**, giving approximately **76 ms** per close-shot crossing and **38 ms** per distant-shot crossing. There is no random distance penalty or automatic shot when the meter reaches an end. Holding beyond five seconds is allowed. Distance is measured horizontally from the player to the locked basket and updated while moving; the accumulated phase stays continuous, preventing a needle jump or a reset by turning the camera.
 
-The mobile cancel target follows the football gesture: dragging outside Shoot alone keeps tracking the original finger; entering Cancel cancels that charge, and lifting afterwards cannot shoot. Other fingers cannot release or drag-cancel it. Cancelling preserves possession and resumes normal movement. Losing focus or disabling the controls clears held input.
+The mobile cancel target follows the football gesture: dragging outside Shoot alone keeps tracking the original finger; entering Cancel arms it; releasing there cancels, while sliding back continues aiming. Other fingers cannot release or drag-cancel it. Cancelling preserves possession and resumes normal movement. Losing focus or disabling the controls clears held input.
 
 The host integrates phase and replicates it with the locked basket and action pose. Release transmits an input timestamp rather than a requested power. The host samples its own phase history with at most **250 ms** of bounded rewind, preventing an extra input frame or ordinary RPC delay from changing the displayed release power. WAN jitter beyond that allowance remains a device/network qualification item. Current rooms use **protocol 29**; all players need matching builds.
 
@@ -47,7 +51,8 @@ Everyone waits **0.34 seconds** before pickup; the stripped player waits **0.70 
 
 ## Tuning
 
-Player boundaries follow the painted **15.24 × 28.6512 m** court. Walking, sprinting, dribbling and jumping stop inside all four lines, allowing room for the character capsule. Diagonal movement slides along the edge. Loose balls remain physical and can leave the court. A ball wholly outside a painted line and below pickup height returns after 0.75 seconds so it cannot become stranded beyond the player's reach. Airborne excursions retain the wider recovery apron. The constraint runs in the offline/host movement path without a physical wall collider.
+The painted court remains **15.24 × 28.6512 m**. Player boundaries now enclose
+the actual **15.24 × 28.6512 m** painted rectangle. Walking, sprinting, dribbling and jumping stop inside all four lines, allowing room for the character capsule. Diagonal movement slides along the edge. Loose balls pass through. The ball centre outside either painted limit at any height starts a two-second timer; returning inside clears it. After two continuous seconds, solo practice (offline or a host alone) relocates the player just outside the first crossing and gives them a standing two-handed hold. A basket support shifts the standing spot to the nearest clear position along the same line. Only passing and aiming are allowed until the pass physically releases; cancelling or opening Settings keeps the restriction. Rooms with multiple players retain recovery to centre pending game-mode possession rules. The wall remains visual, with no ball/camera collider.
 
 [BasketballBoundaryVisual.cs](../Game/Assets/_Game/Sports/Basketball/BasketballBoundaryVisual.cs) draws a **1.8 m** translucent energy wall with teal/gold flow, geometric weave and lit rails. Four panels use only **16 vertices**, sharing football's existing material/shader with property overrides. Player contact and a ball crossing create expanding, fading ripples; four recent pulses can overlap. Swept crossing detection catches fast balls, while reset sequence changes suppress teleport effects. Each peer evaluates its presented actors/ball, adding no contact RPCs. No imported texture, mesh or material was added, and the wall does not block ball or camera physics.
 
@@ -65,9 +70,9 @@ The existing [ball prefab](../Game/Assets/_Game/Prefabs/Basketball/BasketballBal
 | Arc per metre | 0.18 m | Gives the enlarged ball enough descent angle on long shots |
 | Maximum shot speed | 24 m/s | An unsolvable shot is rejected while keeping possession |
 | Backspin | 18 rad/s | Rotation around the shot's horizontal transverse axis |
-| Playable recovery bounds | local x ±10 m, z ±17 m | Loose balls outside for 0.75 s reset; holders outside release immediately |
-| Stranded timeout | 12 s | Resets a stationary ball stuck above pickup height |
-| Outside painted line near floor | 0.75 s | Returns loose apron rebounds once the entire sphere is outside the line and below pickup height |
+| Painted boundary | local x ±7.62 m, z ±14.3256 m | Wall and out-of-bounds detection share these limits |
+| In-court stranded timeout | 12 s | A stationary unreachable ball restarts at the nearest line in solo practice |
+| Outside painted court, any height | 2 continuous seconds | Solo standing inbound at the first crossing; only a physical pass unlocks movement |
 | One-way meter sweep / ideal fraction | 0.84–0.42 s / 0.65 | Distance changes speed; the needle repeats in both directions through a 0.605–0.695 green band |
 | Charging movement multiplier | 0.5 | Applies to walking and sprinting; cancelling restores normal speed |
 | Shot release / full action | 0.308 / 0.686 s | Charge, gather, turning and follow-through take 30% less time; passing keeps its existing timing |
@@ -143,3 +148,12 @@ The first restricted editor invocation failed to obtain a licence; normal editor
 Superseded attempts, intermediate build logs and the completed portable fixture were archived to `Legacy/20261001-221235-304-basketball-gameplay/` with sizes, SHA-256 hashes and recovery paths. No source art, active game asset or current release was archived. Git staging, commit and push remain with the user.
 
 Windows probes and screenshots do not qualify physical-phone rendering, touch ergonomics, frame rate, thermals or WAN latency. Those require device testing.
+
+## Faster passing — 11 October 2026
+
+Full charge takes **0.4 seconds** (previously 0.8). Chest, loft and bounce
+horizontal speed is **1.5×** its former value at the same normalized power.
+The existing vertical arc and bounce time remain unchanged, so chest/loft
+range is **6–15 m**, bounce range **4.5–11.25 m**. Preview and real launch share
+`BasketballPassPath`; clean bounce receivers accept the corresponding higher
+speed. Protocol **42** adds the standing-inbound flag to ball snapshots.

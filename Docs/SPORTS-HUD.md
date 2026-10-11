@@ -9,7 +9,7 @@ press, and updates its label and availability in the same frame.
 | Sport | Attack | Defense | Always available when gameplay permits |
 | --- | --- | --- | --- |
 | Football | Kick, hold/release F | Pressure, hold Q; Tackle, E | Dash, left Ctrl; Jump; Camera |
-| Basketball | Shoot, hold/release E; Pass, hold/release Q | Block, E; Guard, hold Q; Steal, hold F | Jump / Jump Block; Camera |
+| Basketball | Shoot / Pass: hold, slide, release | Block; hold Guard / Steal | Jump / Jump Block; camera inside Settings |
 
 Attack teammates see offensive controls, but only the carrier can shoot or
 pass the ball. Defense controls stay visible for a loose ball, with actions
@@ -22,17 +22,32 @@ squads A and B by stable network join ID. Teams do not reshuffle when someone
 leaves; all peers derive the same assignment. Solo practice remains playable.
 Basketball's shared practice score remains shared; a team score/timed basketball
 match is outside this HUD change. Teammates cannot steal, block or apply shot
-pressure to one another. Use matching **protocol 38** players.
+pressure to one another. Use matching **protocol 41** players.
 
 ## Pocket maps
 
-Both sports use a plain bordered board at bottom centre, with simple pitch
-or court lines. The board is **204 × 114** design units, down from 326 × 216
-(67% less area). There are no headings, legends, faces or decorative surrounds.
+Stadium camera follows the ball in football and basketball. It leads moving
+passes slightly, follows shot height and opens the view for an approaching arc.
+Nearby players and basketball rims contribute to framing; a distant local
+player cannot drag the view away from play. Camera pan remains independent of
+action aim, and movement follows the presented camera direction.
+
+When your character leaves the screen, a cyan arrow and **YOU** label appear
+at the safe screen edge. The distance is the ground distance from your character
+to the ball. The marker avoids HUD panels, does not intercept touches, and hides
+on re-entry, camera-mode changes, travel and menus. A small re-entry margin
+prevents flickering at the screen boundary. The arrow uses native UI geometry
+and the existing font; it adds no bitmap assets. See the
+[camera behaviour and checks](STADIUM-CAMERA.md).
+
+Football uses a **204 × 114** board at bottom centre. Basketball uses a
+**102 × 62** rounded navy court map at the top-left of its 800 × 450 layout.
+Neither map has headings, legends or portraits.
 
 - **Blue `#2788ED`: your team. Red `#EC575D`: opponents.** These colours are
   relative to the local player, independent of squad letter or outfit.
-- Your marker has a white ring. The ball is a smaller white dot.
+- Your marker has a white ring. The ball is white in football and gold in
+  basketball. Basketball opponents use triangles; teammates use circles.
 - Every active player appears, including players outside the camera view.
   Off-field positions clamp to the map edge; in-transit/inactive actors hide.
 - The map uses the arena's local coordinates, with the long axis horizontal.
@@ -43,10 +58,27 @@ or court lines. The board is **204 × 114** design units, down from 326 × 216
 
 ## Button treatment
 
-Football and basketball use plain text controls in a round
+Basketball implements the approved [illustrated mobile design](BasketballUI/README.md):
+round gold Shoot, sky Pass, cream Jump, navy prop slot and illustrated defensive
+slots. Controls use the existing Cove fonts, cream inset rims and short navy
+shadows. One 512-pixel atlas contains the approved SVG illustrations. Keyboard
+shortcuts are retained for testing but are not displayed. The top-right gear
+opens camera settings, the Rules / Controls / Props guide, free roam and leaving.
+Court name, FPS, station distance and permanent instructions are removed.
+
+Hold Shoot or Pass, then follow the faint connected upper or upper-left path
+with the same finger. Cancel is a release destination, not a second button. Entering it arms the coral
+cue; sliding back keeps aiming, and only lifting inside cancels. A timed
+shot arc stays attached to Shoot. Far or otherwise unavailable Dunk/Layup keeps
+the actual timing phase and explains the fallback; only eligible finishes hide
+it. The other movement thumb stays usable. Menus clear pending actions and block
+local input, while room play continues.
+
+
+Football uses plain text controls in a round
 cluster near the right thumb. Primary actions are 160 units across; supporting
 actions are 132–138 units. Utility and Sky-Sail controls use rounded pills.
-There are no button icons or decorative highlights. Short labels show the
+ Short labels show the
 action and keyboard key (or Hold on mobile for sustained actions).
 
 Pressing compresses the visual to 91% and releasing gives a small bounce.
@@ -74,6 +106,13 @@ gauges. Cast/Hook/Reel labels follow the fishing state. Its responsive landscape
 frames and fixed touch targets preserve pointer ownership while the visual face
 animates. Existing compressed sprites, fish models and fonts are reused. See
 [fishing controls](FISHING-MINIGAME.md) and [the selected UI direction](FISHING-UX-DIRECTION.md).
+
+## Basketball ability slot
+
+Tap the icon above Steal, or press G, to use the held prop. The icon remains
+visible with a progress ring during forced aiming or portal reception. The
+caption explains unavailable actions. Team Turbo lasts five seconds.
+See [rules, counterplay and multiplayer behavior](BASKETBALL-PROPS.md).
 
 ## Verification entry points
 

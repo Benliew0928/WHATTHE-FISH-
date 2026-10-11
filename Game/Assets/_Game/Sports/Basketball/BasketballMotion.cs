@@ -134,7 +134,10 @@ namespace WhatTheFish {
   void LateUpdate(){
    if(!RigReady)return;
    var ball=BasketballBall.Active;bool playing=ball&&ball.Playing&&!athlete.inTransit;
-   bool held=playing&&ball.Holder==athlete;bool acting=playing&&(Busy||Charging||PassCharging);
+   // During portal delivery the ball is reserved, not owned yet. Keep the
+   // receiving hands on its animated destination throughout that interval.
+   bool receiving=playing&&ball.Props.transferring&&ball.PropActor(ball.Props.receiver)==athlete;
+   bool held=playing&&(ball.Holder==athlete||receiving);bool acting=playing&&(Busy||Charging||PassCharging);
    weight=Damp(weight,playing?1:0,14);if(weight<.001f)return;
    for(int i=0;i<bones.Length;i++){sourcePositions[i]=bones[i].localPosition;sourceRotations[i]=bones[i].localRotation;}applied=true;
    float dt=Mathf.Max(Time.deltaTime,.001f);float speed=athlete.speed;

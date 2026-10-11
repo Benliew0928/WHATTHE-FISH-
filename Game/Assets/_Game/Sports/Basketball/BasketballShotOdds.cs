@@ -40,6 +40,7 @@ namespace WhatTheFish {
    return (float)shotRandom.NextDouble();
   }
   bool ShotVelocity(Athlete athlete,Vector3 start,Transform hoop,out Vector3 velocity){
+   if(propShotQueued){LastShotChance=1;velocity=Vector3.up;return true;}
    float distance=Vector3.ProjectOnPlane(hoop.position-athlete.transform.position,Vector3.up).magnitude;
    LastShotChance=BasketballShotOdds.Chance(distance,pendingPower,pendingWindow);
    bool make=RollShot()<LastShotChance;
