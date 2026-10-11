@@ -1,5 +1,72 @@
 # APK size audit — measured release records
 
+## Fishing feedback, timing and round recap — 11 October 2026
+
+The fresh AndroidSubmission APK was written at **21:16:21.948 Malaysia time**.
+Actual signed APK size: **88,812,118 → 88,856,012 bytes (+43,894)**.
+Headroom to the strict 100,000,000-byte boundary is **11,143,988 bytes**.
+The 75,000,000-byte development target remains exceeded by **13,856,012 bytes**.
+APK SHA-256: **8766DC73759F316754896D4CF0E11AA2D1F3290A688C593CC3DC5853824749C7**.
+The hard budget gate and independent APK v2 signature verification pass.
+[Release record](BUILD-SIZE.md#fishing-feedback-timing-and-round-recap--11-october-2026).
+
+Compressed ZIP entry sums change **88,719,188 → 88,762,914 bytes (+43,726)**.
+Container/signature overhead changes **92,930 → 93,098 bytes (+168)**.
+The largest compressed entries are IL2CPP **11,563,130**, Unity **9,094,072**,
+metadata **2,653,490** and Java **2,353,635 bytes**. The largest positive deltas
+are IL2CPP **+34,322**, metadata **+7,295** and regenerated Burst native code
+**+1,642 bytes**. Together these account for **43,259 bytes** of the ZIP growth.
+Unity's native binary changes too, decreasing by 195 compressed bytes; Java's
+DEX payload is unchanged. These compiled/native output changes are distinct
+from imported game art, meshes, fonts and audio.
+
+Serialized assets change **153,774,361 → 153,775,137 bytes (+776)**.
+The editable results layout adds **160 bytes** and six MonoScript metadata
+rows add **616 bytes**. No pre-existing packed asset's serialized byte count
+changes: **3,188 rows remain the same**. No new or enlarged packed texture,
+font, mesh, animation, material, shader or imported audio asset is reported.
+The new runtime sounds are synthesized rather than shipped as an audio pack.
+
+The six new MonoScript rows include **208 bytes** of native/source-file
+metadata for the two guarded review files. The executable
+`FishingPolishReview`, `FishingResultsChecks`, `FishingFeedbackChecks` and
+`FishingGameplayProbe` types are absent from the release IL2CPP metadata.
+Their filename metadata is not executable review code, and the size is
+included in the 776-byte serialized increase.
+
+All **1,785 mesh report rows** retain identical field values. Both Cove fonts,
+all six Fishing sprites and both Golf badges retain their serialized layout,
+serialized sizes and the SHA-256 of their entire decompressed packed APK
+files. The two fonts total **64,916 serialized bytes**, the six Fishing sprites
+**88,988**, and the two Golf badges **39,116**. This is actual packed-payload
+integrity, not merely a source-folder size comparison.
+
+The APK has **639 → 640 ZIP entries**. Two apparent added/removed GUID entries
+are the unchanged PerformanceTestRunSettings/PerformanceTestRunInfo resources:
+their decompressed payload hashes and compressed byte counts match exactly.
+Only the results layout adds a genuine new data-file entry, **208 compressed
+bytes**. Overall, **576 entries** retain the same name and payload SHA-256;
+the two renamed unchanged resources are recorded separately.
+
+MobileURP and MobileRenderer remain packed. There is no Desktop pipeline
+asset, SSAO shader or BlueNoise256 asset. The pre-existing BlueNoise64 texture
+and **336-byte** SSAO script metadata remain unchanged. No unexpected imported
+binary growth was found. The substantial development-target shortfall remains
+and is not treated as comfortable spare capacity.
+
+Evidence is in `Builds/FishingPolishQA/Task-20261011-143503/ApkComparison-20261011-131850/`: `comparison.json`,
+`apk-entry-delta.csv`, `serialized-asset-delta.csv`, `mesh-row-delta.csv`,
+`retained-asset-integrity.json`, `added-removed-zip-classification.json`,
+`release-type-check.json`, `apk-signature.txt` and the immutable
+`AfterSizeAudit/` copy. Baseline ZIP hashes are in the task's `BeforeApkZip.json` and the
+baseline audit is in `BeforeSizeAudit/`. The baseline APK is recoverable under
+`Legacy/20261011-205048-934-fishing-polish-before-android/` at repository root.
+
+This audit measures packaging and signatures. Functional evidence is in the
+[verification record](VERIFICATION.md#fishing-feedback-timing-and-round-recap--11-october-2026); it does not establish physical-phone sound,
+haptics, appearance, touch, FPS, thermals or separate-network quality.
+New celebrations and physical-phone testing remain deferred.
+
 ## Golf sticker HUD — 10 October 2026
 
 Actual fresh signed APK: **88,760,152 → 88,812,118 bytes (+51,966)**.

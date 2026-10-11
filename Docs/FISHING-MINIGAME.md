@@ -3,7 +3,7 @@
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **38** players. The room shares one activity and travels together.
+protocol **39** players. The room shares one activity and travels together.
 Fishing supports **two to five friends**, with solo free practice and a solo
 timed practice option. Walk to the end of any of the five coloured piers.
 Each pier has **six fish: two small, two medium and two large**, for **30 fish**
@@ -41,6 +41,22 @@ snaps and the **30-second reel timeout** award no points. Pointer release/exit,
 focus loss, pause and round changes end held input. Only the finger that started
 reeling can release it; the host's **0.8-second renewable lease** also recovers
 from a missing release message. Use Camera to switch among all three views.
+
+The reaction window remains **1.8 seconds**. A remote Hook carries its press
+time on the synchronized room clock. The host can receive that already-timely
+press up to **250 ms** later; it rejects presses before the bite, at/after the
+input deadline, older than 250 ms, more than 50 ms in the future, or for an old
+cast/round or disconnected player. Small accepted clock skew is clamped to host
+time. Host/offline misses stay immediate, and the match deadline always ends
+play. This bounded receipt tolerance does not guarantee every internet delay.
+
+**HOOKING…** acknowledges a queued press for at most **0.5 seconds**, blocking
+duplicates during that wait. A retry is allowed afterward only inside the
+original Hook window. The animated rim continues to show the real deadline.
+Target explanations stay inside the action button: **FIND A PIER**, **FRIEND'S
+FISH**, **FISH RETURNING**, **MOVE CLOSER** and **CAST PATH BLOCKED**. Missed
+bites, snaps, cancellations and reel timeouts have distinct labels. These
+diagnostics do not reserve fish or change the selected target.
 
 ## Playing together
 
@@ -100,6 +116,38 @@ live Unity UI. A shared illustrated fisher badge, real names and local-row colou
 identify players; it is not a live character-customisation portrait.
 No additional 3D model, art pack, animation download or runtime package is added.
 
+## Results, Crew checklist and sound
+
+A centered cream/navy results card opens once at the end of a scored round.
+It freezes final standings, shared ranks, round points and applicable Cup totals.
+Your summary shows catches by size, Wanted bonus points, missed bites, snapped
+lines, cancelled casts, reel timeouts and the existing local best. The host
+replicates these per-round counters and clears them for the next round.
+Abandoned rounds and invalid Cups are labelled explicitly.
+
+**READY & CLOSE** uses the existing Ready action; **CLOSE** or Escape restores
+walking. **RESULTS** reopens the same completed round. While open, the card
+blocks movement, camera input and underlying buttons without pausing the room.
+Editable layout settings are in
+`Game/Assets/_Game/Resources/FishingResultsLayout.asset`.
+
+Crew's live timer card shows the basket, three fish-size badges/checkmarks and
+the next player who needs a catch, with a count of any other missing contributors.
+The results layout's `padding` also reserves space inside the clock's pale
+border so the contribution line stays on the coloured background. The existing
+target and completion rules remain unchanged.
+
+Accepted local actions play short cast, splash, bite, Hook, landing, miss and
+snap sounds. Held reeling adds a quiet ratchet loop and rising strain gives a
+warning. Cues suppress duplicate/stale snapshots and stop on focus loss, pause,
+release or island exit. They obey Game volume and use short synthesized mono
+waveforms; no imported sound pack is added.
+
+**Settings → Fishing vibration** is off by default. Android uses short native
+touch feedback and respects the device touch-feedback setting. Reduced motion
+disables fishing vibration. Device audibility and tactile quality still need
+physical-phone testing. New celebrations are deferred.
+
 ## Simulation and presentation
 
 The host owns targets/reservations, bites, hook deadlines, a spring/drag line
@@ -138,6 +186,13 @@ stays under ignored `Builds/FishingGameplayQA/`, `Builds/FishingUXQA/` and
 `Builds/FishingAimQA/`.
 The script defaults to the complete WindowsFinal player; `-PlayerPath` accepts
 another complete candidate.
+
+`Tools/Build/Test-FishingPolish.ps1` adds rendered results/Crew, target
+explanation, modal-input, Hook pending and sound-lifecycle checks. State checks
+cover receipt ages and deadline boundaries, clock skew, nonfinite times,
+reservation expiry, stale casts/rounds, cancellation and disconnects. The
+gameplay suite also verifies production sound callbacks and replicated recap
+counters. Additional evidence stays under ignored `Builds/FishingPolishQA/`.
 
 A fresh AndroidSubmission must pass the strict APK gate. See
 [measured build size](BUILD-SIZE.md), [packing audit](APK-SIZE-AUDIT.md) and

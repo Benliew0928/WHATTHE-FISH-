@@ -76,7 +76,7 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfCartRpc(GolfCartAction action,ulong cartOwner){if(IsSpawned&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(athlete))&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf)GolfCartWorld.Execute(athlete,action,cartOwner);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfSwingRpc(ulong ballOwner,float heading,float charge,uint round){if(IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Golf&&GolfMatchManager.Instance)GolfMatchManager.Instance.TrySwing(athlete,ballOwner,heading,charge,round);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfChargeRpc(bool charging,ulong ballOwner,float heading,uint round){if(IsSpawned&&GolfMatchManager.Instance)GolfMatchManager.Instance.SetCharging(athlete,charging,ballOwner,heading,round);}
-  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void FishingRpc(FishingAction action,uint round,uint sequence,int fish=-1){if(IsSpawned&&FishingGame.Instance)FishingGame.Instance.Execute(athlete,action,round,sequence,fish);}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void FishingRpc(FishingAction action,uint round,uint sequence,int fish=-1,double pressedAt=double.NaN){if(IsSpawned&&FishingGame.Instance)FishingGame.Instance.Execute(athlete,action,round,sequence,fish,pressedAt);}
   void Update(){if(!IsSpawned)return;
    if(IsOwner){
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
@@ -91,7 +91,7 @@ namespace WhatTheFish {
     if(c.cartAction!=GolfCartAction.None&&exploring)GolfCartRpc(c.cartAction,c.cartOwner);
     bool golfCharge=c.golfCharging&&exploring;
     if(sentGolfCharge!=golfCharge||sentGolfRound!=c.golfRound||golfCharge&&Mathf.Abs(Mathf.DeltaAngle(sentGolfHeading,c.heading))>3){sentGolfCharge=golfCharge;sentGolfRound=c.golfRound;sentGolfHeading=c.heading;GolfChargeRpc(golfCharge,c.golfBallOwner,c.heading,c.golfRound);}
-    if(c.fishingAction!=FishingAction.None&&exploring)FishingRpc(c.fishingAction,c.fishingRound,c.fishingSequence,c.fishingFish);
+    if(c.fishingAction!=FishingAction.None&&exploring)FishingRpc(c.fishingAction,c.fishingRound,c.fishingSequence,c.fishingFish,c.fishingPressedAt);
     if(c.golfSwing&&exploring)GolfSwingRpc(c.golfBallOwner,c.heading,c.golfCharge,c.golfRound);
    }
    if(!IsServer){GolfCartWorld.Receive(athlete,Cart.Value);athlete.BasketballFreeRoam=BasketballFreeRoam.Value;athlete.BasketballMotion.Receive(BasketballPose.Value);athlete.FootballMotion.Receive(FootballPose.Value);athlete.GolfClubMotion.Receive(GolfPose.Value);athlete.FootballEffort.Receive(Effort.Value);athlete.ApplySnapshot(Motion.Value);athlete.ApplyJump(Jump.Value);athlete.ApplyFootball(Football.Value,NetworkManager.ServerTime.Time);}

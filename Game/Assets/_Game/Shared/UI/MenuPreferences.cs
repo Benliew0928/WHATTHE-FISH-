@@ -5,15 +5,18 @@ namespace WhatTheFish {
   public static bool ReducedMotion {get; private set;}
   public static float MasterVolume {get; private set;}
   public static float UIVolume {get; private set;}
+  public static bool FishingVibration {get; private set;}
   public static void Load() {
    ReducedMotion = PlayerPrefs.GetInt("cove.motion", 0) == 1;
    MasterVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("cove.master", .8f));
    UIVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("cove.ui", .65f));
+   FishingVibration = PlayerPrefs.GetInt("fishing.vibration", 0) == 1;
    AudioListener.volume = MasterVolume;
   }
   public static void SetMotion(bool reduced) {ReducedMotion = reduced; PlayerPrefs.SetInt("cove.motion", reduced ? 1 : 0);}
   public static void SetMaster(float value) {MasterVolume = Mathf.Clamp01(value); AudioListener.volume = MasterVolume; PlayerPrefs.SetFloat("cove.master", MasterVolume);}
   public static void SetUI(float value) {UIVolume = Mathf.Clamp01(value); PlayerPrefs.SetFloat("cove.ui", UIVolume);}
+  public static void SetFishingVibration(bool enabled) {FishingVibration = enabled; PlayerPrefs.SetInt("fishing.vibration", enabled ? 1 : 0);}
   public static void Save() => PlayerPrefs.Save();
  }
 

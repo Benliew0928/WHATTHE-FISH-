@@ -24,7 +24,7 @@ namespace WhatTheFish {
   Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned:a==AppRoot.Instance.LocalAthlete)).OrderBy(Key).ToArray();
   public int ParticipantCount=>Eligible().Length;
   public bool CanStart(FishingMode mode)=>Authority&&Context&&State.Match.phase!=FishingRoundPhase.Playing&&State.Match.phase!=FishingRoundPhase.Countdown&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
-  void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);}
+  void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);}
   void OnEnable(){Instance=this;}
   void OnDisable(){State.Clear();Presentation?.Clear();wasContext=false;if(Authority)Publish();if(Instance==this)Instance=null;}
   public FishingPlayerRecord? Player(Athlete actor)=>actor?State.Player(Key(actor)):null;
@@ -73,15 +73,15 @@ namespace WhatTheFish {
   }
   public bool StartMatch(FishingMode mode=FishingMode.Round){if(!CanStart(mode))return false;if(!State.Start(Eligible().Select(Key),++nextRound,Now,mode))return false;PlayerView.Instance?.ClearMatchInput();Publish();return true;}
   void BeginPractice(){var actors=Eligible();State.Begin(actors.Length<=5?actors.Select(Key):Array.Empty<ulong>(),++nextRound,Now,false);PlayerView.Instance?.ClearMatchInput();Publish();}
-  public bool Execute(Athlete actor,FishingAction action,uint round,uint sequence,int fish=-1){
+  public bool Execute(Athlete actor,FishingAction action,uint round,uint sequence,int fish=-1,double pressedAt=double.NaN){
    if(!Authority||!Context||!actor||actor.inTransit||!Eligible().Contains(actor))return false;
    var p=Player(actor);if(!p.HasValue)return false;int pier=action==FishingAction.Cast?NearestPier(actor):p.Value.pier;
    if(action==FishingAction.Cast&&(!CanCast(actor,fish)||Physics.Linecast(actor.transform.position+Vector3.up*1.4f,FishPosition(fish,Now),1<<8,QueryTriggerInteraction.Ignore)))return false;
    if(action!=FishingAction.Cancel&&action!=FishingAction.ReelStop&&action!=FishingAction.Cast&&action!=FishingAction.Ready&&action!=FishingAction.Unready&&pier!=NearestPier(actor))return false;
    float distance=action==FishingAction.Cast?Vector3.ProjectOnPlane(FishPosition(fish,Now)-actor.transform.position,Vector3.up).magnitude:7;
-   bool accepted=State.Act(Key(actor),round,sequence,action,pier,actor.transform.position,Now,fish,distance);if(accepted)Publish();return accepted;
+   bool accepted=State.Act(Key(actor),round,sequence,action,pier,actor.transform.position,Now,fish,distance,pressedAt,NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&Key(actor)!=NetworkManager.ServerClientId);if(accepted)Publish();return accepted;
   }
-  public void Input(Athlete actor,PlayerCommand command){if(command.fishingAction!=FishingAction.None)Execute(actor,command.fishingAction,command.fishingRound,command.fishingSequence,command.fishingFish);}
+  public void Input(Athlete actor,PlayerCommand command){if(command.fishingAction!=FishingAction.None)Execute(actor,command.fishingAction,command.fishingRound,command.fishingSequence,command.fishingFish,command.fishingPressedAt);}
   void FixedUpdate(){
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    if(ReviewSnapshot)return;

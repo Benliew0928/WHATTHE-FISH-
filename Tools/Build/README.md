@@ -8,6 +8,7 @@ Run examples from the repository root. Scripts resolve the project from their ow
 | Self-contained Android delivery with APK budget gate | `./Tools/Build/Build.ps1 -Target AndroidSubmission` |
 | Optional development APK | `./Tools/Build/Build.ps1 -Target Android` |
 | Regenerate the integrated scene | `./Tools/Build/Build.ps1 -Target Scene` |
+| Fishing results, Crew checklist, target feedback and sound lifecycle | `./Tools/Build/Test-FishingPolish.ps1` (requires a development Windows player with graphics) |
 | Read-only commit candidate checks | `./Tools/Build/Check-TaskReady.ps1` (add `-RequireApk` for Android delivery) |
 | Exact staged text portability, after the user stages | `./Tools/Build/Check-PortablePaths.ps1 -Staged` |
 | Archive an explicit reviewed path list with recovery hashes | `Archive-LocalArtifacts.ps1` — [workflow](../../Docs/REPOSITORY-HYGIENE.md#archive-and-restore) |

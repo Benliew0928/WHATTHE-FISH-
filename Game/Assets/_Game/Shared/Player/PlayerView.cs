@@ -107,7 +107,7 @@ namespace WhatTheFish {
    pendingCart=driving?GolfCartAction.Leave:GolfCartAction.Drive;pendingCartOwner=cart.Owner;
   }
   void Update(){
-   if(!active||!target||target.inTransit||FootballMatch.BlocksActions){CancelInput();return;}
+   if(!active||!target||target.inTransit||FootballMatch.BlocksActions||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return;}
    if(EventSystem.current&&EventSystem.current.currentSelectedGameObject){var field=EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>();if(field&&field.isFocused){CancelInput();return;}}
    UpdateFishingTargetInput();
    UpdateFootballInput();UpdateDefenseInput();UpdateGolfAim();
@@ -134,7 +134,7 @@ namespace WhatTheFish {
    var command=ReadInput();if(GolfAimRequested){command.move=Vector2.zero;command.jump=command.sprint=false;command.cartAction=GolfCartAction.None;}if(command.golfSwing)command.heading=pendingGolfHeading;cartMove=command.move;return command;
   }
   PlayerCommand ReadInput(){
-   if(FootballMatch.BlocksMovement){CancelInput();return default;}
+   if(FootballMatch.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return default;}
    if(FootballMatch.BlocksActions)CancelInput();
    if(StealHeld&&Time.unscaledTime>=repeatStealAt){pendingSteal=true;repeatStealAt=Time.unscaledTime+BasketballStealRules.Repeat;}
    bool steal=pendingSteal;pendingSteal=false;
@@ -150,8 +150,10 @@ namespace WhatTheFish {
   void LateUpdate(){
    UpdateGolfAim();
    if(!active||!target){ResetCartCamera();ResetStadiumCamera();HideKickAim();return;}
-   if(Input.GetKeyDown(KeyCode.C))Switch();
-   if(Input.GetMouseButton(1)){LookDelta+=new Vector2(Input.GetAxis("Mouse X")*14,Input.GetAxis("Mouse Y")*14);}
+   bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;
+   if(!fishingModal&&Input.GetKeyDown(KeyCode.C))Switch();
+   if(!fishingModal&&Input.GetMouseButton(1)){LookDelta+=new Vector2(Input.GetAxis("Mouse X")*14,Input.GetAxis("Mouse Y")*14);}
+   if(fishingModal)LookDelta=Vector2.zero;
    yaw+=LookDelta.x*.13f;pitch=Mathf.Clamp(pitch-LookDelta.y*.10f,-25,65);LookDelta=Vector2.zero;
    if(!StadiumField(out _,out _,out _))ResetStadiumCamera();
    if(SkySailWorld.Instance&&SkySailWorld.Instance.RideCamera(cam,yaw,pitch,mode)){ResetCartCamera();HideKickAim();return;}

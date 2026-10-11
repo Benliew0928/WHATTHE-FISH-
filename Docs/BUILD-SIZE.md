@@ -1,5 +1,36 @@
 # Build size — measured release records
 
+## Fishing feedback, timing and round recap — 11 October 2026
+
+Fresh AndroidSubmission APK written at **21:16:21 Malaysia time**:
+**88,812,118 → 88,856,012 bytes (+43,894)**. Headroom to the strict
+100,000,000-byte boundary is **11,143,988 bytes**. The **75,000,000-byte
+development target remains exceeded by 13,856,012 bytes**. The hard budget
+gate and independent APK v2 signature verification pass. SHA-256:
+**8766DC73759F316754896D4CF0E11AA2D1F3290A688C593CC3DC5853824749C7**.
+
+Fishing adds accepted-action sound, optional vibration off by default, clearer
+target/failure labels, bounded remote Hook receipt tolerance, per-round recap
+counters, a closable results card and a live Crew checklist. Existing compressed
+art and fonts are shared. Short mono sounds are generated at runtime; no
+imported texture, mesh, animation, audio or package is added. Scores, reeling
+difficulty, four islands and shared travel retain their behavior. Online peers
+require matching **protocol 39** builds.
+
+The complete **318-file** Windows player is delivered in `Builds/WindowsFinal/`:
+a full content build at **15:12:39**, followed by a validated scripts-only refresh
+at **21:06:07**. All **317 runtime/support hashes** match the tested candidate.
+Final Fishing checks pass **1,245 assertions across four reports**. Earlier
+applicable shared HUD, menu and Golf reports pass another **912 assertions**;
+their shared behavior was unchanged by the final Fishing copy/padding fixes.
+
+[Gameplay and controls](FISHING-MINIGAME.md),
+[packing audit](APK-SIZE-AUDIT.md#fishing-feedback-timing-and-round-recap--11-october-2026),
+[verification and source limits](VERIFICATION.md#fishing-feedback-timing-and-round-recap--11-october-2026).
+New celebrations and physical-phone qualification remain deferred. Windows
+checks do not establish phone touch, sound/vibration quality or sustained FPS.
+The development size target still requires further reductions.
+
 ## Golf sticker HUD — 10 October 2026
 
 Fresh AndroidSubmission APK written at **14:31:19 Malaysia time**:

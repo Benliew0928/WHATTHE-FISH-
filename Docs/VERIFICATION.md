@@ -1,5 +1,196 @@
 # Verification records
 
+## Fishing feedback, timing and round recap — 11 October 2026
+
+The Windows candidate was fully built at **15:12:39 Malaysia time**
+(`2026-10-11T07:12:39.5353337Z`). After later nonserialized C# fixes, a
+successful **scripts-only refresh** retained the complete player data. That
+refresh wrote `Assembly-CSharp.dll` at **20:41:21.115** and `boot.config`
+at **20:41:15.317**; its successful Unity log closed at **20:41:38.945**.
+After the two result-wording fixes and final Crew padding correction, the
+final successful scripts refresh finished at **21:06:07.774 Malaysia time**
+(`2026-10-11T13:06:07.7741024Z`). Each refresh reuses the full 15:12 player
+content; no second full serialized-content build is claimed.
+
+The **seven selected relevant reports** below contain **2,157 counted PASS
+assertions and zero FAIL lines**. The four Fishing reports follow the final
+21:06 refresh. The three shared HUD/menu/Golf reports ran before the last
+Fishing-only wording and Crew padding changes; their underlying shared code
+is unchanged. This is relevant combined coverage, **not a claim that all
+seven reports ran against the exact final snapshot**:
+
+| Coverage | Counted assertions | Evidence |
+| --- | ---: | --- |
+| Final rendered Fishing gameplay, host rules, input timing, recap counters, targeting, Hook cues, all piers/cameras, native typography and landscape safe frames | 1,031 | `Builds/FishingGameplayQA/Run-20261011-210855/offline.txt` |
+| Final actual local host: authoritative fishing, bonuses, replicated recap and clean rematch | 34 | `Builds/FishingGameplayQA/Run-20261011-210701/host.txt` |
+| Final actual local guest: authoritative fishing, bonuses, replicated recap and clean rematch | 34 | `Builds/FishingGameplayQA/Run-20261011-210701/client.txt` |
+| Final feedback/audio contracts, actual cue polling, contained target/failure labels, pending Hook handling, results modal, Crew glyphs inside the colored clock interior, native text, landscape captures and Ready/Close/Reopen routing | 146 | `Builds/FishingPolishQA/Run-20261011-210624/polish.txt` |
+| Earlier shared Football/Basketball/Golf/Fishing controls, gestures, maps and native HUD skins | 157 | `Builds/SportsHudQA/Reviews/Offline-20261011-204513-007/offline/results.txt` |
+| Earlier shared storybook menu, settings, help/rules, room flows and supported landscape layouts | 699 | `Builds/StorybookMenuQA/Run-20261011-204937/offline/results.txt` |
+| Earlier existing Golf HUD, native text, hold/release/cancel, scorecard, countdown and tied/DNF results | 56 | `Builds/GolfHUDQA/Run-20261011-205052/golf-hud.txt` |
+
+Counts were independently obtained from report lines beginning `PASS `, rather
+than copied from older builds. The Fishing client report has **34 PASS lines**
+although its terminal completion counter says `checks=32`; the recap checks
+are present in the report. This counter discrepancy does not introduce FAIL
+lines or invalidate the observed assertions.
+The additional headless offline report in `Run-20261011-210701/` is retained
+as supplementary evidence and excluded from this selected total.
+
+A later wording correction uses `ROSTER CHANGED` for a join or departure,
+and `EVERYONE CAUGHT · CREW GOALS INCOMPLETE` when the point basket is met
+but another Crew requirement is missing. Its successful intermediate
+**scripts-only refresh** finished at **20:57:30.774 Malaysia time**
+(`2026-10-11T12:57:30.7743055Z`). Its focused rendered Fishing polish rerun,
+`Builds/FishingPolishQA/Run-20261011-205738/polish.txt`, contains **146 PASS
+lines, zero FAIL lines, and `checks=146`**. This includes two new meaningful
+fixtures for the met basket with a missing fish size, and the roster-change
+label covering both joins and departures. The final 21:06 Polish rerun retains
+both fixtures and the same 146-count result, with a stronger Crew interior
+check replacing the earlier geometry-only assertion.
+
+Visual review of the 20:57
+1600 × 900 Crew capture found that the white contribution label reached the
+pale bottom border even though its text geometry existed. The new fix uses
+the existing layout's **26-unit padding** below the Crew strip, expands the
+clock accordingly, and preserves the timer and Wanted header position.
+The stronger landscape fixture checks each actual rendered Crew glyph
+vertex in clock coordinates against its **20-unit illustrated border**,
+in addition to native typography, safe-frame and cross-group separation
+checks. The successful `build-windows-crew-padding.log` refresh is followed
+by the final rendered 146-check Polish report and reviewed 1600 × 900
+capture, where the contribution label is clear inside the colored clock.
+No serialized asset changed for this correction. The fresh
+Android build was paused for the wording correction and then this visual
+fix; neither interrupted attempt is a delivered APK.
+
+The selected results treatment is a centered native sticker card after the
+round. It shows frozen standings, catch counts by size, Wanted bonus points,
+missed bites, snapped lines, cancellations, timeouts, local personal bests,
+Cup totals and unmet Crew conditions. Wanted bonuses remain included in the
+normal round score; the recap does not add them again. Close immediately
+restores walking; Results reopens the same snapshot. Ready & Close queues
+the existing Ready action once, and an already-ready player is not toggled
+unready. Keyboard/controller focus and navigation stay inside the open card;
+closing, a new round and context reset clear the owned selection. Delayed
+local-player records retry before a round is marked shown.
+
+The live Crew clock contains fish-size checkmarks and identifies the next
+fisher needing a catch. Native Cove lettering reserves its actual line metrics
+instead of clipping the first line in short text rectangles. Existing artwork,
+fonts and frames are reused; no new texture or effects package is introduced
+for results. New celebration effects remain deferred.
+
+Rendered results captures cover **1600 × 900, 1280 × 960, 1920 × 900,
+1280 × 720 and 844 × 390**, with asymmetric insets. Crew captures cover
+**1600 × 900, 1280 × 960, 1920 × 900 and 844 × 390**. The **five-row standings,
+delayed-record and missing-contributor scenarios are synthetic presentation
+fixtures**. They establish UI/state behavior, not five-device multiplayer.
+The separate host/guest Fishing reports use actual local network processes,
+including authoritative awards and replicated recap/rematch data. Desktop
+844 × 390 review is a phone-shaped Windows viewport, not a physical Android
+test. Physical-phone rendering, touch, vibration, sustained FPS/heat and WAN
+latency/disconnect qualification remain unverified. Sound cue polling and
+generated audio are checked; perceptual listening quality is not established
+by assertion counts alone.
+
+**Player integrity and source limits:** the saved V3 runtime manifest contains
+**317 runtime/support files plus `LATEST-BUILD.txt` (318 total)**. Comparison
+against the measured scripts-refreshed candidates, including final V6, independently
+finds changes in exactly
+`WhatTheFish_Data/boot.config`,
+`WhatTheFish_Data/Managed/Assembly-CSharp.dll` and
+`WhatTheFish_Data/Managed/Assembly-CSharp.pdb`. All other player files retain
+their V3 SHA-256. Evidence is `windows-v3-runtime-files.json` and
+`scripts-refresh-runtime-delta.json`, `copy-fix-runtime-delta.json` and
+`crew-padding-runtime-delta.json` under
+`Builds/FishingPolishQA/Task-20261011-143503/`. The final
+`windows-v6-runtime-files.json` contains all **317 runtime/support files**,
+excluding the delivery note; all 317 hashes were independently matched to
+the complete candidate.
+
+The **281-entry** source snapshots cover **253 C# files**, the Fishing results
+layout, Bootstrap scene, packages and project settings. They are deliberately
+narrow manifests: they do **not** hash every Unity asset, shader, texture,
+mesh, material, `.meta` file or tool, and are not proof of a complete
+all-source build snapshot. V3 versus final
+`windows-source-inputs-v6-crew-padding.json` changes exactly **five manifested
+C# paths**: `FishingPolishBuild.cs`, `FishingGameplayProbe.cs`,
+`FishingResultsChecks.cs`, `FishingHUD.cs` and `FishingResultsUI.cs`.
+`windows-source-post-v6.json` records no mismatches across those 281 narrow
+inputs after the refresh. The final Fishing reports above follow this
+refresh; the three unchanged shared-code reports are explicitly earlier.
+
+Generated Golf Ball text was restored only after a format-aware Unity YAML
+comparison proved all **14 objects**, component/child order, mesh/material/LOD/
+collider fields and GUID-linked external references equivalent. Only local
+file-ID assignment and document order differed. The restoration preserves
+player files and the Git index. Evidence is
+`GeneratedDrift/generated-drift-audit.json` and
+`ball-graph-equal-restoration.json` in the same primary task folder. The audited
+URP global settings matched the baseline at that inspection; the subsequent
+fresh Android packing audit below independently confirms the mobile pipeline.
+
+Early candidate failures remain diagnostic evidence: malformed initial new
+metadata prevented import; a pending-Hook fixture exposed its first failure;
+later native title/label rectangles exposed truncation from Cove line metrics.
+The passing rendered reports follow the import, pending-input and
+geometry fixes. The first scripts refresh failed to compile a development
+mesh-read helper; the corrected refresh succeeds. Earlier failed logs and
+captures are retained. The 20:57 focused checks preserved the strict
+readability and gameplay requirements but missed contribution text crossing
+the illustrated border. Screenshot review caught that defect; the final
+26-unit padding and actual 20-unit clock-interior glyph checks pass across
+all four Crew aspects. This extends the earlier own-label geometry check
+without weakening it.
+
+Fresh AndroidSubmission written at **21:16:21 Malaysia time** is
+**88,856,012 bytes (+43,894 from 88,812,118)**. Strict-boundary headroom is
+**11,143,988 bytes**; the **75 MB target is exceeded by 13,856,012 bytes**.
+Budget enforcement and independent APK v2 signature verification pass.
+[Release and hash](BUILD-SIZE.md#fishing-feedback-timing-and-round-recap--11-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#fishing-feedback-timing-and-round-recap--11-october-2026).
+Evidence is `ApkComparison-20261011-131850/` in the primary task and
+`Builds/SizeAudit/latest/`. All 1,785 mesh rows are unchanged; the mobile
+pipeline ships, without unintended desktop rendering assets. Executable
+review types are absent from release IL2CPP metadata, although Unity retains
+208 bytes of MonoScript asset metadata for two review sources.
+
+The complete candidate was promoted to `Builds/WindowsFinal/` at **21:12:15**.
+All **317 runtime/support SHA-256 hashes** match the tested V6 manifest, with
+`LATEST-BUILD.txt` bringing the folder to **318 files**. Evidence is
+`windows-promotion-integrity.json`; the delivery note records changes,
+validation, APK measurement and source limits. The previous delivery note
+was checked against the task baseline before replacement to preserve any
+newer concurrent delivery.
+
+**Post-build editor-only exception:** the new QA helper's `Windows()` output
+now resolves explicitly from `Application.dataPath`. That path-only edit
+occurred after the APK/player builds; it is excluded from shipping runtime.
+`post-android-source-delta.json` identifies exactly that one changed input;
+the other 280 narrow-manifest inputs match. Compiling the actual helper with
+minimal Unity API stubs passes **11 output-path checks**, using two differently
+named project roots with spaces and an unrelated working directory.
+`Builds/FishingPolishQA/primary/PortableHelper/` holds the evidence. This is a
+helper-path check, not a complete fresh-clone Unity build.
+
+The final format-aware Android inspection in
+`GeneratedDriftAfterAndroid/generated-drift-audit.json` again finds identical
+14-object Ball graphs and baseline URP definitions. Its accompanying
+`ball-graph-equal-restoration.json` records the reviewed local-ID restoration.
+Neither player nor APK bytes were modified by these source restorations.
+
+Reviewed superseded players and the baseline APK/audit are recoverable in
+these ignored archive batches, with original paths, sizes and SHA-256:
+
+- `Legacy/20261011-145908-710-fishing-polish-first-candidate/`
+- `Legacy/20261011-150807-369-fishing-polish-font-candidate/`
+- `Legacy/20261011-205048-934-fishing-polish-before-android/`
+- `Legacy/20261011-211135-879-fishing-polish-windows-delivery/`
+
+Current validation evidence remains under ignored `Builds/`. Changes are left
+unstaged and unpublished; staging, committing and pushing remain with the user.
+
 ## Golf sticker HUD — 10 October 2026
 
 The complete final Windows player was fully built at **14:37:46 Malaysia
