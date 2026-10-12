@@ -1,5 +1,193 @@
 # Build size — measured release records
 
+## Combined Football, Basketball and Fishing release — 12 October 2026
+
+Fresh AndroidSubmission written at **18:42:22 Malaysia time** measures
+**88,856,012 → 90,139,324 bytes (+1,283,312)** against the actual
+Fishing-only APK present at the start of this publish task. Headroom to the
+strict 100,000,000-byte boundary is **9,860,676 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,139,324 bytes**;
+this is not comfortable room for further features. The enforced budget gate
+and independent APK v2 signature verification pass. SHA-256:
+**FB9AC84E23EA34EA34FEF05B9534D07BB1F3DD1C731BE8DD4E3909227D300979**.
+
+Incoming commit `eaad195` brings Football's illustrated HUD, Team Turbo,
+Portal Steal, solid Wall, enlarged pickup displays and approved audio, plus
+Basketball's latest art, controls, props and audio. Its networking logic is
+retained; independent Fishing feedback, results, counters and timestamped
+Hook edges remain integrated. Combined **protocol 46** rejects older incompatible
+room builds. Four islands, one activity per host room and shared travel remain.
+
+The complete **322-file** Windows player is delivered in `Builds/WindowsFinal/`.
+All **321 runtime/support hashes** match the tested candidate. Selected Windows
+coverage passes **4,152 assertions across 22 reports**; later script refreshes
+change guarded development reviews, not shipping gameplay. The full content
+build finished at **18:00:21**; final scripts refresh at **18:29:53**.
+
+[Verification and source limits](VERIFICATION.md#combined-football-basketball-and-fishing-release--12-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#combined-football-basketball-and-fishing-release--12-october-2026). Previous branch measurements below
+remain historical records and do not validate this combined source. New Fishing
+celebrations, physical-phone quality/FPS and real-world WAN qualification remain
+deferred. Further base-game size reductions are still required.
+
+## Approved football audio — 12 October 2026
+
+Fresh AndroidSubmission APK written at **17:05:51 Malaysia time**:
+**89,859,034 → 90,099,410 bytes (+240,376)**. Hard-boundary headroom:
+**9,900,590 bytes**. The **75 MB development target remains exceeded by
+15,099,410 bytes**. The enforced APK budget gate and independent APK v2
+signature verification pass. SHA-256:
+**B637556D028555FD185079575BA55D21A9B620E315F3B3283BFA6370F7D42323**.
+
+80 approved sounds cover football, abilities, match events and buttons.
+55 new mono Vorbis clips add **190,152 serialized bytes**; 25 basketball clips
+are referenced in place. Existing packed asset sizes and all **1,788 imported
+mesh records** remain unchanged. Editable sources stay outside Unity.
+[Implementation and verification](FOOTBALL-AUDIO.md),
+[packing audit](APK-SIZE-AUDIT.md#approved-football-audio--12-october-2026).
+No Android device was connected; phone listening, touch, visuals and FPS remain
+unverified. The existing development-target shortfall remains open.
+
+## Physical football wall and larger spawns — 12 October 2026
+
+Fresh AndroidSubmission APK written at **16:29:39 Malaysia time**:
+**89,851,508 → 89,859,034 bytes (+7,526)**. Hard-boundary headroom:
+**10,140,966 bytes**. The **75 MB development target remains exceeded by
+14,859,034 bytes**. The enforced APK budget gate and independent APK v2
+signature verification pass. SHA-256:
+**D1A821242C0DB57BBFA560F91043F92064B0A495F9D580FE0ED198C41B268F70**.
+
+Football walls now physically block both teams and the ball. Spawn-only models,
+countdown digits and floor projections are four times larger; countdown digits
+use solid dark blue. The change adds one **1,664-byte serialized** material and
+small compiled code changes. Every existing packed asset size and all **1,788
+imported mesh records** remain unchanged. No texture or geometry was enlarged.
+[Verification](VERIFICATION.md#physical-football-wall-and-larger-spawn-displays--12-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#physical-football-wall-and-larger-spawns--12-october-2026).
+No Android device was connected; phone touch, visuals and FPS remain unverified.
+
+## Football Explore Offline props — 12 October 2026
+
+Fresh AndroidSubmission APK written at **15:58:26 Malaysia time**:
+**89,850,652 → 89,851,508 bytes (+856)**. Hard-boundary headroom:
+**10,148,492 bytes**. The **75 MB development target remains exceeded by
+14,851,508 bytes**. The enforced APK budget gate and independent APK v2
+signature verification pass. SHA-256:
+**08EBEEAC279E01C3F880A77AE4D31E48B5E53019B55C97079B560E7E674F725B**.
+
+The existing football countdown, pickups and three abilities now also run in
+Explore Offline without starting a match. No new art or package was added;
+all packed asset sizes and 1,788 imported mesh records remain unchanged.
+[Verification](VERIFICATION.md#football-props-in-explore-offline--12-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#football-explore-offline-props--12-october-2026).
+No Android device was connected; phone touch, visuals and FPS remain unverified.
+
+## Football abilities — 12 October 2026
+
+Fresh AndroidSubmission APK written at **15:31:14 Malaysia time**:
+**89,699,656 → 89,850,652 bytes (+150,996)**. Headroom to the strict
+100,000,000-byte boundary: **10,149,348 bytes**. The **75 MB development
+target remains exceeded by 14,850,652 bytes**. The enforced APK budget gate
+and independent APK v2 signature verification pass. SHA-256:
+**C93FED2FFC8B47CB282AA55BE290B333B0D0603DBEECC9995BBD0E81387CEEE9**.
+
+Adds football Team Turbo, Portal Steal and a 15-second Wall, with two fixed
+midfield touchline spawn points, blue countdown holograms and single-use HUD
+buttons. Four combined model meshes, shared materials and one 512 × 128 ASTC
+atlas provide distinct football artwork. Full-resolution concept art and SVG
+masters remain outside Unity. No new runtime package, font, audio or world
+texture was added. Existing art quality is preserved.
+
+[Rules and implementation](FOOTBALL-ABILITIES.md),
+[packing audit](APK-SIZE-AUDIT.md#football-abilities--12-october-2026),
+[Windows verification](VERIFICATION.md#football-abilities--12-october-2026).
+No Android phone is connected; physical touch, phone appearance/FPS and real
+WAN latency remain unverified. The development size target is still open.
+
+## 2D sports action icons — 12 October 2026
+
+Fresh AndroidSubmission APK written at **14:46:53 Malaysia time**:
+**89,701,824 → 89,699,656 bytes (−2,168)**. Headroom to the strict
+100,000,000-byte boundary: **10,300,344 bytes**. The **75 MB development
+target remains exceeded by 14,699,656 bytes**. The enforced budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**943DAB202360DCBAFCA375E103282CB9045E2DC3940597862A980886FB463664**.
+
+Football Tackle and Dash use simple colourful 2D player poses. Shared Jump
+uses a matching leaping figure in both sports. The existing atlas dimensions,
+ASTC imports, fonts and every packed asset size remain unchanged. All
+**1,788 mesh records** match; full-resolution masters stay outside Unity.
+
+[Design and sources](SportsUI/README.md),
+[packing audit](APK-SIZE-AUDIT.md#2d-sports-action-icons--12-october-2026),
+[Windows delivery](VERIFICATION.md#2d-sports-action-icons--12-october-2026).
+No Android phone was connected; physical touch, phone appearance and FPS remain
+unverified. The development target remains an open project requirement.
+
+## Full-colour sports artwork — 12 October 2026
+
+Fresh AndroidSubmission APK written at **02:00:19 Malaysia time**:
+**89,644,388 → 89,701,824 bytes (+57,436)**. Headroom to the strict
+100,000,000-byte boundary: **10,298,176 bytes**. The **75 MB development
+target remains exceeded by 14,701,824 bytes**. The enforced budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**1D3FF392479D772C1F15A283774F7B7E695C5078B9D864D0CEE67A6BD94C727B**.
+
+Ten full-colour cartoon masters replace the monochrome gameplay glyphs.
+Utility and prop icons also have colour, depth and highlights. Atlas dimensions,
+ASTC imports, font subsets and all packed asset sizes remain unchanged;
+high-resolution masters stay outside Unity. All **1,788 mesh records** match.
+The additional APK bytes mostly reflect richer compressed texture content.
+
+[Design and regeneration](SportsUI/README.md),
+[packing audit](APK-SIZE-AUDIT.md#full-colour-sports-artwork--12-october-2026),
+[Windows delivery](VERIFICATION.md#full-colour-sports-artwork--12-october-2026).
+No Android phone was connected; phone appearance, physical touch and FPS remain
+unverified. The development target remains an open project requirement.
+
+## Sports icons and typography — 12 October 2026
+
+Fresh AndroidSubmission APK written at **01:10:55 Malaysia time**:
+**89,589,994 → 89,644,388 bytes (+54,394)**. Headroom to the strict
+100,000,000-byte boundary: **10,355,612 bytes**. The **75 MB development
+target remains exceeded by 14,644,388 bytes**. The enforced budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**B712BAD3BB76BA8CAA1AC3691A0871B23172335DD45854813406AA6E412C3EA2**.
+
+Both sports now use solid rounded pictograms and compact Manrope subsets.
+The existing two icon atlases retain their dimensions; the shared prop/check
+atlas is 512 × 128. Existing world textures, audio, animations and all
+**1,788 mesh records** remain unchanged. The full font master and SVG masters
+stay editable outside Unity. Licenses ship with the player and APK.
+
+[Design and regeneration](SportsUI/README.md),
+[packing audit](APK-SIZE-AUDIT.md#sports-icons-and-typography--12-october-2026),
+[Windows delivery](VERIFICATION.md#sports-icons-and-typography--12-october-2026).
+No Android phone was connected; phone appearance, physical touch and FPS remain
+unverified. The fresh APK does not remove the need to reach the development target.
+
+## Football touchline UI — 12 October 2026
+
+Fresh AndroidSubmission APK written at **00:27:42 Malaysia time**:
+**89,542,916 → 89,589,994 bytes (+47,078)**. Headroom to the strict
+100,000,000-byte boundary: **10,410,006 bytes**. The **75 MB development
+target remains exceeded by 14,589,994 bytes**. The enforced size gate and
+independent APK v2 signature verification pass. SHA-256:
+**8D0FE4DF010532254F5847485979D3EA80FC762772F823C2EA8C71ABF8412C03**.
+
+The approved football controls, same-finger release-only Cancel, attached
+power ring, regular settings gear, camera tiles and illustrated guide are
+implemented. One 512 × 256 ASTC atlas adds **59,288 serialized bytes**;
+existing fonts and utility icons are reused. The actual compressed icon
+entry is **26,739 bytes**. All **1,788 mesh records** and existing world
+texture, audio and animation records are unchanged. Protocol **43** remains.
+
+[Implementation and checks](FootballUI/implementation.md),
+[packing audit](APK-SIZE-AUDIT.md#football-touchline-ui--12-october-2026),
+[Windows delivery](VERIFICATION.md#football-touchline-ui--12-october-2026).
+No Android phone was connected; physical touch, phone appearance/FPS and WAN
+qualification remain unverified.
+
 ## Fishing feedback, timing and round recap — 11 October 2026
 
 Fresh AndroidSubmission APK written at **21:16:21 Malaysia time**:

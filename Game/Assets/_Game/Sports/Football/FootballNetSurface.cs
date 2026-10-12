@@ -85,7 +85,7 @@ namespace WhatTheFish {
    if(Time.time-LastImpactTime<.06f&&Vector3.Distance(point,LastContact)<.22f)return;
    float amplitude=Mathf.Clamp(speed*.055f,.06f,1.05f),radius=Mathf.Lerp(.55f,1.15f,Mathf.Clamp01(speed/22));
    var impulse=velocity.normalized*amplitude;
-   Receive(point,impulse,radius,Time.time);FootballNetEvents.Send(this,point,impulse,radius);
+   Receive(point,impulse,radius,Time.time);FootballNetEvents.Send(this,point,impulse,radius);FootballBall.Instance.SoundContact(speed>2?FootballSound.Net:FootballSound.NetBrush,worldPoint,speed,.09f);
   }
   static bool Finite(Vector3 v)=>float.IsFinite(v.x)&&float.IsFinite(v.y)&&float.IsFinite(v.z);
   void Upload(){properties.SetVectorArray(ContactsId,contacts);properties.SetVectorArray(ImpulsesId,impulses);surface.SetPropertyBlock(properties);}

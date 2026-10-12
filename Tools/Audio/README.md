@@ -1,4 +1,44 @@
-# Basketball audio preview tools
+# Sports audio preview tools
+
+## Football approved bank and preview
+
+Football's complete preview was approved. See the
+[football sound plan](../../Docs/FOOTBALL-AUDIO-PLAN.md) and
+[integration record](../../Docs/FOOTBALL-AUDIO.md). Regenerate offline with:
+
+```powershell
+python Tools/Audio/publish_football_audio.py
+```
+
+This verifies retained sources, regenerates the audition, publishes 55 new WAVs
+and references 25 approved basketball WAVs in place. Sources and license records
+are retained in `ArtSource/Audio/Football/`. Preserve existing Unity `.meta`
+files. Unity imports retain authored levels with normalization disabled.
+
+To fetch fresh candidate sources and rebuild the original audition instead:
+
+```powershell
+python Tools/Audio/download_football_candidates.py
+python Tools/Audio/build_football_preview.py
+python -m http.server 8767 --bind 127.0.0.1 --directory Builds/FootballAudioPreview
+```
+
+Open `http://127.0.0.1:8767/`. These scripts need the same Python dependencies
+listed below and derive their default root from their own location. Both accept
+`--output`; use the same destination when overriding it. They download eight
+CC0 public Freesound HQ MP3 audition copies, verify hashes, and build 80 clips
+across 56 families, including 25 unchanged approved basketball WAVs. The
+basketball delivery manifest and its LFS-resolved Unity WAVs must be present.
+The downloader and preview builder do not write Unity files. Generated audition
+files stay in ignored `Builds/FootballAudioPreview/`. New effects use
+deterministic local synthesis, not an AI service.
+
+Mark Keep / Change, compare variations and export choices in the preview.
+The new downloader and builder import shared utilities from the existing
+basketball scripts, so keep those scripts together. Source pages and download
+availability may change; review a refreshed download manifest before reuse.
+
+## Basketball approved bank
 
 The audition tools create a soundboard outside Unity. The approved selection
 is now published into the game by `publish_basketball_audio.py`. See the

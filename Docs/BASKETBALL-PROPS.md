@@ -70,7 +70,7 @@ so the actual spawned mesh keeps the same readable size as the authored model.
 - Forced aiming and receiving lock movement, jumping and other ball actions.
   Session changes clear inventory, boosts and transfers. Free-roaming and
   travelling actors cannot collect or activate props.
-- **Protocol 44** is required on all peers.
+- **Protocol 46** is required on all peers.
 
 ## Art and verification
 

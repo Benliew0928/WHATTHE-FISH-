@@ -11,7 +11,10 @@ same ball multiplier. An attached ball follows its carrier exactly.
 
 Kick and Pressure now share one possession-aware action slot; Tackle appears
 only on defense. Dash remains available in either role. See the current
-[team controls and pocket maps](SPORTS-HUD.md).
+[team controls and pocket maps](SPORTS-HUD.md). The approved
+[Touchline UI](FootballUI/implementation.md) places stamina directly below
+Dash and moves camera/guidance/leaving into the top-right settings gear.
+The desktop keys below are testing shortcuts, not on-screen button captions.
 
 | Action | Windows | Touch | Behavior |
 | --- | --- | --- | --- |
@@ -55,7 +58,7 @@ the effect. Pressure takes precedence over simultaneous dash input.
 
 The host computes movement, stamina and containment. Guests send only action
 intent and receive quantized stamina plus dash/pressure/exhaustion state.
-Protocol **44** requires matching Windows and Android peers. Input expiry,
+Protocol **46** requires matching Windows and Android peers. Input expiry,
 focus loss, pointer exit, match resets and travel clear held actions.
 
 The feature uses existing UI images, fonts and the character rig, with a

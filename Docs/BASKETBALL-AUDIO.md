@@ -13,7 +13,7 @@ Master, Court sounds, Buttons and Ambience sliders. Defaults are 80%, 80%, 65%
 and 45%, respectively; existing saved Master/Buttons values are preserved.
 Master applies once through the listener. Changing Court sounds also adjusts
 an already-playing aim or Turbo loop. Values persist when the settings close.
-Combined room protocol **44** requires matching builds on host and guests.
+Combined room protocol **46** requires matching builds on host and guests.
 
 There are **58 approved WAVs / 43 cue families**, with **2,346,294 authoring
 bytes**. Sources, licences, source hashes and processing provenance live in

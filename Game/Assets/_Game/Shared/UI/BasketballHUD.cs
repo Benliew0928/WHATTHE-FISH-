@@ -24,7 +24,7 @@ namespace WhatTheFish {
    pass=Action(layer,true,new Vector2(-194,70),80,CoveUI.Sky,BasketballIcon.Pass,"Pass",out passArt,out passPlate);
    hold=BasketballUIStyle.Text(shoot.transform,"HOLD",6,81,94,17,11,false,TextAnchor.MiddleCenter);
    var jumpButton=ActionFrame(layer,"Jump button",new Vector2(-55,206),64,CoveUI.Cream,24);
-   BasketballUIStyle.Art(jumpButton.transform,BasketballIcon.Jump,16,8,32,32);jump=jumpButton.gameObject.AddComponent<JumpButton>();jump.button=jumpButton;jumpButton.gameObject.AddComponent<BasketballButtonFeedback>();jump.illustrated=true;jump.label=BasketballUIStyle.Text(jumpButton.transform,"Jump",4,33,56,28,13,true,TextAnchor.MiddleCenter);
+   BasketballUIStyle.Art(jumpButton.transform,BasketballIcon.Jump,16,3,32,32);jump=jumpButton.gameObject.AddComponent<JumpButton>();jump.button=jumpButton;jumpButton.gameObject.AddComponent<BasketballButtonFeedback>();jump.illustrated=true;jump.label=BasketballUIStyle.Text(jumpButton.transform,"Jump",4,33,56,28,13,true,TextAnchor.MiddleCenter);
    var stealButton=ActionFrame(layer,"Steal button",new Vector2(-275,152),68,CoveUI.Sky,26);BasketballUIStyle.Art(stealButton.transform,BasketballIcon.Steal,15,6,38,38);steal=stealButton.gameObject.AddComponent<BasketballStealButton>();steal.button=stealButton;steal.illustrated=true;steal.label=BasketballUIStyle.Text(stealButton.transform,"Steal",4,43,60,20,14,true,TextAnchor.MiddleCenter);
    stealButton.gameObject.AddComponent<BasketballButtonFeedback>();BasketballActionSlot.Attach(layer);props=BasketballPropHUD.Create(layer);BuildScore(layer);
    var map=SportsMiniMap.Create(layer,SportId.Basketball);var mr=map.rectTransform;mr.anchorMin=mr.anchorMax=new Vector2(0,1);mr.pivot=Vector2.one*.5f;mr.anchoredPosition=new Vector2(69,-47);mr.sizeDelta=new Vector2(204,124);mr.localScale=Vector3.one*.5f;
@@ -47,7 +47,7 @@ namespace WhatTheFish {
    bool defense=!SportsPossession.Attacking(view.target,SportId.Basketball)&&view.BasketballRole!=BasketballRole.Inactive;bool charging=view.ShotCharging||view.PassCharging;
    shootArt.sprite=BasketballUIStyle.Icon(defense?BasketballIcon.Block:BasketballIcon.Shoot);passArt.sprite=BasketballUIStyle.Icon(defense?BasketballIcon.Guard:BasketballIcon.Pass);
    shootPlate.color=shoot.button.interactable?(defense?CoveUI.Sky:BasketballUIStyle.Shoot):CoveUI.Hex("D5DBCE");passPlate.color=pass.button.interactable?(defense?CoveUI.Mint:CoveUI.Sky):CoveUI.Hex("D5DBCE");
-   shootArt.color=shoot.button.interactable?Color.white:new Color(.7f,.7f,.7f,.7f);passArt.color=pass.button.interactable?Color.white:new Color(.7f,.7f,.7f,.7f);hold.gameObject.SetActive(!defense&&shoot.button.interactable);
+   shootArt.color=shoot.button.interactable?Color.white:new Color(1,1,1,.76f);passArt.color=pass.button.interactable?Color.white:new Color(1,1,1,.76f);hold.gameObject.SetActive(!defense&&shoot.button.interactable);
    TintSupport(jump.button,CoveUI.Cream);TintSupport(steal.button,CoveUI.Sky);
    bool slots=view.BasketballRole!=BasketballRole.Inactive;SetShown(shoot.gameObject,slots&&!view.PassCharging);SetShown(pass.gameObject,slots&&!view.ShotCharging);SetShown(jump.gameObject,!charging);SetShown(steal.gameObject,!charging&&defense);props.GestureHidden=charging;
    if(view.ShotCharging){if(!shoot.guide.gameObject.activeSelf)shoot.guide.Begin();shoot.guide.Refresh();}else shoot.guide.End();
@@ -58,7 +58,7 @@ namespace WhatTheFish {
    notice.text=message;noticePlate.gameObject.SetActive(message.Length>0&&!MenuOpen);if(MenuOpen)RefreshMenu();
   }
   static void SetShown(GameObject go,bool shown){var g=go.GetComponent<CanvasGroup>();if(!g)g=go.AddComponent<CanvasGroup>();g.alpha=shown?1:0;g.blocksRaycasts=shown;}
-  static void TintSupport(Button button,Color face){bool available=button.interactable;button.GetComponent<BasketballPlate>().color=available?face:CoveUI.Hex("D5DBCE");button.GetComponentInChildren<Image>().color=available?Color.white:new Color(.7f,.7f,.7f,.7f);}
+  static void TintSupport(Button button,Color face){bool available=button.interactable;button.GetComponent<BasketballPlate>().color=available?face:CoveUI.Hex("D5DBCE");button.GetComponentInChildren<Image>().color=available?Color.white:new Color(1,1,1,.76f);}
   public void ToggleCourt(){var app=AppRoot.Instance;var ball=BasketballBall.Active;var actor=app?app.LocalAthlete:null;if(!ball||!ball.Playing||!actor||actor.inTransit)return;app.view.ClearMatchInput();var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned)net.BasketballFreeRoamRpc(!actor.BasketballFreeRoam);else ball.SetFreeRoam(actor,!actor.BasketballFreeRoam);CloseMenu();}
   void OnDisable(){if(PlayerView.Instance)PlayerView.Instance.InputBlocked=false;if(Instance==this)Instance=null;}
  }

@@ -13,7 +13,8 @@ namespace WhatTheFish {
     audioLabels[i]=BasketballUIStyle.Text(settingsPanel,AudioNames[i],x,226,146,22,12,true);
     var track=BasketballUIStyle.Plate(settingsPanel,AudioNames[i]+" volume",x,254,143,34,CoveUI.Sky,17,1);track.raycastTarget=true;
     var slider=track.gameObject.AddComponent<Slider>();audioSliders[i]=slider;slider.direction=Slider.Direction.LeftToRight;
-    var area=CoveUI.Rect(track.transform,"Handle area",16,0,111,34);var handle=BasketballUIStyle.Plate(area,"Handle",0,0,30,30,CoveUI.Gold,15,1.5f);handle.raycastTarget=true;handle.rectTransform.pivot=Vector2.one*.5f;slider.handleRect=handle.rectTransform;slider.targetGraphic=handle;
+    // A zero-height rail keeps Unity Slider from vertically stretching the round thumb.
+    var area=CoveUI.Rect(track.transform,"Handle area",16,17,111,0);var handle=BasketballUIStyle.Plate(area,"Handle",0,0,30,30,CoveUI.Gold,15,1.5f);handle.raycastTarget=true;handle.rectTransform.pivot=Vector2.one*.5f;slider.handleRect=handle.rectTransform;slider.targetGraphic=handle;
     slider.navigation=new Navigation{mode=Navigation.Mode.Automatic};slider.onValueChanged.AddListener(value=>{
      if(index==0)MenuPreferences.SetMaster(value);else if(index==1)MenuPreferences.SetSFX(value);else if(index==2)MenuPreferences.SetUI(value);else MenuPreferences.SetAmbience(value);
      audioLabels[index].text=AudioNames[index]+" "+Mathf.RoundToInt(value*100)+"%";

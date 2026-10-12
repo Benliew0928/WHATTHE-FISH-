@@ -1,5 +1,352 @@
 # APK size audit — measured release records
 
+## Combined Football, Basketball and Fishing release — 12 October 2026
+
+Actual signed APK: **88,856,012 → 90,139,324 bytes (+1,283,312)**,
+written at **18:42:22 Malaysia time**. Strict-boundary headroom:
+**9,860,676 bytes**; 75 MB development-target overrun:
+**15,139,324 bytes**. SHA-256:
+**FB9AC84E23EA34EA34FEF05B9534D07BB1F3DD1C731BE8DD4E3909227D300979**. The enforced budget gate and independent APK v2 signature pass.
+[Release and limits](BUILD-SIZE.md#combined-football-basketball-and-fishing-release--12-october-2026).
+
+Compressed ZIP entries total **88,762,914 → 89,997,825 bytes
+(+1,234,911)**. Container/signature overhead changes
+**93,098 → 141,499 bytes
+(+48,401)**. There are **640 → 909 entries**,
+with **573 unchanged named payload hashes**. The largest compressed entries are
+IL2CPP **11,722,581**, Unity **9,108,106**, metadata **2,674,535** and Java
+**2,353,635 bytes**. IL2CPP grows **159,451 compressed bytes**; Java is unchanged.
+
+Serialized assets change **153,775,137 → 155,405,350 bytes
+(+1,630,213)**. These are uncompressed Unity
+measurements, not APK bytes. The incoming asset groups account for:
+
+| Incoming group | Added serialized bytes |
+| --- | ---: |
+| 58 Basketball clips | 283,696 |
+| 55 new Football clips | 190,152 |
+| Basketball props, icons and materials | 366,417 |
+| Football procedural props, icons and materials | 470,932 |
+| Sports typography and shared utility atlas | 99,660 |
+| Football HUD atlas | 59,288 |
+| Basketball HUD atlas | 118,456 |
+
+The remaining **41,612 serialized bytes** are the required particles shader
+(**26,840**), shared prop-effect shader (**11,960**) and script metadata
+(**2,812**). Football references **25 Basketball clips in place**; they are
+not duplicated. Both banks remain mono 32 kHz Vorbis at the approved levels.
+All 80 Football delivery rows and the earlier Basketball delivery rows match
+source hashes. Raw audio, painted masters and Blender authoring stay outside Unity.
+
+All **1,785 prior imported-FBX mesh rows** remain identical; **three new
+Basketball props** produce **1,788 rows**. Football's four procedural `.asset`
+meshes are outside this FBX-only CSV; their packed paths, rendered models and
+collision behavior are checked separately. No pre-existing packed binary
+asset gains serialized bytes. Existing Cove fonts, Fishing sprites and Golf
+badges retain their serialized sizes. No new lossy change to prior world art,
+models, animation or fonts was made by this merge.
+
+MobileURP and MobileRenderer remain packed. No Desktop pipeline asset, SSAO
+shader or BlueNoise256 asset is present. Existing BlueNoise64/script metadata
+remain. All **13 checked development-only review types** are absent from
+release IL2CPP metadata; MonoScript filename metadata is a separate measurement.
+No unexplained bulk growth was found. The development-target shortfall remains
+open and is not treated as spare capacity.
+
+Current immutable comparison, ZIP hashes, asset/mesh deltas, independent
+signature output and copied Unity report are in
+`Builds/Publish/20261011-225324-fishing-merge/LatestApkComparison-20261012-104347/`.
+The current report is also under `Builds/SizeAudit/latest/`.
+
+## Approved football audio — 12 October 2026
+
+Fresh signed APK: **90,099,410 bytes**, **+240,376** from the measured
+89,859,034-byte baseline. Hard-boundary headroom: **9,900,590 bytes**;
+75 MB development target exceeded by **15,099,410 bytes**.
+[Release and hash](BUILD-SIZE.md#approved-football-audio--12-october-2026).
+
+ZIP entries increase **797 → 908**, adding **220,234 compressed bytes** and
+**20,142 bytes** of container overhead. Largest compressed entries: IL2CPP
+**11,689,490**, Unity **9,107,612**, metadata **2,668,179**, Java **2,353,575
+bytes**. New audio resources, licensing, small compiled code changes and metadata
+explain the increase; no unexpected bulk growth was found.
+
+Serialized assets rise **155,214,130 → 155,404,482 bytes (+190,352)**:
+55 new football clips account for **190,152 bytes**, with 200 bytes of script
+references. Serialized size is distinct from compressed APK size. Every existing
+packed asset size and all **1,788 imported mesh records** match the prior release.
+The 25 shared basketball clips are referenced at their original resource paths,
+without duplicated files. Full source recordings and generators remain outside
+Unity. Imports use 32 kHz mono Vorbis at quality 0.65 with normalization disabled;
+the turf loop remains compressed in memory. Existing art is unchanged.
+
+The increase stays below the proposed 500,000-byte incremental allowance.
+Bounded voices, shared resources and short clips avoid needless audio growth;
+this does not resolve the project's pre-existing 75 MB development-target gap.
+All **212 compiled runtime documents** match the tested Windows player.
+After Android, **3,650/3,652 Game input hashes** match. Only generated Golf
+prefab IDs and URP resource registration differ.
+
+Evidence: `Builds/FootballAudioQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `mesh-comparison.json`,
+`apk-signature.txt`, `compiled-source.json`, `source-comparison.json`,
+`portable-regeneration.json` and `Builds/SizeAudit/latest/`.
+Prior release/audit:
+`Legacy/20261012-170341-319-football-audio-before-android/`.
+
+## Physical football wall and larger spawns — 12 October 2026
+
+Fresh signed APK: **89,859,034 bytes**, **+7,526** from the measured
+89,851,508-byte baseline. Hard-boundary headroom: **10,140,966 bytes**;
+75 MB development target exceeded by **14,859,034 bytes**.
+[Release and hash](BUILD-SIZE.md#physical-football-wall-and-larger-spawns--12-october-2026).
+
+ZIP entries increase **796 → 797**, adding **7,352 compressed bytes** and
+**174 bytes** of container overhead. Largest compressed entries: IL2CPP
+**11,665,791**, Unity **9,107,612**, metadata **2,667,024**, Java **2,353,575
+bytes**. Growth comes from native/managed collision code and metadata, the new
+countdown material, and small generated build-data changes. No unexpected bulk
+growth was found.
+
+Serialized assets rise **155,212,466 → 155,214,130 bytes (+1,664)**, entirely
+from `FootballProps/Countdown.mat`; this measurement is distinct from APK size.
+Every existing packed asset size and all **1,788 imported mesh records** match.
+The larger markers reuse the existing meshes and shared URP Lit shader at
+runtime scale. Two pooled box colliders and one shared physics material provide
+solid walls without new geometry, textures or effect assets. Existing art and
+compression quality are preserved.
+
+All **208 compiled runtime source documents** match the tested Windows player.
+After Android, **3,526/3,529 Game input hashes** match. Generated Golf prefab IDs,
+URP resource registration and the new material's legacy `_Color` alias differ.
+Reconstructing the material before that alias update reproduces its exact
+Windows-source hash; `_BaseColor`, shader and every other material property
+are unchanged. The installed URP Lit shader renders `_BaseColor`.
+
+Evidence: `Builds/FootballPhysicalWallQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`countdown-material-comparison.json`, `compiled-source.json`,
+`source-comparison.json` and `Builds/SizeAudit/latest/`.
+Prior release/audit:
+`Legacy/20261012-162621-528-football-solid-before-android/`.
+
+## Football Explore Offline props — 12 October 2026
+
+Fresh signed APK: **89,851,508 bytes**, **+856** from the measured
+89,850,652-byte baseline. Hard-boundary headroom: **10,148,492 bytes**;
+75 MB development target exceeded by **14,851,508 bytes**.
+[Release and hash](BUILD-SIZE.md#football-explore-offline-props--12-october-2026).
+
+The same **796 ZIP entries** add **857 compressed bytes**, with one fewer byte
+of container overhead. Largest compressed entries: IL2CPP **11,661,162**, Unity
+**9,106,039**, metadata **2,666,619**, Java **2,353,575 bytes**. Small compiled
+code/metadata/build-data differences explain the change. Serialized assets
+remain **155,212,466 bytes**, distinct from the APK measurement. Every packed
+asset size and all **1,788 imported mesh records** match the prior release.
+No asset, texture, audio, model, font or package was added or degraded.
+
+All **208 compiled runtime source documents** match the tested Windows player.
+After Android, **3,525/3,527 Game inputs** match; only generated Golf prefab IDs
+and URP resource registration differ. The two edited runtime source files,
+development review and existing football delivery assets match.
+
+Evidence: `Builds/FootballExplorePropsQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `source-comparison.json` and `Builds/SizeAudit/latest/`.
+Prior release/audit: `Legacy/20261012-155613-395-football-explore-before-android/`.
+
+## Football abilities — 12 October 2026
+
+Fresh signed APK: **89,850,652 bytes**, **+150,996** from the measured
+89,699,656-byte baseline. Hard-boundary headroom: **10,149,348 bytes**;
+75 MB development target exceeded by **14,850,652 bytes**.
+[Release and hash](BUILD-SIZE.md#football-abilities--12-october-2026).
+
+Compressed ZIP entries increase **147,903 bytes**, with **3,093 bytes** of
+additional container overhead. Entry count rises **778 → 796**. Largest
+compressed entries remain IL2CPP **11,660,115**, Unity **9,106,039**, metadata
+**2,666,796** and Java **2,353,575 bytes**. Growth is attributable to the small
+football prop resource set, compiled ability/network/UI code, metadata and the
+shared effect shader. No unexplained bulk growth was found.
+
+Serialized assets rise **154,741,182 → 155,212,466 bytes (+471,284)**, a
+different measurement from APK size. Four new combined mesh assets, eight
+coloured materials plus a translucent panel material, four prefabs and one
+**30,392-byte serialized** icon atlas comprise the football art. The atlas is
+512 × 128, ASTC 6×6, without mipmaps. The existing shared shader grows by only
+**1,492 serialized bytes**. All **1,788 pre-existing imported mesh records**
+match; the four generated mesh assets are listed separately in packed-assets.
+Existing fonts, textures, animation and audio are neither enlarged nor reduced
+in quality. The approved concept image and editable SVG masters do not ship.
+
+Runtime presentation pools pickups, the two team barriers, preview, portals
+and countdown digits. Models share materials and have no player colliders;
+wall/portal effects use the shared procedural shader without new effect
+textures. The relocation check reproduces the exact atlas hash from a path
+with spaces and an unrelated working directory. Native model masters are
+deterministic C# geometry with no external Blender/FBX/image dependencies.
+
+All **208 compiled runtime source documents** match the tested Windows player.
+Of **3,527 Game input files**, **3,525** match after Android: generated Golf
+prefab IDs and URP resource registration differ, as in prior releases. Runtime
+C#, generated football resources and UI textures match the tested snapshot.
+
+Evidence: `Builds/FootballPropsQA/Before/`, `apk-comparison.json`,
+`entry-comparison.json`, `asset-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `windows-source.json`, `source-comparison.json`,
+`portability.json` and `Builds/SizeAudit/latest/`. Prior APK/audit archived in
+`Legacy/20261012-152732-503-football-abilities-before-android/`.
+
+## 2D sports action icons — 12 October 2026
+
+Fresh signed APK: **89,699,656 bytes**, **−2,168** from the start-of-task
+89,701,824-byte baseline. Hard-boundary headroom: **10,300,344 bytes**;
+75 MB development target exceeded by **14,699,656 bytes**.
+[Release and hash](BUILD-SIZE.md#2d-sports-action-icons--12-october-2026).
+
+Compressed ZIP entries decrease **2,167 bytes**, with **1 fewer byte** of
+container overhead. Entry count stays **778**. Largest compressed entries:
+IL2CPP **11,630,842**, Unity **9,105,512**, metadata **2,662,916** and Java
+**2,353,575 bytes**. The two updated icon textures and small compiled/UI build
+changes account for the difference; there is no unexplained bulk growth.
+
+Serialized assets remain **154,741,182 bytes**, a different measurement from
+the APK. Every packed asset size matches the baseline, including the existing
+**118,456 / 59,288 / 30,392-byte** basketball, football and shared prop atlases.
+Their dimensions and ASTC 6×6 imports are unchanged. Three high-resolution
+2D illustration masters replace the shoe artwork outside Unity. No font,
+world texture, animation or audio asset expands or loses quality. All
+**1,788 mesh records** match independent of row order.
+
+Evidence: `Builds/FootballPoseIconQA/Before/`, `apk-comparison.json`,
+`entry-comparison.json`, `asset-comparison.json`, `apk-signature.txt`,
+`art-validation.json`, `portability.json` and `Builds/SizeAudit/latest/`.
+All three atlas hashes reproduce exactly when regenerated from a relocated
+path with spaces and an unrelated working directory. The wider Tackle sprite
+omits only fully transparent rows; source alpha ranges from zero to opaque.
+
+All **202 compiled runtime documents** match the tested Windows player.
+Of **3,476 Game inputs**, **3,474** match after Android: generated Golf prefab
+IDs and URP resource registration differ, as in previous builds. Runtime C#,
+font and texture inputs match. Relative to the prior Windows release, only
+the two icon atlases, three HUD/style scripts and generated Golf prefab IDs
+change. The final APK is compared to the original release, not the intermediate
+build made before the shared Jump request.
+
+Prior APK/audit: `Legacy/20261012-143459-868-football-flat-poses-before-android/`.
+Intermediate builds and draft art are indexed in the verification record.
+
+## Full-colour sports artwork — 12 October 2026
+
+Fresh signed APK: **89,701,824 bytes**, **+57,436** from the measured
+89,644,388-byte baseline. Hard-boundary headroom: **10,298,176 bytes**;
+75 MB development target exceeded by **14,701,824 bytes**.
+[Release and hash](BUILD-SIZE.md#full-colour-sports-artwork--12-october-2026).
+
+Compressed ZIP entries increase **57,442 bytes**, with **6 fewer bytes** of
+container overhead. Entry count remains **778**. Three texture entries account
+for **56,738 bytes** of growth; the remaining net **704 bytes** are compiled
+code, metadata and build/scene data. No unexplained bulk growth was found.
+Largest compressed entries: IL2CPP **11,629,529**, Unity **9,105,512**,
+metadata **2,662,916**, Java **2,353,575 bytes**.
+
+Serialized assets remain **154,741,182 bytes**, a different measurement from
+the APK. Every packed asset size matches the baseline. The three UI atlases
+remain **118,456 / 59,288 / 30,392 serialized bytes**, using the same 512 × 512,
+512 × 256 and 512 × 128 ASTC 6×6 textures. Ten high-resolution PNG masters stay
+outside Unity. Existing fonts, world textures, audio and animations are not
+expanded or degraded. All **1,788 mesh records** match independent of row order.
+
+Evidence: `Builds/ColorIconQA/Before/`, `apk-comparison.json`,
+`entry-comparison.json`, `asset-comparison.json`, `apk-signature.txt`,
+`portability.json` and `Builds/SizeAudit/latest/`. Regenerating all three atlases
+from an unrelated working directory and a project path with spaces produces
+identical hashes. All **202 compiled runtime documents** match the tested
+Windows player. Of **3,476 Game inputs**, **3,474** match after Android:
+generated Golf prefab IDs and URP resource registration differ, as in prior
+builds. Runtime C#, fonts, texture imports and icon atlases match.
+
+Previous APK/audit: `Legacy/20261012-015824-930-colour-icons-before-android/`.
+
+## Sports icons and typography — 12 October 2026
+
+Fresh signed APK: **89,644,388 bytes**, **+54,394** from the measured
+89,589,994-byte baseline. Hard-boundary headroom: **10,355,612 bytes**;
+75 MB development target exceeded by **14,644,388 bytes**.
+[Release and hash](BUILD-SIZE.md#sports-icons-and-typography--12-october-2026).
+
+Compressed ZIP entries increase **53,737 bytes**, plus **657 bytes** of
+container overhead. Entry count is **774 → 778**. Largest compressed entries:
+IL2CPP **11,628,857**, Unity **9,105,512**, metadata **2,662,875**, Java
+**2,353,575 bytes**. This remains a small UI change within a project that
+already exceeds its development budget; no world assets were degraded.
+
+Serialized assets increase **154,641,426 → 154,741,182 (+99,756 bytes)**,
+a different measurement from the APK. All changes are accounted for:
+
+| New asset | Serialized bytes |
+| --- | ---: |
+| Display font, Manrope 800 subset | 34,690 |
+| Text font, Manrope 600 subset | 34,578 |
+| Shared prop/check ASTC 6×6 atlas | 30,392 |
+| Shared sports UI script record | 96 |
+
+Existing basketball/football atlases remain **118,456 / 59,288 serialized
+bytes**. All other packed asset sizes match. All **1,788 mesh records** match
+when compared independent of report order. No existing world texture, audio
+or animation record changes. The 16,471-byte combined third-party notice is
+verified byte-for-byte inside the APK; compressed delivery costs are included
+in the total above.
+
+Evidence: `Builds/SportsIconQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `apk-signature.txt`, `portability.json` and
+`Builds/SizeAudit/latest/`. Regeneration from an unrelated working directory
+and a project path with spaces produces identical font and atlas hashes.
+All 202 compiled runtime documents match the tested Windows player. Of 3,476
+recorded Game inputs, 3,474 match after Android: generated Golf prefab IDs and
+URP resource registration differ, as in previous builds. Runtime C#, fonts,
+icon imports and textures match. StreamingAssets license text was copied
+identically into the Windows candidate and is automatically included by fresh
+Unity builds.
+
+Previous APK/audit: `Legacy/20261012-010856-667-sports-icons-before-android/`.
+
+## Football touchline UI — 12 October 2026
+
+Fresh signed APK: **89,589,994 bytes**, **+47,078 bytes** from the measured
+start-of-task release. Hard-boundary headroom: **10,410,006 bytes**; the
+75 MB development target is exceeded by **14,589,994 bytes**.
+[Release and hash](BUILD-SIZE.md#football-touchline-ui--12-october-2026).
+
+Compressed ZIP entries increase **46,910 bytes**, with **168 bytes** of extra
+container overhead. Entry count is **773 → 774**. The new football icon atlas
+accounts for **26,739 compressed bytes**; IL2CPP adds **17,314**, metadata
+**2,456**. Largest compressed entries remain IL2CPP **11,629,168**, Unity
+**9,105,512**, metadata **2,662,664** and Java **2,353,575 bytes**. No unexplained
+bulk growth was found.
+
+Serialized assets increase **154,581,754 → 154,641,426 bytes (+59,672)**,
+which is not the APK measurement. The 512 × 256 ASTC 6×6 icon atlas contributes
+**59,288 bytes**; four script records contribute **384 bytes**. Runtime panels,
+paths, power ring and minimap use geometry. Existing basketball utility icons
+and Cove fonts are shared. The reference pitch screenshot and HTML are outside
+Unity. All **1,788 mesh rows** match the baseline; no existing texture, animation
+or audio record changes. The 75 MB target still needs broader project work;
+this UI adds no redundant font, baked screen or large texture dependency.
+
+Evidence: `Builds/SizeAudit/latest/`, `Builds/FootballUIQA/Before/`,
+`apk-comparison.json`, `asset-comparison.json`, `apk-signature.txt` and
+`portability.json`. Relocated regeneration from an unrelated working directory
+reproduces the exact atlas hash. All 201 compiled runtime source documents
+match the tested Windows player. Of 3,462 captured Game inputs, 3,459 match
+following Android generation: Golf ball prefab IDs and URP resource registration
+are regenerated; the editor-only player writer adds the football launcher and
+updated release caption. The identical launcher is included in the delivered
+Windows folder. Runtime code and icon imports match.
+
+The previous APK and audit are preserved in
+`Legacy/20261012-002527-083-football-ui-before-android/`.
+
 ## Fishing feedback, timing and round recap — 11 October 2026
 
 The fresh AndroidSubmission APK was written at **21:16:21.948 Malaysia time**.

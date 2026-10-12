@@ -33,7 +33,7 @@ A one-way needle sweep takes **0.84 s at 4 m or closer**, gradually shortening t
 
 The mobile cancel target follows the football gesture: dragging outside Shoot alone keeps tracking the original finger; entering Cancel arms it; releasing there cancels, while sliding back continues aiming. Other fingers cannot release or drag-cancel it. Cancelling preserves possession and resumes normal movement. Losing focus or disabling the controls clears held input.
 
-The host integrates phase and replicates it with the locked basket and action pose. Release transmits an input timestamp rather than a requested power. The host samples its own phase history with at most **250 ms** of bounded rewind, preventing an extra input frame or ordinary RPC delay from changing the displayed release power. WAN jitter beyond that allowance remains a device/network qualification item. That synchronized-shot milestone used **protocol 29**; current rooms require matching **protocol 44** builds.
+The host integrates phase and replicates it with the locked basket and action pose. Release transmits an input timestamp rather than a requested power. The host samples its own phase history with at most **250 ms** of bounded rewind, preventing an extra input frame or ordinary RPC delay from changing the displayed release power. WAN jitter beyond that allowance remains a device/network qualification item. That synchronized-shot milestone used **protocol 29**; current rooms require matching **protocol 46** builds.
 
 ## Stealing and loose-ball contests
 

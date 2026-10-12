@@ -64,7 +64,7 @@ namespace WhatTheFish {
   }
   public void RequestTeam(FootballTeam team){
    var actor=AppRoot.Instance.LocalAthlete;if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();
-   if(net&&net.IsSpawned){if(net.IsOwner)net.ChooseFootballTeamRpc(team,Snapshot.revision);}else ChooseTeam(actor,team,Snapshot.revision);
+   if(net&&net.IsSpawned){if(net.IsOwner)net.ChooseFootballTeamRpc(team,Snapshot.revision);}else if(!ChooseTeam(actor,team,Snapshot.revision))FootballAudio.PlayMenu(FootballSound.UIError);
   }
   public void ClearMatch(){goalFollowThroughUntil=0;State.Clear();goals=null;participants.Clear();Selection.Clear();foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.Team.Value=FootballTeam.None;}ClearInputs();ball.ResetBall();Publish();}
   void ClearInputs(){PlayerView.Instance?.ClearMatchInput();foreach(var actor in Athlete.Active){actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();}}
@@ -117,6 +117,18 @@ namespace WhatTheFish {
   }
   bool InvalidFormation(){Debug.LogError("Football kickoff formation is invalid or obstructed. Check FootballMatchRules formation offsets and pitch ground; match cancelled without relocating slots.",this);return false;}
   void ResetDetection(){if(goals!=null)foreach(var goal in goals)goal.Reset(ball.Pitch.InverseTransformPoint(ball.Body.position),Now);}
+  public void ResetAbilityGoalTracking(){if(Authority)ResetDetection();}
+  public void ResolvePendingGoals(){
+   if(!Authority||!Context)return;ball.ResolveAbilityBallStep();double now=Now;
+   if(State.Running&&goals!=null&&!ball.PortalBusy){
+    var point=ball.Pitch.InverseTransformPoint(ball.Body.position);var scale=ball.Pitch.lossyScale;float radius=ball.WorldRadius;
+    var r=new Vector3(radius/Mathf.Abs(scale.x),radius/Mathf.Abs(scale.y),radius/Mathf.Abs(scale.z));
+    for(int i=0;i<goals.Length;i++)if(goals[i].Sample(point,r,now,out double crossedAt)){
+     if(crossedAt>=State.Deadline)State.Advance(crossedAt);
+     if(State.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt)){goalFollowThroughUntil=now+GoalFollowThroughSeconds;ball.ResetFootballProps();ClearInputs();break;}
+    }
+   }
+  }
   void FixedUpdate(){
    if(!Authority){if(Snapshot.revision!=presentedRevision){presentedRevision=Snapshot.revision;if(BlocksActions)PlayerView.Instance?.ClearMatchInput();}return;}
    if(!Context){if(wasContext||State.Phase!=FootballMatchPhase.Idle)ClearMatch();wasContext=false;return;}wasContext=true;
@@ -128,15 +140,7 @@ namespace WhatTheFish {
     if(now>=State.Deadline){Selection.Complete(kickoffRandom);SyncTeams();if(!ResetRound()){ClearMatch();return;}State.TeamsConfirmed(now);}
     Publish();return;
    }
-   // Goals are ordered before timeout, using the swept whole-ball crossing time.
-   if(State.Running&&goals!=null){
-    var point=ball.Pitch.InverseTransformPoint(ball.Body.position);var scale=ball.Pitch.lossyScale;float radius=ball.WorldRadius;
-    var r=new Vector3(radius/Mathf.Abs(scale.x),radius/Mathf.Abs(scale.y),radius/Mathf.Abs(scale.z));
-    for(int i=0;i<goals.Length;i++)if(goals[i].Sample(point,r,now,out double crossedAt)){
-     if(crossedAt>=State.Deadline)State.Advance(crossedAt);
-     if(State.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt)){goalFollowThroughUntil=now+GoalFollowThroughSeconds;ClearInputs();break;}
-    }
-   }
+   ResolvePendingGoals();
    if(State.Phase==FootballMatchPhase.GoalReset&&now>=goalFollowThroughUntil){goalFollowThroughUntil=0;if(!ResetRound()){ClearMatch();return;}State.ResetCompleted(now);}
    if(State.Phase==FootballMatchPhase.Finished&&now>=goalFollowThroughUntil)goalFollowThroughUntil=0;
    var before=State.Phase;State.Advance(now);

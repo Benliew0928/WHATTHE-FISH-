@@ -115,7 +115,7 @@ namespace WhatTheFish {
    }
    DevelopmentProbe.TurnCommand=default;
   }
-  void CheckPickup(BasketballPropSpawn spawn){
+  void CheckPickup(SportsPropSpawn spawn){
    Check(spawn.kind!=SportsProp.None,"materialized prop exists");if(spawn.kind==SportsProp.None)return;var visual=ball.GetComponent<BasketballPropVisual>();var pickup=visual?visual.ReviewPickup():null;
    Check(pickup&&pickup.gameObject.activeInHierarchy,"actual spawned model active "+spawn.kind+" side "+spawn.anchor);if(!pickup)return;
    var renderers=pickup.GetComponentsInChildren<MeshRenderer>();Check(renderers.Length>0&&renderers.All(r=>r.enabled&&r.sharedMaterials.All(m=>m&&m.shader.isSupported)),"spawned model has supported visible materials");if(renderers.Length==0)return;

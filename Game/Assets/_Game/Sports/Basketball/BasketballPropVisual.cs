@@ -21,7 +21,7 @@ namespace WhatTheFish {
   MeshRenderer Plane(string name,int mode){var go=new GameObject(name);go.transform.SetParent(transform.parent,false);go.AddComponent<MeshFilter>().sharedMesh=quad;var r=go.AddComponent<MeshRenderer>();r.sharedMaterial=effect;r.shadowCastingMode=ShadowCastingMode.Off;r.receiveShadows=false;r.enabled=false;return r;}
   void Style(MeshRenderer r,Color color,int mode,float progress=1){block.Clear();block.SetColor("_Tint",color);block.SetFloat("_Mode",mode);block.SetFloat("_Progress",progress);r.SetPropertyBlock(block);}
   public static Color ColorOf(SportsProp k)=>k==SportsProp.LockOn?new Color(1,.65f,.12f):k==SportsProp.Turbo?new Color(.10f,1,.63f):new Color(.08f,.6f,1);
-  void Pickup(BasketballPropSpawn spawn){
+  void Pickup(SportsPropSpawn spawn){
    if(kind!=spawn.kind){if(pickup)Destroy(pickup.gameObject);pickup=null;kind=spawn.kind;
     if(kind!=SportsProp.None&&models[(int)kind-1]){pickup=Instantiate(models[(int)kind-1],transform.parent).transform;pickup.name="Floating "+BasketballPropRules.Name(kind);}}
    var p=BasketballPropRules.Anchor(spawn.anchor);bool countdown=ball.Playing&&spawn.countingDown&&spawn.kind==SportsProp.None;
@@ -70,7 +70,7 @@ namespace WhatTheFish {
   void OnDisable(){ScaleBall(1);if(shadow)shadow.enabled=false;if(hologram)hologram.enabled=false;countdownNumber=0;foreach(var r in portals)if(r)r.enabled=false;if(aim)aim.enabled=false;if(trail)trail.Clear();if(pickup)pickup.gameObject.SetActive(false);foreach(var t in turboTrails.Values)if(t){t.emitting=false;t.Clear();}}
   void OnDestroy(){if(shadow)Destroy(shadow.gameObject);if(hologram)Destroy(hologram.gameObject);foreach(var r in portals)if(r)Destroy(r.gameObject);if(aim)Destroy(aim.gameObject);if(pickup)Destroy(pickup.gameObject);if(quad)Destroy(quad);if(digits!=null)foreach(var m in digits)Destroy(m);foreach(var t in turboTrails.Values)if(t)Destroy(t.gameObject);}
   // Five tiny extruded seven-segment meshes. No textures, fonts or per-tick allocations.
-  static Mesh Digit(int value){
+  public static Mesh Digit(int value){
    int[] masks={0,6,91,79,102,109};int mask=masks[value];var vertices=new List<Vector3>();var uv=new List<Vector2>();var triangles=new List<int>();
    Vector2[] centres={new(0,.44f),new(.26f,.22f),new(.26f,-.22f),new(0,-.44f),new(-.26f,-.22f),new(-.26f,.22f),Vector2.zero};
    for(int segment=0;segment<7;segment++){

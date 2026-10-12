@@ -1,0 +1,127 @@
+{
+  "license": "Apache-2.0",
+  "family": "Material Symbols Rounded, filled, weight 600, 24 px optical size",
+  "modifications": "Ink fill #123F50; otherwise unmodified paths",
+  "icons": [
+    {
+      "name": "book",
+      "symbol": "menu_book",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/menu_book/materialsymbolsrounded/menu_book_wght600fill1_24px.svg",
+      "upstreamSha256": "bb9deeebda63704ce31cc5e3178309e1f68ad314c6a65ebed99deef030d82385",
+      "sha256": "4d0d17939d65668b59bb06028be228931cd539232658c986b13283821c2895bf"
+    },
+    {
+      "name": "close",
+      "symbol": "close",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/close/materialsymbolsrounded/close_wght600fill1_24px.svg",
+      "upstreamSha256": "20b74c2e9e162c9727d89f62aa3330caceecf53eaf6c24961d221620374e8c33",
+      "sha256": "683d6f8d8962dbebf995a090d15e73bfa45e5fabfc43afbd24d2f4ddc0453c88"
+    },
+    {
+      "name": "court",
+      "symbol": "stadium",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/stadium/materialsymbolsrounded/stadium_wght600fill1_24px.svg",
+      "upstreamSha256": "e8bb75ccea2a1208f67c69d59b211282e4311bf4c870ce209516f3a22278e36e",
+      "sha256": "5e5ca993c422ececfbe86e509a70fa3637d4a41e5ec2665ff0c9d9cb356c4f9d"
+    },
+    {
+      "name": "exit",
+      "symbol": "logout",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/logout/materialsymbolsrounded/logout_wght600fill1_24px.svg",
+      "upstreamSha256": "c9805058f185154914c255f2bb5bf3737584814eeb5a58893d2720c7255a1152",
+      "sha256": "fa63b34903341e4a18641d40e1ab233445a2005d43af69021a3d10b5f34420ec"
+    },
+    {
+      "name": "eye",
+      "symbol": "visibility",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/visibility/materialsymbolsrounded/visibility_wght600fill1_24px.svg",
+      "upstreamSha256": "dfc5b388eb28ccdfaf8543b9036f2d0aa97ae7356a6e0f42bfde1f12b0ca607b",
+      "sha256": "793628eed12ff1da8223a808fdaa2cc29ac4e7662ee76dd26ffd2d3a513bb16a"
+    },
+    {
+      "name": "follow",
+      "symbol": "center_focus_strong",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/center_focus_strong/materialsymbolsrounded/center_focus_strong_wght600fill1_24px.svg",
+      "upstreamSha256": "b0dfe84ab32eb7277aef808f10db98e206bdfc6b4f10d466dc905abb3574f21b",
+      "sha256": "b6abdf9abf595faeeebd5c60f59f39a037031da58cf2101f9290eb8f561924c8"
+    },
+    {
+      "name": "gear",
+      "symbol": "settings",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/settings/materialsymbolsrounded/settings_wght600fill1_24px.svg",
+      "upstreamSha256": "36350db1d2caafdbac0144571f9a6c671d41bbeb7e4ec27a6d5571ac8761047e",
+      "sha256": "e0c3f038da04444bebec1dd7968ef922c8ffe0c24e97bcc4d78180008889dfbb"
+    },
+    {
+      "name": "move",
+      "symbol": "open_with",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/open_with/materialsymbolsrounded/open_with_wght600fill1_24px.svg",
+      "upstreamSha256": "f2512b26fcfbcbab800924f366a645151447ab31c242fafc95ca7504973e66d5",
+      "sha256": "4780e7e59e8bbca43c47a56a66da07a2058838eff5e695567cfaa52ccf75d371"
+    },
+    {
+      "name": "points",
+      "symbol": "emoji_events",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/emoji_events/materialsymbolsrounded/emoji_events_wght600fill1_24px.svg",
+      "upstreamSha256": "f62a0c90cd5819ea09628e858df22ba1426ece987fce84d2f06670cdbe38f8e0",
+      "sha256": "9441fb2ea1f65bfc197337eec947225fce61506f102f68c2a8489acee6c2f526"
+    },
+    {
+      "name": "hand-swipe-left",
+      "symbol": "swipe_left",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/swipe_left/materialsymbolsrounded/swipe_left_wght600fill1_24px.svg",
+      "upstreamSha256": "9bbec7ccfb15e774ee9a0f2e09694348ce83120fed4a65940c36e9619fd2d5f9",
+      "sha256": "0418029e6e60daa99c7746dfd61fbd1cf3d52f9bbc781749a5c207ed1a0b752a"
+    },
+    {
+      "name": "target",
+      "symbol": "my_location",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/my_location/materialsymbolsrounded/my_location_wght600fill1_24px.svg",
+      "upstreamSha256": "d06952749fbc28de639e02ce39d17424fb4e44f5aab6d4a3a8e23fa14af3fc10",
+      "sha256": "1574ffc25258a3b6c394d16f6f56413241871de9ff7ccd7972b42c6497244256"
+    },
+    {
+      "name": "flag-checkered",
+      "symbol": "sports_score",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/sports_score/materialsymbolsrounded/sports_score_wght600fill1_24px.svg",
+      "upstreamSha256": "a00e0dee7e7dd6bd8c0fba36afa1e0097957a376b29b2c86bdfef9d641836884",
+      "sha256": "f79e1b15201d32588802153cc65b41dc677f45c29e30b678b057a30317e03305"
+    },
+    {
+      "name": "users-three",
+      "symbol": "groups",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/groups/materialsymbolsrounded/groups_wght600fill1_24px.svg",
+      "upstreamSha256": "afac116e77220787e034a962a149032b0a2608893fadff1cb241f7274a28f4cf",
+      "sha256": "fe55215fb192a132b793a0ee3208fd1084d054c3d3ec66cd4765f806aa93cdb9"
+    },
+    {
+      "name": "lock-on",
+      "symbol": "my_location",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/my_location/materialsymbolsrounded/my_location_wght600fill1_24px.svg",
+      "upstreamSha256": "d06952749fbc28de639e02ce39d17424fb4e44f5aab6d4a3a8e23fa14af3fc10",
+      "sha256": "1574ffc25258a3b6c394d16f6f56413241871de9ff7ccd7972b42c6497244256"
+    },
+    {
+      "name": "turbo",
+      "symbol": "bolt",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/bolt/materialsymbolsrounded/bolt_wght600fill1_24px.svg",
+      "upstreamSha256": "d227605e7dcfbfb728e4a29c3548bd120b4c4601f9ec730ba9f6065d2576270e",
+      "sha256": "16048e2cb61a45092fd595fca06de7bce4a8e7cca79cb0cd3897f597a3091a85"
+    },
+    {
+      "name": "portal",
+      "symbol": "motion_photos_on",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/motion_photos_on/materialsymbolsrounded/motion_photos_on_wght600fill1_24px.svg",
+      "upstreamSha256": "4c5135a239504a35ce77b9b61dbf25b69917607b3dcdb8706ec3c5d2d1d264d6",
+      "sha256": "2c638a88cc0a79723ecacc387fb469490f0b04a87454fc87974faf80243a44d8"
+    },
+    {
+      "name": "check",
+      "symbol": "check",
+      "url": "https://raw.githubusercontent.com/google/material-design-icons/master/symbols/web/check/materialsymbolsrounded/check_wght600fill1_24px.svg",
+      "upstreamSha256": "ac8607725228f254c4f9505bdd2332a0bb133258db476ef6ff1e1f0e722fc272",
+      "sha256": "48a6d6402cde340ef068dd807c22025ee75edf82bb9f9780840e79ed9fde2ea8"
+    }
+  ],
+  "usage": "Source geometry for Tools/Build/Generate-SportsUtilityIcons.py; generated colour variants have bevels, highlights and accent geometry."
+}

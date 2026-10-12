@@ -1,0 +1,85 @@
+{
+  "base": "this directory",
+  "images": [
+    {
+      "file": "basketball.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1624245,
+      "alpha": "transparent to opaque",
+      "sha256": "565d95234a553ed75b43af9e3d626581069149fde36a8b6880149f57d4ce13c9"
+    },
+    {
+      "file": "block.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1049777,
+      "alpha": "transparent to opaque",
+      "sha256": "fb73b54a5c9f476d110105bc8b2fc79c2747a4d0f0a9c233612181cb1834a9b3"
+    },
+    {
+      "file": "dash.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 699267,
+      "alpha": "transparent to opaque",
+      "sha256": "3072b6456182b4ac5d1a1bee748c8f62333e0340bed92985d135ec58cd55515a"
+    },
+    {
+      "file": "football.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1465373,
+      "alpha": "transparent to opaque",
+      "sha256": "9d2298ff3f82409256559750db1457605dc744e1787e63fb4368865d33c92d1c"
+    },
+    {
+      "file": "guard.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1370168,
+      "alpha": "transparent to opaque",
+      "sha256": "81669ecab1244aa1fae60cd1103a405e6669fce6c606612b8e8000b07f284090"
+    },
+    {
+      "file": "jump.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 537520,
+      "alpha": "transparent to opaque",
+      "sha256": "aee3c6a33b8a21d17612ade111d5bf4baef7194c8ddf1b6715b7216b73e3eb9b"
+    },
+    {
+      "file": "pass.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1004153,
+      "alpha": "transparent to opaque",
+      "sha256": "2dc4609321287629da5b2633eabcde4e5e736ca20ddf3a2a71b2fac06b2dc825"
+    },
+    {
+      "file": "pressure.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1335348,
+      "alpha": "transparent to opaque",
+      "sha256": "897d3f23e5ecc523e6b904dc592a2b4e20b5e5f22a2485e62696a434dcc82f1b"
+    },
+    {
+      "file": "steal.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1298608,
+      "alpha": "transparent to opaque",
+      "sha256": "810131a1d978307d67aec05db6a101e5d9ce1e29412811e8f8a60b2f03b35322"
+    },
+    {
+      "file": "tackle.png",
+      "width": 1491,
+      "height": 1055,
+      "bytes": 561608,
+      "alpha": "transparent to opaque",
+      "sha256": "2cc61f6c19ac1628bf9a485e62aacbcf11ef3d6f74603782ad040dd6dfc7f48e"
+    }
+  ]
+}

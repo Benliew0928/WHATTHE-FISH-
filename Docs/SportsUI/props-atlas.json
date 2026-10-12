@@ -1,0 +1,35 @@
+{
+  "base": "repository root",
+  "generator": "Tools/Build/Generate-SportsUI.cjs",
+  "width": 512,
+  "height": 128,
+  "tile": 128,
+  "padding": 4,
+  "style": "painted gameplay art and coloured utility illustrations",
+  "icons": [
+    {
+      "name": "lock-on",
+      "source": "Docs/SportsUI/color-icons/lock-on.svg",
+      "sha256": "09b2abe053f5e7862a7102c1a5625c037234d00e988010246be4e6aa475b8a04",
+      "cell": 0
+    },
+    {
+      "name": "turbo",
+      "source": "Docs/SportsUI/color-icons/turbo.svg",
+      "sha256": "52cb486a1ecbaffed4a781e140d1fc78bb81b7c73c45beb560498533544fa360",
+      "cell": 1
+    },
+    {
+      "name": "portal",
+      "source": "Docs/SportsUI/color-icons/portal.svg",
+      "sha256": "c931b10338724e310fc9093da742877b2b0558e1ea09e5529073dd016000a1d8",
+      "cell": 2
+    },
+    {
+      "name": "check",
+      "source": "Docs/SportsUI/color-icons/check.svg",
+      "sha256": "b8e831ea58ccb5d5103e8942096bc4c621597f9dd883874dfc6e6a7c3ca6ddf9",
+      "cell": 3
+    }
+  ]
+}

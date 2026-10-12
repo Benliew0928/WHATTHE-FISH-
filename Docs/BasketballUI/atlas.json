@@ -1,103 +1,106 @@
 {
   "base": "repository root",
-  "generator": "Tools/Build/Generate-BasketballUI.cjs",
+  "generator": "Tools/Build/Generate-SportsUI.cjs",
+  "width": 512,
+  "height": 512,
   "tile": 128,
   "padding": 4,
+  "style": "painted gameplay art and coloured utility illustrations",
   "icons": [
     {
       "name": "ball",
-      "source": "Docs/BasketballUI/icons/ball.svg",
-      "sha256": "d3ade7dd7fb1082541dd177358250abd57b36091ad8815b6c32eb410860bf73d",
+      "source": "ArtSource/SportsUI/Painted/basketball.png",
+      "sha256": "565d95234a553ed75b43af9e3d626581069149fde36a8b6880149f57d4ce13c9",
       "cell": 0
     },
     {
       "name": "block",
-      "source": "Docs/BasketballUI/icons/block.svg",
-      "sha256": "0376d503a5dc87f2a57e7d45a3c40f6e9f17964892d3d4f3a301b017bdb884c9",
+      "source": "ArtSource/SportsUI/Painted/block.png",
+      "sha256": "fb73b54a5c9f476d110105bc8b2fc79c2747a4d0f0a9c233612181cb1834a9b3",
       "cell": 1
     },
     {
       "name": "book",
-      "source": "Docs/BasketballUI/icons/book.svg",
-      "sha256": "c4db5a8b27c1667d764e22f2b335dd9cdcbd1902103415fca642cfed4e7a7f0d",
+      "source": "Docs/SportsUI/color-icons/book.svg",
+      "sha256": "f61470e56a3b6b301b0d6721b659c52a80c1cb271286eb32256aee569265d82c",
       "cell": 2
     },
     {
       "name": "close",
-      "source": "Docs/BasketballUI/icons/close.svg",
-      "sha256": "1c60fc948689ade88a811f29382a2c8e80aa02ba15724bff9ca12511904b73b0",
+      "source": "Docs/SportsUI/color-icons/close.svg",
+      "sha256": "d92e5ec09262d3125da480c16c1d5bb515890f9de132e36e3523970c94fc6cbe",
       "cell": 3
     },
     {
       "name": "court",
-      "source": "Docs/BasketballUI/icons/court.svg",
-      "sha256": "9b849bdced94c28a281931eb1a4795aa4d6a2f362bb56de80db23d115d031895",
+      "source": "Docs/SportsUI/color-icons/court.svg",
+      "sha256": "784f15d023bc3b1f1fd92f085d5b795d81a1ad0eeb3928dc3736747533eb1853",
       "cell": 4
     },
     {
       "name": "exit",
-      "source": "Docs/BasketballUI/icons/exit.svg",
-      "sha256": "a6d3746d9ea4f780f37420b25b66283144f1a000c65eb11d25764451e7b0aac4",
+      "source": "Docs/SportsUI/color-icons/exit.svg",
+      "sha256": "bb2cb83f3507175bfc7ad3b7984273fc6f059a4bf5c728f675e27ae844e5f060",
       "cell": 5
     },
     {
       "name": "eye",
-      "source": "Docs/BasketballUI/icons/eye.svg",
-      "sha256": "955f84751566c9f591d07082a2363b11dada80d79e64529ae4475e2c93378702",
+      "source": "Docs/SportsUI/color-icons/eye.svg",
+      "sha256": "c915edb52781ae2f9ab15f176d27ca06d0886a5d66db50abafb552bb9fc42c0c",
       "cell": 6
     },
     {
       "name": "follow",
-      "source": "Docs/BasketballUI/icons/follow.svg",
-      "sha256": "fd0a5a0719c8a7a3f53e433f01a8577398cb5ff6bfbbea9c03adcc4907be0e7b",
+      "source": "Docs/SportsUI/color-icons/follow.svg",
+      "sha256": "35606b6e8468f991563103a425208bb98869e93aadd24a2dd841155e269b85ae",
       "cell": 7
     },
     {
       "name": "gear",
-      "source": "Docs/BasketballUI/icons/gear.svg",
-      "sha256": "060dd4ed2fc610b3c03e808a9372bddaf2ae4589bbf9437d950b26b778fa5e4e",
+      "source": "Docs/SportsUI/color-icons/gear.svg",
+      "sha256": "ac1557e737c0bf63846c769f20079e4c0ec1c1fbdbf5fc04fb9d15ab78689372",
       "cell": 8
     },
     {
       "name": "guard",
-      "source": "Docs/BasketballUI/icons/guard.svg",
-      "sha256": "1a543e9d18335b40757666a424fdbf8351dbe56d80d1b4c735cf1a48d74f5f75",
+      "source": "ArtSource/SportsUI/Painted/guard.png",
+      "sha256": "81669ecab1244aa1fae60cd1103a405e6669fce6c606612b8e8000b07f284090",
       "cell": 9
     },
     {
       "name": "jump",
-      "source": "Docs/BasketballUI/icons/jump.svg",
-      "sha256": "8989fa8585a1b6b2788d737cecfd7f786ccaaa10da24923a29e27b5bf264b900",
+      "source": "ArtSource/SportsUI/Painted/jump.png",
+      "sha256": "aee3c6a33b8a21d17612ade111d5bf4baef7194c8ddf1b6715b7216b73e3eb9b",
       "cell": 10
     },
     {
       "name": "move",
-      "source": "Docs/BasketballUI/icons/move.svg",
-      "sha256": "c1fcc64b8d0c57ee74ef80b8e76242c12b99030925be0ef58ed88039b94b2ae6",
+      "source": "Docs/SportsUI/color-icons/move.svg",
+      "sha256": "ed98dd3ff263fd250d61a6115efa45725478914e5f8dbbcaf6e145b94f6e309d",
       "cell": 11
     },
     {
       "name": "pass",
-      "source": "Docs/BasketballUI/icons/pass.svg",
-      "sha256": "d147994432ff3327db4881f85faadef9db21d749a83e940a6a5e5ccf43870e49",
+      "source": "ArtSource/SportsUI/Painted/pass.png",
+      "sha256": "2dc4609321287629da5b2633eabcde4e5e736ca20ddf3a2a71b2fac06b2dc825",
       "cell": 12
     },
     {
       "name": "points",
-      "source": "Docs/BasketballUI/icons/points.svg",
-      "sha256": "0f3e3fedf3d3411238cfc5520172634ae4246d5772657d873a50c69443ff034b",
+      "source": "Docs/SportsUI/color-icons/points.svg",
+      "sha256": "18bf34170629d012ef6459ba57098393b690a027b6bb787d0c058c27d6eaba47",
       "cell": 13
     },
     {
       "name": "shoot",
-      "source": "Docs/BasketballUI/icons/shoot.svg",
-      "sha256": "4dfb387f039bc5fcfebf6f3b0c8535e3a805c51d9fd23d1727895eeb129f8efb",
+      "source": "ArtSource/SportsUI/Painted/basketball.png",
+      "sha256": "565d95234a553ed75b43af9e3d626581069149fde36a8b6880149f57d4ce13c9",
       "cell": 14
     },
     {
       "name": "steal",
-      "source": "Docs/BasketballUI/icons/steal.svg",
-      "sha256": "c465b05a4634f4e05ce59e9ef17d4294a132beb2fa5144e0067db939b80c2a11",
+      "source": "ArtSource/SportsUI/Painted/steal.png",
+      "sha256": "810131a1d978307d67aec05db6a101e5d9ce1e29412811e8f8a60b2f03b35322",
       "cell": 15
     }
   ]

@@ -1,5 +1,7 @@
 # Basketball UI proposal — Hold, slide, release
 
+**Current icon/font update:** [Sports UI refresh](../SportsUI/README.md) uses polished full-colour game artwork and clean Manrope lettering in the game. This page retains the earlier layout and interaction reference.
+
 11 October 2026 · Revision 2, with playtest fixes · **Approved design implemented in the basketball HUD.**
 
 Open [the interactive proposal](proposal.html). Choose a possession or gesture

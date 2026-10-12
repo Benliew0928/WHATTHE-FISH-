@@ -1,0 +1,877 @@
+{
+  "base": "Repository root",
+  "approval": "User: All approve; 12 October 2026",
+  "selection": "All 80 approved clips. Alternate kick and trail steps join the shot/run variation banks; 25 shared clips referenced in place.",
+  "files": [
+    {
+      "cue": "kick-light",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-light-01.wav",
+      "sha256": "7a2024a61ebbb4f2b8af54d7042e392033d9f6f12c1c2e7b4f2f18d4505c358f",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Trims 0.018\u20130.400 and 0.165\u20130.490 s; reduced high end and tail; mono 32 kHz; peak 0.27",
+      "duration": 0.382,
+      "shared": false
+    },
+    {
+      "cue": "kick-light",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-light-02.wav",
+      "sha256": "9dafa2775fd00e9f67eb2530827c2eef2773cf1dd212a5d4e5f88d8bb91646fa",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Trims 0.018\u20130.400 and 0.165\u20130.490 s; reduced high end and tail; mono 32 kHz; peak 0.27",
+      "duration": 0.325,
+      "shared": false
+    },
+    {
+      "cue": "kick-shot",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-shot-01.wav",
+      "sha256": "18d5440f48dad11215dffd563d2fa27927d525a11ddd2163a7bf08d74862f53a",
+      "sources": [
+        "kick"
+      ],
+      "processing": "Trim 0.018\u20130.400 s; 55 Hz high-pass / 7.5 kHz low-pass; tail damping; resampling factors 1, 1.035, 0.97",
+      "duration": 0.382,
+      "shared": false
+    },
+    {
+      "cue": "kick-shot",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-shot-02.wav",
+      "sha256": "35b7dc603a749876535540443195ce5a1b8926ddca09b978759852e307a74e06",
+      "sources": [
+        "kick"
+      ],
+      "processing": "Trim 0.018\u20130.400 s; 55 Hz high-pass / 7.5 kHz low-pass; tail damping; resampling factors 1, 1.035, 0.97",
+      "duration": 0.3954,
+      "shared": false
+    },
+    {
+      "cue": "kick-shot",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-shot-03.wav",
+      "sha256": "f990f4bf40de114d6becfecb6d4ee999491bcd42a14affa287fe126e091077d8",
+      "sources": [
+        "kick"
+      ],
+      "processing": "Trim 0.018\u20130.400 s; 55 Hz high-pass / 7.5 kHz low-pass; tail damping; resampling factors 1, 1.035, 0.97",
+      "duration": 0.3705,
+      "shared": false
+    },
+    {
+      "cue": "kick-alt",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-alt-01.wav",
+      "sha256": "902c6e8100345429ebe7aef5fa699ffc7652ca1ab79a693733f99cedc9805e86",
+      "sources": [
+        "kick_alt",
+        "pillow"
+      ],
+      "processing": "Trims 0.165\u20130.490 and 3.900\u20134.240 s; filtered/damped; matched peak for comparison",
+      "duration": 0.325,
+      "shared": false
+    },
+    {
+      "cue": "kick-alt",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kick-alt-02.wav",
+      "sha256": "e1331399a5915f68e138ee405afab2b1b8bd44c229ff375c8856092568c3d239",
+      "sources": [
+        "kick_alt",
+        "pillow"
+      ],
+      "processing": "Trims 0.165\u20130.490 and 3.900\u20134.240 s; filtered/damped; matched peak for comparison",
+      "duration": 0.34,
+      "shared": false
+    },
+    {
+      "cue": "dribble-touch",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/dribble-touch-01.wav",
+      "sha256": "5b196c2f2bf6db4c57f7179884db18cac1d10afcfaf2fcba6f65400c49240da7",
+      "sources": [
+        "kick"
+      ],
+      "processing": "Main kick trimmed to 160 ms with short fade, darker filtering and reduced level",
+      "duration": 0.16,
+      "shared": false
+    },
+    {
+      "cue": "dribble-touch",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/dribble-touch-02.wav",
+      "sha256": "caf51dd58815c7941bc08e1de2943d252634d2504e8770e9591ca08625d80821",
+      "sources": [
+        "kick"
+      ],
+      "processing": "Main kick trimmed to 160 ms with short fade, darker filtering and reduced level",
+      "duration": 0.16,
+      "shared": false
+    },
+    {
+      "cue": "dribble-touch",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/dribble-touch-03.wav",
+      "sha256": "17eead64977c9ba90aaa107ebdf93724c5a355f90cd97af07864dd1a3e82ba84",
+      "sources": [
+        "kick"
+      ],
+      "processing": "Main kick trimmed to 160 ms with short fade, darker filtering and reduced level",
+      "duration": 0.16,
+      "shared": false
+    },
+    {
+      "cue": "receive",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/receive-01.wav",
+      "sha256": "bd919a7ea1efbe3730dc3b3fe1b590a2f55c2faeedd66d0d873d8e18407ccccd",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Kick source trims filtered to 3.3 kHz, shortened to 0.20\u20130.21 s; reduced level",
+      "duration": 0.21,
+      "shared": false
+    },
+    {
+      "cue": "receive",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/receive-02.wav",
+      "sha256": "69a47cc3273a417a8f3b0235de075808abcf440797b1fccc767e19a76dd0188e",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Kick source trims filtered to 3.3 kHz, shortened to 0.20\u20130.21 s; reduced level",
+      "duration": 0.2,
+      "shared": false
+    },
+    {
+      "cue": "turf-bounce",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-bounce-01.wav",
+      "sha256": "1f9fce8f284ef1c6ba8c05bb22dec880b1d6152721828d35c842fc833291fd3b",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Original damped ball resonance and noise, plus low-level grass footsteps; three deterministic variations",
+      "duration": 0.32,
+      "shared": false
+    },
+    {
+      "cue": "turf-bounce",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-bounce-02.wav",
+      "sha256": "6240be3bb9c15d96f1c554f5bd5c20e26201e1df0e5bd58ebfa89d02d7ced146",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Original damped ball resonance and noise, plus low-level grass footsteps; three deterministic variations",
+      "duration": 0.32,
+      "shared": false
+    },
+    {
+      "cue": "turf-bounce",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-bounce-03.wav",
+      "sha256": "368f7bd6418d4c72c77a7f88ce4af09b5e8a1133c767172f7638bac37963703d",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Original damped ball resonance and noise, plus low-level grass footsteps; three deterministic variations",
+      "duration": 0.32,
+      "shared": false
+    },
+    {
+      "cue": "turf-roll",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-roll-01.wav",
+      "sha256": "f0e601a9759b9700b551c3551d95b49c9169bd9fc4253aaec47800938449b693",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 2.0,
+      "shared": false
+    },
+    {
+      "cue": "goal-post",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/goal-post-01.wav",
+      "sha256": "d78124993e14386b1db85b5daa8911d3f477e61c8f0deee7f38576b3ae90e361",
+      "sources": [
+        "pipe",
+        "kick"
+      ],
+      "processing": "Pipe 0\u20130.540 s plus selected kick; second variant is original modal synthesis. Neither is a direct goal-post recording.",
+      "duration": 0.62,
+      "shared": false
+    },
+    {
+      "cue": "goal-post",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/goal-post-02.wav",
+      "sha256": "319f746f17acd87382ed0ebbe7f3306d080de0f88ee2bf84a359637cc036f09d",
+      "sources": [
+        "pipe",
+        "kick"
+      ],
+      "processing": "Pipe 0\u20130.540 s plus selected kick; second variant is original modal synthesis. Neither is a direct goal-post recording.",
+      "duration": 0.62,
+      "shared": false
+    },
+    {
+      "cue": "goal-net",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/goal-net-01.wav",
+      "sha256": "1c61774cd079f9f478459aea4a79d640566cf97cb0c73eaa137afa71773673a8",
+      "sources": [
+        "net"
+      ],
+      "processing": "Trim 0.018\u20130.650 s; 140 Hz high-pass, 9.5 kHz low-pass; damp tail and fade",
+      "duration": 0.632,
+      "shared": false
+    },
+    {
+      "cue": "net-brush-football",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/net-brush-football-01.wav",
+      "sha256": "194f09318b9082dde5071e7b79fc40296d277c333bf5d4bc90baae7aacdfdcb1",
+      "sources": [
+        "net"
+      ],
+      "processing": "Same football net trim with softer filtering and lower gain",
+      "duration": 0.632,
+      "shared": false
+    },
+    {
+      "cue": "deflection",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/deflection-01.wav",
+      "sha256": "14220c33b546d31c1bc94dc68da332042b4c8b5152d36716e1d7ec354906e88f",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Recorded kick transients filtered to 2.7 kHz, shorter tails, lower level",
+      "duration": 0.382,
+      "shared": false
+    },
+    {
+      "cue": "deflection",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/deflection-02.wav",
+      "sha256": "c84bb220aac505006a0ece0a90bb5a5995f12e4a3338d882865d8e9ac44ce9a7",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Recorded kick transients filtered to 2.7 kHz, shorter tails, lower level",
+      "duration": 0.325,
+      "shared": false
+    },
+    {
+      "cue": "boundary",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/boundary-01.wav",
+      "sha256": "ddfea09fcb9aa2af701aad272bde03a6234ef98e419440497e90e19509740dfc",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.3,
+      "shared": true
+    },
+    {
+      "cue": "grass-walk",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-walk-01.wav",
+      "sha256": "9573847044b5d15fcd67d63a0f04710b359d230478e8085a60071610d960d1c4",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Trims [(0.015, 0.39), (0.71, 1.1), (1.405, 1.815), (2.19, 2.6)]; 110 Hz high-pass, 7.2 kHz low-pass; mono and fades",
+      "duration": 0.375,
+      "shared": false
+    },
+    {
+      "cue": "grass-walk",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-walk-02.wav",
+      "sha256": "369261131d3cc892ae27ee62311d8fb63273e9049d4446c6d53dddb0b81294f1",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Trims [(0.015, 0.39), (0.71, 1.1), (1.405, 1.815), (2.19, 2.6)]; 110 Hz high-pass, 7.2 kHz low-pass; mono and fades",
+      "duration": 0.39,
+      "shared": false
+    },
+    {
+      "cue": "grass-walk",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-walk-03.wav",
+      "sha256": "45292b7b8a54b91627e850320a034d64c3c34f7bc086f06f548a1583dfcb8291",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Trims [(0.015, 0.39), (0.71, 1.1), (1.405, 1.815), (2.19, 2.6)]; 110 Hz high-pass, 7.2 kHz low-pass; mono and fades",
+      "duration": 0.41,
+      "shared": false
+    },
+    {
+      "cue": "grass-walk",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-walk-04.wav",
+      "sha256": "d38a0dfd5cfadb8bba347c2bf0290b64c38a58747f5fae7649418ae22f353a16",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Trims [(0.015, 0.39), (0.71, 1.1), (1.405, 1.815), (2.19, 2.6)]; 110 Hz high-pass, 7.2 kHz low-pass; mono and fades",
+      "duration": 0.41,
+      "shared": false
+    },
+    {
+      "cue": "grass-run",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-run-01.wav",
+      "sha256": "b4a17007534d081a804ded5d25b9b33c98c288570163a60e94f9a3bcdc0e4574",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Walking-source trims shortened by resampling factor 0.83 and layered with a quiet low thud",
+      "duration": 0.33,
+      "shared": false
+    },
+    {
+      "cue": "grass-run",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-run-02.wav",
+      "sha256": "645f83bc12f0bd3857a489f758e8c2bb7a37f5cbd6e24c042ea9691a163317b0",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Walking-source trims shortened by resampling factor 0.83 and layered with a quiet low thud",
+      "duration": 0.33,
+      "shared": false
+    },
+    {
+      "cue": "grass-run",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-run-03.wav",
+      "sha256": "bacb831464546610984f73e171b1259e0d9692e101df1100bca2d8ed441233b0",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Walking-source trims shortened by resampling factor 0.83 and layered with a quiet low thud",
+      "duration": 0.33,
+      "shared": false
+    },
+    {
+      "cue": "grass-run",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-run-04.wav",
+      "sha256": "098fe278b17e460eca54b102e4b027582516538ae12cc55654b5186f887aafa1",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Walking-source trims shortened by resampling factor 0.83 and layered with a quiet low thud",
+      "duration": 0.33,
+      "shared": false
+    },
+    {
+      "cue": "trail-alt",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/trail-alt-01.wav",
+      "sha256": "08a0314098bfc08c4ca19ce1f6622791506d663db5ebb88b32a0ed813ec5ddef",
+      "sources": [
+        "trail"
+      ],
+      "processing": "Trims 0\u20130.400, 0.580\u20130.970, 1.210\u20131.580 s; filtered and faded",
+      "duration": 0.4,
+      "shared": false
+    },
+    {
+      "cue": "trail-alt",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/trail-alt-02.wav",
+      "sha256": "70fb2810147a8e87b8685acf0fa764041bcee9009ad48e17d62b962a68382f9a",
+      "sources": [
+        "trail"
+      ],
+      "processing": "Trims 0\u20130.400, 0.580\u20130.970, 1.210\u20131.580 s; filtered and faded",
+      "duration": 0.39,
+      "shared": false
+    },
+    {
+      "cue": "trail-alt",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/trail-alt-03.wav",
+      "sha256": "5f30f2969bc24ced8d6da1af4dd4ff1ce8ac48445adfea9fef78bd623b07d047",
+      "sources": [
+        "trail"
+      ],
+      "processing": "Trims 0\u20130.400, 0.580\u20130.970, 1.210\u20131.580 s; filtered and faded",
+      "duration": 0.37,
+      "shared": false
+    },
+    {
+      "cue": "grass-cut",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-cut-01.wav",
+      "sha256": "901131a7b0b7d85a6072af92538ac01120df48a68f2e38b069acba3310af53a6",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Filtered friction noise with grass footstep layer and a 260 ms envelope",
+      "duration": 0.26,
+      "shared": false
+    },
+    {
+      "cue": "grass-cut",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/grass-cut-02.wav",
+      "sha256": "b9dc68562d7e9932e528c2417333bfafdb3d28beaacb892f2049ab902bf978e6",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Filtered friction noise with grass footstep layer and a 260 ms envelope",
+      "duration": 0.26,
+      "shared": false
+    },
+    {
+      "cue": "tackle-slide",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/tackle-slide-01.wav",
+      "sha256": "4519f4dbbce4e3da6aeb2032bbd065e598da129a2a85d0c1a0a4d333377dc6b5",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Short grass friction envelope + recorded footstep onset; no collision baked into slide",
+      "duration": 0.43,
+      "shared": false
+    },
+    {
+      "cue": "tackle-slide",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/tackle-slide-02.wav",
+      "sha256": "194ac31bd2674e1ec476d2233dd9c98ec7de5c5cb0dab65fb6a1397c8c94e18b",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Short grass friction envelope + recorded footstep onset; no collision baked into slide",
+      "duration": 0.43,
+      "shared": false
+    },
+    {
+      "cue": "body",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/body-01.wav",
+      "sha256": "eb68a7ecba21244642c657fb3a9fb5f578e44c0e4af6208fe5a07c3aba903bf0",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.23,
+      "shared": true
+    },
+    {
+      "cue": "turf-fall",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-fall-01.wav",
+      "sha256": "21826a8e66644e40ffbc131dd4ecf1bec9ff6e41c58b2ac7bf10a7c740573cc0",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Grass layer, damped low tone and fabric-like noise; no human vocalization",
+      "duration": 0.52,
+      "shared": false
+    },
+    {
+      "cue": "turf-fall",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-fall-02.wav",
+      "sha256": "1bca510a90f222e77a410a6225282025a86393114014c4d3045eda60ad227a74",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Grass layer, damped low tone and fabric-like noise; no human vocalization",
+      "duration": 0.52,
+      "shared": false
+    },
+    {
+      "cue": "turf-land",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-land-01.wav",
+      "sha256": "dcff16088e28891f9a85bf80392a77cb334a234bd6dd5ec71dcdde61e3eb461d",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Paired grass footstep trims at 45/50 ms spacing with short final fade",
+      "duration": 0.4,
+      "shared": false
+    },
+    {
+      "cue": "turf-land",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/turf-land-02.wav",
+      "sha256": "40aa83c99053823ceb17e4b75fb92c8c7f01b98f9a1222d8784cca525fd0ebf6",
+      "sources": [
+        "grass"
+      ],
+      "processing": "Paired grass footstep trims at 45/50 ms spacing with short final fade",
+      "duration": 0.4,
+      "shared": false
+    },
+    {
+      "cue": "cloth",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/cloth-01.wav",
+      "sha256": "b57f1d90e1bd8d6d229543152a16cdb2822855ea98e969d11fbe64bea00c87e2",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.25,
+      "shared": true
+    },
+    {
+      "cue": "swipe",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/swipe-01.wav",
+      "sha256": "75a5f838a36d4438f37734c75f71030c47d323e74262a8bdd4665ba14d8d7879",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.2,
+      "shared": true
+    },
+    {
+      "cue": "dash-start",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/dash-start-01.wav",
+      "sha256": "25691040e929ac1d2a134d0c691073e687447d76565e2f0df917a478bacb24b5",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.22,
+      "shared": false
+    },
+    {
+      "cue": "stamina-empty",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/stamina-empty-01.wav",
+      "sha256": "cd6c1bd56203f2470f4a6bb46254ccb6f3cd45fa886ca879552ca83f9f890f76",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.28,
+      "shared": false
+    },
+    {
+      "cue": "stamina-ready",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/stamina-ready-01.wav",
+      "sha256": "57a60785e9cce59df49e54c185d7e70f60d9e3b1d6df7600ba2173e74a928d83",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.25,
+      "shared": false
+    },
+    {
+      "cue": "countdown",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/countdown-01.wav",
+      "sha256": "bfc299cf5c1ba9ea4db89d3526914bd0c186396d35044d8d6fea25bcc75d050e",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.13,
+      "shared": true
+    },
+    {
+      "cue": "spawn",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/spawn-01.wav",
+      "sha256": "882863054187f0e776dfc7c792aeccc3917acb73ff4f9e9e3068d04e1e4acd87",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.55,
+      "shared": true
+    },
+    {
+      "cue": "pickup",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/pickup-01.wav",
+      "sha256": "fa2134a155a8a299ae17d3da7a590800e8d42f3c0309f1f7bcecc607c0fc7ea8",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.4,
+      "shared": true
+    },
+    {
+      "cue": "turbo-start",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/turbo-start-01.wav",
+      "sha256": "e3e91c13b9c89e048bd6755239d7acdca24b2076fc27b3b61c0eaa8dd6062974",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.48,
+      "shared": true
+    },
+    {
+      "cue": "turbo-loop",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/turbo-loop-01.wav",
+      "sha256": "395dac26d735761e04f9b42ee31c5b04e11fff1029f2d4225314bd48ab503920",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 2.0,
+      "shared": true
+    },
+    {
+      "cue": "turbo-end",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/turbo-end-01.wav",
+      "sha256": "33a59ab42be6292970221a3a05170efa621b6c164e5b4d66faf23beb94f1aff4",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.3,
+      "shared": true
+    },
+    {
+      "cue": "portal-open",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-open-01.wav",
+      "sha256": "e838164e5f2e89805a7a22ba6ae368349056145a7182e5d8f253696f95e98ff9",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.42,
+      "shared": true
+    },
+    {
+      "cue": "portal-in",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-in-01.wav",
+      "sha256": "334031caf09b1d696b0747309f67ff8ca911d32eb5aef4715e3306846af16c51",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.25,
+      "shared": true
+    },
+    {
+      "cue": "portal-out",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-out-01.wav",
+      "sha256": "0a6f3265c2ef9323a14125633cea498fa53604cbb0e29a5acfa5e806ed321753",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.28,
+      "shared": true
+    },
+    {
+      "cue": "portal-close",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-close-01.wav",
+      "sha256": "6c993c30775bb3c5eeb20790f562ed60678d3e0535581b2de9528939f032559a",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.22,
+      "shared": true
+    },
+    {
+      "cue": "interrupt",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/interrupt-01.wav",
+      "sha256": "2fd0088152728942d67906bcb0e6ae2f99e3eb35d5d4426aadc594b2b5654163",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.32,
+      "shared": true
+    },
+    {
+      "cue": "wall-preview",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/wall-preview-01.wav",
+      "sha256": "d2c96a85845001aeddae16b0415c53bae3278711f89ac2f68681ba92f36eb500",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.3,
+      "shared": false
+    },
+    {
+      "cue": "wall-place",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/wall-place-01.wav",
+      "sha256": "24136c52ba680c68c2a3f9e69ad5afc987552fa4848f253f58ba4630eee5e446",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.72,
+      "shared": false
+    },
+    {
+      "cue": "wall-hit",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/wall-hit-01.wav",
+      "sha256": "ab5efcf8683dfa9c461036a61538a4d295a48494fcc375cfca94c4cafbec97b2",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Recorded football kick layer plus original modal barrier resonance; two takes",
+      "duration": 0.44,
+      "shared": false
+    },
+    {
+      "cue": "wall-hit",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/wall-hit-02.wav",
+      "sha256": "d0a52a6c72ec99f2d0858c3585f3e82726c22322d12fd5ec68fe6c68c60ec91c",
+      "sources": [
+        "kick",
+        "kick_alt"
+      ],
+      "processing": "Recorded football kick layer plus original modal barrier resonance; two takes",
+      "duration": 0.44,
+      "shared": false
+    },
+    {
+      "cue": "wall-expire",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/wall-expire-01.wav",
+      "sha256": "9698ca85dc1b3ebb7111d25f29f5c8a88118c8dbe23d40669b14875cc5903daa",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.46,
+      "shared": false
+    },
+    {
+      "cue": "kickoff-whistle",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/kickoff-whistle-01.wav",
+      "sha256": "1fc2e636a21045402ee0506ebb6e4d5820e192b5ca62e8bc387d81e6a76e230a",
+      "sources": [
+        "whistle"
+      ],
+      "processing": "Trim 0.220\u20130.740 s; 1.2 kHz high-pass, 7.6 kHz low-pass; softened attack/tail",
+      "duration": 0.52,
+      "shared": false
+    },
+    {
+      "cue": "final-whistle",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/final-whistle-01.wav",
+      "sha256": "a6837bbd709bbe04ec3f821f0459158eea3242753184f1842c57dad2db4e2506",
+      "sources": [
+        "whistle"
+      ],
+      "processing": "Same single whistle recording edited into three blasts; 1.17 s total",
+      "duration": 1.17,
+      "shared": false
+    },
+    {
+      "cue": "score",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/score-01.wav",
+      "sha256": "22f0115b95a2c53c511c46f871ea486d50662be66730090fc45bb5b69d7ca158",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.4,
+      "shared": true
+    },
+    {
+      "cue": "overtime",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/overtime-01.wav",
+      "sha256": "898ff78c55723133448136ab8d1abb585d6bc0c70bf7422a1d511a6b11a40f9f",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.75,
+      "shared": false
+    },
+    {
+      "cue": "result-win",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/result-win-01.wav",
+      "sha256": "98b2778c2185f3a6574f37a2d20e901b258d2733297fd6ea4f9c7918569f601a",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 1.05,
+      "shared": false
+    },
+    {
+      "cue": "result-loss",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/result-loss-01.wav",
+      "sha256": "e4b9a46d518578e67201ba4d8344df9a44edff7d86f01a4c4db2c78ee65bbd79",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.85,
+      "shared": false
+    },
+    {
+      "cue": "result-draw",
+      "file": "Game/Assets/_Game/Resources/FootballAudio/result-draw-01.wav",
+      "sha256": "93ba928d2737bfb7d4e4344e7bceb5c9ebb2babe440786c98690e78dfc0d4726",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.85,
+      "shared": false
+    },
+    {
+      "cue": "air",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/air-01.wav",
+      "sha256": "8135ebbc92269a50f6d58b739a29af6a8361f2f6865eea082fffe2316a77f60d",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 12.0,
+      "shared": true
+    },
+    {
+      "cue": "ui-click",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-click-01.wav",
+      "sha256": "ca80934658fa01380c9a3cc8f171af1b2b8a807fde63d4f8b76e5809f74d9891",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.007125,
+      "shared": true
+    },
+    {
+      "cue": "ui-confirm",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-confirm-01.wav",
+      "sha256": "f9beddd5a96ebba4548fa3749e3ad1c10dae1c37d7a310be7182f684d0625182",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.28984375,
+      "shared": true
+    },
+    {
+      "cue": "ui-back",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-back-01.wav",
+      "sha256": "6bc92ce1cfbe0387a8435b55756792b9c2fb79dd90475f420d157479780b03cd",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.061,
+      "shared": true
+    },
+    {
+      "cue": "ui-toggle",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-toggle-01.wav",
+      "sha256": "576087496fc141ec75337574e2d8f1383781d0952169a3ab36cf5dbc84e9bd9b",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.6080625,
+      "shared": true
+    },
+    {
+      "cue": "ui-select",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-select-01.wav",
+      "sha256": "7df5961ab58dd6b005ccfb1e38352f744b2e76625067ad5619132ae9b3d690fa",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.04040625,
+      "shared": true
+    },
+    {
+      "cue": "ui-error",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-error-01.wav",
+      "sha256": "af96108fa61cdf54097f3fa4209d60a9c1e3491d9ed740c1f5daf233b5617d80",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.16546875,
+      "shared": true
+    },
+    {
+      "cue": "ui-open",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-open-01.wav",
+      "sha256": "17399b94c947460c73ccb8f31ada49814cf42cd2d6cea359c6a67c15771a4f10",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.14778125,
+      "shared": true
+    },
+    {
+      "cue": "ui-close",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-close-01.wav",
+      "sha256": "434ca94329aceb2f6e98ae9ed0a79aa82327352ca8364251018c3864aba75528",
+      "sources": [
+        "shared-bank"
+      ],
+      "processing": "Byte-identical approved WAVs; no gain, pitch or duration change. Reuse the same assets after approval.",
+      "duration": 0.14778125,
+      "shared": true
+    }
+  ]
+}

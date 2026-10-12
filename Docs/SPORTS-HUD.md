@@ -1,5 +1,10 @@
 # Team controls and pocket maps
 
+Basketball and football now share [full-colour cartoon artwork and Manrope
+typography](SportsUI/README.md) across controls, scores, settings and guides.
+The existing cream/pastel frames and gesture layouts remain. Basketball volume
+thumbs are round and stay inside their tracks, leaving label space clear.
+
 Football and basketball use team possession to choose the action buttons.
 Your team holding the ball means attack; an opponent holding it or a loose
 ball means defense. The action slots keep their positions. Switching roles
@@ -8,7 +13,7 @@ press, and updates its label and availability in the same frame.
 
 | Sport | Attack | Defense | Always available when gameplay permits |
 | --- | --- | --- | --- |
-| Football | Kick, hold/release F | Pressure, hold Q; Tackle, E | Dash, left Ctrl; Jump; Camera |
+| Football | Kick: hold, slide, release | Hold Pressure; tap Tackle | Dash; Jump; held ability; camera inside Settings |
 | Basketball | Shoot / Pass: hold, slide, release | Block; hold Guard / Steal | Jump / Jump Block; camera inside Settings |
 
 Attack teammates see offensive controls, but only the carrier can shoot or
@@ -22,7 +27,14 @@ squads A and B by stable network join ID. Teams do not reshuffle when someone
 leaves; all peers derive the same assignment. Solo practice remains playable.
 Basketball's shared practice score remains shared; a team score/timed basketball
 match is outside this HUD change. Teammates cannot steal, block or apply shot
-pressure to one another. Use matching **protocol 44** players.
+pressure to one another. Use matching **protocol 46** players, including the
+[approved football audio](FOOTBALL-AUDIO.md).
+
+Football's illustrated ability slot sits beside Dash. Tap (or press G) for
+Team Turbo or Portal Steal; Wall opens a placement preview with Place and Cancel.
+The slot is single-use and replaced by a new pickup. Team effect timers appear
+below the scoreboard. See [football abilities](FOOTBALL-ABILITIES.md) for the
+five-second spawn countdown, team restrictions and wall collision rules.
 
 ## Pocket maps
 
@@ -40,21 +52,21 @@ prevents flickering at the screen boundary. The arrow uses native UI geometry
 and the existing font; it adds no bitmap assets. See the
 [camera behaviour and checks](STADIUM-CAMERA.md).
 
-Football uses a **204 × 114** board at bottom centre. Basketball uses a
+Football uses a **125 × 75** rounded navy map at the upper left of its
+800 × 450 design space. Basketball uses a
 **102 × 62** rounded navy court map at the top-left of its 800 × 450 layout.
 Neither map has headings, legends or portraits.
 
 - **Blue `#2788ED`: your team. Red `#EC575D`: opponents.** These colours are
   relative to the local player, independent of squad letter or outfit.
 - Your marker has a white ring. The ball is white in football and gold in
-  basketball. Basketball opponents use triangles; teammates use circles.
+  basketball. Opponents use triangles; teammates use circles.
 - Every active player appears, including players outside the camera view.
   Off-field positions clamp to the map edge; in-transit/inactive actors hide.
 - The map uses the arena's local coordinates, with the long axis horizontal.
   Markers refresh at 12.5 Hz. It never intercepts movement or look touches.
-- The local football stamina meter and control hint sit above the map.
-  Station directions sit below the upper-left status; the station's travel
-  card moves above the map when visiting a football or basketball station.
+- Football stamina sits directly below Dash. Permanent station distance and
+  control hints are removed; travel controls still appear when visiting a station.
 
 ## Button treatment
 
@@ -75,20 +87,20 @@ it. The other movement thumb stays usable. Menus clear pending actions and block
 local input, while room play continues.
 
 
-Football uses plain text controls in a round
-cluster near the right thumb. Primary actions are 160 units across; supporting
-actions are 132–138 units. Utility and Sky-Sail controls use rounded pills.
- Short labels show the
-action and keyboard key (or Hold on mobile for sustained actions).
+Football implements the approved [Touchline design](FootballUI/README.md):
+108-unit round gold Kick / sky Pressure, 80-unit mint Dash with its stamina
+meter, cream Jump and sky Tackle. A regular top-right gear opens Camera,
+Controls / Rules / Stamina and a separate leave confirmation. Labels contain
+no desktop keys. The score strip keeps actual phases, team choice and host start.
 
-Pressing compresses the visual to 91% and releasing gives a small bounce.
-The invisible touch target stays full-sized throughout the animation, so a
-finger near its edge is not cancelled by the shrinking face. Hover, keyboard
-focus and disabled states also receive feedback; reduced-motion preferences
-suppress scaling. Offensive shared slots use gold and defensive slots use
-sky blue. Existing hold, swipe and cancel gestures remain intact.
-The special Chinese cart/aim font is preserved. This generic control skin uses
-existing fonts and generated UI geometry.
+Holding Kick shows a 270-degree power arc and a faint path to a coral landing.
+The original finger keeps the charge; only release in Cancel cancels. Sliding
+back keeps power, and full charge holds without auto-fire. Joystick input stays
+independent. Menus, interrupted touches, resizing and role changes clear holds.
+Existing football aim rails and launch rules remain intact. Frames and feedback
+reuse native geometry; one 512 × 256 atlas adds the approved football icons.
+The fixed hit rectangle does not move when its artwork depresses.
+
 
 Golf uses the selected **A** cream/navy/gold stickers, **C** scorecard column
 lines and **B** framed hold/release hint with a native **!**. Its illustrated
@@ -116,12 +128,14 @@ See [rules, counterplay and multiplayer behavior](BASKETBALL-PROPS.md).
 
 ## Verification entry points
 
-`Tools/Build/Test-SportsHud.ps1 -Capture` checks all four sports, possession
-changes, touch cancellation, map bounds and styling. `-Mode Local` starts
-three basketball peers to verify the carrier, teammate and opponent views.
-Use `-Width` and `-Height` for alternate landscape aspect ratios. The default
-player is resolved relative to the script's repository, independent of the
-shell's working directory. Logs and images stay in ignored `Builds/SportsHudQA/`.
+Current illustrated controls are verified with `Tools/Build/Test-FootballUI.ps1`
+and `Tools/Build/Test-BasketballUI.ps1`, using `-PlayerPath` for the intended
+player. Football match/physics and effort suites cover gameplay and local
+host/guest behavior. Their source-relative paths work independently of the
+caller's directory; logs and captures stay under ignored Builds.
+
+The older generic-skin expectations in `Test-SportsHud.ps1` predate both
+illustrated court HUDs. Use the current dedicated reviews for visual qualification.
 
 See [verification](VERIFICATION.md), [APK measurements](BUILD-SIZE.md), and
 [packing audit](APK-SIZE-AUDIT.md) for the measured delivery and remaining limits.

@@ -13,6 +13,17 @@ Shader "WhatTheFish/Basketball Prop Effect" {
  V vert(A v){V o;o.p=TransformObjectToHClip(v.p.xyz);o.uv=v.uv;o.normal=TransformObjectToWorldNormal(v.normal);o.world=TransformObjectToWorld(v.p.xyz);return o;}
  half4 frag(V i):SV_Target {
   float2 p=(i.uv-.5)*2;float r=length(p),a=atan2(p.y,p.x);float edge=1-smoothstep(.88,1,r);
+  if(_Mode>6.5){
+   float hex=max(abs(p.x)*.866025+abs(p.y)*.5,abs(p.y));float rim=exp(-pow((hex-.76)*24,2));
+   float swirl=pow(saturate(sin(a*3+r*22-_Time.y*6)),12)*smoothstep(.15,.80,r);
+   return half4(lerp(float3(.002,.004,.015),_Tint.rgb,saturate(rim+swirl*.35)),(1-smoothstep(.89,.97,hex))*.98);
+  }
+  if(_Mode>5.5){
+   float border=1-smoothstep(.008,.030,min(min(i.uv.x,1-i.uv.x),min(i.uv.y,1-i.uv.y)));
+   float scan=pow(.5+.5*sin(i.world.y*11-_Time.y*2),18)*.12;
+   float glint=pow(saturate(1-abs(i.uv.x+i.uv.y*1.7-frac(_Time.y*.08)*3)),24)*.16;
+   return half4(lerp(_Tint.rgb,float3(.72,.97,1),border*.8),min(.85,_Tint.a+border*.32+scan+glint));
+  }
   if(_Mode>3.5&&_Mode<4.5){
    float scan=.5+.5*sin(i.world.y*110-_Time.y*7);float rim=pow(1-abs(dot(normalize(i.normal),GetWorldSpaceNormalizeViewDir(i.world))),2);
    return half4(lerp(_Tint.rgb,float3(.6,.9,1),rim*.65),_Tint.a*(.56+.15*scan+.15*rim));

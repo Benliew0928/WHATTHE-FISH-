@@ -67,6 +67,7 @@ namespace WhatTheFish {
     ballPosition=field.TransformPoint(center+new Vector3(0,1,-halfSize.z*.8f));yield return new WaitForEndOfFrame();
     Check(Visible(ballPosition,ballSafe),sport+" teleport keeps the new ball visible immediately");yield return Settle();
     Check(Vector3.Distance(cam.transform.position,ballPosition)<(football?90:40),sport+" teleport settles without runaway zoom");
+    if(!football){BasketballBall.Active.ResetHome();Check(!BasketballBall.Active.IsInbound(actor)&&!BasketballBall.Active.PropLocked(actor),"Basketball movement fixture is unrestricted after frozen-ball camera samples");}
     Place(field,center);app.view.stick.value=Vector2.right;var command=app.view.ReadCommand();app.view.stick.value=Vector2.zero;
     var world=Quaternion.Euler(0,command.heading,0)*new Vector3(command.move.x,0,command.move.y);
     Check(Vector3.Dot(world.normalized,cam.transform.right)>.999f,sport+" right input follows presented camera while aim remains independent");
@@ -74,7 +75,7 @@ namespace WhatTheFish {
     world=Quaternion.Euler(0,command.heading,0)*new Vector3(command.move.x,0,command.move.y);
     Check(Vector3.Dot(world.normalized,Vector3.ProjectOnPlane(cam.transform.forward,Vector3.up).normalized)>.999f,sport+" up input moves toward far sideline");
     actor.capsule.enabled=true;var before=actor.transform.position;actor.Simulate(command,.2f);yield return null;
-    Check(Vector3.Dot(actor.transform.position-before,world)>.01f,sport+" real motor accepts stadium movement");
+    Check(Vector3.Dot(actor.transform.position-before,world)>.01f,sport+" real motor accepts stadium movement, displacement="+Vector3.Dot(actor.transform.position-before,world));
     app.view.yaw=43;app.view.pitch=23;app.view.mode=1;yield return Settle();
     Check(!marker.Showing&&!cam.orthographic&&Mathf.Abs(cam.fieldOfView-60)<.01f,sport+" third person restores lens and hides marker");
     app.view.mode=0;yield return Settle();

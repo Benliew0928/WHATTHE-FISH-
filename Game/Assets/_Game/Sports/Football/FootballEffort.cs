@@ -33,7 +33,7 @@ namespace WhatTheFish {
  }
  public static class FootballPressure {
   public const float Reach=2.4f,Containment=.6f;
-  public static bool Eligible(Athlete a)=>a&&a.isActiveAndEnabled&&!a.inTransit&&a.Action==FootballAction.None&&!a.Airborne&&!a.LoadingJump&&a.WhiffRemaining<=0&&FootballBall.Allowed;
+  public static bool Eligible(Athlete a)=>!(FootballBall.Instance&&FootballBall.Instance.PropLocked(a))&&a&&a.isActiveAndEnabled&&!a.inTransit&&a.Action==FootballAction.None&&!a.Airborne&&!a.LoadingJump&&a.WhiffRemaining<=0&&FootballBall.Allowed;
   public static bool Opponents(Athlete a,Athlete b){
    if(!a||!b||a==b)return false;var match=FootballMatch.Instance;
    if(!match||match.Snapshot.phase==FootballMatchPhase.Idle)return true;
