@@ -1,0 +1,47 @@
+[
+  {
+    "file": "soccer-ball.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/soccer-ball-duotone.svg",
+    "sha256": "95c2b16b6bbe07f1b484d0abc87b7dc4d218da022466cd874d000089c64ea466"
+  },
+  {
+    "file": "sneaker-move.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/sneaker-move-duotone.svg",
+    "sha256": "ac0fda6e4f12d9902b1a438d4efc6e83a5f8bc313939e5402231a38bfd2ebc96"
+  },
+  {
+    "file": "shield-chevron.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/shield-chevron-duotone.svg",
+    "sha256": "e147b2f41839ac6d00f9fa97064152865c067871569377d46ed6ebb1756e6757"
+  },
+  {
+    "file": "check.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/check-duotone.svg",
+    "sha256": "581385c1c40e6e618fe35f6ce2c39e81e0aab36a807ec64437424a5f56c8f240"
+  },
+  {
+    "file": "hand-swipe-left.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/hand-swipe-left-duotone.svg",
+    "sha256": "ec78204e8a2a44f94ec2766670b075efbdc395eb7666afa5023d38dad2955929"
+  },
+  {
+    "file": "target.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/target-duotone.svg",
+    "sha256": "f7e6e8cb3ff844db1ac5b65e34257651d7a55f68eb97da574ac369fcc259343f"
+  },
+  {
+    "file": "flag-checkered.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/flag-checkered-duotone.svg",
+    "sha256": "290dc65ec4b671444321ad632d761a265bfe9a8daa3d67016f417fea3b38c846"
+  },
+  {
+    "file": "users-three.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/users-three-duotone.svg",
+    "sha256": "8df43f36d7329c365afa0672e2367af16a7bfc7d8820838dfe7358cce1a76aba"
+  },
+  {
+    "file": "sneaker.svg",
+    "source": "https://raw.githubusercontent.com/phosphor-icons/core/main/assets/duotone/sneaker-duotone.svg",
+    "sha256": "2b4d90f29c3708d4af83fc78c89802fded0a2d53ccf1b2c68f22fb38c17f0a41"
+  }
+]

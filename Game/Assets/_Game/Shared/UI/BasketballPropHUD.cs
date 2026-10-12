@@ -13,7 +13,7 @@ namespace WhatTheFish {
    icon=CoveUI.Image(transform,"Prop illustration",null,10,6,60,45);caption=BasketballUIStyle.Text(transform,"",4,56,72,20,12,true,TextAnchor.MiddleCenter,CoveUI.Cream);
    var count=BasketballUIStyle.Plate(transform,"One use",58,-5,25,25,CoveUI.Gold,12.5f,2);badge=BasketballUIStyle.Text(count.transform,"1",0,0,25,25,13,true,TextAnchor.MiddleCenter);
    progress=CoveUI.Rect(transform,"Ability progress",0,0,80,80).gameObject.AddComponent<BasketballPropProgress>();progress.raycastTarget=false;progress.color=CoveUI.Gold;
-   icons=new[]{null,Resources.Load<Sprite>("BasketballProps/LockOn"),Resources.Load<Sprite>("BasketballProps/Turbo"),Resources.Load<Sprite>("BasketballProps/Portal")};
+   icons=new[]{null,SportsUIStyle.PropIcon(SportsProp.LockOn),SportsUIStyle.PropIcon(SportsProp.Turbo),SportsUIStyle.PropIcon(SportsProp.Portal)};
   }
   public void Activate(){var ball=BasketballBall.Active;var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;var view=PlayerView.Instance;if(view&&!view.InputBlocked&&ball&&ball.PropUnavailable(actor)=="")ball.RequestProp(actor);}
   void LateUpdate(){
@@ -21,7 +21,7 @@ namespace WhatTheFish {
    var slot=ball.PropSlot(actor);var state=ball.Props;bool aiming=state.aiming&&ball.PropActor(state.aimer)==actor,receiving=state.transferring&&ball.PropActor(state.receiver)==actor;float turbo=ball.TurboRemaining(actor);
    var kind=aiming?SportsProp.LockOn:receiving?SportsProp.Portal:slot.kind!=SportsProp.None?slot.kind:turbo>0?SportsProp.Turbo:SportsProp.None;
    bool visible=kind!=SportsProp.None&&!GestureHidden;group.alpha=visible?1:0;group.blocksRaycasts=visible;button.interactable=view&&!view.InputBlocked&&!view.ShotCharging&&!view.PassCharging&&ball.PropUnavailable(actor)=="";
-   icon.sprite=icons[(int)kind];icon.color=button.interactable||aiming||receiving||turbo>0?Color.white:new Color(.7f,.7f,.7f,.8f);
+   icon.sprite=icons[(int)kind];icon.color=button.interactable||aiming||receiving||turbo>0?Color.white:new Color(1,1,1,.76f);
    caption.text=aiming?"Aiming":receiving?"Receiving":kind==SportsProp.LockOn?"Lock-on":kind==SportsProp.Turbo?"Turbo":"Portal";
    badge.text=aiming?Mathf.CeilToInt((float)(state.aimUntil-BasketballMotion.Clock)).ToString():slot.kind==SportsProp.None&&turbo>0?Mathf.CeilToInt(turbo).ToString():"1";
    progress.Set(aiming?Mathf.Clamp01(1-(float)(state.aimUntil-BasketballMotion.Clock)/BasketballPropRules.AimSeconds):receiving?Mathf.Clamp01((float)(BasketballMotion.Clock-state.portalAt)/BasketballPropRules.PortalSeconds):slot.kind==SportsProp.None&&turbo>0?turbo/5:0);

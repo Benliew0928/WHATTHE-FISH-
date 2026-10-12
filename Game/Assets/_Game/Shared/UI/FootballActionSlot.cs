@@ -8,7 +8,7 @@ namespace WhatTheFish {
   public bool Attacking {get;private set;}
   public static void Attach(Transform parent){
    var kick=parent.GetComponentInChildren<KickButton>(true);var slot=kick.gameObject.AddComponent<FootballActionSlot>();slot.kick=kick;
-   slot.pressure=kick.gameObject.AddComponent<FootballEffortButton>();slot.pressure.pressure=true;slot.pressure.button=kick.button;slot.pressure.label=kick.label;slot.pressure.enabled=false;
+   slot.pressure=kick.gameObject.AddComponent<FootballEffortButton>();slot.pressure.pressure=true;slot.pressure.illustrated=kick.illustrated;slot.pressure.button=kick.button;slot.pressure.label=kick.label;slot.pressure.enabled=false;
    slot.tackle=parent.GetComponentInChildren<TackleButton>(true);slot.tackleGroup=slot.tackle.gameObject.AddComponent<CanvasGroup>();
   }
   void Update(){

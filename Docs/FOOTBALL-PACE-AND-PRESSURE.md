@@ -11,7 +11,10 @@ same ball multiplier. An attached ball follows its carrier exactly.
 
 Kick and Pressure now share one possession-aware action slot; Tackle appears
 only on defense. Dash remains available in either role. See the current
-[team controls and pocket maps](SPORTS-HUD.md).
+[team controls and pocket maps](SPORTS-HUD.md). The approved
+[Touchline UI](FootballUI/implementation.md) places stamina directly below
+Dash and moves camera/guidance/leaving into the top-right settings gear.
+The desktop keys below are testing shortcuts, not on-screen button captions.
 
 | Action | Windows | Touch | Behavior |
 | --- | --- | --- | --- |

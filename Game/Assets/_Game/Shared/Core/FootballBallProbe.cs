@@ -251,9 +251,9 @@ namespace WhatTheFish {
    Check(view.Charging,"FAKE_SHOT_OTHER_FINGER_CANNOT_CANCEL_OR_RELEASE");
    finger.position=cancelPoint;kickButton.OnBeginDrag(finger);
    File.AppendAllText(ReportPath,$"CANCEL state charging={view.Charging} aim={aim.enabled} owner={ball.CurrentController==actor} kinematic={ball.Body.isKinematic} point={cancelPoint} contains={RectTransformUtility.RectangleContainsScreenPoint(kickButton.cancelArea,cancelPoint,null)}\n");
-   Check(!view.Charging&&!view.ReadCommand().kick&&!aim.enabled&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_CANCEL_NEVER_RELEASES_BALL");
+   Check(view.Charging&&kickButton.CancelArmed&&!view.ReadCommand().kick&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_CANCEL_ARMS_WITHOUT_RELEASING_BALL");
    finger.position=kickPoint;kickButton.OnDrag(finger);kickButton.OnPointerDown(finger);
-   Check(!view.Charging,"FAKE_SHOT_RETURN_TO_KICK_CANNOT_RESTART_SAME_GESTURE");
+   Check(view.Charging&&!kickButton.CancelArmed,"FAKE_SHOT_RETURN_TO_KICK_PRESERVES_SAME_GESTURE");
    // Real second-finger joystick input stays independent of the cancelled Kick gesture.
    DevelopmentProbe.TurnCommandActive=false;var stick=view.stick;
    otherFinger.position=RectTransformUtility.WorldToScreenPoint(null,stick.transform.position);stick.OnPointerDown(otherFinger);
@@ -261,7 +261,8 @@ namespace WhatTheFish {
    float beforeTurn=actor.transform.eulerAngles.y;yield return new WaitForSeconds(.3f);
    Check(actor.speed>0&&Mathf.Abs(Mathf.DeltaAngle(beforeTurn,actor.transform.eulerAngles.y))>10&&ball.CurrentController==actor&&ball.Body.isKinematic,"FAKE_SHOT_LEFT_JOYSTICK_TURNS_AND_DRIBBLES_WITHOUT_RELEASE");
    stick.OnPointerUp(otherFinger);DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
-   kickButton.OnPointerUp(finger);yield return null;
+   finger.position=cancelPoint;kickButton.OnPointerUp(finger);yield return null;
+   finger.position=kickPoint;
    Check(!view.Charging&&!view.ReadCommand().kick&&!kickButton.cancelArea.gameObject.activeSelf&&ball.CurrentController==actor,"FAKE_SHOT_CANCELLED_RELEASE_HAS_NO_DELAYED_KICK");
    kickButton.OnPointerDown(finger);Check(view.Charging,"FAKE_SHOT_FRESH_PRESS_RESTARTS_CHARGE");kickButton.OnPointerUp(finger);
    var lightCommand=view.ReadCommand();Check(lightCommand.kick&&lightCommand.kickCharge<.01f,"FAKE_SHOT_NORMAL_TAP_STILL_QUEUES_LIGHT_KICK");

@@ -5,7 +5,7 @@ using UnityEngine;
 namespace WhatTheFish {
  [DefaultExecutionOrder(100)]
  [RequireComponent(typeof(Rigidbody),typeof(SphereCollider))]
- public sealed class FootballBall:MonoBehaviour {
+ public sealed partial class FootballBall:MonoBehaviour {
   public static FootballBall Instance;
   [Header("Kick tuning (speed in metres/second)")]
   [Min(0)] public float minimumKickSpeed=12;
@@ -37,23 +37,24 @@ namespace WhatTheFish {
    }
   }
   bool CanControl(Athlete actor){
-   if(!actor||!actor.isActiveAndEnabled||actor.inTransit||!actor.capsule||!actor.capsule.enabled||!actor.Grounded||actor.Airborne||actor.LoadingJump||actor.Action!=FootballAction.None)return false;
+   if(PortalBusy||Time.time<propPickupDelay||!actor||!actor.isActiveAndEnabled||actor.inTransit||!actor.capsule||!actor.capsule.enabled||!actor.Grounded||actor.Airborne||actor.LoadingJump||actor.Action!=FootballAction.None)return false;
    if(mustApproach.Contains(actor)){
     if(Vector3.ProjectOnPlane(Body.position-actor.transform.position,Vector3.up).magnitude<=controlDistance+.1f)return false;
     mustApproach.Remove(actor);
    }
    var offset=Body.position-(actor.transform.position+Vector3.up*WorldRadius);var horizontal=Vector3.ProjectOnPlane(offset,Vector3.up);
+   if(!AbilityReachClear(actor,Body.position))return false;
    return horizontal.magnitude<=controlDistance&&Vector3.ProjectOnPlane(Body.position-FootPosition(actor),Vector3.up).magnitude<=footControlDistance&&Mathf.Abs(offset.y)<=.5f&&Vector3.Angle(actor.transform.forward,horizontal)<=controlAngle&&Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).magnitude<=controlSpeed*FootballEffort.BallPace&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,Body.position,1<<8,QueryTriggerInteraction.Ignore);
   }
   public void RefreshControl(Athlete candidate=null){
-   if(!HasAuthority)return;
+   if(!HasAuthority||PortalBusy)return;
    if(!Allowed){ReleaseControl();return;}
    if(controller&&(!controller.isActiveAndEnabled||controller.inTransit||!controller.capsule.enabled))ReleaseControl();
    // Walking, sprinting, facing and distance never eject an attached ball.
    if(!controller&&!Body.isKinematic&&candidate&&CanControl(candidate)){
     controller=candidate;sequence++;
     Physics.IgnoreCollision(sphere,candidate.capsule,true);SetPhysicsMode(false);
-    Body.interpolation=RigidbodyInterpolation.None;FollowController(candidate);
+    Body.interpolation=RigidbodyInterpolation.None;FollowController(candidate);FootballAudio.Emit(FootballSound.Receive,Body.position,.85f);
    }
   }
   public float MovementSpeed(Athlete actor,bool sprint,bool charging){
@@ -68,7 +69,7 @@ namespace WhatTheFish {
   }
   public void ReleaseFromTackle(Athlete victim,Athlete tackler,Vector3 direction){
    if(!HasAuthority||controller!=victim||!Allowed)return;
-   ReleaseControl(victim);if(tackler){mustApproach.Add(tackler);tackler.GetComponent<FootballTackle>()?.ClaimBallContact();}
+   SoundContact(FootballSound.Deflection,Body.position,tackleBallSpeed);ReleaseControl(victim);if(tackler){mustApproach.Add(tackler);tackler.GetComponent<FootballTackle>()?.ClaimBallContact();}
    Body.WakeUp();Body.linearVelocity=Vector3.ProjectOnPlane(direction,Vector3.up).normalized*tackleBallSpeed*FootballEffort.BallPace+Vector3.up*tackleBallLift*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;impulsePending=true;
   }
   public Vector3 FootPosition(Athlete actor){
@@ -78,8 +79,8 @@ namespace WhatTheFish {
    position.y=ground+WorldRadius;return position;
   }
   public void FollowController(Athlete actor){
-   if(!actor||CurrentController!=actor)return;
-   var position=FootPosition(actor);var travel=position-Body.position;
+   if(!actor||CurrentController!=actor||PortalBusy)return;
+   var position=FootPosition(actor);if(BlockAttachedBall(actor,position))return;var travel=position-Body.position;
    if(travel.sqrMagnitude>.000001f)Body.rotation=Quaternion.AngleAxis(travel.magnitude/WorldRadius*Mathf.Rad2Deg,Vector3.Cross(Vector3.up,travel).normalized)*Body.rotation;
    Body.position=position;transform.SetPositionAndRotation(position,Body.rotation);
   }
@@ -141,6 +142,8 @@ namespace WhatTheFish {
    if(!GetComponent<FootballMatch>())gameObject.AddComponent<FootballMatch>();
    if(Pitch&&GoalCount!=2)Debug.LogError("Football boundary requires both authored goal posts, crossbars and nets.",this);
    FootballBoundaryVisual.Attach(this);
+   if(!GetComponent<FootballAudio>())gameObject.AddComponent<FootballAudio>();
+   if(!GetComponent<FootballPropVisual>())gameObject.AddComponent<FootballPropVisual>();
   }
   Bounds InPitch(Transform frame,Bounds source){
    var bounds=new Bounds(Pitch.InverseTransformPoint(frame.TransformPoint(source.min)),Vector3.zero);
@@ -148,26 +151,30 @@ namespace WhatTheFish {
    return bounds;
   }
   void OnEnable(){Instance=this;playing=false;received=default;}
-  void OnDisable(){ReleaseControl();mustApproach.Clear();if(Instance==this)Instance=null;}
+  void OnDisable(){DisableFootballWalls();ResetFootballProps();ReleaseControl();mustApproach.Clear();if(Instance==this)Instance=null;}
+  void OnDestroy(){DestroyFootballWalls();}
   void SnapPose(Vector3 position,Quaternion rotation){
    // A sleeping interpolated body otherwise keeps its old rendered pose until contact wakes it.
    var interpolation=Body.interpolation;Body.interpolation=RigidbodyInterpolation.None;
    Body.position=position;Body.rotation=rotation;transform.SetPositionAndRotation(position,rotation);
    Physics.SyncTransforms();Body.interpolation=interpolation;
   }
-  public void ResetBall(){if(!HasAuthority)return;sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
+  public void ResetBall(){if(!HasAuthority)return;ResetFootballProps();sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
   void FixedUpdate(){
    authority=HasAuthority;
    bool active=FootballTackle.EnvironmentAllowed&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!Online||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
    bool followThrough=FootballMatch.GoalFollowThrough;
    bool dynamic=authority&&active&&(!FootballMatch.BlocksActions||followThrough);
    if(followThrough)ReleaseControl();
-   SetPhysicsMode(dynamic&&!controller);
-   Body.detectCollisions=authority;
+   ResolveAbilityBallStep();
+   StepFootballProps();
+   SyncFootballWalls();
+   SetPhysicsMode(dynamic&&!controller&&!PortalBusy);
+   Body.detectCollisions=authority&&!PortalBusy;
    if(authority){
     if(active&&!playing)ResetBall();playing=active;
     if(!dynamic)ReleaseControl();
-    if(dynamic){
+    if(dynamic&&!PortalBusy){
      if(!followThrough){
       RefreshControl();
       if(!controller){Athlete closest=null;float distance=float.MaxValue;foreach(var candidate in Athlete.Active)if(CanControl(candidate)){float d=(candidate.transform.position-Body.position).sqrMagnitude;if(d<distance){distance=d;closest=candidate;}}if(closest)RefreshControl(closest);}
@@ -177,7 +184,7 @@ namespace WhatTheFish {
      if(controller)FollowController(controller);
      else {KeepInsidePitch();ApplyRollingResistance(Time.fixedDeltaTime);SweepPlayers(Time.fixedDeltaTime);}
     }
-    if(Online&&NetworkAthlete.HostPlayer&&(publishTimer-=Time.fixedDeltaTime)<=0){publishTimer=.05f;NetworkAthlete.HostPlayer.Ball.Value=new FootballBallSnapshot{valid=true,position=Body.position,rotation=Body.rotation,sequence=sequence,controllerId=ControllerId()};}
+    if(Online&&NetworkAthlete.HostPlayer&&(publishTimer-=Time.fixedDeltaTime)<=0){publishTimer=.05f;NetworkAthlete.HostPlayer.Ball.Value=new FootballBallSnapshot{valid=true,position=Body.position,rotation=Body.rotation,sequence=sequence,controllerId=ControllerId(),props=footballProps};}
    }else if(NetworkAthlete.HostPlayer){
     var value=NetworkAthlete.HostPlayer.Ball.Value;if(!value.valid)return;
     if(!received.valid||receivedSequence!=value.sequence){SnapPose(value.position,value.rotation);from=value.position;fromRotation=value.rotation;blend=1;}
@@ -189,7 +196,7 @@ namespace WhatTheFish {
   ulong ControllerId(){var net=controller?controller.GetComponent<NetworkObject>():null;return net&&net.IsSpawned?net.NetworkObjectId:ulong.MaxValue;}
   // Only the authoritative ball is bounded by pitch lines; nets have shared world collision.
   // LateUpdate catches the result of PhysX impulses, including a kick at the line.
-  void LateUpdate(){var owner=CurrentController;Body.interpolation=owner?RigidbodyInterpolation.None:freeInterpolation;if(owner&&Allowed)FollowController(owner);else if(HasAuthority&&!Body.isKinematic&&(Allowed||FootballMatch.GoalFollowThrough))KeepInsidePitch();}
+  void LateUpdate(){ResolveAbilityBallStep();var owner=CurrentController;Body.interpolation=owner?RigidbodyInterpolation.None:freeInterpolation;if(owner&&Allowed)FollowController(owner);else if(HasAuthority&&!Body.isKinematic&&(Allowed||FootballMatch.GoalFollowThrough))KeepInsidePitch();}
   void KeepInsidePitch(){
    if(!Pitch)return;
    var point=Pitch.InverseTransformPoint(Body.position);var original=point;
@@ -224,6 +231,7 @@ namespace WhatTheFish {
    if(point.z!=original.z){if(velocity.z*(original.z-point.z)>0)velocity.z=0;spin.x=0;hit=true;}
    if(point.y!=original.y){if(velocity.y>0)velocity.y=0;hit=true;}
    if(!hit)return;
+   if(enteredGoal<0)AudioBoundary(Pitch.TransformPoint(point),Body.linearVelocity);
    Body.position=Pitch.TransformPoint(point);Body.linearVelocity=Pitch.TransformDirection(velocity);Body.angularVelocity=Pitch.TransformDirection(spin);impulsePending=false;sequence++;
    if(Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).sqrMagnitude<.0064f)Body.angularVelocity=Vector3.zero;
   }
@@ -231,7 +239,7 @@ namespace WhatTheFish {
   void StopAtPlayer(Athlete actor){
    if(!HasAuthority||Body.isKinematic||!Allowed)return;
    if(SlideContact(actor))return;
-   ReleaseControl();Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;impulsePending=false;sequence++;
+   SoundContact(FootballSound.Deflection,Body.position,Body.linearVelocity.magnitude);ReleaseControl();Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;impulsePending=false;sequence++;
    // Grounded rolling can sleep, but an airborne contact must still fall.
    float radius=sphere.radius*transform.lossyScale.x;
    if(Physics.Raycast(Body.position,Vector3.down,radius+.04f,1<<8,QueryTriggerInteraction.Ignore))Body.Sleep();
@@ -246,6 +254,7 @@ namespace WhatTheFish {
    Body.position+=direction*Mathf.Max(0,nearest-radius*.05f-.002f);StopAtPlayer(obstacle.GetComponentInParent<Athlete>());
   }
   void OnCollisionEnter(Collision collision){
+   AudioCollision(collision);
    var actor=collision.collider.GetComponentInParent<Athlete>();if(actor)StopAtPlayer(actor);
    if(!HasAuthority||!(Allowed||FootballMatch.GoalFollowThrough))return;
    var net=collision.collider.GetComponentInParent<FootballGoalNet>();if(!net)return;
@@ -262,7 +271,7 @@ namespace WhatTheFish {
   // The controller's rounded foot/step solver must not climb the football.
   // Sweep its horizontal footprint instead, keeping vertical terrain movement intact.
   public Vector3 ConstrainPlayerMotion(Athlete actor,Vector3 displacement,float dt){
-   if(!Allowed||actor.inTransit||!actor.capsule||!actor.capsule.enabled)return displacement;
+   if(PortalBusy||!Allowed||actor.inTransit||!actor.capsule||!actor.capsule.enabled)return displacement;
    if(CurrentController==actor)return ConstrainAttachedMotion(actor,displacement);
    var controller=actor.capsule;float ballRadius=sphere.radius*transform.lossyScale.x;
    var bounds=controller.bounds;
@@ -320,27 +329,27 @@ namespace WhatTheFish {
    Body.AddTorque(-Body.angularVelocity.normalized*Mathf.Min(rollingDeceleration/radius,Body.angularVelocity.magnitude/dt),ForceMode.Acceleration);
   }
   public bool InKickRange(Athlete actor){
-   if(!actor||!Allowed||actor.inTransit||!actor.Grounded||actor.Action!=FootballAction.None||CurrentController&&CurrentController!=actor)return false;
+   if(PortalBusy||!actor||!Allowed||actor.inTransit||!actor.Grounded||actor.Action!=FootballAction.None||CurrentController&&CurrentController!=actor)return false;
    var position=CurrentController==actor?FootPosition(actor):Body.position;
    var offset=position-(actor.transform.position+Vector3.up*WorldRadius);var horizontal=Vector3.ProjectOnPlane(offset,Vector3.up);
    if(horizontal.magnitude>maximumKickDistance||Mathf.Abs(offset.y)>.5f||Vector3.Dot(actor.transform.forward,horizontal.normalized)<.25f)return false;
-   return !Physics.Linecast(actor.transform.position+Vector3.up*.35f,position,1<<8,QueryTriggerInteraction.Ignore);
+   return AbilityReachClear(actor,position)&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,position,1<<8,QueryTriggerInteraction.Ignore);
   }
   public static Vector3 KickDirection(Athlete actor)=>Vector3.ProjectOnPlane(actor.transform.forward,Vector3.up).normalized;
   public bool TryKick(Athlete actor,float charge=1){
    if(float.IsNaN(charge)||float.IsInfinity(charge)||!HasAuthority||Body.isKinematic&&controller!=actor||!InKickRange(actor))return false;
-   if(controller==actor)FollowController(actor);
+   if(controller==actor){FollowController(actor);if(controller!=actor)return false;}
    var direction=KickDirection(actor);
    float maximum=Mathf.Max(0,kickSpeed),speed=Mathf.Lerp(Mathf.Clamp(minimumKickSpeed,0,maximum),maximum,Mathf.Clamp01(charge));
    ReleaseControl(actor);impulsePending=true;Body.WakeUp();
    // Subsequent callbacks see this velocity immediately instead of stacking deferred AddForce.
-   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;return true;
+   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));return true;
   }
   bool SlideContact(Athlete actor){
-   if(!HasAuthority||Body.isKinematic||!Allowed||!actor||actor.Action!=FootballAction.Slide)return false;
+   if(!HasAuthority||Body.isKinematic||!Allowed||!actor||actor.Action!=FootballAction.Slide||!AbilityReachClear(actor,Body.position))return false;
    var slide=actor.GetComponent<FootballTackle>();
    if(slide&&slide.ClaimBallContact()){
-    ReleaseControl();
+    SoundContact(FootballSound.Deflection,Body.position,tackleBallSpeed);ReleaseControl();
     var incoming=Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up);float speed=incoming.magnitude;
     var direction=slide.Direction;Vector3 result;
     float tackleSpeed=tackleBallSpeed*FootballEffort.BallPace;

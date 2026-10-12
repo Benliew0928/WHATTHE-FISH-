@@ -1,5 +1,14 @@
 # Football match rules
 
+The current [Touchline HUD](FootballUI/implementation.md) presents these same
+match states in the approved cream score strip. The earlier glass scoreboard
+captures and release numbers below are historical; current delivery and size
+are recorded in [verification](VERIFICATION.md) and [BUILD-SIZE](BUILD-SIZE.md).
+
+Formal matches and Explore Offline include [Team Turbo, Portal Steal and Wall](FOOTBALL-ABILITIES.md).
+Midfield touchline pickups use a blue five-second countdown. A goal or match
+termination clears inventory and effects; overtime continues them normally.
+
 ## Playing a match
 
 Enter Football through the existing offline Explore or room Start flow. Exploration keeps the original ball interactions and does not score. The host presses **Start match** in the Football HUD; formal matches require an even roster of two to ten players (1v1 through 5v5). Guests cannot start or restart a match. For solo verification, enter Football in Play and use **WHATTHE FISH? > Football > Start single-player test match**. This explicit editor/development-only exception is separate from the normal start button.

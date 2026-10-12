@@ -4,21 +4,8 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace WhatTheFish {
- public enum SportsProp:byte { None,LockOn,Turbo,Portal }
- // Revision travels with the slot: delayed/double clicks cannot spend a replacement.
- public struct SportsPropSlot:INetworkSerializable,IEquatable<SportsPropSlot> {
-  public SportsProp kind;public uint revision;
-  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref kind);s.SerializeValue(ref revision);}
-  public bool Equals(SportsPropSlot b)=>kind==b.kind&&revision==b.revision;
- }
- public struct BasketballPropSpawn:INetworkSerializable,IEquatable<BasketballPropSpawn> {
-  public SportsProp kind;public byte anchor;public double respawn;public bool countingDown;
-  public int CountdownNumber(double now)=>countingDown?Mathf.Clamp((int)Math.Ceiling(respawn-now),1,5):0;
-  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref kind);s.SerializeValue(ref anchor);s.SerializeValue(ref respawn);s.SerializeValue(ref countingDown);}
-  public bool Equals(BasketballPropSpawn b)=>kind==b.kind&&anchor==b.anchor&&respawn==b.respawn&&countingDown==b.countingDown;
- }
  public struct BasketballPropsState:INetworkSerializable,IEquatable<BasketballPropsState> {
-  public BasketballPropSpawn pickup;public double turboA,turboB,aimUntil,portalAt;
+  public SportsPropSpawn pickup;public double turboA,turboB,aimUntil,portalAt;
   public bool aiming,transferring,guided;public ulong aimer,receiver;public uint portalSequence;
   public Vector3 source,destination;public byte portalOutcome;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {
@@ -29,12 +16,12 @@ namespace WhatTheFish {
   public bool Equals(BasketballPropsState b)=>guided==b.guided&&pickup.Equals(b.pickup)&&turboA==b.turboA&&turboB==b.turboB&&aimUntil==b.aimUntil&&aiming==b.aiming&&aimer==b.aimer&&transferring==b.transferring&&receiver==b.receiver&&portalAt==b.portalAt&&portalSequence==b.portalSequence&&source==b.source&&destination==b.destination&&portalOutcome==b.portalOutcome;
  }
  public static class BasketballPropRules {
-  public const float AimSeconds=2,TurboSeconds=5,TurboMultiplier=1.5f,PortalSeconds=.7f,RespawnSeconds=20,CountdownSeconds=5,PickupRadius=.85f;
+  public const float AimSeconds=2,TurboSeconds=SportsAbilityRules.TurboSeconds,TurboMultiplier=SportsAbilityRules.TurboMultiplier,PortalSeconds=SportsAbilityRules.PortalSeconds,RespawnSeconds=SportsAbilityRules.RespawnSeconds,CountdownSeconds=SportsAbilityRules.CountdownSeconds,PickupRadius=SportsAbilityRules.PickupRadius;
   public static string Name(SportsProp kind)=>kind==SportsProp.LockOn?"LOCK-ON SHOT":kind==SportsProp.Turbo?"TEAM TURBO":kind==SportsProp.Portal?"PORTAL STEAL":"FIND A PROP";
   // The two sideline ends of the centre line; no advantage to either half.
   public static Vector3 Anchor(int index)=>new Vector3(index==0?-7f:7f,.08f,0);
   // Directly sample the two alternatives; no reroll loop or repeat fallback.
-  public static SportsProp NextKind(SportsProp previous,int choice)=>previous==SportsProp.None?(SportsProp)(1+choice%3):(SportsProp)(1+((int)previous+choice%2)%3);
+  public static SportsProp NextKind(SportsProp previous,int choice)=>SportsAbilityRules.NextKind(previous,choice,1);
   public static bool OwnHalf(Vector3 point,FootballTeam team)=>team==FootballTeam.B?point.z>.35f:point.z<-.35f;
   // A deliberately assisted shot with a steep, centred descent. Physics contacts
   // and defender sweeps still interrupt it; scoring uses the real hoop crossing.
@@ -124,7 +111,7 @@ namespace WhatTheFish {
    if(spawn&&Authority&&Playing)BeginPropCountdown();
   }
   void BeginPropCountdown(){
-   propState.pickup=new BasketballPropSpawn{anchor=(byte)propRandom.Next(2),respawn=BasketballMotion.Clock+BasketballPropRules.CountdownSeconds,countingDown=true};sendAt=0;
+   propState.pickup=new SportsPropSpawn{anchor=(byte)propRandom.Next(2),respawn=BasketballMotion.Clock+BasketballPropRules.CountdownSeconds,countingDown=true};sendAt=0;
   }
   void StepPickup(){
    ref var spawn=ref propState.pickup;
@@ -199,7 +186,7 @@ namespace WhatTheFish {
   public void ReviewGiveProp(Athlete actor,SportsProp kind){if(Authority&&actor)GiveProp(actor,kind);}
   public void ReviewResetProps(){if(Authority)ResetProps();}
   public void ReviewExpireTurbo(){propState.turboA=propState.turboB=0;}
-  public void ReviewSpawnProps(SportsProp kind,int side=0){if(!Authority)return;propState.pickup=new BasketballPropSpawn{kind=kind,anchor=(byte)side};lastSpawnedProp=kind;sendAt=0;}
+  public void ReviewSpawnProps(SportsProp kind,int side=0){if(!Authority)return;propState.pickup=new SportsPropSpawn{kind=kind,anchor=(byte)side};lastSpawnedProp=kind;sendAt=0;}
   public void ReviewAdvanceSpawn(double seconds){if(!Authority)return;propState.pickup.respawn-=seconds;sendAt=0;}
 #endif
  }

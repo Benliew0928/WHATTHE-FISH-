@@ -34,7 +34,7 @@ namespace WhatTheFish {
    originalCamera=app.view.mode;app.view.mode=2;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;ball.ReviewShotRoll=()=>0;
    hoop=app.stadium.GetComponentsInChildren<Transform>().Single(t=>t.name=="Hoop_North");shoot=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).Single(b=>!b.pass);pass=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).Single(b=>b.pass);
    module=EventSystem.current.GetComponent<StandaloneInputModule>();previous=module.inputOverride;input=EventSystem.current.gameObject.AddComponent<BasketballUIReviewInput>();module.inputOverride=input;
-   yield return new WaitForSeconds(1);yield return Pickup(8);ball.ReviewGiveProp(actor,SportsProp.Turbo);yield return null;yield return Capture("ready");Check(((RectTransform)shoot.transform).rect.size==Vector2.one*106,"approved 106-unit Shoot size");Check(shoot.label.font==CoveUI.DisplayFont,"approved display font loaded");
+   yield return new WaitForSeconds(1);yield return Pickup(8);ball.ReviewGiveProp(actor,SportsProp.Turbo);yield return null;yield return Capture("ready");Check(((RectTransform)shoot.transform).rect.size==Vector2.one*106,"approved 106-unit Shoot size");Check(shoot.label.font==SportsUIStyle.DisplayFont,"sports display font loaded");
    ball.autoPickup=false;ball.ResetHome();yield return null;CheckLabels("defense");yield return Capture("defense");
    foreach(var b in new[]{shoot,pass}){
     yield return Pickup(10);uint shots=ball.ShotCount,passes=ball.PassCount;Finger(81,Point(b),TouchPhase.Began);yield return null;Check(b.Tracking&&(b.pass?app.view.PassCharging:app.view.ShotCharging),"input module touch begins "+b.pass);
@@ -52,7 +52,7 @@ namespace WhatTheFish {
    yield return TimedFallback(BasketballDragChoice.Upper);yield return TimedFallback(BasketballDragChoice.Diagonal);
    yield return Pickup(1.6f);Finger(81,Point(shoot),TouchPhase.Began);Finger(81,Destination(shoot,BasketballDragChoice.Diagonal),TouchPhase.Moved);yield return null;Check(!app.view.ShotNeedsTiming&&!hud.ShotGuide.TimingVisible,"eligible layup hides timing arc");yield return Capture("ready-layup");Finger(81,Destination(shoot,BasketballDragChoice.Cancel),TouchPhase.Moved);Finger(81,Destination(shoot,BasketballDragChoice.Cancel),TouchPhase.Ended);
    yield return Pickup(3.6f);DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,heading=actor.transform.eulerAngles.y};yield return new WaitForSeconds(.12f);Finger(81,Point(shoot),TouchPhase.Began);Finger(81,Destination(shoot,BasketballDragChoice.Upper),TouchPhase.Moved);yield return null;Check(app.view.FinishAvailability==BasketballFinishReason.Ready&&!hud.ShotGuide.TimingVisible,"running dunk hides timing arc only when eligible");yield return Capture("ready-dunk");Finger(81,Destination(shoot,BasketballDragChoice.Cancel),TouchPhase.Moved);Finger(81,Destination(shoot,BasketballDragChoice.Cancel),TouchPhase.Ended);DevelopmentProbe.TurnCommand=default;
-   yield return Pickup(8);Finger(81,Point(shoot),TouchPhase.Began);hud.ShowSettings();Check(app.view.InputBlocked&&!app.view.ShotCharging&&!shoot.Tracking,"settings clears held input");Finger(81,Point(shoot),TouchPhase.Ended);yield return null;Check(app.view.ReadCommand().move==Vector2.zero,"settings blocks movement commands");CheckLabels("settings");yield return Capture("settings");
+   yield return Pickup(8);Finger(81,Point(shoot),TouchPhase.Began);hud.ShowSettings();Check(app.view.InputBlocked&&!app.view.ShotCharging&&!shoot.Tracking,"settings clears held input");Finger(81,Point(shoot),TouchPhase.Ended);yield return null;Check(app.view.ReadCommand().move==Vector2.zero,"settings blocks movement commands");CheckLabels("settings");yield return CheckVolumeControls();yield return Capture("settings");
    foreach(int camera in new[]{0,1,2}){hud.SelectCamera(camera);Check(app.view.mode==camera,"camera selection "+camera);}
    hud.OpenGuide();for(int i=0;i<3;i++){hud.SelectGuide(i);yield return null;CheckLabels("guide-"+i);yield return Capture("guide-"+i);}
    hud.OpenLeave();yield return null;CheckLabels("leave");yield return Capture("leave");hud.CloseMenu();Check(!app.view.InputBlocked&&!app.view.ShotCharging,"return does not resurrect hold");
@@ -62,12 +62,32 @@ namespace WhatTheFish {
    ball.ResetHome();ball.autoPickup=false;actor.capsule.enabled=false;actor.transform.position+=Vector3.right*45;actor.capsule.enabled=true;yield return new WaitForSeconds(.5f);var marker=FindFirstObjectByType<StadiumPlayerIndicator>();Check(marker&&marker.Showing,"offscreen player marker visible during play");hud.ShowSettings();yield return null;Check(marker&&!marker.Showing,"player marker hides behind settings");hud.CloseMenu();
    Finish();
   }
+  IEnumerator CheckVolumeControls(){
+   foreach(var slider in hud.GetComponentsInChildren<Slider>()){
+    float original=slider.value;var track=(RectTransform)slider.transform;var thumb=slider.handleRect;
+    Check(Mathf.Abs(thumb.rect.width-thumb.rect.height)<.1f&&thumb.rect.height<=track.rect.height,slider.name+" round thumb stays inside track");
+    Vector2 left=RectTransformUtility.WorldToScreenPoint(null,track.TransformPoint(new Vector3(track.rect.xMin+1,track.rect.center.y,0)));
+    Vector2 right=RectTransformUtility.WorldToScreenPoint(null,track.TransformPoint(new Vector3(track.rect.xMax-1,track.rect.center.y,0)));
+    Finger(95,left,TouchPhase.Began);yield return null;Check(slider.value<.01f,slider.name+" touch reaches zero");
+    Finger(95,right,TouchPhase.Moved);yield return null;Check(slider.value>.99f,slider.name+" drag reaches full volume");
+    Finger(95,right,TouchPhase.Ended);slider.value=original;yield return null;
+   }
+  }
   IEnumerator TimedFallback(BasketballDragChoice choice){
    yield return Pickup(10);Finger(81,Point(shoot),TouchPhase.Began);Finger(81,Destination(shoot,choice),TouchPhase.Moved);Finger(81,Destination(shoot,BasketballDragChoice.Cancel),TouchPhase.Moved);Finger(81,Destination(shoot,choice),TouchPhase.Moved);Check(shoot.Tracking,"cancel zone can be left before a real timed release");float end=Time.time+6;while(Mathf.Abs(app.view.ShotPower-BasketballBall.SweetSpot)>app.view.ShotWindow&&Time.time<end)yield return null;
    Check(app.view.ShotNeedsTiming,"far finish still requires timing");float power=app.view.ShotPower;uint shots=ball.ShotCount;Finger(81,Destination(shoot,choice),TouchPhase.Ended);yield return new WaitForSeconds(1);
    Check(ball.ShotCount==shots+1&&!actor.BasketballMotion.Finishing,"far "+choice+" releases exactly one normal shot");Check(Mathf.Abs(ball.LastReleasePower-power)<.02f,"far finish preserves displayed release phase");
   }
-  void CheckLabels(string screen){Canvas.ForceUpdateCanvases();foreach(var t in hud.GetComponentsInChildren<Text>()){if(!t.isActiveAndEnabled||!t.gameObject.activeInHierarchy||t.text.Length==0)continue;var group=t.GetComponentInParent<CanvasGroup>();if(group&&group.alpha<.01f)continue;Check(t.preferredHeight<=t.rectTransform.rect.height,screen+" text fits: "+t.text.Replace('\n',' ')+" ["+t.preferredHeight+"/"+t.rectTransform.rect.height+"]");}}
+  void CheckLabels(string screen){
+   Canvas.ForceUpdateCanvases();bool fonts=true,glyphs=true;
+   foreach(var t in hud.GetComponentsInChildren<Text>()){
+    if(!t.isActiveAndEnabled||t.text.Length==0||t.GetComponentsInParent<CanvasGroup>().Any(g=>g.alpha<.01f))continue;
+    fonts&=t.font&&(t.font==SportsUIStyle.DisplayFont||t.font==SportsUIStyle.TextFont);
+    glyphs&=t.font&&t.text.All(c=>char.IsWhiteSpace(c)||t.font.HasCharacter(c));
+    Check(t.preferredHeight<=t.rectTransform.rect.height+.1f,screen+" text fits: "+t.text.Replace('\n',' ')+" ["+t.preferredHeight+"/"+t.rectTransform.rect.height+"]");
+   }
+   Check(fonts,screen+" uses sports fonts throughout");Check(glyphs,screen+" contains no missing font glyphs");
+  }
   void CheckScreen(RectTransform r){var corners=new Vector3[4];r.GetWorldCorners(corners);Check(corners.All(p=>{var s=RectTransformUtility.WorldToScreenPoint(null,p);return Screen.safeArea.Contains(s);}),r.name+" within safe screen at "+Screen.width+"x"+Screen.height);}
   void Finish(){if(module)module.inputOverride=previous;if(input)Destroy(input);DevelopmentProbe.TurnCommandActive=false;DevelopmentProbe.TurnCommand=default;if(hud)hud.CloseMenu();if(app){app.view.ClearMatchInput();app.view.mode=originalCamera;PlayerPrefs.SetInt("camera",originalCamera);PlayerPrefs.Save();}File.AppendAllText(Path.Combine(folder,"results.txt"),"BASKETBALL_UI_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}
  }

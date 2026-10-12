@@ -14,7 +14,7 @@ namespace WhatTheFish {
   public static Image Art(Transform p,BasketballIcon icon,float x,float y,float w,float h)=>CoveUI.Image(p,icon.ToString(),Icon(icon),x,y,w,h);
   // Rasterize at the parent canvas's full 1600-unit density. The basketball
   // layout uses half-size design units; scaling small font glyphs up blurs them.
-  public static Text Text(Transform p,string text,float x,float y,float w,float h,int size=13,bool bold=false,TextAnchor align=TextAnchor.MiddleLeft,Color? color=null){var t=CoveUI.Text(p,text,x,y,w*2,Mathf.Max(h,size*1.5f)*2,size*2,bold,color??CoveUI.Ink,align);t.rectTransform.localScale=Vector3.one*.5f;return t;}
+  public static Text Text(Transform p,string text,float x,float y,float w,float h,int size=13,bool bold=false,TextAnchor align=TextAnchor.MiddleLeft,Color? color=null){var t=CoveUI.Text(p,text,x,y,w*2,Mathf.Max(h,size*1.5f)*2,size*2,bold,color??CoveUI.Ink,align);t.font=bold?SportsUIStyle.DisplayFont:SportsUIStyle.TextFont;t.rectTransform.localScale=Vector3.one*.5f;return t;}
   public static RectTransform Center(Transform p,string name,Vector2 size,Vector2 point,Vector2 anchor){var r=CoveUI.Rect(p,name,0,0,size.x,size.y);r.anchorMin=r.anchorMax=anchor;r.pivot=Vector2.one*.5f;r.anchoredPosition=point;return r;}
   public static BasketballPlate Plate(Transform p,string name,float x,float y,float w,float h,Color color,float radius=16,float border=2,bool shadow=false){var r=CoveUI.Rect(p,name,x,y,w,h);var g=r.gameObject.AddComponent<BasketballPlate>();g.color=color;g.radius=Vector2.one*radius;g.border=border;g.shadow=shadow?3:0;g.raycastTarget=false;return g;}
   public static Button Button(Transform p,string name,string caption,float x,float y,float w,float h,Action action,Color? fill=null,int size=14){

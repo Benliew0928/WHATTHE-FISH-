@@ -6,10 +6,10 @@ namespace WhatTheFish {
   RectTransform overlay,settingsPanel,guidePanel,leavePanel;GameObject[] guidePages;Button[] cameraChoices,guideTabs;Text cameraNote,roamText,leaveText,confirmText;Button leaveButton;int guideTab;
   void BuildMenus(){
    var backdrop=BasketballUIStyle.Plate(root,"Court menu overlay",0,0,800,450,new Color(.07f,.25f,.31f,.46f),0,0);backdrop.raycastTarget=true;overlay=backdrop.rectTransform;CoveUI.Stretch(overlay);
-   settingsPanel=MenuPanel("Court settings",650,424,BasketballIcon.Gear,CloseMenu);
+   settingsPanel=MenuPanel("Court settings",650,422,BasketballIcon.Gear,CloseMenu);
    BasketballUIStyle.Text(settingsPanel,"Camera angle",20,70,590,20,15,true);
    cameraChoices=new Button[3];string[] cameras={"Eye level","Follow","Court view"};BasketballIcon[] art={BasketballIcon.Eye,BasketballIcon.Follow,BasketballIcon.Court};
-   for(int i=0;i<3;i++){int mode=i;var b=BasketballUIStyle.Button(settingsPanel,cameras[i],"",20+i*207,98,196,86,()=>SelectCamera(mode),BasketballUIStyle.Paper);cameraChoices[i]=b;BasketballUIStyle.Art(b.transform,art[i],70,5,56,42);BasketballUIStyle.Text(b.transform,cameras[i],4,51,188,28,16,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(b.transform,"✓",166,2,23,22,16,true,TextAnchor.MiddleCenter).name="Selected camera";}
+   for(int i=0;i<3;i++){int mode=i;var b=BasketballUIStyle.Button(settingsPanel,cameras[i],"",20+i*207,98,196,86,()=>SelectCamera(mode),BasketballUIStyle.Paper);cameraChoices[i]=b;BasketballUIStyle.Art(b.transform,art[i],70,5,56,42);BasketballUIStyle.Text(b.transform,cameras[i],4,51,188,28,16,true,TextAnchor.MiddleCenter);CoveUI.Image(b.transform,"Selected camera",SportsUIStyle.Check,166,2,23,22).color=CoveUI.Ink;}
    cameraNote=BasketballUIStyle.Text(settingsPanel,"",20,191,610,26,12);
    BuildAudioSliders();
    var guide=BasketballUIStyle.Button(settingsPanel,"Court guide","",20,304,610,48,OpenGuide);BasketballUIStyle.Art(guide.transform,BasketballIcon.Book,12,9,30,30);BasketballUIStyle.Text(guide.transform,"Court guide",54,4,500,23,16,true);BasketballUIStyle.Text(guide.transform,"Rules, touch controls & props",54,26,500,16,11);BasketballUIStyle.Text(guide.transform,"›",566,0,30,48,24,true,TextAnchor.MiddleCenter);
@@ -48,8 +48,8 @@ namespace WhatTheFish {
   }
   void ControlCard(Transform p,float x,float y,BasketballIcon icon,string title,string body){BasketballUIStyle.Art(p,icon,x,y,35,35);BasketballUIStyle.Text(p,title,x+43,y,244,22,14,true);BasketballUIStyle.Text(p,body,x+43,y+24,244,51,12,false,TextAnchor.UpperLeft);}
   void BuildPropsGuide(Transform p){
-   string[] keys={"LockOn","Turbo","Portal"},names={"Lock-on","Team Turbo","Portal"},body={"Stand still and aim for 2 seconds, then fire an assisted shot. A block can interrupt it.","Your team moves 1.5× faster for 5 seconds. An active boost cannot stack.","Use from your home half to bring the ball to you. The centre line is outside your half."};
-   for(int i=0;i<3;i++){float x=i*207;CoveUI.Image(p,names[i],Resources.Load<Sprite>("BasketballProps/"+keys[i]),x+67,0,62,53);BasketballUIStyle.Text(p,names[i],x,58,196,23,16,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(p,body[i],x+3,88,190,70,12,false,TextAnchor.UpperCenter);}
+   string[] names={"Lock-on","Team Turbo","Portal"},body={"Stand still and aim for 2 seconds, then fire an assisted shot. A block can interrupt it.","Your team moves 1.5× faster for 5 seconds. An active boost cannot stack.","Use from your home half to bring the ball to you. The centre line is outside your half."};
+   for(int i=0;i<3;i++){float x=i*207;CoveUI.Image(p,names[i],SportsUIStyle.PropIcon((SportsProp)(i+1)),x+67,0,62,53).color=Color.white;BasketballUIStyle.Text(p,names[i],x,58,196,23,16,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(p,body[i],x+3,88,190,70,12,false,TextAnchor.UpperCenter);}
    BasketballUIStyle.Text(p,"One slot · one use · new pickups replace the old prop · use on the painted court",0,163,610,24,11,false,TextAnchor.MiddleCenter);
   }
   void LayoutMenus(){foreach(var panel in new[]{settingsPanel,guidePanel,leavePanel})if(panel)panel.localScale=Vector3.one*Mathf.Min(1,(root.rect.width-28)/panel.rect.width,(root.rect.height-28)/panel.rect.height);}

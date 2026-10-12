@@ -24,7 +24,7 @@ namespace WhatTheFish {
    float until=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!app.Exploring||!app.LocalAthlete||!FootballBall.Instance)&&Time.realtimeSinceStartup<until)yield return null;
    actor=app?app.LocalAthlete:null;ball=FootballBall.Instance;if(!actor||!ball){Check(false,"football initialized");Finish();yield break;}
    yield return new WaitForSeconds(.8f);home=ball.KickoffPosition-Vector3.up*ball.WorldRadius+Vector3.back*5;
-   Check(RoomService.ProtocolVersion==41,"football protocol 41");
+   Check(RoomService.ProtocolVersion==45,"combined room protocol 45");
    if(app.rooms.Connected){if(ball.HasAuthority)yield return Host();else yield return Guest();}else {Rules();yield return Offline();}
    Finish();
   }

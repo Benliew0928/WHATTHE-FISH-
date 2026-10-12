@@ -15,7 +15,7 @@ namespace WhatTheFish {
    var marker=r.gameObject.AddComponent<StadiumPlayerIndicator>();marker.page=page;marker.raycastTarget=false;
    var text=new GameObject("YOU and distance",typeof(RectTransform)).AddComponent<Text>();text.transform.SetParent(r,false);
    text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;text.rectTransform.offsetMin=text.rectTransform.offsetMax=Vector2.zero;
-   text.font=font;text.fontSize=18;text.fontStyle=FontStyle.Bold;text.alignment=TextAnchor.MiddleCenter;text.color=Color.white;text.raycastTarget=false;
+   text.font=font;text.fontSize=18;text.fontStyle=FontStyle.Normal;text.alignment=TextAnchor.MiddleCenter;text.color=Color.white;text.raycastTarget=false;
    marker.label=text;marker.SetShown(false);
   }
   void SetShown(bool value){showing=value;canvasRenderer.cull=!value;if(label)label.enabled=value;SetVerticesDirty();}

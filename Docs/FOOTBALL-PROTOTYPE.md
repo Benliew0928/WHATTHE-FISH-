@@ -28,7 +28,18 @@ Legacy state cleanup, 3 October: the unused `blockedPusher` field, its writes/re
 
 Goal-net collision, 3 October: both authored goals now receive four continuous, invisible convex collision panels (left, right, back and sloping roof) on the existing world layer. The mesh strands previously had no collision; only the football's boundary code retained the ball. [FootballGoalNet](../Game/Assets/_Game/Sports/Football/FootballGoalNet.cs) builds lightweight 4 cm outward-thickened panels from the same goal bounds/front/sign used by the ball, with the existing 2.44-to-2.01 m roof profile. The open mouth remains unobstructed. Every athlete uses normal CharacterController collision regardless of team or possession; walking, sprinting, sliding and jumping cannot cross the net. Pitch lines still do not enclose unladen players. Collision follows the goal's island transform and activation, and generated meshes are released with the goal. The ball's roof constraint shares the same height calculation; kicking, possession, scoring and network authority are retained. Runtime and build evidence is recorded in [VERIFICATION.md](VERIFICATION.md) and [BUILD-SIZE.md](BUILD-SIZE.md).
 
-Fake shot, 3 October: holding the touch Kick button reveals a cancel area immediately to its left. Sliding the same finger into that area immediately cancels the charge and hides the aim arrow. The ball stays in its existing attached possession state; cancellation does not queue a kick, release the ball or reacquire it. The left joystick continues turning/dribbling. Returning that finger to Kick cannot restart the cancelled gesture: lift it and press Kick again. Releasing outside the cancel area retains the existing light/charged kick. Other fingers cannot cancel or release this gesture. Losing focus, pausing, disabling the button or losing kick eligibility cancels safely. No kick forces, charge curve, ball speed or physics settings change. The area shows `× 取消` / `已取消` when the existing font supports these glyphs, otherwise `× Cancel` / `Cancelled`, without adding a font asset. [KickButton](../Game/Assets/_Game/Shared/UI/KickButton.cs) owns the gesture; [FootballBallProbe](../Game/Assets/_Game/Shared/Core/FootballBallProbe.cs) covers cancellation, retained possession, joystick turning, a fresh press and normal light/full releases.
+Fake shot, updated 12 October: holding Kick reveals a connected cancel landing
+above-left, an attached power arc and a shallow drag path. Entering the landing
+only arms cancellation; the aim and charge continue. Sliding back preserves
+charge. Only lifting the original finger inside the landing cancels. The ball
+stays attached; no release or reacquisition occurs. The other thumb continues
+turning/dribbling. Release elsewhere retains the existing light/charged kick.
+Focus loss, suspension, canceled touches, menus, resizing, role changes and
+lost eligibility clear the hold. Desktop keys remain test inputs but are absent
+from the HUD. [KickButton](../Game/Assets/_Game/Shared/UI/KickButton.cs) owns the
+gesture; [UI verification](FootballUI/implementation.md) and the updated ball
+probe cover these cases. Physics, one-second charge and kick strength are unchanged.
+
 
 Arrow charge-growth adjustment, 3 October: maximum length is now **1.8x** the base, replacing 2.0x. The current round, 80%-length triangular head gives about **1.465–2.636 m** visible length across charging (1.6–2.88 longitudinal scale). The charge duration remains one second, and colors/opacity/hide rules are retained. Existing runtime assertions check the new maximum; source-specific runtime/visual/APK validation is pending because fresh Windows/AndroidSubmission attempts exited while Unity had the project open. Evidence: `Builds/FootballAim18xQA/`. The earlier length records below are historical.
 

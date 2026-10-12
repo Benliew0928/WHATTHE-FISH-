@@ -1,0 +1,59 @@
+{
+  "base": "repository root",
+  "generator": "Tools/Build/Generate-SportsUI.cjs",
+  "width": 512,
+  "height": 256,
+  "tile": 128,
+  "padding": 4,
+  "style": "painted gameplay art and coloured utility illustrations",
+  "icons": [
+    {
+      "name": "soccer-ball",
+      "source": "ArtSource/SportsUI/Painted/football.png",
+      "sha256": "9d2298ff3f82409256559750db1457605dc744e1787e63fb4368865d33c92d1c",
+      "cell": 0
+    },
+    {
+      "name": "sneaker-move",
+      "source": "ArtSource/SportsUI/Painted/dash.png",
+      "sha256": "3072b6456182b4ac5d1a1bee748c8f62333e0340bed92985d135ec58cd55515a",
+      "cell": 1
+    },
+    {
+      "name": "shield-chevron",
+      "source": "ArtSource/SportsUI/Painted/pressure.png",
+      "sha256": "897d3f23e5ecc523e6b904dc592a2b4e20b5e5f22a2485e62696a434dcc82f1b",
+      "cell": 2
+    },
+    {
+      "name": "sneaker",
+      "source": "ArtSource/SportsUI/Painted/tackle.png",
+      "sha256": "2cc61f6c19ac1628bf9a485e62aacbcf11ef3d6f74603782ad040dd6dfc7f48e",
+      "cell": 3
+    },
+    {
+      "name": "hand-swipe-left",
+      "source": "Docs/SportsUI/color-icons/hand-swipe-left.svg",
+      "sha256": "350a0da22db5b22886fa268063b003a04cb07ddd711f52112f94f22aa2c44d06",
+      "cell": 4
+    },
+    {
+      "name": "target",
+      "source": "Docs/SportsUI/color-icons/target.svg",
+      "sha256": "c157700b303f1809255041f24d94e0a7ea002580ad60191e1588251dfbc811ea",
+      "cell": 5
+    },
+    {
+      "name": "flag-checkered",
+      "source": "Docs/SportsUI/color-icons/flag-checkered.svg",
+      "sha256": "edcfecc11e01f14045e5eda4ecd8f16ed1370cc10f64055aab7ab9d0dd7c76aa",
+      "cell": 6
+    },
+    {
+      "name": "users-three",
+      "source": "Docs/SportsUI/color-icons/users-three.svg",
+      "sha256": "c0c4668288efef26f2c446b31a2d1df6df1ed65976ccdc2036fe49a9c7876454",
+      "cell": 7
+    }
+  ]
+}
