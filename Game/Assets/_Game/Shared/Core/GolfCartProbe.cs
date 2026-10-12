@@ -138,20 +138,20 @@ namespace WhatTheFish {
   }
   IEnumerator OfflineAudit(){
    var actor=app.LocalAthlete;var key=GolfCartWorld.Key(actor);Place(actor,SafeSite(actor));yield return new WaitForSeconds(.3f);
-   Check(Button(true).button.interactable&&Button(true).label.text.StartsWith("召唤"),"CART_SUMMON_UI");
-   var font=Button(true).label.font;Check(font&&"召唤收回驾驶离开".All(font.HasCharacter),"CART_CHINESE_GLYPHS_EMBEDDED");
+   Check(Button(true).button.interactable&&Button(true).label.text.StartsWith("Buggy"),"CART_SUMMON_UI");
+   var font=Button(true).label.font;Check(font&&"BuggyRecallDriveExit".All(font.HasCharacter),"CART_ENGLISH_GLYPHS_EMBEDDED");
    Check(!Button(false).button.interactable,"CART_DRIVE_HIDDEN_WHEN_NO_CART");
    Button(true).Press();yield return new WaitForSeconds(.4f);var cart=GolfCartWorld.Owned(actor);
-   Check(cart&&GolfCartWorld.Count==1&&Button(true).label.text.StartsWith("收回"),"CART_SUMMON_CHANGES_SAME_BUTTON");if(!cart)yield break;
+   Check(cart&&GolfCartWorld.Count==1&&Button(true).label.text.StartsWith("Recall"),"CART_SUMMON_CHANGES_SAME_BUTTON");if(!cart)yield break;
    Check(cart.wheelPivots.Length==4&&cart.wheelPivots.All(p=>p&&p.GetComponentsInChildren<MeshRenderer>(true).Length==3),"CART_FOUR_MOVABLE_WHEELS_ALL_THREE_LODS");
    Check(cart.GetComponent<LODGroup>().GetLODs().All(l=>l.renderers.Length==5),"CART_BODY_AND_FOUR_WHEELS_IN_EVERY_LOD");
    Check(!GolfCartWorld.Execute(actor,GolfCartAction.Summon,key)&&GolfCartWorld.Count==1,"CART_ONE_PER_PLAYER");
    Check(!GolfCartWorld.Execute(actor,GolfCartAction.Recall,12345)&&GolfCartWorld.HasCart(actor),"CART_RECALL_REJECTS_WRONG_OWNER");
    Check(!GolfCartWorld.Execute(actor,GolfCartAction.Drive,key),"CART_DRIVE_REJECTS_DISTANCE");
    Place(actor,Beside(cart));yield return new WaitForSeconds(.3f);
-   Check(Button(false).button.interactable&&Button(false).label.text.StartsWith("驾驶"),"CART_DRIVE_VISIBLE_NEAR_EMPTY_CART");Capture("parked");
+   Check(Button(false).button.interactable&&Button(false).label.text.StartsWith("Drive"),"CART_DRIVE_VISIBLE_NEAR_EMPTY_CART");Capture("parked");
    Button(false).Press();yield return new WaitForSeconds(.35f);
-   Check(GolfCartWorld.Driving(actor)==cart&&!actor.capsule.enabled&&Button(false).label.text.StartsWith("离开"),"CART_DRIVE_UI_ENTERS_SEAT");
+   Check(GolfCartWorld.Driving(actor)==cart&&!actor.capsule.enabled&&Button(false).label.text.StartsWith("Exit"),"CART_DRIVE_UI_ENTERS_SEAT");
    Check(!actor.CanRequestJump,"CART_DRIVER_CANNOT_JUMP");actor.RequestJump();Check(!actor.LoadingJump&&!actor.Airborne,"CART_DRIVER_JUMP_REJECTED");
    Check(SeatGap(actor)<.02f,"CART_SEATED_HIP gap="+SeatGap(actor));
    CheckPose("ENTRY");
@@ -202,7 +202,7 @@ namespace WhatTheFish {
    app.view.mode=1;app.view.yaw=51;yield return new WaitForSeconds(.2f);Check(Mathf.Abs(Mathf.DeltaAngle(51,CameraYaw))<.1f,"CART_EXIT_RESTORES_NORMAL_CAMERA_WITHOUT_REVERSE_OFFSET");
    actor.RequestJump();yield return new WaitForSeconds(.25f);Check(actor.Airborne,"CART_EXIT_RESTORES_JUMP");yield return new WaitForSeconds(.6f);
    Place(actor,Beside(cart));yield return new WaitForSeconds(.2f);app.view.RequestCartUse();yield return new WaitForSeconds(.3f);app.view.RequestCartToggle();yield return new WaitForSeconds(.4f);
-   Check(!GolfCartWorld.HasCart(actor)&&!GolfCartWorld.Driving(actor)&&actor.capsule.enabled&&GolfCartWorld.Count==0&&Button(true).label.text.StartsWith("召唤"),"CART_RECALL_OCCUPIED_EJECTS_AND_REMOVES");
+   Check(!GolfCartWorld.HasCart(actor)&&!GolfCartWorld.Driving(actor)&&actor.capsule.enabled&&GolfCartWorld.Count==0&&Button(true).label.text.StartsWith("Buggy"),"CART_RECALL_OCCUPIED_EJECTS_AND_REMOVES");
    Place(actor,SafeSite(actor));yield return new WaitForSeconds(.2f);app.view.RequestCartToggle();yield return new WaitForSeconds(.3f);cart=GolfCartWorld.Owned(actor);var parked=cart.transform.position;
    Place(actor,Beside(cart));yield return new WaitForSeconds(.2f);app.view.RequestCartUse();yield return new WaitForSeconds(.3f);Check(GolfCartWorld.Driving(actor)==cart,"CART_DRIVER_BEFORE_ISLAND_SWITCH");
    var streaming=app.environments.GetComponent<SkySailStreaming>();
@@ -343,7 +343,7 @@ namespace WhatTheFish {
    if(app.rooms.Host)Check(guest.capsule.enabled&&guest.Grounded,"CART_NETWORK_RECALL_RESTORES_GUEST_CONTROLLER");
    if(app.rooms.Host){Place(host,SafeSite(host));yield return new WaitForSeconds(.2f);app.view.RequestCartToggle();}yield return new WaitForSeconds(.5f);
    Check(GolfCartWorld.Count==2,"CART_NETWORK_OWNER_CAN_SUMMON_AGAIN");
-   if(!app.rooms.Host){Check(!Button(true).label.text.StartsWith("召唤"),"CART_NETWORK_UI_USES_LOCAL_OWNERSHIP");Record("CART_NETWORK_COMPLETE");yield return new WaitForSeconds(1.2f);var leave=app.rooms.Leave();while(!leave.IsCompleted)yield return null;}
+   if(!app.rooms.Host){Check(!Button(true).label.text.StartsWith("Buggy"),"CART_NETWORK_UI_USES_LOCAL_OWNERSHIP");Record("CART_NETWORK_COMPLETE");yield return new WaitForSeconds(1.2f);var leave=app.rooms.Leave();while(!leave.IsCompleted)yield return null;}
    else {yield return new WaitForSeconds(1.2f);Check(GolfCartWorld.Count==1&&GolfCartWorld.HasCart(host)&&!GolfCartWorld.HasCart(guest),"CART_NETWORK_DISCONNECT_REMOVES_ONLY_LEAVING_OWNER");Record("CART_NETWORK_COMPLETE");}
   }
  }

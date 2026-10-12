@@ -63,7 +63,7 @@ namespace WhatTheFish {
    if(command.cartAction!=GolfCartAction.None)GolfCartWorld.Execute(this,command.cartAction,command.cartOwner);
    if(GolfCartWorld.Simulate(this,command,dt))return;
    if(!capsule.enabled)return;remote=false;
-   if(FootballMatch.BlocksMovement){FootballEffort.Stop();Charging=false;speed=0;return;}
+   if(FootballMatch.BlocksMovement||GolfMatchManager.BlocksMovement){FootballEffort.Stop();Charging=false;speed=0;return;}
    if(FootballMatch.BlocksActions){command.dash=command.pressure=command.kick=command.tackle=command.jump=command.shoot=command.pass=command.steal=command.charging=false;}
    if(FootballBall.Instance)FootballBall.Instance.RefreshControl(this);
    if(command.jump)RequestJump();

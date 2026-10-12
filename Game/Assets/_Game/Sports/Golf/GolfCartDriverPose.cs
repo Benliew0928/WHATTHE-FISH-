@@ -26,9 +26,9 @@ namespace WhatTheFish {
    // Extend both legs forward into the footwell without bending the knees.
    SeatLeg(leftThigh,leftShin,leftFoot,forward,up);
    SeatLeg(rightThigh,rightShin,rightFoot,forward,up);
-   var stance=athlete.GetComponent<TurnFootPlacement>();
-   if(stance){leftFoot.rotation=cart.transform.rotation*stance.left.initialRotation;rightFoot.rotation=cart.transform.rotation*stance.right.initialRotation;}
-   FaceFoot(leftFoot,forward);FaceFoot(rightFoot,forward);
+   // Pitch the feet naturally downward from the straight leg for a relaxed seated pose.
+   if(leftFoot&&leftShin)leftFoot.rotation=Quaternion.AngleAxis(-22,right)*leftShin.rotation;
+   if(rightFoot&&rightShin)rightFoot.rotation=Quaternion.AngleAxis(-22,right)*rightShin.rotation;
    var wheel=cart.seat.position+forward*.53f+up*.20f;
    Solve(leftArm,leftForearm,leftHand,wheel-right*.12f,-right-up*.4f);
    Solve(rightArm,rightForearm,rightHand,wheel+right*.12f,right-up*.4f);

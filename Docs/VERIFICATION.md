@@ -1,5 +1,262 @@
 # Verification records
 
+## Golf cart English button labels — 12 October 2026
+
+`AppRoot` and `GolfCartButton` now display **Buggy**, **Recall**, **Drive** and
+**Exit** for the four cart states. Desktop R/E hints remain. The controls use
+the existing Cove display font because the old Chinese subset does not contain
+the required Latin letters; no new font asset is added. `GolfCartProbe`'s
+existing label and font assertions are updated to match the requested wording.
+
+`Builds/GolfCartQA/Run-20261012-214905/` passes the four button-state checks,
+English glyph coverage and recall label reset. The complete cart suite is
+**not fully passing**: seated-toe direction checks fail at about 64 degrees
+in offline and network poses. The previous WindowsFinal player also reproduces
+the same failures in `Builds/GolfCartLabelsQA/baseline.txt`; these are pre-existing
+pose issues, not a label regression. Both network runs reach completion.
+The existing driving pose is outside this wording change's scope.
+
+The suite records **163 offline passes / 8 toe failures**, **23 host passes /
+2 toe failures**, and **23 client passes / 2 toe failures**. The complete Windows
+candidate built at **21:48 Malaysia time** was promoted to `Builds/WindowsFinal/`;
+**318 copied files** match SHA-256 before note updates. Prior player and trial
+build are archived in `Legacy/20261012-215214-980-golf-cart-labels/`.
+The build includes the existing uncommitted workspace snapshot.
+
+AndroidSubmission was attempted and again failed with Gradle's loopback
+connection error. The stale October 5 APK remains **89,230,290 bytes** before
+and after, with **10,769,710 bytes** to the hard boundary; it exceeds the
+development target by **14,230,290 bytes**. This change's Android size is
+unverified. The latest size audit's failure log/report are fresh, while APK
+contributor CSVs still describe the older APK. No new asset was added.
+
+## Golf forward gaze during swing — 12 October 2026
+
+The head previously inherited the complete 65-degree torso turn. In
+`GolfClubMotion.LateUpdate`, its animated world rotation is now captured before
+the procedural spine/chest adjustment and restored with only **8%** of chest
+yaw and **15%** of address pitch. This keeps the forward gaze with at most
+**5.2 degrees** of yaw and **2.7 degrees** of nod. Head position still follows
+the neck naturally. The bone restore path retains ordinary carry/walk animation;
+arm geometry, grip targets, swing timing and gameplay are unchanged.
+
+Rendered run `Builds/GolfMiniGameQA/Run-20261012-212731/` passes **158 assertions**.
+The new full-backswing and three-strength continuous head checks pass, with
+maximum combined deviation **5.858 degrees**. The existing arm reach, grip,
+contact and recovery checks also pass. The full-charge front screenshot was
+inspected: torso/arms turn sideways while the face remains directed forward.
+Build/test evidence is under `Builds/GolfHeadQA/`.
+
+Network run `Builds/GolfMiniGameQA/Run-20261012-212809/` passes **21 host /
+22 client** assertions. The complete Windows player built at **21:27 Malaysia
+time** was promoted to `Builds/WindowsFinal/`, with **318 copied files** matching
+SHA-256 before its note update. The previous player is archived in
+`Legacy/20261012-212909-820-golf-head/`. This is the current uncommitted workspace
+snapshot, including unrelated pre-existing changes.
+
+AndroidSubmission again failed with Gradle's `Unable to establish loopback
+connection`. APK before/after is the stale **89,230,290-byte** October 5 output:
+**10,769,710 bytes** below the hard boundary and **14,230,290 bytes** above the
+development target. Fresh APK size and phone appearance remain unverified.
+The latest audit log/report show the failed attempt; APK contributor CSVs
+still describe the older build, not this change.
+
+## Golf extended backswing — 12 October 2026
+
+The user's new recording shows both hands retracting to the chest while Swing
+is held. The old `shoulder + (0.12, 0.08, 0.12)` backswing endpoint caused this:
+full-charge wrist reach was about **57% / 30%** of left/right arm length,
+with elbow flexion about **111 / 145 degrees**. Correct address placement and
+palm orientation alone could not fix the separate charge endpoint.
+
+`GolfClubMotion.SwingArcGrip` replaces that endpoint with an outward arc.
+The shoulder turn follows the same signed phase as the hands. Each wrist's
+measured arm length and rotated palm offset define a sphere for the shared
+right-grip position; the left sphere also includes the actual grip-marker
+separation. The closest point on their intersection circle fits both hands
+to a common club pose. Reach blends continuously from the approved address
+to **96%** at full backswing, retaining soft elbows. The modest upward arc
+keeps the hands below the large cartoon head. Contact fitting happens before
+the chest turn so it does not resize the club to compensate for a backswing.
+The elbow pole now follows the current swing phase, including recovery.
+
+The existing 0.10-second contact and 0.74-second swing duration remain. The
+last 0.30 seconds now ease back to address before the busy state ends.
+Grip markers, opposing palm normals, Aim activation and procedural two-bone
+IK remain; ball physics, charge power, trajectories, scores and authority
+were not changed by this revision.
+
+`GolfMatchProbe` adds full-backswing reach/lateral-extension assertions,
+front/side charge captures and exact-clock pose sweeps at **8%, 50%, 100%**
+shot strength. The sweep evaluates the real procedural pose every 10 ms
+without issuing a shot. Rendered evidence
+`Builds/GolfMiniGameQA/Run-20261012-211558/` passes **154 assertions**.
+Each sweep has grip error approximately **0.00001 m**, contact error rounded
+to **0.00000 m**, and minimum arm reach **93%**. Maximum 10 ms movement
+across both palms/elbows is **19.63 / 36.49 / 68.02 mm** for those strengths;
+the last recovery samples stay below **12.72 mm** per step. These are fixed
+animation-frame sweeps, supplemented by the existing live shot tests, not
+phone frame-rate measurements.
+
+At full backswing both wrist reaches are **96%** with about **33 degrees**
+of elbow flexion; half-charge reaches are about **94% / 97%**. Front, side
+and oblique captures show the hands extended to the golfer's right, below
+the shoulders. Address, carry, charge, contact, follow-through and recovery
+checks pass. Evidence and build logs are retained under
+`Builds/GolfBackswingQA/`; extracted user-video frames are in its `Video/`.
+
+Final network evidence `Builds/GolfMiniGameQA/Run-20261012-211639/` passes
+**21 host / 22 client** assertions. The complete Windows player built at
+**21:15 Malaysia time** was promoted to `Builds/WindowsFinal/`; all **318**
+copied files matched SHA-256 before the delivery-note update. The old running
+player was closed under the user's prior authorization. Its complete directory,
+two superseded trial players and the temporary decoder dependency are archived
+in `Legacy/20261012-211800-416-golf-backswing/`. The delivery includes the existing
+uncommitted workspace snapshot and unrelated pre-existing changes.
+
+AndroidSubmission was retried on the final source and again failed with
+Gradle's `Unable to establish loopback connection`. APK before/after remains
+**89,230,290 bytes** (old October 5 output), leaving **10,769,710 bytes** to
+the strict limit and exceeding the development target by **14,230,290 bytes**.
+No fresh Android size or phone appearance is validated. The latest size-audit
+failure log/report are current, while the APK contributor CSV is stale;
+its largest compressed entries remain IL2CPP **11,193,548** and Unity
+**9,066,688 bytes**, not measurements of the new source.
+
+## Golf opposing palm orientation — 12 October 2026
+
+The user approved the arm placement and requested only palm roll: right palm
+faces the golfer's left, and left palm faces the golfer's right. The previous
+two-hand pose used the club's local X axis, which points up/down in address.
+`GolfClubMotion` now uses opposing club-face normals (local +Z / -Z), including
+the wrist-offset calculation in `ContactGrip`. The same club-relative normals
+follow the backswing and follow-through. Grip markers, arm preference, elbow
+poles, torso lean, carry orientation, Aim behavior and gameplay are unchanged.
+The existing fit makes a small adjustment for the rotated palm-to-wrist offset.
+
+Rendered offline evidence `Builds/GolfMiniGameQA/Run-20261012-205330/` passes
+**146 assertions**, including the new palm-direction regression. Right palm
+dot golfer-left is **0.9994**; left palm dot golfer-right is **1.0000**.
+Address and contact grip/head-target errors round to **0.0000 m**. Address
+left/right wrist reach is **92.7% / 98.0%**, and hand height above hips is
+**0.145 / 0.106 m**. The original forward-arm and settled-pose checks pass;
+maximum settled palm movement is **2.03 mm**. Front, side and oblique address
+captures were inspected. Carry, charge 0/50/100%, contact, follow-through,
+recovery and Aim exit checks also pass. Network run
+`Builds/GolfMiniGameQA/Run-20261012-205403/` passes **21 host / 22 client**
+assertions; this is same-machine network validation, not separate-device QA.
+
+The full tested Windows player was promoted to `Builds/WindowsFinal/` and
+**318 copied files** matched SHA-256. The previous player is archived in
+`Legacy/20261012-205457-848-golf-palms/`. The candidate was built at 00:35
+Malaysia time and validated/promoted at 20:53–20:55; its source is the existing
+uncommitted workspace snapshot, including unrelated pre-existing changes.
+
+AndroidSubmission was attempted again and failed in Gradle initialization with
+`java.io.IOException: Unable to establish loopback connection`. Before/after
+APK size remains **89,230,290 bytes**, leaving **10,769,710 bytes** to the hard
+boundary and exceeding the development target by **14,230,290 bytes**. This
+October 5 APK is stale; the palm fix has no validated Android build or phone
+preview. `Builds/SizeAudit/latest/` contains fresh failure logs/report, but its
+APK CSVs remain stale (largest entries: IL2CPP 11,193,548 bytes and Unity
+9,066,688 bytes compressed); they cannot establish this revision's size delta.
+`Check-TaskReady.ps1` and `git diff --check` pass. No Git publishing was done.
+
+## Golf drawn arm and club reference — 12 October 2026
+
+This revision supersedes the preceding address fit. The user's annotated side
+view requires the arms to extend ahead of the torso and the club to stand more
+upright. The prior waist-relative preference kept hands too close to the body;
+independent left-marker sliding also collapsed the hand separation. Reach and
+finger-axis checks alone did not establish the requested silhouette.
+
+`GolfClubMotion.ContactGrip` now starts from the measured shoulder midpoint,
+average arm length and a forward/downward hand preference. Continuous local
+refinement evaluates both wrist targets using the same palm normals and offsets
+as runtime IK, penalizes unreachable targets and hands falling back toward the
+torso, and retains the authored relative grip-marker positions. The full visual
+club is uniformly fitted to the head-to-grip distance, instead of moving hands
+down the shaft. At address its scale is approximately 69% of authored size;
+the carry scale and marker positions are restored outside the two-hand pose.
+The original arm lengths, procedural IK, shot physics and authority are retained.
+The torso leans 18 degrees. Existing Aim, charge and swing states continue to
+activate the shared local/remote pose.
+
+The graphics-enabled run `Builds/GolfMiniGameQA/Run-20261012-002114/` passes
+**145 assertions**. Added regression checks cover hand position ahead of the
+shoulders, low hands, shaft inclination, distinct grip positions and settled
+pose stability. Address palms are **0.219 m ahead of the shoulder midpoint**;
+shaft inclination is **26.63 degrees from vertical**; maximum settled palm
+movement per sampled frame is **1.49 mm**. Left/right wrist reaches are
+**93.7% / 98.0%**, hand heights above the hip joint **0.158 / 0.117 m**,
+and reported grip and head-target errors round to **0.0000 m**. Contact wrist
+reaches are **98.0% / 96.5%**, with the same rounded-zero errors. Captures include
+front, side, oblique, charge, contact, follow-through and carry views.
+These measurements establish the revised silhouette and attachment, not literal
+collinearity of both arms with one shaft or physical-phone performance.
+
+Network evidence `Builds/GolfMiniGameQA/Run-20261012-002158/` passes **21 host /
+22 client assertions**. With explicit user authorization, the old Windows
+player was closed and the complete tested candidate promoted to
+`Builds/WindowsFinal/`; **318 copied files** were independently hash compared.
+The superseded player and temporary source backup are recoverable in
+`Legacy/20261012-002315-447-golf-red-frame/`. The build includes the existing
+uncommitted workspace changes; it is not a clean-commit build.
+
+AndroidSubmission was attempted for this revision but Gradle again failed with
+`Unable to establish loopback connection`. The APK before and after the attempt
+remains **89,230,290 bytes**, with **10,769,710 bytes** to the hard boundary;
+this is a stale baseline, **not validation of the revised code**. A fresh APK
+size and phone appearance remain unverified. The failed build evidence is under
+`Builds/SizeAudit/latest/` and `Builds/GolfRedFrameQA/`.
+
+## Golf address pose and Aim stance — 11 October 2026
+
+`GolfClubMotion` derives the contact grip from measured arm geometry,
+waist/shoulder positions and the club's head-to-`rightGrip` distance. It uses
+the physical head-to-handle axis for both hand rotations, so fingers follow the
+visible shaft rather than an authored marker rotation. During the two-hand pose,
+the real grip markers move down the shaft by the measured club-length/arm-span
+difference, capped at 25% of club length. The left wrist then receives the
+smallest additional along-shaft shift needed to reach 92% of its actual
+two-bone length. This corrects the asymmetric left palm offset without moving
+the club root, club head or right-hand target. One-handed carry restores the
+authored markers unchanged.
+
+Aim drives the same two-hand address for local and replicated players before
+charging. The address stance is taken at 64% of the sanctioned golf reach,
+which places the compact golfer over the lower handle without changing swing,
+ball, score or authority code. The address elbow pole keeps the residual bend
+behind the torso, so the forearms project down the shaft rather than flaring
+away from it. `GolfMatchProbe` records both grip errors, club-head target
+distance, reachability, wrist reach fractions, finger/forearm-to-shaft angles,
+elbow angles and hand height.
+
+The latest graphics-enabled offline run passed all **141 checks**, including
+carry, Aim/address, 0/50/99% charge, contact, follow-through, recovery and
+carry grip-skin checks. Both grip errors and club-head target error were
+**0 mm**. At address, both wrists were reachable at **92% left / 98% right**
+of their actual arm lengths; finger axes were **0 degrees** from the shaft;
+forearm-to-shaft angles were **22 degrees left / 28 degrees right**; and hands
+were **0.10–0.11 m** above the hip joint. At contact, reach was **92% / 95%**
+with zero grip and head-target error. Front, side and gameplay-camera captures
+are in `Builds/GolfMiniGameQA/Run-20261011-235555/`.
+
+The final host/client suite passed **21 host and 20 client assertions**,
+including replicated Aim address before charge, local address, both-hand charge
+and remote shot authority. Evidence: `Builds/GolfMiniGameQA/Run-20261011-235628/`.
+
+A complete Windows candidate with the updated grip markers was built at
+`Builds/GolfAddressPoseQA/Player/`. It could not be promoted to
+`Builds/WindowsFinal/` because the previous
+`WhatTheFish.exe` was still running and Windows denied moving the locked player
+directory. The running process was left untouched. The AndroidSubmission build
+was retried after the final pose change and again reached Gradle but failed with
+`java.io.IOException: Unable to establish loopback connection`. The APK remains
+the pre-task **89,230,290-byte** artifact; its **10,769,710-byte** hard-limit
+headroom is a baseline measurement only and does not verify this change. No
+fresh Android size or signature result is claimed.
+
 ## Golf sticker HUD — 10 October 2026
 
 The complete final Windows player was fully built at **14:37:46 Malaysia

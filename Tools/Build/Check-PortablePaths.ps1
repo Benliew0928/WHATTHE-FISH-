@@ -71,13 +71,19 @@ $reader = $null
 try {
     if ($Staged) {
         $start = [Diagnostics.ProcessStartInfo]::new('git')
-        foreach ($argument in @('-C', $repoRoot, 'cat-file', '--batch')) { $start.ArgumentList.Add($argument) }
+        if ($start.PSObject.Properties['ArgumentList'] -and $start.ArgumentList -ne $null) {
+            foreach ($argument in @('-C', $repoRoot, 'cat-file', '--batch')) { $start.ArgumentList.Add($argument) }
+        } else {
+            $start.Arguments = "-C `"$repoRoot`" cat-file --batch"
+        }
         $start.UseShellExecute = $false
         $start.CreateNoWindow = $true
         $start.RedirectStandardInput = $true
         $start.RedirectStandardOutput = $true
         $start.RedirectStandardError = $true
-        $start.StandardInputEncoding = [Text.UTF8Encoding]::new($false)
+        if ($start.PSObject.Properties['StandardInputEncoding']) {
+            $start.StandardInputEncoding = [Text.UTF8Encoding]::new($false)
+        }
         $reader = [Diagnostics.Process]::Start($start)
         # Git expects LF-delimited object expressions; do not append Windows CR.
         $reader.StandardInput.NewLine = "`n"
