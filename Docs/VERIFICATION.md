@@ -257,6 +257,1168 @@ the pre-task **89,230,290-byte** artifact; its **10,769,710-byte** hard-limit
 headroom is a baseline measurement only and does not verify this change. No
 fresh Android size or signature result is claimed.
 
+## Combined Football, Basketball and Fishing release — 12 October 2026
+
+The newest pulled commit is `eaad195` (Football props, UI and audio). All incoming
+networking/multiplayer logic is retained. Only independent Fishing timestamped
+Hook edges extend its networking file; combined **protocol 46** distinguishes
+the new Fishing recap wire schema from both previous builds. Matching builds
+are required. Four islands, one activity per room and shared travel remain.
+
+Full Windows content build finished **18:00:21 Malaysia time**
+(`2026-10-12T10:00:21.3354160Z`). Successful scripts refreshes for guarded
+countdown/menu reviews retain every scene, asset and runtime file; the final
+refresh finished **18:29:53** (`2026-10-12T10:29:53.2206829Z`). The complete
+candidate was promoted to `Builds/WindowsFinal/`: **321 runtime/support files
+plus LATEST-BUILD.txt, 322 total**. All 321 hashes match the tested source player.
+Only `boot.config`, `Assembly-CSharp.dll` and `Assembly-CSharp.pdb` differ from
+the full content build. Launch `Explore-Fishing.cmd` or `Explore-Football.cmd`.
+
+Selected relevant reports contain **4,152 counted PASS assertions across
+22 reports**, zero FAIL lines and successful completion:
+
+| Suite | Passing assertions | Current evidence under Builds |
+| --- | ---: | --- |
+| Fishing gameplay | 1,099 | `FishingGameplayQA/Run-20261012-180140/offline.txt`; `FishingGameplayQA/Run-20261012-180140/host.txt`; `FishingGameplayQA/Run-20261012-180140/client.txt` |
+| Fishing feedback/results | 146 | `FishingPolishQA/Run-20261012-180334/polish.txt` |
+| Football UI | 756 | `FootballUIQA/Run-20261012-180348-401/results.txt` |
+| Basketball UI | 434 | `BasketballUIQA/Run-20261012-180411-152/results.txt` |
+| Football audio offline | 49 | `FootballAudioQA/Offline-20261012-180434-938/offline/results.txt` |
+| Football audio local | 65 | `FootballAudioQA/Local-20261012-180523-653/host/results.txt`; `FootballAudioQA/Local-20261012-180523-653/guest/results.txt` |
+| Football Explore abilities | 162 | `FootballPropsQA/Explore-20261012-180630-021/offline/results.txt` |
+| Football four-player abilities | 225 | `FootballPropsQA/Local-20261012-181824-344/host/results.txt`; `FootballPropsQA/Local-20261012-181824-344/guest/results.txt`; `FootballPropsQA/Local-20261012-181824-344/teammate/results.txt`; `FootballPropsQA/Local-20261012-181824-344/rival/results.txt` |
+| Basketball audio local | 55 | `BasketballAudioQA/Local-20261012-182015-061/host/results.txt`; `BasketballAudioQA/Local-20261012-182015-061/guest/results.txt` |
+| Football match | 291 | `FootballMatchQA/Run-20261012-182054/offline.txt`; `FootballMatchQA/Run-20261012-182054/host.txt`; `FootballMatchQA/Run-20261012-182054/client.txt` |
+| Golf HUD | 56 | `GolfHUDQA/Run-20261012-182127/golf-hud.txt` |
+| Storybook menus | 699 | `StorybookMenuQA/Run-20261012-182953/offline/results.txt` |
+| Stadium camera | 115 | `BroadcastCameraQA/Reviews/1280x720-20261012-182412-282/results.txt` |
+
+
+Counts come from `PASS ` report lines. Fishing's guest report has 34 such lines
+although its terminal counter says 32; the two recap assertions are present.
+Actual local Fishing/audio tests use two processes; Football ability ownership,
+Wall collision, Portal transfer, scoring and cleanup use four actual processes.
+The four-player Football pass uses a **D3D11 host at 640×360 and three headless
+peers**. Shader/material checks run on the rendered host; peer visual quality
+is not established. The solo Explore pass separately renders at 1600×900 and
+checks natural five-second countdown timing and all ability models.
+
+The native Football/Basketball UI reviews verify their current illustrated
+controls and touch ownership. The older generic SportsHUD review predates
+these skins and is excluded from current qualification. A menu review now
+accepts the native press-feedback component as well as Cove feedback, retaining
+the requirement on every active button. The countdown review samples each
+deliberate digit at a fresh relative deadline after rendering; natural timing
+is tested separately. The camera fixture clears the legitimate stranded-ball
+inbound state before testing ordinary movement. All these changes are guarded
+by `UNITY_EDITOR || DEVELOPMENT_BUILD`; shipping rules are unchanged.
+
+Earlier headless/rendered countdown and stale menu failures remain diagnostic
+evidence and are excluded. No failed/incomplete run is counted as a pass.
+Reports span the full build and later development-review refreshes: this is
+**not a claim that every report ran against the exact final DLL**. Shipping
+source and full serialized content are unchanged between these review refreshes.
+Both current native settings captures were inspected for clear text and contained
+controls. Automated audio checks verify event/playback state, not human listening.
+
+The Windows source manifest covers **3,668 Game inputs** across Assets,
+Packages and ProjectSettings, including binary assets and metadata. Editable
+masters and Tools outside Game are not covered by that manifest. Post-Android
+source differences are recorded separately; regenerated Golf prefab IDs are
+restored only after all **14 complete object graphs and external references**
+match the exact incoming indexed prefab. No player bytes are changed by that
+source-only restoration. Unity's platform-resource registration is generated
+metadata, not a gameplay source change.
+
+Fresh AndroidSubmission written **18:42:22 Malaysia time** measures
+**90,139,324 bytes**, with **9,860,676 bytes** to the strict
+100,000,000-byte boundary and **15,139,324 bytes** over the 75 MB
+development target. Budget and independent APK v2 signature checks pass.
+[Size and SHA-256](BUILD-SIZE.md#combined-football-basketball-and-fishing-release--12-october-2026),
+[packing comparison](APK-SIZE-AUDIT.md#combined-football-basketball-and-fishing-release--12-october-2026). All 13 checked executable
+review types are absent from the release metadata.
+
+Current manifests, proof of retained incoming networking, 22-report hashes,
+failed diagnostics and APK comparison are under
+`Builds/Publish/20261011-225324-fishing-merge/`. Earlier protocol44 candidate,
+Fishing-only APK/audit and complete Windows player are recoverable in
+`Legacy/20261012-175411-814-combined44-player-superseded/`,
+`Legacy/20261012-131303-811-fishing-basketball-before-android/` and
+`Legacy/20261012-183239-088-latest-sports-fishing-windows-delivery/`.
+The superseded review draft is in
+`Legacy/20261012-184043-253-superseded-combined44-review-draft/`.
+Reviewed archives were losslessly compressed with every manifest hash verified.
+No file content was deleted or Git history rewritten.
+
+New Fishing celebrations and physical-phone testing remain deferred. Windows
+captures do not establish phone touch, sound/vibration, graphics, FPS/heat or
+WAN latency. The 75 MB development goal remains unmet.
+
+## Approved football audio — 12 October 2026
+
+All preview sounds are approved and integrated: **80 clips / 54 runtime action
+families**, including 25 shared basketball clips. Kicks, contacts, movement,
+abilities, match transitions and UI feedback follow resolved gameplay or the
+presented pose/state. The Sound page exposes the four shared volume preferences.
+Network protocol **45** requires matching builds.
+
+The complete Windows player built at **17:01:39 Malaysia time** is delivered in
+`Builds/WindowsFinal/`. **322 files** match the tested candidate before updating
+`LATEST-BUILD.txt`; **321 runtime/support files** remain identical. Launch
+`Builds/WindowsFinal/Explore-Football.cmd`. The existing solid Wall and enlarged
+spawn displays are included.
+
+| Suite | Passing assertions | Evidence under Builds |
+| --- | ---: | --- |
+| Football audio, actual offline actions | 49 | `FootballAudioQA/Offline-20261012-170153-895/` |
+| Host/client audio events and presentation | 65 | `FootballAudioQA/Local-20261012-170153-913/` |
+| Explore football props, solid Wall and spawn displays | 162 | `FootballPropsQA/Explore-20261012-170351-716/` |
+| Shared basketball audio regression | 35 | `BasketballAudioQA/Offline-20261012-170351-715/` |
+| Football UI layout and controls, initial audio build | 756 | `FootballUIQA/Run-20261012-165705-468/` |
+
+**311 assertions** pass on the delivered player. The **756 UI assertions** use
+the initial audio build before contact/presentation refinements; final UI layout
+sources are unchanged. The final Sound page was separately rendered and visually
+checked. No targeted errors occur in six retained runtime logs. The client
+receives **21 unique live event IDs** with no duplicates or stale drops.
+Tests include physical frame/net/turf contacts, whole-ball scoring, stationary
+silence, held-button deduplication, Portal phases, Turbo muting/expiry, Wall
+impact/expiry, continuous overtime, final whistle and win/loss/draw results.
+
+An initial frame-contact test exposed pitch containment preceding the PhysX
+callback. The correction checks actual post/crossbar geometry and uses the same
+repeat gate; it changes audio classification only. The failed diagnostic run is
+archived and the corrected offline/network cases pass.
+
+All **80 WAV hashes** regenerate offline from a path with spaces and unrelated
+working directory. **212 compiled runtime source documents** match the current
+source. After Android, **3,650/3,652 Game inputs** match; generated Golf prefab IDs
+and URP resource registration differ. Complete delivery and source hashes are
+retained under `Builds/FootballAudioQA/`.
+
+Fresh AndroidSubmission measures **90,099,410 bytes (+240,376)** with
+**9,900,590 bytes** to the hard boundary. It remains **15,099,410 bytes** above
+the 75 MB development target. Budget and APK v2 signature checks pass. New clips
+add 190,152 serialized bytes; shared clips are not duplicated and every existing
+packed asset size and all 1,788 mesh records match. See [size](BUILD-SIZE.md),
+[audit](APK-SIZE-AUDIT.md) and [implementation/archive list](FOOTBALL-AUDIO.md).
+No connected phone; device listening, touch, visuals/FPS and WAN latency remain
+unverified. Automated audio checks confirm triggering/playback state, not human
+listening quality. No Git staging, commit or push was performed.
+
+## Physical football wall and larger spawn displays — 12 October 2026
+
+The 15-second wall now has a solid world-layer box collider on every peer.
+Both teams, including the placer, collide with it. Immediate placement, expiry,
+reset and travel cleanup run independently of the rendered model. Character
+movement retains its swept collision; ball motion retains continuous wall
+sweeps before goal sampling. Placement checks the full player capsule, including
+airborne players, before creating collision.
+
+Countdown digits and pickup displays are four times their original size, with
+matching larger floor projections. The countdown uses an opaque, depth-writing
+dark-blue material. Enlarged pickups sit fully above the turf; pickup distance,
+HUD icons, deployed wall dimensions and other ability effects are unchanged.
+
+The complete Windows player built at **16:20:48 Malaysia time** is delivered in
+`Builds/WindowsFinal/`. **321 files** match the tested player before updating
+`LATEST-BUILD.txt`; the **320 runtime/support files** remain identical. Protocol
+remains **44**. Relaunch `Builds/WindowsFinal/Explore-Football.cmd` for solo play.
+
+**1,660 assertions pass on this player**:
+
+| Suite | Assertions | Evidence under Builds |
+| --- | ---: | --- |
+| Actual Explore Offline, spawn displays and all abilities | 162 | `FootballPropsQA/Explore-20261012-162159-053/` |
+| Four-player abilities, wall collision and owner RPCs | 225 | `FootballPropsQA/Local-20261012-162251-688/` |
+| Football touch controls and multi-viewport UI | 740 | `FootballUIQA/Run-20261012-162251-695/` |
+| Match, scoring, football physics and network regressions | 533 | `FootballMatchQA/Run-20261012-162428/` |
+
+Collision cases cover walking, dash, tackle, jumping, a 250 ms simulation hitch,
+reverse approach, rotated walls, walking around the ends, actual 15-second expiry
+and immediate reset. A guest's real network dash stops at its own wall, and the
+opposing host player also stops. Ball tests cover dribbling, low kicks, lobs,
+side passes, rotated rebounds and a 2,000 m/s same-step wall/goal crossing.
+Natural Explore countdown, non-repeating pickups, fixed halfway anchors,
+unchanged collection distance and four-times display scale also pass.
+
+Rendered countdown, three enlarged pickup designs, deployed wall and ability
+guide captures were inspected. The diagnostic close countdown camera sees the
+back of the digit; it does not drive the player-facing billboard orientation.
+The default centre-pitch stadium captures have the sideline beacon outside the
+viewport and are not evidence of full-pitch camera coverage.
+
+`Builds/FootballPhysicalWallQA/` records assertions, source hashes, full delivery
+hashes and release comparisons. All **208 compiled runtime source documents**
+match. Only one small shared opaque material was added; geometry and textures
+were reused. Fresh AndroidSubmission measures **89,859,034 bytes (+7,526)**,
+with **10,140,966 bytes** to the hard boundary; the 75 MB development target is
+still exceeded by **14,859,034 bytes**. APK v2 signature verification passes.
+After Android, **3,526/3,529 Game inputs** match: generated Golf prefab IDs,
+URP resource registration and the countdown material's unused legacy colour
+alias differ. The rendered base colour, shader and remaining material properties
+match; reconstruction reproduces the exact Windows material source hash.
+See [release size](BUILD-SIZE.md) and [packing audit](APK-SIZE-AUDIT.md).
+Historical delivery records below describe their earlier source snapshots.
+
+Superseded output is recoverable in
+`Legacy/20261012-162621-528-football-solid-before-android/` and
+`Legacy/20261012-162731-407-football-solid-windows/`. No Android device was
+connected. Physical phone touch, visuals/FPS and real WAN latency remain
+unverified. Git staging, commits and publishing remain with the user.
+
+## Football props in Explore Offline — 12 October 2026
+
+The initial ability implementation only ran in formal matches, so ordinary
+Explore Offline showed no countdown or pickup. Solo Explore now enables the
+same ability simulation automatically while the match stays Idle. The local
+player uses Team A for ability rules without changing the match roster or
+turning on scoring. Online practice continues to wait for confirmed teams.
+The five-second hologram, two fixed touchline locations, different consecutive
+kinds, pickup replacement and all three ability rules are unchanged.
+
+The complete Windows player built at **15:53:33 Malaysia time** was promoted to
+`Builds/WindowsFinal/`. All **321 files** matched the tested player by SHA-256
+before updating the release note; **320 runtime/support files** remain identical.
+The delivery still uses protocol **44**. Relaunch `Explore-Football.cmd` from
+that directory to use the updated offline flow.
+
+**1,061 assertions pass on this player**:
+
+| Suite | Assertions | Evidence under Builds |
+| --- | ---: | --- |
+| Actual Explore Offline entry, countdown, collection and abilities | 133 | `FootballPropsQA/Explore-20261012-155355-333/` |
+| Four-player formal match abilities and cleanup | 188 | `FootballPropsQA/Local-20261012-155452-084/` |
+| Football touch controls and multi-viewport UI | 740 | `FootballUIQA/Run-20261012-155502-355/` |
+
+The Explore test never starts a match while checking all three abilities. It
+observes the actual initial five-second countdown without advancing its clock,
+collects the natural first pickup, activates it through the HUD, checks the
+remaining spawn alternatives and exercises Turbo, Portal and Wall in practice.
+It then checks transition into team selection, rejection of old practice
+requests, clean resumption of practice and exit during a pending portal.
+Rendered first-pickup and practice wall-preview captures were inspected. The
+immediate `explore-held-prop` diagnostic capture occurs before the HUD's next
+LateUpdate; use `wall-preview.png` for the rendered ability button in practice.
+
+Source and delivery evidence is under `Builds/FootballExplorePropsQA/`:
+`verification.json`, `windows-delivery.json`, `compiled-source.json`,
+`windows-source.json` and `changed-game-inputs.json`. All **208 compiled runtime
+source documents** match. Only the ability eligibility/team fallback, one guide
+sentence and the development-only review changed in runtime C#; no new asset
+or package was added. Earlier formal-match-only release notes below are historical.
+
+Fresh AndroidSubmission is **89,851,508 bytes (+856)**, with **10,148,492 bytes**
+of hard-boundary headroom. All packed asset sizes match the baseline. The
+75 MB development target remains exceeded by **14,851,508 bytes**. APK v2
+signature and budget gate pass; `Check-TaskReady.ps1 -RequireApk` passes.
+[Size audit](APK-SIZE-AUDIT.md#football-explore-offline-props--12-october-2026).
+After Android, 3,525/3,527 Game inputs match; only generated Golf prefab IDs and
+URP resource registration differ from Windows. Source and football art match.
+
+Prior APK/audit archive:
+`Legacy/20261012-155613-395-football-explore-before-android/`.
+Prior complete Windows player archive:
+`Legacy/20261012-155653-400-football-explore-windows/`.
+Existing unrelated changes are preserved. Git staging, commit and push remain
+with the user. No connected Android phone or real WAN test was available.
+
+## Football abilities — 12 October 2026
+
+Implemented the approved [football abilities](FOOTBALL-ABILITIES.md): 1.5× team
+Turbo for 5 seconds, own-half Portal Steal to the feet, and a 15-second placed
+wall. Added distinct floating football models, illustrated HUD buttons,
+placement preview/confirmation/cancel, team timers and an Abilities guide.
+Two fixed halfway touchline locations use random sides, different consecutive
+kinds and blue translucent 3D countdowns. Practice has no pickups.
+
+The complete Windows player built at **15:25:11 Malaysia time** is now in
+`Builds/WindowsFinal/`. All **321 files** matched the tested
+`Builds/FootballPropsQA/Player/` by SHA-256 before replacing `LATEST-BUILD.txt`
+with the delivery record; the **320 runtime/support files** remain identical.
+The previous delivery was compared against the task-start record before
+replacement. Use matching **protocol 44** players for every room participant.
+
+**1,762 assertions pass on this exact player**, with no test-suite runtime
+exceptions:
+
+| Suite | Assertions | Evidence under Builds |
+| --- | ---: | --- |
+| Four-player football abilities | 188 | `FootballPropsQA/Local-20261012-152539-474/` |
+| Football UI and touch gestures | 740 | `FootballUIQA/Run-20261012-152639-309/` |
+| Football match, goals, ball physics and network ball | 533 | `FootballMatchQA/Run-20261012-152649/` |
+| Network dash, pressure and stamina | 26 | `FootballPaceQA/Reviews/Local-20261012-152722-255/` |
+| Rendered three-player basketball abilities | 275 | `BasketballPropsQA/Local-20261012-153312-161/` |
+
+Football checks cover every countdown digit, both spawn alternatives, replacement
+and stale requests, actual 1.5× walking/sprinting/dashing/dribbling/charging,
+five-second Turbo expiry, team scope, invalid and simultaneous portals,
+interrupted transfers, one controller, wall preview cancellation, bounds and
+overlap rejection, high-speed/rotated/side/top/dribble contacts, ball reach through
+walls, player passage, actual 15-second expiry and contact timing at expiry.
+Wall contact precedes same-step goals; an already crossed goal wins over a
+portal. Goals clear inventory/effects, restart countdowns and invalidate old
+round requests. Offline implementation runs passed 121 and then 125 assertions
+before the final goal-specific additions; those are retained as development
+evidence and are not included in the final 1,762 count.
+
+Inspected actual rendered captures for all three models, the hologram, blue/black
+portal, wall preview, full-height deployed wall, HUD and illustrated guide.
+The final basketball run also verifies the existing two-second lock-on, Turbo,
+portal, rendered materials and countdowns. The first basketball run used
+`-NoCapture`, which cannot satisfy its existing shader-support assertions. A
+rendered run concurrent with Android compilation missed one sampled countdown
+digit during capture. Rerunning the unchanged player with rendering after the
+build passed all 275 assertions; both earlier logs remain in the task evidence.
+
+All **208 compiled runtime source documents** match their PDB hashes. After
+Android, **3,525 of 3,527 Game inputs** match the tested Windows snapshot; only
+generated Golf prefab IDs and URP resource registration differ. Runtime code,
+football meshes/materials/prefabs and icon textures match. The icon generator
+also reproduces its exact output from a relocated path containing spaces with
+an unrelated working directory. New art uses code-native geometry and SVGs,
+with no external binary model dependencies.
+
+Fresh signed AndroidSubmission: **89,699,656 → 89,850,652 bytes (+150,996)**;
+strict hard-boundary headroom **10,149,348 bytes**. APK budget gate, APK v2
+signature and `Check-TaskReady.ps1 -RequireApk` pass. The 75 MB development
+target remains exceeded by **14,850,652 bytes**.
+[Packing audit and hash](APK-SIZE-AUDIT.md#football-abilities--12-october-2026).
+Evidence index: `Builds/FootballPropsQA/verification.json`, `windows-delivery.json`,
+`compiled-source.json`, `source-comparison.json`, `portability.json`,
+`apk-signature.txt` and `task-ready.txt`.
+
+Archives: prior APK/audit in
+`Legacy/20261012-152732-503-football-abilities-before-android/`; previous complete
+Windows player and completed relocation fixture in
+`Legacy/20261012-153553-759-football-abilities-windows/`. No active game asset
+was removed. Existing unrelated workspace changes were preserved; no staging,
+commit or push was performed.
+
+No Android device is connected. Physical touch, phone appearance/FPS and real
+WAN latency remain unverified; local rendered multiplayer runs do not establish
+those results.
+
+## 2D sports action icons — 12 October 2026
+
+Delivered the complete Windows player at **Builds/WindowsFinal/**, compiled
+**14:43:22 Malaysia time** (2026-10-12T06:43:22Z). All **320 runtime/support
+files** match the tested candidate by SHA-256, excluding the release note.
+The executable, Data directory, DLLs, support folders and launchers stay
+together. Use `Explore-Football.cmd` or `Explore-Basketball.cmd`.
+
+Tackle shows a simple 2D cartoon player sliding along the ground; Dash shows
+a forward sprint with golden speed streaks. Shared Jump uses a matching
+leaping figure with upward chevrons and a turquoise/orange lift trail in
+both sports. The wider Tackle sprite excludes empty transparent rows, and
+Jump sits above its label with clear spacing. Fonts, button positions,
+input behavior, timing and gameplay rules remain unchanged.
+
+**1,162 assertions pass across two fresh final-player UI reports**:
+
+- Football: **728**, `Builds/FootballUIQA/Run-20261012-144334-266/`.
+- Basketball: **434**, `Builds/BasketballUIQA/Run-20261012-144334-294/`.
+
+Unity touch-module sequences exercise independent fingers, drag/cancel/release,
+suspension, settings, role changes and far-finish timing. Font-family, glyph,
+text-fit and slider checks pass. Captures cover 1600 × 900, 1280 × 720,
+1560 × 720 and 1600 × 1200. Final football and basketball defense captures
+were inspected for pose clarity and label separation. These Windows previews
+do not establish physical phone appearance, touch latency or frame rate.
+
+Fresh AndroidSubmission: **89,701,824 → 89,699,656 bytes (−2,168)**,
+**10,300,344 bytes** below the hard boundary and **14,699,656 bytes** over the
+development target. Budget enforcement and independent APK v2 verification
+pass. [Packing audit](APK-SIZE-AUDIT.md#2d-sports-action-icons--12-october-2026).
+ADB reports no connected device. Network protocol remains **43**; WAN
+qualification and physical phone testing remain unverified.
+
+Evidence: `Builds/FootballPoseIconQA/verification.json`, `windows-delivery.json`,
+`compiled-source.json`, `source-comparison.json`, `game-input-changes.json`,
+`portability.json` and `art-validation.json`. All 202 runtime documents match
+the compiled player; the two generated asset differences are documented above.
+
+Reviewed archive batches:
+
+- Replaced shoe masters and old review player:
+  `Legacy/20261012-142456-168-football-pose-icons-sources/`.
+- Superseded 3D draft art, prompts and validation:
+  `Legacy/20261012-143243-928-football-pose-icons-3d-draft/`.
+- Prior APK/audit: `Legacy/20261012-143459-868-football-flat-poses-before-android/`.
+- Prior full-colour player: `Legacy/20261012-143532-297-football-flat-poses-windows/`.
+- Jump shoe master and intermediate validation/builds:
+  `Legacy/20261012-144031-237-sports-flat-poses-before-jump/`.
+- Final superseded Windows player:
+  `Legacy/20261012-144511-651-sports-flat-poses-windows/`.
+- Temporary relocation trees:
+  `Legacy/20261012-142831-692-football-pose-icons-portability/`,
+  `Legacy/20261012-143349-024-football-flat-poses-portability/`,
+  `Legacy/20261012-144140-276-sports-flat-poses-portability/`.
+
+Active masters, prompts and deterministic atlas inputs remain publishable.
+No staging, commit or push was performed.
+
+## Full-colour sports artwork — 12 October 2026
+
+Delivered the complete Windows player at **Builds/WindowsFinal/**, compiled
+**01:54:28 Malaysia time** (2026-10-11T17:54:28Z). All **320 runtime/support
+files** match the tested candidate by SHA-256, excluding the release note.
+The executable, Data directory, DLLs, support folders and launchers stay
+together. Launch with `Explore-Football.cmd` or `Explore-Basketball.cmd`.
+
+Both sports now show full-colour cartoon artwork with consistent shading,
+highlights and clear silhouettes. Utility and prop icons gain colour and
+depth. Unavailable controls preserve the illustration's colour with a softer
+alpha fade. Manrope typography, button placements, connected drag paths,
+release-only cancellation and gameplay behavior remain unchanged.
+
+**1,162 assertions pass across two fresh final-player UI reports**:
+
+- Football: **728**, `Builds/FootballUIQA/Run-20261012-015453-298/`.
+- Basketball: **434**, `Builds/BasketballUIQA/Run-20261012-015453-298/`.
+
+Actual Unity touch-module sequences cover independent fingers, drag/cancel/
+release, suspension, settings, role changes and far-finish timing. Font-family,
+glyph coverage, text fitting, slider travel and round thumb checks pass.
+Captures at 1600 × 900, 1280 × 720, 1560 × 720 and 1600 × 1200 cover gameplay,
+settings and guides. Inspected active and unavailable controls, the new gear,
+camera cards and typography in the actual Windows player.
+
+Fresh AndroidSubmission: **89,644,388 → 89,701,824 bytes (+57,436)**,
+**10,298,176 bytes** below the hard boundary and **14,701,824 bytes** over the
+development target. Budget enforcement and independent APK v2 verification
+pass. [Packing audit](APK-SIZE-AUDIT.md#full-colour-sports-artwork--12-october-2026).
+ADB reports no connected device; physical phone touch, appearance/FPS and WAN
+qualification remain unverified. Network protocol remains **43**.
+
+Evidence is indexed in `Builds/ColorIconQA/verification.json`,
+`windows-delivery.json`, `compiled-source.json`, `source-comparison.json` and
+`portability.json`. All 202 runtime source documents match the compiled player;
+the two generated Game asset differences after Android are documented in the audit.
+
+Reviewed archives:
+
+- Retired monochrome gameplay SVGs and relocation sandbox:
+  `Legacy/20261012-015503-596-colour-icons-retired-glyphs/`.
+- Prior APK/audit: `Legacy/20261012-015824-930-colour-icons-before-android/`.
+- Prior complete Windows player:
+  `Legacy/20261012-020004-602-colour-icons-windows-delivery/`.
+
+The retained utility geometry, licenses, previous proposals and all active
+masters remain publishable. No staging, commit or push was performed.
+
+## Sports icons and typography — 12 October 2026
+
+Delivered complete Windows player at **Builds/WindowsFinal/**, compiled
+**01:06:24 Malaysia time** (2026-10-11T17:06:24Z), with the matching bundled
+license notice. **320 runtime/support files** match the tested candidate by
+SHA-256, excluding the release note. The executable, Data directory, DLLs,
+support folders and launchers stay together. Launch with
+`Explore-Football.cmd` or `Explore-Basketball.cmd`.
+
+Both sports use solid Material Symbols Rounded pictograms and Manrope display/
+text weights, including HUD labels, scores, menus, guides and player indicators.
+Basketball settings avoid fractional downscaling at the base resolution; round
+volume knobs stay inside their tracks and clear of the labels. Existing button
+placements, drag paths, release-only Cancel and gameplay rules remain.
+
+**1,162 assertions pass across two fresh final-player UI reports**:
+
+- Football: **728**, `Builds/FootballUIQA/Run-20261012-010710-372/`.
+- Basketball: **434**, `Builds/BasketballUIQA/Run-20261012-010710-377/`.
+
+Actual Unity touch-module sequences cover independent fingers, drag/cancel/
+release, suspension, settings, role changes and far-finish timing. Added checks
+verify every visible HUD/menu/guide glyph and the shared font family. All four
+volume controls are dragged from zero to full and restored; their thumbs remain
+circular within their tracks. Captures reviewed at 1600 × 900, 1280 × 720,
+1560 × 720 and 1600 × 1200 cover gameplay, settings and guidance without text
+truncation. These are Windows D3D11 captures, not a phone performance claim.
+
+Fresh AndroidSubmission: **89,589,994 → 89,644,388 bytes (+54,394)**,
+**10,355,612 bytes** below the hard boundary, **14,644,388 bytes** over the
+development target. Budget enforcement and independent APK v2 verification
+pass. [Packing audit](APK-SIZE-AUDIT.md#sports-icons-and-typography--12-october-2026).
+ADB reports no connected device; physical phone touch, appearance/FPS and WAN
+qualification remain unverified. Network protocol remains **43**.
+
+Evidence is indexed in `Builds/SportsIconQA/verification.json`,
+`windows-delivery.json`, `compiled-source.json`, `source-comparison.json` and
+`portability.json`. All 202 runtime source documents match the compiled player;
+two generated Game asset differences after Android are documented in the audit.
+
+Reviewed archives:
+
+- Initial candidate: `Legacy/20261012-010444-582-sports-icons-first-review/`.
+- Superseded captures and relocation sandbox: `Legacy/20261012-011046-690-sports-icons-review-drafts/`.
+- Prior APK/audit: `Legacy/20261012-010856-667-sports-icons-before-android/`.
+- Prior complete Windows player: `Legacy/20261012-011322-811-sports-icons-windows-delivery/`.
+
+The older running test window was closed normally before replacement. An earlier
+archive attempt was blocked by that open process and moved no source directory;
+its local failure record is retained. No staging, commit or push was performed.
+
+## Football touchline UI — 12 October 2026
+
+Delivered the complete **00:21:15 Malaysia-time** validated Windows player to
+`Builds/WindowsFinal/`. All **319 runtime/support files** match the reviewed
+candidate by SHA-256; `LATEST-BUILD.txt` is authored separately. Launch with
+`Builds/WindowsFinal/Explore-Football.cmd`. The previous basketball audio,
+props, inbound fixes and other sports remain included. Protocol **43** requires
+matching room builds. [Implementation](FootballUI/implementation.md).
+
+**1,705 passing assertions, zero failures across 11 final-candidate reports**:
+
+- Football UI: **680**, `Builds/FootballUIQA/Run-20261012-002220-476/`.
+  Actual Unity input-module touches cover independent joystick/Kick fingers,
+  Cancel entry/exit/release, full-power hold and launch, wrong-pointer rejection,
+  OS cancellation, suspension, resize, possession changes and menus. Captures
+  cover defense, loose ball, exhaustion, all match phases, camera, guide and
+  leave confirmation. Text fit and bounds are checked at 1600×900, 1280×720,
+  1560×720 and 1600×1200. The initial review caught a clipped roster message
+  and overly opaque map/joystick; these were fixed and rendered again.
+- Match, physics and host/guest ball regression: **533**,
+  `Builds/FootballMatchQA/Run-20261012-002242/` (260 + 16 + 15 + 199 + 26 + 17).
+- Football effort: **72 offline + 17 host + 9 guest**,
+  `Builds/FootballPaceQA/Reviews/Offline-20261012-002242-428/` and
+  `Local-20261012-002259-825/`. Stamina, exhaustion/release, pressure, confirmed
+  team identity and expiry of remote held input remain correct.
+- Basketball UI regression: **394**,
+  `Builds/BasketballUIQA/Run-20261012-003033-029/`.
+
+`Builds/FootballUIQA/verification.json` records each result hash. Delivery
+hashes, 201 matching compiled-source checks, source snapshots, atlas portability,
+APK comparison and v2 signature output are alongside it. The fresh APK is
+**89,589,994 bytes**, **+47,078**, with **10,410,006 bytes** of hard-limit
+headroom. The 75 MB target remains exceeded. See [size record](BUILD-SIZE.md).
+
+Source limits: Android regenerates Golf prefab IDs and URP registration; the
+editor-only player writer adds a football launcher/release caption after the
+Windows runtime was compiled. All runtime source hashes match, and the manually
+added launcher matches the new generator. These three differences are recorded
+in `source-comparison.json`. No device was connected: physical Android touch,
+appearance, FPS and WAN are unverified. Rendered tests use D3D11 batch capture.
+
+Reviewed archives:
+
+- `Legacy/20261012-001606-135-football-ui-initial/`: initial compile-only player.
+- `Legacy/20261012-001952-186-football-ui-visual-refinement/`: superseded UI candidate.
+- `Legacy/20261012-002527-083-football-ui-before-android/`: previous APK/audit and successful relocated generator fixture.
+- `Legacy/20261012-003204-034-football-ui-windows-delivery/`: complete superseded WindowsFinal player.
+
+Current evidence stays under ignored Builds. No staging, commit or push was performed.
+
+## Fishing feedback, timing and round recap — 11 October 2026
+
+The Windows candidate was fully built at **15:12:39 Malaysia time**
+(`2026-10-11T07:12:39.5353337Z`). After later nonserialized C# fixes, a
+successful **scripts-only refresh** retained the complete player data. That
+refresh wrote `Assembly-CSharp.dll` at **20:41:21.115** and `boot.config`
+at **20:41:15.317**; its successful Unity log closed at **20:41:38.945**.
+After the two result-wording fixes and final Crew padding correction, the
+final successful scripts refresh finished at **21:06:07.774 Malaysia time**
+(`2026-10-11T13:06:07.7741024Z`). Each refresh reuses the full 15:12 player
+content; no second full serialized-content build is claimed.
+
+The **seven selected relevant reports** below contain **2,157 counted PASS
+assertions and zero FAIL lines**. The four Fishing reports follow the final
+21:06 refresh. The three shared HUD/menu/Golf reports ran before the last
+Fishing-only wording and Crew padding changes; their underlying shared code
+is unchanged. This is relevant combined coverage, **not a claim that all
+seven reports ran against the exact final snapshot**:
+
+| Coverage | Counted assertions | Evidence |
+| --- | ---: | --- |
+| Final rendered Fishing gameplay, host rules, input timing, recap counters, targeting, Hook cues, all piers/cameras, native typography and landscape safe frames | 1,031 | `Builds/FishingGameplayQA/Run-20261011-210855/offline.txt` |
+| Final actual local host: authoritative fishing, bonuses, replicated recap and clean rematch | 34 | `Builds/FishingGameplayQA/Run-20261011-210701/host.txt` |
+| Final actual local guest: authoritative fishing, bonuses, replicated recap and clean rematch | 34 | `Builds/FishingGameplayQA/Run-20261011-210701/client.txt` |
+| Final feedback/audio contracts, actual cue polling, contained target/failure labels, pending Hook handling, results modal, Crew glyphs inside the colored clock interior, native text, landscape captures and Ready/Close/Reopen routing | 146 | `Builds/FishingPolishQA/Run-20261011-210624/polish.txt` |
+| Earlier shared Football/Basketball/Golf/Fishing controls, gestures, maps and native HUD skins | 157 | `Builds/SportsHudQA/Reviews/Offline-20261011-204513-007/offline/results.txt` |
+| Earlier shared storybook menu, settings, help/rules, room flows and supported landscape layouts | 699 | `Builds/StorybookMenuQA/Run-20261011-204937/offline/results.txt` |
+| Earlier existing Golf HUD, native text, hold/release/cancel, scorecard, countdown and tied/DNF results | 56 | `Builds/GolfHUDQA/Run-20261011-205052/golf-hud.txt` |
+
+Counts were independently obtained from report lines beginning `PASS `, rather
+than copied from older builds. The Fishing client report has **34 PASS lines**
+although its terminal completion counter says `checks=32`; the recap checks
+are present in the report. This counter discrepancy does not introduce FAIL
+lines or invalidate the observed assertions.
+The additional headless offline report in `Run-20261011-210701/` is retained
+as supplementary evidence and excluded from this selected total.
+
+A later wording correction uses `ROSTER CHANGED` for a join or departure,
+and `EVERYONE CAUGHT · CREW GOALS INCOMPLETE` when the point basket is met
+but another Crew requirement is missing. Its successful intermediate
+**scripts-only refresh** finished at **20:57:30.774 Malaysia time**
+(`2026-10-11T12:57:30.7743055Z`). Its focused rendered Fishing polish rerun,
+`Builds/FishingPolishQA/Run-20261011-205738/polish.txt`, contains **146 PASS
+lines, zero FAIL lines, and `checks=146`**. This includes two new meaningful
+fixtures for the met basket with a missing fish size, and the roster-change
+label covering both joins and departures. The final 21:06 Polish rerun retains
+both fixtures and the same 146-count result, with a stronger Crew interior
+check replacing the earlier geometry-only assertion.
+
+Visual review of the 20:57
+1600 × 900 Crew capture found that the white contribution label reached the
+pale bottom border even though its text geometry existed. The new fix uses
+the existing layout's **26-unit padding** below the Crew strip, expands the
+clock accordingly, and preserves the timer and Wanted header position.
+The stronger landscape fixture checks each actual rendered Crew glyph
+vertex in clock coordinates against its **20-unit illustrated border**,
+in addition to native typography, safe-frame and cross-group separation
+checks. The successful `build-windows-crew-padding.log` refresh is followed
+by the final rendered 146-check Polish report and reviewed 1600 × 900
+capture, where the contribution label is clear inside the colored clock.
+No serialized asset changed for this correction. The fresh
+Android build was paused for the wording correction and then this visual
+fix; neither interrupted attempt is a delivered APK.
+
+The selected results treatment is a centered native sticker card after the
+round. It shows frozen standings, catch counts by size, Wanted bonus points,
+missed bites, snapped lines, cancellations, timeouts, local personal bests,
+Cup totals and unmet Crew conditions. Wanted bonuses remain included in the
+normal round score; the recap does not add them again. Close immediately
+restores walking; Results reopens the same snapshot. Ready & Close queues
+the existing Ready action once, and an already-ready player is not toggled
+unready. Keyboard/controller focus and navigation stay inside the open card;
+closing, a new round and context reset clear the owned selection. Delayed
+local-player records retry before a round is marked shown.
+
+The live Crew clock contains fish-size checkmarks and identifies the next
+fisher needing a catch. Native Cove lettering reserves its actual line metrics
+instead of clipping the first line in short text rectangles. Existing artwork,
+fonts and frames are reused; no new texture or effects package is introduced
+for results. New celebration effects remain deferred.
+
+Rendered results captures cover **1600 × 900, 1280 × 960, 1920 × 900,
+1280 × 720 and 844 × 390**, with asymmetric insets. Crew captures cover
+**1600 × 900, 1280 × 960, 1920 × 900 and 844 × 390**. The **five-row standings,
+delayed-record and missing-contributor scenarios are synthetic presentation
+fixtures**. They establish UI/state behavior, not five-device multiplayer.
+The separate host/guest Fishing reports use actual local network processes,
+including authoritative awards and replicated recap/rematch data. Desktop
+844 × 390 review is a phone-shaped Windows viewport, not a physical Android
+test. Physical-phone rendering, touch, vibration, sustained FPS/heat and WAN
+latency/disconnect qualification remain unverified. Sound cue polling and
+generated audio are checked; perceptual listening quality is not established
+by assertion counts alone.
+
+**Player integrity and source limits:** the saved V3 runtime manifest contains
+**317 runtime/support files plus `LATEST-BUILD.txt` (318 total)**. Comparison
+against the measured scripts-refreshed candidates, including final V6, independently
+finds changes in exactly
+`WhatTheFish_Data/boot.config`,
+`WhatTheFish_Data/Managed/Assembly-CSharp.dll` and
+`WhatTheFish_Data/Managed/Assembly-CSharp.pdb`. All other player files retain
+their V3 SHA-256. Evidence is `windows-v3-runtime-files.json` and
+`scripts-refresh-runtime-delta.json`, `copy-fix-runtime-delta.json` and
+`crew-padding-runtime-delta.json` under
+`Builds/FishingPolishQA/Task-20261011-143503/`. The final
+`windows-v6-runtime-files.json` contains all **317 runtime/support files**,
+excluding the delivery note; all 317 hashes were independently matched to
+the complete candidate.
+
+The **281-entry** source snapshots cover **253 C# files**, the Fishing results
+layout, Bootstrap scene, packages and project settings. They are deliberately
+narrow manifests: they do **not** hash every Unity asset, shader, texture,
+mesh, material, `.meta` file or tool, and are not proof of a complete
+all-source build snapshot. V3 versus final
+`windows-source-inputs-v6-crew-padding.json` changes exactly **five manifested
+C# paths**: `FishingPolishBuild.cs`, `FishingGameplayProbe.cs`,
+`FishingResultsChecks.cs`, `FishingHUD.cs` and `FishingResultsUI.cs`.
+`windows-source-post-v6.json` records no mismatches across those 281 narrow
+inputs after the refresh. The final Fishing reports above follow this
+refresh; the three unchanged shared-code reports are explicitly earlier.
+
+Generated Golf Ball text was restored only after a format-aware Unity YAML
+comparison proved all **14 objects**, component/child order, mesh/material/LOD/
+collider fields and GUID-linked external references equivalent. Only local
+file-ID assignment and document order differed. The restoration preserves
+player files and the Git index. Evidence is
+`GeneratedDrift/generated-drift-audit.json` and
+`ball-graph-equal-restoration.json` in the same primary task folder. The audited
+URP global settings matched the baseline at that inspection; the subsequent
+fresh Android packing audit below independently confirms the mobile pipeline.
+
+Early candidate failures remain diagnostic evidence: malformed initial new
+metadata prevented import; a pending-Hook fixture exposed its first failure;
+later native title/label rectangles exposed truncation from Cove line metrics.
+The passing rendered reports follow the import, pending-input and
+geometry fixes. The first scripts refresh failed to compile a development
+mesh-read helper; the corrected refresh succeeds. Earlier failed logs and
+captures are retained. The 20:57 focused checks preserved the strict
+readability and gameplay requirements but missed contribution text crossing
+the illustrated border. Screenshot review caught that defect; the final
+26-unit padding and actual 20-unit clock-interior glyph checks pass across
+all four Crew aspects. This extends the earlier own-label geometry check
+without weakening it.
+
+Fresh AndroidSubmission written at **21:16:21 Malaysia time** is
+**88,856,012 bytes (+43,894 from 88,812,118)**. Strict-boundary headroom is
+**11,143,988 bytes**; the **75 MB target is exceeded by 13,856,012 bytes**.
+Budget enforcement and independent APK v2 signature verification pass.
+[Release and hash](BUILD-SIZE.md#fishing-feedback-timing-and-round-recap--11-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#fishing-feedback-timing-and-round-recap--11-october-2026).
+Evidence is `ApkComparison-20261011-131850/` in the primary task and
+`Builds/SizeAudit/latest/`. All 1,785 mesh rows are unchanged; the mobile
+pipeline ships, without unintended desktop rendering assets. Executable
+review types are absent from release IL2CPP metadata, although Unity retains
+208 bytes of MonoScript asset metadata for two review sources.
+
+The complete candidate was promoted to `Builds/WindowsFinal/` at **21:12:15**.
+All **317 runtime/support SHA-256 hashes** match the tested V6 manifest, with
+`LATEST-BUILD.txt` bringing the folder to **318 files**. Evidence is
+`windows-promotion-integrity.json`; the delivery note records changes,
+validation, APK measurement and source limits. The previous delivery note
+was checked against the task baseline before replacement to preserve any
+newer concurrent delivery.
+
+**Post-build editor-only exception:** the new QA helper's `Windows()` output
+now resolves explicitly from `Application.dataPath`. That path-only edit
+occurred after the APK/player builds; it is excluded from shipping runtime.
+`post-android-source-delta.json` identifies exactly that one changed input;
+the other 280 narrow-manifest inputs match. Compiling the actual helper with
+minimal Unity API stubs passes **11 output-path checks**, using two differently
+named project roots with spaces and an unrelated working directory.
+`Builds/FishingPolishQA/primary/PortableHelper/` holds the evidence. This is a
+helper-path check, not a complete fresh-clone Unity build.
+
+The final format-aware Android inspection in
+`GeneratedDriftAfterAndroid/generated-drift-audit.json` again finds identical
+14-object Ball graphs and baseline URP definitions. Its accompanying
+`ball-graph-equal-restoration.json` records the reviewed local-ID restoration.
+Neither player nor APK bytes were modified by these source restorations.
+
+Reviewed superseded players and the baseline APK/audit are recoverable in
+these ignored archive batches, with original paths, sizes and SHA-256:
+
+- `Legacy/20261011-145908-710-fishing-polish-first-candidate/`
+- `Legacy/20261011-150807-369-fishing-polish-font-candidate/`
+- `Legacy/20261011-205048-934-fishing-polish-before-android/`
+- `Legacy/20261011-211135-879-fishing-polish-windows-delivery/`
+
+Current validation evidence remains under ignored `Builds/`. Changes are left
+unstaged and unpublished; staging, committing and pushing remain with the user.
+
+## Basketball gameplay audio — 11 October 2026
+
+Delivered the complete **19:11:47 Malaysia-time** Windows player to
+`Builds/WindowsFinal/`. All **318 runtime/support files** match the tested
+candidate by SHA-256; `LATEST-BUILD.txt` is authored separately. Launch with
+`Builds/WindowsFinal/Explore-Basketball.cmd`. Existing approved UI, props,
+inbound rules and ball-first camera are included. Protocol **43** requires
+matching host/guest builds.
+
+The user-approved 58-clip bank is synchronized with court/ball contacts,
+possession, releases, scoring, footsteps/landings, props and UI. The Lock-on
+aim stays two seconds with a lower pitch and **7.96 dB** reduction. Import
+normalization is disabled and runtime decoded peak is **0.06448364**. The
+court settings now expose Master, Court sounds, Buttons and Ambience.
+[Action mapping, mixing and provenance](BASKETBALL-AUDIO.md).
+
+**167 passing assertions in four final-player reports**:
+
+- Audio offline: 35 passes, `Builds/BasketballAudioQA/Offline-20261011-191520-609/`.
+- Audio local host/guest: 35 + 20 passes,
+  `Builds/BasketballAudioQA/Local-20261011-191602-259/`. The guest plays 34 unique
+  authoritative event IDs, without duplicates or stale/overflow drops.
+- Inbound and menu regression: 77 passes,
+  `Builds/BasketballInboundQA/Offline-20261011-191650-937-c35b4e/`.
+  Rendered court settings were inspected: labels, volume values, handles and
+  existing controls fit. The original touch and inbound behavior remains intact.
+
+`Test-BasketballAudio.ps1` drives actual pickups, pass release, falling floor
+contacts, backboard/rim collisions, moving feet, jump landing, prop collection,
+Lock-on release/score/cancel, portal intake/arrival/close, Turbo expiry,
+button deduplication, ongoing-aim mute, master mute and application suspension.
+The initial offline run caught a net-prefix lookup also selecting the net-brush
+clip; exact name matching fixes this, and the final bank has exactly 58 clips.
+The final build log is `Builds/BasketballAudioQA/build-20261011-191022.log`.
+
+A relocated source fixture with spaces in its path and an unrelated caller
+directory reproduced all **58 delivery WAV hashes** without network access.
+`portable-delivery.json`, `verification.json`, complete player manifests and
+source snapshots are retained in `Builds/BasketballAudioQA/`.
+
+Fresh AndroidSubmission and independent APK v2 verification pass:
+**89,202,254 → 89,542,916 bytes (+340,662)**, with **10,457,084 bytes** of
+hard-limit headroom. The 75 MB target remains exceeded by **14,542,916 bytes**.
+[Size/hash](BUILD-SIZE.md#basketball-gameplay-audio--11-october-2026) and
+[asset audit](APK-SIZE-AUDIT.md#basketball-gameplay-audio--11-october-2026).
+**3,445 / 3,447 Game inputs** match between tested Windows and Android
+generation; only generated Golf prefab serialization and URP registration
+differ. Runtime code, approved audio and import settings match.
+
+These are rendered Windows engine/event checks, not a recorded final mix or
+a perceptual audition by the assistant. User gameplay listening, physical
+Android speakers/latency, touch/FPS and WAN behavior remain unverified; ADB
+reported no connected device. The earlier native non-batch Unity shutdown
+issue was not newly qualified by these batch-mode reviews.
+
+Reviewed archives:
+`Legacy/20261011-185526-060-basketball-audio-lock-revision/` preserves the old
+Lock-on preview and affected reels;
+`Legacy/20261011-191701-160-basketball-audio-before-android/` preserves the
+previous APK/audit and regeneration fixture;
+`Legacy/20261011-192036-297-basketball-audio-windows-delivery/` preserves the
+complete superseded Windows player. No staging, commit or push was performed.
+
+## Basketball inbound and touch fixes — 11 October 2026
+
+Delivered the complete **18:30:28 Malaysia-time** Windows player to
+`Builds/WindowsFinal/`, including the Data directory, runtime DLLs, support
+folders and launchers. All **317 runtime/support files** match the tested
+candidate and portable copy; `LATEST-BUILD.txt` is authored separately.
+Launch with `Builds/WindowsFinal/Explore-Basketball.cmd`.
+
+- Regular, symmetric eight-tooth Settings gear, from the SVG master and existing atlas.
+- Wall, movement containment and ball rules use the actual 15.24 × 28.6512 m court.
+  Two continuous seconds outside at any height starts a solo standing inbound at
+  the first crossing. Re-entry before the deadline resets the timer. Basket
+  supports use the nearest clear spot on the same line. Shooting, jumping,
+  moving and props stay blocked until a pass physically releases; Cancel and
+  Settings preserve the restart. Offline and a network host alone use this rule;
+  multiplayer team throw-in ownership is deferred and those rooms retain recovery resets.
+- Entering Cancel arms it; only lifting there cancels. Sliding back preserves
+  the hold and charge phase. The coral cue explains the release action.
+- Pass charge fills in 0.4 s; horizontal velocity is 1.5× at every charge level
+  for chest, loft and bounce. Preview and real launch share the plan. A repeated
+  floor contact during the CCD transition no longer clears the clean bounce's
+  catchable-pass state or produces a second bounce. Wall interceptions remain physical.
+
+**1,357 passing assertions in nine reports**, listed in
+`Builds/BasketballInboundQA/verification.json`. Final-player checks include
+77 offline and 77 solo-host inbound checks, 378 touch/layout checks repeated
+from a portable copy launched with an unrelated working directory, 140
+trajectory/shot-odds checks and 31 local host/guest pass checks. Earlier candidate
+checks cover 98 gameplay and 178 props assertions; subsequent gameplay changes
+were the inbound ownership guard and bounce-contact fix, both covered again by
+the final-player suites. Test commands are `Test-BasketballInbound.ps1` (with
+optional `-HostSolo`), `Test-BasketballUI.ps1`, `Test-BasketballTrajectory.ps1`,
+`Test-BasketballPass.ps1`, `Test-BasketballGameplay.ps1` and `Test-BasketballProps.ps1`
+under `Tools/Build/`. Use the rendered props test for material support checks.
+
+Rendered gear/settings, armed Cancel, court edges and basket-stand restarts were
+inspected. Menus and guide text fit at 1280×720, 1560×720 and 1600×1200. The
+input-module suite exercises actual touch IDs, independent movement fingers,
+foreign-finger rejection, sliding back, release in Cancel, outside release,
+OS cancellation, pause and timed far-finish fallback. The inbound suite covers
+all edges, both supports, corners, falls, stationary restrictions and actual release.
+
+Fresh AndroidSubmission and independent APK v2 verification pass:
+**89,200,326 → 89,202,254 bytes (+1,928)**, with **10,797,746 bytes** of hard-limit
+headroom. The 75 MB development target remains exceeded by **14,202,254 bytes**.
+[Size and hash](BUILD-SIZE.md#basketball-inbound-and-touch-fixes--11-october-2026).
+No physical Android device was connected; phone appearance, touch reach/latency,
+FPS and WAN behavior remain unverified. Rendered reviews use D3D11 batch mode;
+ordinary interactive shutdown was not newly qualified against the existing
+Unity native shutdown issue.
+
+`player-manifest.json`, `delivery-manifest.json`, `windows-source.json` and
+`source-delta.json` preserve complete-file and source evidence. **3,318 / 3,320**
+Game inputs match after Android generation; exceptions are generated Golf ball
+prefab serialization and URP resource registration. Runtime code, art and fonts match.
+The bounce fault trace is retained at
+`Builds/BasketballPassQA/Reviews/Local-30-20261011-182718-354/`.
+
+Reviewed archives:
+`Legacy/20261011-181955-468-basketball-inbound-first-review/`,
+`Legacy/20261011-182517-688-basketball-inbound-catch-review/`,
+`Legacy/20261011-182851-612-basketball-inbound-bounce-fix/`,
+`Legacy/20261011-183217-747-basketball-inbound-before-android/`, and
+`Legacy/20261011-183818-785-basketball-inbound-windows-delivery/`, and
+`Legacy/20261011-184034-287-basketball-inbound-cleanup/`.
+The Windows delivery batch contains the complete superseded player; cleanup
+contains superseded captures, logs and duplicate tested player copies. Current task
+validation remains under ignored `Builds/`; no game asset was archived.
+No staging, commit or push was performed.
+
+## Basketball mobile controls — 11 October 2026
+
+Implemented the approved [basketball mobile UI](BasketballUI/README.md) with the
+original icon masters, palette, button sizes and safe-area placement. The HUD
+removes court/FPS/station-distance/key labels and places camera, free roam,
+leaving and the Rules / Controls / Props guide behind the top-right gear.
+Far Dunk/Layup shows its actual reason and retains the current timed-shot arc;
+only an eligible finish hides timing. Main controls stay fixed during a hold.
+
+**1,283 passing assertions across eight reports** cover:
+
+- Unity's actual touch input module: two fingers, ownership, upper/diagonal
+  paths, returning to centre, immediate Cancel, outside release, OS cancellation,
+  suspension and menus during a hold. Both far finishes release exactly one
+  ordinary shot using the displayed phase; eligible finishes hide the arc.
+- Settings and guide text bounds, camera choices, menu input blocking, offscreen
+  marker suppression, safe-screen controls at 1280×720, 1560×720 and 1600×1200.
+  Actual rendered attack, defense, gesture and menu captures were reviewed.
+- Existing charge (47), finish gesture (76), pass trajectory (139), defense
+  (246), and two-player local pass (19 host / 12 guest) checks. Finish/pass
+  regressions preceded the final text/tint and menu-marker presentation polish;
+  the final 372-assertion UI suite passed twice on the delivered build.
+- A complete portable copy ran from a directory with spaces and an unrelated
+  working directory. All **318 candidate files** matched before promotion;
+  **317 runtime/support files** remain identical after authoring the delivery note.
+  Portable atlas regeneration also produced exactly the same PNG hash. All
+  sixteen SVG source hashes match and have no external dependencies.
+
+The complete player was promoted to `Builds/WindowsFinal/`; start
+`Explore-Basketball.cmd`. Build time: **17:20:29 Malaysia time**. The final
+AndroidSubmission is **89,200,326 bytes**, with **10,799,674 bytes** to the
+strict limit and a valid APK v2 signature. [Full size record](BUILD-SIZE.md#basketball-mobile-controls--11-october-2026).
+The 75 MB development target remains exceeded. Existing protocol-41 props and
+ball-first camera changes are included; unrelated working changes are preserved.
+
+Source comparison matches **3,314 of 3,316 inputs** after Android generation.
+Only the generated Golf ball prefab and URP resource registration differ;
+all runtime C#, UI sprites, fonts and other inputs match. No runtime source was
+edited after the final build. Evidence: `Builds/BasketballUIQA/verification.json`,
+`player-manifest.json`, `delivery-manifest.json`, `windows-source.json`,
+`source-delta.json`, `Run-20261011-172108-637/`, `PortableEvidence/`,
+`portable-atlas.txt`, `apk-comparison.json`, `apk-signature.txt`, and the individual
+regression report paths listed in `verification.json`.
+
+Physical Android appearance, thumb reach, latency/FPS and WAN qualification are
+unverified; no device was connected. Initial hidden non-batch capture runs hit
+the repository's documented native Unity shutdown fault after completing their
+checks. Final rendered reviews use D3D11 batch capture and exit with code 0.
+This does not newly qualify ordinary interactive-player shutdown; see the
+[existing engine limitation](VisualDirection/CoastalStadiums/GameReview/VALIDATION.md).
+
+Reviewed archives:
+
+- `Legacy/20261011-171516-579-basketball-ui-before-android/`: prior APK/audit.
+- `Legacy/20261011-171652-905-basketball-ui-windows-delivery/`: previous camera player.
+- `Legacy/20261011-172204-938-basketball-ui-final-polish/`: superseded UI builds,
+  captures, diagnostics and duplicate portable output.
+- `Legacy/20261011-172615-057-basketball-ui-cleanup/`: redundant portable wrapper /
+  captures and preliminary hygiene report after successful promotion.
+
+Active assets and the approved design reference remain publishable. No staging,
+commit, push or history changes were performed. Final repository checks are
+recorded in `Builds/BasketballUIQA/task-ready.txt`.
+
+## Ball-first Stadium camera — 11 October 2026
+
+The complete Windows player in `Builds/WindowsFinal/` was built at **16:45:40
+Malaysia time**. All **317 runtime/support files** match the validated candidate
+and portable copy. The camera follows the ball, leads moving play, retains the
+court under high arcs and considers nearby basketball rims. The local athlete
+has a small nearby influence and no distant pull. A cyan YOU edge arrow shows
+the horizontal distance to the ball, avoids the finished HUD graphics, and never
+captures touches. [Behaviour and implementation](STADIUM-CAMERA.md).
+
+**617 assertions pass across six final reports:** 114 camera checks each at
+1280×720, 1600×720 and portable 1024×768; 202 host, 38 opponent and 35 teammate
+checks in the existing basketball ability suite. The passive network camera
+observers recorded **15,546 frames**, including **3,349 airborne frames** and
+**1,814 offscreen-character frames**, with **zero** ball-visibility or missing-
+arrow failures. The rendered run uses real replicated shots, catches and Portal
+transfers. A preliminary run without graphics could not validate material
+support; the complete rendered rerun passes.
+
+Camera checks cover centre/edge/corner ball positions, nearby and distant player
+framing, continuous arcs in both directions, court reference beneath flights,
+teleport/reset recovery, held-dribble stability, a real approximately 9-metre
+high Lock-on arc and successful scoring, movement remapping through the motor,
+first/third-person restoration, sport re-entry and disable cleanup. Arrow checks
+cover behind-camera bearings, hiding on re-entry, touch transparency and actual
+styled-button overlap. Full-HUD captures were inspected at the tested layouts.
+The portable copy runs from a path containing spaces, with default root resolution
+and an unrelated working directory.
+
+Source scope: ongoing basketball UI edits appeared after the tested Windows
+build and initially prevented a shared-workspace Android compile. A snapshot
+matched all **3,304 Game input hashes** from the Windows build; the APK was built
+there. A concurrent icon sheet already present at Windows build time is included;
+later UI source edits are preserved in the workspace but excluded. All camera
+and gameplay code matches between the delivered players. Generated Golf prefab
+IDs/order are semantically equivalent; mobile rendering registrations differ as
+expected. Protocol **41** and the existing centre-line prop countdown are retained.
+
+Fresh AndroidSubmission at **16:57:15** measures **89,178,578 bytes**, up **61,926**,
+with **10,821,422 bytes** of boundary headroom. Budget and independent APK v2
+signature checks pass. The 75 MB development target remains exceeded.
+[Release hash and packing evidence](BUILD-SIZE.md#ball-first-stadium-camera--11-october-2026).
+Physical Android appearance, touch/FPS, actual-device networking and WAN latency
+qualification are not established by these desktop runs.
+
+Current evidence: `Builds/BallCameraQA/verification.json`, `player-manifest.json`,
+`PortableEvidence/1024x768-20261011-164703-878/`, the source/snapshot records and
+build logs; `Builds/BroadcastCameraQA/Reviews/1280x720-20261011-164601-230/` and
+`1600x720-20261011-164601-238/`; and
+`Builds/BasketballPropsQA/Local-20261011-164800-007/`.
+The retained ignored snapshot preserves reproducibility without changing the
+concurrent workspace. No staging, commit or push was performed.
+`Tools/Build/Check-TaskReady.ps1 -RequireApk` passes; evidence is
+`Builds/BallCameraQA/task-ready.txt`. The read-only check does not certify the
+newer concurrent UI source as part of this tested build.
+
+Previous Windows delivery: `Legacy/20261011-165211-231-ball-camera-windows-delivery/`.
+Prior APK/audit: `Legacy/20261011-164821-353-ball-camera-before-android/`.
+Superseded visual iterations and diagnostic runs:
+`Legacy/20261011-163953-153-ball-camera-first-review/`,
+`Legacy/20261011-164405-544-ball-camera-marker-review/`, and
+`Legacy/20261011-165209-423-ball-camera-test-diagnostics/`.
+The duplicate portable runtime and superseded helper/preliminary check are in
+`Legacy/20261011-165900-007-ball-camera-cleanup/`; current portable evidence is retained.
+
+## Centre-line prop countdown — 11 October 2026
+
+Complete Windows player built at **15:49:52 Malaysia time**, delivered in
+`Builds/WindowsFinal/`. All **317 runtime/support files** match the tested
+candidate and independent portable copy, with the delivery note as file 318.
+**453 assertions across four reports pass** on this same final player:
+
+| Coverage | Assertions | Evidence |
+| --- | ---: | --- |
+| Portable solo props and countdown | 178 | `Builds/BasketballSpawnQA/PortableEvidence/Offline-20261011-155027-958/` |
+| Host | 202 | `Builds/BasketballPropsQA/Local-20261011-155209-139/host/` |
+| Opponent client | 38 | `Builds/BasketballPropsQA/Local-20261011-155209-139/guest/` |
+| Teammate client | 35 | `Builds/BasketballPropsQA/Local-20261011-155209-139/teammate/` |
+
+Both fixed centre-line apron points clear architecture. Each model renders at
+both points. Solo and all three local peers observe **5, 4, 3, 2, 1**, with
+centred, extruded digit meshes and an unchanged announced side/deadline. No prop
+renders or awards inventory early. First spawn takes five seconds; subsequent
+respawning retains the twenty-second interval, including the final five-second
+warning. A player waiting on the location receives the prop after the countdown.
+Sixteen accelerated host cycles per solo/host run never repeat the prior type;
+both possible random choices also exclude it. Disabling the arena clears its
+pending countdown, and re-entry starts a fresh one. Existing Turbo, Lock-on,
+Portal, physical scoring, interruption, duplicate RPC and session checks pass.
+
+Close and court-distance countdown captures were visually inspected. The final
+solo `offline/countdown-5.png` through `countdown-1.png` and `countdown-court.png`
+show the real world hologram; `spawned-*.png` shows actual pickup instances.
+Asymmetric digits use their mesh bounds for centring. The portable run used a
+path containing spaces and launched the copied test script with default root
+resolution from an unrelated working directory. No runtime exceptions occurred.
+`Builds/BasketballSpawnQA/verification.json` and `player-manifest.json` index
+the evidence. No gameplay source changed after the final build. Generated Golf
+prefab IDs/order and platform rendering registration were normalized after
+semantic verification, recorded in `generated-source-cleanup.json`.
+
+Fresh AndroidSubmission completed at **15:56:46**, **89,116,652 bytes**, with
+**10,883,348 bytes** strict-boundary headroom and a valid APK v2 signature.
+The **75 MB development target remains unmet**. All peers require **protocol 41**.
+Previous Windows player and completed portable fixture:
+`Legacy/20261011-155507-931-basketball-countdown-delivery/`. Earlier visual
+reviews, including the detected digit-alignment failure, are recoverable in
+`Legacy/20261011-154940-861-basketball-countdown-intermediate/`. Previous APK:
+`Legacy/20261011-155414-437-basketball-countdown-before-android/`.
+Physical Android appearance, touch/FPS, actual-device late joins/disconnects
+and separate-network latency remain unverified.
+
+## Visible basketball props and ability tuning — 11 October 2026
+
+Complete Windows player built at **14:01:46 Malaysia time** and promoted to
+`Builds/WindowsFinal/`. All **317 runtime/support files** match the tested
+candidate and independent portable copy; the delivery also contains its build
+note. Fresh checks pass **298 assertions across five reports**, all using this
+same player, with no gameplay source changes after the build.
+
+| Coverage | Assertions | Evidence |
+| --- | ---: | --- |
+| Props, solo | 102 | `Builds/BasketballPropsQA/Offline-20261011-140201-204/` |
+| Props, three local peers | 149 | `Builds/BasketballPropsQA/Local-20261011-140305-580/` |
+| Ordinary charge, touch cancellation and boundaries, portable copy | 47 | `Builds/BasketballPropFixQA/PortableEvidence/Run-20261011-140436/` |
+
+The old pickup animation replaced imported scale 100 with 0.95, shrinking the
+models by 100 times. Actual pickups now preserve that scale before applying the
+0.95 presentation factor. All three types exercise the real spawn renderer in
+both halves, including replacement and random reset. Mesh bounds, materials
+and floor clearance pass. The solo report's `spawned-LockOn.png`,
+`spawned-Turbo.png` and `spawned-Portal.png` were visually inspected. These are
+live spawn instances, unlike the separately staged gallery in the earlier record.
+
+Solo Turbo controller and travel speeds measure **6 / 10.5 m/s**, exactly 1.5×
+normal walk/sprint. Local teammate travel measures approximately **5.98 / 10.51
+m/s**, while the opponent stays at approximately **4.09 / 7.01 m/s**. Five-second
+expiry restores normal movement. Lock-on's deadline is two seconds; physical
+release is **2.028 s solo / 2.030 s host**, within one simulation-step allowance.
+Stationary aiming, spent interrupted shots, ordinary blocks, long-range scoring,
+portal races, duplicate RPCs and session cleanup pass.
+
+The complete portable copy ran from a directory containing spaces, using the
+copied charge test's default root resolution from an unrelated working directory.
+`Builds/BasketballPropFixQA/verification.json` indexes reports and manifest
+agreement. Generated Golf prefab IDs/order and platform rendering registrations
+were normalized after semantic verification; see `generated-source-cleanup.json`.
+
+Fresh AndroidSubmission completed at **14:07:11**, **89,113,480 bytes**, with
+**10,886,520 bytes** strict-boundary headroom and a valid APK v2 signature.
+The **75 MB development target remains unmet**. All peers require **protocol 40**.
+The old complete Windows player and portable fixture are archived in
+`Legacy/20261011-140604-130-basketball-prop-fix-delivery/`; current evidence stays
+under `Builds/`. Physical Android appearance, touch/FPS, actual-device
+disconnects/late joins and separate-network latency remain unverified.
+
+## Basketball props — 11 October 2026
+
+The complete Windows player was built at **13:16:35 Malaysia time** and
+promoted to `Builds/WindowsFinal/`. All **317 runtime/support files** match
+the tested candidate and independent portable copy, with a separate delivery
+note making **318 files** in the folder. Selected checks pass **812
+assertions across 14 reports**:
+
+| Coverage | Assertions | Evidence |
+| --- | ---: | --- |
+| Props, portable solo | 66 | `Builds/BasketballPropsQA/PortableFinalEvidence/Offline-20261011-131742-047/` |
+| Props, three local peers | 93 | `Builds/BasketballPropsQA/Local-20261011-131837-344/` |
+| Court boundaries, recovery, ordinary shots and island lifecycle | 98 | `Builds/BasketballGameplayQA/Offline-20261011-125824/` |
+| Shot charge, touch cancellation and boundary effects | 47 | `Builds/BasketballChargeQA/Reviews/Run-20261011-132030/` |
+| Guard, block and interrupted finishes, two local peers | 74 | `Builds/BasketballDefenseQA/Reviews/Local-30-20261011-130046-192/` |
+| Passing and authoritative ordinary-shot probability, two local peers | 50 | `Builds/BasketballTrajectoryQA/Reviews/Local-30-20261011-130131-960/` |
+| Ordinary steals, two local peers | 42 | `Builds/BasketballStealQA/Local-20261011-130200-662/` |
+| Layups, dunks, fallbacks and physical recovery | 185 | `Builds/BasketballFinishQA/Reviews/Offline-20261011-132107-637/` |
+| Rendered shared HUD, four sports | 157 | `Builds/SportsHudQA/Reviews/Offline-20261011-131040-166/` |
+
+The final prop runs cover both teams' opposing-hoop selection, real scoring
+from corners and behind the backboard, one-click three-second aim, immediate
+consumption, ordinary-block interruption, normal speed restoration after five
+seconds, teammate-only boosts, replacement revisions, duplicate owner RPCs,
+home-half gating, simultaneous portal requests, opponent/teammate ownership,
+in-flight interception, receiver departure and lifecycle cleanup. Receiving
+hands follow the actual portal destination. A gallery stages all three models
+for visual review; live play spawns at most two pickups.
+
+`Builds/BasketballPropsQA/Local-20261011-131837-344/host/` contains the final
+model gallery, ability HUD, aiming and portal captures. The portable run used
+an independent directory containing spaces and launched its copied test script
+from an unrelated working directory, with default project-root resolution.
+Its current evidence is copied to `PortableFinalEvidence/` in the task QA folder.
+Blender regeneration from a second root also preserves canonical geometry;
+format-aware inspection found no external image/library dependencies or active
+absolute FBX paths. `asset-audit.json` records those checks.
+
+Source-snapshot limits: props, charge and finish reports use the final player.
+Shared HUD checks used the 13:06 player; general gameplay, defense, passing and
+ordinary-steal checks used the 12:57 player. Subsequent production edits were
+limited to prop-specific opposing-hoop selection and portal receiving hands,
+covered by the final runs. No further gameplay edits followed the final build.
+Build-generated Golf prefab ID/order churn was removed only after comparing its
+component graph; desktop SSAO runtime registrations were restored to the mobile
+source configuration. Each platform builder prepares its intended feature set.
+`generated-source-cleanup.json` records this normalization.
+
+Fresh AndroidSubmission completed at **13:22:20**, with APK **89,109,564 bytes**,
+**10,890,436 bytes** below the strict boundary. Independent APK v2 verification
+passes. The **75 MB development target remains unmet**. The pre-task local APK
+predated current source; [build size](BUILD-SIZE.md#basketball-props--11-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#basketball-props--11-october-2026) distinguish
+that baseline from the last documented release. Protocol **39** is required.
+
+The latest intermediate Windows delivery and completed fixtures are archived in
+`Legacy/20261011-132229-805-basketball-props-final-delivery/`. The original Windows
+release and earlier review runs are in
+`Legacy/20261011-131152-728-basketball-props-delivery/`; the original APK is in
+`Legacy/20261011-125700-224-basketball-props-before-android/`. Additional completed
+portable fixtures and the intermediate APK are in the task's `130700` and
+`131524` archive batches. Current validation evidence remains under `Builds/`.
+
+Physical Android appearance, touch/FPS, real-device disconnect/late-join behavior
+and separate-network latency qualification remain unverified. These are Windows
+executable and local multi-process checks, not a guarantee against every bug.
+
 ## Golf sticker HUD — 10 October 2026
 
 The complete final Windows player was fully built at **14:37:46 Malaysia

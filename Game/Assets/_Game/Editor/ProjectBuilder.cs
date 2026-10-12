@@ -185,7 +185,12 @@ public static partial class ProjectBuilder {
  }
  // Recompile a validated, already-generated scene after code-only changes.
  public static void BuildCurrentWindows()=>BuildWindowsPlayer("../Builds/WindowsFinal/WhatTheFish.exe");
+ public static string ResolveBuildOutputPath(string path){
+  // Resolve relative outputs from the Unity project folder containing Assets.
+  return Path.GetFullPath(Path.IsPathRooted(path)?path:Path.Combine(Application.dataPath,"..",path));
+ }
  public static void BuildWindowsPlayer(string playerPath){
+  playerPath=ResolveBuildOutputPath(playerPath);
   string previousPipelinePath=AssetDatabase.GetAssetPath(GraphicsSettings.defaultRenderPipeline);
   string previousQualityPath=AssetDatabase.GetAssetPath(QualitySettings.renderPipeline);
   var desktopPipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(MobilePackageCleanup.DesktopPipelinePath);
@@ -200,13 +205,14 @@ public static partial class ProjectBuilder {
    AssetDatabase.SaveAssets();
   }
   var outputDirectory=Path.GetDirectoryName(playerPath);
+  File.WriteAllText(Path.Combine(outputDirectory,"Explore-Football.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Football -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Fishing.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Fishing -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Golf.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Basketball.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Basketball -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-SkySail.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -skyStation\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Review-Fishing-Rods.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Fishing -fishingRodPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Review-Golf-Equipment.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Golf -golfEquipmentPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
-  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: F1 coastal arcade with dash, pressure and sports minimap\nBasketball: B1 coastal arena with sports minimap\nGolf: G2 Limestone Cove Links with aim lock, cycling power and physical shot guide\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, animated Hook and fish ! bite cue, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player)\nMultiplayer: combined protocol 38; matching builds required\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: Touchline HUD; Team Turbo, Portal Steal and 15-second Wall; centre-line pickups and blue countdown\nBasketball: B1 coastal arena with sports minimap and three courtside abilities\nGolf: G2 Limestone Cove Links with aim lock, cycling power and physical shot guide\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, animated Hook and fish ! bite cue, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player), action sound, round results and live Crew checklist\nMultiplayer: combined protocol "+RoomService.ProtocolVersion+"; matching builds required\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildFootballMatchVerification(){Build(BuildTarget.StandaloneWindows64,"../Builds/FootballMatchQA/Player/WhatTheFish.exe");}
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}
@@ -232,8 +238,10 @@ public static partial class ProjectBuilder {
   Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.None);
  }
  [MenuItem("WHATTHE FISH?/Build Android submission APK (under 100 MB)")]
- public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk("../Builds/Android/WhatTheFish-release.apk",true);}
+ public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk(ResolveBuildOutputPath("../Builds/Android/WhatTheFish-release.apk"),true);}
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
+  path=ResolveBuildOutputPath(path);
+  FootballPropBuild.Prepare();
   JumpAnimationBuilder.Prepare();
   GolfCartBuilder.Prepare();
   GolfClubBuilder.Prepare();

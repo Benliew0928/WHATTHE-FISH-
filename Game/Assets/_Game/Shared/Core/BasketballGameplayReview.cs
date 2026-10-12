@@ -60,7 +60,7 @@ namespace WhatTheFish {
     uint shots=ball.ShotCount;
     // Exercise the same pointer-down path used on Android, through ReadCommand.
     var control=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass);yield return null;
-    var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=1};
+    var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=1,position=RectTransformUtility.WorldToScreenPoint(null,control.transform.position)};
     control.OnPointerDown(pointer);yield return WaitGreen();control.OnPointerUp(pointer);
     yield return null;yield return new WaitForFixedUpdate();
     Check(ball.Held&&(ball.ActionQueued||actor.BasketballMotion.BeforeRelease),"shot gathers before release");
@@ -90,10 +90,11 @@ namespace WhatTheFish {
    Check(!ball.Held,"wall blocks proximity pickup");Destroy(wall);yield return null;yield return WaitHeld(actor);
    yield return CourtBoundaries();
    // A deliberate teleport outside still recovers possession; walking is fenced.
-   PlaceActor(actor,new Vector3(11,.07f,0));yield return new WaitForSeconds(.2f);Check(!ball.Held&&Mathf.Abs(ball.transform.position.x)<1,"holder teleported outside releases and resets ball");
-   ball.Place(new Vector3(11,1,0),Quaternion.identity,Vector3.zero,Vector3.zero);yield return new WaitForSeconds(1);Check(Mathf.Abs(ball.transform.position.x)<1,"loose ball outside court returns");
+   float outside=BasketballBall.PlayerCourtLimits.x+4;
+   PlaceActor(actor,new Vector3(outside,.07f,3));yield return new WaitForSeconds(.2f);Check(!ball.Held&&Mathf.Abs(ball.transform.position.x)<1,"holder teleported beyond recovery apron releases and resets ball");
+   ball.Place(new Vector3(outside,1,3),Quaternion.identity,Vector3.zero,Vector3.zero);yield return new WaitForSeconds(2.2f);Check(ball.IsInbound(actor)&&Mathf.Abs(actor.transform.position.x)>BasketballBall.PlayerCourtLimits.x,"loose out-of-bounds ball restarts with a standing inbound");
    ball.Place(new Vector3(0,-4,0),Quaternion.identity,Vector3.zero,Vector3.zero);yield return new WaitForSeconds(.1f);Check(ball.transform.position.y>.1f,"fallen ball returns");
-   ball.Body.useGravity=false;ball.Place(new Vector3(0,2,0),Quaternion.identity,Vector3.zero,Vector3.zero);yield return new WaitForSeconds(12.2f);Check(ball.transform.position.y<.2f,"stranded unreachable ball times out");ball.Body.useGravity=true;
+   ball.Body.useGravity=false;ball.Place(new Vector3(0,2,0),Quaternion.identity,Vector3.zero,Vector3.zero);yield return new WaitForSeconds(12.2f);Check(ball.IsInbound(actor),"stranded unreachable ball restarts at nearest line");ball.Body.useGravity=true;ball.ResetHome();
    PlaceActor(actor,new Vector3(0,.07f,-2));yield return WaitHeld(actor);
    app.SendMessage("Return");yield return new WaitForSeconds(.15f);Check(!ball.Held&&ball.Body.isKinematic&&!ball.TryShoot(actor,0),"leaving exploration clears and freezes ball");
    app.EnterOffline();yield return new WaitForSeconds(.5f);Check(!ball.Held&&!ball.Body.isKinematic&&!actor.BasketballFreeRoam,"new offline session starts with loose ball and court boundary");
@@ -106,7 +107,8 @@ namespace WhatTheFish {
   IEnumerator CourtBoundaries(){
    var arena=ball.transform.parent;var limits=BasketballBall.PlayerCourtLimits;
    var wood=app.stadium.GetComponentsInChildren<MeshFilter>().Single(f=>f.name=="Court__Maple").GetComponent<Renderer>().bounds;
-   Check(Mathf.Abs(wood.size.x-2*limits.x)<.01f&&Mathf.Abs(wood.size.z-2*limits.y)<.01f,"player boundaries match the authored court");
+   var painted=BasketballBall.PaintedCourtLimits;
+   Check(Mathf.Abs(wood.size.x-2*painted.x)<.01f&&Mathf.Abs(wood.size.z-2*painted.y)<.01f&&limits==painted,"painted court matches artwork and playable boundary follows its exact lines");
    float margin=actor.capsule.radius+actor.capsule.skinWidth;
    bool Contained(){var p=arena.InverseTransformPoint(actor.transform.TransformPoint(actor.capsule.center));return Mathf.Abs(p.x)+margin<=limits.x+.015f&&Mathf.Abs(p.z)+margin<=limits.y+.015f;}
    foreach(var direction in new[]{Vector2.right,Vector2.left,Vector2.up,Vector2.down}){
@@ -134,7 +136,8 @@ namespace WhatTheFish {
    actor.inTransit=true;Check(ball.ConstrainPlayerMotion(actor,Vector3.right)==Vector3.right,"transit bypasses court boundary");actor.inTransit=false;
    PlaceActor(actor,arena.TransformPoint(new Vector3(0,.07f,-4)));
    foreach(var direction in new[]{Vector2.right,Vector2.left,Vector2.up,Vector2.down}){
-    var point=new Vector3(Mathf.Abs(direction.x)>0?direction.x*(limits.x-.25f):3,.45f,direction.y*(limits.y-.25f));
+    // z=3 clears the scorer table and team seats outside the wider wall.
+    var point=new Vector3(Mathf.Abs(direction.x)>0?direction.x*(limits.x-.25f):3,.45f,Mathf.Abs(direction.x)>0?3:direction.y*(limits.y-.25f));
     ball.ResetHome();
     ball.Place(point,Quaternion.identity,arena.TransformDirection(new Vector3(direction.x,0,direction.y)*5),Vector3.zero);yield return new WaitForSeconds(.22f);
     var p=arena.InverseTransformPoint(ball.Body.position);
@@ -144,14 +147,14 @@ namespace WhatTheFish {
    yield return new WaitForSeconds(.9f);Check(ball.transform.localPosition.x>limits.x,"airborne ball outside painted line is not prematurely recovered");ball.Body.useGravity=true;
    ball.ResetHome();ball.Place(new Vector3(limits.x+.9f,.4f,0),Quaternion.identity,Vector3.zero,Vector3.zero);
    yield return new WaitForSeconds(.25f);Check(ball.transform.localPosition.x>limits.x,"out-of-court rebound remains visible before recovery");
-   yield return new WaitForSeconds(.8f);Check(Mathf.Abs(ball.transform.localPosition.x)<1,"unreachable ball on apron returns inside the player boundary");
-   PlaceActor(actor,arena.TransformPoint(new Vector3(limits.x-1,.07f,0)));ball.autoPickup=true;
+   yield return new WaitForSeconds(2f);Check(ball.IsInbound(actor),"unreachable apron ball becomes a standing inbound");
+   PlaceActor(actor,arena.TransformPoint(new Vector3(limits.x-1,.07f,3)));ball.autoPickup=true;
    ball.Place(arena.InverseTransformPoint(actor.transform.position)+Vector3.forward*.6f+Vector3.up*.15f,Quaternion.identity,Vector3.zero,Vector3.zero);yield return WaitHeld(actor);
-   FindFirstObjectByType<BasketballHUD>().GetComponentInChildren<UnityEngine.UI.Button>().onClick.Invoke();yield return new WaitForSeconds(.15f);
+   FindFirstObjectByType<BasketballHUD>().ToggleCourt();yield return new WaitForSeconds(.15f);
    Check(actor.BasketballFreeRoam&&!ball.Held&&!ball.CanShoot(actor),"Free roam control releases possession and disables pickup/actions");
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,sprint=true};yield return new WaitForSeconds(.5f);DevelopmentProbe.TurnCommand=default;
    Check(arena.InverseTransformPoint(actor.transform.position).x>limits.x+.4f,"deliberate free roam can leave the court");Capture("free-roam-controls",true);
-   FindFirstObjectByType<BasketballHUD>().GetComponentInChildren<UnityEngine.UI.Button>().onClick.Invoke();yield return null;
+   FindFirstObjectByType<BasketballHUD>().ToggleCourt();yield return null;
    Check(!actor.BasketballFreeRoam,"Play basketball control restores play mode");
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.left,sprint=true};yield return new WaitForSeconds(.6f);
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,sprint=true};yield return new WaitForSeconds(.6f);DevelopmentProbe.TurnCommand=default;
@@ -223,7 +226,7 @@ namespace WhatTheFish {
        DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,sprint=true};yield return new WaitForSeconds(1.5f);DevelopmentProbe.TurnCommand=default;
        float x=ball.transform.parent.InverseTransformPoint(actor.transform.position).x,limit=BasketballBall.PlayerCourtLimits.x;
        Check(x>limit-.8f&&x+actor.capsule.radius+actor.capsule.skinWidth<=limit+.04f&&ball.CanShoot(actor),"guest sees dribbling player stop at authoritative sideline");
-       FindFirstObjectByType<BasketballHUD>().GetComponentInChildren<UnityEngine.UI.Button>().onClick.Invoke();yield return new WaitForSeconds(.25f);
+       FindFirstObjectByType<BasketballHUD>().ToggleCourt();yield return new WaitForSeconds(.25f);
        Check(actor.BasketballFreeRoam&&!ball.Held,"guest receives Free roam state and possession release");
        DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,sprint=true};yield return new WaitForSeconds(.6f);DevelopmentProbe.TurnCommand=default;
        Check(ball.transform.parent.InverseTransformPoint(actor.transform.position).x>limit+.3f,"guest deliberately walks out in Free roam");break;

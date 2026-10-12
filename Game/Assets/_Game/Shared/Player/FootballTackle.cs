@@ -28,7 +28,7 @@ namespace WhatTheFish {
   void Awake(){athlete=GetComponent<Athlete>();}
   public void ResetAction(){State=FootballAction.None;Elapsed=0;CooldownRemaining=0;RecoveryRemaining=0;MovementMultiplier=1;immunity=0;ballHit=false;hitThisSlide.Clear();Sequence++;}
   public bool TryStart(bool grounded){
-   if(!Allowed||athlete.ControlsFootball||!grounded||State!=FootballAction.None||RecoveryRemaining>0||CooldownRemaining>0)return false;
+   if(!Allowed||FootballBall.Instance&&FootballBall.Instance.PropLocked(athlete)||athlete.ControlsFootball||!grounded||State!=FootballAction.None||RecoveryRemaining>0||CooldownRemaining>0)return false;
    direction=transform.forward;direction.y=0;direction.Normalize();
    State=FootballAction.Slide;Elapsed=0;CooldownRemaining=cooldown;Sequence++;ballHit=false;hitThisSlide.Clear();
    athlete.Motor.Reset(transform.eulerAngles.y);return true;

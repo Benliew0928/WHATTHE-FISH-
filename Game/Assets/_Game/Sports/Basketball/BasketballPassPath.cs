@@ -23,7 +23,7 @@ namespace WhatTheFish {
     path.rebound=forward*(speed*.85f)+Vector3.up*((gravity*path.bounceTime-vertical)*.78f+gravity*Time.fixedDeltaTime*.5f);
     path.duration=path.bounceTime+after;
    }else{
-    float direct=range/Mathf.Lerp(8,13,power);
+    float direct=range/(BasketballPassRules.SpeedMultiplier*Mathf.Lerp(8,13,power));
     path.duration=Mathf.Lerp(direct,2*Mathf.Sqrt(2*Mathf.Lerp(1.25f,2.8f,power)/gravity),bend);
     path.velocity=forward*(range/path.duration)+Vector3.up*(gravity*(path.duration+Time.fixedDeltaTime)*.5f);
    }
@@ -31,12 +31,17 @@ namespace WhatTheFish {
   }
  }
  public sealed partial class BasketballBall {
-  bool passBounceArmed;BasketballPassPath launchedPass;double passLaunchedAt;
+  bool passBounceArmed;BasketballPassPath launchedPass;double passLaunchedAt,passBouncedAt=double.NegativeInfinity;
   public uint PassBounces {get;private set;}
   public static float PassFloor(Vector3 point){
    return Physics.Raycast(point+Vector3.up*.2f,Vector3.down,out var hit,8,1<<8,QueryTriggerInteraction.Ignore)?hit.point.y:point.y-BasketballMotion.PassPoint.y;
   }
   bool BouncePassContact(Collision collision){
+   // Switching CCD after the planned rebound can repeat its floor contact on
+   // the next step. Keep that ascending pass catchable without bouncing twice.
+   if(!passBounceArmed&&passing&&launchedPass.Bounces&&BasketballMotion.Clock-passBouncedAt<=.08&&Body.linearVelocity.y>0){
+    for(int i=0;i<collision.contactCount;i++){var c=collision.GetContact(i);if(c.normal.y>.94f&&Mathf.Abs(c.point.y-(launchedPass.bounce.y-Radius))<.08f)return true;}
+   }
    if(!passBounceArmed)return false;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    Debug.Log($"PASS_BOUNCE_CONTACT time={BasketballMotion.Clock-passLaunchedAt:F4} distance={Vector3.Distance(Body.position,launchedPass.bounce):F4} ball={Body.position:F4} expected={launchedPass.bounce:F4} contacts={collision.contactCount} collider={collision.collider.name}");
@@ -47,7 +52,7 @@ namespace WhatTheFish {
    for(int i=0;i<collision.contactCount;i++){
     var contact=collision.GetContact(i);
     if(contact.normal.y<.94f||Mathf.Abs(contact.point.y-(launchedPass.bounce.y-Radius))>.08f)continue;
-    Body.linearVelocity=launchedPass.rebound;Body.linearDamping=0;passing=true;RestoreFloorContacts();PassBounces++;sendAt=0;return true;
+    Body.linearVelocity=launchedPass.rebound;Body.linearDamping=0;passing=true;passBouncedAt=BasketballMotion.Clock;RestoreFloorContacts();PassBounces++;sendAt=0;return true;
    }
    return false;
   }

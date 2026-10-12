@@ -295,7 +295,9 @@ namespace WhatTheFish {
    string[] cameras={"First person","Third person","Elevated"};for(int i=0;i<3;i++){int mode=i;Button(p.transform,"Camera "+cameras[i],cameras[i],35+i*449,313,428,66,app.view.mode==i?Gold:Color.white,()=>{app.view.mode=mode;PlayerPrefs.SetInt("camera",mode);MenuPreferences.Save();Rebuild();},CoveSymbol.None,27);}
    Text(p.transform,"Gentler motion",35,421,930,39,29,true);Text(p.transform,"Keeps clear press feedback; reduces bouncing and page movement.",35,469,1006,59,24,false,Muted);
    Button(p.transform,"Reduced motion","Reduced motion: "+(MenuPreferences.ReducedMotion?"On":"Off"),1058,433,312,71,MenuPreferences.ReducedMotion?Mint:Color.white,()=>{MenuPreferences.SetMotion(!MenuPreferences.ReducedMotion);MenuPreferences.Save();Rebuild();},CoveSymbol.None,24);
-   ActionButton("Reset settings","Reset settings",99,809,269,63,Cream,()=>{MenuPreferences.SetMaster(.8f);MenuPreferences.SetUI(.65f);MenuPreferences.SetMotion(false);app.view.mode=1;PlayerPrefs.SetInt("camera",1);MenuPreferences.Save();Rebuild();},CoveSymbol.Settings,23);
+   Text(p.transform,"Fishing vibration uses phone touch feedback. Reduced motion keeps it off.",35,549,1006,37,23,false,Muted);
+   Button(p.transform,"Fishing vibration","Fishing vibration: "+(MenuPreferences.FishingVibration?"On":"Off"),1058,519,312,71,MenuPreferences.FishingVibration?Mint:Color.white,()=>{MenuPreferences.SetFishingVibration(!MenuPreferences.FishingVibration);MenuPreferences.Save();Rebuild();},CoveSymbol.None,23);
+   ActionButton("Reset settings","Reset settings",99,809,269,63,Cream,()=>{MenuPreferences.SetMaster(.8f);MenuPreferences.SetUI(.65f);MenuPreferences.SetMotion(false);MenuPreferences.SetFishingVibration(false);app.view.mode=1;PlayerPrefs.SetInt("camera",1);MenuPreferences.Save();Rebuild();},CoveSymbol.Settings,23);
    ActionButton("Done settings","Done",1260,808,242,65,Mint,Back,CoveSymbol.Check,27);
   }
   void Volume(Transform parent,string label,float value,float x,float y,float width,Action<float> save) {

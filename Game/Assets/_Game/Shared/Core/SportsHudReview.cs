@@ -30,6 +30,7 @@ namespace WhatTheFish {
   void StyleChecks(SportId sport){
    if(sport==SportId.Fishing){FishingStyleChecks();return;}
    if(sport==SportId.Golf){GolfStyleChecks();return;}
+   if(sport==SportId.Basketball){BasketballStyleChecks();return;}
    var buttons=FindObjectsByType<Button>(FindObjectsInactive.Include,FindObjectsSortMode.None).Where(b=>b.GetComponent<GameButtonStyle>()).ToArray();
    Check(buttons.Length>=3,sport+" game controls have Cove skin");
    Check(buttons.All(b=>b.targetGraphic is CovePlate&&b.GetComponent<CoveFeedback>()&&b.transition==Selectable.Transition.None),sport+" plates use interactive feedback");
@@ -44,6 +45,20 @@ namespace WhatTheFish {
    var button=buttons.First(b=>b.IsActive()&&b.IsInteractable());var feedback=button.GetComponent<CoveFeedback>();var pointer=new PointerEventData(EventSystem.current){pointerId=71,button=PointerEventData.InputButton.Left};
    feedback.OnPointerDown(pointer);feedback.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=72});
    var face=(CovePlate)button.targetGraphic;Check(!face.raycastTarget&&face.shadow&&face.border>0,sport+" visual does not resize touch target");feedback.OnPointerUp(pointer);
+  }
+  Button[] BasketballButtons()=>BasketballHUD.Instance?BasketballHUD.Instance.GetComponentsInChildren<Button>(true):Array.Empty<Button>();
+  void BasketballStyleChecks(){
+   Canvas.ForceUpdateCanvases();var hud=BasketballHUD.Instance;var buttons=BasketballButtons();
+   Check(hud&&buttons.Length>=7,"Basketball uses its native courtside controls");if(!hud||buttons.Length==0)return;
+   Check(buttons.All(b=>b.targetGraphic is BasketballPlate&&b.GetComponent<BasketballButtonFeedback>()&&!b.GetComponent<GameButtonStyle>()&&b.transition==Selectable.Transition.None),"Basketball native plates keep their own pointer feedback");
+   Check(buttons.All(b=>b.targetGraphic&&b.targetGraphic.raycastTarget&&(b.GetComponent<Image>()==null||b.GetComponent<Image>().color.a==0)),"Basketball fixed plate rectangles own their touch targets");
+   var shoot=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>!b.pass);var pass=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).FirstOrDefault(b=>b.pass);
+   Check(shoot&&pass&&((RectTransform)shoot.transform).rect.size==Vector2.one*106&&((RectTransform)pass.transform).rect.size==Vector2.one*80,"Basketball preserves approved Shoot and Pass target sizes");
+   Check(shoot&&pass&&new[]{shoot,pass}.All(b=>b.GetComponentsInChildren<Image>(true).Any(i=>i.sprite&&!i.raycastTarget)),"Basketball action illustrations remain visible without consuming touches");
+   var visible=buttons.Where(b=>b.IsActive()&&b.GetComponentsInParent<CanvasGroup>().All(g=>g.alpha>.05f)).ToArray();
+   Rect Bounds(Button b){var c=new Vector3[4];((RectTransform)b.transform).GetWorldCorners(c);return new Rect(c[0],c[2]-c[0]);}
+   foreach(var b in visible){var c=new Vector3[4];((RectTransform)b.transform).GetWorldCorners(c);Check(c.All(p=>p.x>=-.5f&&p.x<=Screen.width+.5f&&p.y>=-.5f&&p.y<=Screen.height+.5f),"Basketball native target stays in bounds: "+b.name);}
+   for(int i=0;i<visible.Length;i++)for(int j=i+1;j<visible.Length;j++)Check(!Bounds(visible[i]).Overlaps(Bounds(visible[j])),"Basketball native controls do not overlap: "+visible[i].name+" / "+visible[j].name);
   }
   Button[] FishingButtons()=>FindObjectsByType<Button>(FindObjectsInactive.Include,FindObjectsSortMode.None).Where(b=>b.targetGraphic is FishingStickerGraphic).ToArray();
   void GolfStyleChecks(){
@@ -79,25 +94,54 @@ namespace WhatTheFish {
    }
   }
   void MapChecks(int players,SportId sport){
-   Canvas.ForceUpdateCanvases();var map=FindFirstObjectByType<SportsMiniMap>();Check(map&&map.PlayerCount==players,sport+" map includes every active player");
-   Check(map&&!map.raycastTarget&&map.rectTransform.anchorMin==new Vector2(.5f,0),sport+" map is bottom-centred and touch-through");
-   Check(map.rectTransform.rect.width<=210&&map.rectTransform.rect.height<=120&&!map.GetComponentInChildren<Text>(),sport+" map is a small board without captions or legend");
+   Canvas.ForceUpdateCanvases();var map=FindFirstObjectByType<SportsMiniMap>();Check(map&&map.PlayerCount==players,sport+" map includes every active player");if(!map)return;
+   if(sport==SportId.Basketball){
+    Check(map&&!map.raycastTarget&&map.rectTransform.anchorMin==new Vector2(0,1)&&map.rectTransform.anchorMax==new Vector2(0,1),"Basketball approved top-left map remains touch-through");
+    var design=Vector2.Scale(map.rectTransform.rect.size,new Vector2(Mathf.Abs(map.rectTransform.localScale.x),Mathf.Abs(map.rectTransform.localScale.y)));
+    Check(map.rectTransform.rect.size==new Vector2(204,124)&&Mathf.Abs(map.rectTransform.localScale.x-.5f)<.001f&&Mathf.Abs(map.rectTransform.localScale.y-.5f)<.001f&&Mathf.Abs(design.x-102)<.5f&&Mathf.Abs(design.y-62)<.5f&&!map.GetComponentInChildren<Text>(),"Basketball map keeps its approved 204 by 124 at half scale without captions or legend");
+   }else{
+    Check(map&&!map.raycastTarget&&map.rectTransform.anchorMin==new Vector2(.5f,0),sport+" map is bottom-centred and touch-through");
+    Check(map.rectTransform.rect.width<=210&&map.rectTransform.rect.height<=120&&!map.GetComponentInChildren<Text>(),sport+" map is a small board without captions or legend");
+   }
    var p=map.MapPoint(local.transform.position);Check(Mathf.Abs(p.x)<=140&&Mathf.Abs(p.y)<=69,sport+" position maps inside field");
    var corners=new Vector3[4];map.rectTransform.GetWorldCorners(corners);Check(corners.All(c=>c.x>=0&&c.x<=Screen.width&&c.y>=0&&c.y<=Screen.height),sport+" map fits screen "+Screen.width+"x"+Screen.height);
   }
   IEnumerator FeedbackChecks(){
    if(app.SelectedSport==SportId.Fishing){yield return FishingFeedbackChecks();yield break;}
    if(app.SelectedSport==SportId.Golf){yield return GolfFeedbackChecks();yield break;}
-   var button=FindObjectsByType<Button>(FindObjectsSortMode.None).First(b=>b.IsActive()&&b.IsInteractable()&&b.GetComponent<GameButtonStyle>());
+   if(app.SelectedSport==SportId.Basketball){yield return BasketballFeedbackChecks();yield break;}
+   // A possession-dependent action can legitimately cancel pressure when its
+   // eligibility changes. Camera isolates pointer feedback; turnover tests
+   // below continue to exercise the real gameplay action and cancellation.
+   var button=FindObjectsByType<Button>(FindObjectsSortMode.None).FirstOrDefault(b=>b.IsActive()&&b.IsInteractable()&&b.GetComponent<GameButtonStyle>()&&b.GetComponentsInChildren<Text>().Any(t=>t.text=="Camera"));
+   Check(button,"Football Camera provides a stable feedback fixture");if(!button)yield break;
    var feedback=button.GetComponent<CoveFeedback>();var visual=button.transform.Find("Button visual");var rect=(RectTransform)button.transform;
+   feedback.OnCancel(null);yield return null;float rest=visual.localScale.x;
    var corners=new Vector3[4];rect.GetWorldCorners(corners);var pointer=new PointerEventData(EventSystem.current){pointerId=81,button=PointerEventData.InputButton.Left};
    feedback.OnPointerDown(pointer);yield return new WaitForSeconds(.16f);
-   Check(MenuPreferences.ReducedMotion||visual.localScale.x<.95f,"held button visibly compresses");
+   File.AppendAllText(Path.Combine(folder,"results.txt"),"DIAG Football feedback button="+button.name+" interactable="+button.IsInteractable()+" reducedMotion="+MenuPreferences.ReducedMotion+" rest="+rest+" held="+visual.localScale.x+" pressScale="+feedback.pressScale+" pressure="+((CovePlate)button.targetGraphic).pressure+"\n");
+   Check(button.IsInteractable(),"Football Camera remains eligible throughout held feedback");
+   Check(MenuPreferences.ReducedMotion||visual.localScale.x<rest*.95f,"held button visibly compresses");
    feedback.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=82});yield return new WaitForSeconds(.08f);
    Check(((CovePlate)button.targetGraphic).pressure==1,"another finger cannot release press feedback");
    var after=new Vector3[4];rect.GetWorldCorners(after);Check(corners.Zip(after,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.01f),"press animation preserves thumb hit area");
    feedback.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);
-   Check(Mathf.Abs(visual.localScale.x-1)<.005f&&((CovePlate)button.targetGraphic).pressure==0,"release returns visual to rest");
+   Check(Mathf.Abs(visual.localScale.x-rest)<.005f&&((CovePlate)button.targetGraphic).pressure==0,"release returns visual to rest");
+  }
+  IEnumerator BasketballFeedbackChecks(){
+   var button=BasketballButtons().FirstOrDefault(b=>b.name=="Court settings"&&b.IsActive()&&b.IsInteractable());
+   Check(button,"Basketball Court settings provides a stable feedback fixture");if(!button)yield break;
+   var feedback=button.GetComponent<BasketballButtonFeedback>();var plate=button.GetComponent<BasketballPlate>();var visual=button.transform.Find("Gear");
+   Check(feedback&&plate&&visual,"Basketball stable control has native artwork and feedback");if(!feedback||!plate||!visual)yield break;
+   bool motion=MenuPreferences.ReducedMotion,hadMotion=PlayerPrefs.HasKey("cove.motion");int motionValue=PlayerPrefs.GetInt("cove.motion");var rect=(RectTransform)button.transform;var before=new Vector3[4];rect.GetWorldCorners(before);
+   float rest=visual.localScale.x;Vector2 position=((RectTransform)visual).anchoredPosition;var pointer=new PointerEventData(EventSystem.current){pointerId=81,button=PointerEventData.InputButton.Left};
+   try{
+    MenuPreferences.SetMotion(false);feedback.OnCancel(null);yield return null;feedback.OnPointerDown(pointer);yield return new WaitForSeconds(.16f);
+    Check(button.IsInteractable()&&plate.pressure>.9f&&visual.localScale.x<rest*.99f&&((RectTransform)visual).anchoredPosition.y<position.y-1,"Basketball held feedback depresses only native artwork");
+    feedback.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=82});yield return new WaitForSeconds(.08f);Check(plate.pressure>.9f,"another finger cannot release Basketball native feedback");
+    var after=new Vector3[4];rect.GetWorldCorners(after);Check(before.Zip(after,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.01f),"Basketball press animation preserves its touch rectangle");
+    feedback.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);Check(plate.pressure<.005f&&Mathf.Abs(visual.localScale.x-rest)<.005f&&Vector2.Distance(((RectTransform)visual).anchoredPosition,position)<.01f,"Basketball matching-finger release restores native artwork");
+   }finally{feedback.OnCancel(null);MenuPreferences.SetMotion(motion);if(hadMotion)PlayerPrefs.SetInt("cove.motion",motionValue);else PlayerPrefs.DeleteKey("cove.motion");}
   }
   IEnumerator FishingFeedbackChecks(){
    var button=FishingButtons().First(b=>b.IsActive()&&b.IsInteractable());var feedback=button.GetComponent<CoveFeedback>();float rest=button.transform.localScale.x;

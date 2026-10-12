@@ -24,17 +24,19 @@ namespace WhatTheFish {
  public struct FishingPlayerRecord:INetworkSerializable,IEquatable<FishingPlayerRecord> {
   public ulong owner;public uint sequence,awardSequence;public FishingPhase phase;public FishingResult result;
   public int fish,pier,score,catches,casts,hooks,lastAward,lastBonus,cupPoints,cupScore;
+  public int smallCatches,mediumCatches,largeCatches,bonusTotal,missedBites,snappedLines,cancels,timeouts;
   public byte wantedMask,catchMask;public bool held,connected,ready;public double phaseAt,biteAt,hookUntil,reelLease;
   public float progress,tension,distance,lineLength,velocity,strain,castDistance,surge;public Vector3 origin;
   public bool Busy=>phase>=FishingPhase.Casting&&phase<=FishingPhase.Reeling;
   public void NetworkSerialize<T>(BufferSerializer<T> s)where T:IReaderWriter {
    s.SerializeValue(ref owner);s.SerializeValue(ref sequence);s.SerializeValue(ref awardSequence);s.SerializeValue(ref phase);s.SerializeValue(ref result);
    s.SerializeValue(ref fish);s.SerializeValue(ref pier);s.SerializeValue(ref score);s.SerializeValue(ref catches);s.SerializeValue(ref casts);s.SerializeValue(ref hooks);
+   s.SerializeValue(ref smallCatches);s.SerializeValue(ref mediumCatches);s.SerializeValue(ref largeCatches);s.SerializeValue(ref bonusTotal);s.SerializeValue(ref missedBites);s.SerializeValue(ref snappedLines);s.SerializeValue(ref cancels);s.SerializeValue(ref timeouts);
    s.SerializeValue(ref lastAward);s.SerializeValue(ref lastBonus);s.SerializeValue(ref cupPoints);s.SerializeValue(ref cupScore);s.SerializeValue(ref wantedMask);s.SerializeValue(ref catchMask);
    s.SerializeValue(ref held);s.SerializeValue(ref connected);s.SerializeValue(ref ready);s.SerializeValue(ref phaseAt);s.SerializeValue(ref biteAt);s.SerializeValue(ref hookUntil);s.SerializeValue(ref reelLease);
    s.SerializeValue(ref progress);s.SerializeValue(ref tension);s.SerializeValue(ref distance);s.SerializeValue(ref lineLength);s.SerializeValue(ref velocity);s.SerializeValue(ref strain);s.SerializeValue(ref castDistance);s.SerializeValue(ref surge);s.SerializeValue(ref origin);
   }
-  public bool Equals(FishingPlayerRecord v)=>owner==v.owner&&sequence==v.sequence&&awardSequence==v.awardSequence&&phase==v.phase&&result==v.result&&fish==v.fish&&pier==v.pier&&score==v.score&&catches==v.catches&&casts==v.casts&&hooks==v.hooks&&lastAward==v.lastAward&&lastBonus==v.lastBonus&&cupPoints==v.cupPoints&&cupScore==v.cupScore&&wantedMask==v.wantedMask&&catchMask==v.catchMask&&held==v.held&&connected==v.connected&&ready==v.ready&&phaseAt==v.phaseAt&&biteAt==v.biteAt&&hookUntil==v.hookUntil&&reelLease==v.reelLease&&progress==v.progress&&tension==v.tension&&distance==v.distance&&lineLength==v.lineLength&&velocity==v.velocity&&strain==v.strain&&castDistance==v.castDistance&&surge==v.surge&&origin==v.origin;
+  public bool Equals(FishingPlayerRecord v)=>owner==v.owner&&sequence==v.sequence&&awardSequence==v.awardSequence&&phase==v.phase&&result==v.result&&fish==v.fish&&pier==v.pier&&score==v.score&&catches==v.catches&&casts==v.casts&&hooks==v.hooks&&smallCatches==v.smallCatches&&mediumCatches==v.mediumCatches&&largeCatches==v.largeCatches&&bonusTotal==v.bonusTotal&&missedBites==v.missedBites&&snappedLines==v.snappedLines&&cancels==v.cancels&&timeouts==v.timeouts&&lastAward==v.lastAward&&lastBonus==v.lastBonus&&cupPoints==v.cupPoints&&cupScore==v.cupScore&&wantedMask==v.wantedMask&&catchMask==v.catchMask&&held==v.held&&connected==v.connected&&ready==v.ready&&phaseAt==v.phaseAt&&biteAt==v.biteAt&&hookUntil==v.hookUntil&&reelLease==v.reelLease&&progress==v.progress&&tension==v.tension&&distance==v.distance&&lineLength==v.lineLength&&velocity==v.velocity&&strain==v.strain&&castDistance==v.castDistance&&surge==v.surge&&origin==v.origin;
  }
  public struct FishingFishRecord:INetworkSerializable,IEquatable<FishingFishRecord> {
   public int id;public bool claimed;public ulong owner;public double respawnAt;
@@ -43,11 +45,13 @@ namespace WhatTheFish {
  }
  // Host-owned rules and a spring/drag line model; presentations never award points.
  public sealed class FishingState {
-  public const double MatchSeconds=180,HookSeconds=1.8,LeaseSeconds=.8,CountdownSeconds=3;
+  public const double MatchSeconds=180,HookSeconds=1.8,HookTransitSeconds=.25,HookClockTolerance=.05,LeaseSeconds=.8,CountdownSeconds=3;
   public const int PierCount=5,FishPerPier=6,SizeCount=3,FishCount=PierCount*FishPerPier,CrewPointsPerPlayer=20;
   public FishingMatchSnapshot Match;
   public readonly List<FishingPlayerRecord> Players=new();
   public readonly List<FishingFishRecord> Fish=new();
+  // Host-derived ownership only: keep a remote cast reserved while its timely Hook is in transit.
+  readonly Dictionary<ulong,uint> remoteHookCasts=new();
   public bool Running=>Match.phase==FishingRoundPhase.Practice||Match.phase==FishingRoundPhase.Playing;
   public FishingPlayerRecord? Player(ulong id){int i=Players.FindIndex(p=>p.owner==id);return i<0?null:Players[i];}
   public static int PierForFish(int fish)=>fish>=0&&fish<FishCount?fish/FishPerPier:-1;
@@ -61,7 +65,7 @@ namespace WhatTheFish {
   public bool AllReady=>Players.Any(p=>p.connected)&&Players.Where(p=>p.connected).All(p=>p.ready&&!p.Busy);
   public void Begin(IEnumerable<ulong> owners,uint round,double now,bool competitive){
    var ids=owners.Distinct().ToArray();if(ids.Length>5)throw new ArgumentException("Fishing supports at most five participants.");
-   Match=new FishingMatchSnapshot{round=round,phase=competitive?FishingRoundPhase.Playing:FishingRoundPhase.Practice,mode=FishingMode.Round,started=now,deadline=competitive?now+MatchSeconds:0};Players.Clear();Fish.Clear();
+   Match=new FishingMatchSnapshot{round=round,phase=competitive?FishingRoundPhase.Playing:FishingRoundPhase.Practice,mode=FishingMode.Round,started=now,deadline=competitive?now+MatchSeconds:0};Players.Clear();Fish.Clear();remoteHookCasts.Clear();
    foreach(var id in ids)Players.Add(new FishingPlayerRecord{owner=id,fish=-1,pier=-1,connected=true});for(int i=0;i<FishCount;i++)Fish.Add(new FishingFishRecord{id=i});
   }
   public bool Start(IEnumerable<ulong> owners,uint round,double now,FishingMode mode){
@@ -72,18 +76,20 @@ namespace WhatTheFish {
    Match=new FishingMatchSnapshot{round=round,phase=FishingRoundPhase.Countdown,mode=mode,started=now+CountdownSeconds,deadline=now+CountdownSeconds+MatchSeconds,cupRound=cup,wantedOffset=offset,cupValid=mode==FishingMode.Cup,crewTarget=mode==FishingMode.Crew?CrewPointsPerPlayer*ids.Length:0};return true;
   }
   public void Join(ulong id){if(Match.phase!=FishingRoundPhase.Practice&&Match.phase!=FishingRoundPhase.Ended)return;if(Players.Any(p=>p.owner==id))return;Players.RemoveAll(p=>!p.connected);if(Players.Count<5){Players.Add(new FishingPlayerRecord{owner=id,fish=-1,pier=-1,connected=true});Match.cupValid=false;}}
-  public void Disconnect(ulong id,double now){int i=Players.FindIndex(p=>p.owner==id);if(i<0)return;var p=Players[i];Release(p,false,now);p.connected=p.held=p.ready=false;p.phase=FishingPhase.Ready;p.sequence++;Players[i]=p;Match.cupValid=false;
+  public void Disconnect(ulong id,double now){int i=Players.FindIndex(p=>p.owner==id);if(i<0)return;var p=Players[i];Release(p,false,now);remoteHookCasts.Remove(id);p.connected=p.held=p.ready=false;p.phase=FishingPhase.Ready;p.sequence++;Players[i]=p;Match.cupValid=false;
    if(Match.phase==FishingRoundPhase.Countdown||Match.mode==FishingMode.Crew&&Match.phase==FishingRoundPhase.Playing)End(now,FishingOutcome.Abandoned);
   }
   void Release(FishingPlayerRecord p,bool caught,double now){if(p.fish<0||p.fish>=Fish.Count)return;var f=Fish[p.fish];if(!f.claimed||f.owner!=p.owner)return;f.claimed=false;f.respawnAt=caught?now+7:0;Fish[p.fish]=f;}
   void Finish(ref FishingPlayerRecord p,FishingPhase phase,FishingResult reason,double now){
-   Release(p,phase==FishingPhase.Caught,now);p.phase=phase;p.result=reason;p.phaseAt=now;p.held=false;
+   Release(p,phase==FishingPhase.Caught,now);remoteHookCasts.Remove(p.owner);p.phase=phase;p.result=reason;p.phaseAt=now;p.held=false;
+   switch(reason){case FishingResult.Missed:p.missedBites++;break;case FishingResult.Snapped:p.snappedLines++;break;case FishingResult.Cancelled:p.cancels++;break;case FishingResult.TimedOut:p.timeouts++;break;}
    if(phase!=FishingPhase.Caught)return;
    int window=Window(now);int size=SizeForFish(p.fish);int bonus=Match.phase==FishingRoundPhase.Playing&&size==Wanted(now)&&(p.wantedMask&(1<<window))==0?3:0;
+   if(size==0)p.smallCatches++;else if(size==1)p.mediumCatches++;else p.largeCatches++;p.bonusTotal+=bonus;
    if(bonus>0)p.wantedMask|=(byte)(1<<window);p.lastBonus=bonus;p.lastAward=Points(p.fish)+bonus;p.score+=p.lastAward;p.catches++;p.awardSequence++;p.catchMask|=(byte)(1<<size);
    if(Match.mode==FishingMode.Crew&&Match.phase==FishingRoundPhase.Playing){Match.crewScore+=p.lastAward;Match.crewMask|=(byte)(1<<size);}
   }
-  public bool Act(ulong owner,uint round,uint sequence,FishingAction action,int pier,Vector3 origin,double now,int chosenFish=-1,float castDistance=7){
+  public bool Act(ulong owner,uint round,uint sequence,FishingAction action,int pier,Vector3 origin,double now,int chosenFish=-1,float castDistance=7,double pressedAt=double.NaN,bool remoteHook=false){
    if(!double.IsFinite(now))return false;Advance(now,0);int index=Players.FindIndex(p=>p.owner==owner);if(round!=Match.round||index<0)return false;var p=Players[index];if(!p.connected||sequence!=p.sequence)return false;
    if(action==FishingAction.Ready||action==FishingAction.Unready){if(Match.phase!=FishingRoundPhase.Practice&&Match.phase!=FishingRoundPhase.Ended||p.Busy)return false;p.ready=action==FishingAction.Ready;Players[index]=p;return true;}
    if(!Running)return false;
@@ -92,9 +98,13 @@ namespace WhatTheFish {
      if(p.phase!=FishingPhase.Ready||pier<0||pier>=PierCount||!float.IsFinite(origin.x)||!float.IsFinite(origin.y)||!float.IsFinite(origin.z)||!float.IsFinite(castDistance)||castDistance<1.2f||castDistance>12)return false;
      int fish=chosenFish;
      if(fish<0||fish>=Fish.Count||PierForFish(fish)!=pier||Fish[fish].claimed||now<Fish[fish].respawnAt)return false;
-     Fish[fish]=new FishingFishRecord{id=fish,claimed=true,owner=owner};p.fish=fish;p.pier=pier;p.origin=origin;p.sequence++;p.casts++;p.phase=FishingPhase.Casting;p.phaseAt=now;p.biteAt=now+1.9+SizeForFish(fish)*.65;p.hookUntil=p.biteAt+HookSeconds;p.result=FishingResult.None;p.progress=0;p.tension=.18f;p.held=p.ready=false;p.castDistance=p.distance=p.lineLength=castDistance;p.velocity=p.strain=p.surge=0;break;
+     Fish[fish]=new FishingFishRecord{id=fish,claimed=true,owner=owner};p.fish=fish;p.pier=pier;p.origin=origin;p.sequence++;p.casts++;p.phase=FishingPhase.Casting;p.phaseAt=now;p.biteAt=now+1.9+SizeForFish(fish)*.65;p.hookUntil=p.biteAt+HookSeconds;p.result=FishingResult.None;p.progress=0;p.tension=.18f;p.held=p.ready=false;p.castDistance=p.distance=p.lineLength=castDistance;p.velocity=p.strain=p.surge=0;if(remoteHook)remoteHookCasts[owner]=p.sequence;else remoteHookCasts.Remove(owner);break;
     case FishingAction.Hook:
-     if(p.phase!=FishingPhase.Bite||now>=p.hookUntil)return false;p.phase=FishingPhase.Reeling;p.phaseAt=now;p.held=false;p.hooks++;break;
+     double hookAt=remoteHook?pressedAt:now;
+     if(!double.IsFinite(hookAt)||hookAt>now+HookClockTolerance||now-hookAt>HookTransitSeconds)return false;
+     hookAt=Math.Min(hookAt,now);
+     if(p.phase!=FishingPhase.Bite||hookAt<p.biteAt||hookAt>=p.hookUntil||remoteHook&&(!remoteHookCasts.TryGetValue(owner,out var castSequence)||castSequence!=sequence))return false;
+     remoteHookCasts.Remove(owner);p.phase=FishingPhase.Reeling;p.phaseAt=now;p.held=false;p.hooks++;break;
     case FishingAction.ReelStart:
      if(p.phase!=FishingPhase.Reeling)return false;p.held=true;p.reelLease=now+LeaseSeconds;break;
     case FishingAction.ReelStop:p.held=false;break;
@@ -105,7 +115,7 @@ namespace WhatTheFish {
   }
   public void Abandon(double now){if(Match.phase==FishingRoundPhase.Countdown||Match.phase==FishingRoundPhase.Playing)End(now,FishingOutcome.Abandoned);}
   void End(double now,FishingOutcome outcome){
-   if(Match.phase==FishingRoundPhase.Ended)return;bool scored=Match.phase==FishingRoundPhase.Playing;Match.phase=FishingRoundPhase.Ended;Match.outcome=outcome;Match.ended=now;
+   if(Match.phase==FishingRoundPhase.Ended)return;bool scored=Match.phase==FishingRoundPhase.Playing;Match.phase=FishingRoundPhase.Ended;Match.outcome=outcome;Match.ended=now;remoteHookCasts.Clear();
    if(outcome==FishingOutcome.Success)Match.medal=(byte)(Match.deadline-now>=40?3:Match.deadline-now>=20?2:1);
    if(scored&&Match.mode==FishingMode.Cup&&Match.cupValid&&outcome==FishingOutcome.Finished){for(int i=0;i<Players.Count;i++){var p=Players[i];p.cupPoints+=Players.Count+1-Rank(p.owner);p.cupScore+=p.score;Players[i]=p;}Match.cupFinished=Match.cupRound==3;}
    for(int i=0;i<Players.Count;i++){var p=Players[i];Release(p,false,now);p.held=p.ready=false;if(p.Busy)p.phase=FishingPhase.Ready;p.sequence++;Players[i]=p;}
@@ -119,7 +129,8 @@ namespace WhatTheFish {
     var p=Players[i];if(!p.connected)continue;
     if(p.phase==FishingPhase.Casting&&now>=p.phaseAt+.65)p.phase=FishingPhase.Waiting;
     if((p.phase==FishingPhase.Casting||p.phase==FishingPhase.Waiting)&&now>=p.biteAt)p.phase=FishingPhase.Bite;
-    if(p.phase==FishingPhase.Bite&&now>=p.hookUntil)Finish(ref p,FishingPhase.Escaped,FishingResult.Missed,now);
+    double hookResolveAt=p.hookUntil+(remoteHookCasts.TryGetValue(p.owner,out var remoteSequence)&&remoteSequence==p.sequence?HookTransitSeconds:0);
+    if(p.phase==FishingPhase.Bite&&now>=hookResolveAt)Finish(ref p,FishingPhase.Escaped,FishingResult.Missed,now);
     if(p.phase==FishingPhase.Reeling){
      if(now>=p.reelLease)p.held=false;
      float step=Mathf.Min(dt,.05f),size=SizeForFish(p.fish);
@@ -142,8 +153,8 @@ namespace WhatTheFish {
    }
    if(Match.phase==FishingRoundPhase.Playing&&Match.mode==FishingMode.Crew&&Match.crewScore>=Match.crewTarget&&Match.crewMask==7&&Players.All(p=>p.catches>0))End(now,FishingOutcome.Success);
   }
-  public void Receive(FishingMatchSnapshot match,IEnumerable<FishingPlayerRecord> players,IEnumerable<FishingFishRecord> fish){Match=match;Players.Clear();Players.AddRange(players);Fish.Clear();Fish.AddRange(fish);}
-  public void Receive(FishingMatchSnapshot match,NetworkList<FishingPlayerRecord> players,NetworkList<FishingFishRecord> fish){Match=match;Players.Clear();for(int i=0;i<players.Count;i++)Players.Add(players[i]);Fish.Clear();for(int i=0;i<fish.Count;i++)Fish.Add(fish[i]);}
-  public void Clear(){Match=default;Players.Clear();Fish.Clear();}
+  public void Receive(FishingMatchSnapshot match,IEnumerable<FishingPlayerRecord> players,IEnumerable<FishingFishRecord> fish){Match=match;remoteHookCasts.Clear();Players.Clear();Players.AddRange(players);Fish.Clear();Fish.AddRange(fish);}
+  public void Receive(FishingMatchSnapshot match,NetworkList<FishingPlayerRecord> players,NetworkList<FishingFishRecord> fish){Match=match;remoteHookCasts.Clear();Players.Clear();for(int i=0;i<players.Count;i++)Players.Add(players[i]);Fish.Clear();for(int i=0;i<fish.Count;i++)Fish.Add(fish[i]);}
+  public void Clear(){Match=default;Players.Clear();Fish.Clear();remoteHookCasts.Clear();}
  }
 }

@@ -6,6 +6,7 @@ namespace WhatTheFish {
  // movement/look touches. Arena-local coordinates also work on moved islands.
  public sealed class SportsMiniMap:MaskableGraphic {
   public static readonly Color OurTeam=CoveUI.Hex("2788ED"),Opponent=CoveUI.Hex("EC575D");
+  public bool IllustratedFootball;
   SportId sport;float nextUpdate;Rect field=new Rect(-92,-47,184,94);
   public int PlayerCount {get;private set;}
   public bool IsAttack {get;private set;}
@@ -36,15 +37,20 @@ namespace WhatTheFish {
   void Ring(VertexHelper v,Vector2 p,float radius,Color c,float width=1.5f){for(int i=0;i<32;i++){float a=i*Mathf.PI/16,b=(i+1)*Mathf.PI/16;Line(v,p+new Vector2(Mathf.Cos(a),Mathf.Sin(a))*radius,p+new Vector2(Mathf.Cos(b),Mathf.Sin(b))*radius,c,width);}}
   void Box(VertexHelper v,Rect r,Color c){Line(v,new(r.xMin,r.yMin),new(r.xMax,r.yMin),c);Line(v,new(r.xMax,r.yMin),new(r.xMax,r.yMax),c);Line(v,new(r.xMax,r.yMax),new(r.xMin,r.yMax),c);Line(v,new(r.xMin,r.yMax),new(r.xMin,r.yMin),c);}
   protected override void OnPopulateMesh(VertexHelper v){
-   v.Clear();var r=rectTransform.rect;bool football=sport==SportId.Football;
+   v.Clear();var r=rectTransform.rect;bool football=sport==SportId.Football;field=IllustratedFootball?new Rect(-52,-28,104,56):new Rect(-92,-47,184,94);
    // A plain board with one border; the field markings identify the sport.
-   Round(v,r,3,new Color(.93f,.98f,.96f,.9f));
-   var inset=r;inset.xMin+=2;inset.xMax-=2;inset.yMin+=2;inset.yMax-=2;
-   Round(v,inset,2,football?new Color(.10f,.25f,.21f,.91f):new Color(.25f,.21f,.17f,.91f));
-   var paint=new Color(1,1,1,.38f);Box(v,field,paint);Line(v,new(0,-47),new(0,47),paint,1);Ring(v,Vector2.zero,football?13:11,paint,1);
+   if(IllustratedFootball){
+    Round(v,r,12,new Color(.07f,.25f,.31f,.78f));
+    Vector2 previous=Vector2.zero;for(int i=0;i<=64;i++){int corner=Mathf.Min(3,i/16);float angle=i*Mathf.PI/32;var c=new Vector2(corner==0||corner==3?r.xMax-12:r.xMin+12,corner<2?r.yMax-12:r.yMin+12);var point=c+new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*11;if(i>0)Line(v,previous,point,new Color(1,.976f,.914f,.58f),1);previous=point;}Line(v,previous,new Vector2(r.xMax-1,r.yMax-12),new Color(1,.976f,.914f,.58f),1);
+   }else {
+    Round(v,r,football?3:22,new Color(.93f,.98f,.96f,.9f));var inset=r;inset.xMin+=2;inset.xMax-=2;inset.yMin+=2;inset.yMax-=2;
+    Round(v,inset,football?2:20,football?new Color(.10f,.25f,.21f,.91f):new Color(.07f,.25f,.31f,.88f));
+   }
+   var paint=new Color(1,1,1,.38f);Box(v,field,paint);Line(v,new(0,field.yMin),new(0,field.yMax),paint,1);Ring(v,Vector2.zero,IllustratedFootball?8:football?13:11,paint,1);
    for(int sign=-1;sign<=1;sign+=2){
-    Box(v,new Rect(sign<0?-92:69,-20,23,40),paint);
-    if(football)Line(v,new(sign*95,-11),new(sign*95,11),Color.white,2);
+    float edge=field.width*.5f,depth=IllustratedFootball?16:23,h=IllustratedFootball?28:40;
+    Box(v,new Rect(sign<0?-edge:edge-depth,-h/2,depth,h),paint);
+    if(football)Line(v,new(sign*(field.width*.5f+2),-7),new(sign*(field.width*.5f+2),7),Color.white,2);
     else {Ring(v,new(sign*69,0),11,paint,1);Ring(v,new(sign*85,0),3,Color.white,1);}
    }
    PlayerCount=0;var app=AppRoot.Instance;var own=app?app.LocalAthlete:null;
@@ -52,10 +58,10 @@ namespace WhatTheFish {
     foreach(var actor in Athlete.Active){if(!actor||actor.inTransit||!actor.gameObject.activeInHierarchy)continue;PlayerCount++;
      var p=MapPoint(actor.transform.position);var c=SportsPossession.SameTeam(own,actor,sport)?OurTeam:Opponent;
      if(actor==own)Dot(v,p,5.6f,Color.white);
-     Dot(v,p,actor==own?4:3.5f,c);
+     if((!football||IllustratedFootball)&&!SportsPossession.SameTeam(own,actor,sport)){int n=v.currentVertCount;v.AddVert(p+Vector2.up*4,c,Vector2.zero);v.AddVert(p+new Vector2(-4,-3),c,Vector2.zero);v.AddVert(p+new Vector2(4,-3),c,Vector2.zero);v.AddTriangle(n,n+1,n+2);}else Dot(v,p,actor==own?4:3.5f,c);
     }
     var ball=sport==SportId.Football?(FootballBall.Instance?FootballBall.Instance.transform:null):(BasketballBall.Active?BasketballBall.Active.transform:null);
-    if(ball){var p=MapPoint(ball.position);Dot(v,p,3.4f,CoveUI.Ink);Dot(v,p,2.5f,Color.white);}
+    if(ball){var p=MapPoint(ball.position);Dot(v,p,3.4f,CoveUI.Ink);Dot(v,p,2.5f,football?Color.white:CoveUI.Gold);}
    }
   }
  }

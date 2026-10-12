@@ -76,9 +76,15 @@ namespace WhatTheFish {
    Finish();
   }
   IEnumerator Rejections(){
+   Check(BasketballFinishRules.Evaluate(BasketballFinish.Layup,new Vector3(0,0,-1.5f),Vector3.forward,Vector3.forward,Vector3.zero,true)==BasketballFinishReason.Front,"finish rules reject a behind-rim approach");
    foreach(var entry in new[]{(6f,0f,BasketballFinish.Layup,BasketballFinishReason.Closer),(.4f,0f,BasketballFinish.Layup,BasketballFinishReason.TooClose),(1.8f,0f,BasketballFinish.Dunk,BasketballFinishReason.Drive),(-1.5f,0f,BasketballFinish.Layup,BasketballFinishReason.Front)}){
-    yield return Pickup(entry.Item1,entry.Item2);uint shots=ball.ShotCount;ball.BeginShotCharge(actor,actor.transform.eulerAngles.y);yield return new WaitForSeconds(.4f);
-    Check(ball.ReleaseShotCharge(actor,actor.transform.eulerAngles.y,double.NaN,entry.Item3)&&ball.FinishNotice.reason==entry.Item4,"normal-shot fallback: "+entry.Item4);
+    yield return Pickup(entry.Item1,entry.Item2);uint shots=ball.ShotCount;
+    // The wider apron leaves the behind-board fixture in place. Normal aiming
+    // can select the opposite front-facing basket, whose rejection is distance.
+    var selected=ball.SelectHoop(actor.transform.position,actor.transform.eulerAngles.y);
+    var expected=entry.Item1<0&&selected!=hoop?BasketballFinishReason.Closer:entry.Item4;
+    ball.BeginShotCharge(actor,actor.transform.eulerAngles.y);yield return new WaitForSeconds(.4f);
+    Check(ball.ReleaseShotCharge(actor,actor.transform.eulerAngles.y,double.NaN,entry.Item3)&&ball.FinishNotice.reason==expected,"normal-shot fallback: "+expected+" actual="+ball.FinishNotice.reason+" target="+selected.name);
     yield return new WaitForSeconds(1);Check(ball.ShotCount==shots+1&&!actor.BasketballMotion.Finishing,"fallback releases once without an ineligible finish: "+entry.Item4);
    }
    yield return Pickup(2.5f);DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,heading=actor.transform.eulerAngles.y};yield return new WaitForSeconds(.15f);
@@ -97,15 +103,16 @@ namespace WhatTheFish {
    uint attempts=ball.Score.attempts;Check(!actor.CanRequestJump&&!ball.TryPass(actor,0)&&!ball.BeginShotCharge(actor,0),"jump pass and shot cannot cancel committed finish");
    actor.ResetLocomotion();yield return new WaitForSeconds(1);Check(!ball.ActionQueued&&ball.Score.attempts==attempts,"reset cancels finish before release exactly once");
   }
+  static Vector2 GuidePoint(BasketballShootButton b,BasketballDragChoice c)=>RectTransformUtility.WorldToScreenPoint(null,b.guide.transform.TransformPoint(b.guide.Target(c)));
   IEnumerator Gesture(){
    yield return Pickup(1.4f);var button=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).First(b=>!b.pass);yield return null;
    Vector2 origin=RectTransformUtility.WorldToScreenPoint(null,button.transform.position);float scale=button.GetComponentInParent<Canvas>().scaleFactor;
    var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=51,position=origin};button.OnPointerDown(pointer);yield return new WaitForSeconds(.4f);
-   pointer.position=origin+Vector2.up*65*scale;button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Dunk,"up selects dunk on shoot button");
+   pointer.position=GuidePoint(button,BasketballDragChoice.Upper);button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Dunk,"up selects dunk on shoot button");
    button.OnDrag(new PointerEventData(EventSystem.current){pointerId=52,position=origin-Vector2.up*70*scale});Check(app.view.ShotFinish==BasketballFinish.Dunk,"foreign finger cannot change finish");
-   pointer.position=origin+Vector2.up*35*scale;button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Dunk,"hysteresis retains choice near threshold");
+   pointer.position=Vector2.Lerp(origin,GuidePoint(button,BasketballDragChoice.Upper),.6f);button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Dunk,"hysteresis retains choice near threshold");
    pointer.position=origin;button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Shot,"return to centre restores regular shot");
-   pointer.position=origin-Vector2.up*65*scale;button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Layup,"down selects layup");
+   pointer.position=GuidePoint(button,BasketballDragChoice.Diagonal);button.OnDrag(pointer);Check(app.view.ShotFinish==BasketballFinish.Layup,"upper-left selects layup");
    if(!noCapture){yield return null;yield return new WaitForEndOfFrame();CaptureControls();yield return null;}
    uint shots=ball.ShotCount;pointer.position=RectTransformUtility.WorldToScreenPoint(null,button.cancelArea.position);button.OnDrag(pointer);button.OnPointerUp(pointer);yield return new WaitForSeconds(.35f);
    Check(!app.view.ShotCharging&&ball.Held&&ball.ShotCount==shots,"cancel after selection cannot fire on lift");
@@ -138,12 +145,12 @@ namespace WhatTheFish {
     string name=(touch?"touch":"mouse")+"-"+kind;float yaw=actor.transform.eulerAngles.y;
     input.Set(origin,true,false,touch);Pump();Check(app.view.ShotCharging,name+" input-module press begins charge");
     yield return new WaitForSeconds(.04f);
-    var position=origin+Vector2.up*(kind==BasketballFinish.Dunk?110:-110)*scale;
+    var position=GuidePoint(button,kind==BasketballFinish.Dunk?BasketballDragChoice.Upper:BasketballDragChoice.Diagonal);
     input.Set(position,false,false,touch);Pump();yield return null;
     Check(app.view.ShotCharging&&app.view.ShotFinish==kind,name+" drag outside button keeps selected charge");
     Check(ball.FinishAvailability(actor,kind,hoop,true)==BasketballFinishReason.Ready,name+" eligible at input release");
    Check(!app.view.ShotNeedsTiming&&app.view.ShotPower<.4f,name+" ready finish needs no charge or timing");
-    Check(!FindFirstObjectByType<BasketballHUD>().transform.Find("Shot power").gameObject.activeSelf,name+" ready finish hides power meter");
+    Check(!FindFirstObjectByType<BasketballHUD>().ShotGuide.TimingVisible,name+" ready finish hides power meter");
     SeedLayup(true);uint shots=ball.ShotCount;input.Set(position,false,true,touch);Pump();
     yield return Observe("input-"+name,true,!noCapture);
     Check(ball.ShotCount==shots+1,name+" full gesture produces one release");
@@ -153,9 +160,9 @@ namespace WhatTheFish {
     Vector2 origin=RectTransformUtility.WorldToScreenPoint(null,button.transform.position);float scale=button.GetComponentInParent<Canvas>().scaleFactor;
     string name=(touch?"touch":"mouse")+"-far-"+kind;
     input.Set(origin,true,false,touch);Pump();yield return new WaitForSeconds(.25f);
-    Vector2 point=origin+Vector2.up*(kind==BasketballFinish.Dunk?100:-100)*scale;input.Set(point,false,false,touch);Pump();yield return null;
+    Vector2 point=GuidePoint(button,kind==BasketballFinish.Dunk?BasketballDragChoice.Upper:BasketballDragChoice.Diagonal);input.Set(point,false,false,touch);Pump();yield return null;
     Check(app.view.ShotFinish==kind&&app.view.ShotNeedsTiming&&app.view.ShotWindow==BasketballBall.SweetWindow,name+" retains normal charge timing");
-    Check(button.label.text.Contains("normal shot"),name+" button explains fallback");
+    Check(button.guide.Cue.Contains("Timed shot"),name+" button explains fallback");
     if(!noCapture){yield return new WaitForEndOfFrame();CaptureControls(name);}
     uint shots=ball.ShotCount;float power=app.view.ShotPower;input.Set(point,false,true,touch);Pump();yield return new WaitForSeconds(1);
     Check(ball.ShotCount==shots+1&&!actor.BasketballMotion.Finishing,name+" gesture releases one ordinary shot");

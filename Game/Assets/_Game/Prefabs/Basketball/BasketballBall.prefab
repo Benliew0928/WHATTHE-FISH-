@@ -132,7 +132,7 @@ MonoBehaviour:
   maxShotSpeed: 24
   backspin: 18
   courtLimits: {x: 10, y: 17}
-  boundaryDelay: 0.75
+  boundaryDelay: 2
   strandedTimeout: 12
 --- !u!1 &467471867550599744
 GameObject:

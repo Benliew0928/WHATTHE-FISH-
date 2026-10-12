@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#fff9e9">
+  <title>Football · Touchline UI proposal</title>
+  <link rel="stylesheet" href="proposal.css">
+</head>
+<body>
+<main class="proposal">
+  <header class="review-header">
+    <div><span class="eyebrow">WHAT THE FISH? / DESIGN REVIEW 01</span><h1>Football <span>· Touchline</span></h1></div>
+    <div class="review-options">
+      <label>Preview<select id="preview"><option value="attack">On the ball</option><option value="charge">Hold Kick</option><option value="cancel">Drag to Cancel</option><option value="defense">Defending</option><option value="teammate">Teammate has the ball</option><option value="loose">Loose ball</option><option value="exhausted">Out of stamina</option><option value="overtime">Golden goal</option></select></label>
+      <label>Screen<select id="screen-shape"><option value="16:9">16:9</option><option value="20:9">Wide phone</option></select></label>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="Interactive landscape football HUD proposal">
+    <img class="world" src="assets/pitch.png" alt="The existing football stadium and turquoise-haired player on the pitch">
+    <div class="game-ui" id="game-ui">
+      <div class="mini-map" aria-label="Pitch map: your team is blue, opponents coral, you have a white ring" role="img">
+        <svg viewBox="0 0 120 68" aria-hidden="true"><g fill="none" stroke="#fff9e9" stroke-width="1.1" opacity=".8"><rect x="4" y="4" width="112" height="60" rx="1"/><path d="M60 4v60M4 19h18v30H4m112-30H98v30h18M4 27h7v14H4m112-14h-7v14h7"/><circle cx="60" cy="34" r="10"/></g><g fill="#79c9f6"><circle cx="28" cy="45" r="3"/><circle cx="61" cy="47" r="3"/><circle cx="48" cy="33" r="4" stroke="#fff9e9" stroke-width="2"/></g><g fill="#ff9273"><path d="M74 18l4 6h-8zM83 42l4 6h-8zM93 30l4 6h-8z"/></g><circle cx="54" cy="31" r="2.5" fill="#fff9e9" stroke="#123f50" stroke-width=".8"/></svg>
+      </div>
+      <div class="score" aria-label="Team A 2, Team B 1. 1 minute 42 seconds remaining">
+        <div class="team team-a"><span class="team-name">TEAM A <small>YOU</small></span><b id="score-a">2</b></div>
+        <div class="clock"><strong id="clock">01:42</strong><span id="phase">MATCH</span></div>
+        <div class="team team-b"><b>1</b><span class="team-name">TEAM B</span></div>
+      </div>
+      <button class="gear plate" id="settings" aria-label="Open football settings"><img src="../BasketballUI/icons/gear.svg" alt=""></button>
+
+      <button class="joystick" id="joystick" aria-label="Movement joystick; push fully to run"><span class="joystick-mark"></span><span class="stick"></span></button>
+
+      <div class="main-control">
+        <svg class="charge-ring" viewBox="0 0 136 136" aria-hidden="true"><circle class="ring-track" cx="68" cy="68" r="60" pathLength="100"/><circle id="power-arc" cx="68" cy="68" r="60" pathLength="100"/></svg>
+        <span class="power-label" id="power-label">KICK POWER</span>
+        <button class="action primary" id="kick" aria-label="Kick; hold for power, release to kick"><span class="icon" data-icon="soccer-ball"></span><strong id="primary-label">Kick</strong><small id="primary-hint">HOLD</small></button>
+        <span class="release-cue" id="release-cue">Release to kick</span>
+      </div>
+      <div class="dash-control support">
+        <button class="action dash" id="dash" aria-label="Dash; hold while moving"><span class="icon" data-icon="sneaker-move"></span><strong id="dash-label">Dash</strong></button>
+        <div class="stamina" role="meter" aria-label="Stamina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><span id="stamina-fill"></span></div>
+        <span class="stamina-caption" id="stamina-caption">HOLD TO DASH</span>
+      </div>
+      <button class="action jump support" id="jump" aria-label="Jump; available off the ball" disabled><img src="../BasketballUI/icons/jump.svg" alt=""><strong>Jump</strong><small id="jump-hint">OFF BALL</small></button>
+      <button class="action tackle support" id="tackle" aria-label="Tackle" hidden><span class="icon" data-icon="sneaker"></span><strong>Tackle</strong><small id="tackle-hint">TAP</small></button>
+      <span class="context-note" id="context-note" hidden>Teammate has the ball</span>
+
+      <div class="gesture" id="gesture" hidden>
+        <svg class="drag-path" viewBox="0 0 254 174" aria-hidden="true"><path class="path-edge" d="M177 88Q151 61 107 54"/><path class="path-dash" d="M177 88Q151 61 107 54"/></svg>
+        <div class="cancel-zone" id="cancel-zone"><img src="../BasketballUI/icons/close.svg" alt=""><strong>Cancel</strong><small>SLIDE HERE</small></div>
+        <div class="drag-instruction" id="drag-instruction"><span data-icon="hand-swipe-left" class="icon"></span>Keep holding · slide to cancel</div>
+      </div>
+      <div class="toast" id="toast" role="status" hidden></div>
+    </div>
+
+    <div class="overlay" id="overlay" hidden>
+      <section class="settings-panel plate" id="settings-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title" tabindex="-1">
+        <header class="panel-header"><div class="panel-title"><img src="../BasketballUI/icons/gear.svg" alt=""><div><h2 id="settings-title">Pitch settings</h2><p>The match keeps playing.</p></div></div><button class="close-button" id="close-settings" aria-label="Close settings"><img src="../BasketballUI/icons/close.svg" alt=""></button></header>
+        <div class="panel-body">
+          <nav class="settings-nav" aria-label="Settings categories"><button data-page="camera" aria-pressed="true"><img src="../BasketballUI/icons/eye.svg" alt="">Camera</button><button data-page="guide" aria-pressed="false"><img src="../BasketballUI/icons/book.svg" alt="">Pitch guide</button></nav>
+          <div class="settings-content">
+            <section id="camera-page"><div class="section-heading"><h3>Your view</h3><span>Changes apply instantly</span></div><div class="camera-grid">
+              <button class="camera-card" data-camera="0" aria-pressed="false"><img src="../BasketballUI/icons/eye.svg" alt=""><strong>Eye level</strong><span>Up close to the action</span><i class="selected-mark" data-icon="check"></i></button>
+              <button class="camera-card" data-camera="1" aria-pressed="true"><img src="../BasketballUI/icons/follow.svg" alt=""><strong>Follow</strong><span>Stay behind your player</span><i class="selected-mark" data-icon="check"></i></button>
+              <button class="camera-card" data-camera="2" aria-pressed="false"><img src="../BasketballUI/icons/court.svg" alt=""><strong>Stadium</strong><span>See the wider play</span><i class="selected-mark" data-icon="check"></i></button>
+            </div><p class="camera-detail" id="camera-detail">Drag on the open right side to look around. Your left thumb stays on movement.</p></section>
+            <section id="guide-page" hidden><div class="guide-tabs" role="tablist" aria-label="Pitch guide"><button role="tab" data-guide="controls" aria-selected="true">Controls</button><button role="tab" data-guide="rules" aria-selected="false">Rules</button><button role="tab" data-guide="energy" aria-selected="false">Stamina</button></div><div id="guide-content" role="tabpanel"></div></section>
+          </div>
+        </div>
+        <footer class="panel-footer"><button class="leave" id="leave"><img src="../BasketballUI/icons/exit.svg" alt="">Leave pitch</button><button class="resume" id="resume">Back to play</button></footer>
+      </section>
+      <section class="confirm-panel plate" id="confirm-panel" role="dialog" aria-modal="true" aria-labelledby="confirm-title" hidden><img class="exit-art" src="../BasketballUI/icons/exit.svg" alt=""><h2 id="confirm-title">Leave the pitch?</h2><p id="leave-copy">Everyone returns to the room. The current match ends.</p><div><button id="stay" class="resume">Keep playing</button><button id="confirm-leave" class="leave confirm-leave">Return to room</button></div></section>
+    </div>
+    <div class="end-screen" id="end-screen" hidden><section class="plate"><span class="icon" data-icon="flag-checkered"></span><h2>Back in the room</h2><p>This is the end of the leave-pitch preview.</p><button class="resume" id="reset">Return to the prototype</button></section></div>
+  </section>
+
+  <footer class="review-footer"><p id="review-note"><b>Try it:</b> hold Kick, slide to Cancel, then slide back before releasing.</p><label>Leave preview<select id="session"><option>Host</option><option>Guest</option><option>Offline</option></select></label></footer>
+  <div class="design-notes"><span><i class="swatch gold"></i>Kick / power</span><span><i class="swatch sky"></i>Defending</span><span><i class="swatch mint"></i>Dash / stamina</span><span class="scope">UI prototype · game capture as backdrop</span></div>
+</main>
+<script src="proposal.js"></script>
+</body>
+</html>

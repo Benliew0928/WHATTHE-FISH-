@@ -154,16 +154,16 @@ namespace WhatTheFish {
   }
   Button TravelButton(Transform parent,float x,float y,int direction){var g=new GameObject("Travel",typeof(RectTransform),typeof(Image),typeof(Button));g.transform.SetParent(parent,false);var r=g.GetComponent<RectTransform>();r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(302,54);g.GetComponent<Image>().color=new Color(.12f,.40f,.42f,1);var b=g.GetComponent<Button>();b.onClick.AddListener(()=>RequestTravel(SkySailMap.Neighbor(app.SelectedSport,direction)));Text(g.transform,"",21,Vector2.zero,new Vector2(290,50));return b;}
   void UpdateUI(){
-   if(!ui)return;ui.enabled=app.Exploring;if(!ui.enabled)return;
+   if(!ui)return;ui.enabled=app.Exploring&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen);if(!ui.enabled)return;
    float distance=Vector3.Distance(app.LocalAthlete.transform.position,SkySailMap.Port(app.SelectedSport));heading.transform.parent.gameObject.SetActive(Travelling||distance<28);
    bool court=app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
    ((RectTransform)heading.transform.parent).anchoredPosition=new Vector2(0,!Travelling&&court?570:175);
    wayfinding.text=Travelling?"Look around • Camera: cabin / chase / panorama":"SKY-SAIL STATION  ·  "+Mathf.RoundToInt(distance)+" m";
    // Golf displays this same distance inside its course badge.
-   wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing&&app.SelectedSport!=SportId.Golf);
+   wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing&&app.SelectedSport!=SportId.Golf&&app.SelectedSport!=SportId.Basketball&&app.SelectedSport!=SportId.Football);
    previous.gameObject.SetActive(!Travelling);next.gameObject.SetActive(!Travelling);
    if(Travelling){heading.text=Journey.from.ToString().ToUpperInvariant()+"  →  "+Journey.to.ToString().ToUpperInvariant();caption.text=Journey.phase switch{SkySailPhase.Preparing=>"Preparing your island • Everyone travels together",SkySailPhase.Boarding=>"Doors closing • Enjoy the journey",SkySailPhase.Docking=>"Welcome to "+Journey.to+" • Doors opening",_=>"Over the sea • "+Mathf.CeilToInt((1-Progress)*Journey.duration)+" seconds to arrival"};}
-   else{heading.text="SKY-SAIL CIRCUIT";caption.text=Message.Length>0?Message:Authority?"Choose your next island • Everyone boards together":"Your host chooses the next island";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+(Application.isMobilePlatform||app.SelectedSport==SportId.Fishing?" →":" → [F]");previous.interactable=Authority&&!streaming.Busy;next.interactable=Authority&&!streaming.Busy;}
+   else{heading.text="SKY-SAIL CIRCUIT";caption.text=Message.Length>0?Message:Authority?"Choose your next island • Everyone boards together":"Your host chooses the next island";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+(Application.isMobilePlatform||app.SelectedSport==SportId.Fishing||app.SelectedSport==SportId.Basketball||app.SelectedSport==SportId.Football?" →":" → [F]");previous.interactable=Authority&&!streaming.Busy;next.interactable=Authority&&!streaming.Busy;}
    progressFill.rectTransform.localScale=new Vector3(Travelling?Mathf.Max(.015f,Progress):1,1,1);
   }
  }

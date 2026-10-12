@@ -1,0 +1,39 @@
+Football audio source record
+
+New recordings are declared CC0-1.0 on their uploader pages. Public HQ MP3 audition copies are retained, not original WAV downloads.
+
+kick — bittermelonheart
+https://freesound.org/people/bittermelonheart/sounds/555042/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+kick_alt — Luisa_Sanchez
+https://freesound.org/people/Luisa_Sanchez/sounds/813402/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+pillow — padpad
+https://freesound.org/people/padpad/sounds/515908/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+grass — Fission9
+https://freesound.org/people/Fission9/sounds/521587/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+trail — Luisa_Sanchez
+https://freesound.org/people/Luisa_Sanchez/sounds/816841/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+net — Luisa_Sanchez
+https://freesound.org/people/Luisa_Sanchez/sounds/816989/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+pipe — Anthousai
+https://freesound.org/people/Anthousai/sounds/406556/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+whistle — Musik-Fan
+https://freesound.org/people/Musik-Fan/sounds/631849/
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Designed effects: original deterministic project synthesis.
+Shared basketball effects: see ArtSource/Audio/Basketball/delivery.json.
+Shared UI: Kenney Interface Sounds, CC0, https://kenney.nl/assets/interface-sounds
