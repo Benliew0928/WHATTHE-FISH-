@@ -29,6 +29,7 @@ namespace WhatTheFish {
    Check(BasketballShotOdds.Chance(float.NaN,.65f)==0&&BasketballShotOdds.Chance(4,float.PositiveInfinity)==0,"nonfinite odds inputs rejected");
    for(float distance=4;distance<=26;distance+=1)File.AppendAllText(Path.Combine(folder,"shot-odds.csv"),$"{distance:F2},{BasketballShotOdds.Chance(distance,.65f):F5},{BasketballShotOdds.Chance(distance,.5f):F5},{BasketballShotOdds.Chance(distance,.2f):F5},{BasketballShotOdds.Chance(distance,0):F5}\n");
   }
+  static Vector2 GuidePoint(BasketballShootButton b,BasketballDragChoice c)=>RectTransformUtility.WorldToScreenPoint(null,b.guide.transform.TransformPoint(b.guide.Target(c)));
   IEnumerator Arcs(){
    var control=FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).First(b=>b.pass);
    float scale=control.GetComponentInParent<Canvas>().scaleFactor;
@@ -36,11 +37,11 @@ namespace WhatTheFish {
     yield return Possess(actor,new Vector3(0,.07f,-5));yield return null;
     var start=RectTransformUtility.WorldToScreenPoint(null,control.transform.position);
     var touch=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=71,position=start};control.OnPointerDown(touch);
-    touch.position=start+Vector2.up*(150*scale);control.OnDrag(touch);Check(app.view.PassBend>.99f&&app.view.PassCharging,"up swipe selects loft without cancelling");
+    touch.position=GuidePoint(control,BasketballDragChoice.Upper);control.OnDrag(touch);Check(app.view.PassBend>.99f&&app.view.PassCharging,"up swipe selects loft without cancelling");
     control.OnDrag(new PointerEventData(EventSystem.current){pointerId=72,position=start-Vector2.up*150*scale});Check(app.view.PassBend>.99f,"other finger cannot change pass arc");
-    touch.position=start-Vector2.up*(150*scale);control.OnDrag(touch);Check(app.view.PassBend<-.99f&&app.view.PassCharging,"down swipe selects bounce without cancelling");
+    touch.position=GuidePoint(control,BasketballDragChoice.Diagonal);control.OnDrag(touch);Check(app.view.PassBend<-.99f&&app.view.PassCharging,"upper-left swipe selects bounce without cancelling");
     touch.position=start;control.OnDrag(touch);Check(app.view.PassBend==0,"return to center restores chest pass");
-    touch.position=start+Vector2.up*(bend*150*scale);control.OnDrag(touch);yield return Observe(1.0f,BasketballPassRules.Name(bend)+"-aim");
+    touch.position=bend==0?start:GuidePoint(control,bend>0?BasketballDragChoice.Upper:BasketballDragChoice.Diagonal);control.OnDrag(touch);yield return Observe(1.0f,BasketballPassRules.Name(bend)+"-aim");
     Check(Mathf.Abs(ball.PassAim.bend-bend)<.01f,"host receives selected bend "+bend);
     Check(!ball.ReleasePassCharge(actor,0,ball.Defense.play,ball.PassClock,float.NaN),"invalid arc release rejected");
     var preview=lane.Path;Check(preview.Bounces==(bend<0),"preview recognizes rebound "+bend);
@@ -57,13 +58,14 @@ namespace WhatTheFish {
     }
     Check(samples>10&&error<(bend<0?.55f:.30f),"physical path matches curved preview "+bend+" error="+error.ToString("F3"));
     Check(ball.PassBounces==bounces+(bend<0?1:0),"exactly the intended floor bounce "+bend+" before="+bounces+" after="+ball.PassBounces);
+    if(bend<0)Check(ball.Defense.passing,"clean rebound remains catchable as a pass after CCD contact transition");
     if(bend>0)Check(peak-path.start.y>2.5f,"loft ball clears standing reach");
     yield return Observe(.4f,"arc-recovery");
    }
    yield return Possess(actor,new Vector3(0,.07f,-5));yield return null;
    var point=RectTransformUtility.WorldToScreenPoint(null,control.transform.position);var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=73,position=point};control.OnPointerDown(pointer);
-   pointer.position=point+Vector2.up*(150*scale);control.OnDrag(pointer);yield return new WaitForSeconds(.3f);uint passes=ball.PassCount;
-   var cancel=RectTransformUtility.WorldToScreenPoint(null,control.cancelArea.position);Check(Mathf.Abs(cancel.x-point.x)>200*scale&&Mathf.Abs(cancel.y-point.y)<10*scale,"cancel is lateral and clear of vertical swipe corridor");
+   pointer.position=GuidePoint(control,BasketballDragChoice.Upper);control.OnDrag(pointer);yield return new WaitForSeconds(.3f);uint passes=ball.PassCount;
+   var cancel=RectTransformUtility.WorldToScreenPoint(null,control.cancelArea.position);Check(Mathf.Abs(cancel.x-point.x)>3*Mathf.Abs(cancel.y-point.y),"cancel is lateral and clear of vertical swipe corridor");
    pointer.position=cancel;control.OnDrag(pointer);control.OnPointerUp(pointer);yield return new WaitForSeconds(.5f);Check(ball.Held&&!lane.Visible&&ball.PassCount==passes,"lateral cancel after loft keeps possession");
    yield return Possess(actor,new Vector3(0,.07f,-5));app.view.BeginPass();app.view.SelectPass(-1);yield return new WaitForSeconds(.9f);app.view.EndPass();float until=Time.time+2;while(ball.PassCount==passes&&Time.time<until)yield return null;ball.autoPickup=false;
    var wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.layer=8;wall.transform.position=new Vector3(0,.45f,-3.2f);wall.transform.localScale=new Vector3(2,.9f,.1f);Physics.SyncTransforms();uint beforeWall=ball.PassBounces;

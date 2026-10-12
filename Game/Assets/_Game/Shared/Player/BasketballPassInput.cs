@@ -9,7 +9,7 @@ namespace WhatTheFish {
   public float PassPower=>!PassCharging?0:BasketballBall.Active&&BasketballBall.Active.IsPassAiming(target)?BasketballBall.Active.PassPower:BasketballPassRules.Power(BasketballMotion.Clock-passStarted);
   public bool BeginPass(int source=int.MinValue){
    var ball=BasketballBall.Active;
-   if(PassCharging||ShotCharging||pendingShoot||pendingShotBegin||pendingPass||!active||!target||!ball||!ball.CanShoot(target))return false;
+   if(InputBlocked||PassCharging||ShotCharging||pendingShoot||pendingShotBegin||pendingPass||!active||!target||!ball||!ball.CanPass(target))return false;
    PassBend=0;PassCharging=true;passSource=source;passPlay=ball.Defense.play;passStarted=BasketballMotion.Clock;pendingPassBegin=true;return true;
   }
   public void EndPass(int source=int.MinValue){

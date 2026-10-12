@@ -146,7 +146,7 @@ Cup results. Render real score changes, row reordering, high-tension release
 and a full catch, including repeated rounds and island travel.
 
 Reuse existing fish, rods and character assets. Avoid new imported art packs
-or UI middleware. Matching multiplayer players now require protocol **39**.
+or UI middleware. Matching multiplayer players now require protocol **44**.
 The historical integrated release on 9 October measured **88,742,452 bytes**, versus
 90,051,054 before merging the teammate updates (**−1,308,602**), with
 **11,257,548 bytes** to the strict 100,000,000-byte boundary. The

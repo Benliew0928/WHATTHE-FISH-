@@ -55,7 +55,7 @@ the effect. Pressure takes precedence over simultaneous dash input.
 
 The host computes movement, stamina and containment. Guests send only action
 intent and receive quantized stamina plus dash/pressure/exhaustion state.
-Protocol **38** requires matching Windows and Android peers. Input expiry,
+Protocol **44** requires matching Windows and Android peers. Input expiry,
 focus loss, pointer exit, match resets and travel clear held actions.
 
 The feature uses existing UI images, fonts and the character rig, with a

@@ -10,12 +10,12 @@ namespace WhatTheFish {
   public bool Equals(BasketballPassAim b)=>bend==b.bend&&phase==b.phase&&play==b.play&&owner==b.owner&&started==b.started&&released==b.released&&heading==b.heading&&power==b.power&&origin==b.origin;
  }
  public static class BasketballPassRules {
-  public const float ChargeSeconds=.8f,FlashSeconds=.26f;
+  public const float ChargeSeconds=.4f,FlashSeconds=.26f,SpeedMultiplier=1.5f;
   public static float Power(double seconds)=>Mathf.Clamp01((float)(seconds/ChargeSeconds));
-  public static float Range(float power,float bend=0)=>bend<-.01f?Mathf.Lerp(3,7.5f,Mathf.Clamp01(power)):Mathf.Lerp(4,10,Mathf.Clamp01(power));
+  public static float Range(float power,float bend=0)=>SpeedMultiplier*(bend<-.01f?Mathf.Lerp(3,7.5f,Mathf.Clamp01(power)):Mathf.Lerp(4,10,Mathf.Clamp01(power)));
   public static string Name(float bend)=>bend>.01f?"Loft":bend<-.01f?"Bounce":"Chest";
   public static Vector3 Velocity(float heading,float power){
-   float duration=Range(power)/Mathf.Lerp(8,13,Mathf.Clamp01(power));
+   float duration=Range(power)/(SpeedMultiplier*Mathf.Lerp(8,13,Mathf.Clamp01(power)));
    return Quaternion.Euler(0,heading,0)*Vector3.forward*(Range(power)/duration)-Physics.gravity*(duration*.5f+Time.fixedDeltaTime*.5f);
   }
  }
@@ -26,7 +26,7 @@ namespace WhatTheFish {
   public float PassPower=>PassAim.phase==1?BasketballPassRules.Power(PassClock-PassAim.started):PassAim.power;
   public bool IsPassAiming(Athlete actor)=>actor&&PassAim.phase==1&&Held&&Holder==actor;
   public bool BeginPassCharge(Athlete actor,float heading,uint play){
-   if(!Authority||play!=Defense.play||!float.IsFinite(heading)||!CanShoot(actor)||!Eligible(actor)||chargingAthlete||passAim.phase==1)return false;
+   if(!Authority||play!=Defense.play||!float.IsFinite(heading)||!CanPass(actor)||!Eligible(actor)||chargingAthlete||passAim.phase==1)return false;
    passAim=new BasketballPassAim{phase=1,play=play,owner=PlayerId(actor),heading=heading%360,started=BasketballMotion.Clock};sendAt=0;return true;
   }
   public void AimPass(Athlete actor,float heading,float bend=0){
@@ -36,7 +36,7 @@ namespace WhatTheFish {
   public void CancelPassCharge(Athlete actor,uint play){
    if(!Authority||!actor||holder!=actor||passAim.phase!=1||passAim.play!=play)return;
    passAim=default;sendAt=0;
-   if(actor.BasketballMotion.PassCharging){var start=CarryPosition(actor);actor.BasketballMotion.Begin(BasketballAction.PassCancel,actor.transform.eulerAngles.y,Quaternion.Inverse(actor.transform.rotation)*(start-actor.transform.position));dribblePhase=0;}
+   if(actor.BasketballMotion.PassCharging&&!IsInbound(actor)){var start=CarryPosition(actor);actor.BasketballMotion.Begin(BasketballAction.PassCancel,actor.transform.eulerAngles.y,Quaternion.Inverse(actor.transform.rotation)*(start-actor.transform.position));dribblePhase=0;}
   }
   public bool ReleasePassCharge(Athlete actor,float heading,uint play,double releasedAt,float bend=0){
    if(!Authority||!IsPassAiming(actor)||play!=Defense.play||passAim.play!=play||!float.IsFinite(heading)||!double.IsFinite(releasedAt)||!float.IsFinite(bend))return false;

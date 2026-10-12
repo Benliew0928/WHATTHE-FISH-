@@ -6,119 +6,135 @@ using System.Linq;
 using UnityEngine;
 
 namespace WhatTheFish {
+ [DefaultExecutionOrder(150)]
  public sealed class StadiumCameraReview:MonoBehaviour {
-  string folder;bool failed;AppRoot app;Camera cam;Athlete actor;
+  string folder;bool failed,manual;AppRoot app;Camera cam;Athlete actor;Rigidbody body;Vector3 ballPosition;
+  SimulationMode previousSimulation;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){
    var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-stadiumCameraReview");
    if(i>=0&&i+1<args.Length)new GameObject("Stadium camera review").AddComponent<StadiumCameraReview>().folder=args[i+1];
   }
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
   void Place(Transform field,Vector3 local){actor.capsule.enabled=false;actor.transform.position=field.TransformPoint(local);actor.ResetLocomotion();Physics.SyncTransforms();}
-  IEnumerator Settle(){yield return new WaitForSeconds(2.5f);yield return new WaitForEndOfFrame();}
+  IEnumerator Settle(){yield return new WaitForSeconds(2);yield return new WaitForEndOfFrame();}
+  void LateUpdate(){if(manual&&body){body.isKinematic=true;body.position=ballPosition;body.transform.position=ballPosition;}}
+  bool Visible(Vector3 world,Rect rect){var p=cam.WorldToViewportPoint(world);return p.z>0&&rect.Contains(new Vector2(p.x,p.y));}
+  readonly Rect ballSafe=new Rect(.115f,.245f,.72f,.54f);
+  readonly Rect picture=new Rect(.03f,.03f,.94f,.94f);
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   float end=Time.realtimeSinceStartup+60;while((!(app=AppRoot.Instance)||!app.LocalAthlete||!app.stadium)&&Time.realtimeSinceStartup<end)yield return null;
+   float deadline=Time.realtimeSinceStartup+60;while((!(app=AppRoot.Instance)||!app.LocalAthlete||!app.stadium)&&Time.realtimeSinceStartup<deadline)yield return null;
    if(!app||!app.LocalAthlete){Check(false,"world initialized");Finish();yield break;}
-   cam=Camera.main;actor=app.LocalAthlete;
+   cam=Camera.main;actor=app.LocalAthlete;previousSimulation=Physics.simulationMode;
    while(!app.Menu||app.Menu.IsTransitioning)yield return null;
    yield return null;
    foreach(var sport in new[]{SportId.Football,SportId.Basketball}){
+    manual=false;Physics.simulationMode=previousSimulation;
     app.SelectSport(sport);while(app.PendingSelection.HasValue)yield return null;app.EnterOffline();yield return Settle();
     app.view.mode=2;app.view.yaw=0;app.view.pitch=16;
-    Transform field;Bounds bounds;
-    if(sport==SportId.Football){field=FootballBall.Instance.Pitch;bounds=FootballBall.Instance.PitchBounds;}
-    else {field=BasketballBall.Active.transform.parent;var half=BasketballBall.PlayerCourtLimits;bounds=new Bounds(Vector3.zero,new Vector3(half.x*2,0,half.y*2));}
-    var halfSize=bounds.extents;var center=bounds.center;center.y=bounds.max.y+.07f;
+    bool football=sport==SportId.Football;Transform field;Bounds bounds;
+    if(football){field=FootballBall.Instance.Pitch;bounds=FootballBall.Instance.PitchBounds;body=FootballBall.Instance.Body;}
+    else {field=BasketballBall.Active.transform.parent;var half=BasketballBall.PlayerCourtLimits;bounds=new Bounds(Vector3.zero,new Vector3(half.x*2,0,half.y*2));BasketballBall.Active.autoPickup=false;body=BasketballBall.Active.Body;}
+    var halfSize=bounds.extents;var center=bounds.center;center.y=bounds.max.y+.08f;
+    Physics.simulationMode=SimulationMode.Script;manual=true;
     var points=new[]{Vector2.zero,new Vector2(-1,0),new Vector2(1,0),new Vector2(0,-1),new Vector2(0,1),new Vector2(-1,-1),new Vector2(1,-1),new Vector2(-1,1),new Vector2(1,1)};
-    float firstCoverage=0;
     for(int i=0;i<points.Length;i++){
-     var p=center+new Vector3(points[i].x*(halfSize.x-.4f),0,points[i].y*(halfSize.z-.4f));Place(field,p);yield return Settle();
-     Check(!cam.orthographic&&cam.fieldOfView<50,sport+" perspective broadcast lens "+i);
-     var feet=cam.WorldToViewportPoint(actor.transform.position);var head=cam.WorldToViewportPoint(actor.transform.position+Vector3.up*1.75f);
-     Check(feet.z>0&&feet.x>.015f&&feet.x<.985f&&feet.y>.015f&&head.y<.998f,sport+" player visible at field sample "+i+" feet="+feet.ToString("F3")+" head="+head.ToString("F3"));
-     var a=cam.WorldToViewportPoint(field.TransformPoint(p+Vector3.forward*3));var b=cam.WorldToViewportPoint(field.TransformPoint(p-Vector3.forward*3));
-     Check(b.x-a.x>.04f,sport+" consistent sideline direction through diagonal pan "+i);
-     Footprint(field,bounds,out float coverage,out float lawn);if(i==0)firstCoverage=coverage;
-     Check(lawn>(sport==SportId.Football?.50f:.40f),sport+" useful playing surface at sample "+i+" lawn="+lawn.ToString("F3"));
-     Check(feet.x>=.14f&&feet.x<=.82f&&feet.y>.22f&&head.y<.84f,sport+" player clear of HUD at sample "+i);
-     if(sport==SportId.Basketball)foreach(var hoop in field.GetComponentsInChildren<BasketballHoop>()){
-      var rim=hoop.transform.TransformPoint(0,BasketballHoop.RimHeight,0);
-      if(Vector3.ProjectOnPlane(rim-actor.transform.position,Vector3.up).magnitude<9){var v=cam.WorldToViewportPoint(rim);Check(v.x>.1f&&v.x<.82f&&v.y>.18f&&v.y<.82f,"nearby basket stays inside broadcast picture "+i);}
-     }
-     if(i>0)Check(Vector2.Distance(new Vector2(feet.x,feet.y),Vector2.one*.5f)>.1f,sport+" edge player is off centre "+i);
-     File.AppendAllText(Path.Combine(folder,"framing.csv"),$"{sport},{i},{cam.aspect:F4},{coverage:F4},{lawn:F4},{cam.transform.position.y:F3},{feet.x:F3},{feet.y:F3}\n");
-     Capture(Path.Combine(folder,sport+"-"+i+".png"));
+     var p=center+new Vector3(points[i].x*(halfSize.x-1),0,points[i].y*(halfSize.z-1));
+     ballPosition=field.TransformPoint(p+Vector3.up*.7f);Place(field,p+new Vector3(1,0,-1));yield return Settle();
+     Check(!cam.orthographic&&cam.fieldOfView<50,sport+" broadcast perspective "+i);
+     Check(Visible(ballPosition,ballSafe),sport+" ball inside useful viewport at field sample "+i);
+     Check(Visible(actor.transform.position+Vector3.up*.9f,picture),sport+" nearby player remains visible "+i);
+     if(i==0||i==7)Capture(Path.Combine(folder,sport+"-near-"+i+".png"));
     }
-    Check(firstCoverage>(sport==SportId.Football?.32f:.35f)&&firstCoverage<(sport==SportId.Football?.50f:.75f),sport+" intended playing-area coverage "+firstCoverage.ToString("F3"));
-    yield return Motion(field,center,halfSize,sport);
-    Place(field,center);yield return Settle();var pose=cam.transform.position;var rotation=cam.transform.rotation;
-    Place(field,center+Vector3.up*1.6f);app.view.yaw=132;app.view.pitch=-20;yield return Settle();
-    Check(Vector3.Distance(pose,cam.transform.position)<.06f&&Quaternion.Angle(rotation,cam.transform.rotation)<.06f,sport+" jump and aim do not tilt or bob the field view");
-    Place(field,center);yield return Settle();
-    app.view.stick.value=Vector2.right;var command=app.view.ReadCommand();app.view.stick.value=Vector2.zero;
+    ballPosition=field.TransformPoint(center+new Vector3(0,.5f,halfSize.z*.65f));Place(field,center-new Vector3(0,0,halfSize.z*.9f));yield return Settle();
+    var marker=FindFirstObjectByType<StadiumPlayerIndicator>();
+    Check(Visible(ballPosition,ballSafe),sport+" distant local athlete cannot pull focus off the ball");
+    Check(marker&&marker.Showing,sport+" offscreen local player shows edge arrow");
+    Check(marker&&!marker.raycastTarget&&marker.GetComponentsInChildren<UnityEngine.UI.Graphic>().All(g=>!g.raycastTarget),sport+" marker never intercepts touch");
+    Check(marker&&!MarkerOverlapsButtons(marker),sport+" marker remains clear of actual styled button rectangles");
+    if(marker)Check(Vector2.Dot(marker.Direction,StadiumPlayerIndicator.Bearing(cam,actor.transform.position+Vector3.up*.9f))>.99f,sport+" arrow points toward local character");
+    Capture(Path.Combine(folder,sport+"-far-player.png"));
+    yield return Settle();var pose=cam.transform.position;var rotation=cam.transform.rotation;
+    Place(field,center-new Vector3(halfSize.x*.7f,0,halfSize.z*.8f));yield return Settle();
+    Check(Vector3.Distance(pose,cam.transform.position)<.15f&&Quaternion.Angle(rotation,cam.transform.rotation)<.15f,sport+" moving a distant player does not move the camera, displacement="+Vector3.Distance(pose,cam.transform.position));
+    Place(field,field.InverseTransformPoint(ballPosition)-Vector3.up*.5f+Vector3.right);yield return Settle();
+    Check(marker&&!marker.Showing,sport+" arrow hides when character returns");
+    pose=cam.transform.position;rotation=cam.transform.rotation;
+    actor.transform.position+=Vector3.up*1.6f;app.view.yaw=132;app.view.pitch=-20;yield return Settle();
+    Check(Vector3.Distance(pose,cam.transform.position)<.06f&&Quaternion.Angle(rotation,cam.transform.rotation)<.06f,sport+" jump and aim do not bob or rotate broadcast");
+    foreach(int sign in new[]{1,-1})yield return Flight(field,center,halfSize,sport,sign);
+    // Abrupt portal/reset at the opposite end must not become a giant velocity lead.
+    ballPosition=field.TransformPoint(center+new Vector3(0,1,-halfSize.z*.8f));yield return new WaitForEndOfFrame();
+    Check(Visible(ballPosition,ballSafe),sport+" teleport keeps the new ball visible immediately");yield return Settle();
+    Check(Vector3.Distance(cam.transform.position,ballPosition)<(football?90:40),sport+" teleport settles without runaway zoom");
+    Place(field,center);app.view.stick.value=Vector2.right;var command=app.view.ReadCommand();app.view.stick.value=Vector2.zero;
     var world=Quaternion.Euler(0,command.heading,0)*new Vector3(command.move.x,0,command.move.y);
-    Check(Vector3.Dot(world.normalized,cam.transform.right)>.999f,sport+" right input moves screen right while aim remains independent");
+    Check(Vector3.Dot(world.normalized,cam.transform.right)>.999f,sport+" right input follows presented camera while aim remains independent");
     app.view.stick.value=Vector2.up;command=app.view.ReadCommand();app.view.stick.value=Vector2.zero;
     world=Quaternion.Euler(0,command.heading,0)*new Vector3(command.move.x,0,command.move.y);
-    Check(Vector3.Dot(world.normalized,Vector3.ProjectOnPlane(cam.transform.forward,Vector3.up).normalized)>.999f,sport+" up input moves toward the far sideline");
-    // Keep this movement check clear of the physical football at kickoff.
-    Place(field,center+Vector3.forward*5);actor.capsule.enabled=true;var before=actor.transform.position;actor.Simulate(command,.2f);yield return null;
-    Check(Vector3.Dot(actor.transform.position-before,world)>.01f,sport+" real motor accepts remapped stadium movement");
-    Place(field,center);app.view.yaw=43;app.view.pitch=23;app.view.mode=1;yield return Settle();
-    var expected=actor.transform.position+Vector3.up*1.35f-Quaternion.Euler(23,43,0)*Vector3.forward*5;
-    Check(!cam.orthographic&&Mathf.Abs(cam.fieldOfView-60)<.01f&&Vector3.Distance(expected,cam.transform.position)<.01f,sport+" original third-person framing and lens restored");
+    Check(Vector3.Dot(world.normalized,Vector3.ProjectOnPlane(cam.transform.forward,Vector3.up).normalized)>.999f,sport+" up input moves toward far sideline");
+    actor.capsule.enabled=true;var before=actor.transform.position;actor.Simulate(command,.2f);yield return null;
+    Check(Vector3.Dot(actor.transform.position-before,world)>.01f,sport+" real motor accepts stadium movement");
+    app.view.yaw=43;app.view.pitch=23;app.view.mode=1;yield return Settle();
+    Check(!marker.Showing&&!cam.orthographic&&Mathf.Abs(cam.fieldOfView-60)<.01f,sport+" third person restores lens and hides marker");
     app.view.mode=0;yield return Settle();
-    Check(!cam.orthographic&&Vector3.Distance(cam.transform.position,actor.transform.position+Vector3.up*1.57f)<.01f&&Mathf.Abs(cam.nearClipPlane-.06f)<.001f,sport+" original first-person framing restored");
-    app.view.mode=2;Place(field,center+new Vector3(halfSize.x+25,0,0));yield return Settle();
-    var outsideFeet=cam.WorldToViewportPoint(actor.transform.position);
-    Check(outsideFeet.x>0&&outsideFeet.x<1&&outsideFeet.y>0&&outsideFeet.y<1,sport+" exploration beyond field remains visible");
+    Check(Vector3.Distance(cam.transform.position,actor.transform.position+Vector3.up*1.57f)<.01f&&Mathf.Abs(cam.nearClipPlane-.06f)<.001f,sport+" original first person restored");
+    app.view.mode=2;yield return Settle();
+    // Test bearing independently for all four screen quadrants and behind camera.
+    foreach(var d in new[]{new Vector3(2,1,4),new Vector3(-2,1,4),new Vector3(2,-1,-4),new Vector3(-2,-1,-4),new Vector3(0,0,-4)}){
+     var bearing=StadiumPlayerIndicator.Bearing(cam,cam.transform.TransformPoint(d));
+     Check(float.IsFinite(bearing.x)&&float.IsFinite(bearing.y)&&bearing.sqrMagnitude>.99f&&(d.x==0||Mathf.Sign(bearing.x)==Mathf.Sign(d.x)),sport+" robust edge bearing "+d);
+    }
+    if(!football){manual=false;Physics.simulationMode=previousSimulation;yield return PhysicalShot(field);}
    }
-   app.view.mode=2;app.SelectSport(SportId.Golf);while(app.PendingSelection.HasValue)yield return null;app.EnterOffline();yield return Settle();
-   Check(!cam.orthographic,"Golf elevated view retains its original perspective");
-   app.SelectSport(SportId.Football);while(app.PendingSelection.HasValue)yield return null;app.EnterOffline();yield return Settle();Check(!cam.orthographic&&Mathf.Abs(cam.fieldOfView-37)<.01f,"return to football restores broadcast lens");
-   app.view.active=false;app.view.enabled=false;Check(!cam.orthographic&&Mathf.Abs(cam.fieldOfView-60)<.01f,"disabling view restores projection and lens for menus and travel");
-   Finish();
+   manual=false;Physics.simulationMode=previousSimulation;actor.capsule.enabled=true;
+   app.SelectSport(SportId.Golf);while(app.PendingSelection.HasValue)yield return null;app.EnterOffline();yield return Settle();
+   Check(!app.view.StadiumFollowing&&!cam.orthographic,"Golf retains its own elevated camera");
+   app.SelectSport(SportId.Football);while(app.PendingSelection.HasValue)yield return null;app.EnterOffline();yield return Settle();
+   Check(Mathf.Abs(cam.fieldOfView-37)<.01f,"sport re-entry restores ball broadcast");
+   app.view.enabled=false;yield return new WaitForEndOfFrame();
+   Check(!app.view.StadiumFollowing&&Mathf.Abs(cam.fieldOfView-60)<.01f&&!FindFirstObjectByType<StadiumPlayerIndicator>().Showing,"disable clears camera and marker");Finish();
   }
-  void Footprint(Transform frame,Bounds field,out float coverage,out float lawn){
-   // Sample actual perspective rays and the field independently. A bounding
-   // rectangle overcounts a rotated trapezoid and cannot measure screen area.
-   var plane=new Plane(frame.up,frame.TransformPoint(new Vector3(0,field.max.y,0)));int onField=0,visible=0;
-   const int n=64;
-   for(int x=0;x<n;x++)for(int y=0;y<n;y++){
-    float u=(x+.5f)/n,v=(y+.5f)/n;
-    var ray=cam.ViewportPointToRay(new Vector2(u,v));
-    if(plane.Raycast(ray,out float distance)){var p=frame.InverseTransformPoint(ray.GetPoint(distance));if(p.x>=field.min.x&&p.x<=field.max.x&&p.z>=field.min.z&&p.z<=field.max.z)onField++;}
-    var screen=cam.WorldToViewportPoint(frame.TransformPoint(new Vector3(Mathf.Lerp(field.min.x,field.max.x,u),field.max.y,Mathf.Lerp(field.min.z,field.max.z,v))));
-    if(screen.z>0&&screen.x>=0&&screen.x<=1&&screen.y>=0&&screen.y<=1)visible++;
+  bool MarkerOverlapsButtons(StadiumPlayerIndicator marker){
+   var corners=new Vector3[4];marker.rectTransform.GetWorldCorners(corners);var bounds=Rect.MinMaxRect(corners[0].x,corners[0].y,corners[2].x,corners[2].y);
+   foreach(var button in FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None)){
+    ((RectTransform)button.transform).GetWorldCorners(corners);
+    if(bounds.Overlaps(Rect.MinMaxRect(corners[0].x,corners[0].y,corners[2].x,corners[2].y)))return true;
    }
-   coverage=(float)visible/(n*n);lawn=(float)onField/(n*n);
+   return false;
   }
-  IEnumerator Motion(Transform field,Vector3 center,Vector3 half,SportId sport){
-   bool football=sport==SportId.Football;
-   var start=center+new Vector3(-half.x*.3f,0,-half.z*.65f);
-   Place(field,start);yield return Settle();
-   var firstRotation=cam.transform.rotation;var previous=cam.transform.position;var previousRotation=cam.transform.rotation;
-   float minHeight=float.MaxValue,maxHeight=0,maxPanSpeed=0,maxTravelSpeed=0;bool visible=true;
-   var frames=Path.Combine(folder,sport+"-motion");Directory.CreateDirectory(frames);
-   const int count=240;float previousCapture=Time.captureDeltaTime;Time.captureDeltaTime=1f/30;
-   for(int i=0;i<count;i++){
-    float t=(float)i/(count-1);var local=Vector3.Lerp(start,center+new Vector3(half.x*.25f,0,half.z*.65f),t);
-    Place(field,local);yield return new WaitForEndOfFrame();
-    var feet=cam.WorldToViewportPoint(actor.transform.position);
-    visible&=feet.z>0&&feet.x>.05f&&feet.x<.95f&&feet.y>.18f&&feet.y<.84f;
-    float height=field.InverseTransformPoint(cam.transform.position).y;
-    minHeight=Mathf.Min(minHeight,height);maxHeight=Mathf.Max(maxHeight,height);
-    maxPanSpeed=Mathf.Max(maxPanSpeed,Mathf.Abs(Mathf.DeltaAngle(previousRotation.eulerAngles.y,cam.transform.eulerAngles.y))*30);
-    maxTravelSpeed=Mathf.Max(maxTravelSpeed,Vector3.Distance(previous,cam.transform.position)*30);
-    File.AppendAllText(Path.Combine(folder,sport+"-motion.csv"),$"{i},{local.x:F3},{local.z:F3},{height:F3},{cam.transform.eulerAngles.y:F3},{feet.x:F3},{feet.y:F3}\n");
-    if(Screen.width==1280&&i%2==0)Capture(Path.Combine(frames,(i/2).ToString("D4")+".png"));
+  IEnumerator Flight(Transform field,Vector3 center,Vector3 half,SportId sport,int sign){
+   bool football=sport==SportId.Football;var start=center+new Vector3(-2,1,-half.z*.72f*sign);var finish=center+new Vector3(2,1,half.z*.72f*sign);
+   Place(field,center-new Vector3(0,0,half.z*.85f*sign));ballPosition=field.TransformPoint(start);yield return Settle();
+   bool visible=true,groundVisible=true;float maxTravel=0,maxPan=0;var previous=cam.transform.position;var previousRotation=cam.transform.rotation;
+   float capture=Time.captureDeltaTime;Time.captureDeltaTime=1f/30;
+   for(int i=0;i<=150;i++){
+    float t=i/150f;var point=Vector3.Lerp(start,finish,t);point.y+=(football?12:9)*Mathf.Sin(t*Mathf.PI);ballPosition=field.TransformPoint(point);
+    yield return new WaitForEndOfFrame();visible&=Visible(ballPosition,ballSafe);
+    groundVisible&=Visible(field.TransformPoint(new Vector3(point.x,center.y,point.z)),picture);
+    if(i>3){maxTravel=Mathf.Max(maxTravel,Vector3.Distance(previous,cam.transform.position)*30);maxPan=Mathf.Max(maxPan,Quaternion.Angle(previousRotation,cam.transform.rotation)*30);}
     previous=cam.transform.position;previousRotation=cam.transform.rotation;
+    if(i==25||i==75||i==140)Capture(Path.Combine(folder,sport+"-flight-"+sign+"-"+i+".png"));
    }
-   Time.captureDeltaTime=previousCapture;
-   Check(visible,sport+" moving player stays in useful viewport");
-   Check(Quaternion.Angle(firstRotation,cam.transform.rotation)>(football?15:27),sport+" broadcast pans toward the opposite end");
-   Check(maxPanSpeed<20&&maxTravelSpeed<(football?25:12),sport+" continuous tracking without camera cuts pan="+maxPanSpeed.ToString("F2")+" travel="+maxTravelSpeed.ToString("F2"));
-   Check(maxHeight-minHeight>(football?.3f:.15f),sport+" lens distance eases with transition and end-court framing");
+   Time.captureDeltaTime=capture;
+   Check(visible,sport+" complete flight stays visible in direction "+sign);
+   Check(groundVisible,sport+" flight retains court underneath "+sign);
+   Check(maxTravel<(football?65:35)&&maxPan<35,sport+" continuous ball tracking travel="+maxTravel.ToString("F2")+" pan="+maxPan.ToString("F2"));
+  }
+  IEnumerator PhysicalShot(Transform field){
+   var ball=BasketballBall.Active;Place(field,new Vector3(0,.08f,-8));actor.capsule.enabled=true;ball.autoPickup=true;ball.ResetHome();
+   ball.Place(new Vector3(0,.25f,-7.4f),Quaternion.identity,Vector3.zero,Vector3.zero);
+   float deadline=Time.time+3;while(ball.Holder!=actor&&Time.time<deadline)yield return null;
+   Check(ball.Holder==actor,"real held-ball setup");yield return Settle();
+   var pose=cam.transform.position;float bob=0;
+   for(int i=0;i<60;i++){yield return new WaitForEndOfFrame();bob=Mathf.Max(bob,Vector3.Distance(cam.transform.position,pose));}
+   Check(bob<.3f,"held dribble does not pump camera zoom or height: "+bob);
+   ball.ReviewGiveProp(actor,SportsProp.LockOn);Check(ball.TryUseProp(actor,ball.PropSlot(actor).revision),"real long-range shot starts");
+   uint shots=ball.ShotCount;deadline=Time.time+4;while(ball.ShotCount==shots&&Time.time<deadline)yield return null;
+   bool visible=true;int frames=0;float apex=0;deadline=Time.time+8;
+   while(ball.Score.result==BasketballResult.Flying&&Time.time<deadline){yield return new WaitForEndOfFrame();visible&=Visible(ball.transform.position,ballSafe);apex=Mathf.Max(apex,ball.transform.localPosition.y);frames++;if(frames==35)Capture(Path.Combine(folder,"Basketball-real-lock-on.png"));}
+   Check(frames>10&&visible&&apex>4,"actual Rigidbody long shot tracked throughout arc, frames="+frames+" apex="+apex);
+   Check(ball.Score.result==BasketballResult.Scored,"camera changes preserve physical assisted scoring");
   }
   void Capture(string path){
    var target=new RenderTexture(Screen.width,Screen.height,24);var previous=RenderTexture.active;var cameraTarget=cam.targetTexture;
@@ -130,7 +146,7 @@ namespace WhatTheFish {
     var image=new Texture2D(Screen.width,Screen.height,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,Screen.width,Screen.height),0,0);image.Apply();File.WriteAllBytes(path,image.EncodeToPNG());Destroy(image);
    }finally{for(int i=0;i<overlays.Length;i++){overlays[i].renderMode=RenderMode.ScreenSpaceOverlay;overlays[i].worldCamera=cameras[i];overlays[i].planeDistance=distances[i];}cam.targetTexture=cameraTarget;RenderTexture.active=previous;target.Release();Destroy(target);Canvas.ForceUpdateCanvases();}
   }
-  void Finish(){File.AppendAllText(Path.Combine(folder,"results.txt"),"STADIUM_CAMERA_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}
+  void Finish(){manual=false;Physics.simulationMode=previousSimulation;File.AppendAllText(Path.Combine(folder,"results.txt"),"STADIUM_CAMERA_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}
  }
 }
 #endif

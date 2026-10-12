@@ -1,0 +1,104 @@
+{
+  "base": "repository root",
+  "generator": "Tools/Build/Generate-BasketballUI.cjs",
+  "tile": 128,
+  "padding": 4,
+  "icons": [
+    {
+      "name": "ball",
+      "source": "Docs/BasketballUI/icons/ball.svg",
+      "sha256": "d3ade7dd7fb1082541dd177358250abd57b36091ad8815b6c32eb410860bf73d",
+      "cell": 0
+    },
+    {
+      "name": "block",
+      "source": "Docs/BasketballUI/icons/block.svg",
+      "sha256": "0376d503a5dc87f2a57e7d45a3c40f6e9f17964892d3d4f3a301b017bdb884c9",
+      "cell": 1
+    },
+    {
+      "name": "book",
+      "source": "Docs/BasketballUI/icons/book.svg",
+      "sha256": "c4db5a8b27c1667d764e22f2b335dd9cdcbd1902103415fca642cfed4e7a7f0d",
+      "cell": 2
+    },
+    {
+      "name": "close",
+      "source": "Docs/BasketballUI/icons/close.svg",
+      "sha256": "1c60fc948689ade88a811f29382a2c8e80aa02ba15724bff9ca12511904b73b0",
+      "cell": 3
+    },
+    {
+      "name": "court",
+      "source": "Docs/BasketballUI/icons/court.svg",
+      "sha256": "9b849bdced94c28a281931eb1a4795aa4d6a2f362bb56de80db23d115d031895",
+      "cell": 4
+    },
+    {
+      "name": "exit",
+      "source": "Docs/BasketballUI/icons/exit.svg",
+      "sha256": "a6d3746d9ea4f780f37420b25b66283144f1a000c65eb11d25764451e7b0aac4",
+      "cell": 5
+    },
+    {
+      "name": "eye",
+      "source": "Docs/BasketballUI/icons/eye.svg",
+      "sha256": "955f84751566c9f591d07082a2363b11dada80d79e64529ae4475e2c93378702",
+      "cell": 6
+    },
+    {
+      "name": "follow",
+      "source": "Docs/BasketballUI/icons/follow.svg",
+      "sha256": "fd0a5a0719c8a7a3f53e433f01a8577398cb5ff6bfbbea9c03adcc4907be0e7b",
+      "cell": 7
+    },
+    {
+      "name": "gear",
+      "source": "Docs/BasketballUI/icons/gear.svg",
+      "sha256": "060dd4ed2fc610b3c03e808a9372bddaf2ae4589bbf9437d950b26b778fa5e4e",
+      "cell": 8
+    },
+    {
+      "name": "guard",
+      "source": "Docs/BasketballUI/icons/guard.svg",
+      "sha256": "1a543e9d18335b40757666a424fdbf8351dbe56d80d1b4c735cf1a48d74f5f75",
+      "cell": 9
+    },
+    {
+      "name": "jump",
+      "source": "Docs/BasketballUI/icons/jump.svg",
+      "sha256": "8989fa8585a1b6b2788d737cecfd7f786ccaaa10da24923a29e27b5bf264b900",
+      "cell": 10
+    },
+    {
+      "name": "move",
+      "source": "Docs/BasketballUI/icons/move.svg",
+      "sha256": "c1fcc64b8d0c57ee74ef80b8e76242c12b99030925be0ef58ed88039b94b2ae6",
+      "cell": 11
+    },
+    {
+      "name": "pass",
+      "source": "Docs/BasketballUI/icons/pass.svg",
+      "sha256": "d147994432ff3327db4881f85faadef9db21d749a83e940a6a5e5ccf43870e49",
+      "cell": 12
+    },
+    {
+      "name": "points",
+      "source": "Docs/BasketballUI/icons/points.svg",
+      "sha256": "0f3e3fedf3d3411238cfc5520172634ae4246d5772657d873a50c69443ff034b",
+      "cell": 13
+    },
+    {
+      "name": "shoot",
+      "source": "Docs/BasketballUI/icons/shoot.svg",
+      "sha256": "4dfb387f039bc5fcfebf6f3b0c8535e3a805c51d9fd23d1727895eeb129f8efb",
+      "cell": 14
+    },
+    {
+      "name": "steal",
+      "source": "Docs/BasketballUI/icons/steal.svg",
+      "sha256": "c465b05a4634f4e05ce59e9ef17d4294a132beb2fa5144e0067db939b80c2a11",
+      "cell": 15
+    }
+  ]
+}

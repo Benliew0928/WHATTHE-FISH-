@@ -45,7 +45,7 @@ namespace WhatTheFish {
    if(Exploring&&!rooms.Connected&&LocalAthlete&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
    if(!Exploring&&LocalAthlete)LocalAthlete.HideHead(false);
    if((rosterTimer-=Time.deltaTime)<0){rosterTimer=.5f;RefreshRoster();if(fps)fps.text=$"{Mathf.RoundToInt(1/Mathf.Max(Time.smoothDeltaTime,.001f))} FPS   •   {(rooms.Connected?"ONLINE":"OFFLINE")}";}
-   if(Input.GetKeyDown(KeyCode.Escape)){if(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)FishingHUD.Instance.Results.Close();else if(view.GolfAimRequested)view.CancelGolfAim();else if(Exploring)Return();else if(Menu)Menu.Back();else Show(rooms.Connected?"room":"home");}
+   if(Input.GetKeyDown(KeyCode.Escape)){if(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)FishingHUD.Instance.Results.Close();else if(Exploring&&SelectedSport==SportId.Basketball&&BasketballHUD.Instance)BasketballHUD.Instance.ToggleSettings();else if(view.GolfAimRequested)view.CancelGolfAim();else if(Exploring)Return();else if(Menu)Menu.Back();else Show(rooms.Connected?"room":"home");}
   }
   void UpdateStatus(){if(status)status.text=rooms.busy?"Connecting…":rooms.Error??"";}
   public void SelectSport(SportId sport,bool fromHost=false){if(rooms.Connected&&!fromHost)return;var streaming=environments.GetComponent<SkySailStreaming>();if(streaming&&streaming.enabledForWorld&&!streaming.Loaded(sport)){if(pendingSelection!=sport){pendingSelection=sport;Show(screen);StartCoroutine(SelectLoaded(sport,fromHost,++selectionVersion));}return;}pendingSelection=null;selectionVersion++;if(sport!=SelectedSport)GolfCartWorld.ParkDrivers(false);environments.Activate(sport);appliedWorld="";stadium?.Apply(CurrentAppearance);if(offline&&!rooms.Connected)ResetOfflineSpawn();view.yaw=0;view.pitch=16;PlayerView.LookDelta=Vector2.zero;}
@@ -54,13 +54,14 @@ namespace WhatTheFish {
   void ResetOfflineSpawn(){offline.capsule.enabled=false;offline.transform.SetPositionAndRotation(environments.Current.Spawn(0),Quaternion.identity);offline.capsule.enabled=true;offline.ResetLocomotion();}
   public void EnterOffline(){if(pendingSelection.HasValue){StartCoroutine(EnterWhenReady());return;}Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium?.Apply(CurrentAppearance);Show("stadium");}
   async void Return(){if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return;if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
-  void Clear(){PlayerView.LookDelta=Vector2.zero;if(page)Destroy(page.gameObject);page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;}
+  public void LeaveCourt()=>Return();
+  void Clear(){PlayerView.LookDelta=Vector2.zero;view.InputBlocked=false;if(page){page.gameObject.SetActive(false);Destroy(page.gameObject);}page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;controlHint=null;}
   public void Show(string which){
    screen=which;
    if(which=="stadium"&&!pendingSelection.HasValue){if(Menu)Menu.Hide();Clear();HUD();
     // Illustrated island HUDs own their skins and safe-area layout frames.
     if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf){foreach(var button in page.GetComponentsInChildren<Button>(true))if(!button.GetComponent<CoveFeedback>())button.gameObject.AddComponent<CoveFeedback>();}
-    else GameButtonStyle.Apply(page);
+    else if(SelectedSport!=SportId.Basketball)GameButtonStyle.Apply(page);
     if(Menu)Menu.ArriveInWorld(page);
     return;
    }
@@ -75,6 +76,7 @@ namespace WhatTheFish {
   void Heading(string title,string caption){Label(page,title,0,new Vector2(82,714),new Vector2(510,80),44,ink);Label(page,caption,0,new Vector2(82,643),new Vector2(490,64),22,ink);}
   void Back(string target){Button("← Back",new Vector2(165,91),()=>Show(target),Color.white,new Vector2(165,54));}
   void HUD(){
+   if(SelectedSport==SportId.Basketball){BasketballHUD.Create(page,font);StadiumPlayerIndicator.Create(page,font);return;}
    var look=Panel(page,new Vector2(1170,480),new Vector2(820,720),new Color(1,1,1,.001f));look.gameObject.AddComponent<TouchPad>().look=true;
    var bg=Panel(page,new Vector2(190,178),new Vector2(176,176),new Color(1,1,1,.25f));var pad=bg.gameObject.AddComponent<TouchPad>();var knob=Panel(bg,Vector2.zero,new Vector2(82,82),cream);knob.anchorMin=knob.anchorMax=new Vector2(.5f,.5f);var circle=MakeCircle();foreach(var r in new[]{bg,knob}){r.GetComponent<Image>().sprite=circle;r.GetComponent<Image>().type=Image.Type.Simple;}pad.knob=knob;view.stick=pad;
    cameraControl=Button("Camera",SelectedSport==SportId.Fishing?Vector2.zero:new Vector2(1470,70),view.Switch,mint,SelectedSport==SportId.Fishing?new Vector2(148,66):new Vector2(160,60));var returnButton=Button(rooms.Host?"Return to room":SelectedSport switch{SportId.Basketball=>"Leave court",SportId.Golf=>"Leave island",SportId.Fishing=>"Leave lagoon",_=>"Leave pitch"},SelectedSport==SportId.Fishing?Vector2.zero:new Vector2(SelectedSport==SportId.Golf?1210:1418,SelectedSport==SportId.Golf?55:818),Return,cream,new Vector2(250,62));
@@ -123,40 +125,13 @@ namespace WhatTheFish {
     kick.cancelLabel.alignment=TextAnchor.MiddleCenter;kick.cancelLabel.rectTransform.anchorMin=kick.cancelLabel.rectTransform.anchorMax=kick.cancelLabel.rectTransform.pivot=new Vector2(.5f,.5f);
     cancelRect.gameObject.SetActive(false);
    }
-   if(SelectedSport==SportId.Basketball){
-    BasketballHUD.Create(page,font);
-    var rect=Panel(page,new Vector2(1470,225),new Vector2(160,160),LocalProfile.Hex("F0B956"));rect.name="Shoot button";
-    var control=rect.gameObject.AddComponent<BasketballShootButton>();control.button=rect.gameObject.AddComponent<Button>();
-    control.label=Label(rect,"Shoot [E]",0,Vector2.zero,new Vector2(210,90),20,ink);
-    control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
-    var cancel=Panel(page,new Vector2(1300,340),new Vector2(138,74),cream);cancel.name="Basketball cancel area";
-    control.cancelArea=cancel;control.cancelLabel=Label(cancel,"Cancel",0,Vector2.zero,new Vector2(130,64),23,ink);
-    control.cancelLabel.alignment=TextAnchor.MiddleCenter;control.cancelLabel.rectTransform.anchorMin=control.cancelLabel.rectTransform.anchorMax=control.cancelLabel.rectTransform.pivot=new Vector2(.5f,.5f);
-    cancel.gameObject.AddComponent<Button>().onClick.AddListener(control.CancelGesture);cancel.gameObject.SetActive(false);
-   }
-   if(SelectedSport==SportId.Basketball){
-    var rect=Panel(page,new Vector2(1300,165),new Vector2(138,138),LocalProfile.Hex("54D7C4"));rect.name="Pass button";
-    var control=rect.gameObject.AddComponent<BasketballShootButton>();control.pass=true;control.button=rect.gameObject.AddComponent<Button>();
-    control.label=Label(rect,"Pass [Q]",0,Vector2.zero,new Vector2(190,90),23,ink);
-    control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
-    var cancel=Panel(page,new Vector2(1130,165),new Vector2(138,74),cream);cancel.name="Basketball pass cancel area";
-    control.cancelArea=cancel;control.cancelLabel=Label(cancel,"Cancel",0,Vector2.zero,new Vector2(130,64),23,ink);
-    control.cancelLabel.alignment=TextAnchor.MiddleCenter;control.cancelLabel.rectTransform.anchorMin=control.cancelLabel.rectTransform.anchorMax=control.cancelLabel.rectTransform.pivot=new Vector2(.5f,.5f);
-    cancel.gameObject.AddComponent<Button>().onClick.AddListener(control.CancelGesture);cancel.gameObject.SetActive(false);
-   }
-   if(SelectedSport==SportId.Basketball){
-    var rect=Panel(page,new Vector2(1300,340),new Vector2(138,138),mint);rect.name="Steal button";
-    var control=rect.gameObject.AddComponent<BasketballStealButton>();control.button=rect.gameObject.AddComponent<Button>();
-    control.label=Label(rect,"Hold F to steal",0,Vector2.zero,new Vector2(190,90),23,ink);
-    control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
-   }
-   if(SelectedSport==SportId.Basketball)BasketballActionSlot.Attach(page);
    if(SelectedSport==SportId.Football)FootballActionSlot.Attach(page);
    if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)SportsMiniMap.Create(page,SelectedSport);
    var stadiumName=rooms.Connected&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.WorldAppearance.Value.Length>0?JsonUtility.FromJson<StadiumAppearance>(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString()).title:CurrentAppearance.title;
    if(SelectedSport!=SportId.Fishing&&SelectedSport!=SportId.Golf)Pill(stadiumName.ToUpperInvariant(),new Vector2(252,818),new Vector2(400,62));fps=Label(page,"",0,new Vector2(66,742),new Vector2(380,44),18,Color.white);if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf)fps.gameObject.SetActive(false);
    controlHint=Label(page,"Drag right to look • Push stick fully to run",0,new Vector2(530,72),new Vector2(570,40),21,Color.white);
    if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf)controlHint.gameObject.SetActive(false);
+   if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)StadiumPlayerIndicator.Create(page,font);
    if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball){controlHint.rectTransform.anchorMin=controlHint.rectTransform.anchorMax=new Vector2(.5f,0);controlHint.rectTransform.anchoredPosition=new Vector2(-285,SelectedSport==SportId.Football?193:148);controlHint.alignment=TextAnchor.MiddleCenter;controlHint.fontSize=18;}
   }
   void Pill(string s,Vector2 p,Vector2 size){var r=Panel(page,p,size,cream);var t=Label(r,s,0,Vector2.zero,size,23,ink);t.alignment=TextAnchor.MiddleCenter;var rt=t.rectTransform;rt.anchorMin=rt.anchorMax=new Vector2(.5f,.5f);rt.pivot=new Vector2(.5f,.5f);}

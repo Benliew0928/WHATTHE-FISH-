@@ -17,7 +17,7 @@ namespace WhatTheFish {
    args=Environment.GetCommandLineArgs();report=Value("-report",Path.Combine(Application.persistentDataPath,"fishing-review.txt"));DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    float end=Time.realtimeSinceStartup+65;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!FishingGame.Instance||!FishingGame.Instance.Context)&&Time.realtimeSinceStartup<end)yield return null;
    app=AppRoot.Instance;game=FishingGame.Instance;Check(app&&game&&game.Context,"FISHING_CONTEXT");
-   Check(RoomService.ProtocolVersion==39,"FISHING_TIMING_AND_RECAP_PROTOCOL_39");
+   Check(RoomService.ProtocolVersion==44,"FISHING_TIMING_AND_RECAP_PROTOCOL_44");
    end=Time.realtimeSinceStartup+15;while(!app.view.active&&Time.realtimeSinceStartup<end)yield return null;
    Check(app.view.active,"ARRIVAL_HANDS_CONTROL_TO_PLAYER");
    if(args.Contains("-networkFishingAudit"))yield return Network();else{Rules();yield return Offline();}

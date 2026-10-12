@@ -24,7 +24,7 @@ namespace WhatTheFish {
   public bool PresentingJump=>remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
   public float JumpPose=>remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
   public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
-  public bool CanRequestJump=>!(FishingGame.Instance&&FishingGame.Instance.Busy(this))&&!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
+  public bool CanRequestJump=>!(BasketballBall.Active&&(BasketballBall.Active.PropLocked(this)||BasketballBall.Active.IsInbound(this)))&&!(FishingGame.Instance&&FishingGame.Instance.Busy(this))&&!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
   public JumpSnapshot JumpState()=>new JumpSnapshot{airborne=Jump.Airborne,preparing=Jump.Preparing,load=Jump.LoadElapsed,velocity=Jump.Velocity,landing=Jump.Landing,sequence=Jump.Sequence};
   public void ApplyJump(JumpSnapshot value){receivedJump=value;}
@@ -60,6 +60,7 @@ namespace WhatTheFish {
   public void Simulate(PlayerCommand command,float dt){
    if(!initialized)Setup();if(inTransit||dt<=0){FootballEffort.Stop();return;}
    if(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this)){command.move=Vector2.zero;command.jump=false;command.cartAction=GolfCartAction.None;}
+   if(BasketballBall.Active&&BasketballBall.Active.PropLocked(this)){command.move=Vector2.zero;command.jump=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=false;}
    if(command.cartAction!=GolfCartAction.None)GolfCartWorld.Execute(this,command.cartAction,command.cartOwner);
    if(GolfCartWorld.Simulate(this,command,dt))return;
    if(!capsule.enabled)return;remote=false;
@@ -101,6 +102,7 @@ namespace WhatTheFish {
    var carrier=command.pressure?FootballPressure.CarrierFor(this):null;
    FootballEffort.Step(command.dash,direction.sqrMagnitude>.01f,footballContext&&FootballPressure.Eligible(this)&&grounded&&!Charging,carrier,dt);
    float requestedSpeed=FootballBall.Instance&&footballContext?FootballBall.Instance.MovementSpeed(this,command.sprint||FootballEffort.Dashing,Charging):(command.sprint?7:4);
+   if(BasketballBall.Active&&BasketballBall.Active.TurboRemaining(this)>0)requestedSpeed*=BasketballPropRules.TurboMultiplier;
    if(FootballEffort.Dashing)requestedSpeed*=WhatTheFish.FootballEffort.DashMultiplier;
    bool footballDefense=FootballEffort.Pressuring;
    float footballHeading=command.heading;
@@ -121,7 +123,7 @@ namespace WhatTheFish {
    if(!defense&&BasketballMotion&&(BasketballMotion.Busy||BasketballMotion.Charging||BasketballMotion.PassCharging))Motor.FaceBasketball(BasketballMotion.State.heading,dt/basketballTimeScale);
    if(GolfClubMotion&&(GolfClubMotion.Busy||GolfClubMotion.State.action==GolfClubAction.Charge))Motor.FaceGolf(GolfClubMotion.AddressHeading);
    if(fishing){Motor.FaceGolf(FishingGame.Instance.Heading(this));displacement.x=displacement.z=0;}
-   if(golfContact){displacement.x=displacement.z=0;}
+   if(golfContact||BasketballBall.Active&&BasketballBall.Active.PropLocked(this)){displacement.x=displacement.z=0;}
    capsule.stepOffset=Jump.Airborne?0:.3f;
    var before=transform.position;
    transform.rotation=Quaternion.Euler(0,Motor.Yaw,0);

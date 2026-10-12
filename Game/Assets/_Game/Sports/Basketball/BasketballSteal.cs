@@ -51,7 +51,7 @@ namespace WhatTheFish {
   Collider ignoredStealer;uint steals;double stealTime=-100;
   public uint StealCount=>Authority?steals:haveTarget?target.steals:0;
   public double StealTime=>Authority?stealTime:haveTarget?target.stealTime:-100;
-  public bool CanSteal(Athlete actor)=>Held&&Role(actor)==BasketballRole.Defense&&Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump;
+  public bool CanSteal(Athlete actor)=>!PropLocked(actor)&&!PortalBusy&&Held&&Role(actor)==BasketballRole.Defense&&Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump;
   public bool TrySteal(Athlete actor,float heading){
    if(!Authority||!CanSteal(actor)||!Eligible(actor)||!float.IsFinite(heading)||!actor.Grounded||Outside(actor.transform.position)||!actor.BasketballMotion||actor.BasketballMotion.Busy)return false;
    heading%=360;var facing=Quaternion.Euler(0,heading,0);
@@ -104,7 +104,7 @@ namespace WhatTheFish {
    if(ignoredStealer){var normal=Vector3.ProjectOnPlane(point-actor.transform.position,Vector3.up).normalized;float into=Vector3.Dot(velocity,normal);if(into<0)velocity-=normal*into*1.65f;}
    var sphere=GetComponent<SphereCollider>();if(ignoredShooter)Physics.IgnoreCollision(sphere,ignoredShooter,true);if(ignoredStealer)Physics.IgnoreCollision(sphere,ignoredStealer,true);
    Body.linearVelocity=velocity;Body.angularVelocity=Vector3.ClampMagnitude(Vector3.Cross(Vector3.up,velocity)/Radius*.4f+Vector3.up*(motion.State.leftHand?3:-3),24);
-   Body.WakeUp();steals++;stealTime=BasketballMotion.Clock;reset++;sendAt=0;
+   BasketballAudio.Emit(BasketballSound.Block,point);Body.WakeUp();steals++;stealTime=BasketballMotion.Clock;reset++;sendAt=0;
   }
   void ClearSteals(){foreach(var attempt in stealAttempts)if(attempt.actor&&attempt.actor.BasketballMotion)attempt.actor.BasketballMotion.ResetPose();stealAttempts.Clear();RestoreStealerCollision();}
   void RestoreStealerCollision(){if(ignoredStealer){Physics.IgnoreCollision(GetComponent<SphereCollider>(),ignoredStealer,false);ignoredStealer=null;}}

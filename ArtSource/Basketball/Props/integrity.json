@@ -1,0 +1,54 @@
+{
+  "base": "repository root",
+  "dependencies": [],
+  "models": [
+    {
+      "name": "LockOn",
+      "vertices": 2752,
+      "triangles": 5480,
+      "materials": 4
+    },
+    {
+      "name": "Turbo",
+      "vertices": 3528,
+      "triangles": 6948,
+      "materials": 4
+    },
+    {
+      "name": "Portal",
+      "vertices": 4188,
+      "triangles": 8336,
+      "materials": 5
+    }
+  ],
+  "files": {
+    "Game/Assets/_Game/Resources/BasketballProps/LockOn.fbx": {
+      "bytes": 121756,
+      "sha256": "2b0f0272b9b12a117088f847c609561a2f71a2fefcf48055336cb146068713ea"
+    },
+    "Game/Assets/_Game/Resources/BasketballProps/Portal.fbx": {
+      "bytes": 157356,
+      "sha256": "7c408740c2395a438414dba050fd1ad627f2048e11d27fcb05112c04d95b597b"
+    },
+    "Game/Assets/_Game/Resources/BasketballProps/Turbo.fbx": {
+      "bytes": 162316,
+      "sha256": "53407b765ef6106dd87ffbc4aafeafade951d5fdfd465b1838a663a1ddf7dc57"
+    },
+    "Game/Assets/_Game/Resources/BasketballProps/LockOn.png": {
+      "bytes": 209833,
+      "sha256": "7505dc720f45df4ebe8c92c39692ebad0f8280f47fdfb1deb93dc19e7b3be153"
+    },
+    "Game/Assets/_Game/Resources/BasketballProps/Portal.png": {
+      "bytes": 217696,
+      "sha256": "e99617886f7cb556966b89732dc182cd54390011994d7a930df72e6e80562825"
+    },
+    "Game/Assets/_Game/Resources/BasketballProps/Turbo.png": {
+      "bytes": 153670,
+      "sha256": "680cb199863a2d9667b998c76b8e73fbeb834ab445f3559087bc4b9d2d4dce76"
+    },
+    "ArtSource/Basketball/Props/BasketballProps.blend": {
+      "bytes": 353388,
+      "sha256": "f0462dd3b7dbe2ddda0bc3fe3346047233c806d7cc74544d70a5f7cb3fc2e0e7"
+    }
+  }
+}

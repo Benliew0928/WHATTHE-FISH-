@@ -25,7 +25,7 @@ material and tiny texture; no new ball, scoring rule or network field is added.
 - There is no global, single-hole, AFK or maximum-duration timer before the first finisher.
 - Finished players rank ahead of DNF, by total strokes ascending, then elapsed finish time ascending. Equal strokes and equal finish time share a rank and a Tie marker. DNF remains in roster order and receives no competitive rank.
 
-The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **38**; older builds cannot join this build.
+The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **44**; older builds cannot join this build.
 
 ## Controls and display
 
@@ -160,7 +160,7 @@ starts authoritative shot travel at 0.10 seconds. Feet stay planted through cont
 control resumes during follow-through. Recovery lasts 0.74 seconds and prevents
 duplicate strokes. Round changes and ball resets cancel queued contacts. Charge,
 heading, round, sequence and server start time synchronize the presentation;
-protocol 38 requires matching host/client players. Ball ownership, scoring,
+protocol 44 requires matching host/client players. Ball ownership, scoring,
 cup order and the shared final countdown retain their existing rules.
 
 See [source, regeneration and tuning](../ArtSource/Golf/Club/README.md).

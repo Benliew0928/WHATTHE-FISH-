@@ -13,7 +13,7 @@ using UnityEngine.Rendering;
 public static class BuildSizeAudit {
  public const long TargetBytes=75000000;
  public const long LimitBytes=100000000;
- public const string Output="../Builds/SizeAudit/";
+ public static string Output=>ProjectBuilder.ResolveBuildOutputPath("../Builds/SizeAudit")+Path.DirectorySeparatorChar;
  public static void AuditLatest(){Write(BuildReport.GetLatestReport(),"before");}
  public static void Write(BuildReport report,string label){
   string dir=Output+label+"/";Directory.CreateDirectory(dir);
@@ -53,6 +53,7 @@ public static class BuildSizeAudit {
   Debug.Log("SIZE_AUDIT_COMPLETE "+Path.GetFullPath(dir));
  }
  public static void CheckApk(string path,bool enforce){
+  path=ProjectBuilder.ResolveBuildOutputPath(path);
   long bytes=new FileInfo(path).Length;
   string result=bytes>=LimitBytes?"OVER_LIMIT":bytes>TargetBytes?"ABOVE_WORKING_TARGET":"WITHIN_TARGET";
   Directory.CreateDirectory(Output);

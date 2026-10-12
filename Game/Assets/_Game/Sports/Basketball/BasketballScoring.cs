@@ -89,9 +89,9 @@ namespace WhatTheFish {
    chargingHoop=SelectHoop(athlete.transform.position,heading);if(!chargingHoop)return false;
    chargingAthlete=athlete;chargeStarted=chargeSampled=BasketballMotion.Clock;chargePhase=0;chargePeriod=ChargePeriod(ChargeDistance(athlete,heading));chargeHistory.Clear();chargeHistory.Add((chargeStarted,0,ShotPressure(athlete,chargingHoop)));sendAt=0;return true;
   }
-  public void CancelShotCharge(Athlete athlete){if(Authority&&chargingAthlete==athlete&&athlete){chargingAthlete=null;chargingHoop=null;sendAt=0;if(athlete.BasketballMotion&&athlete.BasketballMotion.Charging){var start=CarryPosition(athlete);athlete.BasketballMotion.Begin(BasketballAction.Cancel,athlete.transform.eulerAngles.y,Quaternion.Inverse(athlete.transform.rotation)*(start-athlete.transform.position));dribblePhase=0;}}}
+  public void CancelShotCharge(Athlete athlete){if(Authority&&chargingAthlete==athlete&&athlete&&!PropLocked(athlete)){chargingAthlete=null;chargingHoop=null;sendAt=0;if(athlete.BasketballMotion&&athlete.BasketballMotion.Charging){var start=CarryPosition(athlete);athlete.BasketballMotion.Begin(BasketballAction.Cancel,athlete.transform.eulerAngles.y,Quaternion.Inverse(athlete.transform.rotation)*(start-athlete.transform.position));dribblePhase=0;}}}
   public bool ReleaseShotCharge(Athlete athlete,float heading,double releasedAt=double.NaN,BasketballFinish kind=BasketballFinish.Shot){
-   if(!Authority||!athlete||chargingAthlete!=athlete)return false;
+   if(!Authority||!athlete||PropLocked(athlete)||chargingAthlete!=athlete)return false;
    if(!float.IsFinite(heading)||!chargingHoop){CancelShotCharge(athlete);return false;}
    AdvanceCharge();float power=PowerAtPhase(ReleasePhase(releasedAt));var hoop=chargingHoop;
    heading=Quaternion.LookRotation(Vector3.ProjectOnPlane(hoop.position-athlete.transform.position,Vector3.up)).eulerAngles.y;
@@ -114,10 +114,11 @@ namespace WhatTheFish {
   void ResolveAttempt(bool made){
    if(score.result!=BasketballResult.Flying)return;
    score.result=made?BasketballResult.Scored:BasketballResult.Missed;score.lastPoints=made?attemptedPoints:(byte)0;
-   if(made){score.made++;score.points+=attemptedPoints;}else score.missed++;
+   if(made){score.made++;score.points+=attemptedPoints;BasketballAudio.Emit(BasketballSound.Score,Body.position,.8f);}else score.missed++;
    score.changed=BasketballMotion.Clock;score.sequence++;sendAt=0;attemptedHoop=null;
   }
   void ResetShotTracking(){
+   EndPropAim();guidedPropShot=false;
    ResolveAttempt(false);chargingAthlete=null;samplingFlight=false;
    foreach(var basket in baskets)if(basket)basket.ResetCrossing();
   }

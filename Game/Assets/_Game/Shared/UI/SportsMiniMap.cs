@@ -38,9 +38,9 @@ namespace WhatTheFish {
   protected override void OnPopulateMesh(VertexHelper v){
    v.Clear();var r=rectTransform.rect;bool football=sport==SportId.Football;
    // A plain board with one border; the field markings identify the sport.
-   Round(v,r,3,new Color(.93f,.98f,.96f,.9f));
+   Round(v,r,football?3:22,new Color(.93f,.98f,.96f,.9f));
    var inset=r;inset.xMin+=2;inset.xMax-=2;inset.yMin+=2;inset.yMax-=2;
-   Round(v,inset,2,football?new Color(.10f,.25f,.21f,.91f):new Color(.25f,.21f,.17f,.91f));
+   Round(v,inset,football?2:20,football?new Color(.10f,.25f,.21f,.91f):new Color(.07f,.25f,.31f,.88f));
    var paint=new Color(1,1,1,.38f);Box(v,field,paint);Line(v,new(0,-47),new(0,47),paint,1);Ring(v,Vector2.zero,football?13:11,paint,1);
    for(int sign=-1;sign<=1;sign+=2){
     Box(v,new Rect(sign<0?-92:69,-20,23,40),paint);
@@ -52,10 +52,10 @@ namespace WhatTheFish {
     foreach(var actor in Athlete.Active){if(!actor||actor.inTransit||!actor.gameObject.activeInHierarchy)continue;PlayerCount++;
      var p=MapPoint(actor.transform.position);var c=SportsPossession.SameTeam(own,actor,sport)?OurTeam:Opponent;
      if(actor==own)Dot(v,p,5.6f,Color.white);
-     Dot(v,p,actor==own?4:3.5f,c);
+     if(!football&&!SportsPossession.SameTeam(own,actor,sport)){int n=v.currentVertCount;v.AddVert(p+Vector2.up*4,c,Vector2.zero);v.AddVert(p+new Vector2(-4,-3),c,Vector2.zero);v.AddVert(p+new Vector2(4,-3),c,Vector2.zero);v.AddTriangle(n,n+1,n+2);}else Dot(v,p,actor==own?4:3.5f,c);
     }
     var ball=sport==SportId.Football?(FootballBall.Instance?FootballBall.Instance.transform:null):(BasketballBall.Active?BasketballBall.Active.transform:null);
-    if(ball){var p=MapPoint(ball.position);Dot(v,p,3.4f,CoveUI.Ink);Dot(v,p,2.5f,Color.white);}
+    if(ball){var p=MapPoint(ball.position);Dot(v,p,3.4f,CoveUI.Ink);Dot(v,p,2.5f,football?Color.white:CoveUI.Gold);}
    }
   }
  }

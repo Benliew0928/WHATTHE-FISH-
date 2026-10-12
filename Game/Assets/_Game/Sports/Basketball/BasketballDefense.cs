@@ -60,10 +60,10 @@ namespace WhatTheFish {
    bool own=Authority?SportsPossession.SameTeam(lastShooter,actor,SportId.Basketball):Defense.originator!=ulong.MaxValue&&SportsPossession.BasketballTeam(Defense.originator)==SportsPossession.TeamOf(actor,SportId.Basketball);
    return flight&&!own?BasketballRole.Defense:BasketballRole.Loose;
   }
-  public bool CanBlock(Athlete actor)=>Role(actor)==BasketballRole.Defense&&actor.BasketballMotion&&!actor.BasketballMotion.Busy&&!actor.Airborne&&!actor.LoadingJump;
+  public bool CanBlock(Athlete actor)=>!PropLocked(actor)&&!PortalBusy&&Role(actor)==BasketballRole.Defense&&actor.BasketballMotion&&!actor.BasketballMotion.Busy&&!actor.Airborne&&!actor.LoadingJump;
   public void SetGuard(Athlete actor,bool held,float heading){
    if(!Authority||!actor||!actor.BasketballMotion)return;var motion=actor.BasketballMotion;
-   bool allowed=held&&Role(actor)==BasketballRole.Defense&&Eligible(actor)&&actor.Grounded&&!actor.Airborne&&!actor.LoadingJump&&float.IsFinite(heading);
+   bool allowed=held&&!PropLocked(actor)&&!PortalBusy&&Role(actor)==BasketballRole.Defense&&Eligible(actor)&&actor.Grounded&&!actor.Airborne&&!actor.LoadingJump&&float.IsFinite(heading);
    if(!allowed){motion.EndGuard();return;}
    if(motion.Busy)return;
    var point=Holder?Holder.transform.position:Body.position;var delta=Vector3.ProjectOnPlane(point-actor.transform.position,Vector3.up);
@@ -92,6 +92,7 @@ namespace WhatTheFish {
    // toward a moving ball or changes height after a shot fake.
    float committed=motion.Guarding?actor.transform.eulerAngles.y:Mathf.MoveTowardsAngle(actor.transform.eulerAngles.y,heading,55);
    motion.BeginDefense(jumping?BasketballAction.JumpBlock:BasketballAction.Block,committed,point);
+   if(EasyPropBlock(actor))return true;
    blockAttempts.Add(new BlockAttempt{actor=actor,sequence=motion.State.sequence,play=defensePlay,hand=motion.DefensePalm(0),ball=Held?CarryPosition(holder):Body.position});
    return true;
   }
@@ -146,6 +147,7 @@ namespace WhatTheFish {
    }
   }
   void ApplyBlock(Athlete defender,Vector3 point,Vector3 hand,Vector3 handVelocity){
+   EndPropAim();guidedPropShot=false;propState.guided=false;
    passBounceArmed=false;
    var victim=holder;var forward=defender.BasketballMotion.Facing*Vector3.forward;
    var incoming=victim?victim.Motor.Velocity+Vector3.up*victim.Jump.Velocity:Body.linearVelocity;
@@ -165,7 +167,7 @@ namespace WhatTheFish {
    ignoredShooter=victim&&Overlaps(victim.capsule)?victim.capsule:null;ignoredStealer=Overlaps(defender.capsule)?defender.capsule:null;
    if(ignoredShooter)Physics.IgnoreCollision(sphere,ignoredShooter,true);if(ignoredStealer)Physics.IgnoreCollision(sphere,ignoredStealer,true);
    Body.linearVelocity=velocity;Body.angularVelocity=Vector3.ClampMagnitude(Vector3.Cross(point-hand,velocity)*35,28);Body.WakeUp();
-   blocks++;blockTime=BasketballMotion.Clock;blocker=PlayerId(defender);blockContact=point;reset++;sendAt=0;
+   BasketballAudio.Emit(BasketballSound.Block,point);blocks++;blockTime=BasketballMotion.Clock;blocker=PlayerId(defender);blockContact=point;reset++;sendAt=0;
   }
  }
 }

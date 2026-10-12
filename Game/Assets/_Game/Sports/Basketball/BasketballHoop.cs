@@ -53,6 +53,7 @@ namespace WhatTheFish {
    double now=BasketballMotion.Clock;
    if(kind!=BasketballNetKind.Score&&now<nextTouch)return;
    nextTouch=now+(kind==BasketballNetKind.Score?.35:.10);
+   if(kind==BasketballNetKind.Score||kind==BasketballNetKind.Touch)BasketballAudio.Emit(kind==BasketballNetKind.Score?BasketballSound.Net:BasketballSound.NetBrush,transform.TransformPoint(point),kind==BasketballNetKind.Score?1:.7f);
    Hit=new BasketballNetHit{sequence=Hit.sequence+1,time=now,kind=kind,point=point,velocity=Vector3.ClampMagnitude(velocity,18)};dirty=true;
   }
   public void RimContact(Vector3 worldPoint,Vector3 velocity){
