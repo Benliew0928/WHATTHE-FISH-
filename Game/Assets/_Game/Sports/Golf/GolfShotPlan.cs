@@ -51,8 +51,7 @@ namespace WhatTheFish {
      if(!supported||collision.normal.y<.35f){
       next=p+delta.normalized*collision.distance;Normal=collision.normal;
       if(mode==GolfShotMode.Swing||collision.normal.y<.35f){
-       HasTarget=true;v=Vector3.ProjectOnPlane(v,Normal);
-       if(mode==GolfShotMode.Swing&&Normal.y>.35f)v*=settings.landingSpeedRetention;
+       HasTarget=true;v=mode==GolfShotMode.Swing&&Normal.y>.35f?settings.LandingVelocity(v,Normal,true):Vector3.ProjectOnPlane(v,Normal);
        Add(next,v,time+Step*Mathf.Clamp01(collision.distance/delta.magnitude));break;
       }
       v=Vector3.ProjectOnPlane(v,collision.normal);

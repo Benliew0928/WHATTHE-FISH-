@@ -1,5 +1,233 @@
 # Verification records
 
+## Original reference flags and decaying turf bounces - 13 October 2026
+
+The prior flag redraw lost the supplied outline, rounded digits and fabric
+highlights. `GolfFlagArtBuilder` now derives five 1024 x 384 front/back textures
+from the retained originals, with alpha clipping, mipmaps and Android ASTC 6x6.
+The silver pole/bindings remain native 3D, with corrected proportions and smooth
+normals. Ten superseded numeral meshes and the unused old wind material were
+archived after GUID and generator checks; the scene, prefab and rebuilding path
+all reference the new artwork. See [flag authoring](../ArtSource/Golf/Flags/README.md).
+Front appearance follows the reference pixels; game lighting, perspective,
+texture filtering and animated folds mean a rendered frame is not pixel-identical
+to the original illustration.
+
+`GolfFlagWind.Wave` increases both displacement coefficients sixfold:
+.024/.010 -> .144/.060 metres. The fixed hoist stays still; the squared horizontal
+envelope reaches one at the free tip. Maximum displacement bound is .204 m,
+theoretical peak-to-peak .408 m. Broader travelling folds replace sharp creases.
+This is a procedural wind approximation, not a full cloth collision simulation.
+The cloth mesh bounds cover the stronger displacement; alpha is respected by
+colour, shadow and depth passes. Preview times return to -1 before saving.
+
+The guided swing formerly projected away all incoming normal speed at touchdown.
+`GolfShotPlan.Build` now uses `GolfBallPhysicsSettings.LandingVelocity` to reflect
+it with .46 restitution, retaining the existing .78 first-landing tangent factor.
+`GolfBall.OnCollisionEnter` handles later static turf impacts with .46 normal
+restitution and .92 tangent retention, using pre-solver incoming velocity.
+`GroundMotion` waits until a descending contact falls below the .55 m/s cutoff
+before treating it as rolling support. This drains energy and avoids perpetual
+micro-bounces. Putt plans, launch/charge rules, scoring, cups, authority, existing
+snapshot fields and cameras are preserved. Bounces intentionally extend run-out
+past the first touchdown guide target.
+
+Final full Windows build: **22:42:45 Malaysia time** (14:42:45 UTC). The complete
+321-file tested candidate is promoted to `Builds/WindowsFinal/`; every copied
+file hash matched before updating the delivery note. Runtime protocol remains
+47, including the existing concurrent golden shot trail. Verification:
+
+- 83 saved-map assertions pass: cup positions/collision, five numbered flags,
+  shared course and scene references.
+- All five front/back views and oblique wind captures were generated. All front
+  numerals, all rear numerals and oblique wind were visually inspected; rear repair removed
+  the mirrored-digit seam/ghost. Wind snapshots differ by 225,714 pixels.
+- 98 rendered ball-physics assertions pass, including 1 m/3 m drops, guided
+  charges .08/.50/1.00, multiple decaying bounces, unchanged first touchdown,
+  supported rolling/rest, slopes, gameplay forces, trail and all five cups.
+  Recorded outgoing drop speeds: 1 m, 2.0511 -> .8614 m/s; 3 m,
+  3.3635 -> 1.4313 -> .6049 m/s. Guided swing bounce counts: 2/3/6; the
+  full shot also leaves the raised test platform and meets lower terrain.
+- 158 rendered offline match assertions, 22 host and 25 rendered side-approach
+  client assertions pass. New checks observe authoritative multiple rebounds
+  and replicated descent-to-upward reversal without a reset/teleport.
+- 142 rendered island assertions pass: the new two-renderer flag layout, cups,
+  shoreline approaches, fairway, bunkers, camera and streamed environment switching.
+- 121 playability assertions pass: four surface resistances, all five cups in
+  four putting directions and three tee charge levels. Total: **649 assertions**,
+  plus the flag image/wind audit. This is Windows/localhost evidence, not phone
+  appearance/FPS or real WAN qualification.
+
+Evidence: `Builds/GolfFlagBounceQA/`, `Builds/GolfBallPhysicsQA/Run-20261013-223930/`,
+`Builds/GolfMiniGameQA/Run-20261013-223930/`, and
+`Builds/GolfPlayabilityQA/Run-20261013-223930/`, and
+`Builds/GolfG2QA-20261013-224412/`. The final rear-face polish only changes
+texture derivation: final `Assembly-CSharp.dll` SHA-256 exactly matches the
+22:38 player used for the repeated physics/match/playability suites; the final
+delivery also passes a fresh 142-check rendered island run. The absent extra
+file compared with the earlier 322-file candidate is an obsolete Burst
+DoNotShip text diagnostic, not a runtime or launcher dependency.
+
+AndroidSubmission was invoked three times, including the final delivery source, and failed during
+Gradle/JDK initialization: `Unable to establish loopback connection`, caused by
+`UnixDomainSockets.connect0: Invalid argument: connect`. A process-local test
+that made the socket directory unavailable allowed JDK's TCP fallback and the
+standalone Gradle help task succeeded, but the Unity build retry still failed.
+No installed JDK or global Java settings were modified. Therefore new APK bytes
+and Android visual quality remain **unverified**. The retained previous APK is
+unchanged at **90,334,226 bytes**, SHA-256
+`2382DFE7BEF6B1085664B5665D14F2F33B82AE4A5EA2376B9834AA6C19C82A06`:
+9,665,774 bytes to the strict 100 MB boundary, 15,334,226 bytes above the 75 MB
+development goal. It does not validate the new reference textures or rebounds.
+Latest failed audit/logs are retained; older successful contributors remain
+separately in `Builds/GolfFlagDesignQA/BaselineAudit/`.
+
+Archives: `Legacy/20261013-221944-380-golf-reference-flags/` (22 obsolete art/meta
+files), `Legacy/20261013-222802-010-golf-reference-bounce-windows/` (superseded
+complete player and first trial),
+`Legacy/20261013-224525-736-golf-reference-bounce-final/` (all superseded player
+trials and the older promoted player), and `Legacy/20261013-223345-444-golf-reference-bounce-evidence/` (redundant baseline APK copy and first physics run). No Git stage, commit or push was performed.
+
+
+## Teal and cream numbered wind flags — 13 October 2026
+
+All five cup flags now follow the approved references: teal swallowtail cloth,
+cream border and rounded cream numerals, a satin-silver ball-top pole and teal
+bindings. Both faces carry the correct number. `GolfFlagArtBuilder` generates
+native editable geometry and updates the streamed scene and reusable environment
+prefab. `GolfCourseBuilder` uses it on regeneration. Original cup positions,
+collision and scoring geometry remain. The five source PNG references are kept
+under `ArtSource/Golf/Flags/References/`, outside the delivered Unity assets.
+
+`GolfFlagWind` moves the cloth, trim and numeral vertices together. Its two
+slow waves have a combined maximum tip displacement of **0.034 m**; the
+pole-side edge has zero displacement and the pole/bindings remain stationary.
+The cloth casts a waving shadow, and avoids receiving thin-surface self-shadow
+artifacts to keep the numerals legible. Mesh bounds include the deformation.
+There is no cloth simulation, per-frame CPU mesh upload or new raster texture.
+
+Final editor evidence is in `Builds/GolfFlagDesignQA/`: ten front/back close
+captures, two timed oblique wind views and `design-audit.txt`. The wind views
+change **214,041 pixels**; all five front faces and a rear face were visually
+inspected. The existing course audit passes **83 assertions**. Final rendered
+player run `Builds/GolfMiniGameQA/Run-20261013-213326/` passes **158 assertions**,
+including the live five-hole progression and existing procedural golfer pose.
+The shader preview override is restored to **-1 (game clock)** before saving.
+
+The cloth/numeral geometry welds duplicate vertices, uses 16-bit indices and
+packed vertex colours. Raw mesh source text across pole, cloth and ten number
+faces falls **1,165,912 → 381,447 bytes**. This is a source measurement, not an
+APK-size measurement. The three shared materials and shared cloth/pole meshes
+avoid five complete texture copies. Superseded previews are archived in
+`Legacy/20261013-210925-268-golf-flag-first-preview/`,
+`Legacy/20261013-211226-158-golf-flag-polish-preview/`,
+`Legacy/20261013-212259-324-golf-flag-before-weld/` and
+`Legacy/20261013-212910-655-golf-flag-pole-preview/`.
+
+The complete Windows player built at **21:32 Malaysia time** was promoted with
+**322 file hashes** matching the tested candidate. It includes the existing
+golden shot-trail runtime and room protocol **47**. The older concurrent player
+and first flag player are archived in
+`Legacy/20261013-214349-182-golf-wind-flags/`. This is a working-source snapshot,
+not a clean-commit build; later unrelated changes are outside its validation.
+
+The opening on-disk APK was the stale **89,230,290-byte** October 5 package.
+A concurrent shot-trail release produced **90,334,226 bytes** at 21:25 while
+this task was in progress. That intervening growth cannot be attributed solely
+to flag artwork. It and its audit were preserved in
+`Legacy/20261013-213631-964-golf-flag-before-release/` before the final flag build.
+Final-source AndroidSubmission attempts, including process-local IPv4/JVM
+options, still failed with Gradle's `Unable to establish loopback connection`.
+The valid **90,334,226-byte** prior APK was restored byte-for-byte; it is not
+validation of the final optimized meshes. Its hard-limit headroom is
+**9,665,774 bytes**, and its development-target overrun is **15,334,226 bytes**.
+The final Android size and physical-phone appearance remain unverified.
+`Builds/SizeAudit/latest/` holds fresh failure evidence; the previous release's
+contributor CSVs are retained separately in `Builds/GolfFlagDesignQA/BaselineAudit/`.
+
+## Golden Golf shot trail — 13 October 2026
+
+**288 assertions pass** on the complete current Windows player: 85 rendered
+ball/tee/physics/trail, 158 rendered Golf offline, 21 host and 24 side-approach
+client. Evidence: `Builds/GolfBallPhysicsQA/Run-20261013-212235/` and
+`Builds/GolfMiniGameQA/Run-20261013-212235/`. Current visual capture:
+`Builds/GolfTrailQA/gold-shot-trail.png`. Full content build **21:17:42 Malaysia
+time**, final gameplay/review scripts refresh **21:21:50**.
+
+Real qualified shots emit the shared gold/ivory soft-edge ribbon along actual
+ball movement. Head/tail colour, transparent taper, no shadows, a fresh second
+shot, gradual stopped fade, complete one-second expiry and immediate teleport
+cleanup pass. Stopped midpoint fade measures **0.5166**; after expiry the renderer
+is disabled, and reset reports **zero points**. The actual rendered flight was
+inspected. The client detects the host-authorized strike sequence and displays
+the ribbon; score ownership, cancelled swings, stale rounds, independent cup
+progress and authoritative DNF remain checked. The room protocol is **47**.
+
+An initial stop fixture used a kinematic flag which the match manager's normal
+`ApplyLive` step immediately restored to dynamic. The guarded review now freezes
+that temporary body for the visual-only fade sample and restores its constraints
+afterward. Reset verification also exposed immediate automatic trail sampling;
+clearing now disables the empty renderer after placement. Initial reports are
+retained in the reviewed task archives, and the complete final suites pass.
+
+All **222 runtime sources** match the tested isolated snapshot. Current Golf
+scene/environment graphs (**2,275 / 2,342 objects**) and the **14-object** Ball
+prefab match primary despite regenerated local IDs. Current numbered flag
+artwork and scenery-flag cleanup are retained. Reviewed build differences are
+the isolated editor-only build wrapper, desktop pipeline registration and
+generated IDs. The complete **322-file** delivery and exact fresh signed APK/audit
+are retained in `Builds/GolfTrailQA/Release/`, with promotion hashes and source
+comparisons beside them. `Builds/WindowsFinal/LATEST-BUILD.txt` records scope.
+
+Fresh primary AndroidSubmission at **21:25:01** measures **90,334,226 bytes**;
+budget gate, independent v2 signature and populated packing audit pass. The
+one-second fade probe is excluded from release gameplay compilation. Physical
+phone appearance, touch, FPS and WAN remain unverified. See
+[size, provenance and archives](BUILD-SIZE.md#golden-golf-shot-trail--13-october-2026).
+Git publishing was not requested for this feature.
+
+## Remove obsolete Golf scenery flags — 13 October 2026
+
+The two unnumbered teal flags in the original Golf scenery are removed from
+`SkySail_Golf` and the `GolfEnvironment` prefab. The five numbered cup flags
+remain. Old flag bases, timber poles and teal pennants shared `CourseProps`
+material batches with the original tee stones. `GolfCourseBuilder` filters
+only the two old flag footprints, updates the matching visual/collision meshes,
+and retains the tee stones' positions, materials and attributes. This removes
+**296 triangles** from each authored map representation; the surviving teal
+mesh has **520 vertices**. The retained FBX master remains editable.
+The Blender generator now omits those scenery pins, and course regeneration
+applies the same cleanup to older source art.
+
+`GolfDecorativeFlagReview` recorded unchanged references to all **five** hole
+flags during removal and checked five flags in the prefab. The existing saved
+course audit passes **83 assertions**, including hole flags, cups, terrain,
+tees and surface continuity. Rendered evidence is preserved in
+`Builds/GolfFlagRemovalQA/Map/`; the numbered fifth-hole flag was visually
+inspected. Rendered player run `Builds/GolfMiniGameQA/Run-20261013-204245/`
+passes **158 assertions**, including live five-hole progression.
+
+The first Windows build stalled during resource import after saving the map
+and rendered audit. Its batch process was stopped, and a new non-rendering
+editor build completed successfully. Logs and source inventory remain under
+`Builds/GolfFlagRemovalQA/`. Gameplay cameras, scoring and ball physics were
+not edited.
+
+The complete Windows candidate built at **20:41 Malaysia time** was promoted
+to `Builds/WindowsFinal/`, with **322 copied files** matching SHA-256 before
+the note update. The reviewed prior player is archived in
+`Legacy/20261013-204439-499-golf-scenery-flags/`. The build uses the current
+uncommitted workspace, including unrelated pre-existing changes.
+
+AndroidSubmission was attempted and failed in Gradle initialization with
+`Unable to establish loopback connection`. The actual on-disk APK before/after
+remains the stale October 5 output, **89,230,290 bytes**, with **10,769,710 bytes**
+to the hard boundary and **14,230,290 bytes** above the development target.
+This is not an Android build of the flag removal. Fresh size and physical-phone
+appearance are unverified. The latest size-audit log/report are fresh failure
+evidence, while the APK contributor CSVs still describe the old build.
+Repository readiness and whitespace checks pass. No Git publishing was done.
+
 ## Golf cart English button labels — 12 October 2026
 
 `AppRoot` and `GolfCartButton` now display **Buggy**, **Recall**, **Drive** and

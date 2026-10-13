@@ -11,6 +11,17 @@ namespace WhatTheFish {
   [Min(0)] public float maximumSwingLift=8.5f;
   [Tooltip("Tangential speed retained when a lofted swing first meets the turf.")]
   [Range(0,1)] public float landingSpeedRetention=.78f;
+  [Header("Turf landing")]
+  [Tooltip("Normal speed retained by each turf bounce; energy falls by its square.")]
+  [Range(0,1)] public float turfRestitution=.46f;
+  [Tooltip("Impacts below this normal speed settle into rolling instead of tiny jittering hops.")]
+  [Min(0)] public float minimumBounceSpeed=.55f;
+  [Range(0,1)] public float subsequentLandingRetention=.92f;
+  public Vector3 LandingVelocity(Vector3 velocity,Vector3 normal,bool firstLanding){
+   float incoming=Mathf.Max(0,-Vector3.Dot(velocity,normal));
+   var tangent=Vector3.ProjectOnPlane(velocity,normal)*(firstLanding?landingSpeedRetention:subsequentLandingRetention);
+   return tangent+normal*(incoming>minimumBounceSpeed?incoming*turfRestitution:0);
+  }
   [Min(0)] public float minimumPuttSpeed=.35f;
   [Min(0)] public float maximumPuttSpeed=7.5f;
   public Vector3 SwingVelocity(Vector3 direction,float charge,GolfShotMode mode=GolfShotMode.Swing){
@@ -49,6 +60,7 @@ namespace WhatTheFish {
    stopSpeedThreshold=Mathf.Clamp(stopSpeedThreshold,.001f,slowRollingThreshold);
    settlingMaxSpeed=Mathf.Clamp(settlingMaxSpeed,stopSpeedThreshold,slowRollingThreshold);
    stopDelay=Mathf.Max(.02f,stopDelay);rollingResistanceStrength=Mathf.Max(.01f,rollingResistanceStrength);
+   turfRestitution=Mathf.Clamp01(turfRestitution);minimumBounceSpeed=Mathf.Max(0,minimumBounceSpeed);subsequentLandingRetention=Mathf.Clamp01(subsequentLandingRetention);
   }
  }
 }

@@ -241,12 +241,8 @@ def make_world(sport):
             if abs(x-float(fairway(y)))<float(fair_width(y))+7 or math.sqrt((x/145)**2+(y/156)**2)>1.13 or abs(math.sqrt((x/145)**2+(y/156)**2)-1)<.065:continue
             if (x+65)**2+(y+145)**2<300 or (x+87)**2+(y+117)**2<650:continue
             place('Grass_'+str(i%3),'Rough_%03d'%i,x,y,yaw=i*31,scale=rng.uniform(.8,1.2))
-        # Modeled pins and tee markers retain a readable golf course.
-        for x,y in ((4,134),(-87,-117)):
-            z=float(height(x,y));structures.beam('CourseProps',(x,y,z+.01),(x,y,z+.045),.18,'Bronze',24);structures.beam('CourseProps',(x,y,z),(x,y,z+3),.05,'Timber',12)
-            flag=[(x,y,z+3),(x+1.1,y+.1,z+2.8),(x+1,y+.1,z+2.3),(x,y,z+2.25)]
-            flag += [(a,b+.016,c) for a,b,c in flag]
-            structures.add('CourseProps',flag,[(0,1,2,3),(7,6,5,4),(0,4,5,1),(1,5,6,2),(2,6,7,3),(3,7,4,0)],'Teal')
+        # Numbered cup flags are authored by GolfCourseBuilder in Unity.
+        # Retain only the original tee markers in this scenery batch.
         for x in (-25,-1):structures.rock('CourseProps',(x,-151,float(height(x,-151))+.18),(.45,.30,.22),0,'Teal',3)
         spawns=[waypoint(-13+(i%5-2)*2,-146+(i//5)*3) for i in range(10)];safe=spawns[0]
         route('Main fairway',[(float(fairway(y)),y) for y in range(-146,135,10)]+[(2.5,134)])

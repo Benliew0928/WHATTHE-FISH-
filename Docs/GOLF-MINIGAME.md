@@ -25,7 +25,30 @@ material and tiny texture; no new ball, scoring rule or network field is added.
 - There is no global, single-hole, AFK or maximum-duration timer before the first finisher.
 - Finished players rank ahead of DNF, by total strokes ascending, then elapsed finish time ascending. Equal strokes and equal finish time share a rank and a Tie marker. DNF remains in roster order and receives no competitive rank.
 
-The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **44**; older builds cannot join this build.
+The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **47**; older builds cannot join this build.
+
+## Golden shot trail
+
+An actual club contact starts a soft warm-gold ribbon behind the moving ball,
+including putts. Its narrow ivory centre sits inside a soft golden edge.
+The newest portion beside the ball is strongest; the older tail becomes paler,
+thinner and transparent. Each sampled portion lives for **1 second**, including
+its fade. After the ball stops, the remaining ribbon fades fully within that
+same lifetime. A new swing starts a fresh ribbon, and recovery, cup progression,
+round reset or island travel clears it immediately without a teleport line.
+Walking, aiming and cancelled swings create no trail.
+
+[GolfBallTrail.cs](../Game/Assets/_Game/Sports/Golf/GolfBallTrail.cs) owns the
+default **1-second lifetime** and **0.18-metre ribbon width**; its public
+`lifetime` and `width` fields are visible on each running ball in the Inspector.
+The head/tail colours and taper are centralized in that script.
+[GolfBallTrail.shader](../Game/Assets/_Game/Art/Golf/GolfBallTrail.shader)
+provides the soft edge and pale centre, using the shared
+[material](../Game/Assets/_Game/Resources/GolfBallTrail.mat). No texture, light,
+shadow, physics force or collider is added. The host's ball snapshot includes
+a strike sequence; clients start the effect once per actual hit and follow
+the existing displayed ball interpolation. Matching **protocol 47** players
+are required.
 
 ## Controls and display
 
@@ -160,7 +183,7 @@ starts authoritative shot travel at 0.10 seconds. Feet stay planted through cont
 control resumes during follow-through. Recovery lasts 0.74 seconds and prevents
 duplicate strokes. Round changes and ball resets cancel queued contacts. Charge,
 heading, round, sequence and server start time synchronize the presentation;
-protocol 46 requires matching host/client players. Ball ownership, scoring,
+protocol 47 requires matching host/client players. Ball ownership, scoring,
 cup order and the shared final countdown retain their existing rules.
 
 See [source, regeneration and tuning](../ArtSource/Golf/Club/README.md).
@@ -230,3 +253,9 @@ release, camera modes, stale-ball resets, obstruction, all five authored tees an
 round cleanup. Rendered captures include the full HUD and both putt/chip guides.
 Evidence is retained under `Builds/GolfAimQA/`. No test fixture ships in release
 play, and Windows rendering does not qualify physical Android performance.
+
+## Decaying turf bounces - 13 October 2026
+
+A lofted guided swing still ends at its first swept touchdown target. Instead of deleting incoming normal velocity, `GolfBallPhysicsSettings.LandingVelocity` returns the surface tangent with the existing first-landing retention (.78), plus normal restitution (.46). Subsequent authoritative static-turf contacts retain .92 of tangent speed and .46 of incoming normal speed. Normal bounce energy is at most .2116 of the previous impact before gravity/drag losses. Impacts below .55 m/s transition to the existing rolling/settling code, preventing tiny perpetual hops. Ground support cannot prematurely consume a qualifying descending bounce. Free drops use the same contact response; putt plans retain their existing rolling calculation. The ball collider has no material restitution, so the response is applied once.
+
+Only the host/offline authority simulates these contacts. Existing position/rotation snapshots display rebounds on remote clients. No RPC or protocol field, charge rule, launch speed, scoring, cup progression or camera control is added. Airborne run-out is deliberately longer because the requested bounces preserve some vertical energy.

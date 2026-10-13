@@ -1,6 +1,6 @@
 # Five-hole golf map
 
-The Golf island has five new cups with aqua flags numbered **1–5**, putting surfaces and paired tee markers. Pennants and tee markers reuse the map's existing `RI_Teal` material. The previous two teal flags remain scenery; they do not define this course. The course is included in both the streamed `SkySail_Golf` scene and the reusable `GolfEnvironment` prefab.
+The Golf island has five cups with aqua flags numbered **1–5**, putting surfaces and paired tee markers. Tee markers reuse the map's `RI_Teal` material; pennants use the approved original flag artwork and a two-sided wind shader. The two old unnumbered scenery flags have been removed; the numbered cup flags and original tee stones remain. The course is included in both the streamed `SkySail_Golf` scene and the reusable `GolfEnvironment` prefab. `GolfCourseBuilder.RemoveDecorativeFlags` filters the old flag geometry from the retained FBX master, and the Blender generator omits it on regeneration.
 
 | Hole | Area | Cup X/Z (m) | Tee X/Z (m) | Straight distance | Proposed par |
 | --- | --- | --- | --- | ---: | ---: |
@@ -12,13 +12,21 @@ The Golf island has five new cups with aqua flags numbered **1–5**, putting su
 
 Coordinates use the island's local metre space. Heights are sampled from the original terrain. Distances and pars describe this compact game layout, not a regulation course. Holes 1, 2 and 3 are **161–215 m apart**; the closest pair anywhere is approximately **82 m apart**. All new greens clear the coastal promenade, bunkers and existing palm gardens.
 
-Cups are **0.285 m in diameter**, exactly **1.5×** the initial 0.19 m opening, and remain **0.18 m deep**. Each terrain opening has a collidable inner lining and recessed floor. Flagpoles are approximately 3 m high, with a shared aqua pennant and white numbers visible on both sides.
+The numbered flags now use the approved teal swallowtail design with cream
+trim and rounded cream numerals, a silver ball-top pole and teal bindings.
+Both faces are numbered. `GolfFlagArtBuilder` generates shared editable meshes;
+`GolfFlagWind` bends cloth, trim and numbers together on the GPU while fixing
+the pole-side edge. Maximum tip displacement is now 0.204 m (six times the initial 0.034 m bound). The pole stays still.
+Five small derived flag textures ship; the full [approved references and authoring notes](../ArtSource/Golf/Flags/README.md)
+remain outside Unity. Cup locations and scoring geometry are unchanged.
+
+Cups are **0.285 m in diameter**, exactly **1.5×** the initial 0.19 m opening, and remain **0.18 m deep**. Each terrain opening has a collidable inner lining and recessed floor. Flagpoles are approximately 3 m high, with shared cloth geometry and reference teal/cream artwork visible on both sides.
 
 ## Editing and regeneration
 
 Edit [FiveHoleCourse.json](../Game/Assets/_Game/Sports/Golf/FiveHoleCourse.json), then run **WHATTHE FISH? → Golf → Place five-hole course** in Unity. **Place, audit and capture five holes** checks the actual scene/prefab colliders and repeated generation; **Audit and capture saved five holes** reviews the serialized scene in a fresh editor without regenerating geometry. Both write Unity renders to ignored `Builds/GolfPlayabilityQA/Map/`. [GolfCourseBuilder](../Game/Assets/_Game/Editor/GolfCourseBuilder.cs) also runs from the ordinary refined-island generator, so rebuilding the world retains the course.
 
-Keep the configuration, generator, generated [course mesh/material assets](../Game/Assets/_Game/Art/Golf/FiveHoleCourse), [flag prefab](../Game/Assets/_Game/Prefabs/Golf/HoleFlag.prefab), scene, environment prefab and their `.meta` files in Git. The original Blender/FBX terrain masters remain editable and unchanged. Derived terrain sectors contain the cup openings; repeated generation restores the original terrain before cutting. Shared poles, cloth, cup floors and tee meshes reuse existing material/shader families and add no imported texture or font. **The existing terrain mesh remains the putting surface**: it retains its `Golf_Terrain` material and texture coordinates. Small local height adjustments give the immediate cup surrounds a gentle slope; a quintic falloff reconnects them to the original hillside. There is no separate green overlay, colour patch, new texture or additional terrain collider.
+Keep the configuration, generator, generated [course mesh/material assets](../Game/Assets/_Game/Art/Golf/FiveHoleCourse), [flag prefab](../Game/Assets/_Game/Prefabs/Golf/HoleFlag.prefab), scene, environment prefab and their `.meta` files in Git. The original Blender/FBX terrain masters remain editable and unchanged. Derived terrain sectors contain the cup openings; repeated generation restores the original terrain before cutting. Shared poles, cloth, cup floors and tee meshes reuse common geometry. Five small flag delivery textures reproduce the approved references; no font is added. **The existing terrain mesh remains the putting surface**: it retains its `Golf_Terrain` material and texture coordinates. Small local height adjustments give the immediate cup surrounds a gentle slope; a quintic falloff reconnects them to the original hillside. There is no separate green overlay, colour patch, new texture or additional terrain collider.
 
 Grass keeps its meadow distribution outside the five greens. A small irregular fringe clears tall blades around the cups, and the remaining blades follow the local height adjustment. Android uses the same green records with the existing shared grass library; desktop uses derived grass meshes. The original macro-colour/control textures, base terrain height function and four-island travel/streaming model are retained. Existing painted fairway and practice-green colours belong to the original map and remain intact.
 
@@ -47,3 +55,7 @@ The final combined AndroidSubmission measures **88,624,542 bytes**, versus the *
 The initial 3 October 2026 layout passed **160 editor assertions**, **142 mobile-geometry Windows assertions**, **142 final desktop assertions**, and **13,122 terrain-reference samples**. Its evidence is in `Builds/GolfFiveHolesQA/`; desktop captures are in `Builds/GolfG2QA-20261003-171939/`, mobile-geometry captures in `Builds/GolfG2QA-20261003-165611/`. That earlier APK measured **86,896,050 bytes** and is the refinement baseline, not verification of the revised layout. Phone appearance/FPS and shot/scoring mechanics are unverified.
 
 The first-layout unused terrain derivative was archived in `Legacy/20261003-165821-340-golf-five-holes-trial-mesh/` after reference and generator scans. Superseded builds, the first masked-material trial and raw trial diagnostics are in `Legacy/20261003-171933-414-golf-five-holes-delivery/`. Active art masters, dependencies and Unity caches remain in place.
+
+## Reference flags and stronger wind — 13 October 2026
+
+All five cup flags now derive their silhouette, numbers, cream edging and fabric shading from the original supplied PNGs, instead of redrawing them as flat coloured geometry. Silver poles and teal bindings remain 3D. See the [authoring workflow](../ArtSource/Golf/Flags/README.md). The fixed edge has zero displacement; motion grows quadratically toward the free tip. Wave amplitudes are six times the prior values: maximum .204 m per side, theoretical .408 m peak-to-peak. This is a procedural cloth approximation with broader folds. Scene/prefab cup positions and colliders remain unchanged.

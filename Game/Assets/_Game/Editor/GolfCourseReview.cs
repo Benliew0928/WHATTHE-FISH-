@@ -34,8 +34,8 @@ public static class GolfCourseReview {
    foreach(var h in course.holes){
     var p=h.cup.position;var ray=new Ray(p+Vector3.up,Vector3.down);
     Check(h.flag&&h.tee&&Vector3.Distance(h.flag.position,p)<.001f,label+" hole "+h.number+" independent flag and tee");
-    Check(h.flag.GetComponentsInChildren<MeshRenderer>().Length==4,label+" hole "+h.number+" pole, pennant and two readable number faces");
-    Check(h.flag.Find("Aqua pennant").GetComponent<MeshRenderer>().sharedMaterial==aqua,label+" hole "+h.number+" original map aqua material");
+    Check(h.flag.GetComponentsInChildren<MeshRenderer>().Length==2,label+" hole "+h.number+" pole and reference pennant with two readable faces");
+    Check(h.flag.Find("Aqua pennant").GetComponent<MeshRenderer>().sharedMaterial.shader.name=="WhatTheFish/GolfFlagWind",label+" hole "+h.number+" cream bordered teal wind fabric");
     Check(!terrain.Any(c=>c.Raycast(ray,out _,1.2f)),label+" hole "+h.number+" terrain opening");
     var floor=h.cup.Find("Cup floor").GetComponent<MeshCollider>();
     Check(floor.Raycast(ray,out var bottom,2)&&Mathf.Abs(bottom.point.y-(p.y-h.cupDepth))<.003f,label+" hole "+h.number+" recessed floor "+h.cupDepth+" m");

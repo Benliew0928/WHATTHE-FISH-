@@ -44,7 +44,7 @@ namespace WhatTheFish {
    Check(course&&course.holes.Length==5&&course.holes.Select(h=>h.number).OrderBy(n=>n).SequenceEqual(new[]{1,2,3,4,5}),"GOLF_FIVE_NEW_HOLES");
    if(course)foreach(var hole in course.holes){
     var p=hole.cup.position;
-    Check(hole.flag&&hole.tee&&Vector3.Distance(hole.flag.position,p)<.001f&&hole.flag.GetComponentsInChildren<MeshRenderer>().Length==4,"GOLF_NUMBERED_FLAG_"+hole.number);
+    Check(hole.flag&&hole.tee&&Vector3.Distance(hole.flag.position,p)<.001f&&hole.flag.GetComponentsInChildren<MeshRenderer>().Length==2,"GOLF_NUMBERED_FLAG_"+hole.number);
     Check(Physics.Raycast(p+Vector3.up,Vector3.down,out var bottom,2,1<<8)&&bottom.collider.name=="Cup floor"&&Mathf.Abs(bottom.point.y-(p.y-hole.cupDepth))<.004f,"GOLF_OPEN_CUP_DEPTH_"+hole.number);
     Check(Physics.Raycast(hole.tee.position+Vector3.up,Vector3.down,2,1<<8),"GOLF_TEE_GROUND_"+hole.number);
    }

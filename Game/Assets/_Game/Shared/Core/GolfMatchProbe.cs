@@ -291,6 +291,9 @@ namespace WhatTheFish {
     float until=Time.time+15;while(match.Player(guest).TotalStroke<1&&Time.time<until)yield return null;
     Check(match.Player(guest).TotalStroke==1&&match.Player(app.LocalAthlete).TotalStroke==0&&hostBall.Owner==0,"CLIENT_RPC_HITS_HOST_BALL_WITHOUT_TRANSFERRING_OWNER");
     Check(guest.GolfClubMotion.State.action==GolfClubAction.Swing&&guest.GolfClubMotion.State.round==match.Round,"HOST_PUBLISHES_SWING_ROUND_AND_SHARED_START_TIME");yield return new WaitForSeconds(.35f);Check(Vector3.ProjectOnPlane(hostBall.Body.position-hostBall.LastShotPosition,Vector3.up).magnitude>.05f,"HOST_SIMULATES_ACTUAL_CLIENT_SHOT");
+    int bounceCount=0;float lastVertical=hostBall.Velocity.y;until=Time.time+5;
+    while(Time.time<until&&hostBall.Motion!=GolfBallMotion.Resting){yield return new WaitForFixedUpdate();float vertical=hostBall.Velocity.y;if(lastVertical<-.25f&&vertical>.25f)bounceCount++;lastVertical=vertical;}
+    Check(bounceCount>=2,"HOST_AUTHORITATIVE_CLIENT_SHOT_HAS_DECAYING_TURF_BOUNCES");
     yield return Drop(hostBall,1);Check(match.State.Player(0).CurrentHole==2&&match.Player(guest).CurrentHole==1,"NETWORK_HELPER_SHOT_COMPLETES_BALL_OWNER_ONLY");
     var guestBall=match.Ball(guestId);var anchor=guestBall.LastShotPosition;yield return Drop(guestBall,3);Check(match.Player(guest).CurrentHole==1&&Vector3.Distance(guestBall.Body.position,anchor)<.04f,"HOST_WRONG_CUP_RECOVERY_REPLICATED");
     yield return new WaitForSeconds(1);for(int h=2;h<=5;h++)yield return Drop(hostBall,h);double deadline=match.State.CountdownDeadline;
@@ -313,14 +316,19 @@ namespace WhatTheFish {
      Check(Vector3.Angle(actor.transform.forward,direction)<2,"CLIENT_SIDE_APPROACH_AUTO_ADDRESSES_BALL");
     }
     app.view.CancelGolfSwing(42);app.view.RequestGolfSwing(.08f);
-    bool independent=false,countdown=false,moving=false,ownHole2=false,recovered=false;until=Time.time+50;
+    int observedBounces=0;var bounceBall=match.Ball(0);uint bounceReset=bounceBall.ResetSequence;float bounceY=bounceBall.Body.position.y,lastDy=0;
+    bool independent=false,countdown=false,moving=false,ownHole2=false,recovered=false,trailSeen=false;until=Time.time+50;
     while(Time.time<until&&match.State.Phase!=GolfMatchPhase.Ended){
      var local=match.Player(app.LocalAthlete);var host=match.State.Player(0);independent|=local!=null&&host!=null&&local.CurrentHole==1&&host.CurrentHole==2;
      var ui=FindFirstObjectByType<GolfLeaderboardUI>();countdown|=ui&&ui.CountdownVisible;moving|=match.Ball(0)&&Vector3.ProjectOnPlane(match.Ball(0).Body.position-shotStart,Vector3.up).magnitude>.05f;
      var own=match.Ball(app.LocalAthlete);recovered|=local!=null&&local.CurrentHole==1&&own&&own.ResetSequence>=ownReset+2&&Vector3.Distance(own.Body.position,match.TeePosition(1,own.Owner))<.05f;
+     if(bounceBall.ResetSequence==bounceReset){float dy=bounceBall.Body.position.y-bounceY;if(lastDy<-.0001f&&dy>.0001f)observedBounces++;if(Mathf.Abs(dy)>.0001f)lastDy=dy;bounceY=bounceBall.Body.position.y;}
+     var struck=match.Ball(0);trailSeen|=struck&&struck.StrikeSequence>0&&struck.Trail.SeenStrike==struck.StrikeSequence&&struck.Trail.Active&&struck.Trail.Ribbon.positionCount>1;
      ownHole2|=local!=null&&local.CurrentHole==2;yield return null;
     }
     Check(independent&&ownHole2,"CLIENT_SEES_DIFFERENT_TARGETS_AND_CONTINUES_DURING_COUNTDOWN");Check(countdown&&moving,"CLIENT_BALL_POSES_AND_SHARED_COUNTDOWN_VISIBLE");
+    Check(trailSeen,"CLIENT_SEES_HOST_AUTHORIZED_GOLD_SHOT_TRAIL");
+    Check(observedBounces>=1,"CLIENT_SEES_REPLICATED_DESCENT_TO_UPWARD_BOUNCE_WITHOUT_RESET");
     Check(recovered,"CLIENT_RECEIVES_WRONG_CUP_RECOVERY_POSE_AND_RESET");
     var final=match.Player(app.LocalAthlete);Check(match.State.Phase==GolfMatchPhase.Ended&&final.IsDNF&&final.CompletedHoleCount==1&&final.TotalStroke==1,"CLIENT_RECEIVES_AUTHORITATIVE_DNF_AND_STROKES");Check(match.State.Results()[0].player.PlayerId==0,"CLIENT_RESULTS_FINISHED_BEFORE_DNF");
    }

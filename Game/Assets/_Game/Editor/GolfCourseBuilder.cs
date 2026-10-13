@@ -124,8 +124,7 @@ public static class GolfCourseBuilder {
     var floor=Disc("Cup floor",layout.cupRadius,32);var baseNode=Node("Cup floor",hole.transform,Save(floor,Art+"Meshes/Shared/CupFloor.asset"),dark,true);baseNode.transform.localPosition=Vector3.down*layout.cupDepth;
     // The green is part of the original terrain, with the same turf material and UVs.
     var flag=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(FlagPrefab));flag.transform.SetParent(hole.transform,false);flag.transform.localRotation=Quaternion.Euler(0,35,0);
-    var number=Save(Digit(h.number),Art+"Meshes/Shared/Number"+h.number+".asset");
-    foreach(float side in new[]{-.021f,.021f}){var label=Node("Flag number "+h.number,flag.transform,number,white);label.transform.localPosition=new Vector3(.48f,2.48f,side);if(side>0){label.transform.localRotation=Quaternion.Euler(0,180,0);label.transform.localPosition+=Vector3.right*.24f;}}
+    GolfFlagArtBuilder.AddNumbers(flag.transform,h.number);
     var tee=new GameObject("Tee "+h.number);tee.transform.SetParent(root.transform,false);tee.transform.localPosition=Floor(island,h.tee,terrain);var direction=at-tee.transform.localPosition;direction.y=0;tee.transform.localRotation=Quaternion.LookRotation(direction);
     var teeMesh=Save(Disc("Tee marker",.20f,16),Art+"Meshes/Shared/TeeMarker.asset");
     foreach(float x in new[]{-1.2f,1.2f}){var marker=Node("Tee marker",tee.transform,teeMesh,aqua);var location=Floor(island,tee.transform.localPosition+tee.transform.localRotation*new Vector3(x,0,0),terrain);marker.transform.position=island.transform.TransformPoint(location+Vector3.up*.012f);}
@@ -139,32 +138,48 @@ public static class GolfCourseBuilder {
     if(cut&&!AssetDatabase.Contains(working))Object.DestroyImmediate(working);
    }
    TrimGrass(island,layout);
-   // Previous flags remain scenery and have no GolfHole record. New aqua numbered flags own the course.
+   RemoveDecorativeFlags(island);
    AssetDatabase.SaveAssets();Physics.SyncTransforms();
   }finally{island.SetActive(active);}
+ }
+ public static int RemoveDecorativeFlags(GameObject island){
+  // Old FBX scenery combines two unnumbered flags and tee stones by material.
+  // Filter only the two flag footprints; never touch the numbered cup prefab.
+  var footprints=new[]{new Vector2(4,134),new Vector2(-87,-117)};int removed=0;
+  foreach(var filter in island.GetComponentsInChildren<MeshFilter>(true).Where(f=>f.name.StartsWith("Structures__CourseProps_")).ToArray()){
+   var source=filter.sharedMesh;var points=source.vertices;
+   var matrix=island.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix;
+   var retained=new List<int[]>();int count=0;
+   for(int sub=0;sub<source.subMeshCount;sub++){
+    var indices=source.GetTriangles(sub);var keep=new List<int>();
+    for(int i=0;i<indices.Length;i+=3){
+     var p=matrix.MultiplyPoint3x4((points[indices[i]]+points[indices[i+1]]+points[indices[i+2]])/3);
+     if(footprints.Any(at=>Vector2.Distance(new Vector2(p.x,p.z),at)<1.5f)){count++;continue;}
+     keep.Add(indices[i]);keep.Add(indices[i+1]);keep.Add(indices[i+2]);
+    }
+    retained.Add(keep.ToArray());
+   }
+   if(count==0)continue;removed+=count;
+   if(retained.All(t=>t.Length==0)){Object.DestroyImmediate(filter.gameObject);continue;}
+   var used=retained.SelectMany(t=>t).Distinct().OrderBy(i=>i).ToArray();
+   var remap=used.Select((old,index)=>new{old,index}).ToDictionary(v=>v.old,v=>v.index);
+   var mesh=new Mesh{name="Original tee stones without decorative flags",indexFormat=source.indexFormat};
+   mesh.vertices=used.Select(i=>points[i]).ToArray();
+   if(source.normals.Length==points.Length)mesh.normals=used.Select(i=>source.normals[i]).ToArray();
+   if(source.tangents.Length==points.Length)mesh.tangents=used.Select(i=>source.tangents[i]).ToArray();
+   if(source.colors.Length==points.Length)mesh.colors=used.Select(i=>source.colors[i]).ToArray();
+   for(int channel=0;channel<8;channel++){var uv=new List<Vector4>();source.GetUVs(channel,uv);if(uv.Count==points.Length)mesh.SetUVs(channel,used.Select(i=>uv[i]).ToList());}
+   mesh.subMeshCount=retained.Count;for(int sub=0;sub<retained.Count;sub++)mesh.SetTriangles(retained[sub].Select(i=>remap[i]).ToArray(),sub);
+   mesh.RecalculateBounds();filter.sharedMesh=Save(mesh,Art+"Meshes/Shared/CoursePropsWithoutDecorativeFlags.asset");
+   var collider=filter.GetComponent<MeshCollider>();if(collider)collider.sharedMesh=filter.sharedMesh;
+  }
+  return removed;
  }
  static Mesh Disc(string name,float radius,int sides){
   var p=new List<Vector3>{Vector3.zero};var t=new List<int>();for(int i=0;i<sides;i++){float a=i*Mathf.PI*2/sides;p.Add(new Vector3(Mathf.Cos(a)*radius,0,Mathf.Sin(a)*radius));}
   for(int i=0;i<sides;i++)t.AddRange(new[]{0,(i+1)%sides+1,i+1});return Mesh(name,p,t);
  }
- static void PrepareFlag(Material pole,Material cloth){
-  var root=new GameObject("Numbered hole flag");
-  var p=new List<Vector3>();var t=new List<int>();const int sides=12;
-  for(int y=0;y<2;y++)for(int i=0;i<sides;i++){float a=i*Mathf.PI*2/sides;p.Add(new Vector3(Mathf.Cos(a)*.017f,y==0?-.15f:2.96f,Mathf.Sin(a)*.017f));}
-  for(int i=0;i<sides;i++)Quad(t,i,i+sides,(i+1)%sides+sides,(i+1)%sides);
-  Node("Flagpole",root.transform,Save(Mesh("Shared flagpole",p,t),Art+"Meshes/Shared/Flagpole.asset"),pole);
-  var banner=new List<Vector3>{new Vector3(.025f,2.9f,-.012f),new Vector3(1.03f,2.9f,-.012f),new Vector3(.88f,2.3f,-.012f),new Vector3(.025f,2.3f,-.012f),new Vector3(.025f,2.9f,.012f),new Vector3(1.03f,2.9f,.012f),new Vector3(.88f,2.3f,.012f),new Vector3(.025f,2.3f,.012f)};
-  var faces=new List<int>();Quad(faces,0,1,2,3);Quad(faces,4,7,6,5);for(int i=0;i<4;i++)Quad(faces,i,i+4,(i+1)%4+4,(i+1)%4);
-  var uv=banner.Select(v=>new Vector2((v.x-.025f)/1.005f,(v.y-2.3f)/.6f)).ToList();
-  Node("Aqua pennant",root.transform,Save(Mesh("Shared aqua pennant",banner,faces,uv),Art+"Meshes/Shared/Pennant.asset"),cloth);
-  Directory.CreateDirectory(Path.GetDirectoryName(Disk(FlagPrefab)));AssetDatabase.Refresh();PrefabUtility.SaveAsPrefabAsset(root,FlagPrefab);Object.DestroyImmediate(root);
- }
- static Mesh Digit(int number){
-  int[] masks={0,0x06,0x5b,0x4f,0x66,0x6d};var p=new List<Vector3>();var t=new List<int>();
-  Vector4[] bars={new Vector4(.02f,.34f,.20f,.035f),new Vector4(.20f,.19f,.035f,.15f),new Vector4(.20f,.02f,.035f,.15f),new Vector4(.02f,0,.20f,.035f),new Vector4(0,.02f,.035f,.15f),new Vector4(0,.19f,.035f,.15f),new Vector4(.02f,.17f,.20f,.035f)};
-  for(int i=0;i<bars.Length;i++)if((masks[number]&(1<<i))!=0){var b=bars[i];int start=p.Count;p.AddRange(new[]{new Vector3(b.x,b.y,0),new Vector3(b.x,b.y+b.w,0),new Vector3(b.x+b.z,b.y+b.w,0),new Vector3(b.x+b.z,b.y,0)});Quad(t,start,start+1,start+2,start+3);}
-  return Mesh("Flag number "+number,p,t);
- }
+ static void PrepareFlag(Material pole,Material cloth)=>GolfFlagArtBuilder.Prepare();
  static void TrimGrass(GameObject island,Layout layout){
   var greens=island.GetComponentInChildren<GolfCourse>(true).greens;
   var original=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Art/RefinedIslands/Golf/Grass.fbx").GetComponentsInChildren<MeshFilter>(true).ToDictionary(f=>f.name,f=>f.sharedMesh);

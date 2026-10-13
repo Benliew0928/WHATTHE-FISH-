@@ -1,5 +1,61 @@
 # Build size — measured release records
 
+## Reference flags and turf bounces - 13 October 2026 build limitation
+
+The measured opening APK is **90,334,226 bytes**. All three new AndroidSubmission
+attempts failed in Gradle/JDK loopback initialization; the prior APK is retained
+with its original hash. There is no successful after measurement for these
+changes. Its historical headroom is **9,665,774 bytes**, and it exceeds the
+75 MB development target by **15,334,226 bytes**. These values do not validate
+the current reference flag textures or rebound code. Five derived flag maps use
+mipmaps and Android ASTC 6x6; the full reference masters remain outside Unity.
+Unused geometric numeral meshes and their material were archived. No global
+rendering quality or unrelated dependency was reduced. Fresh packed APK
+contributors cannot be measured until the new build succeeds. Windows checks
+and complete delivery pass; see [verification](VERIFICATION.md#original-reference-flags-and-decaying-turf-bounces---13-october-2026).
+
+
+## Golden Golf shot trail — 13 October 2026
+
+Fresh primary AndroidSubmission completed at **21:25:01 Malaysia time**:
+**89,230,290 → 90,334,226 bytes (+1,103,936)**. The opening root APK was the
+stale **4 October** package, so this delta includes intervening game/art work
+and is **not solely trail growth**. Strict-limit headroom is **9,665,774 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,334,226 bytes**.
+The enforced budget gate and independent APK v2 signature pass. SHA-256:
+**2382DFE7BEF6B1085664B5665D14F2F33B82AE4A5EA2376B9834AA6C19C82A06**.
+
+The warm-gold, soft-edged ball trail shares one texture-free material, fades
+from a strong head to a pale transparent tail, and expires each portion within
+**1 second including fade**. No model, texture, audio or package is added by
+this feature. Its shader/material/MonoScript add **6,504 serialized bytes** and
+**3,439 estimated ZIP bytes**, separate from compiled native code and actual
+APK size. See [packing audit](APK-SIZE-AUDIT.md#golden-golf-shot-trail--13-october-2026).
+
+The complete **322-file** Windows player is delivered in `Builds/WindowsFinal/`
+and retained in `Builds/GolfTrailQA/Release/Windows/`. Full content build:
+**21:17:42**; final runtime/review scripts refresh: **21:21:50**. All
+**288 assertions** pass: 85 rendered ball/physics/trail, 158 rendered Golf
+offline, 21 host and 24 side-approach client. Existing physical shots, slope
+settling, five cups, strokes and current numbered flag content remain.
+Combined room protocol **47** adds the authoritative strike marker.
+[Verification and source scope](VERIFICATION.md#golden-golf-shot-trail--13-october-2026).
+
+The initial build request collided with another primary build. Its later
+Gradle loopback initialization failed; the final primary retry succeeded using
+process-local IPv4 preference and constrained JVM/Gradle workers. These settings
+and temporary locations remain outside committed source. Phone appearance,
+touch, FPS and WAN remain unverified.
+
+Reviewed old APK/audit: `Legacy/20261013-211950-049-golf-gold-trail-old-apk/`
+(13 files, 92.89 MB). Superseded Windows player:
+`Legacy/20261013-212758-518-golf-gold-trail-windows/` (322 files, 596.94 MB).
+Redundant candidate, isolated build wrapper and superseded initial review runs:
+`Legacy/20261013-213030-065-golf-gold-trail-candidates/`
+(393 files, 682.47 MB); final 288-check evidence remains current.
+Exact current APK, audit, signatures, comparisons and validation evidence:
+`Builds/GolfTrailQA/`. No Git staging, commit or push is performed for this task.
+
 ## Combined Football, Basketball and Fishing release — 12 October 2026
 
 Fresh AndroidSubmission written at **18:42:22 Malaysia time** measures

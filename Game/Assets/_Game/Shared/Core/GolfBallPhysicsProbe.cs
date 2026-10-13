@@ -124,6 +124,7 @@ namespace WhatTheFish {
    Check(Physics.Raycast(new Vector3(-40,20,-100),Vector3.down,out var floor,40,1<<8,QueryTriggerInteraction.Ignore),"PHYSICS_FIXTURE_INSIDE_EXISTING_COURSE");
    var plate=new GameObject("Temporary ball test surface");plate.layer=8;plate.transform.position=floor.point+Vector3.up*6;plate.AddComponent<BoxCollider>().size=new Vector3(30,.2f,30);
    Vector3 Rest()=>plate.transform.TransformPoint(Vector3.up*.1f)+plate.transform.up*(GolfBall.Radius+.002f);
+   yield return BounceChecks(ball,plate,Rest());
    ball.Place(Rest(),true);PlaceActor(actor,plate.transform.position+new Vector3(-1,.14f,0));yield return new WaitForSeconds(.2f);
    var still=ball.Body.position;var actorStart=actor.transform.position;
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,heading=0,sprint=true};yield return new WaitForSeconds(.7f);DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.15f);
@@ -208,7 +209,70 @@ namespace WhatTheFish {
    Check(Mathf.Abs(horizontalLaunch-ball.PhysicsSettings.maximumSwingSpeed)<.001f,"FULL_CHARGE_CONTACT_USES_CONFIGURED_HORIZONTAL_SPEED");
    Check(fullTravel>5.5f&&ball.Motion!=GolfBallMotion.Resting,"FULL_CHARGE_TRAVELS_BEYOND_PREVIOUS_FIVE_METRE_CAP");
    Check(match.Player(actor).TotalStroke==fullCount+1&&ball.ResetSequence==fullReset,"FULL_CHARGE_COUNTS_ONCE_WITHOUT_FORCED_RECOVERY");
+   yield return ShotTrail(ball);
    ball.Place(match.TeePosition(1,ball.Owner),true);Destroy(plate);yield return null;
+  }
+  IEnumerator BounceChecks(GolfBall ball,GameObject plate,Vector3 rest){
+   var camera=Camera.main;var oldPosition=camera.transform.position;var oldRotation=camera.transform.rotation;
+   foreach(float height in new[]{1f,3f}){
+    ball.Place(rest+Vector3.up*height,true);ball.Body.linearVelocity=Vector3.right*.8f;ball.Body.WakeUp();Physics.SyncTransforms();
+    int bounces=0;float priorVertical=0,peak=0,previousPeak=float.PositiveInfinity;bool decreasing=true;float until=Time.time+9;
+    while(Time.time<until&&ball.Motion!=GolfBallMotion.Resting){
+     yield return new WaitForFixedUpdate();float vertical=ball.Body.linearVelocity.y;
+     if(priorVertical<-.3f&&vertical>.3f){
+      if(bounces>0){decreasing&=peak<previousPeak*.6f;previousPeak=peak;}bounces++;peak=0;
+      if(bounces==1){camera.transform.position=ball.Body.position+new Vector3(1.4f,.7f,-2);camera.transform.LookAt(ball.Body.position+Vector3.up*.2f);Capture("drop-"+height+"-first-bounce");}
+      File.AppendAllText(report,$"BOUNCE drop={height:F1} index={bounces} incoming={-priorVertical:F4} outgoing={vertical:F4} position={ball.Body.position}\n");
+     }
+     if(bounces>0)peak=Mathf.Max(peak,ball.Body.position.y-rest.y);
+     priorVertical=vertical;
+    }
+    Check(bounces>=2&&decreasing,"HIGH_DROP_HAS_MULTIPLE_DECAYING_BOUNCES_"+height);
+    Check(ball.Motion==GolfBallMotion.Resting&&Supported(ball),"DROP_BOUNCES_TRANSITION_TO_SUPPORTED_ROLL_AND_REST_"+height);
+   }
+   var box=plate.GetComponent<BoxCollider>();var oldSize=box.size;box.size=new Vector3(100,.2f,100);Physics.SyncTransforms();
+   foreach(float charge in new[]{.08f,.5f,1f}){
+    var plan=new GolfShotPlan();plan.Build(rest,Vector3.right,charge,GolfShotMode.Swing,match.Course,ball.PhysicsSettings);
+    Check(plan.HasTarget&&Vector3.Dot(plan.Velocities[plan.Count-1],plan.Normal)>.3f,"GUIDED_SWING_TOUCHDOWN_PRESERVES_NORMAL_REBOUND_"+charge);
+    ball.Place(rest,true);ball.Strike(plan);int bounces=0;float priorVertical=0;bool touchdown=false;float until=Time.time+12;
+    while(Time.time<until&&ball.Motion!=GolfBallMotion.Resting){
+     yield return new WaitForFixedUpdate();float vertical=ball.Velocity.y;
+     if(!ball.FollowingShot&&!touchdown){touchdown=true;Check(Vector3.Distance(ball.LastGuideContact,plan.EndPoint)<.001f,"BOUNCE_PRESERVES_FIRST_TOUCHDOWN_TARGET_"+charge);}
+     if(priorVertical<-.3f&&vertical>.3f)bounces++;priorVertical=vertical;
+    }
+    File.AppendAllText(report,$"GUIDED_BOUNCES charge={charge:F2} bounces={bounces} resting={ball.Motion} position={ball.Body.position}\n");
+    Check(touchdown&&bounces>=2,"REAL_GUIDED_SWING_BOUNCES_AFTER_LANDING_"+charge);
+   }
+   box.size=oldSize;Physics.SyncTransforms();camera.transform.SetPositionAndRotation(oldPosition,oldRotation);
+  }
+  IEnumerator ShotTrail(GolfBall ball){
+   var trail=ball.Trail;var ribbon=trail.Ribbon;
+   Check(trail.Active&&ribbon.positionCount>3&&Mathf.Abs(ribbon.time-1)<.001f,"GOLD_TRAIL_FOLLOWS_REAL_QUALIFIED_SWING_FOR_ONE_SECOND");
+   Check(ribbon.sharedMaterial&&ribbon.sharedMaterial.shader.isSupported&&ribbon.sharedMaterial.shader.name=="WhatTheFish/GolfBallTrail","SOFT_GOLD_TRAIL_SHADER_SUPPORTED_WITHOUT_TEXTURE");
+   var head=ribbon.colorGradient.Evaluate(0);var tail=ribbon.colorGradient.Evaluate(1);
+   Check(head.r>.95f&&head.g>.75f&&head.b<.3f&&head.a>.95f&&tail.a<.001f&&tail.b>head.b,"TRAIL_GOLD_HEAD_AND_PALE_TRANSPARENT_TAPERED_TAIL");
+   Check(ribbon.widthCurve.Evaluate(1)==0&&ribbon.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.Off,"TRAIL_TAPERS_WITHOUT_SHADOW_OR_COLLISION_GEOMETRY");
+   if(SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null){
+    bool viewEnabled=app.view.enabled;var camera=Camera.main;var oldPosition=camera.transform.position;var oldRotation=camera.transform.rotation;
+    var first=ribbon.GetPosition(0);var last=ribbon.GetPosition(ribbon.positionCount-1);var centre=(first+last)*.5f;
+    app.view.enabled=false;camera.transform.position=centre+new Vector3(8,3,-9);camera.transform.LookAt(centre);
+    yield return Frame();Capture("gold-shot-trail");ribbon.enabled=false;yield return Frame();Capture("gold-shot-without-trail");ribbon.enabled=true;
+    camera.transform.SetPositionAndRotation(oldPosition,oldRotation);app.view.enabled=viewEnabled;
+   }
+   var sequence=ball.StrikeSequence;ball.Strike(Vector3.right*2+Vector3.up*3);
+   Check(ball.StrikeSequence==sequence+1&&trail.SeenStrike==ball.StrikeSequence&&ribbon.positionCount==0,"NEW_SWING_RESTARTS_TRAIL_WITHOUT_LINKING_PREVIOUS_SHOT");
+   yield return new WaitForSeconds(.2f);Check(ribbon.positionCount>2,"SECOND_SWING_GENERATES_FRESH_TRAIL");
+   var interpolation=ball.Body.interpolation;var constraints=ball.Body.constraints;ball.Body.interpolation=RigidbodyInterpolation.None;
+   // ApplyLive restores dynamic simulation each step. Freeze the review body
+   // instead of setting kinematic and accidentally allowing it to fall again.
+   ball.Body.linearVelocity=ball.Body.angularVelocity=Vector3.zero;ball.Body.constraints=RigidbodyConstraints.FreezeAll;ball.enabled=false;
+   yield return new WaitForSeconds(.5f);var properties=new MaterialPropertyBlock();ribbon.GetPropertyBlock(properties);float fade=properties.GetFloat("_Fade");
+   File.AppendAllText(report,$"TRAIL_STOP active={trail.Active} emitting={ribbon.emitting} fade={fade:F4} points={ribbon.positionCount} body={ball.Body.position} displayed={ball.transform.position}\n");
+   Check(trail.Active&&!ribbon.emitting&&fade>.1f&&fade<.8f,"STOPPED_TRAIL_SMOOTHLY_FADES_WITHIN_ONE_SECOND");
+   yield return new WaitForSeconds(.65f);Check(!trail.Active&&ribbon.positionCount==0,"STOPPED_TRAIL_COMPLETELY_DISAPPEARS_AFTER_ONE_SECOND");
+   ball.enabled=true;ball.Body.constraints=constraints;ball.Body.interpolation=interpolation;ball.Strike(Vector3.right*3);yield return new WaitForSeconds(.15f);ball.Place(ball.LastShotPosition,true);
+   File.AppendAllText(report,$"TRAIL_RESET active={trail.Active} enabled={ribbon.enabled} emitting={ribbon.emitting} points={ribbon.positionCount}\n");
+   Check(!trail.Active&&ribbon.positionCount==0,"BALL_RESET_CLEARS_TRAIL_IMMEDIATELY_WITHOUT_TELEPORT_LINE");
   }
  }
 }

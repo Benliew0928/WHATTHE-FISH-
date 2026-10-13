@@ -1,5 +1,48 @@
 # APK size audit — measured release records
 
+## Reference flags and turf bounces - 13 October 2026 build limitation
+
+The measured opening APK is **90,334,226 bytes**. All three new AndroidSubmission
+attempts failed in Gradle/JDK loopback initialization; the prior APK is retained
+with its original hash. There is no successful after measurement for these
+changes. Its historical headroom is **9,665,774 bytes**, and it exceeds the
+75 MB development target by **15,334,226 bytes**. These values do not validate
+the current reference flag textures or rebound code. Five derived flag maps use
+mipmaps and Android ASTC 6x6; the full reference masters remain outside Unity.
+Unused geometric numeral meshes and their material were archived. No global
+rendering quality or unrelated dependency was reduced. Fresh packed APK
+contributors cannot be measured until the new build succeeds. Windows checks
+and complete delivery pass; see [verification](VERIFICATION.md#original-reference-flags-and-decaying-turf-bounces---13-october-2026).
+
+
+## Golden Golf shot trail — 13 October 2026
+
+Fresh signed primary APK at **21:25:01 Malaysia time**:
+**89,230,290 → 90,334,226 bytes (+1,103,936)**. The opening APK was the stale
+4 October release; the delta includes later combined gameplay/art, so it does
+not measure this visual feature alone. Strict headroom **9,665,774 bytes**;
+75 MB development-target excess **15,334,226 bytes**. Budget gate and independent
+v2 signature pass. Exact package/audit: `Builds/GolfTrailQA/Release/`.
+[Release, source limits and archives](BUILD-SIZE.md#golden-golf-shot-trail--13-october-2026).
+
+| Trail entry | Serialized bytes | Estimated ZIP bytes |
+| --- | ---: | ---: |
+| Soft-edge unlit shader | 6,312 | 3,304 |
+| Shared material | 96 | 54 |
+| MonoScript metadata | 96 | 81 |
+| Total | 6,504 | 3,439 |
+
+No new mesh, texture, audio, font or package is added by the trail. Each ball
+uses a bounded one-second runtime ribbon with a reused property block; it adds
+no lights, shadows, collision geometry or physics forces. Native compiled code
+is a separate contribution. Current serialized assets total **156,182,122 bytes**,
+which is not the compressed APK size. Largest compressed estimates: timber
+**2.247 MB**, character albedo **1.993 MB**, Golf structures **1.966 MB**,
+character mesh **1.588 MB** and football stadium **1.556 MB**. The structures
+change belongs to concurrent scenery-flag cleanup. No unexpected large trail
+dependency appears. Detailed current packing: `Builds/SizeAudit/latest/`;
+retained copy and top contributors: `Builds/GolfTrailQA/`.
+
 ## Combined Football, Basketball and Fishing release — 12 October 2026
 
 Actual signed APK: **88,856,012 → 90,139,324 bytes (+1,283,312)**,
