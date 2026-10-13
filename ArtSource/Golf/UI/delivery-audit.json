@@ -91,8 +91,272 @@
         ]
       },
       "android_astc_6x6_raw_bytes": 7744
+    },
+    {
+      "name": "Countdown_1",
+      "master": {
+        "path": "ArtSource/Golf/UI/Countdown_1-master.png",
+        "bytes": 584286,
+        "sha256": "b1922b9cdddb49b1a795182c88b6cc7adfa3d56edaf1d9f5535674d839bd4c8b",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          0,
+          78,
+          977,
+          990
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/Countdown_1.png",
+        "bytes": 33512,
+        "sha256": "bcd0d492e2cf6e6b27d4ea4d7f6ddf781bf106a53652b7bf9a37d48296f17dea",
+        "dimensions": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          55,
+          20,
+          218,
+          242
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 29584
+    },
+    {
+      "name": "Countdown_2",
+      "master": {
+        "path": "ArtSource/Golf/UI/Countdown_2-master.png",
+        "bytes": 747554,
+        "sha256": "5349c58b4c067aa541d3602714ab25f408a0ae43b6aaeeff3a3c1d9f65126e65",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          119,
+          58,
+          962,
+          948
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/Countdown_2.png",
+        "bytes": 44621,
+        "sha256": "00d0375f57fd8a0c98a0262821671de2e71e33cc76df649e12ef02d68376a95c",
+        "dimensions": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          39,
+          16,
+          219,
+          237
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 29584
+    },
+    {
+      "name": "Countdown_3",
+      "master": {
+        "path": "ArtSource/Golf/UI/Countdown_3-master.png",
+        "bytes": 720111,
+        "sha256": "3b7ec103e51ac03bf2ebd24f07584860bb008d38c332b496b288b97b31235a73",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          20,
+          20,
+          934,
+          1024
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/Countdown_3.png",
+        "bytes": 47135,
+        "sha256": "a7c1aeb178116e71a8733729abb363242d1702ac14671b6e17449cb62893f98a",
+        "dimensions": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          44,
+          17,
+          213,
+          232
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 29584
+    },
+    {
+      "name": "Countdown_4",
+      "master": {
+        "path": "ArtSource/Golf/UI/Countdown_4-master.png",
+        "bytes": 724885,
+        "sha256": "000d6270d7eae3bd551b3a3264d6a75800b3a5a2e6cfa9d3cae34d5a2f9488b3",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          27,
+          64,
+          1008,
+          1016
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/Countdown_4.png",
+        "bytes": 43094,
+        "sha256": "c8bea986aeee497df25c3cdeb2517040457bb46a9b4abf163616f47346a648b2",
+        "dimensions": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          24,
+          16,
+          233,
+          237
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 29584
+    },
+    {
+      "name": "Countdown_5",
+      "master": {
+        "path": "ArtSource/Golf/UI/Countdown_5-master.png",
+        "bytes": 799751,
+        "sha256": "43f71b1060dd510520f95b11da65567eff78f317c020ba0178d57fe97d368010",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          0,
+          65,
+          1014,
+          959
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/Countdown_5.png",
+        "bytes": 48704,
+        "sha256": "2665a49facb483403375221fda4126a5444b3ab43484c408f281bfc9aade7326",
+        "dimensions": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          36,
+          16,
+          221,
+          239
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 29584
+    },
+    {
+      "name": "Countdown_GO",
+      "master": {
+        "path": "ArtSource/Golf/UI/Countdown_GO-master.png",
+        "bytes": 630920,
+        "sha256": "7553010ea737d1c66fcc2c916074d3662f7f8103e6f39cabd2ab2b01c1760c53",
+        "dimensions": [
+          1024,
+          768
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          47,
+          97,
+          983,
+          679
+        ]
+      },
+      "delivery": {
+        "path": "Game/Assets/_Game/Resources/GolfUI/Countdown_GO.png",
+        "bytes": 47131,
+        "sha256": "a34e916e43365cb9fd5d470c6da1c2bd9862d4dbe0a5ae32b35ad9c6249a2f49",
+        "dimensions": [
+          256,
+          162
+        ],
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bounds": [
+          5,
+          19,
+          252,
+          147
+        ]
+      },
+      "android_astc_6x6_raw_bytes": 18576
     }
   ],
-  "total_delivery_png_bytes": 110527,
-  "total_android_astc_6x6_raw_bytes": 37328
+  "total_delivery_png_bytes": 374724,
+  "total_android_astc_6x6_raw_bytes": 203824
 }

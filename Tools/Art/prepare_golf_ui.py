@@ -16,7 +16,16 @@ from PIL import Image, ImageOps
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_DIR = PROJECT_ROOT / "ArtSource/Golf/UI"
 DELIVERY_DIR = PROJECT_ROOT / "Game/Assets/_Game/Resources/GolfUI"
-ASSETS = {"GolfShotBadge": 256, "GolfCourseBadge": 128}
+ASSETS = {
+    "GolfShotBadge": 256,
+    "GolfCourseBadge": 128,
+    "Countdown_1": 256,
+    "Countdown_2": 256,
+    "Countdown_3": 256,
+    "Countdown_4": 256,
+    "Countdown_5": 256,
+    "Countdown_GO": 256,
+}
 
 
 def digest(path: Path) -> str:
@@ -47,13 +56,26 @@ def main() -> None:
             if source.getchannel("A").getextrema()[0] != 0:
                 raise ValueError(f"{name}: master must have a transparent background")
             # Premultiplied resizing avoids dark fringes at translucent outlines.
-            fitted = ImageOps.contain(
-                source.convert("RGBa"), (edge - 4, edge - 4), Image.Resampling.LANCZOS
-            ).convert("RGBA")
-            delivery = Image.new("RGBA", (edge, edge), (0, 0, 0, 0))
-            delivery.paste(fitted, ((edge - fitted.width) // 2, (edge - fitted.height) // 2))
+            if name == "Countdown_GO":
+                bbox = source.getbbox()
+                pad = 12
+                padded_bbox = (max(0, bbox[0] - pad), max(0, bbox[1] - pad), min(source.width, bbox[2] + pad), min(source.height, bbox[3] + pad))
+                cropped_source = source.crop(padded_bbox)
+                target_w, target_h = 256, int(round(256 * cropped_source.height / cropped_source.width))
+                fitted = ImageOps.contain(
+                    cropped_source.convert("RGBa"), (target_w - 4, target_h - 4), Image.Resampling.LANCZOS
+                ).convert("RGBA")
+                delivery = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
+                delivery.paste(fitted, ((target_w - fitted.width) // 2, (target_h - fitted.height) // 2))
+                raw_astc_bytes = (((target_w + 5) // 6) * ((target_h + 5) // 6)) * 16
+            else:
+                fitted = ImageOps.contain(
+                    source.convert("RGBa"), (edge - 4, edge - 4), Image.Resampling.LANCZOS
+                ).convert("RGBA")
+                delivery = Image.new("RGBA", (edge, edge), (0, 0, 0, 0))
+                delivery.paste(fitted, ((edge - fitted.width) // 2, (edge - fitted.height) // 2))
+                raw_astc_bytes = ((edge + 5) // 6) ** 2 * 16
             delivery.save(destination, format="PNG", optimize=True, compress_level=9)
-            raw_astc_bytes = ((edge + 5) // 6) ** 2 * 16
             records.append({
                 "name": name,
                 "master": describe(source_path, source),

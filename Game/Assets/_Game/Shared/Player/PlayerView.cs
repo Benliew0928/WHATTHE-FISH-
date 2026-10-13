@@ -109,7 +109,7 @@ namespace WhatTheFish {
    pendingCart=driving?GolfCartAction.Leave:GolfCartAction.Drive;pendingCartOwner=cart.Owner;
   }
   void Update(){
-   if(!active||InputBlocked||!target||target.inTransit||FootballMatch.BlocksActions||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return;}
+   if(!active||InputBlocked||!target||target.inTransit||FootballMatch.BlocksActions||GolfMatchManager.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return;}
    if(EventSystem.current&&EventSystem.current.currentSelectedGameObject){var field=EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>();if(field&&field.isFocused){CancelInput();return;}}
    UpdateFishingTargetInput();UpdateCountersteerKeyboard();
    UpdateFootballInput();UpdateDefenseInput();UpdateGolfAim();
@@ -133,11 +133,11 @@ namespace WhatTheFish {
   }
   public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;FootballAudio.PlayMenu(FootballSound.UISelect);mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
   public PlayerCommand ReadCommand(){
-   var command=ReadInput();if(GolfAimRequested){command.move=Vector2.zero;command.jump=command.sprint=false;command.cartAction=GolfCartAction.None;}if(command.golfSwing)command.heading=pendingGolfHeading;cartMove=command.move;return command;
+   var command=ReadInput();if(GolfAimRequested||GolfMatchManager.BlocksMovement){command.move=Vector2.zero;command.jump=command.sprint=false;command.cartAction=GolfCartAction.None;}if(command.golfSwing)command.heading=pendingGolfHeading;cartMove=command.move;return command;
   }
   PlayerCommand ReadInput(){
    if(InputBlocked){CancelInput();var canceled=new PlayerCommand{heading=yaw,shotCancel=pendingShotCancel,passCancel=pendingPassCancel};pendingShotCancel=pendingPassCancel=false;return canceled;}
-   if(FootballMatch.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return default;}
+   if(FootballMatch.BlocksMovement||GolfMatchManager.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return default;}
    if(FootballMatch.BlocksActions)CancelInput();
    if(StealHeld&&Time.unscaledTime>=repeatStealAt){pendingSteal=true;repeatStealAt=Time.unscaledTime+BasketballStealRules.Repeat;}
    bool steal=pendingSteal;pendingSteal=false;

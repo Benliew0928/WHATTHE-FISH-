@@ -105,7 +105,7 @@ namespace WhatTheFish {
      var rect=Panel(page,new Vector2(1300,summon?340:165),new Vector2(138,138),summon?mint:LocalProfile.Hex("F0B956"));rect.name=summon?"Golf cart summon button":"Golf cart drive button";
      var control=rect.gameObject.AddComponent<GolfCartButton>();control.summon=summon;control.button=rect.gameObject.AddComponent<Button>();
      cartControls.Add(control);
-     control.label=Label(rect,summon?"召唤":"驾驶",0,Vector2.zero,new Vector2(210,90),27,ink);control.label.font=Resources.Load<Font>("GolfCartLabels");
+     control.label=Label(rect,summon?"Buggy":"Drive",0,Vector2.zero,new Vector2(210,90),27,ink);control.label.font=CoveUI.DisplayFont??font;
      control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
     }
     GolfHUD.Create(page,font,bg,look,(RectTransform)cameraControl.transform,jumpRect,(RectTransform)returnButton.transform,swing,cartControls.ToArray());

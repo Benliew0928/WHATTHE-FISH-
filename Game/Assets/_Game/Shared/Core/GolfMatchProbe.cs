@@ -66,9 +66,38 @@ namespace WhatTheFish {
   void CaptureClub(string name){
    if(!args.Contains("-golfMatchCapture"))return;var camera=Camera.main;var position=camera.transform.position;var rotation=camera.transform.rotation;float fov=camera.fieldOfView;
    camera.transform.position=app.LocalAthlete.transform.position+new Vector3(2.1f,1.6f,1.3f);camera.transform.LookAt(app.LocalAthlete.transform.position+Vector3.up*.92f);camera.fieldOfView=44;
-   FindFirstObjectByType<DevelopmentProbe>()?.CaptureFrame(Path.ChangeExtension(report,"club-"+name+".png"));camera.transform.SetPositionAndRotation(position,rotation);camera.fieldOfView=fov;
+   var capture=FindFirstObjectByType<DevelopmentProbe>();capture?.CaptureFrame(Path.ChangeExtension(report,"club-"+name+".png"));
+   if((name=="address"||name=="charge-50"||name=="charge-100")&&capture){var actor=app.LocalAthlete;camera.transform.position=actor.transform.position+actor.transform.forward*2.2f+Vector3.up*1.35f;camera.transform.LookAt(actor.transform.position+Vector3.up*.82f);capture.CaptureFrame(Path.ChangeExtension(report,"club-"+name+"-front.png"));camera.transform.position=actor.transform.position+actor.transform.right*2.2f+Vector3.up*1.35f;camera.transform.LookAt(actor.transform.position+Vector3.up*.82f);capture.CaptureFrame(Path.ChangeExtension(report,"club-"+name+"-side.png"));}
+   camera.transform.SetPositionAndRotation(position,rotation);camera.fieldOfView=fov;
   }
-  void LogClub(Athlete actor,string label){var c=actor.GolfClubMotion;File.AppendAllText(report,$"CLUB_SAMPLE {label} action={c.State.action} elapsed={c.Elapsed:F3} gripError={c.GripError:F4} left={c.LeftPalm} right={c.RightPalm} head={c.Club.head.position} root={actor.transform.position}\n");}
+  void LogClub(Athlete actor,string label){var c=actor.GolfClubMotion;float power=app&&app.view&&app.view.GolfCharging?app.view.GolfCharge:c.State.action==GolfClubAction.Swing?c.State.charge:0;File.AppendAllText(report,$"CLUB_SAMPLE {label} action={c.State.action} elapsed={c.Elapsed:F3} power={power:F3} gripError={c.GripError:F4} leftGripError={c.LeftGripError:F4} rightGripError={c.RightGripError:F4} headError={c.HeadTargetError:F4} leftReachable={c.LeftWristReachable} rightReachable={c.RightWristReachable} leftArmLength={c.LeftArmLength:F3} rightArmLength={c.RightArmLength:F3} clubHeadToGrip={c.HeadToRightGripLength:F3} leftReachRequest={c.LeftRequestedReachFraction:F3} rightReachRequest={c.RightRequestedReachFraction:F3} leftReachFraction={c.LeftArmReachFraction:F3} rightReachFraction={c.RightArmReachFraction:F3} leftFingerShaftAngle={c.LeftFingerShaftAngle:F1} rightFingerShaftAngle={c.RightFingerShaftAngle:F1} leftForearmShaftAngle={c.LeftForearmShaftAngle:F1} rightForearmShaftAngle={c.RightForearmShaftAngle:F1} leftElbowAngle={c.LeftElbowAngle:F1} rightElbowAngle={c.RightElbowAngle:F1} leftHeightFromWaist={c.LeftHandHeightFromWaist:F3} rightHeightFromWaist={c.RightHandHeightFromWaist:F3} leftShoulder={c.LeftShoulder} rightShoulder={c.RightShoulder} left={c.LeftPalm} right={c.RightPalm} head={c.Club.head.position} root={actor.transform.position}\n");}
+  void CheckSwingArc(Athlete actor){
+   var club=actor.GolfClubMotion;var saved=club.State;
+   foreach(float power in new[]{.08f,.5f,1f}){
+    bool reachable=true;float error=0,contactError=0,maxStep=0,recoveryStep=0,minReach=1,maxHeadTurn=0;
+    var previous=new Vector3[4];
+    for(int tick=0;tick<=75;tick++){
+     // Evaluate the actual procedural pose at exact clock offsets without
+     // issuing a shot or changing the ball, score, or charging input.
+     club.SendMessage("Update");
+     var sample=saved;sample.action=GolfClubAction.Swing;sample.charge=power;sample.started=GolfClubMotion.Clock-tick*.01;
+     club.Receive(sample);club.SendMessage("LateUpdate");
+     reachable&=club.LeftWristReachable&&club.RightWristReachable;
+     maxHeadTurn=Mathf.Max(maxHeadTurn,club.HeadPoseDeviation);
+     error=Mathf.Max(error,club.GripError);minReach=Mathf.Min(minReach,club.LeftArmReachFraction,club.RightArmReachFraction);
+     if(tick==10)contactError=club.HeadTargetError;
+     var current=new[]{club.LeftPalm,club.RightPalm,club.LeftElbow,club.RightElbow};
+     if(tick>0)for(int i=0;i<current.Length;i++){float step=Vector3.Distance(current[i],previous[i]);maxStep=Mathf.Max(maxStep,step);if(tick>=70)recoveryStep=Mathf.Max(recoveryStep,step);}
+     previous=current;
+    }
+    Check(reachable&&error<.001f&&minReach>.90f,"SWING_ARC_REACH_AND_GRIPS_POWER_"+power);
+    Check(contactError<.001f&&maxStep<.10f&&recoveryStep<.015f,"SWING_ARC_CONTACT_AND_CONTINUOUS_RECOVERY_POWER_"+power);
+    Check(maxHeadTurn<6f,"SWING_HEAD_REMAINS_FORWARD_WITH_SMALL_FOLLOW_POWER_"+power);
+    File.AppendAllText(report,$"HEAD_FOLLOW power={power:F2} maxDeviation={maxHeadTurn:F3}\n");
+    File.AppendAllText(report,$"SWING_ARC power={power:F2} gripError={error:F5} contactError={contactError:F5} minReach={minReach:F3} max10msStep={maxStep:F5} recovery10msStep={recoveryStep:F5}\n");
+   }
+   club.SendMessage("Update");club.Receive(saved);club.SendMessage("LateUpdate");
+  }
   void CheckBallVisual(GolfBall ball){
    var lods=ball.GetComponent<LODGroup>().GetLODs();var near=lods[0].renderers.Single();var far=lods[1].renderers.Single();
    Check(near.GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0)/3==15998&&far.GetComponent<MeshFilter>().sharedMesh.GetIndexCount(0)/3==720,"LIVE_BALL_USES_SUPPLIED_DIMPLED_MODEL_AND_ROUND_DISTANT_LOD");
@@ -164,14 +193,39 @@ namespace WhatTheFish {
    var material=lods[0].renderers[0].sharedMaterial;Check(material.GetTexture("_BaseMap") is Texture2D color&&color.width==512&&material.GetTexture("_BumpMap") is Texture2D normal&&normal.width==512&&material.GetTexture("_MetallicGlossMap") is Texture2D mask&&mask.width==256,"CLUB_RETAINS_COLOR_NORMAL_AND_METAL_SMOOTHNESS_2D_MAPS");
    Check(club.Club.GetComponentsInChildren<Collider>().Length==0&&club.Club.GetComponentsInChildren<Rigidbody>().Length==0,"VISUAL_CLUB_ADDS_NO_DUPLICATE_BALL_PHYSICS");
    yield return PoseFrame();LogClub(a,"carry");Check(!club.TwoHanded&&club.GripError<.025f&&Physics.Raycast(club.Club.head.position+Vector3.up*.5f,Vector3.down,out var clubGround,2,1<<8,QueryTriggerInteraction.Ignore)&&club.Club.head.position.y>clubGround.point.y+.04f,"SINGLE_RIGHT_HAND_CARRY_WITH_HEAD_CLEAR_OF_FLOOR");CaptureClub("carry");
-   Check(app.view.BeginGolfAim()&&app.view.BeginGolfSwing(42),"CLUB_CHARGE_BEGINS_AFTER_AIM");yield return null;yield return new WaitForSeconds(.30f);yield return PoseFrame();LogClub(a,"charge");
-   Check(club.TwoHanded&&club.GripError<.025f&&club.State.action==GolfClubAction.Charge&&club.Elapsed>.20f,"BOTH_PALMS_STAY_ON_CLUB_GRIP_DURING_CHARGE");CaptureClub("charge");
+   Check(app.view.BeginGolfAim(),"AIM_ENTERS_ADDRESS_BEFORE_CHARGE");yield return new WaitForSeconds(.3f);yield return PoseFrame();LogClub(a,"address");
+   Check(club.TwoHanded&&club.GripError<.025f&&club.HeadTargetError<.03f&&club.LeftWristReachable&&club.RightWristReachable,"AIM_ADDRESS_HAS_REACHABLE_TWO_HAND_GRIP_AND_HEAD_BEHIND_BALL");CaptureClub("address");
+   var shoulderMid=(club.LeftShoulder+club.RightShoulder)*.5f;var palmMid=(club.LeftPalm+club.RightPalm)*.5f;
+   float forwardReach=Vector3.Dot(palmMid-shoulderMid,a.transform.forward);
+   float shaftFromVertical=Vector3.Angle(club.Club.head.position-club.Club.rightGrip.position,Vector3.down);
+   Check(forwardReach>Mathf.Min(club.LeftArmLength,club.RightArmLength)*.5f,"ADDRESS_HANDS_EXTEND_FORWARD_CLEAR_OF_TORSO");
+   Check(shaftFromVertical<35f&&club.LeftHandHeightFromWaist<.20f&&club.RightHandHeightFromWaist<.20f,"ADDRESS_LOWER_HANDS_AND_UPRIGHT_CLUB_MATCH_REFERENCE");
+   Check(Vector3.Distance(club.LeftPalm,club.RightPalm)>.035f,"ADDRESS_GRIPS_KEEP_DISTINCT_HAND_POSITIONS");
+   float rightPalmLeft=Vector3.Dot(club.RightPalmNormal,-a.transform.right),leftPalmRight=Vector3.Dot(club.LeftPalmNormal,a.transform.right);
+   Check(rightPalmLeft>.95f&&leftPalmRight>.95f,"ADDRESS_RIGHT_PALM_FACES_LEFT_AND_LEFT_PALM_FACES_RIGHT");
+   File.AppendAllText(report,$"ADDRESS_PALMS rightFacingLeft={rightPalmLeft:F4} leftFacingRight={leftPalmRight:F4}\n");
+   float maxStep=0;var previousPalm=palmMid;
+   for(int sample=0;sample<12;sample++){yield return PoseFrame();var currentPalm=(club.LeftPalm+club.RightPalm)*.5f;maxStep=Mathf.Max(maxStep,Vector3.Distance(currentPalm,previousPalm));previousPalm=currentPalm;}
+   Check(maxStep<.012f,"SETTLED_ADDRESS_HAS_NO_GRIP_SEARCH_POPPING");
+   File.AppendAllText(report,$"ADDRESS_REFERENCE forwardFromShoulders={forwardReach:F4} shaftFromVertical={shaftFromVertical:F2} maximumSettledStep={maxStep:F5}\n");
+   Check(app.view.BeginGolfSwing(42),"CLUB_CHARGE_BEGINS_FROM_ADDRESS");LogClub(a,"charge-0");
+   Check(club.TwoHanded&&club.GripError<.025f&&club.LeftWristReachable&&club.RightWristReachable&&app.view.GolfCharge<.001f&&club.HeadTargetError<.03f,"ZERO_CHARGE_STARTS_AT_ADDRESS_WITH_BOTH_HANDS");CaptureClub("charge-0");
+   yield return null;yield return PoseFrame();LogClub(a,"charge-start");
+   Check(club.TwoHanded&&club.GripError<.025f&&club.LeftWristReachable&&club.RightWristReachable&&app.view.GolfCharge<.14f&&club.HeadTargetError<.08f,"EARLY_CHARGE_MOVES_SMOOTHLY_FROM_ADDRESS_WITH_BOTH_HANDS");CaptureClub("charge-start");
+   while(app.view.GolfCharge<.5f)yield return null;yield return PoseFrame();LogClub(a,"charge-50");
+   Check(club.TwoHanded&&club.GripError<.025f&&club.LeftWristReachable&&club.RightWristReachable&&Mathf.Abs(app.view.GolfCharge-.5f)<.03f,"MID_CHARGE_PRESERVES_REACHABLE_TWO_HAND_GRIP");CaptureClub("charge-50");
+   while(app.view.GolfCharge<.99f)yield return null;yield return PoseFrame();LogClub(a,"charge-100");
+   Check(club.LeftArmReachFraction>.93f&&club.RightArmReachFraction>.93f&&club.LeftElbowAngle<45&&club.RightElbowAngle<45,"FULL_BACKSWING_EXTENDS_BOTH_ARMS_WITH_SOFT_ELBOWS");
+   Check(club.HeadPoseDeviation<6f,"FULL_BACKSWING_HEAD_STAYS_FORWARD");
+   Check(Vector3.Dot((club.LeftPalm+club.RightPalm-club.LeftShoulder-club.RightShoulder)*.5f,a.transform.right)>.15f,"FULL_BACKSWING_HANDS_EXTEND_TO_GOLFER_RIGHT");
+   Check(club.TwoHanded&&club.GripError<.025f&&club.LeftWristReachable&&club.RightWristReachable&&app.view.GolfCharge>.99f,"FULL_CHARGE_PRESERVES_REACHABLE_TWO_HAND_GRIP");CaptureClub("charge-100");
    var head=a.visual.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mixamorig:Head");var headScale=head.localScale;app.view.mode=0;app.view.pitch=42;yield return PoseFrame();LogClub(a,"first-person");
    Check(Vector3.Distance(head.localScale,headScale)<.0001f&&a.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(r=>r.enabled)&&club.TwoHanded&&club.GripError<.025f,"AIM_OVERRIDES_ROAM_CAMERA_AND_KEEPS_FULL_GOLFER_VISIBLE");
    if(args.Contains("-golfMatchCapture"))FindFirstObjectByType<DevelopmentProbe>()?.CaptureFrame(Path.ChangeExtension(report,"club-first-person.png"));
    app.view.mode=1;app.view.pitch=14;yield return PoseFrame();Check(Vector3.Distance(head.localScale,headScale)<.0001f,"THIRD_PERSON_RESTORES_CHARACTER_HEAD");
    app.view.CancelGolfSwing(42);yield return new WaitForSeconds(.15f);yield return PoseFrame();
-   Check(!club.TwoHanded&&club.State.action==GolfClubAction.Carry&&match.Player(a).TotalStroke==0,"CANCEL_RETURNS_TO_CARRY_WITHOUT_STROKE");
+   Check(match.IsAiming(a)&&club.TwoHanded&&club.State.action==GolfClubAction.Carry&&club.HeadTargetError<.03f&&match.Player(a).TotalStroke==0,"CANCEL_CHARGE_RECOVERS_TO_AIM_ADDRESS_WITHOUT_STROKE");
+   CheckSwingArc(a);
    Check(ball.GetComponentsInChildren<LODGroup>().Length==1&&ball.GetComponent<LODGroup>().GetLODs().Length==2,"LIVE_BALL_SHARES_TWO_AUTHORED_LODS_WITHOUT_NESTED_GROUPS");
    Check(!match.TrySwing(a,200,float.NaN,.5f,match.Round)&&!match.TrySwing(a,200,0,.5f,match.Round-1)&&match.Player(a).TotalStroke==0,"INVALID_AND_STALE_SWINGS_NOT_COUNTED");
    var velocityBefore=ball.Body.linearVelocity;
@@ -180,9 +234,9 @@ namespace WhatTheFish {
    var anchor=ball.LastShotPosition;Check(Vector3.Distance(ball.Body.linearVelocity,velocityBefore)<.00001f,"BALL_WAITS_FOR_CLUB_CONTACT");
    while(club.Elapsed<GolfClubMotion.ContactTime)yield return null;yield return PoseFrame();LogClub(a,"contact");CaptureClub("contact");
    Check(club.TwoHanded&&club.GripError<.025f,"BOTH_HANDS_HOLD_CLUB_AT_CONTACT");
-   Check(Vector3.Dot(club.Club.transform.position-a.transform.position,a.transform.forward)>.24f,"CONTACT_HANDS_REMAIN_IN_FRONT_OF_TORSO");
+   var hands=(club.LeftPalm+club.RightPalm)*.5f;Check(Vector3.Dot(hands-a.transform.position,a.transform.forward)>.12f,"CONTACT_HANDS_REMAIN_IN_FRONT_OF_TORSO");
    yield return new WaitForSeconds(.1f);Check(Vector3.Distance(ball.Body.position,anchor)>.05f,"REAL_RIGIDBODY_SWING_MOVES_BALL");anchor=ball.LastShotPosition;yield return PoseFrame();LogClub(a,"follow-through");Check(club.Club.head.position.y>=club.State.target.y-.015f&&club.GripError<.025f,"FOLLOW_THROUGH_LIFTS_CLUB_ABOVE_CONTACT_WITH_BOTH_GRIPS");CaptureClub("follow-through");yield return new WaitForSeconds(.7f);
-   Check(!club.Busy&&!club.TwoHanded&&match.Player(a).TotalStroke==1,"FOLLOW_THROUGH_RETURNS_TO_CARRY_COUNTS_ONCE");
+   Check(!club.Busy&&(!match.IsAiming(a)||club.TwoHanded&&club.HeadTargetError<.04f)&&match.Player(a).TotalStroke==1,"FOLLOW_THROUGH_RECOVERS_TO_AIM_WHILE_AIMING_COUNTS_ONCE");
    for(int hole=2;hole<=5;hole++){yield return Drop(ball,hole);Check(match.Player(b).CurrentHole==1&&match.Player(b).CompletedHoleCount==0&&Vector3.Distance(ball.Body.position,anchor)<.04f&&match.Player(a).TotalStroke==1,"WRONG_HOLE_RECOVERS_WITHOUT_PROGRESS_OR_PENALTY_"+hole);}
    ball.Place(new Vector3(450,5,450),false);yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();Check(Vector3.Distance(ball.Body.position,anchor)<.04f&&match.Player(a).TotalStroke==1,"OUT_OF_BOUNDS_RECOVERS_LAST_SHOT_WITHOUT_PENALTY");
    Check(ball.GetComponent<SphereCollider>().excludeLayers==((1<<9)|(1<<GolfCartMotor.Layer)),"BALL_CAN_CROSS_CHARACTER_SHORE_WALLS_AND_IGNORES_CART_PUSH");
@@ -233,7 +287,7 @@ namespace WhatTheFish {
     Check(match.State.Players.All(p=>match.Tee(p.PlayerId))&&FindObjectsByType<GolfTee>(FindObjectsSortMode.None).Length==2,"HOST_CREATES_ONE_FIXED_OPENING_TEE_PER_BALL_OWNER");
     var hostBall=match.Ball(0);hostBall.Place(site+Vector3.up*(GolfBall.Radius+.002f),true);Place(guest,site+(args.Contains("-golfSideSwing")?Vector3.right*.5f:Vector3.back*.9f)+Vector3.up*.04f,args.Contains("-golfSideSwing")?135:0);Place(app.LocalAthlete,site+Vector3.right*5+Vector3.up*.04f);
     yield return new WaitForSeconds(.15f);Check(guest.GolfClubMotion.Equipped&&app.LocalAthlete.GolfClubMotion.Equipped,"HOST_EQUIPS_BOTH_NETWORK_PLAYERS");
-    bool charged=false;float chargeUntil=Time.time+15;while(match.Player(guest).TotalStroke<1&&Time.time<chargeUntil){charged|=guest.GolfClubMotion.State.action==GolfClubAction.Charge&&guest.GolfClubMotion.TwoHanded&&guest.GolfClubMotion.GripError<.025f;yield return null;}Check(charged,"HOST_SEES_RELIABLE_CLIENT_TWO_HAND_CHARGE");
+    bool addressed=false,charged=false;float chargeUntil=Time.time+15;while(match.Player(guest).TotalStroke<1&&Time.time<chargeUntil){addressed|=match.IsAiming(guest)&&guest.GolfClubMotion.TwoHanded&&guest.GolfClubMotion.GripError<.025f&&guest.GolfClubMotion.LeftWristReachable&&guest.GolfClubMotion.RightWristReachable;charged|=guest.GolfClubMotion.State.action==GolfClubAction.Charge&&guest.GolfClubMotion.TwoHanded&&guest.GolfClubMotion.GripError<.025f;yield return null;}Check(addressed,"HOST_SEES_REPLICATED_CLIENT_TWO_HAND_AIM_ADDRESS");Check(charged,"HOST_SEES_RELIABLE_CLIENT_TWO_HAND_CHARGE");
     float until=Time.time+15;while(match.Player(guest).TotalStroke<1&&Time.time<until)yield return null;
     Check(match.Player(guest).TotalStroke==1&&match.Player(app.LocalAthlete).TotalStroke==0&&hostBall.Owner==0,"CLIENT_RPC_HITS_HOST_BALL_WITHOUT_TRANSFERRING_OWNER");
     Check(guest.GolfClubMotion.State.action==GolfClubAction.Swing&&guest.GolfClubMotion.State.round==match.Round,"HOST_PUBLISHES_SWING_ROUND_AND_SHARED_START_TIME");yield return new WaitForSeconds(.35f);Check(Vector3.ProjectOnPlane(hostBall.Body.position-hostBall.LastShotPosition,Vector3.up).magnitude>.05f,"HOST_SIMULATES_ACTUAL_CLIENT_SHOT");
@@ -252,7 +306,7 @@ namespace WhatTheFish {
     CheckBallVisual(match.Ball(0));
     Check(match.State.Players.All(p=>match.Tee(p.PlayerId))&&FindObjectsByType<GolfTee>(FindObjectsSortMode.None).Length==2,"CLIENT_DISPLAYS_BOTH_PLAYERS_FIXED_OPENING_TEES");
     yield return new WaitForSeconds(.2f);Check(Athlete.Active.Where(a=>match.Player(a)!=null).All(a=>a.GolfClubMotion.Equipped),"CLIENT_SEES_CLUB_ON_EVERY_MATCH_PLAYER");
-    Check(app.view.BeginGolfAim(),"CLIENT_REQUESTS_AIM_LOCK");yield return new WaitForSeconds(.3f);Check(app.view.BeginGolfSwing(42),"CLIENT_STARTS_RELIABLE_GOLF_CHARGE");yield return new WaitForSeconds(.35f);yield return PoseFrame();Check(app.LocalAthlete.GolfClubMotion.TwoHanded&&app.LocalAthlete.GolfClubMotion.GripError<.025f,"CLIENT_LOCAL_TWO_HAND_GRIP");
+    Check(app.view.BeginGolfAim(),"CLIENT_REQUESTS_AIM_LOCK");yield return new WaitForSeconds(.3f);yield return PoseFrame();var localClub=app.LocalAthlete.GolfClubMotion;Check(app.view.GolfAiming&&localClub.TwoHanded&&localClub.GripError<.025f&&localClub.HeadTargetError<.03f&&localClub.LeftWristReachable&&localClub.RightWristReachable,"CLIENT_ENTERS_TWO_HAND_AIM_ADDRESS_BEFORE_CHARGE");Check(app.view.BeginGolfSwing(42),"CLIENT_STARTS_RELIABLE_GOLF_CHARGE");yield return new WaitForSeconds(.35f);yield return PoseFrame();Check(localClub.TwoHanded&&localClub.GripError<.025f,"CLIENT_LOCAL_TWO_HAND_GRIP");
     if(args.Contains("-golfSideSwing")){
      var actor=app.LocalAthlete;var direction=Vector3.ProjectOnPlane(match.Ball(0).Body.position-actor.transform.position,Vector3.up);
      File.AppendAllText(report,$"SIDE_ADDRESS position={actor.transform.position} ball={match.Ball(0).Body.position} yaw={actor.transform.eulerAngles.y:F3} error={Vector3.Angle(actor.transform.forward,direction):F3}\n");

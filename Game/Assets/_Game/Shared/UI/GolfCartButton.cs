@@ -17,7 +17,7 @@ namespace WhatTheFish {
    bool available=view&&view.active&&!view.GolfAimRequested&&actor&&GolfCartWorld.Allowed&&!actor.inTransit;
    bool visible=available&&(summon||driving||GolfCartWorld.Nearest(actor));
    visibility.alpha=visible?1:0;visibility.blocksRaycasts=visible;button.interactable=visible&&Time.unscaledTime>=nextPress;
-   label.text=summon?(GolfCartWorld.HasCart(actor)?"收回":"召唤"):(driving?"离开":"驾驶");
+   label.text=summon?(GolfCartWorld.HasCart(actor)?"Recall":"Buggy"):(driving?"Exit":"Drive");
    if(!Application.isMobilePlatform)label.text+=summon?" [R]":" [E]";
   }
  }

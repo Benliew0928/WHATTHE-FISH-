@@ -13,6 +13,7 @@ namespace WhatTheFish {
   public const float AimReach=3f;
   readonly Dictionary<Athlete,GolfAimState> aims=new();
   readonly List<Athlete> invalidAims=new();
+  readonly List<(Athlete actor,GolfAimState aim)> aimUpdates=new();
   public GolfAimState Aim(Athlete actor){if(!actor)return default;var net=actor.GetComponent<NetworkAthlete>();return !Authority&&net?net.GolfAim.Value:aims.TryGetValue(actor,out var value)?value:default;}
   public bool IsAiming(Athlete actor)=>Aim(actor).active;
   public GolfBall AimCandidate(Athlete actor){
@@ -32,7 +33,11 @@ namespace WhatTheFish {
    return StanceAt(actor,ball,offset.normalized,out position);
   }
   bool StanceAt(Athlete actor,GolfBall ball,Vector3 offset,out Vector3 position){
-   position=actor.transform.position;var desired=ball.Body.position+offset*.85f;
+   // Stand close enough for the shoulders to sit over the address grip. The
+   // previous .85 m side offset left the short character reaching outward with
+   // a folded elbow. Derive this from the sanctioned club reach so the stance
+   // remains proportional if that gameplay range is tuned.
+   position=actor.transform.position;var desired=ball.Body.position+offset*(GolfClubMotion.SwingReach*.64f);
    if(!Physics.Raycast(desired+Vector3.up*1.2f,Vector3.down,out var ground,2.5f,1<<8,QueryTriggerInteraction.Ignore)||ground.normal.y<.8f||Mathf.Abs(ground.point.y-actor.transform.position.y)>.6f)return false;
    desired=ground.point+Vector3.up*.035f;
    foreach(var other in Athlete.Active)if(other&&other!=actor&&Vector3.Distance(other.transform.position,desired)<.6f)return false;
@@ -62,9 +67,14 @@ namespace WhatTheFish {
   }
   void ClearAims(){invalidAims.Clear();invalidAims.AddRange(aims.Keys);foreach(var actor in invalidAims)ReleaseAim(actor);aims.Clear();}
   void ValidateAims(){
-   invalidAims.Clear();foreach(var item in aims){var actor=item.Key;var aim=item.Value;var ball=Ball(aim.owner);
-    if(!actor||!CanSwing(actor)||!ball||!ball.ReadyToAim||ball.ResetSequence!=aim.reset||(ball.Body.position-aim.ballPosition).sqrMagnitude>.01f||!InRange(actor,ball))invalidAims.Add(actor);
-   }foreach(var actor in invalidAims)ReleaseAim(actor);
+   invalidAims.Clear();aimUpdates.Clear();foreach(var item in aims){var actor=item.Key;var aim=item.Value;var ball=Ball(aim.owner);
+    if(!actor||!ball||!ball.Live||ball.ResetSequence!=aim.reset||!State.Running||aim.round!=Round||actor.inTransit||GolfCartWorld.Driving(actor)){invalidAims.Add(actor);continue;}
+    if(actor.GolfClubMotion.Busy||!ball.ReadyToAim){
+     if(!InRange(actor,ball)){invalidAims.Add(actor);continue;}
+     aim.ballPosition=ball.Body.position;aimUpdates.Add((actor,aim));continue;
+    }
+    if(!CanSwing(actor)||(ball.Body.position-aim.ballPosition).sqrMagnitude>.01f||!InRange(actor,ball))invalidAims.Add(actor);
+   }foreach(var actor in invalidAims)ReleaseAim(actor);foreach(var update in aimUpdates){aims[update.actor]=update.aim;var net=update.actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned)net.GolfAim.Value=update.aim;}
   }
  }
 }

@@ -12,7 +12,7 @@ namespace WhatTheFish {
    trigger.isTrigger=true;trigger.center=Vector3.down*(hole.cupDepth*.5f);
    trigger.size=new Vector3(hole.cupRadius*2,hole.cupDepth,hole.cupRadius*2);
   }
-  bool Inside(Vector3 local){float radius=Mathf.Max(0,Hole.cupRadius-GolfBall.Radius);return new Vector2(local.x,local.z).sqrMagnitude<=radius*radius;}
+  bool Inside(Vector3 local){return new Vector2(local.x,local.z).sqrMagnitude<=Hole.cupRadius*Hole.cupRadius;}
   public bool Contains(Vector3 position){var p=transform.InverseTransformPoint(position);return p.y<=-GolfBall.Radius*.25f&&p.y>=-Hole.cupDepth-GolfBall.Radius&&Inside(p);}
   // Triggers are discrete. A downward sweep also catches a fast ball passing
   // through the cup between physics steps, without scoring a fly-over.

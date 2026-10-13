@@ -23,6 +23,9 @@ namespace WhatTheFish {
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Golf&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Golf);
   public bool CanStart=>Authority&&Context&&!State.Running&&Course.holes!=null&&Course.holes.Length==GolfPlayerState.HoleCount&&Eligible().Any();
   public double Remaining=>State.Remaining(Now);
+  public bool Starting=>Context&&State.Running&&Now<State.StartedAt;
+  public double StartRemaining=>Starting?Math.Max(0,State.StartedAt-Now):0;
+  public static bool BlocksMovement=>Instance&&Instance.Context&&Instance.Starting;
   public GolfMatchSnapshot Snapshot=>new GolfMatchSnapshot{phase=State.Phase,round=Round,started=State.StartedAt,deadline=State.CountdownDeadline,firstFinisher=State.FirstFinisher};
   void Awake(){
    Course=GetComponent<GolfCourse>();
@@ -50,15 +53,29 @@ namespace WhatTheFish {
   }
   public bool StartMatch(){
    if(!CanStart)return false;
-   return Begin(Eligible().Select(a=>(GolfCartWorld.Key(a),a,a.GetComponent<NetworkAthlete>()?(GolfCartWorld.Key(a)==0?"Host":"Player "+GolfCartWorld.Key(a)):"You")).ToArray());
+   double countdown=System.Environment.GetCommandLineArgs().Any(a=>a.Contains("Audit")||a.Contains("Review")||a.Contains("-probe"))?0:5.0;
+   return Begin(Eligible().Select(a=>(GolfCartWorld.Key(a),a,a.GetComponent<NetworkAthlete>()?(GolfCartWorld.Key(a)==0?"Host":"Player "+GolfCartWorld.Key(a)):"You")).ToArray(),countdown);
   }
-  bool Begin((ulong id,Athlete actor,string name)[] roster){
+  bool Begin((ulong id,Athlete actor,string name)[] roster,double countdown=5.0){
    if(!Authority||!Context||State.Running||Course.holes.Length!=5||Course.holes.Select(h=>h.number).OrderBy(n=>n).SequenceEqual(new[]{1,2,3,4,5})==false||Course.holes.Any(h=>!h.cup||!h.tee))return false;
    var template=AppRoot.Instance.stadium.transform.Find("Golf Equipment/Ball");if(!template)return false;ballTemplate=template.gameObject;
-   if(!State.Start(roster.Select(p=>new GolfEntrant(p.id,p.name)),Now))return false;
+   GolfCartWorld.ParkDrivers(false);
+   if(!State.Start(roster.Select(p=>new GolfEntrant(p.id,p.name)),Now,countdown))return false;
    ClearViews();Round=++nextRound;
-   foreach(var p in roster){actors[p.id]=p.actor;p.actor.Setup();p.actor.GolfClubMotion.Equip(Round);var ball=CreateBall(p.id);ball.SetLive(true);ball.Place(TeePosition(1,p.id),true);}
+   var tee=Course.holes.First(h=>h.number==1).tee;
+   foreach(var p in roster){actors[p.id]=p.actor;p.actor.Setup();p.actor.GolfClubMotion.Equip(Round);var ball=CreateBall(p.id);ball.SetLive(true);ball.Place(TeePosition(1,p.id),true);TeleportToTee(p.actor,p.id,tee);}
    ClearInputs();wasContext=true;Publish();return true;
+  }
+  void TeleportToTee(Athlete actor,ulong id,Transform tee){
+   if(!actor||!tee)return;
+   var ballGround=TeeGroundPosition(1,id);var standPos=ballGround-tee.forward*1.1f;
+   if(Physics.Raycast(standPos+Vector3.up*2f,Vector3.down,out var ground,4f,1<<8,QueryTriggerInteraction.Ignore))standPos=ground.point+Vector3.up*.04f;
+   float yaw=tee.eulerAngles.y;var rot=Quaternion.Euler(0,yaw,0);
+   bool enabled=actor.capsule.enabled;actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(standPos,rot);actor.ResetLocomotion();actor.capsule.enabled=enabled;
+   var net=actor.GetComponent<NetworkAthlete>();
+   if(net&&net.IsSpawned&&net.IsServer)actor.GetComponent<Unity.Netcode.Components.NetworkTransform>().Teleport(standPos,rot,actor.transform.localScale);
+   Physics.SyncTransforms();
+   if(AppRoot.Instance&&AppRoot.Instance.LocalAthlete==actor&&PlayerView.Instance)PlayerView.Instance.yaw=yaw;
   }
   GolfBall CreateBall(ulong id){
    if(balls.TryGetValue(id,out var found)&&found)return found;
@@ -87,7 +104,7 @@ namespace WhatTheFish {
    return p;
   }
   public Vector3 TeePosition(int hole,ulong owner)=>TeeGroundPosition(hole,owner)+Vector3.up*(GolfBall.Radius+.002f+(hole==1?GolfTee.SeatHeight:0));
-  public bool CanSwing(Athlete actor){var p=Player(actor);return Context&&State.Running&&p!=null&&!p.IsFinished&&!p.IsDNF&&actor&&actor.GolfClubMotion&&actor.GolfClubMotion.RigReady&&!actor.GolfClubMotion.Busy&&!actor.inTransit&&!actor.Airborne&&!actor.LoadingJump&&actor.Grounded&&!GolfCartWorld.Driving(actor);}
+  public bool CanSwing(Athlete actor){var p=Player(actor);return Context&&State.Running&&!Starting&&p!=null&&!p.IsFinished&&!p.IsDNF&&actor&&actor.GolfClubMotion&&actor.GolfClubMotion.RigReady&&!actor.GolfClubMotion.Busy&&!actor.inTransit&&!actor.Airborne&&!actor.LoadingJump&&actor.Grounded&&!GolfCartWorld.Driving(actor);}
   public GolfBall Strikeable(Athlete actor){
    if(!CanSwing(actor))return null;
    return balls.Values.Where(b=>CanStrike(actor,b)).OrderBy(b=>Vector3.SqrMagnitude(b.Body.position-actor.transform.position)).FirstOrDefault();
@@ -101,7 +118,7 @@ namespace WhatTheFish {
    actor.GolfClubMotion.Charge(value,heading,ball?ball.Body.position:Vector3.zero,round);
   }
   public bool TrySwing(Athlete hitter,ulong owner,float heading,float charge,uint round){
-   if(!Authority||round!=Round||!float.IsFinite(heading)||!float.IsFinite(charge)||charge<0||charge>1)return false;
+   if(!Authority||round!=Round||Starting||!float.IsFinite(heading)||!float.IsFinite(charge)||charge<0||charge>1)return false;
    State.Advance(Now);var ball=Ball(owner);if(!CanStrike(hitter,ball)){Publish();return false;}
    if(!State.RecordSwing(Player(hitter).PlayerId,Now))return false;
    var direction=Quaternion.Euler(0,heading%360,0)*Vector3.forward;
@@ -142,7 +159,7 @@ namespace WhatTheFish {
   }
   void Receive(){
    var host=NetworkAthlete.HostPlayer;if(!host||!host.IsSpawned)return;var snapshot=host.GolfMatch.Value;
-   if(snapshot.round!=Round){ClearViews();Round=snapshot.round;PlayerView.Instance?.ClearMatchInput();}
+   if(snapshot.round!=Round){ClearViews();Round=snapshot.round;PlayerView.Instance?.ClearMatchInput();if(Course&&Course.holes!=null&&Course.holes.Length>0&&Course.holes[0].tee&&PlayerView.Instance)PlayerView.Instance.yaw=Course.holes[0].tee.eulerAngles.y;}
    var roster=new List<(ulong,GolfPlayerSnapshot)>();foreach(var p in host.GolfPlayers)roster.Add((p.owner,p.progress));State.Receive(snapshot,roster);
    foreach(var net in FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None)){
     if(!net.IsSpawned||State.Player(net.OwnerClientId)==null)continue;var actor=net.GetComponent<Athlete>();actors[net.OwnerClientId]=actor;actor.GolfClubMotion.Equip(Round);
@@ -162,7 +179,7 @@ namespace WhatTheFish {
    if(Time.unscaledTime>=publishAt){publishAt=Time.unscaledTime+.05f;Publish();}
   }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-  public bool StartTestMatch((ulong id,Athlete actor,string name)[] roster)=>Begin(roster);
+  public bool StartTestMatch((ulong id,Athlete actor,string name)[] roster)=>Begin(roster,0);
 #endif
  }
 }

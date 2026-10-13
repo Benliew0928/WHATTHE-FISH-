@@ -25,10 +25,10 @@ namespace WhatTheFish {
   public bool Running=>Phase==GolfMatchPhase.Playing||Phase==GolfMatchPhase.FinalCountdown;
   public bool CountdownStarted=>FirstFinisher!=ulong.MaxValue;
   public GolfPlayerState Player(ulong id)=>players.TryGetValue(id,out var player)?player:null;
-  public bool Start(IEnumerable<GolfEntrant> roster,double now){
+  public bool Start(IEnumerable<GolfEntrant> roster,double now,double countdown=0){
    if(Running||!double.IsFinite(now))return false;
    var entrants=roster?.ToArray();if(entrants==null||entrants.Length==0||entrants.Any(p=>p.id==ulong.MaxValue)||entrants.Select(p=>p.id).Distinct().Count()!=entrants.Length)return false;
-   Clear();foreach(var p in entrants)players.Add(p.id,new GolfPlayerState(p.id,p.name));StartedAt=now;Phase=GolfMatchPhase.Playing;return true;
+   Clear();foreach(var p in entrants)players.Add(p.id,new GolfPlayerState(p.id,p.name));StartedAt=now+Math.Max(0,countdown);Phase=GolfMatchPhase.Playing;return true;
   }
   public bool RecordSwing(ulong hitter,double now){Advance(now);return Running&&double.IsFinite(now)&&now>=StartedAt&&Player(hitter)!=null&&Player(hitter).Stroke();}
   public GolfHoleResult EnterHole(ulong owner,int hole,double now){

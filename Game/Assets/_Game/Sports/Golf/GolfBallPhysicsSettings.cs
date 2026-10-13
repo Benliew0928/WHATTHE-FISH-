@@ -16,7 +16,14 @@ namespace WhatTheFish {
   public Vector3 SwingVelocity(Vector3 direction,float charge,GolfShotMode mode=GolfShotMode.Swing){
    charge=Mathf.Clamp01(charge);
    direction=Vector3.ProjectOnPlane(direction,Vector3.up).normalized;
-   if(mode==GolfShotMode.Putt)return direction*Mathf.Lerp(minimumPuttSpeed,maximumPuttSpeed,charge);
+   if(mode==GolfShotMode.Putt){
+    // Remap charge through sqrt so rolling distance grows roughly linearly with
+    // the displayed charge value. Because distance proportional to v^2, making
+    // v proportional to sqrt(charge) gives distance proportional to charge.
+    // Min/max putt speeds are preserved exactly. Ball physics is unchanged.
+    float linearCharge=Mathf.Sqrt(charge);
+    return direction*Mathf.Lerp(minimumPuttSpeed,maximumPuttSpeed,linearCharge);
+   }
    return direction*Mathf.Lerp(minimumSwingSpeed,maximumSwingSpeed,charge)+Vector3.up*Mathf.Lerp(minimumSwingLift,maximumSwingLift,charge);
   }
   [Header("Slow rolling and rest")]

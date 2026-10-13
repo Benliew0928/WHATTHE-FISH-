@@ -69,16 +69,17 @@ namespace WhatTheFish {
    Time.timeScale=1;var last=match.Course.holes[4];var dir=Vector3.ProjectOnPlane(last.cup.position-last.tee.position,Vector3.up).normalized;
    yield return Prepare(match.TeePosition(5,ball.Owner),Mathf.Atan2(dir.x,dir.z)*Mathf.Rad2Deg);
    var pointer=new PointerEventData(EventSystem.current){pointerId=72,button=PointerEventData.InputButton.Left};int before=match.Player(actor).TotalStroke;ui.OnPointerDown(pointer);
-   yield return new WaitForSeconds(1.15f);Check(app.view.GolfDisplayedCharge>.8f,"POWER_FIRST_RISE");Capture("swing-glow");
-   yield return new WaitForSeconds(.9f);Check(app.view.GolfDisplayedCharge>.25f&&app.view.GolfDisplayedCharge<.55f,"POWER_FALLS_WHILE_STILL_HELD");
-   yield return new WaitForSeconds(.52f);Check(app.view.GolfDisplayedCharge<.12f,"POWER_RETURNS_TO_LOW");
-   yield return new WaitForSeconds(1.1f);Check(app.view.GolfDisplayedCharge>.7f&&app.view.GolfCharging&&match.Player(actor).TotalStroke==before,"POWER_REPEATS_WITHOUT_AUTO_SWING");
-   yield return new WaitForSeconds(.55f);yield return Frame();
+   float sweep=GolfShotRules.PowerSweepSeconds/1.3f;
+   yield return new WaitForSeconds(1.15f*sweep);Check(app.view.GolfDisplayedCharge>.8f,"POWER_FIRST_RISE");Capture("swing-glow");
+   yield return new WaitForSeconds(.9f*sweep);Check(app.view.GolfDisplayedCharge>.25f&&app.view.GolfDisplayedCharge<.55f,"POWER_FALLS_WHILE_STILL_HELD");
+   yield return new WaitForSeconds(.52f*sweep);Check(app.view.GolfDisplayedCharge<.12f,"POWER_RETURNS_TO_LOW");
+   yield return new WaitForSeconds(1.1f*sweep);Check(app.view.GolfDisplayedCharge>.7f&&app.view.GolfCharging&&match.Player(actor).TotalStroke==before,"POWER_REPEATS_WITHOUT_AUTO_SWING");
+   yield return new WaitForSeconds(.55f*sweep);yield return Frame();
    var end=app.view.GolfPreview.EndPoint;var mesh=app.view.GolfPreview.GetComponent<MeshFilter>().sharedMesh.vertices;int samples=app.view.GolfPreview.PointCount;uint sequence=ball.GuideContactSequence;
    // A direction update arriving after the rendered frame cannot move the shot.
    app.view.yaw+=10;ui.OnPointerUp(pointer);yield return Observe("DESCENDING_RELEASE",end,mesh,samples,GolfShotMode.Swing,sequence,before);
    yield return Prepare(Ground(last.cup.position+Vector3.left*2,GolfBall.Radius+.002f),-90);
-   ui.OnPointerDown(pointer);yield return new WaitForSeconds(.9f);yield return Frame();Capture("putt-glow");ui.OnPointerExit(pointer);yield return null;
+   ui.OnPointerDown(pointer);yield return new WaitForSeconds(.9f*sweep);yield return Frame();Capture("putt-glow");ui.OnPointerExit(pointer);yield return null;
    Check(!app.view.GolfCharging&&app.view.GolfAiming,"POINTER_CANCEL_RETAINS_AIM_WITHOUT_SWING");app.view.CancelGolfAim();
    yield return Interactions();
    File.AppendAllText(report,"GOLF_SHOT_COMPLETE checks="+checks+"\n");

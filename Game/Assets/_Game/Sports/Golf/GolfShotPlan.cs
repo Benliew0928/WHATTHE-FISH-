@@ -3,7 +3,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public enum GolfShotMode:byte { Swing,Putt }
  public static class GolfShotRules {
-  public const float PuttDistance=12f,PowerSweepSeconds=1.3f;
+  public const float PuttDistance=12f,PowerSweepSeconds=2.6f;
   public static float Power(float elapsed)=>Mathf.PingPong(Mathf.Max(0,elapsed)/PowerSweepSeconds,1);
  }
  // One terrain-aware trajectory is used for presentation and authoritative
