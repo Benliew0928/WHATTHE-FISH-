@@ -53,9 +53,9 @@ namespace WhatTheFish {
      var fight=p.Value;
      if(!fighting[i]||castSequence[i]!=fight.sequence||castOwner[i]!=fight.owner){smoothVelocity[i]=Vector3.zero;castSequence[i]=fight.sequence;castOwner[i]=fight.owner;}
      fighting[i]=true;
-     position=Vector3.SmoothDamp(fish[i].transform.position,position,ref smoothVelocity[i],.08f,12,Time.deltaTime);
+     position=Vector3.SmoothDamp(fish[i].transform.position,position,ref smoothVelocity[i],.07f,12,Time.deltaTime);
      tangent=fight.fightHeading*fight.velocity+Vector3.Cross(Vector3.up,fight.fightHeading)*fight.fightMotion.x-Vector3.up*fight.fightMotion.y;
-     if(tangent.sqrMagnitude>.09f){var rotation=Quaternion.LookRotation(tangent.normalized)*Quaternion.Euler(0,0,-fight.fightMotion.x*12);fish[i].transform.rotation=Quaternion.RotateTowards(fish[i].transform.rotation,rotation,140*Time.deltaTime);}
+     if(tangent.sqrMagnitude>.09f){var rotation=Quaternion.LookRotation(tangent.normalized)*Quaternion.Euler(0,0,-fight.fightMotion.x*15);fish[i].transform.rotation=Quaternion.RotateTowards(fish[i].transform.rotation,rotation,200*Time.deltaTime);}
      fish[i].transform.position=position;
     }
     else if(landed){fighting[i]=false;fish[i].transform.SetPositionAndRotation(position,Quaternion.LookRotation((p.Value.origin-position).normalized));}
@@ -67,8 +67,8 @@ namespace WhatTheFish {
     bool selected=view&&view.SelectedFishingFish==i;bool nearby=FishingState.PierForFish(i)==pier&&local.HasValue&&local.Value.phase==FishingPhase.Ready&&game.State.Running&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay);
     if(p.HasValue&&p.Value.phase==FishingPhase.Reeling&&visible){
      if(!halos[i]){halos[i]=Line("Fighting fish wake "+i,transform,.025f);halos[i].loop=true;halos[i].positionCount=24;}
-     var wake=halos[i];wake.enabled=p.Value.fightOffset.y<.6f;float cycle=Mathf.Repeat((float)game.Now*1.2f+i*.13f,1),radius=.22f+cycle*.5f+Mathf.Min(1,smoothVelocity[i].magnitude)*.18f;
-     wake.startWidth=wake.endWidth=.025f+p.Value.surge*.025f;wake.startColor=wake.endColor=new Color(.78f,1,1,(1-cycle)*(.45f+p.Value.surge*.4f));
+     var wake=halos[i];wake.enabled=surface>=game.WaterHeight(position)-.18f;float cycle=Mathf.Repeat((float)game.Now*1.6f+i*.13f,1),radius=.28f+cycle*.90f+Mathf.Min(1,smoothVelocity[i].magnitude)*.22f;
+     wake.startWidth=wake.endWidth=.04f+p.Value.surge*.045f;wake.startColor=wake.endColor=new Color(.78f,1,1,(1-cycle)*(.65f+p.Value.surge*.3f));
      var centre=position;centre.y=game.WaterHeight(centre)+.03f;
      for(int j=0;j<wake.positionCount;j++){float angle=j*Mathf.PI*2/wake.positionCount;wake.SetPosition(j,centre+new Vector3(Mathf.Cos(angle)*radius,0,Mathf.Sin(angle)*radius*.75f));}
     }else if(nearby&&visible){

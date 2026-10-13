@@ -71,8 +71,9 @@ namespace WhatTheFish {
   public float WaterHeight(Vector3 world){var p=transform.InverseTransformPoint(world);float t=(float)Now;float fade=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(24,27.8f,new Vector2(p.x,p.z).magnitude));return WaterY+(Mathf.Sin(p.x*.92f+p.z*.46f+t*1.1f)*.023f+Mathf.Sin(p.z*1.27f-p.x*.34f-t*.85f)*.013f)*fade;}
   public Vector3 FishPosition(int fish,double now){
    int pier=Mathf.Clamp(FishingState.PierForFish(fish),0,Lagoon.standingPositions.Length-1),size=FishingState.SizeForFish(fish),row=fish%FishingState.FishPerPier/FishingState.SizeCount;var point=Pier(pier);var centre=transform.position;var radial=Vector3.ProjectOnPlane(point-centre,Vector3.up).normalized;var side=Vector3.Cross(Vector3.up,radial);
-   float t=(float)(now*.55+fish*2.7);var p=point-radial*(5.8f+row*1.45f+size*.55f+Mathf.Cos(t)*.32f)+side*((size-1)*2.1f+(row==0?-.35f:.35f)+Mathf.Sin(t)*.42f);
-   p.y=WaterY-.58f-size*.14f+Mathf.Sin(t*1.4f)*.08f;return p;
+   // Wide continuous ellipses stay in each pier's school and casting range.
+   float t=(float)(now*.60+fish*2.7);var p=point-radial*(5.8f+row*1.45f+size*.55f+Mathf.Cos(t)*1.65f)+side*((size-1)*2.1f+(row==0?-.35f:.35f)+Mathf.Sin(t)*2.10f);
+   p.y=WaterY-.58f-size*.14f+Mathf.Sin(t*1.4f)*.12f;return p;
   }
   public bool StartMatch(FishingMode mode=FishingMode.Round){if(!CanStart(mode))return false;if(!State.Start(Eligible().Select(Key),++nextRound,Now,mode))return false;PlayerView.Instance?.ClearMatchInput();Publish();return true;}
   void BeginPractice(){var actors=Eligible();State.Begin(actors.Length<=5?actors.Select(Key):Array.Empty<ulong>(),++nextRound,Now,false);PlayerView.Instance?.ClearMatchInput();Publish();}

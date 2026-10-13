@@ -1,5 +1,78 @@
 # Current G2 / L2 environment
 
+## Stronger Fishing motion and upstream Golf integration — 13 October 2026
+
+Complete fresh Windows player delivered to `Builds/WindowsFinal/`:
+**321 runtime/support hashes** match the tested candidate,
+plus `LATEST-BUILD.txt` (**322 files**).
+Full content completed UTC **2026-10-13T11:32:40.8512971Z**; this is a complete
+content build, with all teammate scene changes included.
+
+Hooked fish have stronger thrust and surface surges, with spring force, drag,
+buoyancy and gravity retained. Smooth turns allow up to 200 degrees/second;
+rendered travel retains its 12 m/s cap. Free fish swim continuous 3.3 × 4.2 m
+loops inside each pier's casting range. Surface spray is taller and thicker;
+wakes expand farther. The shared-material droplet pool remains capped at 48.
+No new Fishing image, model, shader, audio or package is introduced. Earlier
+catch assistance, countersteering, six skills/two favourites, tutorial, scoring
+and round rules remain intact.
+
+Merged upstream `9b4eb15`, including Golf countdown graphics, cart controls,
+longer swing and integrated scenes. Incoming shared/network code was preserved;
+the merge had no conflicts. Four islands, shared travel and protocol **49** remain.
+
+**3,916 assertions pass in ten fully passing reports.**
+The separate cart reports contain 209 passes and 12 known failures:
+
+| Review | Passes | Known failures | Evidence |
+| --- | ---: | ---: | --- |
+| Fishing gameplay | 2232 | 0 | `Builds/FishingGameplayQA/Run-20261013-193335/offline.txt` |
+| Fishing host | 45 | 0 | `Builds/FishingGameplayQA/Run-20261013-193505/host.txt` |
+| Fishing guest | 46 | 0 | `Builds/FishingGameplayQA/Run-20261013-193505/client.txt` |
+| Fishing results/feedback | 146 | 0 | `Builds/FishingPolishQA/Run-20261013-193543/polish.txt` |
+| Basketball UI | 434 | 0 | `Builds/BasketballUIQA/Run-20261013-193555-638/results.txt` |
+| Football UI | 756 | 0 | `Builds/FootballUIQA/Run-20261013-193618-344/results.txt` |
+| Golf offline match | 158 | 0 | `Builds/GolfMiniGameQA/Run-20261013-193638/offline.txt` |
+| Golf host | 21 | 0 | `Builds/GolfMiniGameQA/Run-20261013-193638/host.txt` |
+| Golf guest | 22 | 0 | `Builds/GolfMiniGameQA/Run-20261013-193638/client.txt` |
+| Golf HUD | 56 | 0 | `Builds/GolfHUDQA/Run-20261013-193748/golf-hud.txt` |
+| Golf cart offline | 163 | 8 | `Builds/GolfCartQA/Run-20261013-193800/offline.txt` |
+| Golf cart host | 23 | 2 | `Builds/GolfCartQA/Run-20261013-193800/host.txt` |
+| Golf cart guest | 23 | 2 | `Builds/GolfCartQA/Run-20261013-193800/client.txt` |
+
+All 30 schools are checked across a complete swim cycle for expanded movement,
+cast reach and lagoon containment. Existing force fixtures still verify finite,
+bounded inertial movement with rising/falling motion. Actual catches verify
+speed/turn caps, attached line endpoints, real large-fish water contact,
+bounded droplets and visible gravitational arcs. Rendered splash, aiming,
+catch/held-caption, skill/tutorial and Golf HUD captures were inspected.
+No runtime exceptions were found in the reports. Source hashes did not change
+in runtime C# between Windows QA and Android; build-time Golf prefab ID drift
+was audited through all14 objects and external GUID references, then restored
+to the exact incoming merged index text. Two URP runtime resource registrations
+differ by platform; reconstructing those two lines matches the exact tested
+Windows bytes, while Android's complete settings graph equals the incoming
+index. Snapshot/audit details stay in `Builds/FishingSurge/Task-20261013-190655/`.
+
+Fresh AndroidSubmission written **19:47:57 Malaysia time** measures
+**90,281,708 → 90,388,492 bytes (+106,784)**.
+Headroom to the strict 100,000,000-byte boundary: **9,611,508 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,388,492 bytes**.
+The enforced hard limit and independent APK v2 signature checks pass. SHA-256:
+**18CC2A2F7E2354ADACAF585FCF7DCDD8F5257A61CC1EAE4D0557CDE91A1EE6EB**.
+
+[Packing comparison](APK-SIZE-AUDIT.md#stronger-fishing-motion-and-upstream-golf-integration--13-october-2026). The previous player was replaced
+in place under the user's no-backup preference; only its metadata inventory is
+retained. No new archive batch is created. User explicitly requested publishing
+this task to `main`.
+
+Physical-phone touch, appearance and sustained FPS, real WAN conditions and
+celebrations remain unverified or deferred. The separate Golf cart suite still
+has the **12 documented toe-direction failures** around 64 degrees; its other
+209 checks and all three completion/exit markers pass. This existing limitation
+is recorded in [the Golf cart notes](VERIFICATION.md#golf-cart-english-button-labels--12-october-2026).
+Fishing splashes use a stylized force model, not a fluid solver.
+
 ## Fishing six skills, familiar tutorial and water contact — 13 October 2026
 
 Delivered the complete player to `Builds/WindowsFinal/`: **321 runtime/support

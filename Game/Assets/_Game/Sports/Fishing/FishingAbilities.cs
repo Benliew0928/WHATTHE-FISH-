@@ -53,13 +53,13 @@ namespace WhatTheFish {
    // neutral buoyancy below the surface and gravity during a breach.
    int steps=Mathf.Max(1,Mathf.CeilToInt(dt/.01f));float h=dt/steps,size=SizeForFish(p.fish);
    for(int i=0;i<steps;i++){
-    float span=1.35f+.45f*size,thrust=p.pull*(2.2f+.5f*size+p.surge*3.2f);
+    float span=1.35f+.45f*size,thrust=p.pull*(3.2f+.7f*size+p.surge*4.8f);
     float stretch=Mathf.Max(0,p.distance-p.lineLength);
-    float lateralForce=thrust-p.fightOffset.x*(1.2f+2*p.progress)-8*stretch*p.fightOffset.x/Mathf.Max(1,p.distance);
-    p.fightMotion.x=(p.fightMotion.x+lateralForce/mass*h)/(1+2.4f/mass*h);
+    float lateralForce=thrust-p.fightOffset.x*(1.8f+2.4f*p.progress)-9*stretch*p.fightOffset.x/Mathf.Max(1,p.distance);
+    p.fightMotion.x=(p.fightMotion.x+lateralForce/mass*h)/(1+2.5f/mass*h);
     p.fightOffset.x+=p.fightMotion.x*h;
-    bool wet=p.fightOffset.y>0;float neutral=.64f+.12f*size;
-    float verticalForce=wet?(neutral-p.fightOffset.y)*5-p.surge*(2.5f+size):mass*9.81f;
+    bool wet=p.fightOffset.y>0;float neutral=.54f+.10f*size;
+    float verticalForce=wet?(neutral-p.fightOffset.y)*5-p.surge*(3.8f+1.4f*size):mass*9.81f;
     p.fightMotion.y=(p.fightMotion.y+verticalForce/mass*h)/(1+(wet?2.2f:.08f)/mass*h);
     p.fightOffset.y+=p.fightMotion.y*h;
     // A safety envelope is well outside the normal trajectory; no per-frame teleporting.

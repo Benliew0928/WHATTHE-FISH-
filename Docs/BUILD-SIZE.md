@@ -1,5 +1,40 @@
 # Build size — measured release records
 
+## Stronger Fishing motion and upstream Golf integration — 13 October 2026
+
+Fresh AndroidSubmission written **19:47:57 Malaysia time** measures
+**90,281,708 → 90,388,492 bytes (+106,784)**.
+Headroom to the strict 100,000,000-byte boundary: **9,611,508 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,388,492 bytes**.
+The enforced hard limit and independent APK v2 signature checks pass. SHA-256:
+**18CC2A2F7E2354ADACAF585FCF7DCDD8F5257A61CC1EAE4D0557CDE91A1EE6EB**.
+
+Hooked fish have stronger thrust and surface surges, with spring force, drag,
+buoyancy and gravity retained. Smooth turns allow up to 200 degrees/second;
+rendered travel retains its 12 m/s cap. Free fish swim continuous 3.3 × 4.2 m
+loops inside each pier's casting range. Surface spray is taller and thicker;
+wakes expand farther. The shared-material droplet pool remains capped at 48.
+No new Fishing image, model, shader, audio or package is introduced. Earlier
+catch assistance, countersteering, six skills/two favourites, tutorial, scoring
+and round rules remain intact.
+
+Merged upstream `9b4eb15`, including Golf countdown graphics, cart controls,
+longer swing and integrated scenes. Incoming shared/network code was preserved;
+the merge had no conflicts. Four islands, shared travel and protocol **49** remain.
+
+Complete Windows player refreshed with **3,916 assertions
+passing in ten reports**, plus the separately documented Golf cart limitation.
+[Verification](FISHING-VERIFICATION.md#stronger-fishing-motion-and-upstream-golf-integration--13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#stronger-fishing-motion-and-upstream-golf-integration--13-october-2026). Source/build/ZIP/signature/promotion
+evidence: `Builds/FishingSurge/Task-20261013-190655/`. No new archive batch.
+
+Physical-phone touch, appearance and sustained FPS, real WAN conditions and
+celebrations remain unverified or deferred. The separate Golf cart suite still
+has the **12 documented toe-direction failures** around 64 degrees; its other
+209 checks and all three completion/exit markers pass. This existing limitation
+is recorded in [the Golf cart notes](VERIFICATION.md#golf-cart-english-button-labels--12-october-2026).
+Fishing splashes use a stylized force model, not a fluid solver.
+
 ## Fishing six skills, familiar tutorial and water contact — 13 October 2026
 
 Fresh AndroidSubmission written **17:49:09 Malaysia time** measures

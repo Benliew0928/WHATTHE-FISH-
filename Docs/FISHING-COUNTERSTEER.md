@@ -66,6 +66,23 @@ button after it becomes Right. A limited winding assist during the first five
 seconds makes catches modestly faster without changing bite or score rules. Reduced motion suppresses
 the extra breathing animation while retaining colour/direction and deadline cues.
 
+## Stronger fights and wider swimming — 13 October 2026
+
+Free fish follow continuous ellipses spanning 3.3 metres toward/away from the
+pier and 4.2 metres sideways. Each school remains inside its own casting range.
+Hooked fish have stronger lateral thrust and surface surges, with spring force,
+water drag, buoyancy and airborne gravity still controlling their movement.
+Presentation retains a 12 m/s travel cap and smooth turns capped at 200 degrees
+per second. Catch assistance, bite windows, countersteering, tension and score
+rules are unchanged by this motion pass.
+
+Surface contact produces taller, thicker spray and wider wakes. Spray inherits
+fish velocity and falls under gravity; droplets disappear on water contact or
+after one second. The shared-material pool remains capped at 48, with four
+droplets per burst for Reduced Motion and twelve otherwise. No new image,
+model, shader, audio or runtime dependency is needed for these effects. This
+is a stylized force model, rather than a fluid simulation.
+
 ## Authority and input recovery
 
 Matching room players require **protocol 49** because the replicated Fishing

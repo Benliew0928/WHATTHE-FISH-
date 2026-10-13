@@ -1,5 +1,55 @@
 # APK size audit — measured release records
 
+## Stronger Fishing motion and upstream Golf integration — 13 October 2026
+
+Fresh AndroidSubmission written **19:47:57 Malaysia time** measures
+**90,281,708 → 90,388,492 bytes (+106,784)**.
+Headroom to the strict 100,000,000-byte boundary: **9,611,508 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,388,492 bytes**.
+The enforced hard limit and independent APK v2 signature checks pass. SHA-256:
+**18CC2A2F7E2354ADACAF585FCF7DCDD8F5257A61CC1EAE4D0557CDE91A1EE6EB**.
+
+Compressed ZIP payloads change **+105,751 bytes**;
+container/signature overhead changes **+1,033**.
+The new APK contains **919 entries**, including
+**899 unchanged payload hashes**. These are measurements
+of the actual APK; source PNG bytes and the tables below are different quantities.
+
+Serialized assets change **+172,008 bytes**;
+6 packed source entries change.
+
+| Changed packed source | Serialized delta (uncompressed) |
+| --- | ---: |
+| `Assets/_Game/Resources/GolfUI/Countdown_5.png` | +30,660 |
+| `Assets/_Game/Resources/GolfUI/Countdown_3.png` | +30,572 |
+| `Assets/_Game/Resources/GolfUI/Countdown_2.png` | +30,456 |
+| `Assets/_Game/Resources/GolfUI/Countdown_4.png` | +30,412 |
+| `Assets/_Game/Resources/GolfUI/Countdown_1.png` | +30,344 |
+| `Assets/_Game/Resources/GolfUI/Countdown_GO.png` | +19,564 |
+
+Fishing's new motion reuses the existing shared line material and pooled
+geometry. Upstream Golf graphics are included in this combined measurement;
+growth is not attributed solely to Fishing. No new Fishing asset is imported.
+Mesh rows: **1788 → 1788**, with
+**0 differing rows**. MobileURP/MobileRenderer are
+packed; no forbidden desktop pipeline/SSAO/BlueNoise256 delivery asset is found.
+All requested development review types are absent from release metadata.
+The package remains self-contained ARM64; no addressable download is introduced.
+
+| Largest packed source | Serialized bytes (uncompressed) |
+| --- | ---: |
+| `Assets/_Game/Art/RefinedIslands/Fishing/Fishing_TerrainControl.png` | 22,369,760 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Golf_TerrainControl.png` | 22,369,756 |
+| `Assets/_Game/Art/RefinedIslands/Fishing/Fishing_WaterDepth.png` | 5,592,564 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Golf_WaterDepth.png` | 5,592,560 |
+| `Assets/_Game/Art/Football/Sunvale/Stadium.fbx` | 3,569,800 |
+| `Built-in Texture2D: Splash Screen Unity Logo` | 2,796,376 |
+
+These largest sources remain the principal size concern. The development
+target remains unmet; this effect pass does not add textures or models to them.
+Current CSVs, ZIP hashes/deltas, source manifest, signature and full-player
+promotion evidence: `Builds/FishingSurge/Task-20261013-190655/`. No physical-phone FPS claim is made.
+
 ## Fishing six skills, familiar tutorial and water contact — 13 October 2026
 
 Fresh AndroidSubmission written **17:49:09 Malaysia time** measures
