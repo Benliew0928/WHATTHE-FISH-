@@ -27,8 +27,10 @@ namespace WhatTheFish {
  public sealed class BasketballPlate:MaskableGraphic {
   public Vector2 radius=new(16,16);public float border=2,inset,shadow,pressure;public Color edge=CoveUI.Ink,insetColor=CoveUI.Cream;public bool dashed;
   public void Refresh()=>SetVerticesDirty();
-  protected override void OnPopulateMesh(VertexHelper v){
-   v.Clear();var r=rectTransform.rect;if(shadow>0){var s=r;s.y-=shadow;Round(v,s,radius,edge);}r=Inset(r,r.width*.02f*pressure);r.y-=3*pressure;
+  protected override void OnPopulateMesh(VertexHelper v){Draw(v,rectTransform.rect,color,radius,border,inset,shadow,pressure,edge,insetColor,dashed);}
+  public static void Draw(VertexHelper v,Rect r,Color color,Vector2 radius,float border=2,float inset=0,float shadow=3,float pressure=0,Color? borderColor=null,Color? rimColor=null,bool dashed=false){
+   Color edge=borderColor??CoveUI.Ink,insetColor=rimColor??CoveUI.Cream;
+   v.Clear();if(shadow>0){var s=r;s.y-=shadow;Round(v,s,radius,edge);}r=Inset(r,r.width*.02f*pressure);r.y-=3*pressure;
    if(border>0&&!dashed)Round(v,r,radius,edge);
    var inner=Inset(r,border);Round(v,inner,radius-Vector2.one*border,inset>0?insetColor:color);
    if(inset>0)Round(v,Inset(inner,inset),radius-Vector2.one*(border+inset),color);

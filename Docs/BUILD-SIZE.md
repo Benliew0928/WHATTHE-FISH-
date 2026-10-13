@@ -1,5 +1,113 @@
 # Build size — measured release records
 
+## Fishing six skills, familiar tutorial and water contact — 13 October 2026
+
+Fresh AndroidSubmission written **17:49:09 Malaysia time** measures
+**90,186,840 → 90,281,708 bytes (+94,868)**.
+Headroom to the strict 100,000,000-byte boundary: **9,718,292 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,281,708 bytes**.
+Enforced hard limit and independent APK v2 signature checks pass. SHA-256:
+**FEC057213DF9E1F1837E954107B37E7335068EBD2B7BB53F65966C1EF2E588CB**.
+
+Adds [six skills and two favourites](FISHING-ABILITIES.md), illustrated bag,
+chest and gear controls, and one shared four-page tutorial for first entry and
+How to Play. Tutorial examples reuse actual icons, direction circles and
+pull/Catch/Tension/duration widgets. Two small ASTC atlases replace text-heavy
+gear controls. Native labels stay independent of image resolution. A limited
+early winding assist makes longer catches about one to two seconds faster
+(up to 2.5 seconds in the representative long-distance large-fish case).
+Held Right text stays in the same layout as Left; clock/icon move up three
+design units; redundant results copy is removed. Visible-body water contact
+drives bounded droplets with inherited velocity and gravity.
+
+Complete **322-file Windows player** in `Builds/WindowsFinal/`; all **321
+runtime/support hashes** match the tested candidate. **3,629 checks across
+six reports** pass. Full content completed **16:49:51**; final script refresh
+**17:35:40**. Matching peers need **protocol 49**. The final refresh only updates
+a development result assertion; gameplay/network evidence retains its exact
+earlier script snapshot. [Verification](FISHING-VERIFICATION.md#fishing-six-skills-familiar-tutorial-and-water-contact--13-october-2026),
+[packing details](APK-SIZE-AUDIT.md#fishing-six-skills-familiar-tutorial-and-water-contact--13-october-2026).
+Physical phone touch/visuals/FPS, real WAN and celebrations remain deferred.
+
+## Fishing hybrid gear and smooth force-driven fights — 13 October 2026
+
+Fresh AndroidSubmission written at **14:50:32 Malaysia time** measures
+**90,166,448 → 90,186,840 bytes (+20,392)**. Headroom to the strict
+100,000,000-byte boundary is **9,813,160 bytes**. The **75,000,000-byte
+development target remains exceeded by 15,186,840 bytes**. Enforced budget
+and independent APK v2 signature checks pass. SHA-256:
+**5921BF64BBF1E7042E702DB375B83D00AA72CCADAB14F1A440FD23ED22BE5391**.
+
+Adds the approved [hybrid gear system](FISHING-ABILITIES.md): three favourites
+before Ready, one held item, shared shore supplies with 22-second refills,
+and six-second treasure salvage with a shared 28-second cooldown. Nine abilities
+reuse existing sports meshes/materials/fonts. Single-line Left/Right/Release
+captions fit inside their coloured circles; the timer is 12 units shorter.
+Hooked fish now use host-owned inertia, thrust, tether forces, water drag,
+neutral buoyancy and airborne gravity, with stable headings and smoothed,
+capped presentation turns. Round/Cup/Crew scoring remains unchanged.
+
+The complete **322-file Windows player** is in `Builds/WindowsFinal/`; all
+**321 runtime/support hashes** match the tested candidate. **3,397 checks
+across six reports** pass, including real guest gear requests and rendered
+landscape/safe-area layouts. Full content completed **14:00:51**; final script
+refresh completed **14:31:54**. Matching peers require **protocol 48**.
+[Verification](FISHING-VERIFICATION.md#fishing-hybrid-gear-and-smooth-force-driven-fights--13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#fishing-hybrid-gear-and-smooth-force-driven-fights--13-october-2026).
+Physical-phone touch/visuals/FPS, real WAN and new celebrations remain deferred.
+Older records below describe earlier deliveries.
+
+## Illustrated Fishing controls and fight motion — 13 October 2026
+
+Fresh AndroidSubmission written at **01:18:45 Malaysia time** measures
+**90,107,796 → 90,166,448 bytes (+58,652)**. Headroom to the strict
+100,000,000-byte boundary is **9,833,552 bytes**. The **75,000,000-byte
+working target remains exceeded by 15,166,448 bytes**. The enforced limit and
+independent APK v2 signature checks pass. SHA-256:
+**66D80607B160AABD90619BA3A8292D6A9F21A3B280DB236A8EB08555CACCE0A1**.
+
+One illustrated Left and one mirrored Right circle share aqua/gold states,
+with native internal labels; the circular reel returns for Cast/Hook. A sliced
+frame contains the turn guide and separate Catch/Tension bars. Catch timing is
+slightly faster with more recovery room; fish dart/breach/wake motion and
+planted torso/rod motion are stronger. Scoring, protocol 47, shared travel and
+sports game rules remain unchanged. [Controls and asset workflow](FISHING-COUNTERSTEER.md).
+
+The complete **322-file Windows player** is delivered in `Builds/WindowsFinal/`;
+all **321 runtime/support hashes** match the tested candidate. **2,491 checks
+across six reports** pass on the final scripts. Full content completed **00:56:55**,
+final script refresh **01:05:00**. [Verification and limits](FISHING-VERIFICATION.md#illustrated-fishing-controls-and-fight-motion--13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#illustrated-fishing-controls-and-fight-motion--13-october-2026).
+Physical-phone visuals/touch/FPS, real WAN and new celebrations remain deferred.
+Older records below describe earlier deliveries.
+
+## Fishing Hold & Countersteer — 12 October 2026
+
+Fresh AndroidSubmission written at **20:43:13 Malaysia time** measures
+**90,139,324 → 90,107,796 bytes (-31,528)**. Headroom to the
+strict 100,000,000-byte boundary is **9,892,204 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,107,796
+bytes**. The enforced limit and independent APK v2 signature verification pass.
+SHA-256: **9F2719FDD9AEA02A5467A7C1322B451E51AFFF915A7D261897AA0D0023B1E522**.
+
+Implements [B — Hold & Countersteer](FISHING-COUNTERSTEER.md): hold the glowing
+Left/Right control, switch against the fish's pull, and release to ease tension.
+Sports typography/panels/press feedback replace the old frame and reel button;
+walking controls are replaced during fights, and unavailable utilities fade.
+Round/Cup/Crew scoring remains unchanged. Matching peers require **protocol 47**.
+
+The complete **322-file** Windows player (321 runtime/support files plus its
+build note) is delivered in `Builds/WindowsFinal/`. All runtime hashes match the
+candidate. **2,442 assertions across six reports** pass on its final scripts:
+Fishing offline/rendered layouts, host/guest catches/rematches, Fishing results/
+feedback and Football/Basketball UI regressions. Full content build finished at
+**20:18:48**, final script refresh at **20:27:02**.
+
+[Verification and limits](FISHING-VERIFICATION.md#fishing-hold--countersteer--12-october-2026),
+[packing comparison](APK-SIZE-AUDIT.md#fishing-hold--countersteer--12-october-2026).
+The development target, physical-phone touch/visual/FPS, real WAN and new
+celebrations remain unresolved/deferred. Older records below are historical.
+
 ## Combined Football, Basketball and Fishing release — 12 October 2026
 
 Fresh AndroidSubmission written at **18:42:22 Malaysia time** measures

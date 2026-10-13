@@ -137,7 +137,8 @@ namespace WhatTheFish {
    var players=frozenMatch.mode==FishingMode.Crew?game.State.Players.OrderBy(p=>p.owner):game.State.Players.OrderByDescending(p=>frozenMatch.cupFinished?p.cupPoints:p.score).ThenByDescending(p=>frozenMatch.cupFinished?p.cupScore:0).ThenBy(p=>p.owner);
    frozenPlayers=players.Take(5).ToArray();frozenNames=frozenPlayers.Select(p=>game.PlayerName(p.owner)).ToArray();
    title.text=frozenMatch.outcome==FishingOutcome.Abandoned?"ROUND STOPPED":frozenMatch.mode==FishingMode.Crew?(frozenMatch.outcome==FishingOutcome.Success?"CREW COMPLETE":"CREW RESULTS"):frozenMatch.cupFinished?"CUP RESULTS":"ROUND RESULTS";
-   subtitle.text=frozenMatch.mode==FishingMode.Cup?"CUP ROUND "+frozenMatch.cupRound+" / 3"+(frozenMatch.cupValid?"":" · CUP INVALID"):frozenMatch.mode==FishingMode.Crew?"SHARED BASKET · "+frozenPlayers.Length+" FISHERS":"LAGOON · "+frozenPlayers.Length+" FISHERS";
+   subtitle.text=frozenMatch.mode==FishingMode.Cup?"CUP ROUND "+frozenMatch.cupRound+" / 3"+(frozenMatch.cupValid?"":" · CUP INVALID"):"";
+   subtitle.gameObject.SetActive(!string.IsNullOrEmpty(subtitle.text));
    bool cup=frozenMatch.mode==FishingMode.Cup;cupHeading.gameObject.SetActive(cup);cupCatchHeading.gameObject.SetActive(cup);
    for(int i=0;i<standings.Length;i++){
     var row=standings[i];bool show=i<frozenPlayers.Length;row.rect.gameObject.SetActive(show);if(!show)continue;var p=frozenPlayers[i];bool mine=p.owner==local;
@@ -154,7 +155,8 @@ namespace WhatTheFish {
     notesLine.text="BASKET "+frozenMatch.crewScore+" / "+frozenMatch.crewTarget+" · "+(sizes.Length==0?"ALL SIZES COLLECTED":"MISSING "+sizes);
     string needs=string.Join(", ",frozenPlayers.Select((p,i)=>new{p,name=frozenNames[i]}).Where(p=>p.p.catches==0).Select(p=>p.name));
     detailLine.text=needs.Length==0?(frozenMatch.outcome==FishingOutcome.Success?new[]{"","BRONZE","SILVER","GOLD"}[Mathf.Clamp(frozenMatch.medal,0,3)]+" · EVERYONE CONTRIBUTED":"EVERYONE CAUGHT · CREW GOALS INCOMPLETE"):"NEEDS A CATCH: "+needs;
-   }else {notesLine.text="Wanted bonuses are included in round points.";detailLine.text=cup&&!frozenMatch.cupValid?"Roster changed: this round adds no Cup points.":cup?"Cup catch points break ties in Cup points.":"Equal round scores share the same rank.";}
+   }else {notesLine.text=cup&&!frozenMatch.cupValid?"CUP INVALID · ROSTER CHANGED":"";detailLine.text="";}
+   notes.gameObject.SetActive(!string.IsNullOrEmpty(notesLine.text)||!string.IsNullOrEmpty(detailLine.text));
    Layout();
   }
   string PersonalBest(FishingPlayerRecord local){
@@ -174,10 +176,10 @@ namespace WhatTheFish {
   public void ClearContext(){ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(false);if(crewStrip)crewStrip.gameObject.SetActive(false);boundGame=null;actor=null;hasResult=observed=false;frozenPlayers=Array.Empty<FishingPlayerRecord>();frozenNames=Array.Empty<string>();}
   void Layout(){
    if(!page||!card)return;float width=Mathf.Max(400,layout.cardWidth),pad=layout.padding,gap=layout.gap,inner=width-pad*2;
-   float titleHeight=LineHeight(title,layout.titleFontSize),subtitleHeight=LineHeight(subtitle,layout.labelFontSize),headerHeight=Mathf.Max(layout.headerHeight,titleHeight+subtitleHeight);
+   float titleHeight=LineHeight(title,layout.titleFontSize),subtitleHeight=subtitle.gameObject.activeSelf?LineHeight(subtitle,layout.labelFontSize):0,headerHeight=subtitleHeight>0?Mathf.Max(layout.headerHeight,titleHeight+subtitleHeight):Mathf.Max(66,titleHeight);
    float columnHeight=Mathf.Max(layout.columnHeight,LineHeight(scoreHeading,layout.labelFontSize)),rowHeight=Mathf.Max(layout.rowHeight,LineHeight(standings[0].name,layout.rowFontSize)+5);
    float summaryHeadingHeight=Mathf.Max(38,LineHeight(summaryTitle,layout.rowFontSize)),statHeight=statLabels.Max(t=>LineHeight(t,layout.statFontSize)),summaryHeight=Mathf.Max(layout.summaryHeight,summaryHeadingHeight+4+statHeight*3);
-   float notesLineHeight=Mathf.Max(LineHeight(notesLine,layout.labelFontSize),LineHeight(detailLine,layout.labelFontSize)),notesHeight=Mathf.Max(layout.notesHeight,notesLineHeight*2);
+   float notesLineHeight=Mathf.Max(LineHeight(notesLine,layout.labelFontSize),LineHeight(detailLine,layout.labelFontSize)),notesHeight=notes.gameObject.activeSelf?Mathf.Max(layout.notesHeight,notesLineHeight*2):0;
    int count=Math.Max(1,frozenPlayers.Length);float y=pad,height=pad*2+headerHeight+columnHeight+count*rowHeight+summaryHeight+notesHeight+layout.footerHeight+gap*4;
    card.sizeDelta=new Vector2(width,height);card.localScale=Vector3.one*Mathf.Min(1,Mathf.Max(.05f,Mathf.Min((page.rect.width-layout.margin*2)/width,(page.rect.height-layout.margin*2)/height)));
    Place(card.Find("Fishing results fish badge") as RectTransform,pad,y+4,62,62);Place(title.rectTransform,pad+76,y,inner-layout.closeSize.x-92,titleHeight);Place(subtitle.rectTransform,pad+76,y+titleHeight,inner-76,subtitleHeight);Place((RectTransform)closeButton.transform,width-pad-layout.closeSize.x,y,layout.closeSize.x,layout.closeSize.y);y+=headerHeight;

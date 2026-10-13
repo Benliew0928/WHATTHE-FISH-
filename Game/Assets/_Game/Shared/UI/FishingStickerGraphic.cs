@@ -4,26 +4,26 @@ using UnityEngine.UI;
 namespace WhatTheFish {
  // Small shared-material UI meshes: no full-screen image, imported atlas or effects package.
  public sealed class FishingStickerGraphic:MaskableGraphic {
-  public enum Kind {Panel,Gauge,Fish,Avatar,Flame,Crown,Reel,Warning,Shine,Aim,Camera,Jump,Close}
+  public enum Kind {Panel,Gauge,Fish,Avatar,Flame,Crown,Warning=7,Shine,Aim,Camera,Jump,Close}
   public Kind kind;public Color tint=LocalProfile.Hex("FFF3D8"),accent=LocalProfile.Hex("38DBD7");
   public float value=1;public bool hot;
   [Min(0)]public float cornerRadius=24;
-  Image artwork;Sprite resizedFrame;bool fullArtwork,solidPanel;public bool portraitVisible;
+  public float pressure;string resourceName;Image artwork;bool fullArtwork,solidPanel;public bool portraitVisible;
   public bool SolidPanel=>solidPanel;
   static readonly Color Ink=LocalProfile.Hex("10394D");
   public void Decorate(){
-   string resource=kind==Kind.Panel||kind==Kind.Gauge?"LagoonFrame":kind==Kind.Fish?"FishBadge":kind==Kind.Flame?"Flame":kind==Kind.Avatar?"FisherBadge":null;if(resource!=null)UseIllustration(resource,kind==Kind.Panel||kind==Kind.Gauge);
+   string resource=kind==Kind.Fish?"FishBadge":kind==Kind.Flame?"Flame":kind==Kind.Avatar?"FisherBadge":null;if(resource!=null)UseIllustration(resource);
   }
-  public void UseIllustration(string resource,bool border=false){
+  public void UseIllustration(string resource,bool sliced=false,bool mirror=false){
+   if(resourceName==resource&&artwork){artwork.rectTransform.localEulerAngles=new Vector3(0,mirror?180:0,0);return;}
    var sprite=Resources.Load<Sprite>("FishingUI/"+resource);if(!sprite)return;
    if(!artwork){var node=new GameObject("Illustrated sticker",typeof(RectTransform),typeof(Image));node.transform.SetParent(transform,false);node.transform.SetAsFirstSibling();var rect=(RectTransform)node.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;artwork=node.GetComponent<Image>();}
-   if(resizedFrame){Destroy(resizedFrame);resizedFrame=null;}
-   if(border){float corner=sprite.rect.width*.18f;resizedFrame=Sprite.Create(sprite.texture,sprite.rect,new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect,Vector4.one*corner);artwork.sprite=resizedFrame;artwork.pixelsPerUnitMultiplier=corner/20f;}
-   else artwork.sprite=sprite;
-   artwork.type=border?Image.Type.Sliced:Image.Type.Simple;artwork.fillCenter=!border;artwork.preserveAspect=!border&&kind!=Kind.Flame;artwork.raycastTarget=false;fullArtwork=!border;if(fullArtwork)solidPanel=false;artwork.enabled=!solidPanel||!border;if(kind==Kind.Avatar){fullArtwork=false;portraitVisible=true;artwork.rectTransform.offsetMin=Vector2.one*3;artwork.rectTransform.offsetMax=-Vector2.one*3;}SetVerticesDirty();
+   resourceName=resource;artwork.sprite=sprite;artwork.type=sliced?Image.Type.Sliced:Image.Type.Simple;artwork.preserveAspect=!sliced&&kind!=Kind.Flame;artwork.rectTransform.localEulerAngles=new Vector3(0,mirror?180:0,0);artwork.raycastTarget=false;fullArtwork=true;solidPanel=false;
+   if(kind==Kind.Avatar){fullArtwork=false;portraitVisible=true;artwork.rectTransform.offsetMin=Vector2.one*3;artwork.rectTransform.offsetMax=-Vector2.one*3;}SetVerticesDirty();
   }
-  protected override void OnDestroy(){if(resizedFrame)Destroy(resizedFrame);base.OnDestroy();}
-  public void Refresh(float fill,Color main,bool danger=false){if(Mathf.Abs(value-fill)<.001f&&tint==main&&hot==danger)return;value=fill;tint=main;hot=danger;if(artwork&&fullArtwork&&kind==Kind.Panel)artwork.color=Color.Lerp(Color.white,main,danger?.25f:.08f);SetVerticesDirty();}
+  public void TintIllustration(Color color){if(artwork)artwork.color=color;}
+  public Image Illustration=>artwork;
+  public void Refresh(float fill,Color main,bool danger=false){if(Mathf.Abs(value-fill)<.001f&&tint==main&&hot==danger)return;value=fill;tint=main;hot=danger;SetVerticesDirty();}
   // Pulse only the illustration; labels and the button's hit area stay fixed.
   public void PulseIllustration(float scale){if(artwork)artwork.rectTransform.localScale=Vector3.one*Mathf.Clamp(scale,.85f,1.2f);}
   public void UseSolidPanel(bool solid=true){
@@ -44,17 +44,9 @@ namespace WhatTheFish {
      if(value>0){Ellipse(vh,r.center,new Vector2(3,3),Ink);Ellipse(vh,r.center,new Vector2(1.6f,1.6f),tint);}break;
     case Kind.Panel:
     case Kind.Gauge:
-     if(kind==Kind.Panel&&solidPanel){
-      float radius=Mathf.Clamp(cornerRadius,0,Mathf.Min(w,h)*.5f),outline=Mathf.Min(2,Mathf.Min(w,h)*.08f);
-      Rounded(vh,r,radius,Ink);Rounded(vh,Inset(r,outline),Mathf.Max(0,radius-outline),tint);
-      Rounded(vh,new Rect(r.x+13,r.y+h-10,w-26,2),1,new Color(1,1,1,.23f));break;
-     }
-     Rounded(vh,new Rect(r.x+2,r.y-4,w,h),Mathf.Min(24,h*.5f),new Color(.01f,.13f,.19f,.35f));
-     Rounded(vh,r,Mathf.Min(24,h*.5f),Ink);Rounded(vh,Inset(r,3),Mathf.Min(21,(h-6)*.5f),new Color(.93f,1,1));
-     Rounded(vh,Inset(r,6),Mathf.Min(18,(h-12)*.5f),kind==Kind.Gauge?Ink:tint,true);
-     if(kind==Kind.Gauge&&value>.005f){var fill=Inset(r,9);fill.width*=Mathf.Clamp01(value);Rounded(vh,fill,Mathf.Min(fill.height*.5f,fill.width*.5f),tint,true);var shine=new Rect(fill.x+6,fill.y+fill.height*.66f,Mathf.Max(0,fill.width-15),4);Rounded(vh,shine,2,new Color(1,1,1,.42f));}
-     if(kind==Kind.Panel)Rounded(vh,new Rect(r.x+13,r.y+h-13,w-26,3),1.5f,new Color(1,1,1,.34f));
-     break;
+     if(kind==Kind.Panel){BasketballPlate.Draw(vh,r,tint,Vector2.one*Mathf.Min(cornerRadius,h*.5f),2,0,3,pressure,Ink);break;}
+     BasketballPlate.Draw(vh,r,Ink,Vector2.one*18,2,0,0,0,Ink);
+     if(value>.005f){var fill=Inset(r,5);fill.width*=Mathf.Clamp01(value);Rounded(vh,fill,Mathf.Min(fill.height*.5f,fill.width*.5f),tint);Rounded(vh,new Rect(fill.x+6,fill.y+fill.height*.70f,Mathf.Max(0,fill.width-12),3),1.5f,new Color(1,1,1,.35f));}break;
     case Kind.Fish:
      Poly(vh,new[]{P(-.48f,-.27f,r),P(-.14f,0,r),P(-.48f,.27f,r)},Ink);Poly(vh,new[]{P(-.42f,-.18f,r),P(-.13f,0,r),P(-.42f,.18f,r)},accent);
      Ellipse(vh,P(.09f,0,r),new Vector2(w*.38f,h*.32f),Ink);Ellipse(vh,P(.09f,.01f,r),new Vector2(w*.33f,h*.26f),tint,true);
@@ -74,12 +66,6 @@ namespace WhatTheFish {
     case Kind.Crown:
      Poly(vh,new[]{P(-.46f,.30f,r),P(-.28f,-.31f,r),P(.29f,-.31f,r),P(.46f,.30f,r),P(.17f,.08f,r),P(0,.44f,r),P(-.17f,.08f,r)},Ink);
      Poly(vh,new[]{P(-.36f,.18f,r),P(-.21f,-.24f,r),P(.22f,-.24f,r),P(.36f,.18f,r),P(.14f,-.02f,r),P(0,.29f,r),P(-.14f,-.02f,r)},LocalProfile.Hex("FFD857"));break;
-    case Kind.Reel:
-     Ellipse(vh,r.center,new Vector2(w*.45f,h*.34f),Ink);Ellipse(vh,r.center,new Vector2(w*.39f,h*.27f),accent,true);
-     Rounded(vh,new Rect(r.center.x-w*.23f,r.center.y-h*.25f,w*.4f,h*.5f),5,LocalProfile.Hex("FFB653"));
-     for(int i=0;i<4;i++)Rounded(vh,new Rect(r.center.x-w*.20f+i*w*.08f,r.center.y-h*.22f,w*.035f,h*.44f),2,LocalProfile.Hex("E8733A"));
-     Ellipse(vh,P(-.24f,0,r),new Vector2(w*.15f,h*.32f),Ink);Ellipse(vh,P(-.24f,0,r),new Vector2(w*.11f,h*.25f),LocalProfile.Hex("5ADDD5"));
-     Rounded(vh,new Rect(r.center.x+w*.13f,r.center.y,w*.075f,h*.35f),3,Ink);Ellipse(vh,P(.23f,.34f,r),new Vector2(w*.14f,h*.075f),LocalProfile.Hex("FFE4A0"));break;
     case Kind.Warning:
      Poly(vh,new[]{P(-.46f,-.39f,r),P(0,.44f,r),P(.46f,-.39f,r)},Ink);Poly(vh,new[]{P(-.34f,-.31f,r),P(0,.28f,r),P(.34f,-.31f,r)},LocalProfile.Hex("FFD857"));
      Rounded(vh,new Rect(r.center.x-2,r.center.y-3,4,h*.20f),2,Ink);Ellipse(vh,P(0,-.21f,r),new Vector2(2.5f,2.5f),Ink);break;

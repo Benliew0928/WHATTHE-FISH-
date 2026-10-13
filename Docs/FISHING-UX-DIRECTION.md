@@ -1,5 +1,12 @@
 # Fishing interaction and cartoon HUD direction
 
+Current direction: [B — Hold & Countersteer](FISHING-COUNTERSTEER.md), selected
+12 October 2026, supersedes the single Reel control and ornamental delivery
+frame described in the historical A direction below. The 13 October refinement
+restores the circular reel for Cast/Hook and adds aqua/gold illustrated Left/Right
+circles with native internal labels and a framed countersteer card. Scores and
+round rules remain.
+
 Status: **A — Lagoon Stickers selected**, 8 October 2026. The user approved
 [the multiplayer rules](FISHING-RULES-PROPOSAL.md) with Crew Catch set to
 20 points per starting player. Implemented on 9 October 2026; see

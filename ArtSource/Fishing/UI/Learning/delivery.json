@@ -1,0 +1,27 @@
+{
+  "base": "repository root",
+  "assets": [
+    {
+      "source": "ArtSource/Fishing/UI/Learning/GearIcons.png",
+      "sourceSha256": "86114ad5b41381ec261d212d87d7274d670bbf583b45b628555033dca2e3a13d",
+      "delivery": "Game/Assets/_Game/Resources/FishingUI/GearIcons.png",
+      "sha256": "49be3fe114c439b6f4749f713fb84aa3e7fa45cac79c8aae7409e30597685282",
+      "pixels": [
+        384,
+        256
+      ],
+      "pngBytes": 127896
+    },
+    {
+      "source": "ArtSource/Fishing/UI/Learning/TutorialPanels.png",
+      "sourceSha256": "9ca769de31c988ffd8efd5cb0dede3b7f83c6486c8f7d446d375865e0ca786cd",
+      "delivery": "Game/Assets/_Game/Resources/FishingUI/TutorialPanels.png",
+      "sha256": "f03c918e89a613682e11746d5635ca22f911878eea14577b2e3a430c5bdd099e",
+      "pixels": [
+        512,
+        256
+      ],
+      "pngBytes": 171129
+    }
+  ]
+}

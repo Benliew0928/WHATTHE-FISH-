@@ -3,6 +3,9 @@
 A gold **!** pops above the biting fish/float, with small cream/gold ripples.
 The existing **HOOK!** artwork pulses and a shrinking gold rim shows the actual
 remaining hook time. The label and touch target stay fixed and usable immediately.
+The 13 October control refinement restores the familiar circular reel artwork
+for Cast/Hook. Aqua/gold Left/Right circles replace it only during the fight.
+The bite cue itself still uses the existing lightweight procedural meshes.
 
 ## Timing and interaction
 
@@ -46,7 +49,7 @@ These graphics add no imported texture, font, model or material.
 Wanted details occupy one line beside the fish illustration. The larger yellow
 **+3** has a two-unit navy outline and no badge background. Catch awards float
 as orange text without a container, preserving the actual catch/bonus amount.
-Player names use the existing heavier Cove Display face; the Lagoon Cup title
+Player names now use the shared sports display face; the Lagoon Cup title
 uses plain navy lettering without a separate highlighted plate. Catch/tension
 labels and orange catch awards have two-unit navy outlines. Camera is 104
 units wide and Jump is 120, with rounder ends and skins stretched to their
@@ -67,11 +70,11 @@ In the Inspector, **Clock Size / Y** controls the outside card height;
 **Clock Text Position / Y** controls the timer lettering. Smaller Y positions
 move the contents down within the card. Dimensions use responsive canvas units.
 
-The current card height is **166**, trimmed by four units from the previous
-170. Clock Badge Y is **33** and Clock Text Y is **29**: the clock illustration
-keeps its **76 × 83** size and previous absolute top placement, while the
-digits sit four units lower. **Wanted Card Position / Y** is **−44**, keeping
-its row in place while reducing the outer card's bottom padding. Crew mode
+The current card height is **154**, trimmed by twelve units from the previous
+166. Clock Badge Y is **28** and Clock Text Y is **24**: the clock illustration
+keeps its **76 × 83** size, with its placement adjusted slightly, while the
+digits use a 59-unit text frame. **Wanted Card Position / Y** is **−39**, keeping
+the Wanted row higher within the shorter card. Crew mode
 keeps its additional checklist space. The saved values are in
 [`FishingUILayout.asset`](../Game/Assets/_Game/Resources/FishingUILayout.asset);
 [`FishingHUDLayout.cs`](../Game/Assets/_Game/Shared/UI/FishingHUDLayout.cs)

@@ -81,7 +81,7 @@ namespace WhatTheFish {
    Check(hud&&buttons.Length>=8,"Fishing uses its illustrated controls");
    if(!hud)return;
    Check(buttons.All(b=>!b.GetComponent<GameButtonStyle>()&&b.GetComponent<CoveFeedback>()&&b.transition==Selectable.Transition.None),"Fishing keeps native skins and pointer feedback");
-   Check(hud.ActionRect.GetComponentsInChildren<Image>(true).Any(i=>i.sprite&&i.sprite.name=="ReelButton"),"Fishing primary control retains reel illustration");
+   Check(hud.ActionRect.GetComponent<BasketballButtonFeedback>()&&hud.ActionRect.GetComponent<FishingStickerGraphic>(),"Fishing primary control reuses native sports frame and press animation");
    Check(hud.FitsSafeFrame()&&hud.RegionsSeparate(),"Fishing frames fit without overlapping on "+Screen.width+"x"+Screen.height);
    Check(hud.TypographyClean(),"Fishing text uses native weights without stacked shadows");
    foreach(var b in buttons.Where(b=>b.IsActive())){
