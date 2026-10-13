@@ -1,0 +1,49 @@
+{
+  "base": "repository root",
+  "assets": [
+    {
+      "source": "ArtSource/Fishing/UI/Illustrated/SteerIdle.png",
+      "sourceSha256": "8d518bb2d805b4fbd3b348cd1839a88af00a1acd16f777ef28da42e7e1e1d849",
+      "delivery": "Game/Assets/_Game/Resources/FishingUI/SteerIdle.png",
+      "sha256": "acd32d8b4d3e0f804d82c7abadc07deecd68b28ddff7cd4b9b5b4e61448e5006",
+      "pixels": [
+        192,
+        192
+      ],
+      "pngBytes": 42487
+    },
+    {
+      "source": "ArtSource/Fishing/UI/Illustrated/SteerLit.png",
+      "sourceSha256": "b72394d6485e854aa8260f2af6cdedd37aeb2de95ab97c33cf4186f3c8ff1d4c",
+      "delivery": "Game/Assets/_Game/Resources/FishingUI/SteerLit.png",
+      "sha256": "ff7fd40c3d9baec2825ccbe4938e373ff842798f50e5b0d83e6b024ff8cbdcdf",
+      "pixels": [
+        192,
+        192
+      ],
+      "pngBytes": 47723
+    },
+    {
+      "source": "ArtSource/Fishing/UI/Illustrated/CounterFrame.png",
+      "sourceSha256": "2e05a8a35499d0e9b25bdc26dbce65d4c6afa7a4a96efe6ccb448bd49d82a4a8",
+      "delivery": "Game/Assets/_Game/Resources/FishingUI/CounterFrame.png",
+      "sha256": "1bda3b37de47491ba2b2e94ec05b5c3e83f0080eeb8e58e9a6ff9f7404943a45",
+      "pixels": [
+        512,
+        128
+      ],
+      "pngBytes": 51587
+    },
+    {
+      "source": "ArtSource/Fishing/UI/Masters/ReelButton.png",
+      "sourceSha256": "3108c1052fe6aa68543109ab14c04f5da79fcc9f7fdff5f2ec4abbdba295a4df",
+      "delivery": "Game/Assets/_Game/Resources/FishingUI/ReelButton.png",
+      "sha256": "caecc84a7de146802232e3227ee7131537e923313aec655dffa3d1cabec742b7",
+      "pixels": [
+        192,
+        192
+      ],
+      "pngBytes": 59682
+    }
+  ]
+}

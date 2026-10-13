@@ -103,6 +103,7 @@ namespace WhatTheFish {
    var carrier=command.pressure?FootballPressure.CarrierFor(this):null;
    FootballEffort.Step(command.dash,direction.sqrMagnitude>.01f,footballContext&&FootballPressure.Eligible(this)&&grounded&&!Charging,carrier,dt);
    float requestedSpeed=FootballBall.Instance&&footballContext?FootballBall.Instance.MovementSpeed(this,command.sprint||FootballEffort.Dashing,Charging):(command.sprint?7:4);
+   if(FishingGame.Instance)requestedSpeed*=FishingGame.Instance.SpeedMultiplier(this);
    if(BasketballBall.Active&&BasketballBall.Active.TurboRemaining(this)>0)requestedSpeed*=BasketballPropRules.TurboMultiplier;
    if(FootballEffort.Dashing)requestedSpeed*=WhatTheFish.FootballEffort.DashMultiplier;
    bool footballDefense=FootballEffort.Pressuring;

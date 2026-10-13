@@ -3,11 +3,17 @@
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **46** players. The room shares one activity and travels together.
+protocol **49** players. The room shares one activity and travels together.
 Fishing supports **two to five friends**, with solo free practice and a solo
 timed practice option. Walk to the end of any of the five coloured piers.
 Each pier has **six fish: two small, two medium and two large**, for **30 fish**
 across the lagoon. The schools reuse the existing three fish models and materials.
+
+Choose **two favourites from six skills before Ready**. Collect one at
+a shared shore bag, or spend six seconds recovering treasure from a pier.
+Carry one item at a time; tap its illustrated icon to use it. A dim icon is not usable yet.
+The first visit opens a four-page tutorial using the same icons and meters as gameplay. The leaderboard **?** and Fishing **How to Play** reopen that shared tutorial.
+See [abilities and acquisition rules](FISHING-ABILITIES.md).
 
 ## Catching
 
@@ -23,14 +29,12 @@ across the lagoon. The schools reuse the existing three fish models and material
 3. **Hook:** a [gold ! cue](FISHING-HOOK-CUE.md) appears above the biting fish
    and **HOOK!** pulses, with a gold rim showing the remaining time. Tap it or press
    **F** within **1.8 seconds** of the bite; input is available immediately.
-4. **Reel:** hold the button or **F** to draw the fish closer. Release when
-   tension turns warm/red, then resume when it eases. The catch gauge tracks
-   the fish approaching the pier; the tension gauge follows line stretch and
-   sustained reeling strain. **100% tension snaps the line.** The current tuning
-   draws fish in slightly faster and builds strain a little more slowly. A catch
-   is typically around a second shorter, varying with size, distance, surges and
-   release timing; large fish still require tension management. Bites arrive
-   **0.3 seconds earlier**, with the same 1.8-second Hook window.
+4. **Hold & Countersteer:** hold the glowing **Left / A** or **Right / D**
+   against the fish's pull. Switch sides when it turns; release both to recover
+   tension. Left/Right arrow keys also work. Wrong steering builds strain without
+   normal catch progress. At high tension both buttons get a warning tint and say Release;
+   **100% tension snaps the line**. The guide previews turns, the catch bar follows
+   distance and the tension bar follows stretch/strain. F cannot reel by itself.
 5. **Land:** small/medium/large fish earn **2 / 5 / 10** base points.
    Landing briefly lifts the fish, updates points and animates the ranking.
    Caught fish return after **seven seconds**.
@@ -40,7 +44,7 @@ position, travelling or leaving the game releases the line. Misses, cancellation
 snaps and the **30-second reel timeout** award no points. Pointer release/exit,
 focus loss, pause and round changes end held input. Only the finger that started
 reeling can release it; the host's **0.8-second renewable lease** also recovers
-from a missing release message. Use Camera to switch among all three views.
+from a missing release message. Use Camera to switch among all three views before casting. Camera and jump fade while the active line blocks them.
 
 The reaction window remains **1.8 seconds**. A remote Hook carries its press
 time on the synchronized room clock. The host can receive that already-timely
@@ -88,9 +92,9 @@ roster. A disconnect during the countdown or Crew round abandons that round.
 A lost host ends the room's activity. Local personal bests are saved separately
 by mode and player count; there is no global online ranking service.
 
-## Lagoon Stickers HUD
+## Sports-style Fishing HUD
 
-[A is the approved design reference](FishingUI/Lagoon-Stickers-Reference.png).
+[B is the current approved design reference](FishingUI/Hold-Countersteer-Reference.png).
 The top-left cream/navy card contains player names, cartoon avatars, shared
 ranks and animated points. Catch awards pop beside the name; the base award
 appears first and a Wanted **+3** follows when earned. Rows slide when another
@@ -99,22 +103,20 @@ flame; crossing the milestone celebrates briefly without ending the contest.
 Crew rows show contribution checks rather than competitive ranks.
 
 The clock/Wanted card holds the time and crew checklist. Catch and Tension
-labels sit inside the bottom gauges. The fill, shine and flame accents animate;
+labels sit above two side-by-side bottom gauges, inside their illustrated card.
+The fill, shine and flame accents animate;
 the danger triangle and **RELEASE!** cue reinforce the red warning. Cast, Hook,
-Reel, Cancel, Camera, Jump and exit controls keep their text contained.
+Left/Right, Cancel, Camera, Jump and exit controls keep their text contained.
 Players can set a short room nickname before a round.
 
-Six small illustrated sprites supply the layered frame, reel button, fish/profile/
-stopwatch badges and flame. [Full-resolution source art and exact prompts](../ArtSource/Fishing/UI/GENERATED-PROMPTS.md)
-are retained with deliberate 64/128/256-pixel mobile imports and ASTC 6×6 compression.
-The six textures total about 84 KB before APK ZIP compression. Rounded lettering
-reuses the existing Cove fonts. Smaller labels and player names use the lighter
-text face; headings, timers and large scores retain the display face. Native text
-uses its intended font weight, with clean dark labels and only one thin outline
-on white labels, instead of stacked shadow/outline copies. Names, scores, gauge fills and interactions remain
-live Unity UI. A shared illustrated fisher badge, real names and local-row colour
-identify players; it is not a live character-customisation portrait.
-No additional 3D model, art pack, animation download or runtime package is added.
+The current [Hold & Countersteer HUD](FISHING-COUNTERSTEER.md) reuses the sports
+fonts and press animation. The circular Cast/Hook reel illustration returns;
+Left and Right share aqua/gold circular artwork with their own native labels.
+A small sliced illustrated frame surrounds the native countersteer track and
+progress bars. The four new/restored compressed delivery PNGs total 201,479
+bytes before APK packing. Editable masters stay outside Unity. Round controls
+use fixed safe-area touch frames. Sharper fish darts/breaches and stronger rod
+and torso motion reuse existing models and materials; feet remain planted.
 
 ## Results, Crew checklist and sound
 

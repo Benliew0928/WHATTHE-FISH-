@@ -43,6 +43,207 @@ change belongs to concurrent scenery-flag cleanup. No unexpected large trail
 dependency appears. Detailed current packing: `Builds/SizeAudit/latest/`;
 retained copy and top contributors: `Builds/GolfTrailQA/`.
 
+## Stronger Fishing motion and upstream Golf integration — 13 October 2026
+
+Fresh AndroidSubmission written **19:47:57 Malaysia time** measures
+**90,281,708 → 90,388,492 bytes (+106,784)**.
+Headroom to the strict 100,000,000-byte boundary: **9,611,508 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,388,492 bytes**.
+The enforced hard limit and independent APK v2 signature checks pass. SHA-256:
+**18CC2A2F7E2354ADACAF585FCF7DCDD8F5257A61CC1EAE4D0557CDE91A1EE6EB**.
+
+Compressed ZIP payloads change **+105,751 bytes**;
+container/signature overhead changes **+1,033**.
+The new APK contains **919 entries**, including
+**899 unchanged payload hashes**. These are measurements
+of the actual APK; source PNG bytes and the tables below are different quantities.
+
+Serialized assets change **+172,008 bytes**;
+6 packed source entries change.
+
+| Changed packed source | Serialized delta (uncompressed) |
+| --- | ---: |
+| `Assets/_Game/Resources/GolfUI/Countdown_5.png` | +30,660 |
+| `Assets/_Game/Resources/GolfUI/Countdown_3.png` | +30,572 |
+| `Assets/_Game/Resources/GolfUI/Countdown_2.png` | +30,456 |
+| `Assets/_Game/Resources/GolfUI/Countdown_4.png` | +30,412 |
+| `Assets/_Game/Resources/GolfUI/Countdown_1.png` | +30,344 |
+| `Assets/_Game/Resources/GolfUI/Countdown_GO.png` | +19,564 |
+
+Fishing's new motion reuses the existing shared line material and pooled
+geometry. Upstream Golf graphics are included in this combined measurement;
+growth is not attributed solely to Fishing. No new Fishing asset is imported.
+Mesh rows: **1788 → 1788**, with
+**0 differing rows**. MobileURP/MobileRenderer are
+packed; no forbidden desktop pipeline/SSAO/BlueNoise256 delivery asset is found.
+All requested development review types are absent from release metadata.
+The package remains self-contained ARM64; no addressable download is introduced.
+
+| Largest packed source | Serialized bytes (uncompressed) |
+| --- | ---: |
+| `Assets/_Game/Art/RefinedIslands/Fishing/Fishing_TerrainControl.png` | 22,369,760 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Golf_TerrainControl.png` | 22,369,756 |
+| `Assets/_Game/Art/RefinedIslands/Fishing/Fishing_WaterDepth.png` | 5,592,564 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Golf_WaterDepth.png` | 5,592,560 |
+| `Assets/_Game/Art/Football/Sunvale/Stadium.fbx` | 3,569,800 |
+| `Built-in Texture2D: Splash Screen Unity Logo` | 2,796,376 |
+
+These largest sources remain the principal size concern. The development
+target remains unmet; this effect pass does not add textures or models to them.
+Current CSVs, ZIP hashes/deltas, source manifest, signature and full-player
+promotion evidence: `Builds/FishingSurge/Task-20261013-190655/`. No physical-phone FPS claim is made.
+
+## Fishing six skills, familiar tutorial and water contact — 13 October 2026
+
+Fresh AndroidSubmission written **17:49:09 Malaysia time** measures
+**90,186,840 → 90,281,708 bytes (+94,868)**.
+Headroom to the strict 100,000,000-byte boundary: **9,718,292 bytes**.
+The **75,000,000-byte development target remains exceeded by 15,281,708 bytes**.
+Enforced hard limit and independent APK v2 signature checks pass. SHA-256:
+**FEC057213DF9E1F1837E954107B37E7335068EBD2B7BB53F65966C1EF2E588CB**.
+
+Compressed ZIP payload totals **90,044,973 → 90,139,488 (+94,515)**.
+Container/signature overhead rises **353 bytes**. **913 entries** (previously
+911) include **845 unchanged payload hashes**. The two new resource entries
+use **38,685 and 30,558 compressed bytes**. IL2CPP grows **15,392**, Burst
+**6,616**, and metadata **2,060** compressed bytes; smaller entry changes offset
+the remainder. These are actual APK measurements.
+
+Serialized assets total **155,427,666 → 155,537,350 (+109,684)**.
+Only five entries change: GearIcons **45,960**, TutorialPanels **63,428**,
+and three script metadata stubs **104/96/96** bytes. The atlases are **384×256**
+and **512×256**; no mipmaps, Android **ASTC 6×6**. Delivery PNGs total **299,025
+bytes** before APK packing. Larger editable masters stay outside Unity.
+Sonar shares the sports radar; Power Reel shares Fishing's reel. The
+[portable generator and art record](../ArtSource/Fishing/UI/Learning/README.md)
+regenerate identical pixels from a clone path with spaces and an unrelated cwd.
+
+All **1,788 mesh rows** match. Existing raster/model/font/audio/shader packed
+sizes remain unchanged. No new imported model, audio, shader or package is
+added. Splashes share Fishing's line material; supplies, treasure and fonts
+remain shared with the sports. MobileURP/MobileRenderer are packed; forbidden
+Desktop/SSAO shader/BlueNoise256 assets remain absent. All **14 checked
+development review types** are absent from release metadata.
+
+The largest unchanged serialized contributors remain Fishing/Golf terrain
+controls (~22.37 MB each), their water-depth textures (~5.59 MB each), and
+Football Stadium.fbx (~3.57 MB). Those values are uncompressed serialized
+sizes, not individual APK ZIP sizes. New UI growth was reduced by downsizing
+the supporting tutorial art to 256×128 per page. The 75 MB target remains unmet.
+
+Current evidence: `Builds/FishingLearn/Task-20261013-160232/ApkComparisonFinal/`
+and `Builds/SizeAudit/latest/`. The exact baseline APK ZIP and prior size audit
+were captured before replacement. No old APK is used to validate new code.
+
+## Fishing hybrid gear and smooth force-driven fights — 13 October 2026
+
+Fresh signed APK: **90,166,448 → 90,186,840 bytes (+20,392)**, written
+**14:50:32 Malaysia time**. Hard-boundary headroom **9,813,160**; 75 MB target
+overrun **15,186,840**. Enforced limit and independent APK v2 signature pass.
+
+Compressed ZIP entries total **90,024,585 → 90,044,973 (+20,388)**;
+container/signature overhead increases **4 bytes**. There are **911 entries**
+in both APKs and **848 unchanged payload hashes**. IL2CPP grows **21,908
+compressed bytes**, Unity **3,792**, and metadata **2,529**; small serialized
+and other entry changes offset part of this growth. These are APK measurements,
+separate from Unity's uncompressed serialized totals.
+
+Serialized assets total **155,427,222 → 155,427,666 (+444)**. Only five totals
+change: four script metadata entries (120, 104, 104 and 100 bytes), and 16 bytes
+for the layout's two caption vectors. The new development check's MonoScript
+metadata is a 104-byte stub; its executable review type is absent from release.
+Existing packed raster/model/font/audio/material/shader asset sizes are unchanged.
+All **1,788 mesh audit rows** match. No new raster texture, imported model,
+audio, shader or package is added. Supplies share Basketball's existing Turbo
+mesh, treasure parts share built-in cubes and Football materials, and effects
+use the existing Fishing line material. Native labels remain sharp without
+additional texture pixels. Existing sprite delivery PNGs stay at **201,479 bytes**.
+
+MobileURP/MobileRenderer are packed; forbidden Desktop/SSAO shader/BlueNoise256
+assets remain absent. All **14 checked development review types** are absent
+from release metadata. The dominant terrain-control/depth assets remain the
+base-game size problem; the 75 MB working target is still unmet.
+
+Evidence: `Builds/FishingFlow/Task-20261013-133219/ApkComparisonFinal/` and
+`Builds/SizeAudit/latest/`. The baseline ZIP was captured before replacement;
+its retained prior release audit was recovered and verified against the exact
+same APK size/SHA when missing baseline CSVs were discovered. That provenance
+is recorded in `baseline-audit-provenance.json`. No current audit was substituted
+for the baseline. Desktop checks do not qualify physical phone performance.
+
+## Illustrated Fishing controls and fight motion — 13 October 2026
+
+Fresh signed APK: **90,107,796 → 90,166,448 bytes (+58,652)**, written
+**01:18:45 Malaysia time**. Headroom: **9,833,552 bytes**; 75 MB target overrun:
+**15,166,448 bytes**. Enforced limit and independent v2 signature pass.
+[Release record](BUILD-SIZE.md#illustrated-fishing-controls-and-fight-motion--13-october-2026).
+
+Compressed ZIP entries total **89,966,621 → 90,024,585 bytes (+57,964)**;
+container/signature overhead changes **141,175 → 141,863 (+688)**.
+There are **907 → 911 entries** and **895 unchanged payload hashes**.
+The four new/restored textures add **53,005 compressed ZIP bytes**:
+frame **14,424**, reel **13,749**, lit steering **12,779**, idle steering **12,053**.
+Left/Right share their artwork; native labels do not occupy texture pixels.
+IL2CPP grows **2,400 compressed bytes**, Burst **2,292**, metadata **74**;
+remaining small entry changes include serialized record IDs and layout data.
+
+Serialized assets grow **155,344,702 → 155,427,222 bytes (+82,520)**, a separate
+uncompressed Unity measurement. Only five packed totals change:
+
+| Asset | Added serialized bytes |
+| --- | ---: |
+| CounterFrame, 512×128, sliced | 30,928 |
+| ReelButton, 192×192, restored original GUID | 17,216 |
+| SteerIdle, 192×192 | 17,160 |
+| SteerLit, 192×192 | 17,160 |
+| FishingUILayout fields | 56 |
+
+Delivery PNG files total **201,479 bytes**, before Android ASTC 6×6 and ZIP
+packing. All sprites are 2D, without mipmaps. A build preflight validates these
+imports. Full-quality editable masters remain outside Unity; the old ornamental
+LagoonFrame remains retired. No font, model, audio, shader or package is added.
+All **1,788 imported-FBX mesh rows remain identical**; retained packed binary
+asset sizes remain unchanged. Largest serialized contributors remain the two
+terrain-control textures (about **22.37 MB each**), water-depth textures (about
+**5.59 MB each**) and stadium geometry. These are not compressed APK costs and
+remain base-game optimization candidates; the 75 MB target is still unmet.
+
+MobileURP/MobileRenderer are packed; Desktop/SSAO shader/BlueNoise256 assets
+are absent. All **13 checked development review types** are absent from release
+metadata. Current evidence: `Builds/FishingIllustrated/Task-20261012-234621/ApkComparison/`
+and `Builds/SizeAudit/latest/`. Desktop validation does not qualify a physical phone.
+
+## Fishing Hold & Countersteer — 12 October 2026
+
+Fresh signed APK: **90,139,324 → 90,107,796 bytes (-31,528)**,
+written **20:43:13 Malaysia time**. Hard-boundary headroom: **9,892,204**;
+75 MB target overrun: **15,107,796 bytes**. Independent v2 signature
+and enforced hard-limit checks pass. [Release record](BUILD-SIZE.md#fishing-hold--countersteer--12-october-2026).
+
+Compressed ZIP entries total **89,997,825 → 89,966,621
+bytes (-31,204)**; container/signature overhead changes
+**141,499 → 141,175 (-324)**.
+There are **909 → 907 entries** and **855 unchanged payload hashes**. Added
+countersteering/UI code grows IL2CPP by **8,100 compressed bytes** and metadata
+by **561**. Removed sprite payloads outweigh this small code growth. No new
+raster delivery asset, font, audio, model, shader or package was added.
+
+Serialized assets fall **155,405,350 → 155,344,702 bytes (−60,648)**, a separate
+uncompressed measurement. Only three packed asset totals change: removal of
+LagoonFrame (**30,248**) and ReelButton (**30,504**) plus **104 bytes** of new
+script metadata. Every other existing packed binary asset retains its size.
+Both retired textures have zero active GUID/resource/generator references;
+originals remain hash-identical in `ArtSource/Fishing/UI/Masters/`. Their source
+PNGs total 3.06 MB, which is **not** the APK saving. Clock remains shared by Golf.
+All **1,788 imported-FBX mesh rows remain identical**. World art/animation is
+unchanged; the APK remains well above the development target.
+
+MobileURP/MobileRenderer remain packed; Desktop/SSAO shader/BlueNoise256 assets
+are absent. All **13 checked development review types** are absent from release
+IL2CPP metadata. Production fight controls are present and exercised separately
+in the Windows player. Fresh evidence: `Builds/FishingRedesign/Concepts-20261012-194347/ApkComparison/` and
+`Builds/SizeAudit/latest/`. Physical-phone qualification remains separate.
+
 ## Combined Football, Basketball and Fishing release — 12 October 2026
 
 Actual signed APK: **88,856,012 → 90,139,324 bytes (+1,283,312)**,

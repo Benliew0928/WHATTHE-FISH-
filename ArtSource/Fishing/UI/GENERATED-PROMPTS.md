@@ -4,15 +4,16 @@ Generated with the built-in OpenAI image-generation tool on 8–9 October 2026.
 Style reference: [selected concept](../../../Docs/FishingUI/Lagoon-Stickers-Reference.png).
 These are six separate RGBA production assets, not a flattened gameplay HUD.
 Each original is 1254 × 1254 pixels and retains real alpha transparency.
-Full-resolution masters are the active source PNGs in
+Fish/profile/clock/flame masters remain the active source PNGs in
 [Game/Assets/_Game/Resources/FishingUI](../../../Game/Assets/_Game/Resources/FishingUI).
-No absolute installation paths are required. The original source art stays intact;
-the importer derives 64-pixel flames, 128-pixel fish/profile/clock badges and 256-pixel frames
-and reel buttons with ASTC 6×6 on Android. These six compressed textures occupy
-about 84 KB before APK ZIP compression; their original PNG byte sizes are not
-the shipped texture sizes.
-The frame uses a reusable nine-slice border. Scores, labels and fills remain live.
-The existing Cove rounded display font is reused. The same illustrated fisher
+The ornamental frame and reel originals are retained in `Masters/` outside Unity.
+The ornamental frame is retired; the reel returns as a 192-pixel Cast/Hook
+delivery sprite. The 13 October [illustrated fight controls](Illustrated/README.md)
+add small aqua/gold shared Left/Right sprites and a sliced card, with a portable
+generator and delivery integrity manifest. Android uses ASTC 6×6 without mipmaps.
+Source PNG bytes, serialized texture bytes and compressed APK bytes are different
+measurements. Scores, labels and fills remain live native UI. The current HUD
+reuses the sports fonts. The same illustrated fisher
 badge is shared by all rows; real names distinguish players and the local row
 has a different colour. This is not a live avatar/customisation portrait.
 
@@ -42,3 +43,21 @@ Use case: stylized-concept. Production asset: one transparent PNG player profile
 ### ClockBadge.png
 
 Use case: stylized-concept. Production asset: one transparent PNG stopwatch badge for the Lagoon Stickers fishing game HUD, square 1024x1024. Image 1 is a STYLE REFERENCE ONLY. Match the charming stopwatch icon at the left of the top-centre timer in it: a chunky glossy orange-gold round stopwatch with small top push button, deep navy outer contour, creamy white clock face, rounded deep navy hour and minute hands, tiny simple navy tick marks, turquoise-blue raised outer accent and subtle toy-like shiny highlight. Tilt the stopwatch slightly left for lively sticker character; fully visible and centred, occupying 85% of the canvas. Crisp thick smooth outlines and high-quality softly shaded playful game UI illustration, same cream/navy/coral/gold/teal palette and finish as Image 1. No letters, words, digits, extra props, fish, timer panel, full HUD, watermark or coloured background. Real transparent alpha around the whole stopwatch. This is a small standalone 2D game icon, not a 3D model or screenshot.
+
+## Retired delivery textures, 12 October 2026
+
+LagoonFrame and ReelButton are superseded by the shared native sports panels and
+Hold & Countersteer controls. Their original editable PNGs remain in
+`Masters/LagoonFrame.png` and `Masters/ReelButton.png`, outside Unity. They are
+not loaded or regenerated into the current player. Fish, fisher, clock and flame
+delivery sprites remain active; Golf shares the clock. See
+[the selected interaction](../../../Docs/FISHING-COUNTERSTEER.md).
+
+## Six skills and familiar tutorial, 13 October 2026
+
+The built-in image generator produced two transparent atlases. The
+[learning art record](Learning/README.md) records prompt intent, mode, references,
+masters, portable derivation and verified delivery hashes. Runtime tutorial
+examples also reuse live controls and icons. Sonar and Power Reel share existing
+art. The circular ReelButton is active again in the current illustrated HUD;
+its master remains outside Unity.

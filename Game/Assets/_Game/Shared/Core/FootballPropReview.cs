@@ -31,7 +31,7 @@ namespace WhatTheFish {
    if(!ball.HasAuthority){yield return Guest();Finish();yield break;}
    peers=Athlete.Active.Where(a=>a.GetComponent<NetworkObject>()&&a.GetComponent<NetworkObject>().IsSpawned).OrderBy(a=>a.GetComponent<NetworkObject>().OwnerClientId).ToArray();
    if(Environment.GetCommandLineArgs().Contains("-explorePropsOnly")){yield return ExploreChecks();Finish();yield break;}
-   Check(peers.Length==0?ball.OfflinePropPractice&&ball.Props.live:!ball.Props.live&&ball.Props.pickup.kind==SportsProp.None,"solo Explore enables props; multiplayer practice waits for teams");Check(RoomService.ProtocolVersion==46,"combined ability/audio protocol 46");
+   Check(peers.Length==0?ball.OfflinePropPractice&&ball.Props.live:!ball.Props.live&&ball.Props.pickup.kind==SportsProp.None,"solo Explore enables props; multiplayer practice waits for teams");Check(RoomService.ProtocolVersion==49,"combined ability/audio protocol 49");
    bool started=peers.Length==0?match.StartTestMatch():match.StartMatch();Check(started,"formal match starts");
    var roster=peers.Length==0?new[]{actor}:peers;foreach(var a in roster){int i=Array.IndexOf(roster,a);Check(match.ChooseTeam(a,i%2==0?FootballTeam.A:FootballTeam.B,match.Snapshot.revision),"choose team "+i);}
    match.Selection.Complete(new System.Random(7));match.State.TeamsConfirmed(match.Now-4);match.State.Advance(match.Now);yield return new WaitForFixedUpdate();yield return null;

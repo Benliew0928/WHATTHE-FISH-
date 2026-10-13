@@ -35,7 +35,7 @@ namespace WhatTheFish {
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.7f);
    review=new GameObject("Defense review camera").AddComponent<Camera>();review.CopyFrom(Camera.main);review.enabled=false;capture&=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;app.view.mode=1;actor.HideHead(false);
    ball.DefenseTrace=line=>File.AppendAllText(Path.Combine(folder,"contact.csv"),stage+","+line+"\n");
-   Check(RoomService.ProtocolVersion==46,"matching basketball protocol 46");
+   Check(RoomService.ProtocolVersion==49,"matching basketball protocol 49");
    if(app.rooms.Connected){if(ball.Authority)yield return Host();else yield return Guest();}
    else {Rules();Time.captureFramerate=rate;if(passOnly)yield return PassMotion();else yield return Motion();}
    Finish();
