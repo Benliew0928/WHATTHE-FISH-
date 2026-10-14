@@ -7,10 +7,10 @@ namespace WhatTheFish {
   public Material sky;
   public bool basketball;
   public Vector2 islandRadii;
-  public ScreenSpaceAmbientOcclusion exteriorContactShading;
+  public ScreenSpaceAmbientOcclusion exteriorContactShading {get;private set;}
   Light sun; Camera view;
   public void Apply(Camera camera,Light light) {
-   view=camera;sun=light;
+   view=camera;sun=light;exteriorContactShading=IslandContactShading.Resolve(camera);
    RenderSettings.skybox=sky;view.clearFlags=CameraClearFlags.Skybox;
    // Keep the game's original bright display palette; its old renderer had no post-process resources.
    var data=view.GetComponent<UniversalAdditionalCameraData>();if(data)data.renderPostProcessing=false;
@@ -26,7 +26,7 @@ namespace WhatTheFish {
    // The open court and exterior share daylight shadows.
    sun.shadows=LightShadows.Soft;
   }
-  void OnDisable(){if(exteriorContactShading)exteriorContactShading.SetActive(false);}
+  void OnDisable(){if(exteriorContactShading)exteriorContactShading.SetActive(false);exteriorContactShading=null;}
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
   static void DesktopQuality(){
    if(Application.isMobilePlatform)return;

@@ -40,7 +40,6 @@ public static class PackagedContentBuild {
    for(int i=0;i<sources.Length;i++){
     var scene=EditorSceneManager.OpenScene(sources[i],OpenSceneMode.Single);
     if(mobile){MobileGeometryBuilder.Apply(scene);MobileModelBuilder.Apply(scene);MobileMaterialBuilder.Apply(scene);}
-    if(target==BuildTarget.Android)AndroidSceneDependencies.Apply(scene);
     EditorSceneManager.SaveScene(scene,copies[i],true);
    }
    var entry=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Single);

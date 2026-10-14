@@ -57,6 +57,7 @@ namespace WhatTheFish {
    var match=BasketballMatch.Instance;
    bool live=!match||match.Live;
    if(simulate){
+    StepPickup();
     if(live)StepBlocks();if((!match||match.BallLive)&&!PortalBusy)StepShotPhysics();
     live=!match||match.Live;
     if(live){StepProps();if(!PortalBusy){StepSteals();StepInteraction();StepPropFlight();}}
@@ -73,7 +74,7 @@ namespace WhatTheFish {
     host.Basketball.Value=new BasketballSnapshot{inbound=InboundPending,props=propState,valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,steals=steals,stealTime=stealTime,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time,passAim=passAim,defense=Defense,finish=finishNotice,charge=Charge,score=score,northNet=baskets[0]?baskets[0].Hit:default,southNet=baskets[1]?baskets[1].Hit:default};
    }
   }
-  public void ResetMatchBall(bool clearScore){if(!Authority||!initialized)return;ResetHome();ResetProps(false);if(clearScore)ResetSessionScore();}
+  public void ResetMatchBall(bool clearScore,bool preserveInventory=false){if(!Authority||!initialized)return;ResetHome();ResetProps(false,!preserveInventory);if(clearScore)ResetSessionScore();}
   public void GiveMatchPossession(Athlete actor){
    if(!Authority||!actor)return;ClearPossession();holder=actor;dribblePhase=0;outsideFor=looseFor=0;
    Body.isKinematic=false;Body.linearVelocity=Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;

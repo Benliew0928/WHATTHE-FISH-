@@ -1,5 +1,105 @@
 # Build size — measured release records
 
+## Golf buggy control and shot camera - 14 October 2026
+
+Fresh AndroidSubmission at **18:54:34 Malaysia time** measures
+**73,453,793 -> 73,446,301 bytes (-7,492)** against this task's opening APK.
+Development reserve below 75,000,000 bytes is **1,553,699 bytes**; headroom to
+the strict 100,000,000-byte ceiling is **26,553,699 bytes**. The enforced build
+gate and independent APK v2 signature verification pass. SHA-256:
+`E4BF71D7D11845B843582F145C0A46D773E2ABBA72B56205319FDE195BDC4DDE`.
+
+Buggy steering and reverse preserve the player's camera angle. Accepted aiming
+recalls the player's buggy until manually summoned again. Confirmed impact
+starts a smooth ball-follow camera through flight and landing, then a smooth
+return to the golfer. No new art, audio or shipped dependency was added.
+Both mesh inventories are unchanged. The combined working-tree measurement
+also includes concurrent sports prop-cycle and lighting work, so the full byte
+delta is not attributable to the golf changes alone. See the
+[packing audit](APK-SIZE-AUDIT.md#golf-buggy-control-and-shot-camera---14-october-2026).
+
+The complete **324-file** Windows player built at **18:48:50** is delivered in
+`Builds/WindowsFinal/`, protocol **55**, with every file hash-verified against
+the tested candidate. [Verification](VERIFICATION.md#golf-buggy-control-and-shot-camera---14-october-2026)
+records **632 passing assertions**, rendered camera checks and source limits.
+This is `bd62f78` plus preserved uncommitted work. Physical Android appearance,
+touch and performance remain unverified. Current evidence is in
+`Builds/GolfCameraQA/`; its `SizeAuditFinal/` preserves the measured audit.
+
+## Live renderer lighting fix - 14 October 2026
+
+Fresh AndroidSubmission at **18:43:03 Malaysia time** measures
+**73,453,793 -> 73,448,789 bytes (-5,004)** against this task's opening APK.
+The development reserve is **1,551,211 bytes** below 75,000,000, with
+**26,551,211 bytes** to the strict 100,000,000-byte ceiling. The enforced build
+gate and independent APK v2 signature check pass. SHA-256:
+`00F95C3C789CB3BCDF83E76A7AC8391AFABAA3EA7CAEE76B884574F356501EB5`.
+
+Island lighting now controls the active camera's SSAO feature instead of a
+bundled duplicate. The fix restores the intended Windows contact shading;
+it does not reduce character textures, materials, geometry or normal shadows.
+All four islands and lossless packaging remain. Both mesh inventories are
+unchanged. This shared-checkout build also includes concurrent sports prop-cycle
+and Golf camera work, so its byte delta is not an isolated lighting benchmark.
+See the [audit](APK-SIZE-AUDIT.md#live-renderer-lighting-fix---14-october-2026).
+
+The complete **324-file** Windows player built at **18:35:38** is delivered in
+`Builds/WindowsFinal/`, protocol **55**. [Verification](VERIFICATION.md#live-renderer-lighting-fix---14-october-2026)
+records **495 passing assertions**, four-island character comparisons and source
+snapshot limits. A later development-only `GolfAimProbe.cs` update is outside
+this Windows snapshot; delivered gameplay and lighting code match. Phone visual
+quality/FPS remain unverified. Current evidence is in `Builds/CharacterLightingQA/`.
+
+## Continuous sports prop spawning - 14 October 2026
+
+Fresh AndroidSubmission at **18:40:11 Malaysia time** measures
+**73,453,793 -> 73,444,625 bytes (-9,168)**. Development reserve below
+75,000,000 bytes is **1,555,375 bytes**; headroom to the strict 100,000,000-byte
+ceiling is **26,555,375 bytes**. The enforced build gate and APK v2 signature
+verification pass. SHA-256:
+`DA0F0EEB65B860B9E7E74C719FBF6619DEF3D26BFEBA76B33F79EF5CAF71D624`.
+
+Both sports spawn the first pickup ten seconds after live play begins, show a
+countdown only during the final five seconds, and schedule the next pickup ten
+seconds after collection. An uncollected pickup and pending deadline survive
+baskets, out-of-bounds inbounds, shot-clock restarts and football goals/kickoff.
+Protocol **55** requires matching builds. One held slot and slower football
+shots from the preceding release are retained.
+
+The complete **324-file** Windows player built at **18:26:20** was promoted to
+`Builds/WindowsFinal/` and hash-verified after **1,404 passing assertions**.
+Source includes preserved uncommitted work on `bd62f78` and concurrent golf and
+lighting work available at build time. Android includes later golf camera and
+development-review edits; the tested sports implementation is unchanged.
+See [source limits and checks](VERIFICATION.md#continuous-sports-prop-spawning---14-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#continuous-sports-prop-spawning---14-october-2026).
+No physical Android or WAN validation is claimed. Current evidence is in
+`Builds/PropCycleQA/`, including a preserved `AndroidAudit/` snapshot.
+
+## Persistent sports props and slower football shots - 14 October 2026
+
+Fresh AndroidSubmission at **17:43:53 Malaysia time** measures
+**73,446,145 -> 73,453,793 bytes (+7,648)**. It remains below the
+75,000,000-byte development target with **1,546,207 bytes** reserved, and has
+**26,546,207 bytes** of headroom to the strict 100,000,000-byte ceiling.
+The enforced build gate and independent APK v2 signature check pass. SHA-256:
+`18CA85CD5E90D740F9CC109C2B0810733AC953C48AB972D3DE48DEF33C674A7D`.
+
+Both sports retain each player's unused single prop through goals and restarts;
+another pickup replaces it, activation consumes it, and match end clears it.
+Football shot launch speed is reduced by 20%; attached dribbling is unchanged.
+Protocol **54** requires matching peers. Existing lossless island packaging and
+art quality are preserved; serialized asset and mesh inventories are unchanged.
+See the [packing audit](APK-SIZE-AUDIT.md#persistent-sports-props-and-slower-football-shots---14-october-2026).
+
+The complete **323-file** Windows player built at **17:38:15** is delivered in
+`Builds/WindowsFinal/`, with every file matching the tested candidate.
+[Verification](VERIFICATION.md#persistent-sports-props-and-slower-football-shots---14-october-2026)
+records **1,825 passing assertions**, source provenance and archive batches.
+This is `bd62f78` plus uncommitted task changes. Physical Android quality,
+loading, memory/FPS and WAN play remain unverified. Current evidence is in
+`Builds/PropRetentionQA/` and `Builds/SizeAudit/latest/`.
+
 ## Lossless island packaging - 14 October 2026
 
 Fresh AndroidSubmission at **16:38:21 Malaysia time** measures

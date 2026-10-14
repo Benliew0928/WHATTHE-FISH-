@@ -121,7 +121,7 @@ namespace WhatTheFish {
    foreach(var pose in poses)Place(pose.actor,pose.world);Physics.SyncTransforms();return true;
   }
   bool PrepareRestart(){
-   ball.ResetMatchBall(false);if(!PlaceFormation())return false;
+   ball.ResetMatchBall(false,preserveInventory:true);if(!PlaceFormation())return false;
    var limit=BasketballBall.PaintedCourtLimits;
    // Right from the court facing the conceding hoop, closer to the stand
    // than the midpoint between hoop centre and baseline corner.

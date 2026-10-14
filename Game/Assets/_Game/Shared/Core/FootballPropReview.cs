@@ -39,14 +39,14 @@ namespace WhatTheFish {
    Signal("live");RuleChecks();yield return SpawnChecks();yield return TurboChecks();yield return PortalChecks();yield return WallChecks();yield return Gallery();
    if(peers.Length==4)yield return NetworkChecks();yield return GoalChecks();
    ball.ResetFootballProps();Check(ball.PropSlot(actor).kind==SportsProp.None&&!ball.PortalBusy&&!ball.Props.wallA.active&&!ball.Props.wallB.active&&ball.TurboRemaining(actor)==0,"reset clears inventory and every ability effect");
-   match.ClearMatch();yield return new WaitForSeconds(.2f);Check((peers.Length==0?ball.OfflinePropPractice&&ball.Props.pickup.countingDown:!ball.Props.live)&&!ball.PortalBusy,"match exit clears effects and solo Explore resumes fresh countdown");Signal("host-done");if(peers.Length==4){yield return Wait("guest-done");yield return Wait("teammate-done");yield return Wait("rival-done");}Finish();
+   match.ClearMatch();yield return new WaitForSeconds(.2f);Check((peers.Length==0?ball.OfflinePropPractice&&ball.Props.pickup.respawn>FootballBall.PropClock&&!ball.Props.pickup.countingDown:!ball.Props.live)&&!ball.PortalBusy,"match exit clears effects and solo Explore resumes fresh countdown");Signal("host-done");if(peers.Length==4){yield return Wait("guest-done");yield return Wait("teammate-done");yield return Wait("rival-done");}Finish();
   }
   IEnumerator ExploreChecks(){
    Check(peers.Length==0&&match.Snapshot.phase==FootballMatchPhase.Idle&&!match.Running,"ordinary offline Explore without a test match");
    Check(ball.OfflinePropPractice&&ball.PropsLive&&ball.Props.live,"Explore automatically enables prop simulation and visuals");Check(ball.PropTeam(actor)==FootballTeam.A&&match.TeamOf(actor)==FootballTeam.None,"solo practice gets ability team without changing match roster");
-   var spawn=ball.Props.pickup;var visual=ball.GetComponent<FootballPropVisual>();int seen=0;bool early=false,stable=true;double end=spawn.respawn;float timeout=Time.realtimeSinceStartup+8;
+   var spawn=ball.Props.pickup;var visual=ball.GetComponent<FootballPropVisual>();int seen=0;bool early=false,stable=true;double end=spawn.respawn;float timeout=Time.realtimeSinceStartup+12;
    while(ball.Props.pickup.kind==SportsProp.None&&Time.realtimeSinceStartup<timeout){yield return new WaitForEndOfFrame();if(!ball.Props.pickup.countingDown)continue;int number=visual.CountdownNumber;seen|=1<<number;early|=FootballBall.PropClock<end&&visual.PickupModel;stable&=ball.Props.pickup.anchor==spawn.anchor&&ball.Props.pickup.respawn==end;}
-   Check(seen==62&&stable&&!early,"automatic first countdown visibly steps 5 4 3 2 1 at its fixed location");Check(ball.Props.pickup.kind!=SportsProp.None&&FootballBall.PropClock>=end,"first Explore pickup appears only after five-second countdown");
+   Check(seen==62&&stable&&!early,"automatic first countdown visibly steps 5 4 3 2 1 at its fixed location");Check(ball.Props.pickup.kind!=SportsProp.None&&FootballBall.PropClock>=end,"first Explore pickup appears at its ten-second deadline");
    yield return null;Check(visual.PickupModel&&visual.PickupModel.gameObject.activeInHierarchy&&visual.PickupModel.GetComponent<Renderer>().bounds.size.magnitude>.6f,"actual Explore prop mesh visible above pitch");
    var anchor=ball.PropAnchor(ball.Props.pickup.anchor);Capture("explore-first-spawn",anchor+ball.Pitch.TransformDirection(new Vector3(anchor==ball.PropAnchor(0)?7:-7,6,-9)),anchor+Vector3.up*3.8f);CaptureHud("explore-spawn-stadium");
    var kind=ball.Props.pickup.kind;PlaceAt(actor,anchor);yield return new WaitForSeconds(.15f);Check(ball.PropSlot(actor).kind==kind&&ball.Props.pickup.kind==SportsProp.None,"walk into Explore pickup grants usable held slot");CaptureHud("explore-held-prop");
@@ -54,10 +54,11 @@ namespace WhatTheFish {
    ball.ReviewExpireFootballEffects();yield return new WaitForFixedUpdate();RuleChecks();yield return SpawnChecks();yield return TurboChecks();yield return PortalChecks();yield return WallChecks();
    Check(match.Snapshot.phase==FootballMatchPhase.Idle&&match.State.ScoreA==0&&match.State.ScoreB==0,"all three abilities work without starting match or enabling scoring");
    Place(actor,0,-8);FreeBall(8,8);ball.ReviewGiveFootballProp(actor,SportsProp.Wall);var stale=ball.PropSlot(actor);uint oldRound=match.Snapshot.revision;Check(match.StartTestMatch(),"formal match may start after solo ability practice");yield return new WaitForFixedUpdate();Check(!ball.PropsLive&&!ball.Props.live&&ball.PropSlot(actor).kind==SportsProp.None,"team selection clears practice props and effects");Check(!ball.TryUseProp(actor,stale.revision,oldRound,Heading()),"practice request cannot leak into formal match");
-   match.ClearMatch();yield return new WaitForFixedUpdate();yield return null;Check(ball.OfflinePropPractice&&ball.Props.pickup.countingDown&&ball.PropSlot(actor).kind==SportsProp.None,"returning to solo Explore restarts a clean countdown");
+   match.ClearMatch();yield return new WaitForFixedUpdate();yield return null;Check(ball.OfflinePropPractice&&ball.Props.pickup.respawn>FootballBall.PropClock&&!ball.Props.pickup.countingDown&&ball.PropSlot(actor).kind==SportsProp.None,"returning to solo Explore restarts a clean countdown");
    ball.ReviewGiveFootballProp(actor,SportsProp.Portal);FreeBall(8,8);Place(actor,0,-8);Check(ball.RequestProp(actor,Heading()),"practice portal starts before exit");app.LeaveCourt();yield return new WaitForSeconds(.2f);Check(!app.Exploring&&!ball.PropsLive&&!ball.Props.live&&!ball.PortalBusy&&ball.PropSlot(actor).kind==SportsProp.None,"leaving Explore clears pickup inventory and pending transfer");
   }
   void RuleChecks(){
+   var cycle=SportsAbilityRules.SchedulePickup(100,1);Check(cycle.respawn==110&&!cycle.countingDown&&cycle.kind==SportsProp.None,"shared cycle schedules exactly ten seconds");Check(!SportsAbilityRules.WarnPickup(ref cycle,104.999)&&SportsAbilityRules.WarnPickup(ref cycle,105)&&cycle.CountdownNumber(105)==5,"shared warning starts at five seconds exactly");Check(!SportsAbilityRules.WarnPickup(ref cycle,109)&&cycle.respawn==110&&cycle.anchor==1,"late updates never extend deadline or change location");
    foreach(var previous in new[]{SportsProp.Turbo,SportsProp.Portal,SportsProp.Wall}){var a=FootballPropRules.NextKind(previous,0);var b=FootballPropRules.NextKind(previous,1);Check(a!=previous&&b!=previous&&a!=b&&FootballPropRules.Kind(a)&&FootballPropRules.Kind(b),"both spawn alternatives exclude "+previous);}
    var wall=new FootballWallState{active=true,position=Vector3.zero,heading=0,until=20};
    Check(FootballPropRules.Sweep(wall,new Vector3(0,1,-100),new Vector3(0,1,100),.11f,out var f,out var n)&&f>.49f&&f<.51f&&n.z<-.9f,"continuous high-speed wall crossing");
@@ -74,7 +75,7 @@ namespace WhatTheFish {
    foreach(var kind in new[]{SportsProp.Turbo,SportsProp.Portal,SportsProp.Wall})Check(FootballPropHUD.Icon(kind),"distinct icon exists "+kind);
   }
   IEnumerator SpawnChecks(){
-   ball.ResetFootballProps();yield return new WaitForFixedUpdate();yield return null;var visual=ball.GetComponent<FootballPropVisual>();
+   ball.ResetFootballProps();yield return new WaitForFixedUpdate();yield return null;Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.respawn-FootballBall.PropClock>9.8,"first pickup scheduled ten seconds ahead with no early warning");ball.ReviewAdvanceFootballSpawn(5);yield return new WaitForFixedUpdate();yield return null;var visual=ball.GetComponent<FootballPropVisual>();
    {
     var h=visual.Hologram;Check(h&&h.sharedMaterial,"hologram renderer is loaded");Check(Vector3.Distance(h.transform.lossyScale,Vector3.one*4.6f)<.001f,"countdown is four times original size");var m=h.sharedMaterial;var c=m.GetColor("_BaseColor");Check(m.GetFloat("_Surface")==0&&m.GetFloat("_ZWrite")==1&&c.a==1&&c.b>c.g*4&&c.g<.2f,"countdown is opaque dark blue with depth writing");
     var point=ball.PropAnchor(ball.Props.pickup.anchor);Capture("countdown",point+new Vector3(7,6,-10),point+Vector3.up*4);CaptureHud("countdown-stadium");
@@ -83,21 +84,21 @@ namespace WhatTheFish {
    // a fresh real-time countdown after capture instead of subtracting seconds
    // from a deadline that is also advancing during GPU readback.
    ball.ResetFootballProps();yield return new WaitForFixedUpdate();yield return null;
-   int digits=0;double countdownEnd=ball.Props.pickup.respawn;float timeout=Time.realtimeSinceStartup+8;
-   while(ball.Props.pickup.countingDown&&Time.realtimeSinceStartup<timeout){
+   int digits=0;double countdownEnd=ball.Props.pickup.respawn;float timeout=Time.realtimeSinceStartup+12;
+   while(ball.Props.pickup.kind==SportsProp.None&&Time.realtimeSinceStartup<timeout){
     yield return new WaitForEndOfFrame();if(ball.Props.pickup.countingDown)digits|=1<<visual.CountdownNumber;
    }
    for(int n=5;n>=1;n--)Check((digits&(1<<n))!=0,"blue hologram digit "+n);
-   Check(FootballBall.PropClock>=countdownEnd,"countdown waits its full five seconds");
+   Check(FootballBall.PropClock>=countdownEnd,"first spawn waits its full ten seconds");
    Check(ball.Props.pickup.kind!=SportsProp.None&&!ball.Props.pickup.countingDown,"prop materializes only after countdown");
-   var seen=ball.Props.pickup.kind;yield return null;Check(visual.PickupModel&&visual.PickupModel.GetComponent<Renderer>().bounds.size.magnitude>.6f,"floating prop has visible world dimensions");
+   var first=ball.Props.pickup;yield return new WaitForSeconds(.2f);Check(ball.Props.pickup.Equals(first),"uncollected pickup remains the only world prop");var seen=ball.Props.pickup.kind;yield return null;Check(visual.PickupModel&&visual.PickupModel.GetComponent<Renderer>().bounds.size.magnitude>.6f,"floating prop has visible world dimensions");
    for(int i=0;i<8;i++){
     var spawn=ball.Props.pickup;var local=ball.Pitch.InverseTransformPoint(ball.PropAnchor(spawn.anchor));Check(Mathf.Abs(local.z-ball.PitchBounds.center.z)<.01f,"pickup on midfield line "+i);
     yield return new WaitForEndOfFrame();Check(visual.PickupModel&&Vector3.Distance(visual.PickupModel.lossyScale,Vector3.one*4.48f)<.001f&&visual.PickupModel.GetComponent<Renderer>().bounds.min.y>ball.PropAnchor(spawn.anchor).y,"enlarged pickup floats wholly above floor "+spawn.kind);
     var point=ball.PropAnchor(spawn.anchor);if(i<3)Capture("large-pickup-"+spawn.kind,point+new Vector3(7,6,-10),point+Vector3.up*3.8f);
     PlaceAt(actor,point+ball.Pitch.TransformDirection(Vector3.forward*2));yield return new WaitForSeconds(.08f);Check(ball.Props.pickup.kind==spawn.kind,"display scale does not enlarge collection radius "+i);
     PlaceAt(actor,ball.PropAnchor(spawn.anchor));yield return new WaitForSeconds(.12f);Check(ball.PropSlot(actor).kind==spawn.kind&&ball.Props.pickup.kind==SportsProp.None,"walking into prop collects once "+i);
-    Place(actor,0,-8);ball.ReviewAdvanceFootballSpawn(15);yield return new WaitForFixedUpdate();yield return null;Check(ball.Props.pickup.countingDown,"next cycle announces location "+i);ball.ReviewAdvanceFootballSpawn(5);yield return new WaitForFixedUpdate();yield return null;Check(ball.Props.pickup.kind!=seen&&ball.Props.pickup.kind!=SportsProp.None,"consecutive prop differs "+i);seen=ball.Props.pickup.kind;
+    Place(actor,0,-8);ball.ReviewAdvanceFootballSpawn(5);yield return new WaitForFixedUpdate();yield return null;Check(ball.Props.pickup.countingDown,"next cycle announces location "+i);ball.ReviewAdvanceFootballSpawn(5);yield return new WaitForFixedUpdate();yield return null;Check(ball.Props.pickup.kind!=seen&&ball.Props.pickup.kind!=SportsProp.None,"consecutive prop differs "+i);seen=ball.Props.pickup.kind;
    }
    var old=ball.PropSlot(actor);ball.ReviewGiveFootballProp(actor,SportsProp.Turbo);Check(!ball.TryUseProp(actor,old.revision,match.Snapshot.revision,Heading())&&ball.PropSlot(actor).kind==SportsProp.Turbo,"stale inventory request cannot spend replacement");
    Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision,match.Snapshot.revision-1,Heading()),"old round activation rejected");
@@ -165,12 +166,22 @@ namespace WhatTheFish {
    File.WriteAllText(Path.Combine(shared,"race-at"),(FootballBall.PropClock+1).ToString("R",System.Globalization.CultureInfo.InvariantCulture));Signal("portal-race");double at=double.Parse(File.ReadAllText(Path.Combine(shared,"race-at")),System.Globalization.CultureInfo.InvariantCulture);while(FootballBall.PropClock<at)yield return null;ball.RequestProp(actor,Heading());yield return new WaitForSeconds(.95f);int spent=(ball.PropSlot(actor).kind==SportsProp.None?1:0)+(ball.PropSlot(guest).kind==SportsProp.None?1:0);Check(spent==1&&(ball.CurrentController==actor||ball.CurrentController==guest),"simultaneous portals reserve one ball and consume one slot");yield return Wait("guest-race-done");
   }
   IEnumerator GoalChecks(){
-   ball.ReviewExpireFootballEffects();yield return new WaitForFixedUpdate();Place(actor,-7,-10);FreeBall(8,8);ball.ReviewGiveFootballProp(actor,SportsProp.Turbo);Check(ball.RequestProp(actor,Heading()),"Turbo before goal accepted");yield return new WaitForSeconds(.1f);
+   ball.ResetFootballProps();yield return new WaitForFixedUpdate();yield return null;var pending=ball.Props.pickup;ball.ResetBall(preserveInventory:true);Check(ball.Props.pickup.Equals(pending),"ball reset preserves pending spawn deadline and location");ball.ReviewAdvanceFootballSpawn(10);yield return new WaitForFixedUpdate();yield return null;var retainedPickup=ball.Props.pickup;Check(retainedPickup.kind!=SportsProp.None,"world pickup exists before goal");ball.ReviewExpireFootballEffects();yield return new WaitForFixedUpdate();Place(actor,-7,-10);FreeBall(8,8);ball.ReviewGiveFootballProp(actor,SportsProp.Turbo);Check(ball.RequestProp(actor,Heading()),"Turbo before goal accepted");yield return new WaitForSeconds(.1f);
    ball.ReviewFootballWall(FootballTeam.A,Point(0,-3),Heading());ball.ReviewGiveFootballProp(actor,SportsProp.Portal);var slot=ball.PropSlot(actor);uint round=match.Snapshot.revision;
+   var owners=peers.Length==4?peers:new[]{actor};foreach(var owner in owners)if(owner!=actor)ball.ReviewGiveFootballProp(owner,SportsProp.Portal);var held=owners.Select(ball.PropSlot).ToArray();
    int north=Enumerable.Range(0,ball.GoalCount).First(i=>ball.GoalSign(i)>0);float goal=ball.GoalFront(north)-ball.PitchBounds.center.z;
    FreeBall(0,goal-2,.35f);match.ResetAbilityGoalTracking();yield return new WaitForFixedUpdate();ball.Body.position=Point(0,goal+1,.35f);Check(!ball.TryUseProp(actor,slot.revision,round,Heading()),"already crossed goal wins over portal activation");
-   Check(match.State.ScoreA>0&&!match.Running&&!ball.PortalBusy&&!ball.Props.wallA.active&&ball.PropSlot(actor).kind==SportsProp.None&&ball.TurboRemaining(actor)==0,"goal clears held inventory wall and Turbo");
-   float end=Time.realtimeSinceStartup+8;while(!match.Running&&Time.realtimeSinceStartup<end)yield return null;Check(match.Running&&ball.Props.pickup.countingDown,"new kickoff starts fresh spawn countdown");ball.ReviewGiveFootballProp(actor,SportsProp.Turbo);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision,round,Heading()),"pre-goal round request cannot spend post-goal slot");
+   Check(match.State.ScoreA>0&&!match.Running&&!ball.PortalBusy&&!ball.Props.wallA.active&&owners.Select((owner,i)=>ball.PropSlot(owner).Equals(held[i])).All(same=>same)&&ball.TurboRemaining(actor)==0,"goal retains every held slot while clearing wall and Turbo");
+   yield return null;yield return new WaitForEndOfFrame();var propHud=FootballPropHUD.Instance;Check(propHud&&propHud.GetComponent<CanvasGroup>().alpha>.99f&&!propHud.GetComponent<Button>().interactable,"goal keeps the held prop visible and unavailable until kickoff");CaptureHud("goal-retained-prop");Check(ball.Props.pickup.Equals(retainedPickup)&&ball.GetComponent<FootballPropVisual>().PickupModel&&ball.GetComponent<FootballPropVisual>().PickupModel.gameObject.activeInHierarchy,"same world pickup stays visible throughout goal pause");
+   if(peers.Length==4){Signal("goal-held");foreach(var role in new[]{"guest","teammate","rival"})yield return Wait(role+"-goal-held");}
+   float end=Time.realtimeSinceStartup+8;while(!match.Running&&Time.realtimeSinceStartup<end)yield return null;Check(match.Running&&ball.Props.pickup.Equals(retainedPickup),"kickoff preserves the same uncollected world prop");yield return new WaitForSeconds(.2f);
+   Check(owners.Select((owner,i)=>ball.PropSlot(owner).Equals(held[i])).All(same=>same),"held slots and revisions survive kickoff and live prop initialization");
+   yield return new WaitForEndOfFrame();Check(propHud&&propHud.GetComponent<CanvasGroup>().alpha>.99f,"held prop stays visible after kickoff");CaptureHud("kickoff-retained-prop");
+   if(peers.Length==4){Signal("goal-resumed");foreach(var role in new[]{"guest","teammate","rival"})yield return Wait(role+"-goal-resumed");}
+   ball.ReviewFootballBall(ball.KickoffPosition-Vector3.up*100,Vector3.zero);yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();Check(owners.Select((owner,i)=>ball.PropSlot(owner).Equals(held[i])).All(same=>same),"stranded ball recovery retains every held slot");
+   Check(!ball.TryUseProp(actor,slot.revision,round,Heading())&&ball.PropSlot(actor).Equals(slot),"pre-goal round request cannot spend retained slot");
+   Place(actor,0,-8);FreeBall(8,8);Check(ball.TryUseProp(actor,slot.revision,match.Snapshot.revision,Heading())&&ball.PropSlot(actor).kind==SportsProp.None,"retained prop is usable once with the current round");yield return new WaitForSeconds(.8f);
+   ball.ReviewGiveFootballProp(actor,SportsProp.Wall);match.State.Advance(match.State.Deadline);yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();Check(match.State.Phase==FootballMatchPhase.Finished&&owners.All(owner=>ball.PropSlot(owner).kind==SportsProp.None),"match end clears every held inventory slot");
   }
   IEnumerator Guest(){
    yield return Wait("live",60);var n=actor.GetComponent<NetworkAthlete>();string role=n.OwnerClientId==1?"guest":n.OwnerClientId==2?"teammate":"rival";
@@ -186,6 +197,8 @@ namespace WhatTheFish {
     yield return Wait("guest-wall-move");DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,heading=Heading(180),dash=true};yield return new WaitForSeconds(.9f);DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.25f);float z=ball.Pitch.InverseTransformPoint(actor.transform.position).z-ball.PitchBounds.center.z;Check(z>6.35f&&z<7,"guest observes dash blocked by wall without crossing z="+z.ToString("F3"));Signal("guest-wall-blocked");
     yield return Wait("portal-race");double at=double.Parse(File.ReadAllText(Path.Combine(shared,"race-at")),System.Globalization.CultureInfo.InvariantCulture);while(FootballBall.PropClock<at)yield return null;ball.RequestProp(actor,actor.transform.eulerAngles.y);yield return new WaitForSeconds(1.1f);Check(!ball.PortalBusy&&ball.CurrentController,"one controller after contested portal");Signal("guest-race-done");
    }
+   yield return Wait("goal-held",60);yield return new WaitForSeconds(.2f);var heldSlot=ball.PropSlot(actor);Check(heldSlot.kind==SportsProp.Portal,"goal retains replicated held prop");Signal(role+"-goal-held");
+   yield return Wait("goal-resumed");yield return new WaitForSeconds(.2f);Check(ball.PropSlot(actor).Equals(heldSlot)&&match.Running,"kickoff retains replicated slot and revision");Signal(role+"-goal-resumed");
    yield return Wait("host-done",60);yield return new WaitForSeconds(.3f);Check(!ball.Props.live&&!ball.PortalBusy&&!ball.Props.wallA.active&&!ball.Props.wallB.active&&ball.PropSlot(actor).kind==SportsProp.None,"match reset replicates all cleanup");Signal(role+"-done");
   }
   IEnumerator Gallery(){

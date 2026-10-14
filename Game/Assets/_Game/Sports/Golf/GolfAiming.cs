@@ -55,6 +55,9 @@ namespace WhatTheFish {
    var existing=Aim(actor);if(existing.active)return existing.owner==owner;
    var ball=Ball(owner);
    if(!CanSwing(actor)||!AimEligible(actor,ball)||!TryStance(actor,ball,out var feet,heading))return false;
+   // Recall on the authority before entering the stance. The existing cart
+   // snapshot replicates this to every peer; cancel/shot completion never summons it.
+   if(GolfCartWorld.HasCart(actor))GolfCartWorld.Execute(actor,GolfCartAction.Recall,GolfCartWorld.Key(actor));
    bool controller=actor.capsule.enabled;actor.capsule.enabled=false;actor.transform.position=feet;actor.ResetLocomotion();actor.capsule.enabled=controller;
    actor.GolfClubMotion.Equip(Round);actor.GolfClubMotion.Address(ball.Body.position);Physics.SyncTransforms();
    var state=new GolfAimState{active=true,owner=owner,round=Round,reset=ball.ResetSequence,ballPosition=ball.Body.position,mode=ShotMode(ball)};aims[actor]=state;

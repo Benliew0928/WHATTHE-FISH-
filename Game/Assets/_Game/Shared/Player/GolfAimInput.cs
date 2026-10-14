@@ -16,6 +16,7 @@ namespace WhatTheFish {
   public bool BeginGolfAim(){
    if(aimWanted)return GolfAiming;var match=GolfMatchManager.Instance;var ball=active&&match?match.AimCandidate(target):null;if(!ball)return false;
    aimWanted=true;aimAccepted=false;golfReleased=false;aimOwner=ball.Owner;aimRound=match.Round;aimRequestedAt=Time.unscaledTime;
+   ReturnFromGolfShot();
    pendingJump=false;pendingCart=GolfCartAction.None;
    // Start with the direction the player was already looking. The shot camera
    // works from every roaming camera mode and restores it when aim ends.
@@ -23,6 +24,7 @@ namespace WhatTheFish {
    return true;
   }
   public void CancelGolfAim(){
+   if(pendingGolf)ReturnFromGolfShot();
    bool requested=aimWanted;aimWanted=aimAccepted=false;GolfCharging=false;pendingGolf=false;if(golfPreview)golfPreview.Hide();
    if(!requested||!target)return;var match=GolfMatchManager.Instance;var net=target.GetComponent<NetworkAthlete>();
    if(net&&net.IsSpawned)net.GolfAimRpc(false,aimOwner,aimRound,yaw);else if(match)match.SetAim(target,false,aimOwner,aimRound);

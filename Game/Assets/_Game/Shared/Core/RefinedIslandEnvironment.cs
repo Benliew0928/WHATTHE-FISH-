@@ -26,16 +26,18 @@ namespace WhatTheFish {
  }
  public sealed class RefinedIslandEnvironment:MonoBehaviour {
   public IslandLayout layout;public IslandLightingProfile lighting;
-  public ScreenSpaceAmbientOcclusion contactShading;
+  public ScreenSpaceAmbientOcclusion contactShading {get;private set;}
   public static RefinedIslandEnvironment Active {get;private set;}
   string previousContact;Light appliedSun;float previousBias,previousNormalBias;
   void OnEnable(){Active=this;}
   void OnDisable(){
    if(Active==this)Active=null;
-   if(contactShading){if(previousContact!=null)JsonUtility.FromJsonOverwrite(previousContact,contactShading);contactShading.SetActive(false);previousContact=null;}
+   ReleaseContactShading();
    if(appliedSun){appliedSun.shadowBias=previousBias;appliedSun.shadowNormalBias=previousNormalBias;appliedSun=null;}
   }
   public void Apply(Camera camera,Light sun){
+   var contact=IslandContactShading.Resolve(camera);
+   if(contactShading!=contact){ReleaseContactShading();contactShading=contact;}
    Active=this;var p=lighting;RenderSettings.skybox=p.sky;camera.clearFlags=CameraClearFlags.Skybox;
    RenderSettings.ambientMode=AmbientMode.Flat;RenderSettings.ambientLight=p.ambient;
    RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=p.fogStart;RenderSettings.fogEndDistance=p.fogEnd;RenderSettings.fogColor=p.fogColor;
@@ -50,6 +52,10 @@ namespace WhatTheFish {
     JsonUtility.FromJsonOverwrite("{\"m_Settings\":{\"Intensity\":"+p.contactIntensity.ToString(System.Globalization.CultureInfo.InvariantCulture)+",\"Radius\":"+p.contactRadius.ToString(System.Globalization.CultureInfo.InvariantCulture)+"}}",contactShading);
     contactShading.SetActive(p.contactShading);
    }
+  }
+  void ReleaseContactShading(){
+   if(contactShading){if(previousContact!=null)JsonUtility.FromJsonOverwrite(previousContact,contactShading);contactShading.SetActive(false);}
+   previousContact=null;contactShading=null;
   }
  }
 }

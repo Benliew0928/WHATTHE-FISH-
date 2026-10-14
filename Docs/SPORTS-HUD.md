@@ -27,7 +27,7 @@ squads A and B by stable network join ID. Teams do not reshuffle when someone
 leaves; all peers derive the same assignment. Solo practice remains playable.
 Basketball practice keeps a shared score; competitive rooms use timed team
 matches and teammate-only inbounds. Teammates cannot steal, block or apply shot
-pressure to one another. Use matching **protocol 53** players, including the
+pressure to one another. Use matching **protocol 55** players, including the
 [approved football audio](FOOTBALL-AUDIO.md).
 
 Basketball Steal occupies the lower-left Pass slot during defense. Sliding there

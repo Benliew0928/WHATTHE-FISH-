@@ -116,7 +116,6 @@ public static class RefinedIslandBuilder {
   }
   var env=root.AddComponent<RefinedIslandEnvironment>();env.layout=data;env.lighting=new IslandLightingProfile();
   env.lighting.sky=Material(dir+sport+"_DaylightSky.mat","WhatTheFish/CoastalSky");env.lighting.intensity=sport=="Fishing"?1.12f:1.18f;
-  env.contactShading=AssetDatabase.LoadAllAssetsAtPath("Assets/_Game/Settings/DesktopCoastRenderer.asset").OfType<ScreenSpaceAmbientOcclusion>().Single();
   var clouds=Material(dir+sport+"_Cloud.mat","WhatTheFish/CoastalCloud");clouds.CopyPropertiesFromMaterial(AssetDatabase.LoadAssetAtPath<Material>("Assets/_Game/Art/CoastalIslands/Coast_Cloud.mat"));EditorUtility.SetDirty(clouds);
   var random=new System.Random(sport=="Golf"?927:928);var skyRoot=new GameObject("Sculpted cloud field");skyRoot.transform.SetParent(root.transform,false);
   for(int i=0;i<32;i++){

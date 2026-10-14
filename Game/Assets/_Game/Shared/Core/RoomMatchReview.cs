@@ -33,7 +33,7 @@ namespace WhatTheFish {
    Check(match.ChooseTeam(mateA,FootballTeam.A,selection)&&match.ChooseTeam(mateB,FootballTeam.B,selection),"fixture teammates selected");
    Check(!match.ChooseTeam(partner,FootballTeam.A,selection),"full team rejected");
    if(!online)Check(match.ChooseTeam(partner,FootballTeam.B,selection),"partner selects B");
-   yield return Capture("selection");yield return Until(()=>match.Running,"regulation starts",18);
+   yield return Capture("selection");yield return Until(()=>match.Running,"regulation starts",18);yield return new WaitForFixedUpdate();yield return null;
    Check(match.TeamOf(actor)==FootballTeam.A&&match.TeamOf(partner)==FootballTeam.B,"balanced locked teams");
    Check(Math.Abs(match.Remaining-180)<2,"room duration excludes setup");
    Check(!match.ChooseTeam(actor,FootballTeam.B,selection),"team changes rejected after selection");
@@ -46,32 +46,37 @@ namespace WhatTheFish {
    Check(ball.Holder==actor&&match.State.Possession==FootballTeam.A&&deadline>match.Now,"carrier and live shot clock initialized");
    ball.GiveMatchPossession(actor);match.Control(actor);Check(match.State.ShotDeadline==deadline,"same team control retains clock");
    ball.ReviewGiveProp(actor,SportsProp.Turbo);Check(ball.TryUseProp(actor,ball.PropSlot(actor).revision),"ability usable in regulation");
-   yield return Capture("regulation");
+   var propOwners=new[]{actor,partner,mateA,mateB};foreach(var owner in propOwners)ball.ReviewGiveProp(owner,SportsProp.Portal);var heldProps=propOwners.Select(ball.PropSlot).ToArray();
+   var pickupDeadline=ball.Props.pickup.respawn;Check(pickupDeadline>match.Now&&!ball.Props.pickup.countingDown,"competitive match schedules first pickup ten seconds after play starts");yield return Capture("regulation");
    yield return Drop(actor,aHoop,3);Check(match.State.ScoreA==3&&match.State.ScoreB==0&&match.State.Phase==BasketballMatchPhase.Restart,"physical three pointer credited to A");
    Check(ball.Holder&&match.TeamOf(ball.Holder)==FootballTeam.B&&match.State.Possession==FootballTeam.B,"conceding team gets protected baseline ball");
-   Check(ball.PropSlot(actor).kind==SportsProp.None&&ball.TurboRemaining(actor)==0,"score clears inventory and active effects");
+   Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same)&&ball.TurboRemaining(actor)==0,"score retains every player's inventory and clears active effects");
    Check(!ball.BeginShotCharge(partner,0)&&!ball.TrySteal(actor,0)&&!ball.TryUseProp(actor,ball.PropSlot(actor).revision),"restart gates shots steals and abilities");
    double frozen=match.Remaining;Vector3 before=actor.transform.position;actor.Simulate(new PlayerCommand{move=Vector2.one,jump=true,heading=0},.1f);
    Check(Vector3.Distance(before,actor.transform.position)<.001f&&match.Remaining==frozen,"restart freezes movement and match clock");
    if(online){var n=actor.GetComponent<NetworkAthlete>();Check(!(bool)typeof(NetworkAthlete).GetMethod("AcceptBasketball",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(n,new object[]{selection}),"old network round rejected");}
-   yield return Capture("basket-restart");yield return OpenRestart();
+   Check(ball.Props.pickup.respawn==pickupDeadline,"basket inbound preserves pickup deadline");ball.ReviewAdvanceSpawn(10);yield return new WaitForFixedUpdate();yield return new WaitForEndOfFrame();var worldPickup=ball.Props.pickup;var worldModel=ball.GetComponent<BasketballPropVisual>().ReviewPickup();Check(worldPickup.kind!=SportsProp.None&&worldModel&&worldModel.gameObject.activeInHierarchy,"pickup materializes during inbound without waiting for play to resume");yield return Capture("basket-restart");var propHud=FindFirstObjectByType<BasketballPropHUD>();Check(propHud&&propHud.GetComponent<CanvasGroup>().alpha>.99f&&!propHud.GetComponent<Button>().interactable,"basket keeps held prop visible during protected restart");yield return OpenRestart();
    Check(!ball.InboundPending&&match.Running,"legal pass opens restart");
+   Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same),"all held prop revisions survive inbound release");
    Check(match.State.ShotRemaining(match.Now)>17,"fresh possession clock");
    ball.autoPickup=false;ball.Body.isKinematic=false;ball.Place(new Vector3(7,3,0),Quaternion.identity,ball.transform.parent.right*8,Vector3.zero);match.Touch(partner);
    yield return Until(()=>match.State.Phase==BasketballMatchPhase.Restart,"out of bounds detected");
    Check(match.State.Possession==FootballTeam.A&&ball.Holder&&match.TeamOf(ball.Holder)==FootballTeam.A,"last-touch opponent owns sideline restart");
+   Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same),"out of bounds retains all held props");yield return new WaitForEndOfFrame();Check(ball.Props.pickup.Equals(worldPickup)&&ball.GetComponent<BasketballPropVisual>().ReviewPickup()==worldModel&&worldModel.gameObject.activeInHierarchy,"out of bounds preserves same world prop instance and location");
    yield return OpenRestart();
    yield return Until(()=>match.State.Phase==BasketballMatchPhase.Restart,"20-second shot clock expires",25);
    Check(match.State.RestartReason==BasketballRestart.ShotClock&&match.State.Possession==FootballTeam.B,"shot-clock turnover awards B");yield return Capture("shot-clock");
+   Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same),"shot-clock restart retains all held props");Check(ball.Props.pickup.Equals(worldPickup)&&ball.GetComponent<BasketballPropVisual>().ReviewPickup()==worldModel,"uncollected pickup survives a full possession and shot-clock restart without respawning");
    yield return OpenRestart();
    yield return Drop(partner,bHoop,2);Check(match.State.ScoreB==2,"physical opposite-hoop basket credits B");
+   Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same),"second basket retains all held props");
    yield return OpenRestart();
-   if(online){yield return Until(()=>match.State.Phase==BasketballMatchPhase.Cancelled,"guest departure immediately voids match",20);Check(match.State.Result==FootballMatchResult.None&&match.State.ScoreA==3&&match.State.ScoreB==2,"void has no awarded winner and retains scores");yield return Capture("disconnected");}
+   if(online){yield return Until(()=>match.State.Phase==BasketballMatchPhase.Cancelled,"guest departure immediately voids match",20);Check(match.State.Result==FootballMatchResult.None&&match.State.ScoreA==3&&match.State.ScoreB==2,"void has no awarded winner and retains scores");Check(propOwners.All(owner=>ball.PropSlot(owner).kind==SportsProp.None),"void clears all held props");yield return Capture("disconnected");}
    else {
-    partner.gameObject.SetActive(false);yield return new WaitForFixedUpdate();Check(match.State.Phase==BasketballMatchPhase.Cancelled&&match.State.Result==FootballMatchResult.None,"departed participant voids match before another goal");partner.gameObject.SetActive(true);
+    partner.gameObject.SetActive(false);yield return new WaitForFixedUpdate();Check(match.State.Phase==BasketballMatchPhase.Cancelled&&match.State.Result==FootballMatchResult.None,"departed participant voids match before another goal");Check(propOwners.All(owner=>ball.PropSlot(owner).kind==SportsProp.None),"void clears all held props");partner.gameObject.SetActive(true);
     Check(match.ReviewStart(new[]{actor,partner,mateA,mateB},.5,1),"new match after void");uint rev=match.Snapshot.revision;Check(match.ChooseTeam(actor,FootballTeam.A,rev)&&match.ChooseTeam(partner,FootballTeam.B,rev)&&match.ChooseTeam(mateA,FootballTeam.A,rev)&&match.ChooseTeam(mateB,FootballTeam.B,rev),"overtime fixture teams locked");
     yield return Until(()=>match.Running,"short regulation starts");yield return Until(()=>match.State.Phase==BasketballMatchPhase.Overtime,"tied match enters overtime");
-    yield return Drop(actor,match.AttackingHoop(actor),2);Check(match.State.Result==FootballMatchResult.TeamA&&match.State.Phase==BasketballMatchPhase.Finished,"golden basket ends match");yield return Capture("result");
+    foreach(var owner in propOwners)ball.ReviewGiveProp(owner,SportsProp.Turbo);yield return Drop(actor,match.AttackingHoop(actor),2);Check(match.State.Result==FootballMatchResult.TeamA&&match.State.Phase==BasketballMatchPhase.Finished,"golden basket ends match");Check(propOwners.All(owner=>ball.PropSlot(owner).kind==SportsProp.None),"winning basket clears inventory at match end");yield return Capture("result");
     Check(!match.State.Basket(FootballTeam.B,3,match.Now)&&match.State.ScoreB==0,"finished score immutable");
     match.Clear();Check(match.State.Phase==BasketballMatchPhase.Idle&&ball.SetFreeRoam(actor,true),"clearing fixture restores offline sandbox");
     Destroy(partner.gameObject);Destroy(mateA.gameObject);Destroy(mateB.gameObject);
@@ -103,7 +108,8 @@ namespace WhatTheFish {
    bool restart=false,clock=false;float end=Time.realtimeSinceStartup+50;
    while(Time.realtimeSinceStartup<end&&match.Snapshot.scoreB<2){var s=match.Snapshot;restart|=s.phase==BasketballMatchPhase.Restart&&s.scoreA==3;clock|=s.restart==BasketballRestart.ShotClock;yield return null;}
    Check(match.Snapshot.scoreA==3&&match.Snapshot.scoreB==2,"guest receives both team scores");Check(restart&&clock,"guest receives score restart and shot clock turnover");
-   yield return Until(()=>match.Running,"guest sees resumed play");yield return Capture("guest-regulation");
+   Check(ball.PropSlot(actor).kind==SportsProp.Portal,"guest retained inventory through both baskets and all restarts");
+   yield return Until(()=>match.Running,"guest sees resumed play");yield return Until(()=>ball.Held&&!ball.InboundPending,"guest sees final inbound received");yield return Capture("guest-regulation");
    var task=app.rooms.Leave();while(!task.IsCompleted)yield return null;Check(!app.rooms.Connected,"guest leaves cleanly");
   }
   IEnumerator Football(){

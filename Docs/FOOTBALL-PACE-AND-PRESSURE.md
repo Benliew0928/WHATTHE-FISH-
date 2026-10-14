@@ -5,7 +5,9 @@ room guests and bots. Walking is **4.2 m/s** and running **7.35 m/s**.
 Dribbling retains its 75% possession multiplier, giving **3.15 / 5.5125 m/s**;
 charging moves at **2.52 m/s**. Dash and Team Turbo multiply these reduced
 speeds once. Other sports, jump physics and tackle/hit impulses retain their
-tuning. Kick launch speeds remain **16.8-30.8 m/s** depending on charge.
+tuning. Kick launch speeds are **13.44-24.64 m/s** depending on charge,
+20% below the previous 16.8-30.8 m/s. Only the shot launch receives this new
+multiplier; dribbling continues to attach the ball to the player's forward foot.
 
 ## Receiving
 
@@ -73,7 +75,7 @@ cooldown remains **1.5 seconds**, with the existing **0.8 m** contact sweep.
 
 The host computes movement, stamina and containment. Guests send only action
 intent and receive quantized stamina plus dash/pressure/exhaustion state.
-Protocol **53** requires matching Windows and Android peers. Input expiry,
+Protocol **55** requires matching Windows and Android peers. Input expiry,
 focus loss, pointer release/cancellation, match resets and travel clear held actions. Leaving Pressure to reach a swipe target retains its owning finger; leaving the standalone Dash button still cancels Dash.
 
 The feature uses existing UI images, fonts and the character rig, with a

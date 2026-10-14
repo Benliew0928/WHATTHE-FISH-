@@ -7,11 +7,15 @@ Artwork masters and regeneration: [football props](../ArtSource/Football/Props/R
 
 Abilities appear during formal football matches **and Explore Offline**. Solo
 Explore starts them automatically without pressing Start Match. Online practice
-still waits for a formal match and its assigned teams. The first spawn begins
-with a solid dark-blue 3D 5–4–3–2–1 countdown. The host or offline game chooses one
+still waits for a formal match and its assigned teams. The first pickup appears
+ten seconds after live play starts: five quiet seconds, then a solid dark-blue
+3D 5–4–3–2–1 countdown. The host or offline game chooses one
 of the two fixed points at the touchline ends of halfway, 0.75 m inside the
-pitch boundary. Only one pickup exists at a time. After collection, a 15-second
-pause precedes the next 5-second countdown. Each new kind differs from the last.
+pitch boundary. Only one pickup exists at a time and remains until collected.
+Each collection starts another ten-second cycle with the warning in its final
+five seconds. Each new kind differs from the last. Goals and kickoff resets
+preserve the world pickup, chosen location and fixed deadline; its timer and
+presentation continue during the pause. Collection resumes with live play.
 
 Countdown digits, floating pickup models and their floor projections are **4×**
 their original display size for visibility across the large pitch. Models float
@@ -23,6 +27,13 @@ collecting another prop replaces the unused one. Tap the illustrated ability
 button, or press **G**, to activate. The football menu's **Abilities** page
 explains the controls. Invalid requests and cancelled wall previews retain the
 prop. An accepted portal is consumed even if its transfer is interrupted.
+
+Unused props remain with their collector through goals, kickoff resets and
+overtime. The next pickup replaces that one slot; props never accumulate in a
+second slot. Match completion, cancellation, a new match or leaving the sport
+clears inventory.
+The held prop stays visible during a goal/kickoff pause and is disabled until
+play resumes.
 
 In Explore Offline, the local player uses Team A's half for ability rules
 (the negative pitch-Z half), without adding a match roster or enabling scoring.
@@ -65,8 +76,9 @@ are disabled while reserved. A departing, airborne, obstructed or tackled receiv
 cancels attachment and drops the ball safely at the source, keeping the use spent.
 Goal tracking resets around the transfer so teleporting cannot score along its
 path. Existing goals resolve before a new portal can claim the ball. A wall stays
-until expiry if its placer leaves. Goals, match termination and travel clear all
-held props and effects; regulation-to-overtime remains continuous.
+until expiry if its placer leaves. Goals clear active effects while retaining
+held props. Match termination and travel clear inventory and effects;
+regulation-to-overtime remains continuous.
 
 ## Verification and delivery
 

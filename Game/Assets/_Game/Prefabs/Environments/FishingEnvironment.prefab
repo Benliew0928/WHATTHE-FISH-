@@ -29384,7 +29384,6 @@ MonoBehaviour:
     contactRadius: 0.22
     shadowBias: 0.65
     shadowNormalBias: 0.45
-  contactShading: {fileID: -2145358759756738505, guid: 204d46c01d0b7984f87cba8d325be146, type: 2}
 --- !u!1 &4767873593248448830
 GameObject:
   m_ObjectHideFlags: 0

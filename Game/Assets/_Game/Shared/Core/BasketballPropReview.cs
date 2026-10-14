@@ -29,7 +29,7 @@ namespace WhatTheFish {
    if(!ball.Authority){yield return Guest();Finish();yield break;}
    var peers=Athlete.Active.Where(a=>a.GetComponent<NetworkObject>()&&a.GetComponent<NetworkObject>().IsSpawned).OrderBy(a=>a.GetComponent<NetworkObject>().OwnerClientId).ToArray();
    foreach(var peer in peers)Place(peer,new Vector3(peer==actor?0:4,.08f,peer==actor?-8:6));
-   Check(ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None,"session starts with countdown, not an immediate pickup");
+   Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None,"session starts with a quiet five seconds, not an immediate pickup");
    yield return SpawnVisuals();
    yield return SpawnSequence();
    var old=ball.PropSlot(actor);ball.ReviewGiveProp(actor,SportsProp.Turbo);Check(!ball.TryUseProp(actor,old.revision)&&ball.PropSlot(actor).kind==SportsProp.Turbo,"stale request cannot spend replacement inventory");
@@ -134,7 +134,7 @@ namespace WhatTheFish {
    }
   }
   IEnumerator ObserveCountdown(bool capture){
-   float timeout=Time.time+8;while(!ball.Props.pickup.countingDown&&Time.time<timeout)yield return null;
+   float timeout=Time.time+12;while(!ball.Props.pickup.countingDown&&Time.time<timeout)yield return null;
    var initial=ball.Props.pickup;Check(initial.countingDown,"countdown snapshot received");int seen=0;bool stable=true,noPickup=true,noEarlyGrant=true;var slot=ball.PropSlot(actor);var visual=ball.GetComponent<BasketballPropVisual>();
    while(ball.Props.pickup.countingDown&&Time.time<timeout){
     yield return new WaitForEndOfFrame();var state=ball.Props.pickup;if(!state.countingDown)break;
@@ -157,23 +157,23 @@ namespace WhatTheFish {
    foreach(var previous in new[]{SportsProp.LockOn,SportsProp.Turbo,SportsProp.Portal}){
     var a=BasketballPropRules.NextKind(previous,0);var b=BasketballPropRules.NextKind(previous,1);Check(a!=previous&&b!=previous&&a!=b&&a!=SportsProp.None&&b!=SportsProp.None,"both random choices exclude previous "+previous);
    }
-   ball.ReviewResetProps();double started=BasketballMotion.Clock;Signal("countdown-start");yield return ObserveCountdown(true);
-   Check(BasketballMotion.Clock-started>=5&&BasketballMotion.Clock-started<5.3,"initial spawn waits five full seconds");CheckPickup(ball.Props.pickup);
-   var first=ball.Props.pickup;File.WriteAllText(Path.Combine(shared,"spawn-location"),first.anchor.ToString());Signal("countdown-materialized");
+   ball.ReviewResetProps();double started=BasketballMotion.Clock;Check(!ball.Props.pickup.countingDown&&Math.Abs(ball.Props.pickup.respawn-started-10)<.02,"first deadline is ten seconds with warning initially hidden");Signal("countdown-start");yield return ObserveCountdown(true);
+   Check(BasketballMotion.Clock-started>=10&&BasketballMotion.Clock-started<10.4,"initial spawn waits ten full seconds");CheckPickup(ball.Props.pickup);
+   var first=ball.Props.pickup;yield return new WaitForSeconds(.2f);Check(ball.Props.pickup.Equals(first),"uncollected pickup does not reschedule or duplicate");File.WriteAllText(Path.Combine(shared,"spawn-location"),first.anchor.ToString());Signal("countdown-materialized");
    if(Athlete.Active.Count>=3){yield return Wait("countdown-observed-1",5);yield return Wait("countdown-observed-2",5);}
    Place(actor,BasketballPropRules.Anchor(first.anchor));yield return new WaitForSeconds(.2f);
    Check(ball.PropSlot(actor).kind==first.kind&&ball.Props.pickup.kind==SportsProp.None,"walk-through collects one shared prop");double collectedUntil=ball.Props.pickup.respawn;
-   Check(collectedUntil-BasketballMotion.Clock>19.7&&!ball.Props.pickup.countingDown,"collection starts twenty-second respawn interval");
-   Place(actor,new Vector3(0,.08f,-8));ball.ReviewGiveProp(actor,SportsProp.None);yield return new WaitForSeconds(14);
+   Check(collectedUntil-BasketballMotion.Clock>9.7&&!ball.Props.pickup.countingDown,"collection starts ten-second respawn interval");
+   Place(actor,new Vector3(0,.08f,-8));ball.ReviewGiveProp(actor,SportsProp.None);yield return new WaitForSeconds(4);
    Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None,"cooldown remains empty before final five seconds");
    float timeout=Time.time+2;while(!ball.Props.pickup.countingDown&&Time.time<timeout)yield return null;
-   Check(Math.Abs(ball.Props.pickup.respawn-collectedUntil)<.08,"five-second warning is included in twenty-second respawn");
+   Check(Math.Abs(ball.Props.pickup.respawn-collectedUntil)<.08,"five-second warning is included in ten-second respawn");
    Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return ObserveCountdown(false);yield return new WaitForSeconds(.15f);
    Check(ball.PropSlot(actor).kind!=SportsProp.None&&ball.PropSlot(actor).kind!=first.kind,"waiting player receives a different prop only after countdown");
    var last=ball.PropSlot(actor).kind;
-   // Drive many real host transitions without spending twenty seconds per sample.
+   // Drive many real host transitions without spending ten seconds per sample.
    for(int i=0;i<16;i++){
-    Place(actor,new Vector3(0,.08f,-8));ball.ReviewAdvanceSpawn(15);yield return new WaitForFixedUpdate();yield return null;
+    Place(actor,new Vector3(0,.08f,-8));ball.ReviewAdvanceSpawn(5);yield return new WaitForFixedUpdate();yield return null;
     Check(ball.Props.pickup.countingDown&&ball.Props.pickup.anchor<=1&&ball.Props.pickup.CountdownNumber(BasketballMotion.Clock)==5,"next cycle announces one fixed side "+i);
     ball.ReviewAdvanceSpawn(5);yield return new WaitForFixedUpdate();yield return null;
     var next=ball.Props.pickup;Check(next.kind!=SportsProp.None&&next.kind!=last,"consecutive host spawn differs "+i);last=next.kind;
@@ -181,8 +181,8 @@ namespace WhatTheFish {
    }
    Place(actor,new Vector3(0,.08f,-8));ball.ReviewResetProps();yield return new WaitForEndOfFrame();ball.enabled=false;yield return new WaitForEndOfFrame();
    Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None&&!ball.GetComponent<BasketballPropVisual>().ReviewHologram.enabled,"disabling arena clears pending countdown and its hologram");
-   ball.enabled=true;yield return new WaitForFixedUpdate();yield return null;Check(ball.Props.pickup.countingDown&&ball.Props.pickup.CountdownNumber(BasketballMotion.Clock)==5,"re-entering starts a fresh five-second countdown");
-   ball.ReviewAdvanceSpawn(5);yield return new WaitForFixedUpdate();yield return null;Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return new WaitForSeconds(.2f);
+   ball.enabled=true;yield return new WaitForFixedUpdate();yield return null;Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.respawn-BasketballMotion.Clock>9.8,"re-entering schedules a fresh ten-second cycle");
+   ball.ReviewAdvanceSpawn(10);yield return new WaitForFixedUpdate();yield return null;Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return new WaitForSeconds(.2f);
   }
   IEnumerator Gallery(){
    ball.autoPickup=false;Place(actor,new Vector3(0,.08f,-5));

@@ -43,6 +43,7 @@ namespace WhatTheFish {
    Check(ball.ResetSequence==reset&&ball.GuideContactSequence==contact+1,label+"_REACHES_REAL_CONTACT_WITHOUT_RESET");
    Check(error<.08f&&endError<.02f,label+"_VISIBLE_PATH_AND_CONTACT_MATCH_LIVE_BALL");
    Check(match.Player(actor).TotalStroke==strokes+1,label+"_ONE_RELEASE_ONE_STROKE");
+   Check(app.view.GolfShotCameraActive,label+"_SHOT_CAMERA_FOLLOWS_SWINGS_AND_PUTTS");
    if(mode==GolfShotMode.Putt){yield return new WaitForSeconds(.8f);Check(ball.Motion==GolfBallMotion.Resting&&Vector3.Distance(ball.Body.position,target)<.03f,label+"_PUTT_RESTS_AT_GLOW");}
    else Check(peak-ball.LastShotPosition.y>.35f,label+"_SWING_HAS_CURVED_FLIGHT");
   }
@@ -57,7 +58,7 @@ namespace WhatTheFish {
      var direction=mode==GolfShotMode.Swing?Vector3.ProjectOnPlane(hole.cup.position-hole.tee.position,Vector3.up).normalized:Vector3.right;
      var origin=mode==GolfShotMode.Swing?match.TeePosition(hole.number,ball.Owner):Ground(hole.cup.position+Vector3.right*2,GolfBall.Radius+.002f);
      float heading=Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg;
-     yield return Prepare(origin,heading);Check(app.view.GolfMode==mode&&ui.label.text.StartsWith(mode.ToString()),$"HOLE_{hole.number}_{mode}_AUTOMATIC_MODE_AND_BUTTON");
+     yield return Prepare(origin,heading);app.view.mode=(hole.number-1)%3;Check(app.view.GolfMode==mode&&ui.label.text.StartsWith(mode.ToString()),$"HOLE_{hole.number}_{mode}_AUTOMATIC_MODE_AND_BUTTON");
      var aim=match.Aim(actor);app.view.GolfPreview.Show(ball,match.Course,aim.ballPosition,heading,power,aim.mode,Camera.main);
      Check(app.view.GolfPreview.HasTarget,"TARGET_ON_REAL_COURSE_SURFACE");
      var target=app.view.GolfPreview.EndPoint;var vertices=app.view.GolfPreview.GetComponent<MeshFilter>().sharedMesh.vertices;int count=app.view.GolfPreview.PointCount;uint contact=ball.GuideContactSequence;int strokes=match.Player(actor).TotalStroke;

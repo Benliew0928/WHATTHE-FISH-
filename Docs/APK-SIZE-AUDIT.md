@@ -1,5 +1,135 @@
 # APK size audit — measured release records
 
+## Golf buggy control and shot camera - 14 October 2026
+
+Actual APK at **18:54:34 Malaysia time**:
+**73,453,793 -> 73,446,301 bytes (-7,492)** from this task's opening baseline.
+Development reserve is **1,553,699 bytes** and hard-limit headroom is
+**26,553,699 bytes**. AndroidSubmission and independent APK v2 verification pass.
+SHA-256: `E4BF71D7D11845B843582F145C0A46D773E2ABBA72B56205319FDE195BDC4DDE`.
+
+| Largest APK entries | Opening compressed bytes | Current compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 41,782,767 | 41,770,179 |
+| IL2CPP ARM64 library | 11,877,472 | 11,882,138 |
+| Unity ARM64 library | 9,190,940 | 9,190,940 |
+| Managed metadata | 2,696,165 | 2,696,491 |
+
+The APK retains **779 entries**. Compressed payload decreases by **7,498 bytes**;
+container/signing overhead increases by **6 bytes**. Player serialized assets
+increase from **11,356,742 to 11,356,958 bytes**, entirely the concurrent
+`CharacterLightingReview` (+112) and `IslandContactShading` (+104) script records.
+Bundle serialized assets remain **146,871,897 bytes** and both mesh inventories
+are unchanged. These uncompressed inventories are not APK measurements.
+The golf work adds no art, audio, texture, mesh or shipped dependency. Four-island
+content and lossless packaging are retained without reducing visual quality.
+
+This shared-checkout build also contains concurrent sports prop-cycle and
+lighting work; the opening-to-final delta is a combined measurement. Compared
+with the immediately preceding 73,448,789-byte APK, this build is 2,488 bytes
+smaller. There is no unexpected asset growth to remove from this task.
+
+Evidence: `Builds/GolfCameraQA/apk-comparison.json`, `entry-comparison.json`,
+`asset-comparison.json`, `apk-signature.txt`, `SizeAuditBefore/` and
+`SizeAuditFinal/`. The current audit is also in `Builds/SizeAudit/latest/`.
+See [verification](VERIFICATION.md#golf-buggy-control-and-shot-camera---14-october-2026)
+for the complete Windows delivery, source comparison and device-testing limits.
+
+## Live renderer lighting fix - 14 October 2026
+
+Actual APK at **18:43:03 Malaysia time**:
+**73,453,793 -> 73,448,789 bytes (-5,004)** from this task's opening baseline.
+Development headroom is **1,551,211 bytes** and hard-limit headroom is
+**26,551,211 bytes**. AndroidSubmission and APK v2 signature verification pass.
+SHA-256: `00F95C3C789CB3BCDF83E76A7AC8391AFABAA3EA7CAEE76B884574F356501EB5`.
+
+| Largest APK entries | Opening compressed bytes | Current compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 41,782,767 | 41,772,668 |
+| IL2CPP ARM64 library | 11,877,472 | 11,882,138 |
+| Unity ARM64 library | 9,190,940 | 9,190,940 |
+| Managed metadata | 2,696,165 | 2,696,491 |
+
+There are **779 APK entries**. Player-side serialized assets increase by **216
+bytes**, entirely two script records, to **11,356,958 bytes**. Bundle assets remain
+**146,871,897 bytes** and both mesh inventories are unchanged. These uncompressed
+inventories are not APK sizes. No art imports or material settings were reduced.
+The combined working-tree build also contains concurrent prop-cycle/Golf work;
+do not attribute its entire byte delta to the lighting fix.
+
+Actual Windows binary inspection finds **one** `Soft contact shading` feature
+in the player and **zero** in the island bundle. Scene/prefab references to the
+desktop feature were removed, and regeneration no longer recreates them. The
+Android renderer remains SSAO-free. The normal shading settings are preserved;
+the fix corrects runtime object identity, not texture compression.
+
+Current evidence: `Builds/CharacterLightingQA/After/SizeAudit/`,
+`apk-comparison.json`, `asset-comparison.json`, `renderer-feature-inventory.json`
+and `apk-signature.txt`. See [verification](VERIFICATION.md#live-renderer-lighting-fix---14-october-2026)
+for character captures, complete Windows delivery and device-testing limits.
+
+## Continuous sports prop spawning - 14 October 2026
+
+Fresh APK at **18:40:11 Malaysia time**:
+**73,453,793 -> 73,444,625 bytes (-9,168)**. Hard-limit headroom is
+**26,555,375 bytes** and development reserve is **1,555,375 bytes**.
+The AndroidSubmission gate and independent APK v2 verification pass.
+SHA-256: `DA0F0EEB65B860B9E7E74C719FBF6619DEF3D26BFEBA76B33F79EF5CAF71D624`.
+
+| Largest APK entries | Previous compressed bytes | Current compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 41,782,767 | 41,768,502 |
+| IL2CPP ARM64 library | 11,877,472 | 11,882,138 |
+| Unity ARM64 library | 9,190,940 | 9,190,940 |
+| Managed metadata | 2,696,165 | 2,696,491 |
+
+The APK retains **779 entries**. Compressed payload decreases by **9,173 bytes**;
+container/signing overhead grows by **5 bytes**. Bundle compression offsets
+the small code/metadata growth. Both mesh inventories are unchanged. Bundle
+serialized assets remain **146,871,897 bytes**; player serialized assets grow
+from **11,356,742 to 11,356,958 bytes**, solely two script metadata rows from
+concurrent `CharacterLightingReview` and `IslandContactShading` work. There is
+no new prop art, texture, audio or mesh. These inventories are not APK size.
+
+The measured build includes concurrent golf/lighting source, so its byte delta
+is a combined working-tree measurement. All 247 Windows compiled documents
+matched captured source at build time. Subsequent source differences are the
+concurrent golf camera's `PlayerView`, `GolfAimProbe`, `CharacterLightingReview`,
+platform render-resource selection and generated Golf prefab IDs. Canonical
+prefab comparison confirms unchanged semantics; sports prop source is unchanged.
+Evidence: `Builds/PropCycleQA/apk-comparison.json`, `asset-comparison.json`,
+`source-comparison.json`, `apk-signature.txt` and `AndroidAudit/`.
+
+## Persistent sports props and slower football shots - 14 October 2026
+
+Actual APK at **17:43:53 Malaysia time**:
+**73,446,145 -> 73,453,793 bytes (+7,648)**. Development reserve is
+**1,546,207 bytes**; hard-limit headroom is **26,546,207 bytes**. The
+AndroidSubmission gate and independent APK v2 signature verification pass.
+SHA-256: `18CA85CD5E90D740F9CC109C2B0810733AC953C48AB972D3DE48DEF33C674A7D`.
+
+| Largest APK entries | Previous compressed bytes | Current compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 41,773,982 | 41,782,767 |
+| IL2CPP ARM64 library | 11,878,577 | 11,877,472 |
+| Unity ARM64 library | 9,190,940 | 9,190,940 |
+| Managed metadata | 2,696,189 | 2,696,165 |
+
+The APK still contains **779 entries**. Compressed payload grows by **7,655
+bytes**; container/signing overhead decreases by **7 bytes**. There are no new
+art assets or dependencies. Player-side serialized assets remain **11,356,742
+bytes** and bundle-side assets remain **146,871,897 bytes**. Compared asset rows
+and both player/bundle mesh inventories are unchanged. These uncompressed
+inventories are distinct from the measured APK size.
+
+All **244 compiled Windows gameplay source documents** match captured working
+source. Platform-specific resource selection and generated Golf prefab local
+IDs are the only subsequent build-input changes; format-aware comparison
+confirms identical prefab semantics. Evidence is in `Builds/PropRetentionQA/`,
+including `asset-comparison.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `apk-signature.txt`.
+See [verification and delivery limits](VERIFICATION.md#persistent-sports-props-and-slower-football-shots---14-october-2026).
+
 ## Lossless island packaging - 14 October 2026
 
 Actual APK at **16:38:21 Malaysia time**:

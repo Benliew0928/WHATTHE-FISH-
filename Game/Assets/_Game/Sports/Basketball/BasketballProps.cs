@@ -107,24 +107,31 @@ namespace WhatTheFish {
   void SetPortalBall(Vector3 point){Body.position=point;transform.position=point;}
   void EndPropAim(){if(propState.aiming&&propAimer)BasketballAudio.Emit(BasketballSound.Interrupt,propAimer.transform.position,.7f);var actor=propAimer;propAimer=null;propHoop=null;propShotQueued=false;propState.aiming=false;if(actor){pendingAction=BasketballAction.None;CancelShotCharge(actor);}sendAt=0;}
   void CancelPropBall(){EndPropAim();guidedPropShot=false;propState.guided=false;if(portalReceiver&&portalReceiver.BasketballMotion)portalReceiver.BasketballMotion.ResetPose();portalReceiver=null;propState.transferring=false;sendAt=0;}
-  void ResetProps(bool spawn=true){
-   CancelPropBall();foreach(var pair in propSlots)if(pair.Key){var net=pair.Key.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.BasketballProp.Value=new SportsPropSlot{revision=++propRevision};}
-   propSlots.Clear();propState=default;lastSpawnedProp=SportsProp.None;audioCountdown=0;audioPortalIn=audioPortalOut=false;
-   if(spawn&&Authority&&Playing)BeginPropCountdown();
+  void ResetProps(bool spawn=true,bool clearInventory=true){
+   CancelPropBall();
+   if(clearInventory){foreach(var pair in propSlots)if(pair.Key){var net=pair.Key.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.BasketballProp.Value=new SportsPropSlot{revision=++propRevision};}propSlots.Clear();}
+   var pickup=propState.pickup;propState=default;if(!clearInventory)propState.pickup=pickup;
+   if(clearInventory){lastSpawnedProp=SportsProp.None;audioCountdown=0;}audioPortalIn=audioPortalOut=false;
+   if(clearInventory&&spawn&&Authority&&Playing&&(!BasketballMatch.Instance||!BasketballMatch.Instance.Competitive))SchedulePickup();
   }
-  void BeginPropCountdown(){
-   propState.pickup=new SportsPropSpawn{anchor=(byte)propRandom.Next(2),respawn=BasketballMotion.Clock+BasketballPropRules.CountdownSeconds,countingDown=true};sendAt=0;
+  void SchedulePickup(){
+   propState.pickup=SportsAbilityRules.SchedulePickup(BasketballMotion.Clock,propRandom.Next(2));sendAt=0;
   }
   void StepPickup(){
+   var match=BasketballMatch.Instance;
+   if(match&&match.Competitive&&!match.Active)return;
+   if(propState.pickup.respawn==0&&propState.pickup.kind==SportsProp.None){if(match&&match.Competitive&&!match.Running)return;SchedulePickup();}
    ref var spawn=ref propState.pickup;
    if(spawn.kind==SportsProp.None){
-    if(!spawn.countingDown){if(BasketballMotion.Clock>=spawn.respawn-BasketballPropRules.CountdownSeconds)BeginPropCountdown();return;}
+    if(SportsAbilityRules.WarnPickup(ref spawn,BasketballMotion.Clock))sendAt=0;
+    if(!spawn.countingDown)return;
     int number=spawn.CountdownNumber(BasketballMotion.Clock);if(number!=audioCountdown){audioCountdown=number;BasketballAudio.Emit(BasketballSound.Countdown,transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor)),.65f);}
     if(BasketballMotion.Clock<spawn.respawn)return;
     spawn.kind=BasketballPropRules.NextKind(lastSpawnedProp,propRandom.Next(lastSpawnedProp==SportsProp.None?3:2));lastSpawnedProp=spawn.kind;spawn.countingDown=false;audioCountdown=0;BasketballAudio.Emit(BasketballSound.Spawn,transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor)));sendAt=0;
     // Leave a materialization frame before collecting, even if a player waited here.
     return;
    }
+   if(BasketballMatch.BlocksActions||InboundPending)return;
    var point=transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor));Athlete winner=null;float best=BasketballPropRules.PickupRadius*BasketballPropRules.PickupRadius;
    foreach(var actor in Athlete.Active){
     if(!Eligible(actor)||actor.Airborne||actor.LoadingJump||PropLocked(actor)||!actor.Grounded)continue;
@@ -133,12 +140,11 @@ namespace WhatTheFish {
     if(winner&&Mathf.Abs(distance-best)<.00001f&&PlayerId(actor)>=PlayerId(winner))continue;
     winner=actor;best=distance;
    }
-   if(winner){BasketballAudio.Emit(BasketballSound.Pickup,winner.transform.position);GiveProp(winner,spawn.kind);spawn.kind=SportsProp.None;spawn.respawn=BasketballMotion.Clock+BasketballPropRules.RespawnSeconds;sendAt=0;}
+   if(winner){BasketballAudio.Emit(BasketballSound.Pickup,winner.transform.position);GiveProp(winner,spawn.kind);SchedulePickup();}
   }
   void StepProps(){
    expiredPropActors.Clear();foreach(var pair in propSlots)if(!Eligible(pair.Key))expiredPropActors.Add(pair.Key);
    foreach(var actor in expiredPropActors){if(actor)GiveProp(actor,SportsProp.None);propSlots.Remove(actor);}
-   StepPickup();
    if(propState.aiming){
     if(!propAimer||!Eligible(propAimer)||holder!=propAimer||!InsidePaintedCourt(propAimer)||!propHoop){EndPropAim();}
     else if(!propShotQueued&&BasketballMotion.Clock>=propState.aimUntil-BasketballMotion.ReleaseTime(BasketballAction.Shoot)){

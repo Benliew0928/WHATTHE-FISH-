@@ -92,50 +92,24 @@ namespace WhatTheFish {
   IEnumerator CameraAudit(GolfCart cart){
    foreach(int mode in new[]{0,1,2}){
     app.view.mode=mode;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(.5f);
-    app.view.yaw=presentedCartHeading+20;yield return null;
+    app.view.yaw=presentedCartHeading+20;app.view.pitch=27;yield return null;yield return null;
     float heading=presentedCartHeading,cameraYaw=CameraYaw;
     DevelopmentProbe.TurnCommand=new PlayerCommand{move=new Vector2(.2f,.98f)};yield return new WaitForSeconds(.4f);
     float turn=Mathf.DeltaAngle(heading,presentedCartHeading),viewTurn=Mathf.DeltaAngle(cameraYaw,CameraYaw);
     Record($"MEASURE cameraMode={mode} right20Percent cartTurn={turn:F2} cameraTurn={viewTurn:F2}");
-    Check(turn>6&&Mathf.Abs(turn-viewTurn)<.6f,"CART_CAMERA_RIGHT_TURN_ONE_TO_ONE_MODE_"+mode);
-    heading=presentedCartHeading;cameraYaw=CameraYaw;
+    Check(turn>6&&Mathf.Abs(viewTurn)<.6f,"CART_CAMERA_RIGHT_TURN_PRESERVES_WORLD_ANGLE_MODE_"+mode);
+    heading=presentedCartHeading;
     DevelopmentProbe.TurnCommand=new PlayerCommand{move=new Vector2(-.2f,.98f)};yield return new WaitForSeconds(.4f);
     turn=Mathf.DeltaAngle(heading,presentedCartHeading);viewTurn=Mathf.DeltaAngle(cameraYaw,CameraYaw);
-    Record($"MEASURE cameraMode={mode} left20Percent cartTurn={turn:F2} cameraTurn={viewTurn:F2}");
-    Check(turn< -6&&Mathf.Abs(turn-viewTurn)<.6f,"CART_CAMERA_LEFT_TURN_ONE_TO_ONE_MODE_"+mode);
-    Check(Mathf.Abs(Mathf.DeltaAngle(presentedCartHeading+20,CameraYaw))<.6f,"CART_CAMERA_PRESERVES_MANUAL_LOOK_OFFSET_MODE_"+mode);
-    PlayerView.LookDelta=new Vector2(100,0);yield return null;yield return null;
-    Check(Mathf.Abs(Mathf.DeltaAngle(presentedCartHeading+33,CameraYaw))<.6f,"CART_CAMERA_LOOK_DRAG_STILL_WORKS_MODE_"+mode);
-    Capture("following-camera"+mode);yield return null;
+    Check(turn< -6&&Mathf.Abs(viewTurn)<.6f,"CART_CAMERA_LEFT_TURN_PRESERVES_WORLD_ANGLE_MODE_"+mode);
+    PlayerView.LookDelta=new Vector2(100,30);yield return null;yield return null;
+    Check(Mathf.Abs(Mathf.DeltaAngle(cameraYaw+13,CameraYaw))<.6f&&Mathf.Abs(app.view.pitch-24)<.1f,"CART_CAMERA_MANUAL_LOOK_WORKS_MODE_"+mode);
+    cameraYaw=CameraYaw;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.down};yield return new WaitForSeconds(1.5f);
+    Check(cart.State.speed< -1&&Mathf.Abs(Mathf.DeltaAngle(cameraYaw,CameraYaw))<.6f,"CART_REVERSE_NEVER_ROTATES_CAMERA_MODE_"+mode);
+    DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.5f);
+    Check(Mathf.Abs(Mathf.DeltaAngle(cameraYaw,CameraYaw))<.6f,"CART_COASTING_PRESERVES_CAMERA_MODE_"+mode);
+    Capture("manual-camera"+mode);yield return null;
    }
-   app.view.mode=0;app.view.yaw=presentedCartHeading;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.down};yield return new WaitForSeconds(1.2f);
-   float firstReverse=Mathf.Abs(Mathf.DeltaAngle(presentedCartHeading,CameraYaw));
-   Record($"MEASURE firstPersonReverse yawOffset={firstReverse:F2} speed={cart.State.speed:F3}");
-   Check(cart.State.speed< -1&&firstReverse<.6f,"CART_FIRST_PERSON_REVERSE_KEEPS_FORWARD_VIEW");Capture("first-person-reverse");yield return null;
-   app.view.mode=1;app.view.yaw=presentedCartHeading;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(1.1f);
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.down};yield return new WaitForSeconds(.15f);
-   float earlyReverse=Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw));
-   Check(earlyReverse>1&&earlyReverse<40,"CART_THIRD_PERSON_REVERSE_TURNS_GRADUALLY");
-   yield return new WaitForSeconds(2.4f);float fullReverse=Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw));
-   Record($"MEASURE thirdPersonReverse early={earlyReverse:F2} settled={fullReverse:F2}");
-   Check(fullReverse>174&&fullReverse<=180,"CART_THIRD_PERSON_REVERSE_LOOKS_BACK");Capture("third-person-reverse");yield return null;
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(.15f);
-   float earlyForward=Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw));
-   Check(earlyForward<fullReverse-1&&earlyForward>140,"CART_THIRD_PERSON_FORWARD_RETURNS_GRADUALLY");
-   yield return new WaitForSeconds(2.4f);float fullForward=Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw));
-   Record($"MEASURE thirdPersonForward early={earlyForward:F2} settled={fullForward:F2}");
-   Check(fullForward<6,"CART_THIRD_PERSON_FORWARD_RETURNS_TO_FRONT");Capture("third-person-forward");yield return null;
-   app.view.mode=2;app.view.yaw=43;yield return null;float overheadHeading=presentedCartHeading,overheadYaw=CameraYaw;
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=new Vector2(.5f,.866f)};yield return new WaitForSeconds(.5f);
-   Check(Mathf.Abs(Mathf.DeltaAngle(overheadHeading,presentedCartHeading))>15&&Mathf.Abs(Mathf.DeltaAngle(overheadYaw,CameraYaw)-Mathf.DeltaAngle(overheadHeading,presentedCartHeading))<.6f,"CART_OVERHEAD_TURN_FOLLOWS_CART_WITH_LOOK_OFFSET");
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.down};yield return new WaitForSeconds(1.1f);
-   Check(cart.State.speed< -1&&Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw))<.1f,"CART_OVERHEAD_REVERSE_ADDS_NO_THIRD_PERSON_FLIP");Capture("overhead-reverse");yield return null;
-   app.view.mode=0;app.view.yaw=presentedCartHeading;yield return new WaitForSeconds(.2f);
-   Check(Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw))<.1f,"CART_SWITCH_FROM_OVERHEAD_HAS_NO_OLD_TURN_OR_REVERSE_OFFSET");
-   app.view.mode=1;yield return new WaitForSeconds(.2f);
-   float switchReverse=Mathf.Abs(Mathf.DeltaAngle(app.view.yaw,CameraYaw));
-   Check(switchReverse>1&&switchReverse<60,"CART_SWITCH_TO_THIRD_PERSON_REVERSE_STARTS_SMOOTHLY");
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up};yield return new WaitForSeconds(.6f);DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
   }
   IEnumerator OfflineAudit(){
    var actor=app.LocalAthlete;var key=GolfCartWorld.Key(actor);Place(actor,SafeSite(actor));yield return new WaitForSeconds(.3f);
@@ -321,12 +295,12 @@ namespace WhatTheFish {
    float steerUntil=Time.realtimeSinceStartup+3;while(Mathf.Abs(cart.State.steering)<5&&Time.realtimeSinceStartup<steerUntil)yield return null;
    yield return new WaitForSeconds(.2f);
    Check(cart.State.steering>5&&Mathf.Abs(FrontSteer(cart)-cart.State.steering)<1,"CART_NETWORK_STEERING_AND_FRONT_WHEEL_POSE_REPLICATE");
-   if(!app.rooms.Host){float cartTurn=Mathf.DeltaAngle(localCartHeading,presentedCartHeading),cameraTurn=Mathf.DeltaAngle(localCameraBefore,CameraYaw);Record($"MEASURE networkDriver cartTurn={cartTurn:F2} cameraTurn={cameraTurn:F2}");Check(Mathf.Abs(cartTurn-cameraTurn)<1,"CART_NETWORK_LOCAL_DRIVER_CAMERA_FOLLOWS_INTERPOLATED_TURN");}
+   if(!app.rooms.Host){float cartTurn=Mathf.DeltaAngle(localCartHeading,presentedCartHeading),cameraTurn=Mathf.DeltaAngle(localCameraBefore,CameraYaw);Record($"MEASURE networkDriver cartTurn={cartTurn:F2} cameraTurn={cameraTurn:F2}");Check(Mathf.Abs(cartTurn)>6&&Mathf.Abs(cameraTurn)<1,"CART_NETWORK_LOCAL_DRIVER_PRESERVES_MANUAL_CAMERA");}
    else Check(Mathf.Abs(Mathf.DeltaAngle(localYawBefore,app.view.yaw))<.1f,"CART_NETWORK_REMOTE_DRIVER_DOES_NOT_ROTATE_HOST_CAMERA");
    yield return new WaitForSeconds(.5f);DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    app.view.mode=2;yield return null;localCameraBefore=CameraYaw;localYawBefore=app.view.yaw;localCartHeading=presentedCartHeading;
    if(!app.rooms.Host)DevelopmentProbe.TurnCommand=new PlayerCommand{move=new Vector2(-.6f,.8f)};yield return new WaitForSeconds(.4f);
-   if(!app.rooms.Host){float cartTurn=Mathf.DeltaAngle(localCartHeading,presentedCartHeading),cameraTurn=Mathf.DeltaAngle(localCameraBefore,CameraYaw);Record($"MEASURE networkOverheadDriver cartTurn={cartTurn:F2} cameraTurn={cameraTurn:F2}");Check(cartTurn< -6&&Mathf.Abs(cartTurn-cameraTurn)<1,"CART_NETWORK_OVERHEAD_FOLLOWS_INTERPOLATED_LEFT_TURN");}
+   if(!app.rooms.Host){float cartTurn=Mathf.DeltaAngle(localCartHeading,presentedCartHeading),cameraTurn=Mathf.DeltaAngle(localCameraBefore,CameraYaw);Record($"MEASURE networkOverheadDriver cartTurn={cartTurn:F2} cameraTurn={cameraTurn:F2}");Check(cartTurn< -6&&Mathf.Abs(cameraTurn)<1,"CART_NETWORK_OVERHEAD_PRESERVES_MANUAL_CAMERA");}
    else Check(Mathf.Abs(Mathf.DeltaAngle(localYawBefore,app.view.yaw))<.1f,"CART_NETWORK_REMOTE_DRIVER_DOES_NOT_ROTATE_HOST_OVERHEAD_CAMERA");
    DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    Check(Vector3.Distance(cart.transform.position,NetworkAthlete.HostPlayer.Cart.Value.position)<.4f,"CART_NETWORK_HOST_POSE_REPLICATES");

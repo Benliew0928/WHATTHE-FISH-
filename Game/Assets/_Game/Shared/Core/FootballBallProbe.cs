@@ -134,10 +134,10 @@ namespace WhatTheFish {
    yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
    button.OnPointerDown(kickPointer);button.OnPointerUp(kickPointer);yield return new WaitForSeconds(.08f);
    float weak=Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude;
-   Check(Mathf.Abs(weak-ball.minimumKickSpeed*FootballEffort.BallPace)<.6f,"SHORT_TAP_MINIMUM_KICK");
+   Check(Mathf.Abs(weak-ball.minimumKickSpeed*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier)<.6f,"SHORT_TAP_MINIMUM_KICK");
    yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
    Check(PlayerView.Instance.BeginKick(),"KEYBOARD_CHARGE_BEGINS");yield return new WaitForSeconds(ball.maximumChargeTime*.5f);float half=PlayerView.Instance.Charge;PlayerView.Instance.EndKick();yield return new WaitForSeconds(.08f);
-   Check(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude>weak+1&&Mathf.Abs(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude-Mathf.Lerp(ball.minimumKickSpeed,ball.kickSpeed,half)*FootballEffort.BallPace)<.6f,"HALF_CHARGE_INTERPOLATES_FORCE");
+   Check(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude>weak+1&&Mathf.Abs(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude-Mathf.Lerp(ball.minimumKickSpeed,ball.kickSpeed,half)*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier)<.6f,"HALF_CHARGE_INTERPOLATES_FORCE");
    yield return new WaitForSeconds(.4f);ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);
    button.OnPointerDown(kickPointer);yield return new WaitForSeconds(.2f);kickPointer.position=RectTransformUtility.WorldToScreenPoint(null,button.cancelArea.position);button.OnDrag(kickPointer);button.OnPointerUp(kickPointer);yield return new WaitForSeconds(.1f);
    Check(!PlayerView.Instance.Charging&&ball.CurrentController==actor&&ball.Body.isKinematic,"CANCEL_AREA_DRAG_RETAINS_BALL_WITHOUT_KICK");
@@ -148,7 +148,7 @@ namespace WhatTheFish {
    Check(!PlayerView.Instance.Charging&&ball.Body.linearVelocity.magnitude<.08f,"OUT_OF_RANGE_CHARGE_CANCELS");
    Check(!ball.TryKick(actor,float.NaN)&&!ball.TryKick(actor,float.PositiveInfinity),"NONFINITE_CHARGE_REJECTED");
    ball.ResetBall();Place(actor,origin+new Vector3(0,-.22f,-.9f));yield return new WaitForSeconds(.2f);Check(ball.TryKick(actor,5),"OVERSIZED_CHARGE_CLAMPED");yield return new WaitForSeconds(.08f);
-   Check(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude<=ball.kickSpeed*FootballEffort.BallPace+.1f,"CHARGE_CANNOT_EXCEED_MAXIMUM_SPEED");
+   Check(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude<=ball.kickSpeed*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier+.1f,"CHARGE_CANNOT_EXCEED_MAXIMUM_SPEED");
    yield return BalanceAudit(ball,actor,origin);
    ball.ResetBall();DevelopmentProbe.TurnCommandActive=false;File.AppendAllText(ReportPath,"FOOTBALL_PHYSICS_COMPLETE\n");Debug.Log("FOOTBALL_PHYSICS_COMPLETE "+ReportPath);
   }

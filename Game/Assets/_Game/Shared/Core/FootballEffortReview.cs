@@ -62,7 +62,7 @@ namespace WhatTheFish {
    Check(Vector3.Distance(ball.transform.position,ball.FootPosition(actor))<.03f,"ball stays on foot during fast dribble");
    DevelopmentProbe.TurnCommand=new(){move=Vector2.up,dash=true,charging=true};yield return new WaitForSeconds(.3f);
    Check(!actor.FootballEffort.Dashing&&Mathf.Abs(actor.speed-2.52f)<.15f,"charging cancels dash and moves at scaled charge speed");DevelopmentProbe.TurnCommand=default;
-   foreach(float charge in new[]{0f,.5f,1f}){Place(actor,home);Pickup(actor);Check(actor.TryKick(charge),"kick accepted at "+charge);Check(Mathf.Abs(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude-Mathf.Lerp(16.8f,30.8f,charge))<.02f,"football launch is 140 percent at charge "+charge);}
+   foreach(float charge in new[]{0f,.5f,1f}){Place(actor,home);Pickup(actor);Check(actor.TryKick(charge),"kick accepted at "+charge);Check(Mathf.Abs(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude-Mathf.Lerp(13.44f,24.64f,charge))<.02f,"football launch is twenty percent slower at charge "+charge);Check(Mathf.Abs(ball.Body.linearVelocity.y-.28f)<.001f,"shot vertical launch scales with speed at charge "+charge);}
    var rival=Instantiate(app.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(actor,home);Place(rival,home+Vector3.forward*1.4f,180);Pickup(actor);
    rival.Simulate(new(){pressure=true,heading=180},.1f);
    Check(rival.FootballEffort.Pressuring&&!actor.FootballEffort.Pressuring,"defender can pressure ball carrier");

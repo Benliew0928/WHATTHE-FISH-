@@ -1,7 +1,7 @@
 # Basketball pickup, shot physics, scoring and passing
 
 Current ability rules and the expanded courtside collection boundary are in
-[Basketball props](BASKETBALL-PROPS.md). The integrated room protocol is **53**;
+[Basketball props](BASKETBALL-PROPS.md). The integrated room protocol is **55**;
 older delivery notes below describe their original snapshots.
 
 Choose **Play vs bots** for a 2v2-5v5 solo match, or fill a host room with
@@ -38,7 +38,7 @@ A one-way needle sweep takes **0.84 s at 4 m or closer**, gradually shortening t
 
 The mobile cancel target follows the football gesture: dragging outside Shoot alone keeps tracking the original finger; entering Cancel arms it; releasing there cancels, while sliding back continues aiming. Other fingers cannot release or drag-cancel it. Cancelling preserves possession and resumes normal movement. Losing focus or disabling the controls clears held input.
 
-The host integrates phase and replicates it with the locked basket and action pose. Release transmits an input timestamp rather than a requested power. The host samples its own phase history with at most **250 ms** of bounded rewind, preventing an extra input frame or ordinary RPC delay from changing the displayed release power. WAN jitter beyond that allowance remains a device/network qualification item. That synchronized-shot milestone used **protocol 29**; current rooms require matching **protocol 51** builds.
+The host integrates phase and replicates it with the locked basket and action pose. Release transmits an input timestamp rather than a requested power. The host samples its own phase history with at most **250 ms** of bounded rewind, preventing an extra input frame or ordinary RPC delay from changing the displayed release power. WAN jitter beyond that allowance remains a device/network qualification item. That synchronized-shot milestone used **protocol 29**; current rooms require matching **protocol 55** builds.
 
 ## Stealing and loose-ball contests
 

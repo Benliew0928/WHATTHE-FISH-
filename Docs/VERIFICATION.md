@@ -1,5 +1,233 @@
 # Verification records
 
+## Golf buggy control and shot camera - 14 October 2026
+
+The complete **324-file** Windows player built at **18:48:50 Malaysia time** is
+delivered in `Builds/WindowsFinal/`. Every file, including data, runtime libraries,
+launchers and the release note, matches the tested candidate. The player retains
+protocol **55**, concurrent sports prop-cycle and lighting changes, four islands
+and shared room travel. Source is `bd62f78` plus preserved uncommitted work.
+
+**632 passing assertions**, indexed with report hashes in
+`Builds/GolfCameraQA/verification.json`:
+
+| Check | Passing assertions |
+| --- | ---: |
+| Buggy offline / host / guest | 165 / 25 / 25 |
+| Five-hole shot and putt checks, cycling all camera modes | 209 |
+| Rendered aim, recall and shot camera, offline / host / guest | 70 / 35 / 34 |
+| Cache-prepared runner, host / guest | 35 / 34 |
+
+Buggy checks cover manual yaw/pitch through entry, steering and reverse in all
+three camera modes. Aim checks cover a buggy parked over the ball, authoritative
+recall before the accepted stance, rejected summoning while aiming, cancellation
+leaving the buggy recalled, and later manual summoning. The shot camera waits
+for confirmed impact, follows the presented ball through flight and run-out,
+holds briefly at rest and returns smoothly with the player's camera angle/mode
+preserved. Interruption and input/result clearing also exercise the smooth return.
+
+Rendered samples keep the ball inside the central 90% of the viewport for
+**219/219 offline, 389/389 host and 224/224 guest frames**. The continuity checks
+pass, and flight, landing and return captures were visually inspected. The aim
+probe now uses the actual tee height and current power-sweep timing; its former
+low fixture could embed the ball in the wooden cup. The runner prepares the
+packaged-content cache before timed checks so cold extraction does not consume
+their gameplay timeout.
+
+The final aim and runner suites used their default player path from a relocated
+directory containing spaces and an unrelated working directory. **43 local
+documentation links** were checked in that fixture. Reports, logs and captures
+remain in `Builds/GolfCameraQA/PortableFinalEvidence/`; cart and shot reports are
+in `Builds/GolfCartQA/Run-20261014-185122/` and
+`Builds/GolfShotQA/Run-20261014-185122/`. The final explicit-player-path
+normalization is a script-only follow-up; the tested default path is unchanged.
+
+All **247 compiled gameplay source documents** match current source. Of **3,792**
+captured Windows build inputs, **3,790** still match after Android generation;
+the differences are platform URP resource selection and the generated Golf Ball
+prefab. These are recorded source-snapshot limits, not a clean commit snapshot.
+Evidence includes `compiled-source.json`, `windows-source.json`,
+`source-comparison.json`, `windows-manifest.json` and `windows-delivery.json`.
+
+AndroidSubmission at **18:54:34** is **73,446,301 bytes**, down **7,492 bytes** from
+the opening APK, with **26,553,699 bytes** hard-limit headroom and **1,553,699
+bytes** development reserve. APK v2 signature verification passes. See the
+[size record](BUILD-SIZE.md#golf-buggy-control-and-shot-camera---14-october-2026)
+and [audit](APK-SIZE-AUDIT.md#golf-buggy-control-and-shot-camera---14-october-2026).
+Physical Android appearance, touch, loading, memory/FPS and real WAN play remain
+unverified; no phone was connected. Windows tests do not establish phone quality.
+
+The superseded complete Windows delivery is recoverable in
+`Legacy/20261014-185618-106-golf-camera-windows/`. Reviewed preliminary players
+and disposable portability fixtures were archived with their size/hash manifests:
+
+- `Legacy/20261014-182626-171-golf-camera-candidate/`
+- `Legacy/20261014-183721-533-golf-camera-second-candidate/`
+- `Legacy/20261014-184237-621-golf-camera-portable-fixture/`
+- `Legacy/20261014-184314-014-golf-camera-shared-candidate/`
+- `Legacy/20261014-185704-673-golf-camera-final-fixture/`
+
+Current validation evidence remains under `Builds/`. No staging, commit, push
+or history changes were performed; unrelated working-tree changes are preserved.
+
+## Live renderer lighting fix - 14 October 2026
+
+The complete **324-file** Windows player built at **18:35:38 Malaysia time** is
+delivered in `Builds/WindowsFinal/`. Every delivered binary/data/launcher file
+matches the tested candidate; the final build note adds release evidence.
+Protocol **55** and the concurrent sports prop-cycle/Golf camera source are
+retained. This is `bd62f78` plus the preserved uncommitted working tree.
+
+**495 passing assertions**:
+
+| Check | Passing assertions |
+| --- | ---: |
+| Four-island live shading, two circuits, boundaries and character captures | 102 |
+| Cold/warm packaging, all islands and render/material/collision checks | 104 |
+| Programmed basketball/football bots, offline | 124 / 63 |
+| Default test paths from an unrelated directory and a path containing spaces | 102 |
+
+Evidence is in `Builds/CharacterLightingQA/FinalReview/`, `Packaging/`,
+`PortableCheck/`, and `Builds/ProgrammedBotsQA/Run-20261014-183752/`.
+Front/back character views were inspected on Football, Basketball, Golf and
+Fishing. Matching captures temporarily restore the former stuck SSAO settings:
+these reproduce the excessive dark hair/crease patches and speckles, while the
+corrected captures retain the intended lighter contact shading and normal
+shadows. The fixture freezes the character pose; captures are not animation/FPS
+measurements. Original materials and texture bindings are checked unchanged.
+
+The live renderer is controlled directly through URP's camera renderer-data API.
+Court/field activation boundaries, Golf/Fishing intensity/radius, restoration
+across island changes and walking remain correct. Binary inspection confirms one
+player-side feature and no bundled duplicate. The build dependency check rejects
+island dependencies on the desktop renderer asset. Mobile has no SSAO feature.
+
+All **247 compiled source documents** matched when validated. A later independent
+change to development-only `GolfAimProbe.cs` is not included in this Windows
+snapshot; it only runs with `-golfAimAudit` and is excluded from Android release.
+The other **246 documents**, including all gameplay/lighting code, still match.
+See `compiled-source.json` and `delivery-source-snapshot.json` in the task evidence.
+
+Cold Windows startup was **29.22 s**, including **28.02 s** cache preparation;
+warm startup was **1.30 s**, including **0.17 s** cache validation. These are
+Unity-runtime measurements on a shared development machine, not phone or
+controlled performance benchmarks. AndroidSubmission measures **73,448,789 bytes**
+and passes APK v2 signature verification; see [size](BUILD-SIZE.md#live-renderer-lighting-fix---14-october-2026).
+Physical Android appearance, touch, memory/FPS and real WAN play remain untested.
+Existing Fishing reflection depth-buffer warnings are outside this reference fix.
+
+The superseded delivery/failed initial diagnostic is recoverable in
+`Legacy/20261014-184351-733-character-lighting-delivery/`. Duplicate players,
+preliminary review, alternate-path fixture and test-only caches are archived in
+`Legacy/20261014-184548-350-character-lighting-cleanup/`. Current screenshots,
+logs, inventories, signature and delivery hashes remain under the task evidence.
+No staging, commit, push or history changes were performed.
+
+## Continuous sports prop spawning - 14 October 2026
+
+The complete **324-file** Windows player built at **18:26:20 Malaysia time**
+was delivered to `Builds/WindowsFinal/` and hash-compared with the tested
+candidate. Protocol **55** requires matching peers. This is `bd62f78` plus
+preserved uncommitted work, including concurrent golf/lighting code available
+at build time. All **247 compiled gameplay documents** matched captured source.
+
+**1,404 passing assertions**, all run against that final player, are indexed in
+`Builds/PropCycleQA/verification.json`:
+
+| Check | Passing assertions |
+| --- | ---: |
+| Football props, offline | 176 |
+| Football props, rendered four-player room | 260 |
+| Basketball props, rendered host/guest/teammate | 277 |
+| Both sports' offline and host/guest competitive matches | 691 |
+
+Coverage includes the first ten-second deadline, quiet initial five seconds,
+visible 5–4–3–2–1 countdown, ten-second respawn after collection, one uncollected
+world pickup, replacement of a held item, and replicated inventory/activation.
+Basketball checks prove that a pickup can materialize during an inbound pause,
+that baskets retain its deadline, and that out-of-bounds and shot-clock restarts
+retain the same world object and location. Football checks prove that ball
+resets preserve pending deadlines and the same pickup stays visible through
+goal and kickoff. Match end/cancellation still clears props. Existing ball,
+ability, scoring and team rules pass alongside these additions.
+
+A fixture initially sampled the first timer before the next live physics step;
+the corrected fixture waits for that step, and all final match suites pass.
+An initial build overlapped incomplete golf source and one Android launch lost
+the shared-project startup race; neither is presented as release validation.
+The subsequent full Windows and Android builds succeeded.
+
+Fresh AndroidSubmission at **18:40:11** measures **73,444,625 bytes**, down
+**9,168 bytes**. APK v2 verification passes; hard-limit headroom is **26,555,375
+bytes**, and development reserve is **1,555,375 bytes**. Both mesh inventories
+are unchanged. See [size](BUILD-SIZE.md#continuous-sports-prop-spawning---14-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#continuous-sports-prop-spawning---14-october-2026).
+
+Source limits: later concurrent edits to `PlayerView`, `GolfAimProbe` and
+`CharacterLightingReview` are present in Android but absent from this Windows
+snapshot. Sports prop code is identical; this task's tests do not certify those
+other features. Android also changes platform resources and generated Golf
+prefab IDs; canonical comparison confirms unchanged prefab semantics. Physical
+Android quality, loading, memory/FPS and WAN behavior remain unverified.
+
+Reviewed superseded output is archived under `Legacy/20261014-*-prop-cycle-*/`.
+The previous Windows player is in `20261014-183030-237-prop-cycle-windows`, and
+the previous APK/audit is in `20261014-183123-339-prop-cycle-before-android`.
+Initial candidates, preliminary tests, fixture failure and build-race evidence
+have their own batches. Archive records and current final evidence remain in
+`Builds/PropCycleQA/`. No Git staging, commits or pushes were performed.
+
+## Persistent sports props and slower football shots - 14 October 2026
+
+The full packaged Windows player built at **17:38:15 Malaysia time** is delivered
+in `Builds/WindowsFinal/`. All **323 files** match the tested candidate, including
+data, runtime libraries, embedded scenes and launchers. `LATEST-BUILD.txt` records
+the changes and limits. Source is `bd62f78` plus uncommitted task changes;
+protocol **54** requires matching peers.
+
+**1,825 passing assertions** are indexed in
+`Builds/PropRetentionQA/verification.json`:
+
+| Check | Passing assertions |
+| --- | ---: |
+| Football props, offline and rendered four-player room | 420 |
+| Basketball props, rendered host/guest/teammate | 275 |
+| Final competitive match and inventory lifecycle | 681 |
+| Football shot speed and attached dribbling, offline and host/guest | 165 |
+| Football network ball and shot probe | 43 |
+| Final portable default runner and offline ball physics | 241 |
+
+Checks cover one-slot replacement and consumption, retained items across goals,
+basketball inbounds/out/shot-clock restarts, football kickoff and stranded-ball
+recovery, and clearing at match completion/cancellation. Rendered captures verify
+the held prop stays visible and disabled during restart pauses. Football shot
+launch is exactly 80% of its previous speed at weak, half and full charge;
+existing attached dribbling behavior remains covered.
+
+All **244 compiled gameplay documents** match captured working source. The final
+full build reran match lifecycle and the default ball runner. Earlier rendered
+prop, effort and network checks use equivalent gameplay source; only the
+development match fixture's guest-receipt wait changed before the final build.
+The runner also passes from a checkout path containing spaces with an unrelated
+working directory. Android changes platform resource selection and generated
+Golf prefab IDs; canonical YAML comparison confirms unchanged prefab semantics.
+Provenance and delivery manifests are retained in `Builds/PropRetentionQA/`.
+
+Fresh AndroidSubmission measures **73,453,793 bytes**, up **7,648 bytes**, with
+**26,546,207 bytes** hard-limit headroom and **1,546,207 bytes** development
+reserve. APK v2 verification passes; asset and mesh inventories are unchanged.
+See [measured size](BUILD-SIZE.md#persistent-sports-props-and-slower-football-shots---14-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#persistent-sports-props-and-slower-football-shots---14-october-2026).
+
+Reviewed superseded players, APK/audit output, incomplete build attempts and
+temporary copied checkout were archived with the repository tool under
+`Legacy/20261014-*-prop-retention-*/`. The prior complete Windows player is in
+`20261014-174836-819-prop-retention-windows`; the prior APK is in
+`20261014-174134-473-prop-retention-before-android`. Task archive records remain
+in `Builds/PropRetentionQA/archive-*.txt`; current evidence remains available.
+No Git staging, commits or pushes were performed. Physical Android appearance,
+loading, memory/FPS and WAN play remain unverified.
+
 ## Lossless island packaging - 14 October 2026
 
 The complete **324-file** Windows player built at **16:33:17 Malaysia time**

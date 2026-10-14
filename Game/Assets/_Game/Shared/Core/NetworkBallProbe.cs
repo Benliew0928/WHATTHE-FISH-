@@ -24,7 +24,7 @@ namespace WhatTheFish {
     if(clientCharging&&!clientKick&&elapsed>=clientChargeStart+ball.maximumChargeTime*.5f){app.view.EndKick();clientKick=true;TurnCommand=default;Check(clientControlSeen,"CLIENT_CONTROLLER_ID_REPLICATES_WHILE_CHARGING");}
     if(snapshot.valid&&(app.rooms.Host?arranged&&!hostKick:clientCharging||clientKick)){clientTravel=Mathf.Max(clientTravel,Vector3.Distance(ball.Body.position,centre));if(app.rooms.Host&&!ball.Body.isKinematic)clientPeak=Mathf.Max(clientPeak,ball.Body.linearVelocity.magnitude);}
     if(app.rooms.Host&&!hostKick&&elapsed>start+6){
-     Check(serverChargeSeen&&chargeMovePeak>.6f&&chargeMovePeak<=.735f,"SERVER_CHARGING_MOVEMENT_PENALTY_NO_SPRINT");Record("MEASURE network chargeMovePeak="+chargeMovePeak);Check(clientTravel>2,"CLIENT_RPC_MOVES_AUTHORITATIVE_BALL");Check(clientPeak>ball.minimumKickSpeed*FootballEffort.BallPace+1&&clientPeak<ball.kickSpeed*FootballEffort.BallPace-1,"CLIENT_HALF_CHARGE_REACHES_SERVER");ball.ResetBall();centre=ball.Body.position;
+     Check(serverChargeSeen&&chargeMovePeak>.49f&&chargeMovePeak<=.51f,"SERVER_CHARGING_MOVEMENT_PENALTY_NO_SPRINT");Record("MEASURE network chargeMovePeak="+chargeMovePeak);Check(clientTravel>2,"CLIENT_RPC_MOVES_AUTHORITATIVE_BALL");Check(clientPeak>ball.minimumKickSpeed*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier+1&&clientPeak<ball.kickSpeed*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier-1,"CLIENT_HALF_CHARGE_REACHES_SERVER");ball.ResetBall();centre=ball.Body.position;
      foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?0:4,-.22f,p.OwnerClientId==0?-.9f:-4);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
      hostKick=true;
     }
@@ -43,7 +43,7 @@ namespace WhatTheFish {
     ball.Body.WakeUp();ball.Body.linearVelocity=Vector3.forward*9;
    }
    yield return new WaitForSeconds(1.2f);
-   if(app.rooms.Host)Check(ball.Body.linearVelocity.magnitude<.08f&&ball.Body.position.z<centre.z+1.6f,"SERVER_BALL_STOPS_AT_REMOTE_PLAYER");
+   if(app.rooms.Host){var receiver=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).First(p=>p.OwnerClientId!=0).GetComponent<Athlete>();Check(ball.CurrentController==receiver&&ball.Body.isKinematic&&Vector3.Distance(ball.transform.position,ball.FootPosition(receiver))<.03f,"SERVER_BALL_RECEIVED_AT_REMOTE_PLAYER");}
    var stopped=ball.Body.position;yield return new WaitForSeconds(.3f);
    Check(Vector3.Distance(stopped,ball.Body.position)<.08f&&Vector3.Distance(ball.Body.position,NetworkAthlete.HostPlayer.Ball.Value.position)<.15f,"STOPPED_BALL_REPLICATES_TO_BOTH_PLAYERS");
    // Keep server fixtures alive long enough for clients whose scene initialization finishes later.

@@ -18,7 +18,7 @@ three-second opening countdown. Both sports default to three playing minutes;
 the host may choose three, five or ten minutes before everyone readies up.
 
 Only the host simulates scoring, possession, restarts and results. Guests receive
-snapshots and send owner-authorized inputs. Protocol 53 requires matching builds.
+snapshots and send owner-authorized inputs. Protocol 55 requires matching builds.
 There is one active match in the room. Travel is blocked until that match finishes
 or is voided; the four-island shared-travel model is retained.
 
@@ -48,7 +48,9 @@ or is voided; the four-island shared-travel model is retained.
   planted outside the line, cannot jump/shoot/use abilities and must pass to a
   teammate. Free-direction or outward inbounds are rejected. Both clocks stay
   paused until the physical pass releases; that release unlocks centre crossing
-  and starts the 20-second clock. Inventories and ability effects clear on restart.
+  and starts the 20-second clock. Unused props remain in each player's single
+  slot; another pickup replaces them. Active ability effects clear on restart.
+  Inventory clears when the match ends or is cancelled.
 - A shot physically released before the match buzzer can resolve afterward.
   Players cannot take a new shot or rebound after the buzzer. Flight resolution
   is bounded to eight seconds from release, including stuck balls. A ball still
@@ -67,6 +69,9 @@ The existing [football match rules](FOOTBALL-MATCH.md) remain: a whole-ball goal
 is one point, including an own goal for the opposing side. A goal gets 0.65 seconds
 of net follow-through, then players and ball reset for a three-second centre-ball
 restart. Both teams are released together. Resets do not consume playing time.
+Unused props survive goals and kickoff resets in their collector's single slot;
+another pickup replaces them. Goals clear active effects. Match completion,
+cancellation or travel clears held inventory.
 
 A tied regulation period continues directly into 60-second golden-goal overtime;
 the first goal wins, otherwise the result is a draw. A goal must complete before

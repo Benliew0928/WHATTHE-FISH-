@@ -8,6 +8,7 @@ namespace WhatTheFish {
  public sealed partial class FootballBall:MonoBehaviour {
   public static FootballBall Instance;
   public event System.Action<Athlete,float> Kicked;
+  public const float ShotSpeedMultiplier=.8f;
   [Header("Kick tuning (speed in metres/second)")]
   [Min(0)] public float minimumKickSpeed=12;
   [Min(0)] public float kickSpeed=22;
@@ -160,7 +161,7 @@ namespace WhatTheFish {
    Body.position=position;Body.rotation=rotation;transform.SetPositionAndRotation(position,rotation);
    Physics.SyncTransforms();Body.interpolation=interpolation;
   }
-  public void ResetBall(){if(!HasAuthority)return;ResetFootballProps();sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
+  public void ResetBall(bool preserveInventory=false){if(!HasAuthority)return;ResetFootballProps(!preserveInventory);sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
   void FixedUpdate(){
    authority=HasAuthority;
    bool active=FootballTackle.EnvironmentAllowed&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!Online||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
@@ -181,7 +182,7 @@ namespace WhatTheFish {
       if(!controller){Athlete closest=null;float distance=float.MaxValue;foreach(var candidate in Athlete.Active)if(CanControl(candidate)){float d=(candidate.transform.position-Body.position).sqrMagnitude;if(d<distance){distance=d;closest=candidate;}}if(closest)RefreshControl(closest);}
      }
      float sea=RefinedIslandEnvironment.Active?RefinedIslandEnvironment.Active.layout.sea_level:0;
-     if(Body.position.y<sea-2||Vector3.Distance(Body.position,origin)>300)ResetBall();
+     if(Body.position.y<sea-2||Vector3.Distance(Body.position,origin)>300)ResetBall(preserveInventory:true);
      if(controller)FollowController(controller);
      else {KeepInsidePitch();ApplyRollingResistance(Time.fixedDeltaTime);SweepPlayers(Time.fixedDeltaTime);}
     }
@@ -344,7 +345,7 @@ namespace WhatTheFish {
    float maximum=Mathf.Max(0,kickSpeed),speed=Mathf.Lerp(Mathf.Clamp(minimumKickSpeed,0,maximum),maximum,Mathf.Clamp01(charge));
    ReleaseControl(actor);impulsePending=true;Body.WakeUp();
    // Subsequent callbacks see this velocity immediately instead of stacking deferred AddForce.
-   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));Kicked?.Invoke(actor,charge);return true;
+   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace*ShotSpeedMultiplier;Body.angularVelocity=Vector3.zero;FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));Kicked?.Invoke(actor,charge);return true;
   }
   public void SweepSlideContact(Athlete actor,Vector3 before,Vector3 after,float reach){
    if(!HasAuthority||!Allowed||PortalBusy||!actor||CurrentController==actor)return;

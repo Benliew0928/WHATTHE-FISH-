@@ -6,6 +6,12 @@ one use. Tap the illustrated ability button or press **G** to activate it.
 Picking up another prop later grants another use. Invalid actions retain the
 item. The player who collects an item controls its activation.
 
+Unused props stay with their collector through baskets, out-of-bounds inbounds,
+shot-clock restarts and overtime. Collecting another item replaces the single
+held slot; there is no stored second item. Activation spends the item once.
+Match completion, cancellation, a new match or leaving the sport clears inventory.
+Restarts still cancel active boosts, aiming and transfers.
+
 ## Abilities
 
 | Prop | Activation | Effect and counterplay |
@@ -44,12 +50,15 @@ camera while retaining their depth. No pickup is visible or collectible early.
 Players may wait at the announced location; normal host pickup arbitration
 applies after materialization.
 
-The first spawn starts with the five-second warning. After collection, the
-20-second respawn interval contains 15 seconds of waiting and five seconds of
-countdown. If the host reaches the warning start late, it still starts a full
-five-second countdown. The deadline and location replicate in snapshots,
-so clients and late arrivals use the same remaining time. Session changes clear
-the pending spawn; returning starts a new countdown.
+The first pickup appears ten seconds after live play starts: five quiet seconds,
+then the five-second warning. Every collection starts the same ten-second cycle.
+An uncollected pickup remains indefinitely; no additional pickup spawns beside it.
+The deadline is fixed even if a host update arrives late. Deadline and location
+replicate in snapshots, so clients and late arrivals use the same remaining time.
+Baskets, out-of-bounds inbounds and shot-clock restarts preserve the same world
+pickup and pending deadline. The timer and presentation continue during these
+pauses; collection waits until inbound play resumes. Only a new match or leaving
+the session starts a fresh cycle; match completion/cancellation clears it.
 
 The original painted court remains 15.24 by 28.6512 m. Player containment and
 the energy wall now follow those exact painted lines. The relocated pickups
@@ -88,7 +97,7 @@ Android release and cannot be invoked over the network.
 The review exercises all three types through the real spawn renderer on both
 sides, checking visible mesh bounds above the floor and capturing each model.
 It checks all five visible countdown digits, uncollectible warning states,
-twenty-second respawning, repeated host transitions without consecutive types,
+ten-second respawning, repeated host transitions without consecutive types,
 architecture clearance, multiplayer agreement and disabling/re-entering the arena.
 It measures controller speed and distance travelled for walking and sprinting:
 6 / 10.5 m/s during Turbo, versus 4 / 7 m/s normally. Local multiplayer also

@@ -7154,8 +7154,6 @@ MonoBehaviour:
   yaw: 0
   pitch: 16
   active: 0
-  cartReverseTurnTime: 0.45
-  cartReverseTurnSpeed: 180
   golfShoulderOffset: 1.8
   golfViewDistance: 3.5
 --- !u!114 &1760678659

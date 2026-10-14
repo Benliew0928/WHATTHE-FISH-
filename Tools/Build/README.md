@@ -5,6 +5,7 @@ Run examples from the repository root. Scripts resolve the project from their ow
 | Task | Entry point |
 | --- | --- |
 | Complete Windows player | `./Tools/Build/Build.ps1 -Target Windows` |
+| All-island character lighting and active renderer regression | `./Tools/Build/Test-CharacterLighting.ps1 -PlayerPath Builds/WindowsFinal/WhatTheFish.exe` (development player; saves matching character captures) |
 | Self-contained Android delivery with APK budget gate | `./Tools/Build/Build.ps1 -Target AndroidSubmission` |
 | Optional development APK | `./Tools/Build/Build.ps1 -Target Android` |
 | Regenerate the integrated scene | `./Tools/Build/Build.ps1 -Target Scene` |

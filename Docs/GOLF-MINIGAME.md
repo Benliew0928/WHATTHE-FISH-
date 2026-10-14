@@ -25,7 +25,29 @@ material and tiny texture; no new ball, scoring rule or network field is added.
 - There is no global, single-hole, AFK or maximum-duration timer before the first finisher.
 - Finished players rank ahead of DNF, by total strokes ascending, then elapsed finish time ascending. Equal strokes and equal finish time share a rank and a Tie marker. DNF remains in roster order and receives no competitive rank.
 
-The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. Room protocol is **47**; older builds cannot join this build.
+The host owns all physical simulation, scores and deadlines; offline play uses the same gameplay code. Clients send reliable owner-authorized swing requests with a selected ball, heading, charge and round revision. The host validates the hitter, active ball, range, visibility and revision. Invalid, cancelled or stale requests add no stroke. The ball snapshot is published on its owner's player object, independent of the hitter. The current room protocol is defined in [RoomService.cs](../Game/Assets/_Game/Shared/Networking/RoomService.cs); matching builds are required.
+
+## Shot camera and buggy recall
+
+An accepted Aim recalls the golfer's own buggy, clearing an obstructed ball.
+Cancelling or completing the shot leaves the buggy recalled; use Buggy / R
+to summon it again when ready. Driving camera rotation stays under manual
+control, including turns and reverse; see [cart controls](GOLF-CART.md).
+
+On release, the camera holds the aiming composition through the downswing.
+Confirmed ball contact starts a 0.65-second eased transition to the actual
+moving ball. The camera follows flight, touchdown and rolling, with a small
+velocity lead and terrain/prop obstruction checks. After the ball settles,
+it holds the landing for 0.85 seconds and eases back to the character over
+0.9 seconds. The player's selected roaming mode and look angle are retained.
+Right-side drag/right mouse can still adjust the view during flight.
+
+Rejected or cancelled swings cannot start a ball-follow shot. Recovery and
+cup relocation return to the golfer instead of following a teleport; new
+rounds, island travel and disabled cameras clear the sequence. Only the local
+hitter's requested shot takes over their camera, even when striking someone
+else's ball. Guests track the displayed ball snapshots, so they do not rely
+on a kinematic Rigidbody's velocity. No new network field or art asset ships.
 
 ## Golden shot trail
 
@@ -47,7 +69,7 @@ provides the soft edge and pale centre, using the shared
 [material](../Game/Assets/_Game/Resources/GolfBallTrail.mat). No texture, light,
 shadow, physics force or collider is added. The host's ball snapshot includes
 a strike sequence; clients start the effect once per actual hit and follow
-the existing displayed ball interpolation. Matching **protocol 47** players
+the existing displayed ball interpolation. Matching host/client builds
 are required.
 
 ## Controls and display

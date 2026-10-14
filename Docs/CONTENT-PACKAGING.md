@@ -54,6 +54,29 @@ services and development probes survive. Existing Sky-Sail streaming continues
 to load one detailed island at a time, with everyone travelling together in a
 host room. Programmed sports bots, controls and match rules are unchanged.
 
+## Runtime lighting references
+
+Do not serialize a desktop renderer feature into an island scene or environment
+prefab. A player build and a separate scene bundle can each contain their own
+copy of the same source ScriptableObject. Updating the bundled copy does not
+update the feature used by the player's camera.
+
+`IslandContactShading.Resolve` selects the active camera's renderer through URP's
+renderer-data API. Coastal and refined island environments bind to that live
+SSAO feature when activated; a renderer without SSAO (including Android's mobile
+renderer) safely returns no feature. Golf/Fishing restore the prior settings on
+exit, and Football/Basketball retain their interior/exterior activation rules.
+Textures, materials, geometry and the lossless packaging format are unaffected.
+
+This corrects the Windows shading regression missed by the initial packaging
+asset-equality checks. Identical art bytes do not establish runtime lighting
+parity. Build with Unity execute method `CharacterLightingBuild.BuildReview`,
+then run `Tools/Build/Test-CharacterLighting.ps1`. The test checks live feature
+identity and settings through two four-island circuits, court/field boundaries,
+character movement and matching front/back captures with corrected and former
+stuck settings. Inspect the captures under `Builds/CharacterLightingQA/` as well
+as the assertions; pixel checks alone do not establish visual quality.
+
 ## Validation
 
 Build a separate review player with Unity execute method

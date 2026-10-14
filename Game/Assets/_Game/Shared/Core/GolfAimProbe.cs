@@ -27,12 +27,15 @@ namespace WhatTheFish {
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    float until=Time.time+65;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!GolfMatchManager.Instance)&&Time.time<until)yield return null;
    app=AppRoot.Instance;match=GolfMatchManager.Instance;actor=app.LocalAthlete;Check(match&&actor&&match.Context,"GOLF_CONTEXT");
-   if(match.Authority){Check(match.StartMatch(),"MATCH_STARTED");foreach(var player in Athlete.Active.Where(a=>match.Player(a)!=null).ToArray()){var b=match.Ball(player);var tee=match.Course.holes[(int)(b.Owner%5)].tee;b.Place(tee.position+Vector3.up*(GolfBall.Radius+.01f),true);Place(player,tee.position-tee.forward*2.6f);}}
+   if(match.Authority){Check(match.StartMatch(),"MATCH_STARTED");foreach(var player in Athlete.Active.Where(a=>match.Player(a)!=null).ToArray()){var b=match.Ball(player);var tee=match.Course.holes[(int)(b.Owner%5)].tee;b.Place(match.TeePosition((int)(b.Owner%5)+1,b.Owner),true);Place(player,tee.position-tee.forward*2.6f);}}
    until=Time.time+10;while((!match.State.Running||!match.Ball(actor)||Vector3.Distance(actor.transform.position,match.Ball(actor).Body.position)>3)&&Time.time<until)yield return null;
    ball=match.Ball(actor);yield return new WaitForSeconds(.7f);ui=FindFirstObjectByType<GolfSwingButton>();Check(ball&&ui&&ui.aimButton.interactable,"NEARBY_AIM_AVAILABLE_BEYOND_OLD_SWING_RANGE");
    Check(!ui.button.interactable&&!app.view.BeginGolfSwing(),"SWING_REQUIRES_EXPLICIT_AIM");
    app.view.mode=1;app.view.yaw=match.Course.holes[(int)(ball.Owner%5)].tee.eulerAngles.y;app.view.pitch=24;
+   app.view.RequestCartToggle();yield return new WaitForSeconds(.65f);Check(GolfCartWorld.HasCart(actor),"BUGGY_SUMMONED_BEFORE_AIM");
    yield return Aim();Check(app.view.AimedGolfOwner==ball.Owner&&Vector3.ProjectOnPlane(actor.transform.position-ball.Body.position,Vector3.up).magnitude<.95f,"SAFE_STANCE_NEAR_SELECTED_BALL");
+   yield return new WaitForSeconds(.25f);Check(!GolfCartWorld.HasCart(actor)&&!GolfCartWorld.Owned(actor),"AIM_RECALLS_OWN_BUGGY_ON_AUTHORITY_AND_GUEST");
+   if(match.Authority)Check(!GolfCartWorld.Execute(actor,GolfCartAction.Summon,GolfCartWorld.Key(actor)),"AUTHORITY_REJECTS_SUMMON_DURING_AIM");
    var feet=actor.transform.position;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.one,sprint=true,jump=true,heading=app.view.yaw};
    app.view.RequestJump();app.view.RequestCartToggle();yield return new WaitForSeconds(.6f);
    Check(Vector3.ProjectOnPlane(actor.transform.position-feet,Vector3.up).magnitude<.015f&&!actor.Airborne&&!actor.LoadingJump&&!GolfCartWorld.Driving(actor),"MOVEMENT_JUMP_AND_CART_INPUT_CANNOT_BREAK_AIM");
@@ -41,16 +44,37 @@ namespace WhatTheFish {
    float originalYaw=app.view.yaw;var end=app.view.GolfPreview.EndPoint;app.view.yaw+=35;yield return new WaitForSeconds(.2f);yield return Frame();Check(Vector3.Distance(end,app.view.GolfPreview.EndPoint)>.3f&&Vector3.ProjectOnPlane(actor.transform.position-feet,Vector3.up).magnitude<.015f,"ROTATING_AIM_CHANGES_PATH_WITHOUT_MOVING_FEET");app.view.yaw=originalYaw;
    int strokes=match.Player(actor).TotalStroke;Check(app.view.BeginGolfSwing(41),"CHARGE_FROM_LOCKED_STANCE");yield return new WaitForSeconds(.4f);app.view.CancelGolfAim();yield return new WaitForSeconds(.35f);
    Check(!match.IsAiming(actor)&&!app.view.GolfCharging&&!app.view.GolfPreview.Visible&&match.Player(actor).TotalStroke==strokes,"CANCEL_DURING_CHARGE_UNLOCKS_HIDES_GUIDE_AND_COSTS_NO_STROKE");
+   Check(!GolfCartWorld.HasCart(actor)&&!app.view.GolfShotCameraActive,"CANCEL_NEVER_SUMMONS_BUGGY_OR_STARTS_BALL_CAMERA");
+   app.view.RequestCartToggle();yield return new WaitForSeconds(.65f);Check(GolfCartWorld.HasCart(actor),"PLAYER_CAN_SUMMON_AGAIN_AFTER_CANCEL");
    DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,heading=originalYaw+90};yield return new WaitForSeconds(.35f);DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.2f);Check(Vector3.ProjectOnPlane(actor.transform.position-feet,Vector3.up).magnitude>.15f,"CANCEL_RESTORES_WALKING");
    yield return Aim();
-   var pointer=new PointerEventData(EventSystem.current){pointerId=27,button=PointerEventData.InputButton.Left};ui.OnPointerDown(pointer);yield return new WaitForSeconds(.95f);yield return Frame();
+   var pointer=new PointerEventData(EventSystem.current){pointerId=27,button=PointerEventData.InputButton.Left};ui.OnPointerDown(pointer);yield return new WaitForSeconds(GolfShotRules.PowerSweepSeconds*.73f);yield return Frame();
    Check(app.view.GolfCharging&&app.view.GolfCharge>.65f&&app.view.GolfPreview.LaunchVelocity.y>1,"TOUCH_HOLD_SHOWS_LOFTED_SHOT");
    var expected=ball.PhysicsSettings.SwingVelocity(Quaternion.Euler(0,app.view.yaw,0)*Vector3.forward,app.view.GolfDisplayedCharge,app.view.GolfMode);Check(Vector3.Distance(expected,app.view.GolfPreview.LaunchVelocity)<.001f,"PREVIEW_USES_DISPLAYED_RELEASE_PROFILE");Capture("aim-chip");
    ui.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=99,button=PointerEventData.InputButton.Left});Check(app.view.GolfCharging,"UNRELATED_POINTER_CANNOT_RELEASE_SWING");
-   ui.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);Check(match.Player(actor).TotalStroke==strokes+1&&!app.view.GolfAimRequested&&!match.IsAiming(actor),"TOUCH_RELEASE_SWINGS_ONCE_AND_RELEASES_STANCE");
+   ui.OnPointerUp(pointer);Check(!app.view.GolfFollowingBall,"CAMERA_WAITS_FOR_CONFIRMED_CONTACT");yield return new WaitForSeconds(.4f);Check(match.Player(actor).TotalStroke==strokes+1&&!app.view.GolfAimRequested&&!match.IsAiming(actor),"TOUCH_RELEASE_SWINGS_ONCE_AND_RELEASES_STANCE");
    Check(Vector3.ProjectOnPlane(ball.Body.position-ball.LastShotPosition,Vector3.up).magnitude>.5f&&!app.view.GolfPreview.Visible,"SHOT_TRAVELS_AND_PREVIEW_CLEARS");
+   yield return CameraJourney();
    if(!app.rooms.Connected)yield return OfflineEdges();else yield return NetworkPutt();
    File.AppendAllText(report,"GOLF_AIM_COMPLETE checks="+checks+"\n");
+  }
+  IEnumerator CameraJourney(){
+   Check(app.view.GolfFollowingBall,"CONFIRMED_SHOT_ENTERS_BALL_CAMERA");
+   float heading=app.view.yaw,pitch=app.view.pitch,until=Time.time+26,started=Time.time,maxStep=0,maxTurn=0;int frames=0,visible=0;
+   var previous=Camera.main.transform.position;var rotation=Camera.main.transform.rotation;bool captured=false,landed=false;
+   while(app.view.GolfShotCameraActive&&Time.time<until){
+    yield return Frame();var camera=Camera.main;float dt=Mathf.Max(.001f,Time.deltaTime);
+    maxStep=Mathf.Max(maxStep,Vector3.Distance(previous,camera.transform.position)/dt);maxTurn=Mathf.Max(maxTurn,Quaternion.Angle(rotation,camera.transform.rotation)/dt);
+    previous=camera.transform.position;rotation=camera.transform.rotation;
+    if(!app.view.GolfFollowingBall&&!landed){Capture("ball-landed");landed=true;}
+    if(app.view.GolfFollowingBall&&Time.time-started>.5f){var p=camera.WorldToViewportPoint(ball.transform.position);frames++;if(p.z>0&&p.x>.05f&&p.x<.95f&&p.y>.05f&&p.y<.95f)visible++;if(!captured){Capture("ball-flight");captured=true;}}
+   }
+   File.AppendAllText(report,$"CAMERA visible={visible}/{frames} maxSpeed={maxStep:F3} maxTurn={maxTurn:F3} seconds={Time.time-started:F3}\n");
+   Check(frames>5&&visible>=frames*.95f,"FLYING_AND_LANDING_BALL_STAYS_IN_FRAME");
+   Check(!app.view.GolfShotCameraActive&&Time.time-started<24,"LANDING_RETURNS_CAMERA_TO_CHARACTER");
+   Check(maxStep<160&&maxTurn<220,"CAMERA_TRANSITIONS_HAVE_NO_SINGLE_FRAME_CUT");
+   Check(Mathf.Abs(Mathf.DeltaAngle(heading,app.view.yaw))<.01f&&Mathf.Abs(pitch-app.view.pitch)<.01f&&app.view.mode==1,"RETURN_PRESERVES_PLAYER_CAMERA_ANGLE_AND_MODE");
+   Check(Vector3.Distance(Camera.main.transform.position,actor.transform.position)<6&&!GolfCartWorld.HasCart(actor),"RETURN_REJOINS_GOLFER_WITH_BUGGY_STILL_RECALLED");Capture("ball-return");
   }
   IEnumerator NetworkPutt(){
    if(match.Authority){
@@ -69,16 +93,28 @@ namespace WhatTheFish {
    Check(error<.08f&&match.Player(actor).TotalStroke==strokes+1,"NETWORK_PUTT_STOPS_AT_DISPLAYED_TARGET_AND_COUNTS_ONCE");
   }
   IEnumerator OfflineEdges(){
-   yield return new WaitForSeconds(.7f);var tee=match.Course.holes[0].tee;ball.Place(tee.position+Vector3.up*.09f,true);Place(actor,tee.position-tee.forward*3.4f);yield return new WaitForSeconds(.4f);
+   // Use the real opening support height; the old .09 m fixture embedded the
+   // ball inside the wooden cup and could swallow a horizontal test impulse.
+   yield return new WaitForSeconds(.7f);var tee=match.Course.holes[0].tee;ball.Place(match.TeePosition(1,ball.Owner),true);Place(actor,tee.position-tee.forward*3.4f);yield return new WaitForSeconds(.4f);
    Check(!app.view.CanAimGolf&&!ui.aimButton.interactable,"DISTANT_BALL_DOES_NOT_ALLOW_TELEPORTING");
    for(int mode=0;mode<3;mode++){Place(actor,tee.position-tee.forward*2.6f);app.view.mode=mode;yield return new WaitForSeconds(.15f);yield return Aim();yield return Frame();Check(Camera.main.nearClipPlane>.1f,"AIM_CAMERA_AVAILABLE_FROM_ROAM_MODE_"+mode);app.view.CancelGolfAim();yield return null;Check(app.view.mode==mode,"CANCEL_PRESERVES_ROAM_CAMERA_"+mode);}
    Place(actor,tee.position-tee.forward*2.6f);yield return new WaitForSeconds(.15f);yield return Aim();ball.Recover();yield return new WaitForSeconds(.2f);Check(!app.view.GolfAimRequested&&!match.IsAiming(actor),"BALL_RESET_CANCELS_STALE_AIM");
-   yield return new WaitForSeconds(.3f);yield return Aim();ball.ApplyGameplayImpulse(Vector3.right*.07f);yield return new WaitForSeconds(.2f);Check(!app.view.GolfAimRequested&&!match.IsAiming(actor),"MOVING_BALL_CANCELS_STALE_AIM");
-   ball.Place(tee.position+Vector3.up*.09f,true);Place(actor,tee.position-tee.forward*2.6f);yield return new WaitForSeconds(.5f);
+   yield return new WaitForSeconds(.3f);yield return Aim();var impulseOrigin=ball.Body.position;ball.ApplyGameplayImpulse(Vector3.right*.3f+Vector3.up*.15f);yield return new WaitForSeconds(.3f);File.AppendAllText(report,$"DISLODGED_BALL travel={Vector3.Distance(impulseOrigin,ball.Body.position):F3} reach={Vector3.Distance(actor.transform.position,ball.Body.position):F3} aiming={match.IsAiming(actor)}\n");Check(!app.view.GolfAimRequested&&!match.IsAiming(actor),"BALL_LEAVING_SWING_REACH_CANCELS_STALE_AIM");
+   ball.Place(match.TeePosition(1,ball.Owner),true);Place(actor,tee.position-tee.forward*2.6f);yield return new WaitForSeconds(.5f);
    var wall=new GameObject("Temporary golf aim barrier");wall.layer=8;wall.transform.SetPositionAndRotation(tee.position-tee.forward*1.3f+Vector3.up*.7f,tee.rotation);wall.AddComponent<BoxCollider>().size=new Vector3(3,2,.15f);Physics.SyncTransforms();Check(!app.view.CanAimGolf&&!app.view.BeginGolfAim(),"WALL_BLOCKS_AIM_ENTRY");Destroy(wall);yield return null;
-   for(int h=0;h<5;h++){var t=match.Course.holes[h].tee;ball.Place(t.position+Vector3.up*.09f,true);Place(actor,t.position-t.forward*2.6f);yield return new WaitForSeconds(.5f);yield return Aim();Check(match.CanStrike(actor,ball),"AUTHORED_TEE_HAS_SAFE_STANCE_"+(h+1));app.view.CancelGolfAim();}
+   for(int h=0;h<5;h++){var t=match.Course.holes[h].tee;ball.Place(match.TeePosition(h+1,ball.Owner),true);Place(actor,t.position-t.forward*2.6f);yield return new WaitForSeconds(.5f);yield return Aim();Check(match.CanStrike(actor,ball),"AUTHORED_TEE_HAS_SAFE_STANCE_"+(h+1));app.view.CancelGolfAim();}
    yield return Aim();app.view.enabled=false;yield return new WaitForSeconds(.1f);app.view.enabled=true;yield return null;Check(!match.IsAiming(actor),"DISABLED_CAMERA_RELEASES_AIM_WITHOUT_HUD_ERROR");
    yield return Aim();app.view.ClearMatchInput();yield return null;Check(!match.IsAiming(actor)&&!app.view.GolfAimRequested,"MENU_OR_ROUND_CLEAR_UNLOCKS");
+   app.view.RequestCartToggle();yield return new WaitForSeconds(.4f);var parked=GolfCartWorld.Owned(actor);Check(parked,"BLOCKING_BUGGY_FIXTURE_SUMMONED");
+   var under=Ground(parked.transform.position);ball.Place(under+Vector3.up*(GolfBall.Radius-.033f),true);Place(actor,under+parked.transform.right*2.5f);yield return new WaitForSeconds(.6f);
+   Check(parked.hull.bounds.Contains(ball.Body.position+Vector3.up*.65f),"BUGGY_BODY_BLOCKS_BALL_VIEW_BEFORE_AIM");
+   yield return Aim();Check(!GolfCartWorld.HasCart(actor)&&match.CanStrike(actor,ball),"AIM_CLEARS_BUGGY_PARKED_OVER_BALL");app.view.CancelGolfAim();
+   yield return new WaitForSeconds(.2f);
+   yield return Aim();app.view.RequestGolfSwing(.5f);yield return new WaitForSeconds(.45f);Check(app.view.GolfFollowingBall,"INTERRUPTION_FIXTURE_FOLLOWS_CONFIRMED_SHOT");
+   var beforeClear=Camera.main.transform.position;app.view.ClearMatchInput();yield return Frame();
+   Check(app.view.GolfShotCameraActive&&!app.view.GolfFollowingBall&&Vector3.Distance(beforeClear,Camera.main.transform.position)<.4f,"RESULT_OR_INPUT_CLEAR_STARTS_SMOOTH_RETURN_WITHOUT_CUT");
+   yield return new WaitForSeconds(1.1f);Check(!app.view.GolfShotCameraActive,"INTERRUPTED_CAMERA_RETURNS_CONTROL");
+   ball.Place(under+Vector3.up*(GolfBall.Radius-.033f),true);yield return new WaitForSeconds(.5f);
    yield return Aim();match.ClearMatch();yield return null;Check(!app.view.GolfAimRequested&&!app.view.GolfPreview.Visible,"MATCH_END_CLEARS_AIM_AND_PREVIEW");
   }
  }

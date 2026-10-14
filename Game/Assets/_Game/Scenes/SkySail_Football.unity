@@ -8904,7 +8904,6 @@ MonoBehaviour:
   sky: {fileID: 2100000, guid: 3d9175c861341234cbf5bb0001a62f49, type: 2}
   basketball: 0
   islandRadii: {x: 132, y: 160}
-  exteriorContactShading: {fileID: -2145358759756738505, guid: 204d46c01d0b7984f87cba8d325be146, type: 2}
 --- !u!1 &1260307217
 GameObject:
   m_ObjectHideFlags: 0
