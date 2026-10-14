@@ -27,7 +27,7 @@ namespace WhatTheFish {
   public uint PresentationReset=>Authority?reset:haveTarget?target.reset:0;
   Vector3 home;Quaternion homeRotation;float sendAt,receivedAt;bool initialized,wasConnected,wasAuthority,wasPlaying;
   uint reset;BasketballSnapshot previous,target;bool haveTarget;
-  void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;home.y=Mathf.Max(home.y,Radius+.002f);homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;PrepareHoops();BasketballBoundaryVisual.Attach(this);gameObject.AddComponent<BasketballPassVisual>();gameObject.AddComponent<BasketballPropVisual>();PrepareAudioSurfaces();gameObject.AddComponent<BasketballAudio>();initialized=true;}
+  void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;home.y=Mathf.Max(home.y,Radius+.002f);homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;PrepareHoops();BasketballBoundaryVisual.Attach(this);gameObject.AddComponent<BasketballPassVisual>();gameObject.AddComponent<BasketballPropVisual>();PrepareAudioSurfaces();gameObject.AddComponent<BasketballAudio>();initialized=true;gameObject.AddComponent<BasketballMatch>();}
   void OnEnable(){Active=this;if(initialized)ResetHome();}
   void OnDisable(){ClearPossession();ResetProps(false);if(Active==this)Active=null;if(Body){Body.isKinematic=true;Simulating=false;}haveTarget=false;wasPlaying=false;}
   void SetPose(Vector3 position,Quaternion rotation){
@@ -54,8 +54,16 @@ namespace WhatTheFish {
    // Freeze clients even while their player/network variables are still arriving.
    bool simulate=authority&&playing&&(!connected||(host&&host.IsSpawned));
    if(connected!=wasConnected||authority!=wasAuthority||playing!=wasPlaying){ResetCourtPlayers();if(authority)ResetSessionScore();ResetHome();ResetProps();wasConnected=connected;wasAuthority=authority;wasPlaying=playing;}
-   if(simulate){StepBlocks();if(!PortalBusy)StepShotPhysics();StepProps();if(!PortalBusy){StepSteals();StepInteraction();StepPropFlight();}}
-   bool dynamic=simulate&&!Held&&!PortalBusy;
+   var match=BasketballMatch.Instance;
+   bool live=!match||match.Live;
+   if(simulate){
+    if(live)StepBlocks();if((!match||match.BallLive)&&!PortalBusy)StepShotPhysics();
+    live=!match||match.Live;
+    if(live){StepProps();if(!PortalBusy){StepSteals();StepInteraction();StepPropFlight();}}
+    else if(match&&match.Snapshot.phase==BasketballMatchPhase.Buzzer){StepPropFlight();if(OutsidePaint(CourtPoint(Body.position)))match.Boundary(CourtPoint(Body.position));}
+    match?.AfterBallStep();
+   }
+   bool dynamic=simulate&&(!match||match.BallLive)&&!Held&&!PortalBusy;
    if(Body.isKinematic==dynamic)Body.isKinematic=!dynamic;
    Simulating=simulate;Body.detectCollisions=authority&&!Held&&!PortalBusy;
    Body.interpolation=dynamic?RigidbodyInterpolation.Interpolate:RigidbodyInterpolation.None;
@@ -64,6 +72,12 @@ namespace WhatTheFish {
     sendAt=Time.unscaledTime+.05f;
     host.Basketball.Value=new BasketballSnapshot{inbound=InboundPending,props=propState,valid=true,held=Held,queued=ActionQueued,holder=HolderId,shots=shotCount,passes=passCount,steals=steals,stealTime=stealTime,dribble=dribblePhase,cadence=dribbleCadence,position=transform.localPosition,rotation=transform.localRotation,reset=reset,time=NetworkManager.Singleton.ServerTime.Time,passAim=passAim,defense=Defense,finish=finishNotice,charge=Charge,score=score,northNet=baskets[0]?baskets[0].Hit:default,southNet=baskets[1]?baskets[1].Hit:default};
    }
+  }
+  public void ResetMatchBall(bool clearScore){if(!Authority||!initialized)return;ResetHome();ResetProps(false);if(clearScore)ResetSessionScore();}
+  public void GiveMatchPossession(Athlete actor){
+   if(!Authority||!actor)return;ClearPossession();holder=actor;dribblePhase=0;outsideFor=looseFor=0;
+   Body.isKinematic=false;Body.linearVelocity=Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;
+   Follow(actor);reset++;sendAt=0;
   }
   void Update(){
    if(Authority)return;var host=NetworkAthlete.HostPlayer;if(!host||!host.IsSpawned||host.WorldSport.Value!=SportId.Basketball)return;

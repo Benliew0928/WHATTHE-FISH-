@@ -42,6 +42,7 @@ namespace WhatTheFish {
    reason="";if(!app||!app.Exploring){reason="Enter an island first.";return false;}
    if(!Authority){reason="Your host chooses the destination.";return false;}
    if(Travelling||streaming.Busy){reason="Preparing the journey…";return false;}
+   if(FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active){reason="Finish the match before travelling.";return false;}
    if(!SkySailMap.Adjacent(app.SelectedSport,target)){reason="Choose a neighboring station.";return false;}
    var group=Group();if(group.Length>app.environments.Definition(target).maxPlayers){reason=target+" supports "+app.environments.Definition(target).maxPlayers+" players. Your group stays together.";return false;}
    var port=SkySailMap.Port(app.SelectedSport);if(group.Any(p=>Vector3.Distance(p.transform.position,port)>18)){reason="Bring everyone to the Sky-Sail station.";return false;}
@@ -49,11 +50,11 @@ namespace WhatTheFish {
   }
   public void RequestTravel(SportId target){
    if(!CanTravel(target,out var why)){Message=why;return;}
-   Message="";
+   FootballBots.Instance?.Clear();BasketballBots.Instance?.Clear();Message="";
    var s=new SkySailJourney{sequence=Journey.sequence+1,from=app.SelectedSport,to=target,phase=SkySailPhase.Preparing,started=Clock,duration=44};SetState(s);
   }
   void SetState(SkySailJourney s){if(app.rooms.Connected){if(app.rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldTravel.Value=s;}else offlineJourney=s;}
-  Athlete[] Group()=>app.rooms.Connected?FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).OrderBy(a=>a.OwnerClientId).Select(a=>a.GetComponent<Athlete>()).ToArray():new[]{app.LocalAthlete};
+  Athlete[] Group()=>app.rooms.Connected?FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(a=>a.IsPlayerObject).OrderBy(a=>a.OwnerClientId).Select(a=>a.GetComponent<Athlete>()).ToArray():new[]{app.LocalAthlete};
   void Update(){
    if(!app)return;
    Shader.SetGlobalVector("_SkySailOrigin",Origin);
@@ -84,7 +85,7 @@ namespace WhatTheFish {
     if(Journey.phase==SkySailPhase.Riding&&Progress>.83f&&!approach&&prepared){approach=true;var root=app.environments.roots[(int)Journey.to];root.transform.position=SkySailMap.Center(Journey.to)-Origin;root.SetActive(true);proxies[(int)Journey.to].SetActive(false);}
     PinPassengers();
     if(Authority){
-     bool ready=prepared&&(!app.rooms.Connected||FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).All(p=>p.TravelReady.Value==Journey.sequence));
+     bool ready=prepared&&(!app.rooms.Connected||FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsPlayerObject).All(p=>p.TravelReady.Value==Journey.sequence));
      if(Journey.phase==SkySailPhase.Preparing&&ready)Advance(SkySailPhase.Boarding);
      else if(Journey.phase==SkySailPhase.Preparing&&elapsed>60){Message="A player could not prepare the island. Please try again.";var s=Journey;s.phase=SkySailPhase.Idle;SetState(s);}
      else if(Journey.phase==SkySailPhase.Boarding&&elapsed>3.5)Advance(SkySailPhase.Riding);
@@ -100,7 +101,7 @@ namespace WhatTheFish {
   IEnumerator Prepare(SportId id,uint sequence){
    yield return streaming.Prepare(id);if(!Travelling||sequence!=seenSequence)yield break;
    if(!string.IsNullOrEmpty(streaming.Error)){Message=streaming.Error;yield break;}prepared=true;
-   if(app.rooms.Connected){var local=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);if(local&&acknowledged!=sequence){acknowledged=sequence;local.TravelReadyRpc(sequence);}}
+   if(app.rooms.Connected){var local=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsPlayerObject&&p.IsOwner);if(local&&acknowledged!=sequence){acknowledged=sequence;local.TravelReadyRpc(sequence);}}
   }
   void Advance(SkySailPhase phase){var s=Journey;s.phase=phase;s.started=Clock;SetState(s);}
   void PinPassengers(){for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;int row=i/5;var offset=new Vector3(row==0?-1.45f:1.45f,.06f,(i%5-2)*1.08f);a.transform.SetPositionAndRotation(cabin.TransformPoint(offset),cabin.rotation*Quaternion.Euler(0,row==0?90:-90,0));}}

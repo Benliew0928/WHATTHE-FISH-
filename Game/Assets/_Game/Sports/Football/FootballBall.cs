@@ -7,6 +7,7 @@ namespace WhatTheFish {
  [RequireComponent(typeof(Rigidbody),typeof(SphereCollider))]
  public sealed partial class FootballBall:MonoBehaviour {
   public static FootballBall Instance;
+  public event System.Action<Athlete,float> Kicked;
   [Header("Kick tuning (speed in metres/second)")]
   [Min(0)] public float minimumKickSpeed=12;
   [Min(0)] public float kickSpeed=22;
@@ -14,9 +15,8 @@ namespace WhatTheFish {
   [Min(.01f)] public float maximumKickDistance=1.35f;
   [Header("Ball physics")]
   [Min(0)] public float linearDamping=.05f,angularDamping=.05f,rollingDeceleration=2f;
-  [Header("Control (metres, degrees, metres/second)")]
-  [Min(.01f)] public float controlDistance=1.2f,footControlDistance=.55f,footOffset=.65f;
-  [Range(0,180)] public float controlAngle=55;
+  [Header("Control (metres, metres/second)")]
+  [Min(.01f)] public float controlDistance=1.2f,footOffset=.65f;
   [Min(0)] public float controlSpeed=6.2f;
   [Range(0,1)] public float dribbleMovementMultiplier=.75f,chargeMovementMultiplier=.6f;
   [Header("Slide contact")]
@@ -44,7 +44,8 @@ namespace WhatTheFish {
    }
    var offset=Body.position-(actor.transform.position+Vector3.up*WorldRadius);var horizontal=Vector3.ProjectOnPlane(offset,Vector3.up);
    if(!AbilityReachClear(actor,Body.position))return false;
-   return horizontal.magnitude<=controlDistance&&Vector3.ProjectOnPlane(Body.position-FootPosition(actor),Vector3.up).magnitude<=footControlDistance&&Mathf.Abs(offset.y)<=.5f&&Vector3.Angle(actor.transform.forward,horizontal)<=controlAngle&&Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).magnitude<=controlSpeed*FootballEffort.BallPace&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,Body.position,1<<8,QueryTriggerInteraction.Ignore);
+   // Receiving is radial around the player; facing only determines the attached foot position.
+   return horizontal.sqrMagnitude<=controlDistance*controlDistance&&Mathf.Abs(offset.y)<=.5f&&Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).magnitude<=controlSpeed*FootballEffort.BallPace&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,Body.position,1<<8,QueryTriggerInteraction.Ignore)&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,FootPosition(actor),1<<8,QueryTriggerInteraction.Ignore);
   }
   public void RefreshControl(Athlete candidate=null){
    if(!HasAuthority||PortalBusy)return;
@@ -343,7 +344,23 @@ namespace WhatTheFish {
    float maximum=Mathf.Max(0,kickSpeed),speed=Mathf.Lerp(Mathf.Clamp(minimumKickSpeed,0,maximum),maximum,Mathf.Clamp01(charge));
    ReleaseControl(actor);impulsePending=true;Body.WakeUp();
    // Subsequent callbacks see this velocity immediately instead of stacking deferred AddForce.
-   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));return true;
+   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));Kicked?.Invoke(actor,charge);return true;
+  }
+  public void SweepSlideContact(Athlete actor,Vector3 before,Vector3 after,float reach){
+   if(!HasAuthority||!Allowed||PortalBusy||!actor||CurrentController==actor)return;
+   var path=Vector3.ProjectOnPlane(after-before,Vector3.up);var offset=Vector3.ProjectOnPlane(Body.position-before,Vector3.up);
+   float t=path.sqrMagnitude>.000001f?Mathf.Clamp01(Vector3.Dot(offset,path)/path.sqrMagnitude):0;
+   var nearest=Vector3.Lerp(before,after,t);
+   if(Mathf.Abs(Body.position.y-nearest.y-WorldRadius)>.55f||(offset-path*t).sqrMagnitude>(reach+WorldRadius)*(reach+WorldRadius))return;
+   if(Physics.Linecast(before+Vector3.up*WorldRadius,Body.position,1<<8,QueryTriggerInteraction.Ignore))return;
+   if(CurrentController){
+    var slide=actor.GetComponent<FootballTackle>();
+    if(!FootballPressure.Opponents(actor,CurrentController)||!slide||!slide.ClaimBallContact())return;
+    // The attached ball can stop the sliding capsule before the body sweep
+    // reaches its carrier. A clear foot-level ball contact still wins the ball.
+    ReleaseFromTackle(CurrentController,actor,slide.Direction);return;
+   }
+   SlideContact(actor);
   }
   bool SlideContact(Athlete actor){
    if(!HasAuthority||Body.isKinematic||!Allowed||!actor||actor.Action!=FootballAction.Slide||!AbilityReachClear(actor,Body.position))return false;

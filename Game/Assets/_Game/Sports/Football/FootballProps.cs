@@ -37,7 +37,8 @@ namespace WhatTheFish {
   public bool PortalBusy=>Props.transferring;
   public uint PropBallRevision=>Props.portalSequence;
   public FootballTeam PropTeam(Athlete actor)=>OfflinePropPractice&&actor&&AppRoot.Instance&&actor==AppRoot.Instance.LocalAthlete?FootballTeam.A:FootballMatch.Instance?FootballMatch.Instance.TeamOf(actor):FootballTeam.None;
-  public Athlete PropActor(ulong id){if(!Online)return portalReceiver?portalReceiver:AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;foreach(var a in Athlete.Active)if(SportsAbilityRules.PlayerId(a)==id)return a;return null;}
+  ulong PropPlayerId(Athlete actor)=>Online?SportsAbilityRules.PlayerId(actor):FootballBots.Id(actor);
+  public Athlete PropActor(ulong id){foreach(var a in Athlete.Active)if(PropPlayerId(a)==id)return a;return null;}
   public bool PropLocked(Athlete actor)=>actor&&PortalBusy&&(HasAuthority?portalReceiver==actor:SportsAbilityRules.PlayerId(actor)==Props.receiver);
   bool PropEligible(Athlete actor)=>PropsLive&&actor&&actor.isActiveAndEnabled&&!actor.inTransit&&actor.capsule&&PropTeam(actor)!=FootballTeam.None;
   public SportsPropSlot PropSlot(Athlete actor){if(!actor)return default;var n=actor.GetComponent<NetworkAthlete>();if(!HasAuthority&&n&&n.IsSpawned)return n.FootballProp.Value;return footballSlots.TryGetValue(actor,out var s)?s:default;}
@@ -106,7 +107,7 @@ namespace WhatTheFish {
    else if(kind==SportsProp.Wall){if(!TryWallPlacement(actor,heading,out var wall,out _))return false;if(PropTeam(actor)==FootballTeam.B)footballProps.wallB=wall;else footballProps.wallA=wall;}
    else if(kind==SportsProp.Portal){
     var source=controller?FootPosition(controller):Body.position;ReleaseControl();portalReceiver=actor;actor.Motor.Reset(actor.transform.eulerAngles.y);actor.FootballEffort.Stop();
-    footballProps.transferring=true;footballProps.receiver=SportsAbilityRules.PlayerId(actor);footballProps.portalAt=PropClock;footballProps.portalSequence=++transferRevision;footballProps.portalOutcome=0;footballProps.source=source;footballProps.destination=FootPosition(actor);
+    footballProps.transferring=true;footballProps.receiver=PropPlayerId(actor);footballProps.portalAt=PropClock;footballProps.portalSequence=++transferRevision;footballProps.portalOutcome=0;footballProps.source=source;footballProps.destination=FootPosition(actor);
     SetPhysicsMode(false);Body.detectCollisions=false;Body.position=source;transform.position=source;abilitySweepReady=false;sequence++;FootballMatch.Instance.ResetAbilityGoalTracking();
    }else return false;
    FootballAudio.Emit(kind==SportsProp.Turbo?FootballSound.TurboStart:kind==SportsProp.Wall?FootballSound.WallPlace:FootballSound.PortalOpen,kind==SportsProp.Portal?footballProps.source:actor.transform.position);SyncFootballWalls();GiveFootballProp(actor,SportsProp.None);publishTimer=0;return true;
@@ -147,7 +148,7 @@ namespace WhatTheFish {
    foreach(var actor in Athlete.Active){if(!PropEligible(actor)||!actor.Grounded||actor.Airborne||actor.LoadingJump||PropLocked(actor)||actor.Action!=FootballAction.None)continue;
     var delta=actor.transform.position-point;float distance=Vector3.ProjectOnPlane(delta,Vector3.up).sqrMagnitude;
     if(Mathf.Abs(delta.y)>.5f||distance>best+.00001f||Physics.Linecast(actor.transform.position+Vector3.up*.5f,point+Vector3.up*.5f,1<<8,QueryTriggerInteraction.Ignore))continue;
-    if(winner&&Mathf.Abs(distance-best)<.00001f&&SportsAbilityRules.PlayerId(actor)>=SportsAbilityRules.PlayerId(winner))continue;winner=actor;best=distance;
+    if(winner&&Mathf.Abs(distance-best)<.00001f&&PropPlayerId(actor)>=PropPlayerId(winner))continue;winner=actor;best=distance;
    }
    if(winner){FootballAudio.Emit(FootballSound.Pickup,winner.transform.position,.9f);GiveFootballProp(winner,spawn.kind);spawn.kind=SportsProp.None;spawn.respawn=PropClock+SportsAbilityRules.RespawnSeconds;publishTimer=0;}
   }

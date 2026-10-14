@@ -86,7 +86,7 @@ namespace WhatTheFish {
   public float ShotPower {get{if(!ShotCharging)return 0;var ball=BasketballBall.Active;return BasketballBall.PowerAtPhase(ball&&ball.IsCharging(target)?ball.PresentedChargePhase:shotPhase+(BasketballMotion.Clock-shotSampled)/ShotSweepSeconds);}}
   public bool BeginShot(int source=int.MinValue){
    if(InputBlocked||ShotCharging||PassCharging||pendingPass||pendingPassBegin||!active||!target||!BasketballBall.Active||!BasketballBall.Active.CanShoot(target))return false;
-   shotHoop=BasketballBall.Active.SelectHoop(target.transform.position,yaw);if(!shotHoop)return false;
+   shotHoop=BasketballBall.Active.SelectHoop(target.transform.position,yaw,target);if(!shotHoop)return false;
    ShotCharging=true;ShotFinish=BasketballFinish.Shot;shotPhase=0;shotSampled=BasketballMotion.Clock;shotSource=source;pendingShotBegin=true;return true;
   }
   public void EndShot(int source=int.MinValue){if(!ShotCharging||source!=shotSource)return;pendingFinish=ShotFinish;var ball=BasketballBall.Active;pendingShotReleasedAt=ball&&ball.IsCharging(target)?ball.PresentedChargeTime:BasketballMotion.Clock;ShotCharging=false;pendingShoot=true;}

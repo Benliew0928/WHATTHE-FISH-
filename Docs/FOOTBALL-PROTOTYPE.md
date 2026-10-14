@@ -1,5 +1,15 @@
 # Football possession and physics — 2 October 2026
 
+## Current pickup and pace - 14 October 2026
+
+The current [pickup and movement rules](FOOTBALL-PACE-AND-PRESSURE.md) supersede
+the historical tuning below. Free balls attach within a **1.2 m radial area**
+regardless of facing; the old 55-degree cone and forward-foot proximity check
+are removed. Player locomotion is **70% of the 13 October pace** for humans and
+bots, with unchanged ball speed and a **1.5-second** tackle cooldown. Successful
+ball-only slide contacts can also dislodge possession. Rooms require matching
+**protocol 51** players.
+
 ## Position-aware goal net — 3 October 2026
 
 Both goals now render a subdivided net with independent back, side and sloping roof panels. [FootballNetSurface](../Game/Assets/_Game/Sports/Football/FootballNetSurface.cs) replaces only the visible authored strands at runtime; the editable stadium source, frame and existing collision panels remain intact. Contacts come from the authoritative ball's PhysX contact point, incoming relative velocity and surface normal, with a containment fallback for fast/clamped shots. Contact coordinates are transformed into the goal's own space, so both goal directions and island movement remain aligned.

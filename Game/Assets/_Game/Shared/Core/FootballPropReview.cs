@@ -31,7 +31,7 @@ namespace WhatTheFish {
    if(!ball.HasAuthority){yield return Guest();Finish();yield break;}
    peers=Athlete.Active.Where(a=>a.GetComponent<NetworkObject>()&&a.GetComponent<NetworkObject>().IsSpawned).OrderBy(a=>a.GetComponent<NetworkObject>().OwnerClientId).ToArray();
    if(Environment.GetCommandLineArgs().Contains("-explorePropsOnly")){yield return ExploreChecks();Finish();yield break;}
-   Check(peers.Length==0?ball.OfflinePropPractice&&ball.Props.live:!ball.Props.live&&ball.Props.pickup.kind==SportsProp.None,"solo Explore enables props; multiplayer practice waits for teams");Check(RoomService.ProtocolVersion==49,"combined ability/audio protocol 49");
+   Check(peers.Length==0?ball.OfflinePropPractice&&ball.Props.live:!ball.Props.live&&ball.Props.pickup.kind==SportsProp.None,"solo Explore enables props; multiplayer practice waits for teams");Check(NetworkManager.Singleton.NetworkConfig.ProtocolVersion==RoomService.ProtocolVersion,"matching ability protocol");
    bool started=peers.Length==0?match.StartTestMatch():match.StartMatch();Check(started,"formal match starts");
    var roster=peers.Length==0?new[]{actor}:peers;foreach(var a in roster){int i=Array.IndexOf(roster,a);Check(match.ChooseTeam(a,i%2==0?FootballTeam.A:FootballTeam.B,match.Snapshot.revision),"choose team "+i);}
    match.Selection.Complete(new System.Random(7));match.State.TeamsConfirmed(match.Now-4);match.State.Advance(match.Now);yield return new WaitForFixedUpdate();yield return null;
@@ -75,13 +75,20 @@ namespace WhatTheFish {
   }
   IEnumerator SpawnChecks(){
    ball.ResetFootballProps();yield return new WaitForFixedUpdate();yield return null;var visual=ball.GetComponent<FootballPropVisual>();
-   // Rendering captures can consume live server time. Sample each deliberate
-   // review digit against a fresh relative deadline; natural timing is checked
-   // separately by ExploreChecks. Do not alter the production spawn clock.
-   for(int n=5;n>=1;n--){ball.ReviewAdvanceFootballSpawn(ball.Props.pickup.respawn-(FootballBall.PropClock+n-.05));yield return new WaitForFixedUpdate();yield return new WaitForEndOfFrame();Check(ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None&&visual.CountdownNumber==n,"blue hologram digit "+n+" observed="+visual.CountdownNumber);if(n==5){
+   {
     var h=visual.Hologram;Check(h&&h.sharedMaterial,"hologram renderer is loaded");Check(Vector3.Distance(h.transform.lossyScale,Vector3.one*4.6f)<.001f,"countdown is four times original size");var m=h.sharedMaterial;var c=m.GetColor("_BaseColor");Check(m.GetFloat("_Surface")==0&&m.GetFloat("_ZWrite")==1&&c.a==1&&c.b>c.g*4&&c.g<.2f,"countdown is opaque dark blue with depth writing");
     var point=ball.PropAnchor(ball.Props.pickup.anchor);Capture("countdown",point+new Vector3(7,6,-10),point+Vector3.up*4);CaptureHud("countdown-stadium");
-   }ball.ReviewAdvanceFootballSpawn(1);yield return new WaitForFixedUpdate();yield return null;}
+   }
+   // Capture/readback can take over a second with four rendered players. Start
+   // a fresh real-time countdown after capture instead of subtracting seconds
+   // from a deadline that is also advancing during GPU readback.
+   ball.ResetFootballProps();yield return new WaitForFixedUpdate();yield return null;
+   int digits=0;double countdownEnd=ball.Props.pickup.respawn;float timeout=Time.realtimeSinceStartup+8;
+   while(ball.Props.pickup.countingDown&&Time.realtimeSinceStartup<timeout){
+    yield return new WaitForEndOfFrame();if(ball.Props.pickup.countingDown)digits|=1<<visual.CountdownNumber;
+   }
+   for(int n=5;n>=1;n--)Check((digits&(1<<n))!=0,"blue hologram digit "+n);
+   Check(FootballBall.PropClock>=countdownEnd,"countdown waits its full five seconds");
    Check(ball.Props.pickup.kind!=SportsProp.None&&!ball.Props.pickup.countingDown,"prop materializes only after countdown");
    var seen=ball.Props.pickup.kind;yield return null;Check(visual.PickupModel&&visual.PickupModel.GetComponent<Renderer>().bounds.size.magnitude>.6f,"floating prop has visible world dimensions");
    for(int i=0;i<8;i++){
@@ -97,14 +104,14 @@ namespace WhatTheFish {
   }
   IEnumerator TurboChecks(){
    Place(actor,0,-10);FreeBall(8,10);Check(Use(SportsProp.Turbo),"Turbo accepted");Check(ball.TurboRemaining(actor)>4.8f&&ball.TurboRemaining(actor)<=5,"Turbo duration is five seconds");
-   MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading()},9,"boosted walk");
-   MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading(),sprint=true},15.75f,"boosted sprint");
-   MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading(),dash=true},22.8375f,"boosted dash with existing stamina drain");Check(actor.FootballEffort.Stamina<95,"Turbo does not bypass dash stamina");
-   Place(actor,0,-8);yield return Acquire(actor);MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading()},6.75f,"boosted dribble penalty");
-   Place(actor,0,-8);yield return Acquire(actor);MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading(),charging=true},5.4f,"boosted charge penalty");
+   MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading()},6.3f,"boosted walk");
+   MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading(),sprint=true},11.025f,"boosted sprint");
+   MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading(),dash=true},15.98625f,"boosted dash with existing stamina drain");Check(actor.FootballEffort.Stamina<95,"Turbo does not bypass dash stamina");
+   Place(actor,0,-8);yield return Acquire(actor);MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading()},4.725f,"boosted dribble penalty");
+   Place(actor,0,-8);yield return Acquire(actor);MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading(),charging=true},3.78f,"boosted charge penalty");
    actor.ResetLocomotion();ball.ReviewGiveFootballProp(actor,SportsProp.Turbo);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision,match.Snapshot.revision,Heading())&&ball.PropSlot(actor).kind==SportsProp.Turbo,"active Turbo refuses stacking and keeps prop");
    if(peers.Length==4)Check(ball.TurboRemaining(peers[2])>0&&ball.TurboRemaining(peers[1])==0,"Turbo affects own team only");
-   yield return new WaitForSeconds(5.1f);FreeBall(8,10);MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading()},6,"normal pace restored after actual deadline");Check(ball.TurboRemaining(actor)==0,"Turbo expires");
+   yield return new WaitForSeconds(5.1f);FreeBall(8,10);MeasureSpeed(new PlayerCommand{move=Vector2.up,heading=Heading()},4.2f,"normal pace restored after actual deadline");Check(ball.TurboRemaining(actor)==0,"Turbo expires");
   }
   void MeasureSpeed(PlayerCommand c,float expected,string name){Place(actor,0,-12);for(int i=0;i<35;i++)actor.Simulate(c,.02f);Check(Mathf.Abs(actor.speed-expected)<.5f,name+" actual="+actor.speed.ToString("F2")+" expected="+expected);}
   IEnumerator PortalChecks(){
@@ -113,7 +120,10 @@ namespace WhatTheFish {
    Check(!actor.CanRequestJump&&!actor.TryTackle()&&!ball.TryKick(actor),"receiver cannot jump, tackle or kick during transit");var planted=actor.transform.position;actor.Simulate(new PlayerCommand{move=Vector2.up,dash=true},.1f);Check(Vector3.Distance(planted,actor.transform.position)<.03f,"receiver stays planted during transfer");
    yield return new WaitForSeconds(.2f);Capture("portal-source",ball.Props.source+(Camera.main.transform.position-ball.Props.source).normalized*3.2f,ball.Props.source);CaptureHud("portal-in-play");yield return new WaitForSeconds(.65f);Check(ball.CurrentController==actor&&!ball.PortalBusy&&Vector3.Distance(ball.Body.position,ball.FootPosition(actor))<.03f,"portal completes at feet with one controller");
    ball.ReviewGiveFootballProp(actor,SportsProp.Portal);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision,match.Snapshot.revision,Heading())&&ball.PropSlot(actor).kind==SportsProp.Portal,"self-steal rejected without spending");
-   FreeBall(4,8);Check(Use(SportsProp.Portal),"interruptible transfer starts");actor.inTransit=true;yield return new WaitForSeconds(.1f);actor.inTransit=false;Check(!ball.PortalBusy&&!ball.CurrentController&&!ball.Body.isKinematic&&ball.Body.detectCollisions,"departing receiver safely releases reserved ball");Check(ball.PropSlot(actor).kind==SportsProp.None,"interrupted accepted transfer remains consumed");
+   FreeBall(4,8);Check(Use(SportsProp.Portal),"interruptible transfer starts");actor.inTransit=true;yield return new WaitForSeconds(.1f);actor.inTransit=false;Check(match.State.Phase==FootballMatchPhase.Cancelled&&!ball.PortalBusy&&!ball.CurrentController&&ball.Body.isKinematic&&ball.Body.detectCollisions,"departing receiver cancels room match and clears reserved ball");Check(ball.PropSlot(actor).kind==SportsProp.None,"interrupted accepted transfer remains consumed");
+   match.ClearMatch();Check(peers.Length==0?match.StartTestMatch():match.StartMatch(),"fresh fixture match after departure cancellation");
+   var roster=peers.Length==0?new[]{actor}:peers;for(int i=0;i<roster.Length;i++)match.ChooseTeam(roster[i],i%2==0?FootballTeam.A:FootballTeam.B,match.Snapshot.revision);
+   match.Selection.Complete(new System.Random(7));match.State.TeamsConfirmed(match.Now-4);match.State.Advance(match.Now);yield return new WaitForFixedUpdate();yield return null;Check(match.Running,"ability fixture resumes in fresh live match");
    Place(actor,0,-8);FreeBall(4,8);Check(Use(SportsProp.Portal),"tackle interruption transfer starts");actor.GetComponent<FootballTackle>().ReceiveHit(Vector3.right);yield return new WaitForSeconds(.1f);Check(!ball.PortalBusy&&!ball.CurrentController,"hit during portal cannot attach ball to fallen receiver");actor.ResetLocomotion();
   }
   IEnumerator WallChecks(){

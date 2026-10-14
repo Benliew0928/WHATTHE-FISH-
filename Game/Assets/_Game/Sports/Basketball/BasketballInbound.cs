@@ -5,13 +5,13 @@ using UnityEngine;
 namespace WhatTheFish {
  public sealed partial class BasketballBall {
   public const float OutOfBoundsSeconds=2;
-  Athlete inboundActor;Vector3 boundaryPrevious,boundaryExit;bool boundarySampled;
+  Athlete inboundActor;Vector3 boundaryPrevious,boundaryExit;bool boundarySampled,inboundFlight;double inboundReleased;
   public bool InboundPending=>Authority?inboundActor&&holder==inboundActor:haveTarget&&target.inbound&&target.held;
   public bool IsInbound(Athlete actor)=>Playing&&actor&&InboundPending&&Holder==actor;
   public Vector3 InboundExit=>transform.parent?transform.parent.TransformPoint(boundaryExit):boundaryExit;
   Vector3 CourtPoint(Vector3 world)=>transform.parent?transform.parent.InverseTransformPoint(world):world;
   bool OutsidePaint(Vector3 point)=>Mathf.Abs(point.x)>PaintedCourtLimits.x||Mathf.Abs(point.z)>PaintedCourtLimits.y;
-  void ResetBoundaryTracking(){boundarySampled=false;outsideFor=0;inboundActor=null;}
+  void ResetBoundaryTracking(){boundarySampled=inboundFlight=false;outsideFor=0;inboundActor=null;}
   // This is a planar rules boundary, independent of the visual fabric's height.
   // Preserve the first crossing even if the ball rolls far away or lands on a stand.
   Vector3 ExitPoint(Vector3 from,Vector3 to){
@@ -28,19 +28,26 @@ namespace WhatTheFish {
   }
   bool StepBoundaryRecovery(){
    var point=CourtPoint(Body.position);bool outside=OutsidePaint(point);
+   // The legal launch begins beyond the line; allow it to enter the court.
+   if(inboundFlight){if(!outside)inboundFlight=false;else if(BasketballMotion.Clock-inboundReleased<.7)return true;else inboundFlight=false;}
+   if(outside&&BasketballMatch.Instance&&BasketballMatch.Instance.Competitive){boundaryExit=ExitPoint(boundarySampled?boundaryPrevious:point,point);return BasketballMatch.Instance.Boundary(boundaryExit);}
    if(outside){if(outsideFor==0){boundaryExit=ExitPoint(boundarySampled?boundaryPrevious:point,point);BasketballAudio.Emit(BasketballSound.Boundary,InboundExit);}outsideFor+=Time.fixedDeltaTime;}
    else outsideFor=0;
    boundaryPrevious=point;boundarySampled=true;looseFor+=Time.fixedDeltaTime;
    if(outsideFor>=OutOfBoundsSeconds){RecoverAtBoundary();return true;}
-   if(looseFor>=strandedTimeout&&Body.linearVelocity.sqrMagnitude<.25f&&point.y>pickupHeight){boundaryExit=ExitPoint(point,point);RecoverAtBoundary();return true;}
+   if(looseFor>=strandedTimeout&&Body.linearVelocity.sqrMagnitude<.25f&&point.y>pickupHeight){boundaryExit=ExitPoint(point,point);if(!BasketballMatch.Instance||!BasketballMatch.Instance.Boundary(boundaryExit,true))RecoverAtBoundary();return true;}
    return outside; // No collecting an out-of-bounds ball through the wall.
   }
   void RecoverAtBoundary(){
-   // Practice restart only. Team possession/throw-in ownership is a future mode rule.
+   // Practice restart only. Competitive restarts are handled by BasketballMatch.
    // A host testing alone uses the same rule as offline practice.
    var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;
    if(Connected&&NetworkManager.Singleton.ConnectedClients.Count!=1||!Eligible(actor)){ResetHome();return;}
-   var exit=boundaryExit;var limits=PaintedCourtLimits;
+   BeginInbound(actor,boundaryExit);
+  }
+  public bool BeginInbound(Athlete actor,Vector3 exit){
+   if(!Authority||!actor||!actor.capsule)return false;
+   var limits=PaintedCourtLimits;
    bool side=Mathf.Abs(exit.x)>=limits.x-.001f;
    var outward=side?new Vector3(Mathf.Sign(exit.x),0,0):new Vector3(0,0,Mathf.Sign(exit.z));
    float clearance=actor.capsule.radius+actor.capsule.skinWidth+.12f;
@@ -57,7 +64,7 @@ namespace WhatTheFish {
     if(Physics.CheckCapsule(center+Vector3.up*(height*.5f-radius),center-Vector3.up*(height*.5f-radius),radius,1<<8,QueryTriggerInteraction.Ignore))continue;
     found=true;break;
    }
-   if(!found)return; // Retry while retaining the original exit; do not lose the ball.
+   if(!found)return false; // Retry while retaining the original exit; do not lose the ball.
    ClearPossession();boundaryExit=exit;NewDefensePlay();inboundActor=actor;
    if(PlayerView.Instance&&PlayerView.Instance.target==actor)PlayerView.Instance.ClearMatchInput();
    var inward=transform.parent?transform.parent.TransformDirection(-outward):-outward;float heading=Quaternion.LookRotation(inward).eulerAngles.y;
@@ -67,7 +74,7 @@ namespace WhatTheFish {
    holder=actor;pendingAction=BasketballAction.None;dribblePhase=0;looseFor=outsideFor=0;
    Body.isKinematic=false;Body.linearVelocity=Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;
    actor.BasketballMotion.Begin(BasketballAction.PassCharge,heading,BasketballMotion.PassPocket);
-   Follow(actor);BasketballAudio.Emit(BasketballSound.Inbound,Body.position);reset++;sendAt=0;
+   Follow(actor);BasketballAudio.Emit(BasketballSound.Inbound,Body.position);reset++;sendAt=0;return true;
   }
   void StepInboundHold(){
    if(!IsInbound(holder))return;

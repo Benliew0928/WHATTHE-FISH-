@@ -30,9 +30,12 @@ namespace WhatTheFish {
  public static class MenuMatchRules {
   public static int Minutes {get; private set;} = 3;
   public static int OverrideMinutes {get; private set;}
+  public static int BasketballMinutes {get;private set;}=3;
+  static bool BasketballSelected=>AppRoot.Instance&&AppRoot.Instance.SelectedSport==SportId.Basketball;
   public static int Sanitize(int value) => value == 5 || value == 10 ? value : 3;
   public static int CurrentMinutes => AppRoot.Instance && AppRoot.Instance.rooms.Connected && NetworkAthlete.HostPlayer
-   ? Sanitize(NetworkAthlete.HostPlayer.FootballMinutes.Value) : Minutes;
+   ? Sanitize(BasketballSelected?NetworkAthlete.HostPlayer.BasketballMinutes.Value:NetworkAthlete.HostPlayer.FootballMinutes.Value) : BasketballSelected?BasketballMinutes:Minutes;
+  public static float BasketballSeconds=>60*Sanitize(AppRoot.Instance&&AppRoot.Instance.rooms.Connected&&NetworkAthlete.HostPlayer?NetworkAthlete.HostPlayer.BasketballMinutes.Value:BasketballMinutes);
   public static float RegulationSeconds(float authoredSeconds) {
    int value=AppRoot.Instance&&AppRoot.Instance.rooms.Connected&&NetworkAthlete.HostPlayer
     ? NetworkAthlete.HostPlayer.FootballMinutes.Value:OverrideMinutes;
@@ -41,9 +44,9 @@ namespace WhatTheFish {
   public static bool SetMinutes(int value) {
    var app = AppRoot.Instance;
    if (app && app.rooms.Connected && (!app.rooms.Host || app.Exploring)) return false;
-   Minutes = Sanitize(value); OverrideMinutes=Minutes;
+   if(BasketballSelected)BasketballMinutes=Sanitize(value);else {Minutes = Sanitize(value); OverrideMinutes=Minutes;}
    if (app && app.rooms.Host && NetworkAthlete.HostPlayer) {
-    NetworkAthlete.HostPlayer.FootballMinutes.Value = Minutes;
+    if(BasketballSelected)NetworkAthlete.HostPlayer.BasketballMinutes.Value=BasketballMinutes;else NetworkAthlete.HostPlayer.FootballMinutes.Value = Minutes;
     // A rule change requires everyone to acknowledge the new setup.
     foreach (var player in Object.FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None))
      if (player.IsSpawned && player.IsServer) player.Ready.Value = false;

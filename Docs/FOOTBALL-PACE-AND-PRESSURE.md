@@ -1,16 +1,30 @@
 # Football pace, stamina and pressure
 
-Football movement is 150% of the previous tuning. Walking is **6 m/s** and
-running **10.5 m/s**. Dribbling retains its 75% possession multiplier, giving
-**4.5 / 7.875 m/s**; charging moves at **3.6 m/s**. Other sports retain their
-movement tuning. Kick launch speeds are 140%: **16.8–30.8 m/s** depending on
-charge. Slide ball impulses and the controllable-ball speed threshold use the
-same ball multiplier. An attached ball follows its carrier exactly.
+Football locomotion is **70% of the previous pace**, equally for human players,
+room guests and bots. Walking is **4.2 m/s** and running **7.35 m/s**.
+Dribbling retains its 75% possession multiplier, giving **3.15 / 5.5125 m/s**;
+charging moves at **2.52 m/s**. Dash and Team Turbo multiply these reduced
+speeds once. Other sports, jump physics and tackle/hit impulses retain their
+tuning. Kick launch speeds remain **16.8-30.8 m/s** depending on charge.
+
+## Receiving
+
+A free, low ball attaches within **1.2 m horizontally around the player's
+body**, regardless of facing: front, sides and rear all work. Once received,
+it follows the player's forward foot. This applies to Explore Offline,
+Play vs AI and host-authoritative room matches.
+
+Walls, ability barriers, airborne players, active tackles/falls and high or
+fast balls still prevent acquisition. A nearby opponent cannot take an
+already-held ball by proximity alone. After kicking or being involved in a
+tackle release, that player must leave the pickup area and approach again;
+this prevents immediate recapture of their own release. Ball speed and this
+fresh-approach rule are unchanged.
 
 ## Controls
 
 Kick and Pressure now share one possession-aware action slot; Tackle appears
-only on defense. Dash remains available in either role. See the current
+only on defense. Dash remains available in either role. Dash is above-left and Tackle is lower-left of Pressure. Keep Pressure held and slide to Jump, Dash or Tackle; return to its centre to re-arm another action. Dash lasts while the finger stays on its path. Jump/tackle trigger once per entry, subject to their existing cooldowns. See the current
 [team controls and pocket maps](SPORTS-HUD.md). The approved
 [Touchline UI](FootballUI/implementation.md) places stamina directly below
 Dash and moves camera/guidance/leaving into the top-right settings gear.
@@ -20,7 +34,7 @@ The desktop keys below are testing shortcuts, not on-screen button captions.
 | --- | --- | --- | --- |
 | Run | Hold Shift | Push stick fully | Faster base movement, no stamina cost |
 | Dash | Hold left Ctrl while moving | Hold Dash while moving | Runs 45% faster than the new run speed |
-| Pressure | Hold Q | Hold Pressure | Faces a nearby carrier and contains movement toward the defender |
+| Pressure | Hold Q | Hold Pressure | Automatically follows and guards an opposing carrier |
 | Tackle | E | Tackle | Existing slide challenge and miss recovery |
 | Kick | Hold/release F | Hold/release Kick | Existing charge, aim and cancel gesture |
 
@@ -33,10 +47,9 @@ travel, blocked match actions, behind the camera and behind world geometry.
 
 A full bar contains 100 stamina. Moving dash consumes **32 per second**, so a
 continuous burst lasts approximately **3.1 seconds**. Dash speed is
-**15.225 m/s**, or **11.419 m/s** while dribbling. Stamina starts recovering
+**10.6575 m/s**, or **7.993125 m/s** while dribbling. Stamina starts recovering
 after **0.6 seconds** without dash, at **15 per second**, including during
-ordinary movement and pressure. Charging a kick, tackling, falling, jumping
-and blocked match phases cancel dash. Holding dash while stationary costs
+ordinary movement and pressure. Charging a kick, falling and blocked match phases cancel dash. Standalone dash also cancels during jumping/tackling; the pressure gesture can keep dash selected while its own action completes. Holding dash while stationary costs
 nothing. Exhaustion requires releasing dash and recovering at least **25**
 stamina before another burst; keeping it held cannot generate automatic bursts.
 Round resets and teleports restore a full bar.
@@ -48,18 +61,20 @@ practice, any other player can defend. During matches, teammates cannot
 pressure one another. It does not automatically steal possession: tackle and
 positioning remain the means of winning the ball.
 
-The defender strafes at **6.6 m/s** and faces the carrier when within six
-metres with a clear line of sight. Within **2.4 m**, a close, facing defender
-reduces the carrier's movement component toward them by up to **60%**.
-Sideways escape and retreat keep their speed. Only the strongest containment
-applies, so multiple defenders cannot stack a complete movement lock. Walls,
-height differences, facing away, losing possession and action recovery remove
-the effect. Pressure takes precedence over simultaneous dash input.
+Within **8 m** and clear line of sight, holding Pressure automatically follows
+the carrier, faces them and targets a **1.35 m** goal-side marking gap.
+The defender keeps **70%** of their already-reduced movement speed: ordinary
+chase is **5.145 m/s**. Within **2.4 m**, a close, facing defender slows the
+carrier's total horizontal movement by **25%**, including sideways movement,
+dash and Turbo. Multiple defenders do not stack this slowdown. Walls, height
+differences, facing away, losing possession and action recovery remove the
+effect. The captured pressure hold survives the defender's jump and tackle, and Dash may run simultaneously with Pressure using the same stamina costs and slowdown. A close (at most 1.55 m), clear pressure tackle faces the carrier and dislodges the ball through the normal hit/release rules. The tackle
+cooldown remains **1.5 seconds**, with the existing **0.8 m** contact sweep.
 
 The host computes movement, stamina and containment. Guests send only action
 intent and receive quantized stamina plus dash/pressure/exhaustion state.
-Protocol **46** requires matching Windows and Android peers. Input expiry,
-focus loss, pointer exit, match resets and travel clear held actions.
+Protocol **53** requires matching Windows and Android peers. Input expiry,
+focus loss, pointer release/cancellation, match resets and travel clear held actions. Leaving Pressure to reach a swipe target retains its owning finger; leaving the standalone Dash button still cancels Dash.
 
 The feature uses existing UI images, fonts and the character rig, with a
 smoothed defensive lean and faster distance-driven gait. It adds no imported
@@ -73,3 +88,7 @@ stored under ignored `Builds/FootballPaceQA/`. The script resolves its default
 player relative to its repository, independently of the caller's directory.
 See [release measurements](BUILD-SIZE.md), [packing audit](APK-SIZE-AUDIT.md)
 and [verification record](VERIFICATION.md) for the delivered build's results.
+
+Learned AI has been retired. The [programmed bots](PROGRAMMED-BOTS.md) use
+these same pickup and movement rules. Older checkpoints, reports and training
+tools are recoverable from local Legacy archives, not part of active gameplay.

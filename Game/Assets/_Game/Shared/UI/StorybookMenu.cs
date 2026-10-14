@@ -33,6 +33,7 @@ namespace WhatTheFish {
    if(page=="sports"||page=="sport")page="home";
    if(page=="custom"&&(!CanCustomize||!CanEdit))page=app.rooms.Connected?"room":"home";
    if(page=="room"&&!app.rooms.Connected)page="home";
+   if(page=="ai"&&((app.SelectedSport!=SportId.Football&&app.SelectedSport!=SportId.Basketball)||app.rooms.Connected))page="home";
    if(hasDraft&&page!="custom"){app.stadium?.Apply(app.CurrentAppearance);hasDraft=false;}
    if(Page=="custom"&&page!="custom")ReleasePreview();
    restoreFocus=page==Page&&EventSystem.current&&EventSystem.current.currentSelectedGameObject?EventSystem.current.currentSelectedGameObject.name:null;
@@ -47,6 +48,7 @@ namespace WhatTheFish {
    switch(page){
     case "create":CreateRoom();break;case "join":JoinRoom();break;case "room":Lobby();break;
     case "rules":Rules();break;case "custom":Customize();break;case "settings":Settings();break;
+    case "ai":AISetup();break;
     case "help":Help();break;case "character":AthleteCard();break;case "loading":Loading();break;
     default:Home();break;
    }
@@ -130,10 +132,12 @@ namespace WhatTheFish {
    Button(panel.transform,"Settings","Settings",246,24,214,57,Cream,()=>Go("settings"),CoveSymbol.Settings,23);
    Text(panel.transform,"Bring your people.",37,108,424,51,34,true);
    Text(panel.transform,"Pick an island, then jump in.",38,164,410,48,23,false,Muted);
-   var create=Button(panel.transform,"Create room","Create room",33,238,424,100,Coral,()=>Go("create"),CoveSymbol.People,33);busyButtons.Add(create);
-   var join=Button(panel.transform,"Join room","Join room",33,359,424,94,Mint,()=>Go("join"),CoveSymbol.Join,33);busyButtons.Add(join);
-   var explore=Button(panel.transform,"Explore offline","Explore offline",33,474,424,76,Sky,app.EnterOffline,CoveSymbol.Map,28);busyButtons.Add(explore);
-   Plate(panel.transform,"Divider",35,578,420,2,Line,0,0);
+   bool football=app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
+   var create=Button(panel.transform,"Create room","Create room",33,football?234:238,424,football?82:100,Coral,()=>Go("create"),CoveSymbol.People,33);busyButtons.Add(create);
+   var join=Button(panel.transform,"Join room","Join room",33,football?328:359,424,football?82:94,Mint,()=>Go("join"),CoveSymbol.Join,33);busyButtons.Add(join);
+   var explore=Button(panel.transform,"Explore offline","Explore offline",33,football?422:474,424,football?72:76,Sky,app.EnterOffline,CoveSymbol.Map,28);busyButtons.Add(explore);
+   if(football)busyButtons.Add(Button(panel.transform,"Play vs AI","Play vs bots",33,506,424,72,Gold,()=>Go("ai"),CoveSymbol.People,28));
+   else Plate(panel.transform,"Divider",35,578,420,2,Line,0,0);
    var custom=Button(panel.transform,"Customize venue","Customize\nvenue",33,602,206,83,Color.white,()=>Go("custom"),CoveSymbol.Paint,23);custom.interactable=CanCustomize;
    Button(panel.transform,"How to play","How to\nplay",254,602,203,83,Color.white,()=>Go("help"),CoveSymbol.Book,23);
    Badge(panel.transform,"Selected: "+app.SelectedSport,33,722,424,Gold);
@@ -141,6 +145,15 @@ namespace WhatTheFish {
    if(!string.IsNullOrEmpty(app.rooms.Error))NoticeLater(app.rooms.Error);
   }
   void NoticeLater(string value){StartCoroutine(DeferredNotice(value));}
+  void AISetup(){
+   int size=app.BotTeamSize;
+   Heading(app.SelectedSport+" vs bots",MenuMatchRules.CurrentMinutes+"-minute match");
+   Text(content,"Team size",204,210,1192,55,34,true,null,TextAnchor.MiddleCenter);
+   for(int value=2;value<=5;value++){int selected=value;busyButtons.Add(Button(content,"AI team size "+value,value+"v"+value,204+(value-2)*304,294,280,116,size==value?Gold:Color.white,()=>{app.BotTeamSize=selected;Rebuild();},CoveSymbol.None,34));}
+   Text(content,$"You + {size-1} bot teammates vs {size} bot opponents",204,440,1192,60,29,false,Ink,TextAnchor.MiddleCenter);
+   busyButtons.Add(Button(content,"Start AI match","Start match",558,554,484,104,Mint,app.PlayAgainstAI,CoveSymbol.People,33));
+   ActionButton("AI match conditions","Match length",600,701,400,76,Cream,()=>{returnFromRules="ai";draftMinutes=MenuMatchRules.CurrentMinutes;Go("rules");},CoveSymbol.Flag,26);
+  }
   IEnumerator DeferredNotice(string value){yield return null;Notice(value);}
   void IslandChoice(SportId sport,float x,float y) {
    var r=Rect(content,"Island - "+sport,x,y,444,306);var hit=r.gameObject.AddComponent<Image>();hit.color=new Color(1,1,1,.001f);
@@ -170,7 +183,7 @@ namespace WhatTheFish {
    message=Text(content,"",100,704,803,60,22,false,Muted);
    Footer("Your device hosts the room. Keep the game open while your friends play.");
   }
-  string RuleSummary()=>app.SelectedSport switch {SportId.Football=>MenuMatchRules.CurrentMinutes+" min match  •  1 min overtime  •  2–10 players",SportId.Basketball=>"Shared practice  •  2 and 3 point shots",SportId.Golf=>"5 holes  •  30-second finish countdown",_=>"3-minute rounds  •  Cup or Crew Catch  •  1–5 players"};
+  string RuleSummary()=>app.SelectedSport switch {SportId.Football=>MenuMatchRules.CurrentMinutes+" min match  •  1 min overtime  •  2–10 players",SportId.Basketball=>MenuMatchRules.CurrentMinutes+" min match  •  20-second shot clock  •  2–10 players",SportId.Golf=>"5 holes  •  30-second finish countdown",_=>"3-minute rounds  •  Cup or Crew Catch  •  1–5 players"};
   void JoinRoom() {
    Heading("Meet your crew","Ask your host for the room code, then hop aboard.");
    var p=Plate(content,"Join invitation",105,184,1390,600,Cream,35,2,true);
@@ -199,7 +212,7 @@ namespace WhatTheFish {
    var p=Plate(content,"Player board",62,182,930,604,Cream,32,2,true);
    roomCount=Text(p.transform,"Your crew",32,23,650,52,34,true);
    Badge(p.transform,app.rooms.Host?"You're the host":"Guest",693,30,201,Gold);
-   var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(n=>n.IsSpawned).OrderBy(n=>n.OwnerClientId).ToArray();
+   var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(n=>n.IsSpawned&&n.IsPlayerObject).OrderBy(n=>n.OwnerClientId).ToArray();
    for(int i=0;i<app.environments.Current.maxPlayers;i++){
     float x=30+(i%2)*448,y=101+(i/2)*83;var row=Plate(p.transform,"Player slot "+i,x,y,422,69,Color.white,16,1);row.borderColor=Line;
     if(i>=players.Length){Text(row.transform,"Waiting for a friend…",24,0,377,69,22,false,Muted);continue;}
@@ -222,23 +235,23 @@ namespace WhatTheFish {
    message=Text(content,"",318,807,991,57,21,false,Ink);
    Button(content,"Room help","How to play",1322,809,218,61,Cream,()=>Go("help"),CoveSymbol.Book,22);
   }
-  void ToggleReady(){if(app.rooms.busy)return;var own=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsSpawned&&p.IsOwner);if(own)own.ReadyRpc(!own.Ready.Value);}
+  void ToggleReady(){if(app.rooms.busy)return;var own=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsSpawned&&p.IsPlayerObject&&p.IsOwner);if(own)own.ReadyRpc(!own.Ready.Value);}
   void Rules() {
    Heading("Set the day up",CanEdit?"Choose your conditions before everyone readies up.":"The host chooses the conditions. Here is your room's setup.");
    var p=Plate(content,"Conditions",98,181,1404,605,Cream,34,2,true);
    Image(p.transform,"Sport preview",Island(app.SelectedSport),886,76,481,415);
    Text(p.transform,app.SelectedSport+" conditions",38,31,832,59,38,true);
-   if(app.SelectedSport==SportId.Football){
+   if(app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball){
     Text(p.transform,"Match length",40,122,804,40,27,true);
     var options=new[]{3,5,10};for(int i=0;i<3;i++){int value=options[i];var b=Button(p.transform,"Duration "+value,value+" minutes",40+i*258,181,238,75,draftMinutes==value?Gold:Color.white,()=>{draftMinutes=value;Rebuild();},CoveSymbol.None,26);b.interactable=CanEdit;}
     Detail(p.transform,"Teams","2–10 players in even teams, up to 5 v 5",40,300,788);
-    Detail(p.transform,"If it's a tie","One minute of overtime",40,382,788);
-    Detail(p.transform,"Before kickoff","10 seconds to pick teams; then a 3-second countdown",40,464,788);
+    Detail(p.transform,"If it's a tie","60 seconds: next score wins, then a draw. No shootouts.",40,382,788);
+    Detail(p.transform,app.SelectedSport==SportId.Basketball?"Possession":"Before kickoff",app.SelectedSport==SportId.Basketball?"20-second shot clock; 2-second restarts; no free throws.":"10 seconds to pick teams; 3-second kickoff. No penalties.",40,464,788);
    }else{
     var rows=app.SelectedSport==SportId.Basketball?new[]{("Play style","Shared practice. Dribble, shoot and pass."),("Points","2 inside the arc; 3 outside the arc."),("Shooting","Hold, aim for the sweet spot, then release."),("Free roam","Use Free roam to explore without the ball.")}:app.SelectedSport==SportId.Golf?new[]{("Course","Five holes; each player progresses independently."),("Finish","First finisher starts a shared 30-second countdown."),("Ranking","Fewest strokes, then the fastest finish time."),("Ball play","You can strike any active ball; only the hitter gains a stroke.")}:new[]{("Round & Cup","Highest score after 3 minutes. Cup combines three rounds."),("Fish & bonuses","Small / medium / large: 2 / 5 / 10 points. Wanted catch: +3 once per minute."),("Crew Catch","20 points per player, all three sizes and a catch from everyone."),("Ready together","Pick 2 skills, then Ready. Host starts; shore bags and treasure offer gear.")};
     for(int i=0;i<rows.Length;i++)Detail(p.transform,rows[i].Item1,rows[i].Item2,40,126+i*97,790);
    }
-   if(CanEdit&&app.SelectedSport==SportId.Football){
+   if(CanEdit&&(app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball)){
     ActionButton("Reset conditions","Reset",99,808,184,65,Cream,()=>{draftMinutes=3;Rebuild();});
     ActionButton("Save conditions","Save conditions",1166,808,335,65,Mint,()=>{MenuMatchRules.SetMinutes(draftMinutes);if(history.Count>0)history.Pop();app.Show(returnFromRules);NoticeLater("Conditions saved. Everyone can ready up.");},CoveSymbol.Check,26);
    }else ActionButton("Done conditions","Done",1265,808,237,65,Mint,Back,CoveSymbol.Check);
@@ -353,7 +366,7 @@ namespace WhatTheFish {
    if(Page=="rules"&&!CanEdit&&draftMinutes!=MenuMatchRules.CurrentMinutes&&!IsTransitioning){draftMinutes=MenuMatchRules.CurrentMinutes;Rebuild();return;}
    if(joinButton)joinButton.interactable=!busy&&roomCode&&ValidCode(roomCode.text);
    if(readyButton||startButton){
-    var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsSpawned).ToArray();
+    var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsSpawned&&p.IsPlayerObject).ToArray();
     if(players.Length!=playerRows.Count&&Page=="room"&&!IsTransitioning){Rebuild();return;}
     var own=players.FirstOrDefault(p=>p.IsOwner);bool all=players.Length>0&&players.All(p=>p.Ready.Value);
     if(readyButton)readyButton.interactable=!busy&&own;if(readyLabel)readyLabel.text=own&&own.Ready.Value?"Ready!  Tap to undo":"I'm ready";

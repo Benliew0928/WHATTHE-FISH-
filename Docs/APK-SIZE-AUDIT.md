@@ -1,5 +1,206 @@
 # APK size audit — measured release records
 
+## Lossless island packaging - 14 October 2026
+
+Actual APK at **16:38:21 Malaysia time**:
+**91,647,416 -> 73,446,145 bytes (-18,201,271)**. The 75 MB target is achieved
+with **1,553,855 bytes** remaining; hard-limit headroom is **26,553,855 bytes**.
+The AndroidSubmission gate and APK v2 signature verification pass. SHA-256:
+`B95490F5D3FFE178099FD8A26130CBE43B43D9F00172177858AC41EF3E4F54C9`.
+
+| Largest APK entries | Compressed bytes |
+| --- | ---: |
+| Embedded five-scene bundle | 41,773,982 |
+| IL2CPP ARM64 library | 11,878,577 |
+| Unity ARM64 library | 9,190,940 |
+| Managed metadata | 2,696,189 |
+| Golf cart serialized asset | 909,802 |
+| Unity default resources | 798,971 |
+| Java classes.dex | 351,740 |
+
+The primary saving is lossless scene compression with shared dependencies,
+followed by release Java minification. The earlier non-minified packaging trial
+was 75,452,618 bytes and missed the target; it was not accepted as delivery.
+All four islands, close props, cabin modules, animations and resource-loaded
+gameplay/UI assets remain. This is not an asset-quality reduction or deferred
+network download. The runtime cache is additional installed storage.
+
+Player-side serialized assets total **11,356,742 bytes**; bundle-side serialized
+assets total **146,871,897 bytes**. These are separate inventories, not APK size.
+`latest/bundle-packed-assets.csv`, `bundle-packed-layout.csv`, `bundle-meshes.csv`
+and `bundle-catalog.json` now accompany the normal player report. The asset ZIP
+estimator explicitly warns that its per-asset estimates exclude the LZMA bundle.
+
+UnityPy inspection of the actual opening APK, new embedded bundle and new
+player-side files matched **2,022 Mesh/Texture2D/AnimationClip objects in 823
+asset/type groups**, with **zero changed or missing groups**. Texture checks
+also hash image bytes. This covers assets under `Assets/_Game/Art/`; shader and
+material support is checked separately in rendered Windows tests. All 244
+compiled Windows gameplay source documents match current source. Platform
+builds only changed the desktop SSAO resource selection and generated Golf ball
+local object IDs; format-aware comparison confirms unchanged prefab semantics.
+
+Before/after package, source, payload, signature and validation evidence is in
+`Builds/PackagingQA/`; current release inventories are in `Builds/SizeAudit/latest/`.
+See [packaging mechanics and cache tradeoffs](CONTENT-PACKAGING.md) and
+[verification](VERIFICATION.md#lossless-island-packaging---14-october-2026).
+Physical Android quality/FPS, startup and WAN play remain unverified.
+
+## Basketball and football defense swipes - 14 October 2026
+
+Actual APK: **91,634,440 -> 91,647,416 bytes (+12,976)**, built at
+**15:48:33 Malaysia time**. Headroom: **8,352,584 bytes** to the strict
+100,000,000-byte boundary. Development-target excess: **16,647,416 bytes**.
+The AndroidSubmission budget gate and independent APK v2 signature check pass.
+SHA-256:
+`B5840A3429B40C6D251E2DC1CC9ABF33C4C907D6431E8A62551CAC1874D90B18`.
+
+There are **923 APK entries**, unchanged. Compressed payload grows **12,978
+bytes**, with two fewer bytes of container/signature overhead. The principal
+growth is IL2CPP **+11,789 bytes** and managed metadata **+1,114 bytes**.
+Largest compressed entries are IL2CPP **11,862,414**, Unity **9,114,056**,
+managed metadata **2,691,336** and `classes.dex` **2,353,575 bytes**.
+
+Serialized assets total **157,500,474 bytes (+112)**. The only changed asset
+row is the new development review script's 112-byte script record; its review
+implementation is guarded by `UNITY_EDITOR || DEVELOPMENT_BUILD`. Serialized
+sizes are not compressed APK sizes. All **1,788 packed mesh rows are unchanged**.
+The feature shares existing control artwork, fonts, meshes and animations and
+adds no packages. No texture/audio/mesh quality was reduced. The existing
+75 MB development reserve deficit remains open.
+
+All **242 compiled Windows gameplay source documents** still match current
+source after Android builds. Of 3,774 captured asset/package/settings inputs,
+only two differ: Android removes the desktop SSAO runtime resource selection
+and regenerates Golf ball prefab object IDs. Format-aware YAML comparison
+confirms identical Golf prefab semantics. The Android packing comparison
+confirms unchanged art and mesh rows.
+
+Current audit is in `Builds/SizeAudit/latest/`; before/after comparisons,
+signature evidence, source checks and Windows delivery manifests are retained
+under `Builds/BasketballControlQA/`. The prior APK/audit is recoverable from
+`Legacy/20261014-154454-549-sports-controls-before-android/`.
+See the [validation and archive record](VERIFICATION.md#basketball-and-football-defense-swipes---14-october-2026).
+Physical Android appearance/FPS and real WAN play remain unverified.
+
+## Programmed sports bots and training retirement - 14 October 2026
+
+Actual APK: **91,700,774 -> 91,634,440 bytes (-66,334)**, built at
+**14:09:27 Malaysia time**. Headroom: **8,365,560 bytes** to the strict
+100,000,000-byte boundary. Development-target excess: **16,634,440 bytes**.
+The enforced size gate and APK v2 signature check pass. SHA-256:
+`63B343211DD71D6F732CBFE0F4CC6F486C44E8A57532A6A7966722D408923F97`.
+
+Package entries fall from **1,030 to 923**. Compressed payload decreases
+**47,952 bytes**, with **18,382 fewer bytes** of container/signature overhead.
+Serialized assets decrease **134,416 bytes** to **157,500,362**, including
+**116,808 bytes** of inference resources across **482 removed audit rows**.
+These serialized measurements are not compressed APK bytes. All **1,788 mesh
+rows are unchanged**, and no gameplay art, texture or audio quality is reduced.
+
+Largest compressed entries: IL2CPP **11,850,625**, Unity **9,114,056**,
+managed metadata **2,690,222**, and `classes.dex` **2,353,575 bytes**.
+The programmed policies add small compiled code; removing the already-stripped
+learning dependencies produces a modest net saving. No trained model had been
+included in the opening APK. The development reserve deficit remains open.
+
+ML-Agents, Inference Engine, App UI, their build support, training launchers,
+datasets and model candidates are retired. Source/data recovery batches are
+listed in [programmed bots](PROGRAMMED-BOTS.md#retired-training).
+The prior APK/audit is preserved in
+`Legacy/20261014-140531-191-programmed-bots-before-android/`.
+Before/after APK entries, asset changes, canonical Golf prefab comparison and
+signature evidence are in `Builds/ProgrammedBotsQA/`. Current audit is in
+`Builds/SizeAudit/latest/`. No physical Android or WAN qualification was run.
+
+## Latest upstream Golf merge - 14 October 2026
+
+Fast-forwarded `main` from `ca979d5` to `3a0456d`, including `cb0b6e2`.
+Preserved local sports/AI work and protocol 51; combined both sides of release
+records and retained the incoming Golf ball prefab with coherent object IDs.
+
+Fresh AndroidSubmission at **01:16:04 Malaysia time** measures
+**90,518,282 -> 91,700,774 bytes (+1,182,492)**. Headroom to the strict
+100,000,000-byte boundary is **8,299,226 bytes**. The 75,000,000-byte
+development target remains exceeded by **16,700,774 bytes**. The enforced
+budget gate and independent APK v2 signature verification pass. SHA-256:
+`4977FBE6105F4E7ADFD0A2B250FFF127C6C6A9431F238E9BA53698FD04867E52`.
+
+Audit growth is primarily the five incoming flag textures (**315,116 serialized
+bytes each**) and refined flagpole/cloth meshes (**+121,668 / +51,044 bytes**).
+Serialized assets total **157,634,778 bytes**, up **1,789,632**; serialized
+measurements are not compressed APK bytes. The largest compressed entries are
+IL2CPP **11,837,737**, Unity **9,114,056**, managed metadata **2,689,497** and
+`classes.dex` **2,356,543 bytes**. Preserve shared masters and the existing
+mobile imports; the development reserve deficit remains unresolved.
+
+Current audit is in `Builds/SizeAudit/latest/`. Before-build APK/audit and asset
+comparison are retained in `Builds/PullMergeQA/`. This is a merged working-tree
+build, including pre-existing uncommitted work, not a clean commit snapshot.
+Physical Android appearance, FPS and WAN play are unverified. Concurrent
+BasketballBot/BasketballBots scripts added after both builds are excluded from
+this validated source snapshot; final readiness flags their missing metadata.
+
+## Football radial pickup and reduced pace - 14 October 2026
+
+Actual APK: **90,515,790 -> 90,518,282 bytes (+2,492)**, built
+**00:48:57 Malaysia time**. Headroom: **9,481,718 bytes** to the strict
+100,000,000-byte boundary. Development-target excess: **15,518,282 bytes**.
+SHA-256: `11E14C28F9E2065C473D62A0F7C52AB42F5671478693CFAF4794ABD3C2E70829`.
+APK v2 signature verification and enforced size checks pass.
+
+The package still has **1,026 entries**. Compressed payload changes **+2,493
+bytes**, with **-1 byte** of container/signature overhead. Total serialized
+assets stay **155,845,146 bytes**, and all **1,788 mesh rows** are unchanged.
+Largest compressed entries are IL2CPP **11,833,262**, Unity **9,112,780**,
+managed metadata **2,688,022** and `classes.dex` **2,356,543 bytes**. The small
+increase is code/metadata rather than new assets or dependencies; there is no
+avoidable art growth to remove within this gameplay change. The pre-existing
+development-budget deficit remains unresolved.
+
+Current audit: `Builds/SizeAudit/latest/`. Before/after assets, ZIP entries,
+hashes and signature evidence: `Builds/FootballControlQA/`. Prior Android
+output and audit are preserved in
+`Legacy/20261014-004605-879-football-control-android/`.
+
+## Training recovery and Fishing merge - 13 October 2026
+
+Actual APK: **90,384,954 -> 90,515,790 bytes (+130,836)**, built at
+**22:44:55 Malaysia time**. Headroom to the strict 100,000,000-byte boundary:
+**9,484,210 bytes**. Development-target excess: **15,515,790 bytes**.
+SHA-256: `CA05A8BB6FB2820FC5FA478408F49716F03718AB64F4857375E5BD92799B6B01`.
+APK v2 signature verification passes. The package has **1,026 entries**;
+compressed payload grows **130,152 bytes**, with another **684 bytes** of
+container/signature overhead. Serialized assets grow **132,000 bytes**.
+
+Incoming Fishing art changes are small delivery textures, not additional
+high-resolution masters in the package:
+
+| Packed source | Serialized byte delta |
+| --- | ---: |
+| `FishingUI/TutorialPanels.png` | +63,428 |
+| `FishingUI/GearIcons.png` | +45,960 |
+| `FishingUI/CounterFrame.png` | +30,928 |
+| `FishingUI/SteerIdle.png` | +17,160 |
+| `FishingUI/SteerLit.png` | +17,160 |
+| `FishingUI/LagoonFrame.png` | -30,248 |
+| `FishingUI/ReelButton.png` | -13,288 |
+
+These paths are under `Assets/_Game/Resources/`. Remaining growth is small
+layout/script metadata. All **1,788 mesh rows are unchanged**. Largest compressed
+entries remain IL2CPP **11,830,766**, Unity **9,112,780**, managed metadata
+**2,688,010** and `classes.dex` **2,356,543 bytes**. No candidate model or teacher
+data enters game assets. Training logic is excluded from the release player.
+The existing development-budget deficit remains unresolved; unrelated visual
+assets were not degraded to hide it.
+
+Current reports: `Builds/SizeAudit/latest/`. Before/after entries, packed assets,
+source hashes and independent signature check: `Builds/TrainingRepairQA/`.
+The pre-task APK and audit are preserved in
+`Legacy/20261013-222552-227-training-recovery-before-android/`.
+
+
+
 ## Reference flags and turf bounces - 13 October 2026 build limitation
 
 The measured opening APK is **90,334,226 bytes**. All three new AndroidSubmission
@@ -243,6 +444,266 @@ are absent. All **13 checked development review types** are absent from release
 IL2CPP metadata. Production fight controls are present and exercised separately
 in the Windows player. Fresh evidence: `Builds/FishingRedesign/Concepts-20261012-194347/ApkComparison/` and
 `Builds/SizeAudit/latest/`. Physical-phone qualification remains separate.
+## Teammate merge and training launcher (13 October 2026)
+
+Fresh signed APK: **90,384,954 bytes**, **+142,622** from the measured
+90,242,332-byte baseline. Headroom: **9,615,046 bytes**; development target
+exceeded by **15,384,954 bytes**.
+[Release and hash](BUILD-SIZE.md#teammate-merge-and-training-launcher-13-october-2026).
+
+ZIP entries increase **1,015 -> 1,022**. Compressed entries add **141,423 bytes**;
+container overhead adds **1,199 bytes**. Largest compressed entries are IL2CPP
+**11,786,432**, Unity **9,108,103**, metadata **2,681,794** and Java
+**2,356,543 bytes**. Serialized assets rise **155,540,258 -> 155,713,146 bytes
+(+172,888)**: six incoming Golf countdown images total **172,008**, Fishing
+layout **160**, and seven script records **720 bytes**. These are uncompressed
+serialized sizes, not APK bytes. All **1,788 mesh records** match. New Golf art
+master/delivery hashes match all **16** entries in its source audit.
+
+No new model weights, Python dependencies, meshes or audio enter the APK.
+Existing CPU-only inference shader filtering and editor-only App UI settings
+were preserved while retaining the teammate's portable output-path resolver.
+The incoming image growth is small and explained; the pre-existing 75 MB
+shortfall remains an optimization task, not an acceptable reserve to spend.
+
+All **234 compiled runtime source documents** match the final Windows player.
+After Android, **3,720/3,722 Game input hashes** match its source snapshot. Only
+URP resource registration and generated Golf prefab IDs/order differ; a
+format-aware comparison proves identical Golf objects/properties/references.
+Original IDs/order were restored after retaining the generated copy and proof.
+
+Evidence is in `Builds/MergeTrainingQA/` (`Before/`, APK/asset/entry comparisons,
+source proofs, art hashes, signature and device records) and
+`Builds/SizeAudit/latest/`. The pre-merge APK/audit is preserved in
+`Legacy/20261013-165930-274-teammate-merge-before-android/`. The first merged APK,
+superseded by the tested Golf fix, is in
+`Legacy/20261013-170706-721-merge-golf-validation-rebuild/`.
+Signature verification passes; no Android device was attached.
+
+## Football training checkpoint (13 October 2026)
+
+Fresh signed APK: **90,242,332 bytes**, **+90,830** from the measured
+90,151,502-byte baseline. Hard-boundary headroom: **9,757,668 bytes**;
+75 MB development target exceeded by **15,242,332 bytes**.
+[Release and hash](BUILD-SIZE.md#football-training-checkpoint-13-october-2026).
+
+ZIP entries increase **908 -> 1,015**. Compressed entries add **72,428 bytes**;
+container overhead adds **18,402 bytes**. Largest compressed entries: IL2CPP
+**11,740,737**, Unity **9,107,612**, metadata **2,675,153**, Java **2,356,543
+bytes**. The IL2CPP increase is 6,668 compressed bytes. Model weights and Python
+dependencies are not included in the APK.
+
+Serialized assets rise **155,405,854 -> 155,540,258 bytes (+134,404)**:
+103 residual inference shader records total 62,504 bytes, 523 package script
+records add 71,588, two project script records add 224, and generated performance
+test metadata adds 88. These are uncompressed serialized sizes, not APK bytes.
+All existing art/audio sizes and **1,788 mesh records** match the baseline.
+
+An initial attempt revealed expensive unused GPU inference shader compilation
+and was stopped before an APK was produced. The final build excludes all GPU
+inference shader variants, while retaining CPU inference for the development
+prototype. Transitive App UI is editor-only, with its player shader inclusion
+disabled. Shader/resource headers remain in the package; no package-cache
+files were deleted or vendored to hide their dependencies. Future GPU inference
+requires revisiting this deliberate filter. No game render shader, texture,
+mesh or audio quality was reduced. Existing development-budget debt remains.
+
+All **227 compiled runtime source documents** match the final Windows player.
+After Android, **3,690/3,692 Game input hashes** match the Windows snapshot;
+only URP resource registration and generated Golf prefab IDs/order differ.
+Format-aware comparison proves identical Golf objects/properties/references
+after ID normalization; original IDs/order were restored to avoid unrelated
+churn. The generated copy and proof are retained.
+
+Evidence: `Builds/FootballTrainingQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `Builds/SizeAudit/latest/`.
+The prior APK/audit is in
+`Legacy/20261013-160308-582-football-training-before-android/`;
+the abandoned GPU build log is in
+`Legacy/20261013-161136-171-football-unused-gpu-build/`.
+APK v2 signature verification passes; no Android device was available.
+
+## Casual football calibration (13 October 2026)
+
+Fresh signed APK: **90,151,502 bytes**, **940 bytes smaller** than the measured
+90,152,442-byte baseline. Hard-boundary headroom: **9,848,498 bytes**;
+75 MB development target exceeded by **15,151,502 bytes**.
+[Release and hash](BUILD-SIZE.md#casual-football-calibration-13-october-2026).
+
+There are still **908 ZIP entries**. Compressed entries decrease **936 bytes**;
+container overhead decreases **four bytes**. Largest compressed entries: IL2CPP
+**11,734,069**, Unity **9,107,612**, metadata **2,674,740**, Java **2,353,575
+bytes**. Native uncompressed code rises 656 bytes while its compressed entry
+shrinks 1,006 bytes; do not interpret compressed-size noise as an optimization.
+
+Serialized assets remain **155,405,854 bytes**. Every packed asset size and all
+**1,788 mesh records** match the baseline. The policy continues to share the
+same characters, animation, geometry, audio and abilities. No art quality,
+compression setting, ML dependency or model weight changed. Development-only
+calibration drills and reporting remain excluded from release. No avoidable
+bulk growth was found; the pre-existing 75 MB development-target gap is open.
+
+All **225 compiled runtime source documents** match the final Windows player.
+After Android, **3,682/3,684 Game inputs** match the Windows snapshot, with only
+URP resource registration and generated Golf prefab IDs/order differing.
+Format-aware comparison proves equivalent Golf objects, properties and
+references after ID normalization; original IDs/order were restored to avoid
+unrelated churn. The generated copy and proof are retained.
+
+Evidence: `Builds/FootballCasualQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json` (empty: no asset-size changes), `entry-comparison.json`,
+`apk-signature.txt`, `compiled-source.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `Builds/SizeAudit/latest/`.
+The previous release/audit is in
+`Legacy/20261013-144448-226-football-casual-before-android/`.
+APK v2 signature verification passes; no Android device was available.
+
+## Football defense and tactical AI (13 October 2026)
+
+Fresh signed APK: **90,152,442 bytes**, **+8,928** from the measured
+90,143,514-byte baseline. Hard-boundary headroom: **9,847,558 bytes**;
+75 MB development target exceeded by **15,152,442 bytes**.
+[Release and hash](BUILD-SIZE.md#football-defense-and-tactical-ai-13-october-2026).
+
+There are still **908 ZIP entries**. Compressed entries add **8,927 bytes**;
+container overhead adds **one byte**. Largest compressed entries: IL2CPP
+**11,735,075**, Unity **9,107,612**, metadata **2,674,698**, Java **2,353,575
+bytes**. The small increase is compiled gameplay code and metadata, not a
+content pack or training dependency.
+
+Serialized assets rise **155,405,750 -> 155,405,854 bytes (+104)**, entirely the
+new navigation script record. All existing art/audio sizes and **1,788 mesh
+records** match. The defense/tactical policy shares existing characters,
+animation, props, geometry and ball physics. Development-only review/training
+logic is excluded from release. No new model weights, duplicated delivery art
+or avoidable bulk growth were introduced. Existing asset quality/compression
+is unchanged; the pre-existing development-target gap remains unresolved.
+
+All **225 compiled runtime source documents** match the final tested Windows
+player. After Android, **3,682/3,684 Game input hashes** match the Windows
+snapshot; only generated Golf prefab IDs/order and URP resource registration
+differ. Format-aware prefab comparison proves identical objects, properties
+and references after normalizing local IDs. Original IDs/order were restored
+to avoid unrelated churn; the generated copy and comparison are retained.
+
+Evidence: `Builds/FootballDefenseAIQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `Builds/SizeAudit/latest/`.
+The prior APK/audit is preserved in
+`Legacy/20261013-130942-517-football-defense-ai-before-android/`.
+Intermediate releases were preserved in
+`Legacy/20261013-131957-747-football-defense-ai-intermediate/`,
+`Legacy/20261013-133124-728-football-defense-ai-final-fixture/` and
+`Legacy/20261013-133808-909-football-ai-loose-ball-recovery/`.
+The final APK was rebuilt after the loose-ball fix and final functional checks;
+an older APK is not being used to validate current code. APK v2 signature
+verification passes; no Android device was available.
+
+## Football AI foundation (13 October 2026)
+
+Fresh signed APK: **90,143,514 bytes**, **+16,972** from the measured
+90,126,542-byte baseline. Hard-boundary headroom: **9,856,486 bytes**;
+75 MB development target exceeded by **15,143,514 bytes**.
+[Release and hash](BUILD-SIZE.md#football-ai-foundation-13-october-2026).
+
+There are still **908 ZIP entries**. Compressed entries add **16,963 bytes**;
+container overhead adds **9 bytes**. Largest compressed entries: IL2CPP
+**11,726,704**, Unity **9,107,612**, metadata **2,674,156**, Java **2,353,575
+bytes**. Growth is small compiled gameplay code/metadata, not new content packs.
+
+Serialized assets rise **155,405,242 -> 155,405,750 bytes (+508)**: five new
+script records add 496 bytes; the network athlete record adds 12 bytes. Review
+and training-driver logic is excluded from release by the development/editor
+guard. All **1,788 mesh records** and existing texture, mesh, material and audio
+sizes match. Bots share existing characters, animation, controls and ball
+physics. No ML package, model weight, duplicated art or avoidable bulk growth
+was introduced. The pre-existing 75 MB development-target gap is not resolved.
+
+All **224 compiled runtime source documents** match the tested Windows player.
+After Android, **3,680/3,682 Game input hashes** match the Windows snapshot;
+only generated Golf prefab IDs/order and URP resource registration differ.
+Format-aware prefab comparison proves identical objects, properties and
+references after normalizing local IDs. Original IDs/order were restored to
+avoid unrelated churn; the generated copy and comparison are retained.
+
+Evidence: `Builds/FootballAIQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `Builds/SizeAudit/latest/`.
+Prior release/audit: `Legacy/20261013-001445-260-football-ai-before-android/`.
+An intermediate APK was rebuilt after a development-only menu fixture update:
+`Legacy/20261013-002059-797-football-ai-intermediate-apk/`.
+
+## Room matches (12 October 2026)
+
+Fresh signed APK: **90,126,542 bytes**, **+27,432** from the measured
+90,099,110-byte baseline. Hard-boundary headroom: **9,873,458 bytes**;
+75 MB development target exceeded by **15,126,542 bytes**.
+[Release and hash](BUILD-SIZE.md#room-matches-12-october-2026).
+
+There are still **908 ZIP entries**. Compressed entries increase **27,433 bytes**;
+container overhead decreases **1 byte**. Largest compressed entries: IL2CPP
+**11,712,289**, Unity **9,107,612**, metadata **2,672,024**, Java **2,353,575
+bytes**. Growth is small compiled gameplay/network code and metadata, not art.
+
+Serialized assets rise **155,404,594 -> 155,405,242 bytes (+648)**: six script
+records add 616 bytes; the network athlete prefab's serialized record adds 32.
+Review logic is excluded from release by `UNITY_EDITOR || DEVELOPMENT_BUILD`.
+All **1,788 imported mesh records**, and all existing textures, meshes, materials
+and audio asset sizes, match. Existing compression and visual quality are
+unchanged. No unexpected bulk growth or avoidable duplicated delivery assets
+were found; the pre-existing 75 MB target gap remains unresolved.
+
+All **219 compiled runtime source documents** match the tested Windows player.
+After Android, **3,668/3,670 Game input hashes** match the Windows snapshot;
+only generated Golf prefab IDs/order and URP resource registration differ.
+Format-aware prefab comparison proves identical objects, properties and
+references after normalizing local IDs. Original IDs/order were restored to
+avoid unrelated source churn; the generated copy and comparison are retained.
+
+Evidence: `Builds/RoomMatchQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `Builds/SizeAudit/latest/`.
+Prior release/audit:
+`Legacy/20261012-223506-586-room-match-before-android/`.
+
+## Hosted sports movement — 12 October 2026
+
+Fresh signed APK: **90,099,110 bytes**, **300 bytes smaller** than the measured
+90,099,410-byte baseline. Hard-boundary headroom: **9,900,890 bytes**;
+75 MB development target exceeded by **15,099,110 bytes**.
+[Release and hash](BUILD-SIZE.md#hosted-sports-movement--12-october-2026).
+
+There are still **908 ZIP entries**. Compressed entries shrink by **298 bytes**;
+container overhead shrinks by **2 bytes**. Largest compressed entries: IL2CPP
+**11,689,062**, Unity **9,107,612**, metadata **2,668,294**, Java **2,353,575
+bytes**. The small native/metadata differences accompany the movement code
+change; no unexpected bulk growth was found.
+
+Serialized assets rise **155,404,482 → 155,404,594 bytes (+112)**, entirely
+from the new review script's metadata. Review logic is guarded by
+`UNITY_EDITOR || DEVELOPMENT_BUILD`. Every existing packed asset size and all
+**1,788 imported mesh records** match. No new texture, mesh, material or audio
+resource is shipped for this fix; existing compression and visual quality are
+unchanged. The pre-existing development-target gap remains unresolved.
+
+All **213 compiled runtime documents** match the tested Windows source.
+After Android, **3,654/3,656 Game input hashes** match the Windows snapshot;
+only URP resource registration and generated Golf prefab IDs/order differ.
+Format-aware comparison proves the regenerated prefab has identical objects,
+properties and references after normalizing local IDs. Original IDs/order were
+restored to avoid unrelated source churn; the generated copy and proof are kept.
+
+Evidence: `Builds/NetworkMovementQA/Before/`, `apk-comparison.json`,
+`asset-comparison.json`, `entry-comparison.json`, `apk-signature.txt`,
+`compiled-source.json`, `source-comparison.json`,
+`generated-prefab-equivalence.json` and `Builds/SizeAudit/latest/`.
+Prior release/audit:
+`Legacy/20261012-183556-915-sports-movement-before-android/`.
 
 ## Combined Football, Basketball and Fishing release — 12 October 2026
 

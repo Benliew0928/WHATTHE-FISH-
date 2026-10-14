@@ -108,13 +108,13 @@ namespace WhatTheFish {
     Screen.SetResolution(resolution.x,resolution.y,false);yield return new WaitForSecondsRealtime(.6f);Canvas.ForceUpdateCanvases();Layout();yield return Capture("10-home-"+Screen.width+"x"+Screen.height+"-requested-"+resolution.x);
    }
    Click("Explore offline");Check(app.Menu.IsTransitioning,"island arrival fades and gates gameplay input");yield return new WaitForSecondsRealtime(.6f);Check(app.Exploring&&app.view.active&&!app.Menu.Content.gameObject.activeInHierarchy,"offline launch hands control to gameplay");
-   Check(FindObjectsByType<Button>(FindObjectsSortMode.None).Where(b=>b.gameObject.activeInHierarchy).All(b=>b.GetComponent<CoveFeedback>()||b.GetComponent<BasketballButtonFeedback>()),"gameplay buttons have press feedback");
+   Check(FindObjectsByType<Button>(FindObjectsSortMode.None).Where(b=>b.gameObject.activeInHierarchy).All(b=>b.GetComponent<CoveFeedback>()||b.GetComponent<BasketballButtonFeedback>()),"gameplay buttons have their current press feedback");
    Finish();
   }
   IEnumerator Network(){
    yield return Wait(()=>app.rooms.Connected&&NetworkAthlete.HostPlayer&&FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Count(p=>p.IsSpawned)==2,"two matching protocol players connected",55);yield return Settled();
    if(!app.rooms.Connected)yield break;
-   Check(RoomService.ProtocolVersion==49,"combined sports/fishing protocol 49");
+   Check(Unity.Netcode.NetworkManager.Singleton.NetworkConfig.ProtocolVersion==RoomService.ProtocolVersion,"room uses the current combined protocol");
    var own=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
    if(role=="host"){
     Check(MenuMatchRules.SetMinutes(5),"host can set conditions");

@@ -13,7 +13,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed class RoomService:MonoBehaviour,IRoomService {
-  public const ushort ProtocolVersion=49;
+  public const ushort ProtocolVersion=53;
   public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   public bool Host=>Connected&&NetworkManager.Singleton.IsHost;
@@ -47,7 +47,7 @@ namespace WhatTheFish {
   void Closed(){if(!leaving)_=ExitWithMessage("The host left. This room is now closed.");}
   public async Task SetExploring(bool value){await Run(async()=>{
    if(!Host)throw new InvalidOperationException("Only the host can start exploration.");
-   if(value&&FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Any(p=>!p.Ready.Value))throw new InvalidOperationException("Wait until every player is ready.");
+   if(value&&FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Any(p=>p.IsPlayerObject&&!p.Ready.Value))throw new InvalidOperationException("Wait until every player is ready.");
    if(Session!=null){Session.AsHost().IsLocked=value;await Session.AsHost().SavePropertiesAsync();}
    var world=NetworkAthlete.HostPlayer;if(world)world.Exploring.Value=value;
   });}

@@ -1,17 +1,17 @@
 using UnityEngine;
 
 namespace WhatTheFish {
- // Shared by the HUD, radar and basketball rules. Join IDs are stable on every
- // peer, so alternating basketball squads need no extra network messages.
+ // Shared team identity for the HUD, radar, defense and abilities.
  public static class SportsPossession {
   public static FootballTeam TeamOf(Athlete actor,SportId sport){
    if(!actor)return FootballTeam.None;
    if(sport==SportId.Football)return FootballMatch.Instance?FootballMatch.Instance.TeamOf(actor):FootballTeam.None;
    if(sport!=SportId.Basketball)return FootballTeam.None;
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.Instance.TeamOf(actor);
    var net=actor.GetComponent<NetworkAthlete>();
    return net&&net.IsSpawned?BasketballTeam(net.OwnerClientId):actor.BasketballPracticeTeam;
   }
-  public static FootballTeam BasketballTeam(ulong player)=>player%2==0?FootballTeam.A:FootballTeam.B;
+  public static FootballTeam BasketballTeam(ulong player)=>BasketballMatch.Instance&&BasketballMatch.Instance.Competitive?BasketballMatch.Instance.TeamOf(player):player%2==0?FootballTeam.A:FootballTeam.B;
   public static bool SameTeam(Athlete a,Athlete b,SportId sport){
    if(!a||!b)return false;if(a==b)return true;
    var team=TeamOf(a,sport);return team!=FootballTeam.None&&team==TeamOf(b,sport);

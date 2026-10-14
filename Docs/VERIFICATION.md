@@ -1,5 +1,932 @@
 # Verification records
 
+## Lossless island packaging - 14 October 2026
+
+The complete **324-file** Windows player built at **16:33:17 Malaysia time**
+is delivered in `Builds/WindowsFinal/`. Every file was hash-compared with the
+tested candidate before enriching `LATEST-BUILD.txt` with the delivery record.
+All **244 compiled gameplay source documents** still match current source.
+This includes preserved local sports work on `main` `3a0456d`, protocol **53**,
+not a clean commit snapshot. Android platform resource selection and generated
+Golf ball local IDs are the only post-Windows input differences; prefab semantics
+are verified unchanged.
+
+**3,917 passing assertions** are indexed with report hashes in
+`Builds/PackagingQA/verification.json`:
+
+| Check | Passing assertions |
+| --- | ---: |
+| Cold/warm boot and two four-island loading circuits | 104 |
+| Relocated player, space-containing path and corrupt-cache recovery | 104 |
+| Full four-leg offline Sky-Sail circuit | 54 |
+| Local host/guest shared travel and return | 18 |
+| Basketball/football programmed bots, 2v2-5v5 and full matches | 224 |
+| Both sports' room rules, offline and host/guest | 666 |
+| Rendered fishing gameplay and local multiplayer | 2,323 |
+| Golf offline and host/guest matches | 204 |
+| Golf rolling, materials, putts and charge distances | 121 |
+| Basketball local defense, directional passing and manual inbounds | 99 |
+
+The new packaging review also checks geometry, collision, shader support,
+nonblank images, missing-shader magenta and clean return from Fishing. Close
+props, cabin interiors, distant islands and all four sports were inspected in
+rendered captures. The package comparison matched **2,022 serialized mesh,
+texture and animation objects**, including texture image bytes, across **823
+asset/type groups**, with zero changed or missing groups. Existing high-quality
+masters and mobile delivery settings are unchanged.
+
+### Loading measurements
+
+Measurements use Unity's runtime clock on Windows, not full OS process startup.
+The baseline was the same working source with normal unpackaged scenes.
+
+| Windows measurement | Seconds |
+| --- | ---: |
+| Unpackaged baseline reaches home | 0.812 |
+| Packaged first launch reaches home | 21.401 |
+| First-launch cache preparation portion | 20.550 |
+| Packaged cached launch reaches home | 0.954 |
+| Cached preparation portion | 0.140 |
+| Subsequent detailed-island load/reload range | 0.251-0.518 |
+
+The desktop LZMA bundle is about 295 MB and produces a **482,965,362-byte**
+runtime cache. Android's embedded bundle is only **41,773,982 bytes**; these
+desktop timings and cache size must not be presented as Android measurements.
+The final sampled maximum startup frame gap was below 0.07 seconds, and sampled
+Unity allocations peaked at 176.5/195.9 MB in cold/warm review runs. These are
+not OS working-set measurements, device memory limits or FPS certification.
+Evidence: `MeasuredTiming/`, `BaselineTiming/`, `PortableRecovery/` and
+`ReleaseTravel/` under `Builds/PackagingQA/`.
+
+### Repairs and limits
+
+The packaging trial exposed a Fishing shutdown null mesh, now guarded without
+changing visible gameplay. The loading bar was changed to a plain UI rectangle
+after a missing built-in sprite diagnostic. The basketball bot action fixture
+now performs the manual inbound for the opponent it deliberately disables;
+full bot matches independently verify scoring and restarts through normal play.
+One heavily concurrent fishing network run failed the three-second favourites
+acknowledgement check; the isolated host/guest rerun passed **45/46** assertions.
+The failed trace is retained rather than hidden. No production fishing RPC or
+match logic was changed to make that test pass.
+
+Fresh AndroidSubmission at **16:38:21** is **73,446,145 bytes**, down from
+**91,647,416**, with **1,553,855 bytes** below the 75 MB target and **26,553,855**
+to the strict 100 MB boundary. Build enforcement, APK v2 signing, all five
+catalog scenes and separate bundle/player inventories pass. No physical Android
+device is attached: first-launch time, installed cache storage, appearance,
+touch controls, frame rate and WAN networking remain unqualified on phones.
+
+### Cleanup and publishing
+
+Reviewed superseded players and prototype caches were moved with recovery
+hashes, preserving QA reports, screenshots, baseline APK, current delivery,
+authoring masters, reusable tools and installed Unity/dependency caches:
+
+- `Legacy/20261014-162906-367-packaging-review-player/`: intermediate candidate.
+- `Legacy/20261014-163244-772-packaging-obsolete-players/`: 12 older test players.
+- `Legacy/20261014-164257-579-packaging-prototype-cleanup/`: unpackaged comparison,
+  relocated test copy and superseded temporary caches; copied recovery evidence
+  stays in `Builds/PackagingQA/PortableRecovery/`.
+- `Legacy/20261014-164354-934-packaging-windows-delivery/`: complete prior delivery.
+
+All **5,144 archived files (10,552,958,308 bytes)** were hash-verified after moving.
+Archival does not free disk space or rewrite Git history. Generated packaging
+scene copies and all build output are ignored, and normal builds regenerate the
+copies from versioned sources. Portable-path and `Check-TaskReady.ps1 -RequireApk`
+checks passed: **4,511 publishable files**, **689 LFS paths**, **139 pending
+add/remove operations**, including preserved earlier work. Nothing is staged,
+committed or pushed by this task.
+
+## Basketball and football defense swipes - 14 October 2026
+
+The complete **322-file** Windows player built at **15:43:27 Malaysia time**
+is delivered in `Builds/WindowsFinal/`. All copied files match the tested
+player's SHA-256 manifest. Matching peers use **protocol 53**. This includes
+preserved local sports work on `main` `3a0456d`, not a clean commit snapshot.
+
+Basketball uses a main Guard button, immediate left-swipe Steal without ending
+Guard, and an upward release-to-Block path. Guard auto-faces the carrier. Within
+1.25 m both players retain 70% speed; a guarded steal connects after windup,
+the ordinary-shot meter runs 30% faster, and scoring chance loses 20 percentage
+points. Passing follows camera heading, highlights the selected teammate in
+mint, and retains the lock within two player widths. Competitive scores and
+boundary exits require a stationary teammate pass from outside the line;
+opponents stay in their own half until release. Basketball now requires 2v2-5v5
+so an inbounder always has a teammate; host bot filling remains available.
+
+Football swaps Dash and Tackle positions. Pressure remains held while swiping
+to Dash, Jump or Tackle and back. Auto-follow/facing survives the defender's own
+actions, and a clear pressure tackle within 1.55 m dislodges the ball. Existing
+slowdown, stamina, cooldown and recovery numbers are retained.
+
+**2,617 selected assertions pass**:
+
+| Coverage | Assertions |
+| --- | ---: |
+| New basketball controls, offline portable run and host/guest | 191 |
+| Basketball touch UI, labels and screen layouts | 434 |
+| Football touch UI and persistent Pressure swipe paths | 745 |
+| Competitive match rules, offline and host/guest | 666 |
+| Basketball network passing regression | 33 |
+| Basketball defense, animation continuity and physical contacts | 246 |
+| Football effort, offline and host/guest | 162 |
+| Basketball bots, full match and host/guest | 140 |
+
+The new basketball fixture verifies both 30% movement multipliers, the actual
+host shot penalty, faster meter, repeated held steals, missed steals, Block,
+menu cancellation, camera selection/band exit, physical receipt at all four
+court edges, exact restart placement, paused clocks and centre restrictions.
+Peers receive the selected teammate and simultaneous guard/steal state.
+Football uses injected EventSystem touches to exercise Pressure through dash,
+jump/landing, missed tackle, return-to-centre and a repeated successful tackle.
+The unattended basketball bot match scored eight points with ten shots and
+20 passes, including manual restarts.
+
+Reviewed nonblank 844x390, 1280x720 and larger Windows captures of the controls,
+pass badge and inbounds. The final basketball UI checks include immediate
+caption/art agreement during possession changes. Earlier regressions exposed
+a pressure target lost during jumping, a one-frame defensive-caption delay,
+and test fixtures retaining disabled pickup or assuming the old inbounder;
+these are corrected. The final match fixture verifies actual teammate receipt
+before waiting for a shot-clock turnover.
+
+All **242 compiled gameplay source documents** match their captured source.
+The final control/UI/match suites ran on the delivered player. Earlier passing,
+defense, football and bot evidence remains applicable: the subsequent source
+changes are limited to immediate basketball slot refresh and two review
+fixtures. The exact four-file comparison is saved in
+`Builds/BasketballControlQA/test-source-provenance.json`.
+
+The new runner's default paths also pass from a copied checkout folder with
+spaces, launched from an unrelated temporary working directory. That is a
+portable execution check using a complete copied player, not a fresh Unity
+clone build. Current results, captures, manifests and source comparisons remain
+under `Builds/BasketballControlQA/` and the suite folders listed in its
+`verification.json`. See [APK measurements](BUILD-SIZE.md) and
+[packing audit](APK-SIZE-AUDIT.md) for the fresh AndroidSubmission build.
+Physical Android appearance/FPS and real WAN play remain unverified.
+
+The repository archive tool recorded recoverable hashes and paths for these
+ignored batches:
+
+- `Legacy/20261014-154149-011-sports-controls-candidate/`: earlier candidate.
+- `Legacy/20261014-154454-549-sports-controls-before-android/`: prior APK/audit.
+- `Legacy/20261014-154704-340-sports-controls-windows/`: prior Windows delivery.
+- `Legacy/20261014-154733-860-sports-controls-cleanup/`: superseded task players,
+  copied portability checkout, corrected failing fixtures and editing scripts.
+
+No active art was removed. No staging, commits, pushes or history changes were
+performed. Existing unrelated local work is preserved.
+
+## Programmed sports bots and training retirement - 14 October 2026
+
+Basketball now has programmed bots for recovery, dribbling, passing, charged
+shooting at assigned hoops, teammate spacing, marking, steals, jump blocks and
+collected props. Both sports offer Play vs bots for **2v2 through 5v5** and
+host-controlled room filling. Explore offline clears solo bots and formal rules.
+The existing casual football policy is retained. Room bot identities are
+sport-specific and distinct from human owners; matching peers use protocol 52.
+
+**1,692 selected assertions pass**:
+
+| Coverage | Assertions |
+| --- | ---: |
+| Programmed bots: offline sizes, actions, full matches, host/guest | 221 |
+| Competitive match rules: offline and host/guest | 603 |
+| Basketball passing: offline and host/guest | 64 |
+| Basketball defense and pose/contact checks | 246 |
+| Basketball props | 178 |
+| Football effort: offline and host/guest | 162 |
+| Football props | 162 |
+| Movement: both sports, offline/host, 30/60/120 FPS and two cameras | 56 |
+
+Basketball's final unattended match recorded **11 shots, 12 passes and 12
+points**. A separate fixture verifies a human physically receiving a bot's
+pass and a defender entering the actual guard pose. Football scored through
+normal kicks at **both assigned ends**, resumed both restarts, and completed
+an unattended match with one goal and 16 kicks. A goalless draw is also a valid
+football result; the full-match check does not require every match to score.
+Casual reaction delays and ordinary shot/movement rules apply.
+
+Reviewed nonblank **844x390** basketball setup and 5v5 gameplay captures;
+controls and the scoreboard fit. Room checks exercise live **2v2** host/guest
+play, ownership, carrier resolution, filling restrictions and clean bot removal.
+Offline checks cover all four supported sizes. This does not establish 5v5
+multi-device performance. A 55-assertion portability fixture ran the script's
+default paths from a checkout path with spaces and an unrelated temporary
+working directory, using a copied complete player; it is not a fresh Unity
+clone build claim.
+
+The pass regression exposed a test timing issue: the observer checked loft
+curvature before its bend snapshot finished converging. The review now waits
+for the same bend threshold that it asserts; the host/guest rerun passes.
+Earlier bot test fixtures placed the receiver behind a carrier after its
+normal dribble delay; the corrected fixture keeps the receiver ahead.
+Superseded diagnostic runs and the portable player fixture are preserved in
+`Legacy/20261014-141156-525-programmed-bots-superseded-qa/`.
+
+All **241** compiled gameplay source documents match the captured working
+source. Android's build changes only four recorded input hashes: the selected
+URP/graphics/quality settings and regenerated Golf prefab local IDs/order.
+Canonical Golf prefab semantics and all **1,788** packed mesh rows are unchanged.
+The complete **322-file** tested Windows player is promoted to
+`Builds/WindowsFinal/`, with every delivered hash verified and its build note
+updated. The reviewed prior 344-file player is recoverable from
+`Legacy/20261014-141202-880-programmed-bots-windows/`.
+
+The learned bridge, observations, external action injection, teacher/drill
+recording, launchers, models and datasets are archived; ML-Agents, Inference
+Engine and App UI are removed from the active graph. Source reference/GUID
+checks found no serialized dependencies on retired scripts. No learned runtime
+or model files appear in the delivered Windows player. Installed local tools
+and caches stay ignored per repository instructions. See
+[archive batches and active policy](PROGRAMMED-BOTS.md).
+
+Fresh signed AndroidSubmission: **91,634,440 bytes**, **66,334 fewer** than the
+opening package, with **8,365,560 bytes** to the 100 MB boundary. The **75 MB
+development target is still exceeded by 16,634,440 bytes**. Size and signature
+pass; physical phone appearance/FPS and real WAN play remain unverified.
+Evidence: `Builds/ProgrammedBotsQA/verification.json`, selected `Run-*` folders,
+suite logs, source proofs, manifest and APK comparisons. See
+[release measurement](BUILD-SIZE.md#programmed-sports-bots-and-training-retirement---14-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#programmed-sports-bots-and-training-retirement---14-october-2026).
+
+## Latest upstream Golf merge - 14 October 2026
+
+Fast-forward `ca979d5` -> `3a0456d` includes incoming trail, reference flags and
+ball-physics work while retaining existing local sports/AI changes. Five stash
+conflicts were resolved: both sets of release records are kept; protocol 51
+remains active; regenerated Golf ball object IDs follow the incoming prefab.
+The temporary recovery stash is retained, and all working changes are unstaged.
+
+Fresh AndroidSubmission succeeds at **91,700,774 bytes**, **+1,182,492** from
+90,518,282; hard-limit headroom **8,299,226 bytes**, development-target excess
+**16,700,774 bytes**. Independent APK v2 verification passes. Detailed audit
+and SHA-256 are in [build sizes](BUILD-SIZE.md#latest-upstream-golf-merge---14-october-2026).
+
+Complete freshly built Windows player: `Builds/WindowsFinal/`.
+Rendered ball physics **98 PASS**, rendered shots **188 PASS**, rendered offline
+match **158 PASS**. Captures checked show the gold flight trail, readable close
+hole-5 flag and putt guide. Headless offline match fails
+`ADDRESS_HANDS_EXTEND_FORWARD_CLEAR_OF_TORSO` in both the new player and the
+archived pre-merge player; this existing headless pose limitation is unresolved.
+The corresponding rendered match passes. No phone or WAN qualification.
+
+Evidence: `Builds/PullMergeQA/`; reports/captures:
+`Builds/GolfBallPhysicsQA/Run-20261014-011906/`,
+`Builds/GolfShotQA/Run-20261014-011906/`,
+`Builds/GolfMiniGameQA/Run-20261014-011945/` (rendered pass),
+`Builds/GolfMiniGameQA/Run-20261014-011906/` (headless failure),
+`Builds/GolfMiniGameQA/Run-20261014-012006/` (same baseline failure).
+Prior complete Windows player (344 files) archived with integrity manifest:
+`Legacy/20261014-011526-139-pull-merge-windows-baseline/`.
+The earlier `Legacy/20261014-011231-655-pull-merge-windows-baseline/` attempt
+recorded its inventory but moved nothing because the player was running.
+
+Initial readiness, portable paths, Git whitespace and LFS integrity checks pass.
+Final readiness fails because concurrent work added `BasketballBot.cs` and
+`BasketballBots.cs` without their Unity metadata after both builds. Those later
+additions are preserved and excluded from this validated source snapshot; their
+owning task must complete metadata and validation. Git publishing remains with
+the user.
+
+## Football radial pickup and reduced pace (14 October 2026)
+
+Free, low footballs now attach inside the existing **1.2 m horizontal radius**
+from any direction, without a facing cone or forward-foot proximity test.
+Receiving cannot cross a wall, including placing a rear pickup across a wall
+in front of the receiver. Existing fast/high-ball, grounded/action, ownership,
+ability barrier and fresh-approach exclusions remain. Football locomotion is
+**70% of its preceding pace** for human players, guests and bots. Walk/run/dash
+are **4.2 / 7.35 / 10.6575 m/s**; dribbling, charging, Turbo and pressure use
+the reduced base. Other sports, kick speed, jump physics and tackle/hit impulses
+are unchanged. Rooms require matching **protocol 51** builds.
+
+**803 assertions passed across 12 reports**:
+
+| Suite | Passed | Coverage |
+| --- | ---: | --- |
+| Football ball | 241 | 32 pickup bearing/facing combinations, outside radius, wall/high/airborne/fast-ball rejection, release/ownership, kick/collision/net/field-edge behavior |
+| Rendered effort | 134 | Actual speed, dash, charge, pressure/Turbo, tackles and touch controls |
+| Effort host/guest | 33 | Rear pickup replication, reduced guest speed, pressure and input expiry |
+| Rendered football abilities | 162 | Turbo speeds, portals, walls, inventory and match reset |
+| AI offline/host/guest | 177 | Equal human/bot walk/run/dash at 30/60/120 Hz, rear pickup, tactics, room authority and full matches |
+| Football/basketball movement | 56 | Offline/host, chase/stadium, 30/60/120 FPS: zero stationary movement frames, football 7.35 m/s, basketball unchanged at 7 m/s |
+
+Two 120-second 2v2 bot matches completed legally, **0-1** and **0-0**, with
+**27 kicks and 23 completed passes** combined. Longest stationary-ball spells
+were approximately **1.20 s** and **1.18 s**. This is a gameplay regression
+sample, not a human difficulty study or learned-policy qualification.
+Explore Offline remains bot-free; Play vs AI retains its separate 2v2-5v5
+selector and match rules.
+
+Evidence index: `Builds/FootballControlQA/verification.json`. It lists exact
+passing report paths. Rendered close/stadium views are retained under
+`Builds/FootballPaceQA/Reviews/Offline-20261014-003828-646/`. The initial ball
+diagnostic expected the former interception position rather than newly attached
+possession; the corrected test checks either a stopped physical interception
+or actual receiver ownership at the foot. A headless ability run cannot validate
+shader material state; the passing ability suite was rerun with Direct3D.
+
+Complete Windows player built **00:42:32 Malaysia time**, promoted to
+`Builds/WindowsFinal/`, with **344 files hash-verified** against the candidate.
+All **242 compiled C# documents** match the working source. The final rebuild
+only isolates the AI speed-test runners from other players; prior ball,
+effort and ability reports use identical gameplay source. No earlier delivery
+is presented as validation of new gameplay. Superseded delivery is preserved
+in `Legacy/20261014-004711-225-football-control-windows/`; prior Android output
+and audit in `Legacy/20261014-004605-879-football-control-android/`.
+
+Windows-to-Android source hashing reports **3,744/3,746 matching inputs**
+(excluding the generated performance-run record from mismatch detection).
+The two differing generated inputs are the URP global settings asset, whose
+post-Android content has no Git diff, and the Golf ball prefab. Structural
+inspection proves the prefab differs from the repository version only in
+local IDs and object ordering; its generated bytes are retained, not blindly
+reverted over pre-existing work. No gameplay script differs between builds.
+
+Training remains paused. No cloud spending, new learning run, candidate
+promotion or automatic bot replacement occurred. Existing checkpoints and
+reports are retained but need evaluation under the new mechanics before
+further training. No phone or real-WAN validation was available. See
+[pickup/pace rules](FOOTBALL-PACE-AND-PRESSURE.md) and the fresh
+[APK measurement](BUILD-SIZE.md#football-radial-pickup-and-reduced-pace---14-october-2026).
+
+## Training recovery and Fishing merge (13 October 2026)
+
+Fast-forwarded **9b4eb15 -> ca979d5** and merged the uncommitted sports/AI
+work back in. All **129 pre-merge local files remain**; the retained snapshot
+and per-file comparison are under `Builds/TrainingRepairQA/Before/` and
+`local-preservation.json`. Recovery stash
+`ada0af0a2681715bd794316aba57015a8f4f859d` is retained as a backup, not something
+to reapply. No feature commit or push was made; the index is left unstaged.
+Protocol **50** separates this combined contract from both branches' protocol 49.
+
+Selected gameplay checks pass **3,884 assertions across 24 reports**, with
+no targeted runtime exceptions in **21 logs**: room Basketball/Football,
+football AI, network Pressure, Fishing gameplay/polish, Golf cart and Storybook
+menus. The final Windows build passes **80 editor room-rule checks**. All
+**242 compiled runtime documents** match the final source snapshot. Comparison
+with the preceding player isolates the last two changed runtime files to
+development-only teacher recording/masking; normal gameplay did not change.
+The complete player is delivered together in `Builds/WindowsFinal/`.
+
+The trainer now mixes full-contract collection/shooting/passing/defense,
+uses bounded progress rewards, per-team outcome metrics and qualification
+gates before 2v2-5v5 advancement. Teacher state/action pairs are captured
+together rather than using the stock recorder's preceding action. The pinned
+MA-POCA cloning targets account for its clipped Gaussian action scale.
+**19 Python regression tests** cover pairing, final sample retention, invalid
+actions, action-scale round-trip, gates, deadline status and checkpoint selection.
+
+Teacher recording and ML-Agents loader round-trips pass for moving-defense
+skills and all four team sizes, including Team B. The 40 moving-skill teacher
+trials have **37 successes**, with zero rejected actions. Windows PowerShell
+launches a relocated script tree containing spaces from an unrelated working
+directory; the one-hour dry run and six real legacy evaluation trials pass.
+This is a script portability check with an explicit player override, not a
+fresh full Unity clone build. No cloud training or automatic bot replacement.
+
+The [archived first four-hour run review](PROGRAMMED-BOTS.md#retired-training) remains the
+baseline. New bounded pilot results are retained under
+`Builds/FootballTrainingQA/Plans/recovery-paired-pilot/`; the user-run one-hour
+experiment is not started by this task. See [training instructions](PROGRAMMED-BOTS.md#retired-training).
+
+The diagnostic pilot used **9:50 of a 12-minute cap**, including a deliberate
+pause/resume to repair action scaling; this is not a clean training benchmark.
+Its foundation gate scored collection **1/20**, shooting **15/20**, passing
+**16/20**, stationary defense **16/20**. Correctly, it did not advance.
+Independent moving-defense checks scored collection **3/20**, shooting
+**17/20**, passing **16/20**, defense **0/20**; corresponding random scores
+were **1/20, 8/20, 7/20, 0/20**. This establishes useful shooting/passing
+learning in narrow fixtures, not overall football competence. Recovery and
+moving defense remain blockers for learned-bot deployment.
+The four final 60-second 2v2 games were all losses, with **0-26 aggregate
+goals**. The selected ONNX is **186,592 bytes**. It is retained for diagnosis,
+not installed as a normal opponent.
+
+The complete prior Windows delivery is archived in
+`Legacy/20261013-225109-906-training-recovery-windows/`; superseded diagnostic
+players are in `Legacy/20261013-222154-004-training-recovery-old-player/` and
+`Legacy/20261013-225245-024-training-recovery-pre-pairing-player/`.
+Generated timer telemetry was moved to
+`Legacy/20261013-225508-085-training-recovery-player-telemetry/`. All **344
+remaining delivery files** match the validated player by SHA-256.
+
+Fresh signed AndroidSubmission: **90,515,790 bytes**, **9,484,210 bytes** to
+the hard boundary and **15,515,790 bytes over** the development target.
+[Size record](BUILD-SIZE.md#training-recovery-and-fishing-merge---13-october-2026).
+Generated Golf ball prefab IDs were normalized only after structural
+equivalence checks; source content and active references are unchanged.
+Physical-phone performance, touch/appearance, WAN/Relay and human AI difficulty
+remain unqualified. Desktop inference timing is not phone performance.
+
+
+## Teammate merge and training launcher (13 October 2026)
+
+`main` fast-forwarded **eaad195 -> 9b4eb15** and the uncommitted sports/AI work
+was restored and merged. All **105** pre-merge local files were preserved;
+94 matched ignoring line endings and 11 required combined content. Further
+changes in this phase are recorded below. Recovery stash
+`76abbc3c7987d41e8e19cab457c3c7853be40a18` remains as a backup, not something to
+apply again. No local feature commit or push was made. Teammate Golf/Fishing
+work and both sides' historical release records are retained. Protocol is
+**49** to cover the combined bot and Fishing Hook RPC contracts.
+
+Selected checks pass **3,835 assertions across 35 reports**, with no targeted
+runtime exceptions in **32 logs**, plus **80 editor pure room-rule checks**:
+room rules, 5v5 solo/host/guest AI, tackle/Pressure, movement, Golf matches/HUD/
+swing/cart/shot guide, Fishing gameplay/results and the Storybook menu. An
+extra cart check caught imported-axis foot rotation in the incoming pose; it
+now preserves the relaxed 22-degree pitch using the actual toe direction.
+The near-cup putt fixture now accounts for the teammate's square-root power
+mapping. Both initially failing suites pass: **221 cart + 188 shot checks**.
+Rendered Golf seated feet, Golf HUD and compact Fishing results were inspected.
+The teammate's normal five-second Golf startup countdown is bypassed by its
+existing diagnostic mode, so these probes do not qualify its normal visuals.
+
+The final Windows player was built **17:26:13 Malaysia time**. All **234
+compiled runtime documents** match final source. Initial merged checks used
+the preceding build: **228/233** source documents match final, with differences
+only in the subsequently tested Golf pose/probes and development trainer.
+Golf-fix validation has **231/233** unchanged documents; the remaining changes
+are development-only learning code. Later room/AI regressions have **233/234**
+identical documents; only the skill drill's programmed pass receiver changed.
+That final fixture passed 30 teacher trials: **10/10 shooting, 10/10 passing,
+8/10 defense**, **475 accepted actions, zero rejected**. These teacher results
+validate the fixture, not learned competence.
+
+The [live-progress local launcher](PROGRAMMED-BOTS.md#retired-training) has eight passing
+Python contract tests. A final-player short run trained/exported and loaded
+the same **186,592-byte** full-contract policy through mixed skills and **2v2,
+3v3, 4v4, 5v5**, then evaluated random/candidate skills and both team sides
+against casual bots (2v2 A and 5v5 B). All action masks were respected. The
+smoke candidate won neither match and passed none of its three skill trials;
+it is explicitly not a competent opponent. Stop-file pause and resume
+preserved the run and consumed budget. Two additional 25-second worker tests
+stopped at their time limits and saved at **1,024 -> 1,792 steps**, proving
+actual checkpoint resume. The four-hour run was **not** performed.
+
+The launcher dry run and a six-trial real evaluation also pass from copied
+scripts under a checkout path with spaces, launched from an unrelated working
+directory. Python/player locations were explicit overrides; this is not a full
+independent Unity clone build. Portable-path and final task-readiness checks
+pass, including the measured APK budget check. The index remains empty.
+
+Current evidence: `Builds/MergeTrainingQA/` (source preservation/comparisons,
+gameplay summary, `SkillTeacherFinal/`, `BudgetStop/`, APK audits and hashes),
+`Builds/FootballTrainingQA/Plans/skills-final-resume-smoke/`, its five model
+folders under `Models/`, and the timestamped gameplay runs listed in
+`gameplay-verification.json`. Earlier merged bridge and collection-model reload
+checks passed: ten agents, 176 observations and explicit reset; the prior
+diagnostic collection model reproduced **64/100** with no rejected actions.
+
+The complete **345-file** final player is delivered in `Builds/WindowsFinal/`,
+with data, DLLs, launchers, build note and all files hash-verified. The previous
+player is in `Legacy/20261013-173638-686-teammate-ai-merge-windows/`; intermediate
+players/APK were archived in the `merge-golf-validation-rebuild`,
+`training-skills-old-validated` and `merge-golf-tested-player` dated batches.
+The superseded intermediate player and first smoke weights are in
+`Legacy/20261013-173957-931-merge-training-intermediate/`; final smoke weights
+and all current validation evidence remain available.
+No active art was archived. The fresh signed APK is **90,384,954 bytes**;
+[size/headroom](BUILD-SIZE.md#teammate-merge-and-training-launcher-13-october-2026).
+
+User choices are settled: up to four hours locally, casual/fun first, normal
+mid-to-high-tier Android, no test phone yet. No further product decision is
+needed to run this football curriculum. Default bots remain programmed;
+learned-policy promotion and basketball learning are later gates. Phone
+touch/FPS/memory/heat/inference, WAN/Relay, human difficulty and broader skill
+generalization remain unverified. The 75 MB development-size shortfall and
+stadium-camera roof occlusion remain open.
+
+## Football training checkpoint (13 October 2026)
+
+Selectable solo and host-filled **2v2, 3v3, 4v4 and 5v5** are implemented,
+with larger-team support/cover spacing. The casual programmed bots remain the
+default. Explore Offline and the established match/defense rules are unchanged.
+The [training checkpoint](PROGRAMMED-BOTS.md#retired-training) describes the separate
+development-only bridge and learned collection prototype, not trained football
+tactics or basketball AI.
+
+The final Windows player was built **16:16:40 Malaysia time**. **1,503 gameplay
+assertions pass**, with no targeted diagnostics in **22 runtime logs**:
+
+- Final 5v5 compact 844x390 solo, host and guest: **215** assertions, including
+  four full 180-second regulation matches (seeds 1729-1732), physical shooting,
+  tactical/ability drills, capacity, authority, disconnects and cleanup.
+- Final 2v2 desktop 1600x900: **113**. Final headless solo/host/guest at 2v2,
+  3v3 and 4v4: **136, 138 and 140**. Menu checks click all size choices and
+  the actual Start button, verify the ten-player roster, then switch to 2v2.
+- Offline/network defense regression: **158**. Basketball and football room
+  rule regression: **603**. Also **80 editor pure-rule checks** pass.
+
+The four final 5v5 matches finish **1-1, 1-0, 1-0, 1-0** with **210 accepted
+kicks, 172 receptions, five physical goals, 115 body tackle hits and seven
+ability uses**. The longest stationary-ball interval is **1.16 seconds**.
+These are small automated samples, not proof of perceived human difficulty.
+Compact menu/live and desktop captures were inspected; ten athletes render,
+the field is nonblank, and the team-size controls fit without overlap.
+
+Defense/room regressions used the preceding player. Compiled-document
+comparison proves **223/227** documents identical to the final player; the
+four differences are the AI-review fixture, learner, trainer bridge and setup
+menu. Those changes were tested on the final player. All **227 final compiled
+runtime documents** match current source. Complete **345-file** delivery was
+copied and hash-verified into `Builds/WindowsFinal/`, including its updated note,
+data, DLLs and launchers. Protocol remains **48**, with no wire-format change.
+
+Final-player Python protocol tests pass with 4, 6, 8 and 10 agents, 176-float
+full-match observations, action masks and explicit resets. A 2,400-step 5v5
+bridge test also crosses two natural match endings, producing **20 terminal
+agent notifications**. It uses random legal actions, not a learned policy;
+its poor match activity is not offered as a gameplay-quality result.
+
+The selected learned collection model uses 8 projected floats and 2 movement
+actions. **1,000 teacher demonstrations + 20,004 PPO/behavioral-cloning steps**
+produce a **76,086-byte ONNX**, converted to **76,144 bytes** for Unity.
+Independent confirmation seed 23001 collects **72/100**, versus random **34/100**.
+Diagnostic seed 22001 collects **64/100**, versus **22/100**, reproduced by
+loading the model in the final player. The diagnostic seed was also used for
+an earlier rejected prototype, not treated as a wholly fresh holdout.
+The prototype is weaker than its teacher and does not pass, shoot or defend.
+
+Resume loads checkpoint step 20,004, preserves the original run logs and
+exports byte-identical ONNX (SHA-256
+`19FB001C6A2EEDC73CB2050027C93404F13E9694A4071E77CF3D931899EBE79B`).
+A copied evaluation script/model under a checkout path with spaces runs from
+an unrelated working directory. This exercises repository-root resolution and
+quoted model/player arguments; it is not a complete independent Unity clone
+build. No trained weights were added to active Unity assets or normal play.
+
+Evidence: final AI runs `Builds/FootballAIQA/Run-20261013-162202/`, `162631`,
+`163002`, `163126` and `163251`; defense reviews `Offline-20261013-161222-650`
+and `Local-20261013-161230-547` under `Builds/FootballPaceQA/Reviews/`;
+`Builds/RoomMatchQA/Run-20261013-161232/`; and `Builds/FootballTrainingQA/`
+for `gameplay-verification.json`, source/delivery hashes, `Selected/`,
+`Models/collect-relative-v1/`, `checkpoint-verification.json`, timestamped bridge
+results and evaluations. Final CPU inference/reload is in
+`Evaluation-20261013-162328/`; independent learned/random evaluations are
+`Evaluation-20261013-161436/` and `Evaluation-20261013-161448/`.
+
+The previous complete Windows player is archived in
+`Legacy/20261013-163533-565-football-training-windows/`. Superseded training
+players and rejected full-vector experiments are preserved in
+`Legacy/20261013-163602-919-football-training-superseded/`. No active game art
+was archived. The fresh signed APK is **90,242,332 bytes**;
+[size/headroom and audit](BUILD-SIZE.md#football-training-checkpoint-13-october-2026).
+Task-readiness and portable-path checks pass; nothing was staged, committed
+or pushed. No Android device was connected. Phone touch/FPS/inference cost,
+WAN/Relay and human playtesting remain unverified; the development-size
+shortfall and stadium-camera roof occlusion remain. Stop at this checkpoint
+before lengthy full-match learning or replacing the default opponent.
+
+## Casual football calibration (13 October 2026)
+
+The approved casual target is implemented as `football-casual-v1`, shared by
+solo teammates/opponents and host-controlled room bots. Attacking decisions
+remain 0.18-0.25 seconds; off-possession decisions are 0.28-0.38 seconds. Bots
+mark for at least 0.65 seconds before a slide, space slide commitments by
+3.5-4.25 seconds, and wait one second before a defensive Portal/Wall response
+to a new carrier. Close clear shots retain priority and existing aim accuracy.
+Human controls, 1.5-second tackle cooldown, Pressure penalties, room rules and
+Explore Offline are unchanged. No learned-AI training or trainer integration
+was started. [Current policy](PROGRAMMED-BOTS.md).
+
+Same-seed all-bot comparison, four 180-second regulation matches per policy
+(8119-8122), passes the limits in `Tools/Build/Compare-FootballCalibration.ps1`:
+
+| Metric | Previous tactical baseline | Final casual |
+| --- | ---: | ---: |
+| Total elapsed seconds, including restarts/overtime | 740.25 | 751.33 |
+| Accepted kicks | 96 | 143 |
+| Teammate receptions | 79 | 98 |
+| Physical goals | 7 | 8 |
+| Body tackle hits per elapsed minute | 20.83 | 12.06 |
+| Idle time / elapsed time | 13.39% | 7.27% |
+
+Body-hit rate is **42% lower**, without losing kicking, passing or scoring in
+this sample. Final scores are **0-0, 2-3, 1-1, 0-1**. This is a small automated
+comparison, not a human difficulty rating, target win rate or proof of fun.
+Receptions are not a pass-quality grade. Physics and pickup spawning are not
+bit-identical, even when tactical seeds match.
+
+Four additional full-length seeds **9041-9044**, not used to choose the tuning,
+finish **0-0, 1-0, 1-2, 1-2**: **108 kicks, 83 receptions, seven goals,
+158 body hits and six ability uses**. Idle time is 56.24/739.93 seconds;
+the longest stationary interval is **2.04 seconds**. All eight final long
+episodes retain at least six kicks, a reception and no 12-second stall.
+The short desktop smoke has one decisive result and three legal draws.
+
+The first casual candidate slowed all decisions and failed the kicking-rate
+comparison (49 kicks versus 96). It was rejected, not relabelled as passing.
+Restoring quicker team-in-possession decisions produced the final result.
+The comparison thresholds were not relaxed. Candidate evidence and source
+hashes are retained in `Legacy/20261013-143809-827-football-casual-first-calibration/`.
+
+Windows player built **14:39:38 Malaysia time**. **1,304 assertions pass**:
+AI desktop/offline/host/guest **158**, compact 844x390 **96**, two four-match
+long batches **284**, offline/network defense **163**, both sports' room rules
+**603**. **80 editor pure-rule checks** also pass. No targeted diagnostics in
+**15 current runtime logs**. Drills verify bounded decision cadence, quicker
+attack decisions, initial marking delay, post-tackle breathing room, re-entry
+reset, delayed abilities, legal physical tackles, mirrored physical shooting,
+passing/wall lanes, navigation, recovery, input expiry, authority and cleanup.
+
+Defense and room regressions ran on the first casual candidate. Their modules
+are source-identical in the final player: **223/225 compiled documents** match,
+with only the bot policy and its AI-review fixture changed afterward. All
+**225 final compiled documents** match current source. The complete **322-file**
+player was copied to `Builds/WindowsFinal/` and hash-checked before updating its
+delivery note. Protocol remains **48**; no network wire contract changed.
+
+Evidence: `Builds/FootballAIQA/Run-20261013-142743/` (previous-player baseline),
+`Run-20261013-144032/` (comparison), `Run-20261013-144043/` (desktop/network),
+`Run-20261013-144120/` (compact), `Run-20261013-144244/` (additional seeds),
+and `Builds/FootballCasualQA/` for the comparison, held-out summary, source
+proofs, full regression inventory and delivery hashes. The comparison script
+also produces an identical report from a copied checkout path containing
+spaces, launched from an unrelated working directory. Compact live and guest
+captures were inspected; gameplay assets/rendering were not changed.
+
+The previous complete Windows player is preserved in
+`Legacy/20261013-144659-671-football-casual-windows/`. The previous APK/audit is
+in `Legacy/20261013-144448-226-football-casual-before-android/`. Fresh release
+measurements are in [BUILD-SIZE.md](BUILD-SIZE.md#casual-football-calibration-13-october-2026).
+No staging, commit or push was performed.
+
+Limits remain: human playtesting for perceived difficulty, Android touch/FPS/
+runtime cost, WAN/Relay behavior, the pre-existing 75 MB development-size gap,
+and stadium-camera roof occlusion near some touchlines. Basketball AI is not
+part of this football calibration. Stop here before the learned-AI phase.
+
+## Football defense and tactical AI (13 October 2026)
+
+The [defense and tactical policy](PROGRAMMED-BOTS.md) add a 1.5-second
+tackle cooldown, a wider 0.8-metre sweep, ball-first steals and automatic
+goal-side Pressure. Defender movement is 70%; the guarded carrier's complete
+horizontal movement is 75%, including Dash/Turbo, without stacked penalties.
+Room rules, assigned goals, no free throws/penalty kicks and isolated Explore
+Offline remain intact. Football bots now pass, cover, use abilities and navigate
+walls through normal actions. They are programmed, not trained or skill-rated.
+
+Windows player built **13:40:14 Malaysia time**. **2,032 assertions pass** in
+the selected current evidence, with no targeted runtime diagnostics in **28 logs**:
+
+- AI desktop/offline/host/guest: **136**; compact 844x390: **77**; two headless
+  180-second regulation episodes: **90**. Includes legal physical shooting,
+  actual reacquisition after kick lockout, all four pitch edges, pass/shot lanes,
+  hunter/cover roles, wall detours, all three abilities, contract version 2,
+  input expiry, authority, guest replication, cancellation and cleanup.
+- Pressure/effort: **163**, offline and host/guest. Covers 30/60/120 Hz,
+  run/Dash/Turbo penalties, automatic follow, release, visibility/range, travel,
+  teammates, no stacking, touch controls and the exact tackle cooldown boundary.
+- Tackle regression: **210**; football match/ball physics: **535**; abilities:
+  **162**; both sports' room rules: **603**; hosted/offline movement: **56**.
+  The host remains 10.5 m/s in football and 7 m/s in basketball without stalls.
+
+**80 editor pure-rule checks** also pass. Reused non-AI regressions precede the
+last bot-policy and AI-review changes: **223/225 compiled source documents**
+are identical between candidates; only `FootballBot.cs` and `FootballAIReview.cs`
+differ. All **225 compiled documents** in the final player match current source.
+The complete **322-file** player was promoted to `Builds/WindowsFinal/` and
+hash-checked before updating its delivery note. Protocol **48** requires matching
+players. No phone performance claim is made from these Windows checks.
+
+Four 45-second desktop seeds (1729-1732) all draw 0-0: **27 accepted kicks,
+25 teammate receptions, 67 body tackle hits and one ability use**. Held-out
+180-second seeds 8119/8120 finish **1-0 and 0-0**, with **45 kicks, 30 receptions,
+117 body tackle hits and two ability uses** combined. Stationary-ball time is
+**22.52/181.74** and **20.12/190.66 seconds**. Idle time is counted only in live
+play; total elapsed time includes restarts and overtime where applicable.
+Receptions are not a tactical pass-quality rating.
+These are functional smoke metrics, not proof of strong attacking play.
+
+An intermediate long run scored but then left the ball stationary for **152.48
+seconds**. Trace inspection found loose-ball back-pass turning and a recovery
+condition that watched the player's speed. Both were corrected. A targeted
+physical lockout-recovery drill and a per-episode stationary-time ceiling of
+50% now cover that failure. Short matches permit legal draws; the full-length
+evaluation batch must demonstrate scoring. Seeded decisions do not imply
+bit-identical physics or ability-spawn randomness across runs/platforms.
+
+Current AI evidence: `Builds/FootballAIQA/Run-20261013-134105/`,
+`Run-20261013-134115/` and `Run-20261013-134156/`. The full regression inventory,
+runtime scan, compiled-source comparison and delivery hashes are under
+`Builds/FootballDefenseAIQA/`; its `verification.json` names every reused run.
+Compact live and default third-person defense captures were inspected. The
+stadium camera can still be occluded by the roof near some touchlines; that
+camera issue is not fixed in this phase. Android touch, visuals/FPS, AI runtime
+cost and WAN/Relay play still need device/network testing.
+
+Previous complete player: `Legacy/20261013-134402-136-football-defense-ai-windows/`.
+Superseded failures/benchmarks are preserved in
+`Legacy/20261013-133153-346-football-defense-ai-diagnostics/` and
+`Legacy/20261013-133808-909-football-ai-loose-ball-recovery/`, not counted as
+current passing validation. Superseded passing AI traces/captures are in
+`Legacy/20261013-134647-331-football-ai-superseded-passes/`.
+Earlier/intermediate APKs are retained in dated
+`football-defense-ai-before-android`, `football-defense-ai-intermediate` and
+`football-defense-ai-final-fixture` archive batches. No Git publishing actions
+were taken. Final APK measurements are recorded in
+[BUILD-SIZE.md](BUILD-SIZE.md#football-defense-and-tactical-ai-13-october-2026).
+Human difficulty calibration is the next gate, before claiming AI readiness.
+
+## Football AI foundation (13 October 2026)
+
+The [football AI foundation](PROGRAMMED-BOTS.md) adds a separate 2v2
+Play vs AI mode, host-added room bots, stable non-human identities and a
+development-only reset/observation/action/report interface. Explore Offline
+stays isolated. The policy is programmed, not trained, and is not yet a
+validated strong opponent. Basketball AI and ability-aware tactics are pending.
+
+Windows player built **00:19:28 Malaysia time**. **2,278 assertions pass** across
+the current evidence, including repeated pure rules in the room suite:
+
+- AI desktop host/guest/offline: **84**, covering balanced teams, identities,
+  normal-rule starts, physical play, server authority, replication, input expiry,
+  stale/duplicate action rejection, disconnect cancellation and lobby cleanup.
+- Compact 844x390 AI: **64**. Headless AI: **64**. A copied player/test script in
+  a path containing spaces, launched from an unrelated working directory:
+  **64**. Desktop and compact menu/live/result captures were inspected.
+- Existing room matches: **603**, covering both sports' competitive rules,
+  exploration separation, restarts, fixed goals, scoring and guest behavior.
+- Existing football match/physics: **533**, including physical kicks, goals,
+  formations, resets and network synchronization.
+- Menu regression: **848**, including button hit targets/text fitting, settings,
+  conditions, customization, offline entry and host/guest lobby controls.
+- Two-process Sky-Sail travel: **18**, covering the human group going to Golf
+  and back to Football, shared destination and restored network transforms.
+
+The four desktop evaluation seeds produce **18 accepted physical kicks,
+5 goals and 15 teammate receptions** across four completed short matches.
+One is a scoreless draw. These are smoke metrics, not evidence of strong
+opposition or a calibrated difficulty tier. The same seed choices aid repeatable
+tests, but cross-platform/frame-schedule bitwise physics determinism is not claimed.
+There is no trainer bridge, learned model or complete training pipeline yet.
+
+**80 editor pure-rule assertions** also pass. No targeted runtime diagnostics
+in **23 current logs**. Corrected early issues included the room prefab choice,
+pre-spawn network-variable writes and an endpoint-only movement fixture that
+mistook a post-goal reset for no movement. The older menu review expected the
+superseded feedback component/protocol; it now checks the current sports
+feedback and configured protocol. Superseded failures are archived, not counted.
+
+Current evidence: `Builds/FootballAIQA/Run-20261013-001930/`,
+`Run-20261013-001505/`, `Run-20261013-002159/`, `HeadlessPortable/`, `SkySail/`,
+`verification.json`, `runtime-diagnostics.json`, `build-20261013-001754.log`,
+`Builds/RoomMatchQA/Run-20261013-002035/`,
+`Builds/FootballMatchQA/Run-20261013-002209/` and
+`Builds/StorybookMenuQA/Run-20261013-002025/`.
+Compact/portable/travel tests precede the final development-only menu-review
+fixture update; gameplay source is unchanged between those candidates.
+
+The complete player is promoted to **Builds/WindowsFinal/**. All **322 files**
+match the tested candidate before updating the delivery note. All **224 compiled
+source documents** match. Of **3,682 Game inputs**, 3,680 match after Android;
+the generated prefab and URP-registration differences are recorded in the
+[size audit](APK-SIZE-AUDIT.md#football-ai-foundation-13-october-2026).
+Protocol **47** requires matching builds. Existing room rules and the hosted
+movement fix are retained.
+
+AndroidSubmission and independent APK v2 verification pass: **90,126,542 ->
+90,143,514 bytes (+16,972)**, with **9,856,486 bytes** hard-limit headroom.
+The 75 MB development target is exceeded by **15,143,514 bytes**. No Android
+device was connected: phone input/visuals/FPS, bot runtime cost and WAN/Relay
+latency remain unverified. Automated bot matches do not replace human playtests.
+
+Archives: `Legacy/20261013-001445-260-football-ai-before-android/`,
+`Legacy/20261013-002059-797-football-ai-intermediate-apk/`,
+`Legacy/20261013-002432-126-football-ai-diagnostics/` and
+`Legacy/20261013-002444-485-football-ai-windows/`.
+Intermediate passing regressions are archived in
+`Legacy/20261013-002634-395-football-ai-old-regressions/`.
+No staging, commit or push.
+
+## Room matches (12 October 2026)
+
+The [competitive rules phase](ROOM-MATCH-RULES.md) is implemented. Basketball
+has host-authoritative team scores, fixed attacking hoops, 3/5/10-minute matches,
+20-second possession clocks, protected two-second restarts, buzzer resolution
+and 60-second golden-basket overtime. Both sports reject ordinary offline match
+starts and immediately void an active match when a participant leaves. Explore
+Offline remains practice/exploration. No free throws, penalty kicks or AI added.
+
+Validated Windows player built **22:30:35 Malaysia time**. **1,492 assertions
+pass**, including repeated pure rules in each room-review process:
+
+- Room-match desktop suite: **603** across basketball/football offline isolation
+  and two-process host/guest runs. Covers fixed hoops at four headings per team,
+  locked teams, score ownership, physical 2/3-point baskets, possession/restart
+  clocks, boundary ownership, abilities/input gating, stale network requests,
+  overtime, disconnect cancellation, rematches and shared-travel rejection.
+- Compact 844x390 suite: **217**, with rendered selection, live play, score
+  restart, shot-clock turnover and final-result captures. Also inspected 1600x900
+  captures. The canvas, court and character visuals render without new overlaps.
+- Existing football match/physics suite: **533**, including whole-ball goals,
+  both resets, net impacts, overtime/results, formations and host/guest sync.
+- Existing basketball gameplay: **98 offline + 41 host/guest**, including physical
+  shots, catches, passes, input RPCs, boundary fencing, solo inbound, Free roam,
+  island exits/returns and practice-mode disconnect recovery.
+
+**80 pure assertions** also pass in the editor before building. No targeted
+runtime diagnostics in **17 logs**. Earlier failed fixtures were corrected:
+the boundary launch must be dynamic, and team choices must arrive before the
+selection deadline. Their superseded evidence is archived, not counted as passes.
+
+Current evidence:
+`Builds/RoomMatchQA/Run-20261012-223039/`,
+`Builds/RoomMatchQA/Run-20261012-223302/`,
+`Builds/RoomMatchQA/verification.json`, `runtime-diagnostics.json`,
+`pure-rules.txt`, `build-20261012-222912.log`,
+`Builds/FootballMatchQA/Run-20261012-223150/`,
+`Builds/BasketballGameplayQA/Offline-20261012-223226/` and
+`Builds/BasketballGameplayQA/Local-20261012-223335/`.
+
+The complete player was promoted to **Builds/WindowsFinal/**. All **322 files**
+matched the tested candidate before updating its delivery note; all 321 remaining
+runtime/support files retain those hashes. All **219 compiled source documents**
+match. Of **3,670 Game inputs**, 3,668 match after Android; only regenerated Golf
+prefab IDs/order and URP resource registration differ. Prefab equivalence passes,
+and original IDs/order were restored. Protocol **46** requires matching builds.
+
+AndroidSubmission and independent APK v2 verification pass: **90,099,110 ->
+90,126,542 bytes (+27,432)**, with **9,873,458 bytes** hard-limit headroom.
+The 75 MB development target is still exceeded by **15,126,542 bytes**.
+[Full size audit](APK-SIZE-AUDIT.md#room-matches-12-october-2026).
+No device was connected: actual Android touch, visuals, FPS and WAN/Relay latency
+remain unverified. Scene-level network runs used two players; balanced 2-10-player
+rosters are covered by pure rules, not full 10-device playtests. AI training still
+needs its environment/agent harness and evaluation; this phase does not claim a
+trained agent or training-ready pipeline.
+
+Archives: `Legacy/20261012-223506-586-room-match-before-android/`,
+`Legacy/20261012-224000-225-room-match-windows/` and
+`Legacy/20261012-224056-343-room-match-diagnostics/`.
+Existing hosted-movement changes were retained. No staging, commit or push.
+
+## Hosted sports movement — 12 October 2026
+
+The host's own football/basketball character now samples and simulates movement
+per rendered frame, matching Explore Offline. Previously the server-owned
+character stepped at 50 Hz without host-side NetworkTransform interpolation.
+At controlled 60 FPS the original player has 10 stationary movement frames per
+second; at 120 FPS it has 70. The fix has zero in both sports and both chase and
+stadium views at 30/60/120 FPS. Sprint pace stays 10.5 m/s in football and 7 m/s
+in basketball. [Diagnosis, scope and reproduction](NETWORK-MOVEMENT.md).
+
+The Windows player built at **18:05:21 Malaysia time** is delivered in
+`Builds/WindowsFinal/`, with all **322 files** verified against the tested
+candidate before updating its delivery note. **321 runtime/support files**
+remain identical. Start `WhatTheFish.exe` to host a room, or the existing
+Explore launchers for offline play. Protocol **45** is unchanged.
+
+| Suite | Passing assertions | Evidence under Builds |
+| --- | ---: | --- |
+| Final frame cadence, both sports, offline/host | 56 | `NetworkMovementQA/Fixed-20261012-180526/` |
+| Final football props, four rendered participants | 226 | `FootballPropsQA/Local-20261012-183226-340/` |
+| Final basketball props, three rendered participants | 275 | `BasketballPropsQA/Local-20261012-183332-318/` |
+| Final football audio, host/client | 65 | `FootballAudioQA/Local-20261012-183532-836/` |
+| Football stamina, Dash, pressure and input expiry | 26 | `FootballPaceQA/Reviews/Local-20261012-174622-656/` |
+| Basketball shots, passing, possession and reconnect | 41 | `BasketballGameplayQA/Local-20261012-174622/` |
+| Football match, scoring, collisions and ball physics | 533 | `FootballMatchQA/Run-20261012-175157/` |
+
+**622 assertions** pass on the final player, plus **600** on the initial fixed
+player. Compiled-source comparison confirms only three development review probes
+changed between those players; every gameplay source matches. No targeted
+runtime diagnostics occur in **23 retained logs**. The final source proof covers
+**213 compiled runtime documents**. Evidence and full delivery hashes are in
+`Builds/NetworkMovementQA/`.
+
+Early headless ability reviews failed shader/material assertions and were not
+counted as visual passes. A loaded rendered run also failed a possession fixture;
+the isolated run passed all possession and network-wall cases. Both original and
+fixed players exposed the accelerated countdown test's screenshot-timing issue.
+The final football review observes all five digits over real elapsed time;
+basketball samples the receiving hand before screenshot readback can outlast
+the portal. Both corrected rendered suites pass. Close countdown and portal
+captures were inspected. These corrections change review probes only.
+
+Frame-cadence measurements use Unity capture time, not an FPS benchmark.
+Local multi-process network checks do not establish real WAN latency behavior.
+Android size/signature and device limits are recorded in [BUILD-SIZE.md](BUILD-SIZE.md).
+
+Fresh AndroidSubmission measures **90,099,110 bytes (−300)**, with
+**9,900,890 bytes** to the hard boundary. It remains **15,099,110 bytes** above
+the development target. Budget and APK v2 signature checks pass. Existing
+packed assets and all 1,788 mesh records match. No phone is connected. After
+Android, 3,654/3,656 Game input hashes match the Windows snapshot; the two
+generated-state differences are documented in [the audit](APK-SIZE-AUDIT.md#hosted-sports-movement--12-october-2026).
+
+Reviewed superseded output and failed diagnostics are recoverable in:
+
+- `Legacy/20261012-174217-734-sports-movement-baseline/`
+- `Legacy/20261012-180046-302-sports-movement-initial/`
+- `Legacy/20261012-183518-994-sports-movement-diagnostics/`
+- `Legacy/20261012-183556-915-sports-movement-before-android/`
+- `Legacy/20261012-183650-909-sports-movement-windows/`
+
 ## Original reference flags and decaying turf bounces - 13 October 2026
 
 The prior flag redraw lost the supplied outline, rounded digits and fabric

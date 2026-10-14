@@ -1,7 +1,7 @@
 using System;
 namespace WhatTheFish {
  public enum FootballTeam:byte { None, A, B }
- public enum FootballMatchPhase:byte { Idle=0, Kickoff=1, Regulation=2, GoalReset=3, Overtime=5, Finished=6, TeamSelection=7 }
+ public enum FootballMatchPhase:byte { Idle=0, Kickoff=1, Regulation=2, GoalReset=3, Overtime=5, Finished=6, TeamSelection=7, Cancelled=8 }
  public enum FootballMatchResult:byte { None, TeamA, TeamB, Draw }
  // Pure rules and deadline clock. No scene, UI, animation or network dependency.
  public sealed class FootballMatchState {
@@ -12,6 +12,8 @@ namespace WhatTheFish {
   double remaining,regular,overtime,kickoff;
   public uint Revision {get;private set;}
   public bool Running=>Phase==FootballMatchPhase.Regulation||Phase==FootballMatchPhase.Overtime;
+  public bool Active=>Phase!=FootballMatchPhase.Idle&&Phase!=FootballMatchPhase.Finished&&Phase!=FootballMatchPhase.Cancelled;
+  public void Cancel(){if(!Active)return;Result=FootballMatchResult.None;Set(FootballMatchPhase.Cancelled,0);}
   public double Remaining(double now)=>Running||Phase==FootballMatchPhase.Kickoff||Phase==FootballMatchPhase.TeamSelection?Math.Max(0,Deadline-now):remaining;
   public void Start(double now,double regulation,double extra,double countdown){
    regular=Math.Max(.01,regulation);overtime=Math.Max(.01,extra);kickoff=Math.Max(0,countdown);

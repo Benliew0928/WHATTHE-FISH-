@@ -13,8 +13,8 @@ press, and updates its label and availability in the same frame.
 
 | Sport | Attack | Defense | Always available when gameplay permits |
 | --- | --- | --- | --- |
-| Football | Kick: hold, slide, release | Hold Pressure; tap Tackle | Dash; Jump; held ability; camera inside Settings |
-| Basketball | Shoot / Pass: hold, slide, release | Block; hold Guard / Steal | Jump / Jump Block; camera inside Settings |
+| Football | Kick: hold, slide, release | Hold Pressure; swipe to Dash, Jump or Tackle and back | Dash; Jump; held ability; camera inside Settings |
+| Basketball | Shoot / Pass: hold, slide, release | Main Guard: hold, swipe left to Steal, swipe up and release to Block | Jump / Jump Block; camera inside Settings |
 
 Attack teammates see offensive controls, but only the carrier can shoot or
 pass the ball. Defense controls stay visible for a loose ball, with actions
@@ -25,10 +25,21 @@ Football uses the match's confirmed teams. Before a match, unassigned practice
 players treat each other as opponents. Basketball automatically alternates
 squads A and B by stable network join ID. Teams do not reshuffle when someone
 leaves; all peers derive the same assignment. Solo practice remains playable.
-Basketball's shared practice score remains shared; a team score/timed basketball
-match is outside this HUD change. Teammates cannot steal, block or apply shot
-pressure to one another. Use matching **protocol 46** players, including the
+Basketball practice keeps a shared score; competitive rooms use timed team
+matches and teammate-only inbounds. Teammates cannot steal, block or apply shot
+pressure to one another. Use matching **protocol 53** players, including the
 [approved football audio](FOOTBALL-AUDIO.md).
+
+Basketball Steal occupies the lower-left Pass slot during defense. Sliding there
+from Guard performs a steal immediately and keeps Guard held; returning to the
+main button rearms the next swipe. The upper Block choice uses the attack's
+release-to-act gesture. Camera-directed passing marks the selected teammate
+with a mint **PASS TO** badge and keeps the lock within two player widths.
+
+Football Dash now occupies the upper-left slot, with Tackle at lower left.
+Pressure keeps facing and following the carrier while its captured finger slides
+to these buttons or Jump. Return to Pressure to rearm a repeated action without
+lifting. Existing action cooldowns and stamina rules still apply.
 
 Football's illustrated ability slot sits beside Dash. Tap (or press G) for
 Team Turbo or Portal Steal; Wall opens a placement preview with Place and Cancel.

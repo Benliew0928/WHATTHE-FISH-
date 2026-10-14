@@ -1,62 +1,43 @@
 # Basketball defense
 
-Basketball has automatically alternating squads, assigned by stable network
-join ID. The carrier's whole team sees attack controls; the other team sees
-defense. A loose or released ball shows defense by default. Only the carrier
-can shoot/pass, and teammates cannot steal, block or pressure one another.
-Released-shot/pass defense still excludes the originating squad. Free roam
-and travel clear inputs. Scoring remains shared court practice, without foul
-penalties or a timed team match. See [team controls and maps](SPORTS-HUD.md).
+Competitive basketball uses selected, balanced teams; warm-up uses join-ID squads.
+The carrier's team sees attacking controls. Only the carrier can shoot or pass.
+Teammates cannot steal, block or apply guard pressure to one another. See
+[match rules](ROOM-MATCH-RULES.md) and [team controls](SPORTS-HUD.md).
 
 ## Controls
 
-The button positions stay fixed and switch handlers with the possession role.
-
-| Slot | Attacking team | Defending team |
+| Touch slot | Attack | Defense |
 | --- | --- | --- |
-| Main / E | Hold Shoot; up Dunk, down Layup | Tap Block; drag up and release for Jump Block |
-| Secondary / Q | Hold Pass, aim with camera, release to throw | Hold Guard |
-| Third / F | Hidden | Hold Steal |
-| Jump / Space | Ordinary jump | Immediate Jump Block |
+| Main | Hold Shoot; finish/cancel paths | Hold Guard; swipe up and release for Block |
+| Lower-left secondary | Hold Pass | Steal; swipe here from Guard to steal immediately |
+| Jump | Jump | Jump Block |
 
-Shoot and Pass are hidden from defenders. Steal, Block and Guard are hidden
-from the attacking team. During loose-ball recovery the defensive slots remain
-visible; actions requiring possession are disabled. Movement, jump, camera
-and court controls remain available. A finger belongs to the action it started:
-role changes cancel that gesture, and releasing it cannot activate a newly
-assigned button. The block gesture tracks its original finger outside the
-button; guard and steal holds cancel when dragged off. Focus loss, disabled
-controls and session changes clear input.
-
-The [shared pass lane](BASKETBALL-PASSING.md) shows the carrier's direction and
-charge to all players. Defenders can use that cue to anticipate an interception.
+While holding Guard, returning to its centre re-arms the left steal path.
+A missed steal retains guard during its animation and recovery; another swipe
+can be made when the action is ready. Leaving the button does not release the
+captured finger. Lifting, cancellation, menus, focus loss, travel or a possession
+change clears it. Another finger cannot release it or fire its actions.
+Desktop retains Q for Guard, E for Block, F for Steal and Space for Jump Block.
 
 ## Guarding and pressure
 
-Hold Defend to face a nearby carrier and strafe at 3 m/s. Guarding overrides
-sprint, including a fully pushed touch stick. Turning is limited to 360 degrees
-per second, and facing assistance acquires the ball within 3.5 m and a forward
-area. The player controls every step; the guard never moves automatically
-toward an opponent. The camera remains independent. A block started while
-guarding commits the body's facing, so moving the camera does not pull the
-reach away from the opponent.
+Guard automatically turns toward the carrier, including from behind, at the
+existing 360 degrees per second. Camera aim and movement remain independent.
+Within **1.25 m** with clear sight and matching elevation, both players keep
+**70%** of their movement speed. Multiple defenders do not stack the slowdown.
+At that distance, a guarded steal succeeds after its windup if the opponent
+still has the ball and remains close; walls and other intervening bodies still
+block it. The ball becomes a physical loose ball with the existing pickup grace.
 
-Body collision contains a drive. It does not apply a proximity slowdown,
-teleport, possession transfer or automatic stun. Guarding pressure narrows the
-ordinary shot's green half-window from 0.045 toward 0.025. Pressure combines
-distance (0.75–2.4 m), facing and position between shooter and hoop. A wall
-removes pressure, and the strongest valid defender determines the capped
-value. Perfect 0.65 power remains accurate. The host records pressure alongside
-charge phase and freezes the tolerance at the bounded release timestamp; the
-replicated meter displays the authoritative pressure.
+A guarded ordinary shot's meter advances **30% faster**. The green band's width
+stays unchanged. The host subtracts **20 percentage points** from the usual
+range/timing chance and clamps at zero. It records pressure with charge history
+so a bounded release timestamp uses the pressure visible at that time. The
+replicated meter uses the same integrated phase and period.
 
-Release uses the timestamp of the displayed charge sample when that sample is
-ahead of the client's buffered server clock. The host still bounds the request
-to its own history; a visible green release is not evaluated at an older phase.
-
-Unblocked finishes retain their existing rules: a dunk uses its guaranteed
-trajectory and a layup uses the single 85% host roll. Neither receives a second
-random defense roll.
+Unblocked layups and dunks retain their existing finish rules. Unavailable
+finishes that fall back to a timed shot receive the normal guarded-shot penalty.
 
 ## Blocking and recovery
 
@@ -64,7 +45,7 @@ Standing Block loads and reaches through a committed point. Its active window
 is 0.12–0.30 s, with 0.70 s total recovery. The current dribble or incoming
 flight is predicted once at the start; the hand does not chase subsequent
 changes. Low dribbles may be knocked loose when exposed, while the body shields
-the far side. Steal retains its separate low swipe and dribble-exposure rules.
+the far side. Unguarded steals retain their low swipe and dribble-exposure rules.
 
 Jump Block has a 0.16 s load, a 2.20 m physical root rise, an active hand window
 of 0.22–0.88 s and a 1.30 s action. This stylized jump reaches the existing dunk

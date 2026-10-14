@@ -1,7 +1,7 @@
-param([int]$Port=7798,[switch]$Video)
+param([int]$Port=7798,[switch]$Video,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$player=Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'
+$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
 $out=Join-Path $root ('Builds/TackleQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $processes=@()

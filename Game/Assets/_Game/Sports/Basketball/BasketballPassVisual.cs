@@ -29,7 +29,7 @@ namespace WhatTheFish {
    if(!lane)Create();if(!lane)return;
    float power=ball.PassPower;Length=BasketballPassRules.Range(power,aim.bend);Vector3 origin=aim.origin;
    if(aim.phase<3){var actor=ball.Holder;if(!actor){lane.enabled=false;return;}origin=actor.transform.position+Quaternion.Euler(0,aim.heading,0)*BasketballMotion.PassReleasePoint(aim.bend);}
-   Path=BasketballPassPath.Create(origin,aim.heading,power,aim.bend,BasketballBall.PassFloor(origin));
+   Path=ball.PassPath(origin,aim,power);
    // A vertex on the real floor contact preserves the bounce corner.
    for(int i=0;i<=Steps;i++){
     float time=Path.Bounces?(i<=32?Path.bounceTime*i/32:Mathf.Lerp(Path.bounceTime,Path.duration,(i-32)/32f)):Path.duration*i/Steps;

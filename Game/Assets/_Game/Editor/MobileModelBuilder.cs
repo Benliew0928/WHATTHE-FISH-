@@ -83,6 +83,7 @@ public sealed class MobileModelBuildProcessor:IProcessSceneWithReport,IPreproces
  public int callbackOrder=>-8;
  public void OnPreprocessBuild(BuildReport report){if(report.summary.platform==BuildTarget.Android||Environment.GetEnvironmentVariable("WTF_MOBILE_PREVIEW")=="1")MobileModelBuilder.ValidateSources();}
  public void OnProcessScene(Scene scene,BuildReport report){
+  if(PackagedContentBuild.IsPrepared(scene))return;
   if(report!=null&&(report.summary.platform==BuildTarget.Android||Environment.GetEnvironmentVariable("WTF_MOBILE_PREVIEW")=="1"))MobileModelBuilder.Apply(scene);
  }
 }

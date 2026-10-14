@@ -7,8 +7,8 @@ namespace WhatTheFish {
  // Simulation is called by Athlete, on the server for network players.
  public sealed class FootballTackle:MonoBehaviour {
   public const float SlidePlayback=2f,SlideDuration=.85f/SlidePlayback,HitDuration=.8f,HitPlayback=.45f/HitDuration,SlideTravel=.55f/SlidePlayback,HitTravel=.24f;
-  public const float WhiffSpeedMultiplier=.4f;
-  [Min(0)] public float cooldown=4,whiffRecovery=.8f;
+  public const float WhiffSpeedMultiplier=.4f,ContactRadius=.8f;
+  [Min(0)] public float cooldown=1.5f,whiffRecovery=.8f;
   public FootballAction State {get;private set;}
   public float Elapsed {get;private set;}
   public float CooldownRemaining {get;private set;}
@@ -29,9 +29,18 @@ namespace WhatTheFish {
   public void ResetAction(){State=FootballAction.None;Elapsed=0;CooldownRemaining=0;RecoveryRemaining=0;MovementMultiplier=1;immunity=0;ballHit=false;hitThisSlide.Clear();Sequence++;}
   public bool TryStart(bool grounded){
    if(!Allowed||FootballBall.Instance&&FootballBall.Instance.PropLocked(athlete)||athlete.ControlsFootball||!grounded||State!=FootballAction.None||RecoveryRemaining>0||CooldownRemaining>0)return false;
-   direction=transform.forward;direction.y=0;direction.Normalize();
+   var carrier=athlete.FootballEffort.Pressuring?FootballPressure.CarrierFor(athlete):null;
+   direction=carrier?carrier.transform.position-transform.position:transform.forward;direction.y=0;direction.Normalize();
    State=FootballAction.Slide;Elapsed=0;CooldownRemaining=cooldown;Sequence++;ballHit=false;hitThisSlide.Clear();
-   athlete.Motor.Reset(transform.eulerAngles.y);return true;
+   float heading=direction.sqrMagnitude>.001f?Quaternion.LookRotation(direction).eulerAngles.y:transform.eulerAngles.y;
+   athlete.Motor.Reset(heading);
+   // Successful close pressure puts the carrier within a committed tackle's
+   // contact range even when its attached ball is on the far foot.
+   if(carrier&&FootballBall.Instance.HasAuthority&&Vector3.ProjectOnPlane(carrier.transform.position-transform.position,Vector3.up).magnitude<=FootballPressure.StandOff+.2f&&FootballPressure.Visible(athlete,carrier)){
+    var opponent=carrier.GetComponent<FootballTackle>();
+    if(opponent&&opponent.ReceiveHit(direction,athlete)){hitThisSlide.Add(opponent);HitsDealt++;}
+   }
+   return true;
   }
   public bool ReceiveHit(Vector3 push,Athlete tackler=null){
    if(!Allowed||athlete.inTransit||athlete.Airborne||immunity>0)return false;
@@ -77,7 +86,7 @@ namespace WhatTheFish {
    int count;
    // Grow only when crowded: a full non-alloc buffer may have omitted players.
    // There is no per-slide victim limit, and the sweep covers actual travel only.
-   while((count=Physics.OverlapCapsuleNonAlloc(before+Vector3.up*.5f,after+Vector3.up*.5f,.48f,contacts,~0,QueryTriggerInteraction.Ignore))==contacts.Length)
+   while((count=Physics.OverlapCapsuleNonAlloc(before+Vector3.up*.5f,after+Vector3.up*.5f,ContactRadius,contacts,~0,QueryTriggerInteraction.Ignore))==contacts.Length)
     System.Array.Resize(ref contacts,contacts.Length*2);
    Vector3 slideDirection=direction;
    for(int i=0;i<count;i++){
@@ -93,6 +102,7 @@ namespace WhatTheFish {
      break;
     }
    }
+   if(State==FootballAction.Slide)FootballBall.Instance?.SweepSlideContact(athlete,before,after,ContactRadius);
   }
  }
 }

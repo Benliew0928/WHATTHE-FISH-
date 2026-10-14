@@ -99,7 +99,11 @@ public static class MobilePackageCleanup {
 public sealed class AndroidSceneDependencies : IProcessSceneWithReport {
  public int callbackOrder=>0;
  public void OnProcessScene(Scene scene,BuildReport report){
+  if(PackagedContentBuild.IsPrepared(scene))return;
   if(report==null||report.summary.platform!=BuildTarget.Android)return;
+  Apply(scene);
+ }
+ public static void Apply(Scene scene){
   foreach(var root in scene.GetRootGameObjects()){
    foreach(var coast in root.GetComponentsInChildren<CoastalEnvironment>(true))coast.exteriorContactShading=null;
    foreach(var island in root.GetComponentsInChildren<RefinedIslandEnvironment>(true))island.contactShading=null;

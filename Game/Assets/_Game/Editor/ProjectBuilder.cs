@@ -235,6 +235,7 @@ public static partial class ProjectBuilder {
   EditorUserBuildSettings.buildAppBundle=false;
   PlayerSettings.SetManagedStrippingLevel(UnityEditor.Build.NamedBuildTarget.Android,ManagedStrippingLevel.Medium);
   PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.Android,UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
+  PlayerSettings.Android.minifyRelease=true;
   Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.None);
  }
  [MenuItem("WHATTHE FISH?/Build Android submission APK (under 100 MB)")]
@@ -252,7 +253,9 @@ public static partial class ProjectBuilder {
   // URP can retain the previous platform's pipeline after a build in this editor.
   // Recompute build resources so Android does not inherit desktop SSAO textures.
   UnityEditor.Rendering.CoreBuildData.instance.Dispose();
-  var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport});
+  var report=Environment.GetEnvironmentVariable("WTF_UNPACKAGED_REVIEW")=="1"
+   ?BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport})
+   :PackagedContentBuild.Build(target,path,options);
   if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);
   if(target==BuildTarget.StandaloneWindows64&&(options&BuildOptions.CompressWithLz4HC)!=0){
    string data=Path.Combine(Path.GetDirectoryName(path),Path.GetFileNameWithoutExtension(path)+"_Data","data.unity3d");
@@ -261,6 +264,6 @@ public static partial class ProjectBuilder {
   }
   if(target==BuildTarget.StandaloneWindows64&&(options&BuildOptions.Development)!=0)WhatTheFish.Editor.BasketballDefenseBuild.Geometry(Path.GetDirectoryName(path));
   Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);
-  if(target==BuildTarget.Android){BuildSizeAudit.Write(report,"latest");BuildSizeAudit.CheckApk(path,false);}
+  if(target==BuildTarget.Android){BuildSizeAudit.Write(report,"latest");if(Environment.GetEnvironmentVariable("WTF_UNPACKAGED_REVIEW")!="1")PackagedContentBuild.CopyContentAudit(target);BuildSizeAudit.CheckApk(path,false);}
  }
 }

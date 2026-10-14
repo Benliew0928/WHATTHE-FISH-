@@ -43,7 +43,7 @@ The host alone chooses spawns, arbitrates pickups, consumes inventory and change
 ball ownership. Slot revisions reject replacement races and duplicate requests;
 round revisions reject delayed requests across kickoffs. Kick RPCs also include
 the portal transfer revision so an old kick cannot affect a newly transferred ball.
-Room protocol **46** (including approved football audio) requires matching builds
+Room protocol **52** (including approved football audio) requires matching builds
 on all players. See [football audio](FOOTBALL-AUDIO.md).
 
 Placement validates the entire rotated footprint, pitch bounds, goal areas,

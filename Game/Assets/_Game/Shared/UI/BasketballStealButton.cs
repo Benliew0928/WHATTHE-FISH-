@@ -6,8 +6,9 @@ namespace WhatTheFish {
  public sealed class BasketballStealButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler {
   public Button button;public Text label;public bool illustrated;int pointer=int.MinValue;bool pressed;
   CanvasGroup group;
-  void Awake(){group=gameObject.AddComponent<CanvasGroup>();}
-  void Update(){
+  void Awake(){group=GetComponent<CanvasGroup>()??gameObject.AddComponent<CanvasGroup>();}
+  void Update()=>Refresh();
+  public void Refresh(){
    var view=PlayerView.Instance;var ball=BasketballBall.Active;
    bool visible=view&&view.BasketballRole!=BasketballRole.Inactive&&!SportsPossession.Attacking(view.target,SportId.Basketball);group.alpha=visible?1:0;group.blocksRaycasts=visible;
    button.interactable=visible&&view.active&&!view.InputBlocked&&ball&&ball.CanSteal(view.target);if((!visible||!button.interactable)&&pressed)Release(true);

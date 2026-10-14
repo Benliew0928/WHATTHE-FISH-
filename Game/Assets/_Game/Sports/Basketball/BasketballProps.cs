@@ -38,7 +38,7 @@ namespace WhatTheFish {
   int audioCountdown;bool audioPortalIn,audioPortalOut;bool propShotQueued,guidedPropShot;Vector3 propShotStart,propShotEnd,propShotDetour;double propShotAt;float propShotDuration;
   public BasketballPropsState Props=>Authority?propState:haveTarget?target.props:default;
   public bool PortalBusy=>Props.transferring;
-  public Athlete PropActor(ulong id){if(!Connected)return AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;foreach(var a in Athlete.Active)if(PlayerId(a)==id)return a;return null;}
+  public Athlete PropActor(ulong id){if(!Connected&&!(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive))return AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;foreach(var a in Athlete.Active)if(PlayerId(a)==id)return a;return null;}
   public FootballTeam PropTeam(Athlete actor){var team=SportsPossession.TeamOf(actor,SportId.Basketball);return team==FootballTeam.None?FootballTeam.A:team;}
   public SportsPropSlot PropSlot(Athlete actor){
    if(!actor)return default;var net=actor.GetComponent<NetworkAthlete>();
@@ -57,6 +57,7 @@ namespace WhatTheFish {
   }
   public bool InOwnHalf(Athlete actor)=>InsidePaintedCourt(actor)&&BasketballPropRules.OwnHalf(transform.parent.InverseTransformPoint(actor.transform.position),PropTeam(actor));
   Transform PropTargetHoop(Athlete actor){
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.Instance.AttackingHoop(actor);
    // Imported North/South names reflect Blender axes, which are reversed in
    // Unity. Select the enemy end in the same arena frame as the own-half rule.
    float direction=PropTeam(actor)==FootballTeam.B?-1:1,best=0;Transform target=null;
@@ -64,6 +65,7 @@ namespace WhatTheFish {
    return target;
   }
   public string PropUnavailable(Athlete actor){
+   if(BasketballMatch.BlocksActions||InboundPending)return "WAIT FOR PLAY";
    if(!Playing||!actor||actor.inTransit||actor.BasketballFreeRoam)return "JOIN THE COURT";
    var kind=PropSlot(actor).kind;if(kind==SportsProp.None)return "FIND A COURTSIDE PROP";
    if(IsInbound(actor))return "PASS TO RESTART PLAY";
@@ -92,7 +94,7 @@ namespace WhatTheFish {
    BasketballAudio.Emit(BasketballSound.TurboStart,actor.transform.position);
    }else if(kind==SportsProp.Portal){
     // Resolve an already completed physical crossing before reserving possession.
-    StepShotPhysics();var source=Held?CarryPosition(holder):Body.position;
+    StepShotPhysics();if(BasketballMatch.BlocksActions)return false;var source=Held?CarryPosition(holder):Body.position;
     ClearPossession();portalReceiver=actor;actor.Motor.Reset(actor.transform.eulerAngles.y);
     propState.transferring=true;propState.receiver=PlayerId(actor);propState.portalAt=BasketballMotion.Clock;propState.portalSequence++;propState.portalOutcome=0;
     propState.source=source;propState.destination=actor.transform.TransformPoint(new Vector3(0,1.05f,.5f));
@@ -154,7 +156,7 @@ namespace WhatTheFish {
    SetPortalBall(phase<.5f?propState.source:propState.destination);
    if(phase<1)return;
    var receiver=portalReceiver;portalReceiver=null;propState.transferring=false;propState.portalOutcome=1;
-   holder=receiver;receiver.BasketballMotion.Begin(BasketballAction.Cancel,receiver.transform.eulerAngles.y,Quaternion.Inverse(receiver.transform.rotation)*(propState.destination-receiver.transform.position));dribblePhase=0;pendingAction=BasketballAction.None;Body.isKinematic=true;Body.detectCollisions=false;looseFor=outsideFor=0;NewDefensePlay();Follow(receiver);BasketballAudio.Emit(BasketballSound.Catch,Body.position);BasketballAudio.Emit(BasketballSound.PortalClose,propState.destination);BasketballAudio.Emit(BasketballSound.PortalClose,propState.source,.7f);reset++;sendAt=0;
+   holder=receiver;BasketballMatch.Instance?.Control(receiver);receiver.BasketballMotion.Begin(BasketballAction.Cancel,receiver.transform.eulerAngles.y,Quaternion.Inverse(receiver.transform.rotation)*(propState.destination-receiver.transform.position));dribblePhase=0;pendingAction=BasketballAction.None;Body.isKinematic=true;Body.detectCollisions=false;looseFor=outsideFor=0;NewDefensePlay();Follow(receiver);BasketballAudio.Emit(BasketballSound.Catch,Body.position);BasketballAudio.Emit(BasketballSound.PortalClose,propState.destination);BasketballAudio.Emit(BasketballSound.PortalClose,propState.source,.7f);reset++;sendAt=0;
   }
   bool EasyPropBlock(Athlete defender){
    if(!propState.aiming||!propAimer||SportsPossession.SameTeam(defender,propAimer,SportId.Basketball))return false;

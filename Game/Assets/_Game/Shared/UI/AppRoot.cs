@@ -15,7 +15,7 @@ namespace WhatTheFish {
   bool SupportsCustomization=>SelectedSport==SportId.Football||SelectedSport==SportId.Basketball;
   public GameObject athletePrefab; Athlete offline; Canvas canvas;RectTransform safe,page;Font font;Sprite rounded;Text status,roster,fps,controlHint;float rosterTimer;string screen="home",appliedWorld="";bool lastExploring; InputField code;Button cameraControl;
   readonly Color ink=LocalProfile.Hex("173834"),mint=LocalProfile.Hex("BFEBCB"),cream=LocalProfile.Hex("FFF9E9");
-  void Awake(){Instance=this;Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
+  void Awake(){Instance=this;gameObject.AddComponent<FootballBots>();gameObject.AddComponent<BasketballBots>();Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
   SportId? pendingSelection; uint selectionVersion;
   IEnumerator Start(){
    font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");rounded=MakeRound();
@@ -42,7 +42,7 @@ namespace WhatTheFish {
    }
    view.target=LocalAthlete;view.active=Exploring&&(!Menu||!Menu.IsTransitioning);
    if(controlHint)controlHint.text=view.GolfAimRequested?"Drag right to aim • Hold, then release • Cancel to walk":GolfCartWorld.Allowed&&GolfCartWorld.Driving(LocalAthlete)?"Left stick: drive & steer • Drag right to look":view.mode==2&&!(LocalAthlete&&LocalAthlete.inTransit)&&(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)?SelectedSport==SportId.Basketball?"Drag right to aim • Push stick fully to run":"Broadcast view • Push stick fully to run":"Drag right to look • Push stick fully to run";
-   if(Exploring&&!rooms.Connected&&LocalAthlete&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
+   if(Exploring&&!rooms.Connected&&LocalAthlete&&!LocalAthlete.GetComponent<FootballBot>()&&!LocalAthlete.GetComponent<BasketballBot>()&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
    if(!Exploring&&LocalAthlete)LocalAthlete.HideHead(false);
    if((rosterTimer-=Time.deltaTime)<0){rosterTimer=.5f;RefreshRoster();if(fps)fps.text=$"{Mathf.RoundToInt(1/Mathf.Max(Time.smoothDeltaTime,.001f))} FPS   •   {(rooms.Connected?"ONLINE":"OFFLINE")}";}
    if(Input.GetKeyDown(KeyCode.Escape)){if(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)FishingHUD.Instance.CloseOverlay();else if(Exploring&&SelectedSport==SportId.Basketball&&BasketballHUD.Instance)BasketballHUD.Instance.ToggleSettings();else if(Exploring&&SelectedSport==SportId.Football&&FootballHUD.Instance)FootballHUD.Instance.ToggleSettings();else if(view.GolfAimRequested)view.CancelGolfAim();else if(Exploring)Return();else if(Menu)Menu.Back();else Show(rooms.Connected?"room":"home");}
@@ -52,7 +52,11 @@ namespace WhatTheFish {
   IEnumerator SelectLoaded(SportId sport,bool fromHost,uint version){yield return environments.GetComponent<SkySailStreaming>().Prepare(sport);if(version!=selectionVersion)yield break;pendingSelection=null;if(!environments.GetComponent<SkySailStreaming>().Loaded(sport)){Debug.LogError("Could not load "+sport);yield break;}SelectSport(sport,fromHost);Show(screen);}
   IEnumerator EnterWhenReady(){while(pendingSelection.HasValue)yield return null;EnterOffline();}
   void ResetOfflineSpawn(){offline.capsule.enabled=false;offline.transform.SetPositionAndRotation(environments.Current.Spawn(0),Quaternion.identity);offline.capsule.enabled=true;offline.ResetLocomotion();}
-  public void EnterOffline(){if(pendingSelection.HasValue){StartCoroutine(EnterWhenReady());return;}Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium?.Apply(CurrentAppearance);Show("stadium");}
+  public void EnterOffline(){if(pendingSelection.HasValue){StartCoroutine(EnterWhenReady());return;}FootballMatch.Instance?.ClearMatch();BasketballMatch.Instance?.Clear();FootballBots.Instance?.Clear();BasketballBots.Instance?.Clear();Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium?.Apply(CurrentAppearance);Show("stadium");}
+  public int BotTeamSize {get=>SelectedSport==SportId.Basketball?BasketballBots.PreferredTeamSize:FootballBots.PreferredTeamSize;set{if(SelectedSport==SportId.Basketball)BasketballBots.PreferredTeamSize=value;else FootballBots.PreferredTeamSize=value;}}
+  public void PlayAgainstAI()=>PlayAgainstAI(BotTeamSize);
+  public void PlayAgainstAI(int teamSize){if((SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)&&!rooms.Connected&&!pendingSelection.HasValue&&FootballBots.ValidTeamSize(teamSize))StartCoroutine(StartAI(teamSize));}
+  IEnumerator StartAI(int teamSize){var sport=SelectedSport;if(!(sport==SportId.Basketball?BasketballBots.Instance.StartSolo(teamSize):FootballBots.Instance.StartSolo(teamSize)))yield break;yield return new WaitForFixedUpdate();if(SelectedSport!=sport||rooms.Connected)yield break;if(sport==SportId.Basketball)BasketballMatch.Instance?.StartMatch();else FootballMatch.Instance?.StartMatch();}
   async void Return(){if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return;if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
   public void LeaveCourt()=>Return();
   void Clear(){PlayerView.LookDelta=Vector2.zero;view.InputBlocked=false;if(page){page.gameObject.SetActive(false);Destroy(page.gameObject);}page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;controlHint=null;}
@@ -69,8 +73,8 @@ namespace WhatTheFish {
    if(!Menu){Menu=gameObject.AddComponent<StorybookMenu>();Menu.Initialize(this,safe);}
    Menu.Show(pendingSelection.HasValue?"loading":which);
   }
-  NetworkAthlete LocalNetwork()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
-  void RefreshRoster(){if(!roster)return;var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).OrderBy(p=>p.OwnerClientId).ToArray();roster.text=string.Join("\n",players.Select(p=>{
+  NetworkAthlete LocalNetwork()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsPlayerObject&&p.IsOwner);
+  void RefreshRoster(){if(!roster)return;var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsPlayerObject).OrderBy(p=>p.OwnerClientId).ToArray();roster.text=string.Join("\n",players.Select(p=>{
    return $"{(p.OwnerClientId==0?"HOST":"PLAYER "+p.OwnerClientId)}{(p.IsOwner?" (you)":"")}  ·  Rainbow Sprinter  ·  {(p.Ready.Value?"READY":"choosing…")}";}));}
   public void SaveStadium(StadiumAppearance a){if(!SupportsCustomization||rooms.Connected&&!rooms.Host)return;a.Clamp();LocalProfile.SaveSport(SelectedSport,a);stadium?.Apply(a);if(rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(a);}
   void Heading(string title,string caption){Label(page,title,0,new Vector2(82,714),new Vector2(510,80),44,ink);Label(page,caption,0,new Vector2(82,643),new Vector2(490,64),22,ink);}

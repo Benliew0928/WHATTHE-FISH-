@@ -99,7 +99,10 @@ namespace WhatTheFish {
    ball.Place(start,true);Check(!ball.FollowingShot&&ball.ReadyToAim,"RESET_CLEARS_PLANNED_TRAVEL");Destroy(plate);yield return null;
    match.ClearMatch();Check(match.StartMatch(),"CUP_PUTT_MATCH_STARTED");ball=match.Ball(actor);cup=match.Course.holes[0].cup.position;
    yield return Prepare(Ground(cup+Vector3.right*.65f,GolfBall.Radius+.002f),-90);Check(app.view.GolfMode==GolfShotMode.Putt,"CUP_APPROACH_USES_PUTT");
-   app.view.RequestGolfSwing(.35f);until=Time.time+4;while(match.Player(actor).CompletedHoleCount==0&&Time.time<until)yield return new WaitForFixedUpdate();
+   // Preserve this near-cup fixture's launch speed under the new sqrt charge curve.
+   float cupCharge=.35f*.35f;var physics=ball.PhysicsSettings;
+   Check(Mathf.Abs(physics.SwingVelocity(Vector3.left,cupCharge,GolfShotMode.Putt).magnitude-Mathf.Lerp(physics.minimumPuttSpeed,physics.maximumPuttSpeed,.35f))<.0001f,"CUP_PUTT_USES_REMAPPED_POWER");
+   app.view.RequestGolfSwing(cupCharge);until=Time.time+4;while(match.Player(actor).CompletedHoleCount==0&&Time.time<until)yield return new WaitForFixedUpdate();
    File.AppendAllText(report,$"CUP_PUTT position={ball.Body.position:F4} completed={match.Player(actor).CompletedHoleCount}\n");
    Check(match.Player(actor).CompletedHoleCount==1&&match.Player(actor).TotalStroke==1,"ACTUAL_GROUND_PUTT_FALLS_INTO_CUP_AND_SCORES");
   }

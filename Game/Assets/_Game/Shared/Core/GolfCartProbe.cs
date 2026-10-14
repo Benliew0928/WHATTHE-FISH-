@@ -52,8 +52,9 @@ namespace WhatTheFish {
      foreach(var side in new[]{"Left","Right"}){
       var toe=Bone(side+"ToeBase");
       var direction=(toe.childCount>0?toe.GetChild(0).position-toe.position:toe.position-Bone(side+"Foot").position).normalized;
-      float angle=Vector3.Angle(direction,cart.transform.forward);
-      Check(angle<.1f,"CART_TOES_FORWARD_"+side+"_"+poseCheck+" angle="+angle);
+      var expected=cart.transform.forward*Mathf.Cos(22*Mathf.Deg2Rad)-cart.transform.up*Mathf.Sin(22*Mathf.Deg2Rad);
+      float angle=Vector3.Angle(direction,expected);
+      Check(angle<.1f,"CART_TOES_RELAXED_PITCH_"+side+"_"+poseCheck+" error="+angle);
      }
      var feet=new[]{Bone("LeftFoot"),Bone("RightFoot")}.Select(t=>cart.transform.InverseTransformPoint(t.position)-cart.transform.InverseTransformPoint(cart.seat.position)).ToArray();
      Check(feet.All(p=>Mathf.Abs(p.x)<.35f&&p.z>.25f&&p.z<.5f&&p.y>0&&p.y<.15f),"CART_FEET_AHEAD_AND_ABOVE_SEAT_"+poseCheck+" left="+feet[0]+" right="+feet[1]);

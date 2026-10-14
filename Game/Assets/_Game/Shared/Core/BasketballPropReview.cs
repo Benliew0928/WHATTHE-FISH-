@@ -66,9 +66,12 @@ namespace WhatTheFish {
    Place(actor,new Vector3(0,.08f,0));yield return new WaitForSeconds(.15f);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision),"centre line excluded from home half");
    Place(actor,new Vector3(0,.08f,-8));ball.Place(new Vector3(3,1,8),Quaternion.identity,Vector3.right*3,Vector3.zero);yield return new WaitForSeconds(.15f);
    var portalSlot=ball.PropSlot(actor);Check(ball.TryUseProp(actor,portalSlot.revision),"own-half portal accepts airborne loose ball");Check(!ball.TryUseProp(actor,portalSlot.revision),"duplicate transfer rejected");
-   yield return new WaitForSeconds(.2f);Check(actor.BasketballMotion.Charging,"receiver holds a receiving pose");Check(ball.PortalBusy&&!ball.Held&&ball.Body.isKinematic&&!ball.Body.detectCollisions,"ball reserved exclusively during transfer");Capture("portal-open",new Vector3(5,3.3f,11),new Vector3(3,1,8));
+   yield return new WaitForSeconds(.2f);Check(actor.BasketballMotion.Charging,"receiver holds a receiving pose");Check(ball.PortalBusy&&!ball.Held&&ball.Body.isKinematic&&!ball.Body.detectCollisions,"ball reserved exclusively during transfer");
    yield return new WaitForSeconds(.36f);yield return new WaitForEndOfFrame();
-   Check(Vector3.Distance(actor.BasketballMotion.RightPalm,ball.Props.destination)<.24f,"portal destination stays within receiving hand reach");
+   // Read the animated hand while the transfer is active, before synchronous
+   // screenshot readback can outlast the remaining portal lifetime.
+   Check(ball.PortalBusy&&Vector3.Distance(actor.BasketballMotion.RightPalm,ball.Props.destination)<.24f,"portal destination stays within receiving hand reach");
+   Capture("portal-open",new Vector3(5,3.3f,11),new Vector3(3,1,8));
    Capture("portal-catch",new Vector3(2,2,-5),new Vector3(0,1,-8));yield return new WaitForSeconds(.3f);
    Check(ball.Holder==actor&&!ball.PortalBusy&&!ball.PropLocked(actor),"portal ends with one owner and unlocked controls");
    ball.ReviewGiveProp(actor,SportsProp.Portal);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision)&&ball.PropSlot(actor).kind==SportsProp.Portal,"self-steal is disabled without spending");

@@ -22,7 +22,7 @@ namespace WhatTheFish {
   public void Stow(){
    Restore();
    // Release our grip once; the golf presentation owns the same shape in its match.
-   if(closedGrip){bool golfGrip=actor&&actor.GolfClubMotion&&actor.GolfClubMotion.ShowBodyInFirstPerson;if(!golfGrip&&skins!=null)foreach(var skin in skins)if(skin)skin.SetBlendShapeWeight(skin.sharedMesh.GetBlendShapeIndex("GolfRightGrip"),0);closedGrip=false;}
+   if(closedGrip){bool golfGrip=actor&&actor.GolfClubMotion&&actor.GolfClubMotion.ShowBodyInFirstPerson;if(!golfGrip&&skins!=null)foreach(var skin in skins)if(skin&&skin.sharedMesh){int grip=skin.sharedMesh.GetBlendShapeIndex("GolfRightGrip");if(grip>=0)skin.SetBlendShapeWeight(grip,0);}closedGrip=false;}
    if(rod)rod.SetActive(false);if(line)line.enabled=false;if(floatRing)floatRing.enabled=false;
   }
   void OnDisable(){Stow();}

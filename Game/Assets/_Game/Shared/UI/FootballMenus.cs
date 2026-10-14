@@ -34,7 +34,7 @@ namespace WhatTheFish {
   void BuildControls(Transform p,float w,int size){float col=(w-18)/2;
    Card(p,0,0,col,BasketballUIStyle.Icon(BasketballIcon.Move),"Move & look","Left stick to move; push fully to run. Drag right to look.",size);
    Card(p,col+18,0,col,FootballUIStyle.Icon(FootballIcon.Ball),"Kick with control","Tap for a light kick. Hold for power; release toward your target.",size);
-   Card(p,0,80,col,FootballUIStyle.Icon(FootballIcon.Pressure),"Defend","Hold Pressure to face a carrier. Tap Tackle to challenge.",size);
+   Card(p,0,80,col,FootballUIStyle.Icon(FootballIcon.Pressure),"Defend","Hold Pressure. Slide to Jump, Dash or Tackle; return to repeat.",size);
    Card(p,col+18,80,col,BasketballUIStyle.Icon(BasketballIcon.Jump),"Play off the ball","Jump without the ball. Hold Dash while moving for a burst.",size);
    Note(p,w,"Changed your mind? Slide into Cancel and lift. Slide back to keep aiming.",size);
   }
@@ -49,7 +49,7 @@ namespace WhatTheFish {
    FootballUIStyle.Art(p,FootballIcon.Dash,0,1,34,34);BasketballUIStyle.Text(p,"Save a burst for the break",44,0,w-44,25,17,true);BasketballUIStyle.Text(p,"Normal running does not spend stamina.",44,27,w-44,24,size);
    var bar=BasketballUIStyle.Plate(p,"Stamina example",0,61,w,9,CoveUI.Ink,4.5f,0);BasketballUIStyle.Plate(bar.transform,"Stamina example fill",2,2,w*.7f,5,BasketballUIStyle.Teal,2.5f,0);
    float col=(w-18)/2;BasketballUIStyle.Text(p,"Hold while moving",0,81,col,23,14,true);BasketballUIStyle.Text(p,"A full bar lasts about 3 seconds. Let go to recover; standing still costs nothing.",0,106,col,47,size,false,TextAnchor.UpperLeft);BasketballUIStyle.Text(p,"Empty? Release and rest",col+18,81,col,23,14,true);BasketballUIStyle.Text(p,"Lift your finger. Dash returns after stamina recovers to a quarter full.",col+18,106,col,47,size,false,TextAnchor.UpperLeft);
-   Note(p,w,"Charging ends Dash. Pressure faces a nearby carrier; it does not automatically win the ball.",size);
+   Note(p,w,"Charging ends Dash. Hold Pressure, then swipe to Tackle when close to win the ball.",size);
   }
   void BuildAbilities(Transform p,float w,int size){float col=(w-18)/2;
    Card(p,0,0,col,FootballPropHUD.Icon(SportsProp.Turbo),"Team Turbo","Your whole team moves at 1.5× speed for 5 seconds. Cannot stack.",size);
@@ -66,7 +66,7 @@ namespace WhatTheFish {
   public void SelectGuide(int tab){guideTab=Mathf.Clamp(tab,0,guidePages.Length-1);for(int i=0;i<guidePages.Length;i++){guidePages[i].SetActive(i==guideTab);guideTabs[i].GetComponent<BasketballPlate>().color=i==guideTab?CoveUI.Ink:BasketballUIStyle.Paper;guideTabs[i].GetComponentInChildren<Text>().color=i==guideTab?CoveUI.Cream:CoveUI.Ink;}}
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();RefreshMenu();}
   void RefreshMenu(){var view=PlayerView.Instance;if(!view)return;for(int i=0;i<3;i++){var p=cameraChoices[i].GetComponent<BasketballPlate>();p.color=i==view.mode?CoveUI.Hex("DCF0D8"):BasketballUIStyle.Paper;p.border=i==view.mode?2.5f:1;p.edge=i==view.mode?CoveUI.Ink:CoveUI.Hex("CAD0BD");p.shadow=i==view.mode?2:0;p.Refresh();cameraChoices[i].transform.Find("Selected camera").gameObject.SetActive(i==view.mode);}cameraNote.text=view.mode==0?"Look through your player's eyes. Drag on the open right side to look around.":view.mode==1?"Drag on the open right side to look around. Your left thumb stays on movement.":"A wider, ball-following view. Drag to pan your view; your player's aim stays independent.";leaveButton.interactable=!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling);}
-  public void OpenLeave(){var rooms=AppRoot.Instance.rooms;leaveText.text=rooms.Connected?(rooms.Host?"You're the host. Everyone returns to the room and this match ends.":"You leave the room and return to sport selection. Other players can keep playing."):"Return to sport selection? You can come back for another kickabout.";confirmText.text=rooms.Connected?(rooms.Host?"Return to room":"Leave room"):"Leave pitch";OpenMenu(true);}
+  public void OpenLeave(){var rooms=AppRoot.Instance.rooms;leaveText.text=rooms.Connected?(rooms.Host?"Everyone returns to the room. The current match ends without a winner.":"Leaving voids the active match without a winner. You return to sport selection."):"Return to sport selection? You can come back for another kickabout.";confirmText.text=rooms.Connected?(rooms.Host?"Return to room":"Leave room"):"Leave pitch";OpenMenu(true);}
   public void CloseMenu(){MenuPreferences.Save();if(!overlay)return;overlay.gameObject.SetActive(false);controls.blocksRaycasts=true;ClearInput();if(PlayerView.Instance)PlayerView.Instance.InputBlocked=false;UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);}
  }
 }

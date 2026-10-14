@@ -9,6 +9,24 @@ namespace WhatTheFish {
   public bool Bounces=>bounceTime>0;
   public Vector3 Point(float time)=>Bounces&&time>bounceTime?Travel(bounce,rebound,time-bounceTime):Travel(start,velocity,time);
   public static Vector3 Travel(Vector3 origin,Vector3 velocity,float time)=>origin+velocity*time+Physics.gravity*(time*time*.5f+time*Time.fixedDeltaTime*.5f);
+  public static BasketballPassPath ToReceiver(Vector3 start,Vector3 target,float power,float bend,float floor){
+   var delta=Vector3.ProjectOnPlane(target-start,Vector3.up);float distance=delta.magnitude;
+   float heading=Mathf.Atan2(delta.x,delta.z)*Mathf.Rad2Deg;
+   var path=Create(start,heading,power,bend,floor);float gravity=-Physics.gravity.y;
+   if(path.Bounces){
+    float up=path.rebound.y-gravity*Time.fixedDeltaTime*.5f;
+    float discriminant=up*up-2*gravity*(target.y-path.bounce.y);
+    if(discriminant<0)return ToReceiver(start,target,power,0,floor);
+    float after=(up+Mathf.Sqrt(discriminant))/gravity;
+    var speed=delta.normalized*(distance/(path.bounceTime+after*.85f));
+    path.velocity=new Vector3(speed.x,path.velocity.y,speed.z);path.bounce=Travel(start,path.velocity,path.bounceTime);
+    path.rebound=new Vector3(speed.x*.85f,path.rebound.y,speed.z*.85f);path.duration=path.bounceTime+after;
+   }else {
+    path.duration=Mathf.Max(path.duration,distance/(BasketballPassRules.SpeedMultiplier*Mathf.Lerp(8,13,power)));
+    path.velocity=delta/path.duration+Vector3.up*((target.y-start.y)/path.duration+gravity*(path.duration+Time.fixedDeltaTime)*.5f);
+   }
+   return path;
+  }
   public static BasketballPassPath Create(Vector3 start,float heading,float power,float bend,float floor){
    bend=Mathf.Clamp(bend,-1,1);power=Mathf.Clamp01(power);float gravity=-Physics.gravity.y;
    var forward=Quaternion.Euler(0,heading,0)*Vector3.forward;float range=BasketballPassRules.Range(power,bend);

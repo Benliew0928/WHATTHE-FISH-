@@ -42,7 +42,7 @@ follow match transitions; Explore has no scoring or match whistles.
 
 Authoritative contacts use live, sequenced RPCs with a bounded queue and stale
 event rejection, so entering an existing match does not replay past hits.
-Initial presentation snapshots seed state. **Room protocol 46** includes the
+Initial presentation snapshots seed state. **Room protocol 51** includes the
 football audio event RPC; all players in a room need the updated build.
 
 UI factories and held-action pointer feedback share the approved button palette.
