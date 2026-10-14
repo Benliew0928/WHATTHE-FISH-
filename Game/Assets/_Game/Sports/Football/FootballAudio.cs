@@ -49,6 +49,8 @@ namespace WhatTheFish {
   void OnDestroy(){if(voiceRoot)Destroy(voiceRoot.gameObject);}
   void OnApplicationPause(bool value){suspended=value;if(value)StopAll();}
   public void StopAll(){foreach(var v in voices)v.source.Stop();air?.source.Stop();turbo?.source.Stop();roll?.source.Stop();pending.Clear();feet.Clear();presenting=false;resultAt=-1;lastReceived=0;sender=ulong.MaxValue;}
+  public void BeginReplay(){foreach(var v in voices)v.source.Stop();turbo.source.Stop();roll.source.Stop();feet.Clear();}
+  public void EndReplay(){foreach(var v in voices)if(!UI(v.cue))v.source.Stop();feet.Clear();priorBall=ball.transform.position;ballSpeed=0;}
   static bool UI(FootballSound c)=>c>=FootballSound.UIClick;
   static bool Flat(FootballSound c)=>UI(c)||c==FootballSound.Air||c>=FootballSound.Kickoff&&c<=FootballSound.Draw;
   static int Priority(FootballSound c)=>Flat(c)&&c!=FootballSound.Air?3:c==FootballSound.Walk||c==FootballSound.Run||c==FootballSound.Cut||c==FootballSound.Cloth||c==FootballSound.Dribble?0:c==FootballSound.Bounce?1:2;
@@ -60,6 +62,7 @@ namespace WhatTheFish {
   AudioClip Choose(FootballSound cue){if(!bank.TryGetValue(cue,out var clips)||clips.Length==0)return null;takes.TryGetValue(cue,out int take);takes[cue]=(take+1)%clips.Length;return clips[take];}
   void Begin(Voice v,FootballSound cue,AudioClip clip,Vector3 point,float gain,bool loop){var s=v.source;s.Stop();v.cue=cue;v.gain=Mathf.Clamp(gain,0,1.4f);v.priority=Priority(cue);v.began=Time.unscaledTimeAsDouble;s.transform.position=point;s.clip=clip;s.pitch=1;s.loop=loop;s.spatialBlend=Flat(cue)?0:.5f;s.priority=128-v.priority*24;s.volume=Gain(v);s.Play();}
   public void Play(FootballSound cue,Vector3 point,float gain=1,string reason="pose",uint eventId=0){
+   if(reason!="replay")FootballReplay.Instance?.RecordSound(cue,point,gain);
    if(!Context||suspended||gain<=0)return;var clip=Choose(cue);if(!clip)return;Voice voice=null;int priority=Priority(cue);
    for(int i=UI(cue)?16:0;i<(UI(cue)?20:16);i++){var v=voices[i];if(!v.source.isPlaying){voice=v;break;}if(v.priority<=priority&&(voice==null||v.priority<voice.priority||v.priority==voice.priority&&v.began<voice.began))voice=v;}
    if(voice==null)return;Begin(voice,cue,clip,point,gain,false);
@@ -102,7 +105,7 @@ namespace WhatTheFish {
    if(!Context||suspended){if(presenting)StopAll();return;}bool first=!presenting;presenting=true;
    while(pending.Count>0&&FootballMotion.Clock>=pending.Peek().time+.05){var e=pending.Dequeue();if(FootballMotion.Clock-e.time<.8)Play(e.cue,e.point,e.gain,"network",e.sequence);}
    foreach(var v in voices)if(v.source.isPlaying)v.source.volume=Gain(v);
-   PresentFeet();PresentMatch(first);PresentProps(first);
+   if(!FootballReplay.Presenting){PresentFeet();PresentProps(first);}else {turbo.source.Stop();roll.source.Stop();}PresentMatch(first);
    var actor=AppRoot.Instance.LocalAthlete;var point=actor?actor.transform.position:ball.transform.position;Loop(air,FootballSound.Air,true,point,.55f);
    float speed=first?0:Vector3.ProjectOnPlane(ball.transform.position-priorBall,Vector3.up).magnitude/Mathf.Max(.001f,Time.deltaTime);priorBall=ball.transform.position;ballSpeed=Mathf.Lerp(ballSpeed,Mathf.Min(32,speed),.4f);
    bool rolling=!ball.CurrentController&&!ball.PortalBusy&&ballSpeed>.4f&&ballSpeed<8&&FootballBall.Allowed&&Physics.Raycast(ball.transform.position,Vector3.down,ball.WorldRadius+.05f,1<<8,QueryTriggerInteraction.Ignore);
@@ -110,6 +113,7 @@ namespace WhatTheFish {
   }
   void PresentMatch(bool first){
    var match=FootballMatch.Instance;var state=match.Snapshot;var actor=AppRoot.Instance.LocalAthlete;var point=ball.KickoffPosition;
+   if(state.phase==FootballMatchPhase.Finished&&match.GoalSequence)state.phase=FootballMatchPhase.GoalReset;
    if(!first){
     if(state.scoreA+state.scoreB>previousMatch.scoreA+previousMatch.scoreB)Play(FootballSound.Score,point,1,"goal-confirmed");
     if(state.phase!=previousMatch.phase){

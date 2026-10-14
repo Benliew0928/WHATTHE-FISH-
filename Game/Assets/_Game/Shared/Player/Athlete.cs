@@ -7,6 +7,7 @@ namespace WhatTheFish {
   void OnEnable(){Active.Add(this);}
   void OnDisable(){GolfCartWorld.Forget(this);Active.Remove(this);FootballBall.Instance?.ForgetPlayer(this);}
   public CharacterController capsule; public Transform visual; public bool controlled,inTransit; public float speed;
+  public CharacterIdentityLibrary identityLibrary;
   Animator animator; SkinnedMeshRenderer[] bodyRenderers;float turnWeight;int turnLayer=-1;FootballTackle football;int footballLayer=-1;float footballWeight;FootballSnapshot receivedFootball,cachedFootball;uint footballSequence=uint.MaxValue;double footballClock,footballReceivedAt;Vector3 visualRest;float groundSlideWeight;
   public FootballEffort FootballEffort {get;}=new FootballEffort();
   public JumpMotor Jump {get;}=new JumpMotor();
@@ -48,7 +49,7 @@ namespace WhatTheFish {
    return cachedFootball;
   }
   public void ApplyFootball(FootballSnapshot value,double serverTime){receivedFootball=value;footballClock=serverTime;footballReceivedAt=Time.timeAsDouble;}
-  public void Setup(){if(!BasketballMotion)BasketballMotion=GetComponent<BasketballMotion>()??gameObject.AddComponent<BasketballMotion>();BasketballMotion.Bind(this);if(!GolfClubMotion)GolfClubMotion=GetComponent<GolfClubMotion>()??gameObject.AddComponent<GolfClubMotion>();GolfClubMotion.Bind(this);if(!FootballMotion){FootballMotion=GetComponent<FootballMotion>();if(!FootballMotion)FootballMotion=gameObject.AddComponent<FootballMotion>();}FootballMotion.Bind(this);capsule=GetComponent<CharacterController>();animator=GetComponentInChildren<Animator>();football=GetComponent<FootballTackle>();jumpLayer=animator?animator.GetLayerIndex("Jump"):-1;footballLayer=animator?animator.GetLayerIndex("Football action"):-1;turnLayer=animator?animator.GetLayerIndex("Turn expression"):-1;bodyRenderers=visual?visual.GetComponentsInChildren<SkinnedMeshRenderer>(true):GetComponentsInChildren<SkinnedMeshRenderer>(true);if(!initialized){Jump.Reset();Motor.Reset(transform.eulerAngles.y);lastPosition=transform.position;visualRest=visual?visual.localPosition:Vector3.zero;initialized=true;}}
+  public void Setup(){if(!BasketballMotion)BasketballMotion=GetComponent<BasketballMotion>()??gameObject.AddComponent<BasketballMotion>();BasketballMotion.Bind(this);if(!GolfClubMotion)GolfClubMotion=GetComponent<GolfClubMotion>()??gameObject.AddComponent<GolfClubMotion>();GolfClubMotion.Bind(this);if(!FootballMotion){FootballMotion=GetComponent<FootballMotion>();if(!FootballMotion)FootballMotion=gameObject.AddComponent<FootballMotion>();}FootballMotion.Bind(this);capsule=GetComponent<CharacterController>();animator=GetComponentInChildren<Animator>();football=GetComponent<FootballTackle>();jumpLayer=animator?animator.GetLayerIndex("Jump"):-1;footballLayer=animator?animator.GetLayerIndex("Football action"):-1;turnLayer=animator?animator.GetLayerIndex("Turn expression"):-1;bodyRenderers=visual?visual.GetComponentsInChildren<SkinnedMeshRenderer>(true):GetComponentsInChildren<SkinnedMeshRenderer>(true);if(!initialized){Jump.Reset();Motor.Reset(transform.eulerAngles.y);lastPosition=transform.position;visualRest=visual?visual.localPosition:Vector3.zero;initialized=true;}CharacterIdentity.Ensure(this);}
   public void ResetLocomotion(){FootballEffort.Reset();if(BasketballBall.Active)BasketballBall.Active.ForgetFinishApproach(this);BasketballFreeRoam=false;if(!initialized)Setup();Motor.Reset(transform.eulerAngles.y);speed=0;Charging=false;nextKick=0;if(BasketballMotion)BasketballMotion.ResetPose();if(GolfClubMotion)GolfClubMotion.ResetPose();if(FootballMotion)FootballMotion.ResetPose();Jump.Reset();receivedJump=default;jumpWeight=0;if(animator&&jumpLayer>=0)animator.SetLayerWeight(jumpLayer,0);if(football)football.ResetAction();footballWeight=0;groundSlideWeight=0;if(visual)visual.localPosition=visualRest;if(animator&&footballLayer>=0)animator.SetLayerWeight(footballLayer,0);lastPosition=transform.position;turnWeight=0;if(animator&&turnLayer>=0)animator.SetLayerWeight(turnLayer,0);}
   public LocomotionSnapshot Snapshot(double now){
    // Keep the timestamp stable within a phase, including idle, so unchanged
@@ -65,6 +66,7 @@ namespace WhatTheFish {
    if(command.cartAction!=GolfCartAction.None)GolfCartWorld.Execute(this,command.cartAction,command.cartOwner);
    if(GolfCartWorld.Simulate(this,command,dt))return;
    if(!capsule.enabled)return;remote=false;
+   if(FootballMatch.KickoffInput(this,command)){FootballEffort.Stop();speed=0;return;}
    if(FootballMatch.BlocksMovement||BasketballMatch.BlocksMovement||GolfMatchManager.BlocksMovement){FootballEffort.Stop();Charging=false;speed=0;return;}
    if(BasketballMatch.BlocksActions){command.jump=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=false;}
    if(FootballMatch.BlocksActions){command.dash=command.pressure=command.kick=command.tackle=command.jump=command.shoot=command.pass=command.steal=command.charging=false;}
@@ -189,9 +191,11 @@ namespace WhatTheFish {
    visual.localPosition=visualRest-Vector3.up*(clearance*groundSlideWeight);
   }
   public void Appearance(CharacterAppearance data){
-   // Preserve the profile/network call path while this baked Meshy look has no swap slots.
    data.Clamp();
+   var identity=CharacterIdentity.Ensure(this);
+   var network=GetComponent<NetworkAthlete>();
+   if(network&&network.IsSpawned&&network.IdentityNumber.Value>0)identity.SetNumber(network.IdentityNumber.Value);
   }
-  public void HideHead(bool hidden){if(bodyRenderers==null)Setup();bool golfBody=hidden&&(GolfClubMotion&&GolfClubMotion.ShowBodyInFirstPerson||GetComponent<FishingRodMotion>()&&GetComponent<FishingRodMotion>().Equipped)&&PlayerView.Instance&&PlayerView.Instance.mode==0;foreach(var renderer in bodyRenderers)renderer.enabled=!hidden||golfBody;}
+  public void HideHead(bool hidden){if(bodyRenderers==null)Setup();bool golfBody=hidden&&(GolfClubMotion&&GolfClubMotion.ShowBodyInFirstPerson||GetComponent<FishingRodMotion>()&&GetComponent<FishingRodMotion>().Equipped)&&PlayerView.Instance&&PlayerView.Instance.mode==0;foreach(var renderer in bodyRenderers)renderer.enabled=!hidden||golfBody;GetComponent<CharacterIdentity>()?.SetHidden(hidden);}
  }
 }

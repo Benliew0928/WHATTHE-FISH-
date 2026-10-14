@@ -6,6 +6,8 @@ namespace WhatTheFish {
   public static FootballHUD Instance {get;private set;}
   public bool MenuOpen=>overlay&&overlay.gameObject.activeSelf;
   public KickButton Kick=>kick;
+  CanvasGroup replayVisibility;
+  public void SetReplayHidden(bool hidden){if(!replayVisibility)replayVisibility=gameObject.AddComponent<CanvasGroup>();replayVisibility.alpha=hidden?0:1;replayVisibility.blocksRaycasts=replayVisibility.interactable=!hidden;}
   RectTransform root,parent;Vector2 parentSize;Rect lastSafe;CanvasGroup controls;
   KickButton kick;FootballEffortButton dash;JumpButton jump;TackleButton tackle;FootballActionSlot slot;
   Image primaryArt;Text primaryHint,dashHint,jumpHint,tackleHint;BasketballPlate staminaFill;CanvasGroup dashGroup;

@@ -30,6 +30,7 @@ namespace WhatTheFish {
   // Invoked after ball presentation, including guest interpolation and held
   // animation. PlayerView retains its early update order for input sampling.
   internal void PresentStadiumCamera(){
+   if(FootballReplay.Presenting)return;
    if(!isActiveAndEnabled||!StadiumField(out var frame,out var field,out bool football)){ResetStadiumCamera();return;}
    var ball=football?FootballBall.Instance.transform:BasketballBall.Active.transform;
    var point=frame.InverseTransformPoint(ball.position);

@@ -1,5 +1,202 @@
 # Verification records
 
+## Longer football transitions - 15 October 2026
+
+The complete **324-file** Windows player built at **02:28:43 Malaysia time** is
+delivered in `Builds/WindowsFinal/`, protocol **58**. Every data file, library,
+launcher and release note matches the tested candidate. The current ten
+character identities, Blue/Red teams and prior sports/world changes are retained.
+
+**271 assertions passed on this player**: **187 offline, 69 host and 15 guest**
+at **844×390**. Tests used the default runner path from a relocated complete
+player, a directory containing spaces and an unrelated working directory.
+Coverage includes VS AI 2v2–5v5, human rooms, rooms filled with bots, all three
+camera preferences, consecutive goals, golden goals, cancellation, held props,
+conceding-side restart, arbitrary kickoff heading, AI kickoff and the guest's
+real reliable kick RPC. Recorded footage remains exactly four seconds before
+the goal and one second after it; scoring and match time stay protected.
+
+**Sixteen rendered timing traces** independently measure eight **1.6-second
+entries with 1.0-second holds**, and eight **0.8-second returns with 0.3-second
+holds**. Entry movement takes 0.3 seconds on each side; return movement takes
+0.25 seconds on each side. Measurements use transitions between rendered
+samples on the simulation clock. Every camera switch and centre reset occurs
+while the card is stationary and fully covering the field; the card clears
+afterward. The large-logo entry and return captures were inspected.
+
+Reports and captures are in
+`Builds/FootballReplayTimingQA/Portable Checkout/Builds/FootballReplayQA/Run-20261015-022915/`.
+`verification.json` records report hashes; `observed-timing.json` indexes the
+sixteen CSV traces. `compiled-source.json` confirms all **256 compiled gameplay
+source documents** match. Of **3,871 Windows build inputs**, **3,869** match
+after Android packaging; the two differences are platform URP resources and
+regenerated Golf Ball local identifiers. The build is `bd62f78` plus preserved
+shared uncommitted work, not a clean commit snapshot. `windows-manifest.json`
+and `windows-delivery.json` record complete delivery verification.
+
+Fresh AndroidSubmission at **02:34:35** measures **73,988,013 bytes**, down
+**3,300 bytes**, with **26,011,987 bytes** hard-limit headroom and **1,011,987
+bytes** development reserve. APK v2 signature verification passes. See the
+[size record](BUILD-SIZE.md#longer-football-transitions---15-october-2026)
+and [audit](APK-SIZE-AUDIT.md#longer-football-transitions---15-october-2026).
+No physical Android device is connected; Android appearance, touch, loading,
+memory/FPS and WAN play remain unverified.
+
+Reviewed superseded output was archived with byte/hash recovery inventories:
+
+- `Legacy/20261015-023221-315-football-replay-timing-apk/` — preceding APK and audit.
+- `Legacy/20261015-023542-600-football-replay-timing-windows/` — preceding complete Windows player and disposable duplicate portability player.
+
+Current reports, captures, tested candidate and build evidence remain under
+`Builds/FootballReplayTimingQA/`. No staging, commit, push or history rewrite
+was performed.
+
+## Ten player identities - 15 October 2026
+
+The complete **324-file** player built at **01:47:28 Malaysia time** is delivered
+in `Builds/WindowsFinal/`, with protocol **57**. Ten unique room identities apply
+to humans and bots; actual football/basketball membership controls Blue/Red
+uniforms. Other activities use personal colors. Both body LODs, the existing rig,
+grips and animation library remain shared. Illustrated goal replay and kickoff,
+four islands and the prior sports/travel work are included.
+
+**972 final-player assertions pass**, plus two host/guest roster comparisons:
+
+| Final-player check | Passing assertions |
+| --- | ---: |
+| Ten-player football: offline / host / guest | 122 / 95 / 93 |
+| Ten-player basketball: offline / host / guest | 122 / 95 / 93 |
+| Jump: gameplay / host / client | 132 / 3 / 5 |
+| Tackle: gameplay and two-player network | 212 |
+
+Identity checks run at **844 x 390** from a complete portable player under a path
+with spaces, launched from an unrelated working directory. They cover colliding
+preferences, full capacity, departure/reuse, schema migration, ten unique leases,
+5v5 team membership, correct material colors, shared textures, preserved grips,
+all accessory LODs, first-person hiding, network retention and personal-color
+restoration. Host and guest independently agree on all ten number/team mappings.
+Rendered gameplay, front/back lineups and close views of all ten presets were
+inspected. Scoreboard exclusion prevents number badges hiding under the HUD;
+football stamina bars share badge placement. Desktop checks do not establish
+physical-phone legibility or performance.
+
+Earlier identity candidates passed **3,077 additional regression assertions**:
+turn 62, football motion 303, basketball motion 62, basketball pass 30, golf
+swing 106, fishing 2,232, football effort 137 and football replay/kickoff 145.
+These precede only final number-coordinate quantization, HUD placement or test
+fixture changes; they are recorded separately from final-player counts. Earlier
+1280 x 720 and compact identity runs also pass, but are not added to this total.
+
+Legacy test repairs: probes wait for packaged scene startup; fishing's turn check
+expects visible held-rod hands and a hidden head/accessories; jump checks the
+current Tackle label; tackle LOD fixtures settle feet and move the loose ball
+away, and use the existing 2.94 m/s miss-recovery speed. Basketball motion checks
+full-strength IK reach after its existing 0.22-second pass gather; held-ball,
+joint-continuity and release checks still cover the gather. Baseline comparison
+reproduced that old reach-check failure. No gameplay timing/physics was changed
+to satisfy these assertions. Failed intermediate evidence is retained locally.
+
+All **256 compiled gameplay source documents** match the shared checkout;
+all **372 recorded C#/shader/include files** still match after Android packaging.
+This is `bd62f78` plus preserved uncommitted work, not a clean commit snapshot.
+Unity normalizes the current quality AA field to the existing URP 2x setting;
+build-generated Golf Ball local identifiers/platform resources may differ.
+New identity assets have no external binary dependencies and use Unity GUID
+references. Original FBX/Blender sources remain unchanged.
+
+Fresh AndroidSubmission and independent APK v2 verification pass at
+**73,991,313 bytes**, +509,276 from the preceding replay APK. Development reserve
+is **1,008,687 bytes**; hard-limit headroom is **26,008,687 bytes**.
+The shell's additional `$LASTEXITCODE` wrapper produced a false failure because
+it followed a PowerShell script rather than a native command; Unity's final exit
+is 0, the build report is Succeeded, and the gate records WITHIN_TARGET for these
+exact APK bytes. [Build size](BUILD-SIZE.md#ten-player-identities---15-october-2026)
+and [asset audit](APK-SIZE-AUDIT.md#ten-player-identities---15-october-2026) contain
+the complete measurements.
+
+Current evidence is indexed with report hashes in
+`Builds/CharacterIdentityQA/verification.json`, with source hashes, rendered
+captures, `release-audit.json`, signature output and `SizeAuditFinal/` beside it.
+The superseded complete Windows player and reviewed intermediate players/captures
+were archived with the repository tool in
+`Legacy/20261015-021139-868-character-identities/` (1,031 files). Current source,
+generated assets and their metadata remain publishable; build output is ignored.
+
+Physical Android appearance, touch, memory/FPS, loading and WAN play remain
+unverified; no phone was connected. No staging, commit or push was performed.
+
+## Illustrated football goal replay - 15 October 2026
+
+The complete **324-file** Windows player built at **00:31:09 Malaysia time**
+is delivered in `Builds/WindowsFinal/`. Every file, including data, libraries,
+launchers and release note, matches the tested candidate. It uses protocol
+**56** and retains four islands, shared room travel and earlier sports,
+prop-cycle, golf-camera and contact-shading work.
+
+**360 passing assertions on the final illustrated player**, indexed with
+report hashes in `Builds/FootballReplayQA/verification.json`:
+
+| Final-player check | Passing assertions |
+| --- | ---: |
+| Replay and kickoff, offline at 1600×900 | 145 |
+| Replay and kickoff, offline at 844×390 | 145 |
+| Human and bot-filled rooms, host at 844×390 | 55 |
+| Human and bot-filled rooms, guest at 844×390 | 15 |
+
+Coverage includes VS AI 2v2–5v5, physical goal crossings, exactly four seconds
+before and one second after the goal, rapid consecutive goals, camera-mode
+restoration, ball framing, golden-goal results, cancellation, retained props,
+conceding-side centre possession, 360-degree aiming, AI kickoff, invalid/stale
+action rejection and the real guest reliable kick RPC. Render-only copies
+contain no colliders, Animators or network objects. Playback cannot rescore
+the goal or consume the remaining match clock.
+
+Actual goal cards, replay approach/impact and returned views were inspected at
+both resolutions. The [current illustrated card](GoalReplay/in-game-transition.png)
+shows the enlarged official logo, football, shot trail and net drawings. Compact
+tests ran using the default player path from a relocated directory containing
+spaces and an unrelated working directory. Final evidence is in
+`Builds/FootballReplayQA/Final Portable/Builds/FootballReplayQA/Run-20261015-003200/`
+and `Builds/FootballReplayQA/Run-20261015-003447/`.
+
+Separate earlier gameplay regressions passed **575 football match/physics
+assertions** (`Builds/FootballMatchQA/Run-20261015-000823/`) and **81 programmed-bot
+assertions** (`Builds/ProgrammedBotsQA/Run-20261015-002359/`). These preceded the
+final artwork revision and are not counted as final-player assertions. An
+earlier compact guest fixture cleared the host's accepted restart before the
+guest observed it; keeping that fixture live for one second fixed the test
+race. The final host and guest both observe the accepted angled kick.
+
+Build source is the isolated `Builds/FootballReplayQA/SourceSnapshot`, based on
+`bd62f78` plus preserved prior changes and this task. All **252 compiled gameplay
+source documents** match that snapshot. Of **3,804 recorded Windows inputs**,
+**3,802** still match after Android generation; platform URP resource selection
+and regenerated Golf Ball local identifiers are the two differences. Evidence
+is in `SourceSnapshot/Builds/FootballReplayQA/compiled-source.json` and
+`windows-source.json`, plus top-level `source-comparison.json`,
+`windows-manifest.json` and `windows-delivery.json` in the task evidence folder.
+The shared checkout's concurrent character-identity implementation is preserved
+but intentionally excluded from this delivery and these test claims. This is
+not a clean commit snapshot.
+
+AndroidSubmission at **00:37:32** is **73,482,037 bytes**, up **35,736**, with
+**26,517,963 bytes** hard-limit headroom and **1,517,963 bytes** development
+reserve. APK v2 signature verification passes. See the
+[size record](BUILD-SIZE.md#illustrated-football-goal-replay---15-october-2026)
+and [audit](APK-SIZE-AUDIT.md#illustrated-football-goal-replay---15-october-2026).
+No phone is connected. Physical Android appearance, touch, loading, memory/FPS
+and WAN play remain unverified.
+
+Reviewed superseded output was archived with byte/hash recovery inventories:
+
+- `Legacy/20261015-003935-425-football-replay-delivery/` — prior complete Windows player, pre-artwork APK and audit.
+- `Legacy/20261015-003655-116-football-replay-preliminary-players/` — preliminary review players and relocation helper.
+- `Legacy/20261015-002802-896-football-replay-design-cleanup/` — superseded boards and completed one-off editing helpers.
+- `Legacy/20261014-234321-910-goal-replay-browser-draft/` — obsolete browser prototype.
+
+Current captures, reports, the tested source snapshot and approved references
+remain available. No staging, commit, push or history rewrite was performed.
+
 ## Golf buggy control and shot camera - 14 October 2026
 
 The complete **324-file** Windows player built at **18:48:50 Malaysia time** is

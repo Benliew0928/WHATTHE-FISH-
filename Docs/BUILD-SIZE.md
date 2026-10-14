@@ -1,5 +1,84 @@
 # Build size — measured release records
 
+## Longer football transitions - 15 October 2026
+
+Fresh AndroidSubmission at **02:34:35 Malaysia time** measures
+**73,991,313 -> 73,988,013 bytes (-3,300)**. Development reserve below
+75,000,000 bytes is **1,011,987 bytes**; headroom to the strict 100,000,000-byte
+ceiling is **26,011,987 bytes**. The enforced gate and independent APK v2
+signature verification pass. SHA-256:
+`2A5FE9F9529AD344062771496CD1B9CD17C7C7E77570AAE9398E42FCB1CF4643`.
+
+The goal card now lasts **1.6 seconds**, including a full **1.0-second hold**.
+The return lasts **0.8 seconds**, with camera switches and the centre reset
+under the covered holds. Replay footage remains five seconds. No assets,
+textures, meshes, audio or packages were added; both serialized inventories
+and mesh inventories are unchanged. See the
+[audit](APK-SIZE-AUDIT.md#longer-football-transitions---15-october-2026).
+
+The complete **324-file** Windows player built at **02:28:43**, protocol **58**,
+is delivered in `Builds/WindowsFinal/`, retaining the current character identities
+and earlier gameplay. Every delivered file matches the tested candidate.
+[Verification](VERIFICATION.md#longer-football-transitions---15-october-2026)
+records **271 passing assertions** and **16 rendered timing traces** across
+VS AI and local rooms. Physical Android quality and performance remain
+unverified. Evidence: `Builds/FootballReplayTimingQA/` and its `SizeAuditFinal/`.
+
+## Ten player identities - 15 October 2026
+
+Fresh AndroidSubmission at **02:11:35 Malaysia time** measures
+**73,482,037 -> 73,991,313 bytes (+509,276)** against the preceding illustrated
+replay release. Development reserve below 75,000,000 bytes is **1,008,687 bytes**;
+headroom to the strict 100,000,000-byte ceiling is **26,008,687 bytes**.
+The enforced APK gate and independent APK v2 signature verification pass.
+SHA-256: `701974B45CE7F671149E9DA9B729E0928CF7350AAA05E6EAE0073B9E212186AA`.
+
+Ten unique heads and room numbers share the existing body, textures and nine
+animation clips. Football/basketball use Blue/Red uniforms; other activities
+retain personal colors. One shared digit atlas and small head/scalp meshes
+provide the new art. Number-coordinate quantization reduced the first measured
+identity APK from **74,006,669 to 73,991,313 bytes (-15,356)**. Growth is
+**9,276 bytes above** the plan's 500,000-byte engineering target; the working
+APK target remains satisfied. No unrelated world or texture quality was cut.
+See the [packing audit](APK-SIZE-AUDIT.md#ten-player-identities---15-october-2026).
+
+The opening APK was 73,446,301 bytes. Its combined delta is +545,012 bytes,
+including the intervening replay release (+35,736); it is not all attributable
+to character identities. The complete **324-file** Windows player built at
+**01:47:28**, protocol **57**, is delivered in `Builds/WindowsFinal/`.
+It includes the latest illustrated replay and the shared working tree's prior
+gameplay changes. [Verification](VERIFICATION.md#ten-player-identities---15-october-2026)
+records final-player checks, earlier regressions and source limits. Physical
+Android appearance and performance remain unverified.
+
+Evidence: `Builds/CharacterIdentityQA/release-audit.json`, `character-storage-final.json`,
+`apk-signature.txt`, `verification.json` and `SizeAuditFinal/`.
+
+## Illustrated football goal replay - 15 October 2026
+
+Fresh AndroidSubmission at **00:37:32 Malaysia time** measures
+**73,446,301 -> 73,482,037 bytes (+35,736)**. Development reserve below
+75,000,000 bytes is **1,517,963 bytes**; headroom to the strict
+100,000,000-byte ceiling is **26,517,963 bytes**. The enforced build gate and
+independent APK v2 signature verification pass. SHA-256:
+`FDA8B748C4919FE05441A8A35D0E2EE320E9D4CF890A15726B6D46D099F5A216`.
+
+The [illustrated Broadcast Slash](GoalReplay/README.md) reuses the official
+logo and native vector drawings. Five seconds of recorded goal footage precede
+a conceding-team centre kick with free aiming. VS AI, human rooms and rooms
+filled with bots share this flow. No texture, mesh, audio bank or package was
+added. Both mesh inventories and the bundle's serialized asset total are
+unchanged; see the [packing audit](APK-SIZE-AUDIT.md#illustrated-football-goal-replay---15-october-2026).
+
+The complete **324-file** Windows player built at **00:31:09** is delivered in
+`Builds/WindowsFinal/`, protocol **56**, with every file hash-verified against
+the tested candidate. [Verification](VERIFICATION.md#illustrated-football-goal-replay---15-october-2026)
+records **360 passing final-player assertions** and separate earlier gameplay
+regressions. This isolated source snapshot excludes concurrent unfinished
+character-identity work in the shared checkout. Physical Android appearance,
+touch and performance remain unverified. Current evidence is under
+`Builds/FootballReplayQA/`, including `SizeAuditFinal/`.
+
 ## Golf buggy control and shot camera - 14 October 2026
 
 Fresh AndroidSubmission at **18:54:34 Malaysia time** measures

@@ -340,7 +340,7 @@ namespace WhatTheFish {
    Heading("Your Rainbow Sprinter","One bright little athlete, ready for all four islands.");
    var p=Plate(content,"Athlete information",265,221,1070,477,Cream,36,2,true);Image(p.transform,"Island postcard",Island(app.SelectedSport),22,20,407,380);
    Text(p.transform,"Ready for a day out",456,57,556,63,37,true);
-   Text(p.transform,"Your crew shares the Rainbow Sprinter look.\n\nOutfit changes will arrive when the character has swappable parts.",457,150,556,188,27,false,Muted);
+   Text(p.transform,"Every crew member gets a distinct hairstyle and number.\n\nFootball and basketball use matching Blue or Red uniforms. Your identity stays with you across all four islands.",457,150,556,188,27,false,Muted);
    ActionButton("Done athlete","Done",1104,729,230,65,Mint,Back,CoveSymbol.Check);
   }
   void Loading() {

@@ -16,7 +16,10 @@ namespace WhatTheFish {
   Athlete actor,aimReceiver,observedCarrier,markedCarrier;System.Random random;FootballBotAction action;float think,decisionElapsed,chargeTime,nextKick,nextChallenge,aimError,stuckTime,resetUntil,possessionSince,markingSince;Vector3 resetPoint;uint round,abilityRevision;bool aiming;
   public void Initialize(int slot,int seed){Slot=slot;actor=GetComponent<Athlete>();random=new System.Random(unchecked(seed+slot*7919));think=(float)random.NextDouble()*DecisionMin;decisionElapsed=chargeTime=nextKick=nextChallenge=stuckTime=resetUntil=0;action=default;aiming=false;aimReceiver=observedCarrier=markedCarrier=null;possessionSince=markingSince=Time.time;Decisions=Kicks=Passes=Abilities=0;round=uint.MaxValue;}
   public PlayerCommand Read(float dt){
-   var match=FootballMatch.Instance;if(!actor||!match||!match.Context||!match.Running||match.TeamOf(actor)==FootballTeam.None){action=default;chargeTime=0;Intent="Waiting";return default;}
+   if(!enabled)return default;
+   var match=FootballMatch.Instance;
+   if(actor&&match&&FootballMatch.CanAimKickoff(actor)){Intent="Kickoff";return new PlayerCommand{heading=match.BotKickoffHeading(actor),kick=match.Now>=match.Snapshot.deadline+.9,kickCharge=.45f};}
+   if(!actor||!match||!match.Context||!match.Running||match.TeamOf(actor)==FootballTeam.None){action=default;chargeTime=0;Intent="Waiting";return default;}
    if(round!=match.Snapshot.revision){round=match.Snapshot.revision;action=default;think=decisionElapsed=chargeTime=stuckTime=resetUntil=0;aiming=false;observedCarrier=markedCarrier=null;possessionSince=markingSince=Time.time;nextKick=nextChallenge=Time.time+.3f;}
    decisionElapsed+=dt;
    if((think-=dt)<=0){var owner=FootballBall.Instance.CurrentController;bool attacking=owner&&match.TeamOf(owner)==match.TeamOf(actor);think=(attacking?AttackDecisionMin:DecisionMin)+(float)random.NextDouble()*(attacking?AttackDecisionJitter:DecisionJitter);action=Decide(decisionElapsed);abilityRevision=FootballBall.Instance.PropSlot(actor).revision;decisionElapsed=0;Decisions++;}

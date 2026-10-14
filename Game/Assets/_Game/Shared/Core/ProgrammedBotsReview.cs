@@ -11,7 +11,7 @@ namespace WhatTheFish {
   string folder;bool failed;AppRoot app;bool basketball;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var a=Environment.GetCommandLineArgs();int i=Array.IndexOf(a,"-programmedBotsReview");if(i>=0&&i+1<a.Length)new GameObject("Programmed bots review").AddComponent<ProgrammedBotsReview>().folder=a[i+1];}
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
-  IEnumerator Until(Func<bool> predicate,string label,float seconds=25){float end=Time.realtimeSinceStartup+seconds;while(!predicate()&&Time.realtimeSinceStartup<end)yield return null;Check(predicate(),label);}
+  IEnumerator Until(Func<bool> predicate,string label,float seconds=25){float end=Time.realtimeSinceStartup+seconds;while(!predicate()&&Time.realtimeSinceStartup<end){var m=FootballMatch.Instance;if(!basketball&&m&&m.Authority&&m.KickoffReady&&m.KickoffActor)m.TryKickoff(m.KickoffActor,m.BotKickoffHeading(m.KickoffActor),.3f,m.Snapshot.revision);yield return null;}Check(predicate(),label);}
   Athlete[] Roster=>basketball?BasketballBots.Roster:FootballBots.Roster;
   int Count=>basketball?BasketballBots.Instance.Count:FootballBots.Instance.Count;
   bool Running=>basketball?BasketballMatch.Instance.Running:FootballMatch.Instance.Running;

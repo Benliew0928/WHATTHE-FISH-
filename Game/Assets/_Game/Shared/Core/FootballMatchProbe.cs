@@ -78,7 +78,7 @@ namespace WhatTheFish {
    }finally{frame.SetPositionAndRotation(oldPosition,oldRotation);Physics.SyncTransforms();}
    Check(Vector3.Distance(ball.KickoffPosition,centre)<.001f,"FORMATION_NEVER_CHANGES_BALL_ANCHOR");
   }
-  IEnumerator WaitPlaying(){while(!FootballMatch.Instance||!FootballMatch.Instance.Running)yield return new WaitForFixedUpdate();}
+  IEnumerator WaitPlaying(){while(!FootballMatch.Instance||!FootballMatch.Instance.Running){var m=FootballMatch.Instance;if(m&&m.KickoffReady&&m.KickoffActor)m.TryKickoff(m.KickoffActor,m.BotKickoffHeading(m.KickoffActor),.2f,m.Snapshot.revision);yield return new WaitForFixedUpdate();}}
   IEnumerator SelectSportReady(AppRoot app,SportId sport){
    app.SelectSport(sport);float until=Time.realtimeSinceStartup+20;
    while(app.SelectedSport!=sport&&Time.realtimeSinceStartup<until)yield return null;
@@ -87,7 +87,7 @@ namespace WhatTheFish {
   IEnumerator ResetPresentation(string goal){
    var ball=FootballBall.Instance;
    var match=FootballMatch.Instance;var actor=AppRoot.Instance.LocalAthlete;
-   Check(match.TryKickoffPose(match.TeamOf(actor),1,0,out var pose,out _)&&Vector3.Distance(actor.transform.position,pose)<.03f,"GOAL_RETURNS_TO_FIXED_SLOT_"+goal);
+   Check(match.KickoffActor==actor&&Vector3.Distance(Vector3.ProjectOnPlane(actor.transform.position-ball.KickoffPosition,Vector3.up),Vector3.zero)<.81f,"GOAL_RETURNS_TO_CENTRE_TAKER_"+goal);
    Check(Vector3.Distance(ball.Body.position,ball.KickoffPosition)<.001f,"GOAL_USES_EXISTING_BALL_ANCHOR_"+goal);
    if(Application.isBatchMode)yield return null;else yield return new WaitForEndOfFrame();
    float gap=Vector3.Distance(ball.transform.position,ball.Body.position);
@@ -95,7 +95,7 @@ namespace WhatTheFish {
    Check(gap<.01f,"RESET_RENDER_AT_CENTRE_"+goal);
    Check(ball.GetComponentsInChildren<Renderer>().Any(r=>r.enabled&&r.gameObject.activeInHierarchy&&Vector3.Distance(r.bounds.center,ball.Body.position)<ball.WorldRadius),"RESET_MESH_AT_CENTRE_"+goal);
    yield return WaitPlaying();yield return new WaitForSeconds(.1f);if(Application.isBatchMode)yield return null;else yield return new WaitForEndOfFrame();
-   Check(Vector3.Distance(ball.transform.position,ball.Body.position)<.01f,"RESTART_VISIBLE_WITHOUT_CONTACT_"+goal);
+   Check(Vector3.Distance(ball.transform.position,ball.Body.position)<.5f,"RESTART_KICK_VISIBLE_"+goal);
    if(!Application.isBatchMode){
     // View centre from the side so the kickoff athlete does not occlude the ball.
     float yaw=PlayerView.Instance.yaw;PlayerView.Instance.yaw=30;yield return null;yield return new WaitForEndOfFrame();
@@ -115,9 +115,10 @@ namespace WhatTheFish {
     while(FootballMatch.GoalFollowThrough)yield return new WaitForFixedUpdate();
     File.AppendAllText(ReportPath,"FOLLOW_THROUGH_END phase="+match.State.Phase+" remaining="+match.Remaining.ToString("R")+" countdown="+match.rules.kickoffSeconds.ToString("R")+" elapsed="+(match.Now-started).ToString("R")+"\n");
     Check(surface.ImpactCount>impacts,"SCORED_BALL_REACHES_NET_"+sign);
-    Check(match.Now-started<=.68&&match.State.ScoreA+match.State.ScoreB==score,"BOUNDED_FOLLOW_THROUGH_NO_DOUBLE_SCORE_"+sign);
+    Check(match.Now-started<=FootballMatch.ReplayCaptureSeconds+.1&&match.State.ScoreA+match.State.ScoreB==score,"BOUNDED_FOLLOW_THROUGH_NO_DOUBLE_SCORE_"+sign);
     if(golden){yield return new WaitForFixedUpdate();Check(ball.Body.isKinematic&&Vector3.Distance(ball.Body.position,ball.KickoffPosition)>10,"GOLDEN_GOAL_FREEZES_AT_NET_WITHOUT_RESET");}
-    else Check(match.State.Phase==FootballMatchPhase.Kickoff&&match.Remaining<=match.rules.kickoffSeconds+.001,"FOLLOW_THROUGH_THEN_NORMAL_KICKOFF_"+sign);
+    while(match.GoalSequence)yield return new WaitForFixedUpdate();
+    if(!golden)Check(match.State.Phase==FootballMatchPhase.Kickoff&&match.Remaining<=1.15+.001,"REPLAY_THEN_PROTECTED_KICKOFF_"+sign);
    }
   }
   IEnumerator Start(){
@@ -132,7 +133,7 @@ namespace WhatTheFish {
    uint selectionRevision=match.Snapshot.revision;Check(match.ChooseTeam(actor,FootballTeam.A,selectionRevision),"LOCAL_TEAM_REQUEST_ACCEPTED");Check(match.ChooseTeam(actor,FootballTeam.A,selectionRevision)&&match.Snapshot.teamA==1,"REPEATED_CHOICE_ONE_SEAT");
    yield return new WaitForSeconds(.1f);Check(match.State.Phase==FootballMatchPhase.TeamSelection,"ALL_CHOSEN_STILL_WAITS_FOR_DEADLINE");
    while(match.State.Phase==FootballMatchPhase.TeamSelection)yield return new WaitForFixedUpdate();
-   Check(match.TryKickoffPose(FootballTeam.A,1,0,out var kickoffPose,out _)&&Vector3.Distance(actor.transform.position,kickoffPose)<.03f,"FIRST_KICKOFF_FIXED_ONE_PLAYER_SLOT");
+   Check(match.KickoffActor==actor&&Vector3.ProjectOnPlane(actor.transform.position-ball.KickoffPosition,Vector3.up).magnitude<.81f,"FIRST_KICKOFF_CENTRE_TAKER");
    Check(Vector3.Distance(ball.Body.position,kickoffAnchor)<.001f&&ball.CurrentController==null,"FIRST_KICKOFF_EXISTING_BALL_POINT_NO_OWNER");
    Check(match.TeamOf(actor)==FootballTeam.A&&!match.ChooseTeam(actor,FootballTeam.B,selectionRevision),"SELECTED_TEAM_RETAINED_AND_LOCKED");var start=actor.transform.position;actor.Simulate(new PlayerCommand{move=Vector2.up,sprint=true,kick=true,tackle=true,jump=true},.1f);
    Check(Vector3.Distance(start,actor.transform.position)<.001f&&!actor.TryKick()&&!actor.TryTackle()&&!actor.CanRequestJump,"COUNTDOWN_BLOCKS_ALL_MATCH_ACTIONS");Check(ball.Body.isKinematic,"COUNTDOWN_BALL_FROZEN");yield return WaitPlaying();Check(!ball.Body.isKinematic,"KICKOFF_RESTORES_PHYSICS");

@@ -14,6 +14,7 @@ namespace WhatTheFish {
   public int Sign {get;private set;}
   public float LastImpactTime {get;private set;}=-10;
   public Mesh SurfaceMesh=>mesh;
+  public void CopyReplay(Vector4[] recordedContacts,Vector4[] recordedImpulses){System.Array.Copy(contacts,recordedContacts,Capacity);System.Array.Copy(impulses,recordedImpulses,Capacity);}
   readonly Vector4[] contacts=new Vector4[Capacity],impulses=new Vector4[Capacity];
   Mesh mesh;MeshRenderer surface,authored;bool authoredEnabled;MaterialPropertyBlock properties;int next;
   static readonly int SizeId=Shader.PropertyToID("_NetSize"),ContactsId=Shader.PropertyToID("_Contacts"),ImpulsesId=Shader.PropertyToID("_Impulses");

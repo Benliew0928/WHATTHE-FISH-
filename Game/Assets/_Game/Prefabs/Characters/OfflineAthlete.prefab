@@ -76,7 +76,9 @@ MonoBehaviour:
   capsule: {fileID: 8587167767446482221}
   visual: {fileID: 2522548452682047024}
   controlled: 0
+  inTransit: 0
   speed: 0
+  identityLibrary: {fileID: 11400000, guid: 895d7946499c6af4eac6054b0ed032db, type: 2}
 --- !u!114 &2893273042507227528
 MonoBehaviour:
   m_ObjectHideFlags: 0

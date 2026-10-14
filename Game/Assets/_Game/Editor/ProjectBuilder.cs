@@ -243,6 +243,7 @@ public static partial class ProjectBuilder {
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
   path=ResolveBuildOutputPath(path);
   FootballPropBuild.Prepare();
+  CharacterIdentityBuild.Prepare();
   JumpAnimationBuilder.Prepare();
   GolfCartBuilder.Prepare();
   GolfClubBuilder.Prepare();

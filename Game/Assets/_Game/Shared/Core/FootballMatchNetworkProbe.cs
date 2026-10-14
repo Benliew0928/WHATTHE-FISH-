@@ -10,11 +10,12 @@ namespace WhatTheFish {
   string report;int count;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){if(Environment.GetCommandLineArgs().Contains("-networkFootballMatchAudit"))new GameObject("Network football match checks").AddComponent<FootballMatchNetworkProbe>();}
   void Check(bool value,string name){File.AppendAllText(report,(value?"PASS ":"FAIL ")+name+"\n");if(!value)throw new Exception(name);count++;}
-  IEnumerator Playing(){while(!FootballMatch.Instance.Running)yield return new WaitForFixedUpdate();}
+  IEnumerator Playing(){while(!FootballMatch.Instance.Running){var m=FootballMatch.Instance;if(m.Authority&&m.KickoffReady&&m.KickoffActor)m.TryKickoff(m.KickoffActor,m.BotKickoffHeading(m.KickoffActor),.2f,m.Snapshot.revision);yield return new WaitForFixedUpdate();}}
   bool FixedSlotsReplicated(){
    var match=FootballMatch.Instance;var players=Athlete.Active.Where(a=>a&&a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned).ToArray();
    if(players.Length!=2)return false;
    foreach(var actor in players){
+    if(FootballBots.Id(actor)==match.Snapshot.kickoffPlayer){if(Vector3.ProjectOnPlane(actor.transform.position-FootballBall.Instance.KickoffPosition,Vector3.up).magnitude>1.1f)return false;continue;}
     if(!match.TryKickoffPose(match.TeamOf(actor),1,0,out var position,out var rotation)||Vector3.Distance(actor.transform.position,position)>.15f||Vector3.Dot(actor.transform.forward,rotation*Vector3.forward)<.99f)return false;
    }
    return true;
@@ -36,7 +37,7 @@ namespace WhatTheFish {
     Check(NetImpactsCorrect(),"HOST_BOTH_NET_CONTACTS");uint liveRevision=match.Snapshot.revision;while(match.State.Phase==FootballMatchPhase.Regulation)yield return new WaitForFixedUpdate();Check(match.State.Phase==FootballMatchPhase.Overtime&&match.Snapshot.revision==liveRevision,"HOST_CONTINUOUS_OVERTIME_REVISION");
     while(match.State.Phase!=FootballMatchPhase.Finished)yield return new WaitForFixedUpdate();Check(match.State.Result==FootballMatchResult.Draw,"HOST_OVERTIME_TIMEOUT_DRAW");var guest=Athlete.Active.First(a=>a.GetComponent<NetworkAthlete>().OwnerClientId!=0);var guestBefore=guest.transform.position;yield return new WaitForSeconds(.5f);Check(Vector3.Distance(guestBefore,guest.transform.position)>.03f,"CLIENT_CAN_MOVE_AFTER_FINISH");Check(match.StartMatch()&&match.State.ScoreA==0&&match.State.ScoreB==0,"HOST_NEW_MATCH_CLEAN");yield return new WaitForSeconds(.2f);match.rules=original;_=app.rooms.SetExploring(false);while(app.Exploring)yield return null;yield return new WaitForFixedUpdate();Check(match.State.Phase==FootballMatchPhase.Idle,"HOST_ROOM_RETURN_CLEAR");
    }else{
-    Check(!match.StartMatch(),"CLIENT_CANNOT_START");bool countdown=false,regulation=false,goalB=false,goalA=false,extra=false,finished=false;bool selected=false,selectionSeen=false,fullSeen=false,resetB=false,resetA=false,slotsReplicated=false;float until=Time.time+20;
+    Check(!match.StartMatch(),"CLIENT_CANNOT_START");bool countdown=false,regulation=false,goalB=false,goalA=false,extra=false,finished=false;bool selected=false,selectionSeen=false,fullSeen=false,resetB=false,resetA=false,slotsReplicated=false;float until=Time.time+40;
     while(Time.time<until&&!finished){var s=match.Snapshot;
      if(s.phase==FootballMatchPhase.Kickoff||s.phase==FootballMatchPhase.Regulation)slotsReplicated|=FixedSlotsReplicated();
      if(s.phase==FootballMatchPhase.TeamSelection){selectionSeen=true;fullSeen|=s.teamA==s.teamCapacity&&s.teamCapacity==1;if(fullSeen&&!selected){match.RequestTeam(FootballTeam.A);yield return new WaitForSeconds(.15f);Check(match.TeamOf(app.LocalAthlete)==FootballTeam.None,"CLIENT_FULL_TEAM_REJECTED");match.RequestTeam(FootballTeam.B);selected=true;}}

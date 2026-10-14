@@ -17,6 +17,6 @@ namespace WhatTheFish {
    var team=TeamOf(a,sport);return team!=FootballTeam.None&&team==TeamOf(b,sport);
   }
   public static Athlete Holder(SportId sport)=>sport==SportId.Football?(FootballBall.Instance?FootballBall.Instance.CurrentController:null):sport==SportId.Basketball&&BasketballBall.Active?BasketballBall.Active.Holder:null;
-  public static bool Attacking(Athlete local,SportId sport)=>SameTeam(local,Holder(sport),sport);
+  public static bool Attacking(Athlete local,SportId sport)=>sport==SportId.Football&&FootballMatch.CanAimKickoff(local)||SameTeam(local,Holder(sport),sport);
  }
 }

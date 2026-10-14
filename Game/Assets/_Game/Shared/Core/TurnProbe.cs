@@ -68,8 +68,11 @@ namespace WhatTheFish {
      Check(animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"),$"TURN_STOP_{sport}_LOD{level}");
     }
     recordingTurn=false;Time.captureFramerate=0;lod.ForceLOD(-1);
-    app.view.mode=0;yield return new WaitForSeconds(.2f);
-    Check(athlete.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).All(r=>!r.enabled),"TURN_FIRST_PERSON_"+sport);
+    app.view.mode=0;yield return new WaitForSeconds(.2f);yield return new WaitForEndOfFrame();
+    var rod=athlete.GetComponent<FishingRodMotion>();bool handsVisible=rod&&rod.Equipped;
+    var skins=athlete.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true);
+    var head=athlete.visual.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mixamorig:Head");
+    Check((handsVisible?skins.All(r=>r.enabled)&&head.localScale.magnitude<.01f:skins.All(r=>!r.enabled))&&athlete.GetComponent<CharacterIdentity>().AddedRenderers.All(r=>!r.enabled),"TURN_FIRST_PERSON_"+sport);
    }
    TurnCommandActive=false;Record("TURN_GAMEPLAY_COMPLETE");
   }

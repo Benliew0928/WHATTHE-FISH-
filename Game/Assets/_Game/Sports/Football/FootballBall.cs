@@ -331,13 +331,14 @@ namespace WhatTheFish {
    Body.AddTorque(-Body.angularVelocity.normalized*Mathf.Min(rollingDeceleration/radius,Body.angularVelocity.magnitude/dt),ForceMode.Acceleration);
   }
   public bool InKickRange(Athlete actor){
+   if(FootballMatch.Instance&&FootballMatch.Instance.AwaitingKickoff)return FootballMatch.CanAimKickoff(actor);
    if(PortalBusy||!actor||!Allowed||actor.inTransit||!actor.Grounded||actor.Action!=FootballAction.None||CurrentController&&CurrentController!=actor)return false;
    var position=CurrentController==actor?FootPosition(actor):Body.position;
    var offset=position-(actor.transform.position+Vector3.up*WorldRadius);var horizontal=Vector3.ProjectOnPlane(offset,Vector3.up);
    if(horizontal.magnitude>maximumKickDistance||Mathf.Abs(offset.y)>.5f||Vector3.Dot(actor.transform.forward,horizontal.normalized)<.25f)return false;
    return AbilityReachClear(actor,position)&&!Physics.Linecast(actor.transform.position+Vector3.up*.35f,position,1<<8,QueryTriggerInteraction.Ignore);
   }
-  public static Vector3 KickDirection(Athlete actor)=>Vector3.ProjectOnPlane(actor.transform.forward,Vector3.up).normalized;
+  public static Vector3 KickDirection(Athlete actor)=>FootballMatch.CanAimKickoff(actor)&&PlayerView.Instance&&PlayerView.Instance.target==actor?Quaternion.Euler(0,PlayerView.Instance.yaw,0)*Vector3.forward:Vector3.ProjectOnPlane(actor.transform.forward,Vector3.up).normalized;
   public bool TryKick(Athlete actor,float charge=1){
    if(float.IsNaN(charge)||float.IsInfinity(charge)||!HasAuthority||Body.isKinematic&&controller!=actor||!InKickRange(actor))return false;
    if(controller==actor){FollowController(actor);if(controller!=actor)return false;}

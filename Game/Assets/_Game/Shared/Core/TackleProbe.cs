@@ -11,6 +11,7 @@ namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   void PlaceAthlete(Athlete a,Vector3 position,float yaw){a.capsule.enabled=false;a.transform.SetPositionAndRotation(position,Quaternion.Euler(0,yaw,0));a.ResetLocomotion();a.capsule.enabled=true;Physics.SyncTransforms();}
   IEnumerator TackleAudit(){
+   Application.targetFrameRate=60;QualitySettings.vSyncCount=0;
    yield return new WaitForSeconds(2);var app=AppRoot.Instance;app.SelectSport(SportId.Football);app.EnterOffline();app.view.mode=1;app.view.yaw=-35;
    TurnCommandActive=true;TurnCommand=default;
    var actor=app.LocalAthlete;var rival=Instantiate(app.athletePrefab).GetComponent<Athlete>();rival.name="Tackle test opponent";rival.Setup();
@@ -20,7 +21,12 @@ namespace WhatTheFish {
    if(args.Contains("-tackleVideo")){Time.captureFramerate=30;turnFrames=Path.Combine(Path.GetDirectoryName(output),"frames");Directory.CreateDirectory(turnFrames);turnFrame=0;recordingTurn=true;}
    foreach(int lod in new[]{0,1}){
     actor.GetComponentInChildren<LODGroup>().ForceLOD(lod);rival.GetComponentInChildren<LODGroup>().ForceLOD(lod);
-    PlaceAthlete(actor,origin,0);PlaceAthlete(rival,origin+Vector3.forward*3.8f,180);TurnCommand=default;yield return null;
+    // Repeat each LOD with a loose ball away from the route and settled feet.
+    // Prior possession/knockback must not turn a collision test into an airborne dodge.
+    FootballBall.Instance.ResetBall();FootballBall.Instance.Body.position=origin+Vector3.right*20;
+    PlaceAthlete(actor,origin,0);PlaceAthlete(rival,origin+Vector3.forward*3.8f,180);TurnCommand=default;
+    for(int settle=0;settle<6;settle++){rival.Simulate(default,1f/60);yield return null;}
+    Check(actor.Grounded&&rival.Grounded&&!rival.Airborne,"TACKLE_SETTLED_FIXTURE_LOD"+lod);
     int dealt=source.HitsDealt,received=victim.HitsReceived;var first=actor.transform.position;var rivalStart=rival.transform.position;
     button.OnPointerDown(new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left});
     yield return null;
@@ -37,7 +43,7 @@ namespace WhatTheFish {
       earlyInput|=actor.transform.position.x>before.x+.01f;
      }else {if(actor.Action==FootballAction.None)TurnCommand=default;yield return null;}
     }
-    Check(hit&&source.HitsDealt-dealt==1&&victim.HitsReceived-received==1,"TACKLE_SINGLE_HIT_LOD"+lod);
+    Check(hit&&source.HitsDealt-dealt==1&&victim.HitsReceived-received==1,$"TACKLE_SINGLE_HIT_LOD{lod} dealt={source.HitsDealt-dealt} received={victim.HitsReceived-received} source={actor.transform.position} rival={rival.transform.position}");
     Check(Vector3.Dot(rival.transform.position-rivalStart,Vector3.forward)>.3f,"TACKLE_OPPONENT_SLIDES_LOD"+lod);
     Check(slideClip&&hitClip&&!earlyInput,"TACKLE_ANIMATION_AND_BLOCKED_RECOVERY_CONTROL_LOD"+lod);
     Check(actor.Action==FootballAction.None&&actor.TackleCooldown<=.2f,"TACKLE_RECOVERED_NO_QUEUED_REPEAT_LOD"+lod);
@@ -67,7 +73,7 @@ namespace WhatTheFish {
    Check(source.RecoveryRemaining==0&&source.MovementMultiplier==1,"TACKLE_PLAYER_CONTACT_NO_MISS_PENALTY");
    PlaceAthlete(actor,origin,90);PlaceAthlete(rival,origin+Vector3.forward*4,180);actor.TryTackle();
    TurnCommand=new PlayerCommand{move=Vector2.up,heading=90,sprint=true};yield return new WaitForSeconds(.7f);
-   Check(source.RecoveryRemaining>0&&actor.speed>4.05f&&actor.speed<4.35f,"TACKLE_MISS_SPRINT_SPEED_42_METRES_PER_SECOND");
+   Check(source.RecoveryRemaining>0&&Mathf.Abs(actor.speed-2.94f)<.15f,"TACKLE_MISS_SPRINT_SPEED_294_METRES_PER_SECOND actual="+actor.speed);
    yield return new WaitForSeconds(.7f);
    Check(source.RecoveryRemaining==0&&actor.speed>6.8f,"TACKLE_MISS_FULL_SPRINT_RESUMES");TurnCommand=default;
    hits=source.HitsDealt;

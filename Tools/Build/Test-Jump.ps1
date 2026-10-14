@@ -8,7 +8,8 @@ $processes=@()
 function Start-JumpProbe([string]$Name,[string]$Options){
     $report=Join-Path $out ($Name+'.txt')
     $log=Join-Path $out ($Name+'.log')
-    Start-Process -FilePath $player -ArgumentList "$Options -probe -report `"$report`" -logFile `"$log`"" -WindowStyle Hidden -PassThru
+    $process=Start-Process -FilePath $player -ArgumentList "$Options -probe -report `"$report`" -logFile `"$log`"" -WindowStyle Hidden -PassThru
+    $null=$process.Handle;return $process
 }
 try {
     $processes+=Start-JumpProbe 'gameplay' '-batchmode -screen-width 1280 -screen-height 720 -screen-fullscreen 0 -jumpAudit -exitAfter 70'

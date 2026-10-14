@@ -31,7 +31,7 @@ namespace WhatTheFish {
    else Set(FootballMatchPhase.GoalReset,0);
    return true;
   }
-  public void ResetCompleted(double now){if(Phase==FootballMatchPhase.GoalReset)Set(FootballMatchPhase.Kickoff,now+kickoff);}
+  public void ResetCompleted(double now,double? countdown=null){if(Phase==FootballMatchPhase.GoalReset)Set(FootballMatchPhase.Kickoff,now+(countdown??kickoff));}
   public void Advance(double now){
    if(now<Deadline)return;
    switch(Phase){

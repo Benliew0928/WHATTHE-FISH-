@@ -64,7 +64,7 @@ namespace WhatTheFish {
    v.Clear();for(int i=0;i<3;i++){var direction=ends[i].normalized;var start=direction*60;var end=ends[i]-direction*40;bool active=selected==i+1;BasketballUIMesh.Line(v,start,end,active?CoveUI.Mint:new Color(1,.98f,.91f,.55f),active?15:10);var tip=Vector2.Lerp(start,end,.7f);var side=new Vector2(-direction.y,direction.x)*4;BasketballUIMesh.Line(v,tip-direction*6+side,tip,CoveUI.Ink,2);BasketballUIMesh.Line(v,tip-direction*6-side,tip,CoveUI.Ink,2);}
   }
  }
- [DefaultExecutionOrder(200)]
+ [DefaultExecutionOrder(10020)]
  public sealed class FootballEffortHUD:MonoBehaviour {
   sealed class Bar {public RectTransform root;public Image fill;public Text state;public Transform head;}
   readonly List<Vector2> placed=new();
@@ -107,13 +107,16 @@ namespace WhatTheFish {
     bool visible=active&&camera&&!actor.inTransit&&!(actor==view.target&&view.mode==0);
     var world=bar.head?bar.head.position+Vector3.up*.2f:actor.transform.position+Vector3.up*2.15f;
     var screen=camera?camera.WorldToScreenPoint(world):Vector3.zero;
+    bool identified=actor.GetComponent<CharacterIdentity>();Rect badge=default;
+    if(identified){visible&=CharacterIdentityBadges.TryGetScreenRect(actor,out badge);screen=new Vector3(badge.center.x,Screen.height-badge.yMax-4,screen.z);}
     visible&=screen.z>0&&screen.x>0&&screen.x<Screen.width&&screen.y>0&&screen.y<Screen.height;
     if(visible)visible=!Physics.Linecast(camera.transform.position,world,1<<8,QueryTriggerInteraction.Ignore);
     bar.root.gameObject.SetActive(visible);if(!visible)continue;
     RectTransformUtility.ScreenPointToLocalPointInRectangle(parent,screen,canvas.renderMode==RenderMode.ScreenSpaceOverlay?null:canvas.worldCamera,out var point);
     // Separate nearby overhead meters in broadcast view without hiding any player.
-    for(int pass=0;pass<placed.Count;pass++)foreach(var previous in placed)if(Mathf.Abs(previous.x-point.x)<88&&Mathf.Abs(previous.y-point.y)<30)point.y=previous.y+30;
+    if(!identified)for(int pass=0;pass<placed.Count;pass++)foreach(var previous in placed)if(Mathf.Abs(previous.x-point.x)<88&&Mathf.Abs(previous.y-point.y)<30)point.y=previous.y+30;
     placed.Add(point);bar.root.anchoredPosition=point;bar.state.rectTransform.anchoredPosition=new Vector2(0,16);Paint(bar,actor,false);VisibleBars++;
+    if(identified){bar.state.text="";bar.root.sizeDelta=new Vector2(badge.width/canvas.scaleFactor,6/canvas.scaleFactor);}
    }
    removed.Clear();foreach(var pair in bars)if(!pair.Key||!Athlete.Active.Contains(pair.Key)){Destroy(pair.Value.root.gameObject);removed.Add(pair.Key);}foreach(var actor in removed)bars.Remove(actor);
   }
