@@ -14,7 +14,7 @@ namespace WhatTheFish {
   readonly Stack<string> history=new();readonly List<Button> busyButtons=new();
   readonly List<(NetworkAthlete player,Text state,CovePlate dot)> playerRows=new();
   Text message,readyLabel,startHint,roomCount,toast,headingCaption;CoveButton readyButton,startButton,joinButton;
-  string restoreFocus;
+  string restoreFocus,seatSignature;
   GameObject modalRoot;
   InputField roomCode,venueName;StadiumAppearance draft;bool hasDraft,leaving;
   int draftMinutes;string returnFromRules="create",lastError="";float refreshAt,toastUntil,busySince;
@@ -48,7 +48,7 @@ namespace WhatTheFish {
    switch(page){
     case "create":CreateRoom();break;case "join":JoinRoom();break;case "room":Lobby();break;
     case "rules":Rules();break;case "custom":Customize();break;case "settings":Settings();break;
-    case "ai":AISetup();break;
+    case "ai":AISetup();break;case "customize":CustomizeFootball();break;
     case "help":Help();break;case "character":AthleteCard();break;case "loading":Loading();break;
     default:Home();break;
    }
@@ -138,7 +138,7 @@ namespace WhatTheFish {
    var explore=Button(panel.transform,"Explore offline","Explore offline",33,football?422:474,424,football?72:76,Sky,app.EnterOffline,CoveSymbol.Map,28);busyButtons.Add(explore);
    if(football)busyButtons.Add(Button(panel.transform,"Play vs AI","Play vs bots",33,506,424,72,Gold,()=>Go("ai"),CoveSymbol.People,28));
    else Plate(panel.transform,"Divider",35,578,420,2,Line,0,0);
-   var custom=Button(panel.transform,"Customize venue","Customize\nvenue",33,602,206,83,Color.white,()=>Go("custom"),CoveSymbol.Paint,23);custom.interactable=CanCustomize;
+   var custom=Button(panel.transform,"Customize venue",app.SelectedSport==SportId.Football?"Customize":"Customize\nvenue",33,602,206,83,Color.white,()=>Go(app.SelectedSport==SportId.Football?"customize":"custom"),CoveSymbol.Paint,23);custom.interactable=CanCustomize;
    Button(panel.transform,"How to play","How to\nplay",254,602,203,83,Color.white,()=>Go("help"),CoveSymbol.Book,23);
    Badge(panel.transform,"Selected: "+app.SelectedSport,33,722,424,Gold);
    Footer(app.SelectedSport==SportId.Fishing?"Fish together: a timed round, a three-round Cup or a shared Crew Catch.":"Choose your island  •  Invite your friends  •  Travel together on the Sky-Sail");
@@ -210,30 +210,41 @@ namespace WhatTheFish {
   void Lobby() {
    Heading("Your crew is gathering",app.SelectedSport+"  •  "+RuleSummary());
    var p=Plate(content,"Player board",62,182,930,604,Cream,32,2,true);
-   roomCount=Text(p.transform,"Your crew",32,23,650,52,34,true);
+   roomCount=Text(p.transform,"Your crew",32,23,650,52,28,true);
    Badge(p.transform,app.rooms.Host?"You're the host":"Guest",693,30,201,Gold);
    var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(n=>n.IsSpawned&&n.IsPlayerObject).OrderBy(n=>n.OwnerClientId).ToArray();
-   for(int i=0;i<app.environments.Current.maxPlayers;i++){
-    float x=30+(i%2)*448,y=101+(i/2)*83;var row=Plate(p.transform,"Player slot "+i,x,y,422,69,Color.white,16,1);row.borderColor=Line;
-    if(i>=players.Length){Text(row.transform,"Waiting for a friend…",24,0,377,69,22,false,Muted);continue;}
-    var player=players[i];var dot=Plate(row.transform,"Player number",13,12,45,45,LocalProfile.Teams[i%4],22,0);
-    Text(dot.transform,(i+1).ToString("00"),0,0,45,45,20,true,null,TextAnchor.MiddleCenter);
-    string who=player.OwnerClientId==0?"Host":"Player "+player.OwnerClientId;if(player.IsOwner)who+=" (you)";
-    Text(row.transform,who,73,2,212,35,23,true);var state=Text(row.transform,"",74,35,319,28,19,false,Muted);playerRows.Add((player,state,dot));
-   }
-   Text(p.transform,"Ready up when you're happy with the setup.",35,535,841,44,23,false,Muted);
+   seatSignature=RoomSeats.Signature();
+   Text(p.transform,"PLAYERS  ·  choose an open numbered place",30,92,860,36,24,true);
+   DrawSeats(p.transform,players,false,app.environments.Current.maxPlayers,140);
+   Text(p.transform,"SPECTATORS  ·  watch from the stands",30,330,860,36,24,true);
+   DrawSeats(p.transform,players,true,10,378);
+   var permission=Button(p.transform,"Allow spectators",RoomSeats.Allowed?"Spectators: allowed":"Spectators: closed",30,543,390,42,RoomSeats.Allowed?Mint:Sky,()=>NetworkAthlete.HostPlayer.AllowSpectatorsRpc(!RoomSeats.Allowed),size:21);
+   permission.interactable=app.rooms.Host;
+   Text(p.transform,"Click an empty place to move. Then ready up.",440,543,460,42,20,false,Muted);
    var side=Plate(content,"Room invitation",1020,182,521,604,Cream,32,2,true);
    Text(side.transform,"ROOM CODE",30,25,457,36,20,true,Muted,TextAnchor.MiddleCenter);
    Text(side.transform,app.rooms.Code,26,71,467,69,48,true,null,TextAnchor.MiddleCenter);
    Button(side.transform,"Copy invitation","Copy code",91,157,340,59,Sky,()=>StartCoroutine(CoveClipboard.Copy(app.rooms.Code,ok=>Notice(ok?"Room code copied. Share it with your crew.":"Copy isn't available. Share the code shown above."))),CoveSymbol.Copy,23);
    Button(side.transform,"Room conditions","Conditions",27,245,224,59,Color.white,()=>{returnFromRules="room";draftMinutes=MenuMatchRules.CurrentMinutes;Go("rules");},CoveSymbol.Flag,23);
-   var venue=Button(side.transform,"Room venue","Venue",270,245,224,59,Color.white,()=>Go("custom"),CoveSymbol.Paint,23);venue.interactable=CanCustomize&&CanEdit;
+   var venue=Button(side.transform,"Room venue",app.SelectedSport==SportId.Football?"Customize":"Venue",270,245,224,59,Color.white,()=>Go(app.SelectedSport==SportId.Football?"customize":"custom"),CoveSymbol.Paint,23);venue.interactable=CanCustomize&&(CanEdit||app.SelectedSport==SportId.Football);
    readyButton=Button(side.transform,"Ready toggle","I'm ready",27,327,467,74,Mint,ToggleReady,CoveSymbol.Check,28);readyLabel=readyButton.GetComponentInChildren<Text>();
    startHint=Text(side.transform,"",27,415,467,54,21,false,Muted,TextAnchor.MiddleCenter);
    startButton=Button(side.transform,"Travel together",app.rooms.Host?"Travel together":"Waiting for host",27,493,467,76,Coral,()=>{_=app.rooms.SetExploring(true);},CoveSymbol.Boat,28);
    ActionButton("Leave room","Leave room",64,809,214,61,Cream,LeaveDialog,CoveSymbol.Back,23);
    message=Text(content,"",318,807,991,57,21,false,Ink);
    Button(content,"Room help","How to play",1322,809,218,61,Cream,()=>Go("help"),CoveSymbol.Book,22);
+  }
+  void DrawSeats(Transform parent,NetworkAthlete[] players,bool spectator,int count,float top){
+   for(int i=0;i<count;i++){
+    byte seat=(byte)((spectator?10:0)+i);var player=players.FirstOrDefault(n=>n.RoomSeat.Value==seat);
+    string number=(i+1).ToString("00");string title=player?(player.IsOwner?"You":player.OwnerClientId==0?"Host":player.Nickname.Value.ToString()):"Open";
+    if(title.Length>12)title=title.Substring(0,11)+"…";
+    var button=Button(parent,(spectator?"Spectator seat ":"Player seat ")+number,number+"  "+title,30+(i%5)*175,top+(i/5)*77,165,66,player?(player.IsOwner?Gold:Mint):Color.white,()=>{
+     var own=RoomTeleport.Players().FirstOrDefault(n=>n.IsOwner);if(own){app.rooms.SeatMessage="";own.ChooseRoomSeatRpc(seat);}
+    },size:20);
+    button.interactable=!player&&(!spectator||RoomSeats.Allowed);
+    if(player){var caption=button.GetComponentInChildren<Text>();caption.rectTransform.sizeDelta=new Vector2(141,40);var state=Text(parent,"",38+(i%5)*175,top+(i/5)*77+44,149,20,14,false,Muted,TextAnchor.MiddleCenter);playerRows.Add((player,state,null));}
+   }
   }
   void ToggleReady(){if(app.rooms.busy)return;var own=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsSpawned&&p.IsPlayerObject&&p.IsOwner);if(own)own.ReadyRpc(!own.Ready.Value);}
   void Rules() {
@@ -257,6 +268,15 @@ namespace WhatTheFish {
    }else ActionButton("Done conditions","Done",1265,808,237,65,Mint,Back,CoveSymbol.Check);
   }
   void Detail(Transform parent,string title,string value,float x,float y,float w) {Text(parent,title,x,y,w,35,25,true);Text(parent,value,x,y+35,w,49,23,false,Muted);}
+  void CustomizeFootball() {
+   Heading("Make the ball your own","Your trail, all game. Only you see your choice, whoever kicks the ball.");
+   var panel=Plate(content,"Personal football style",63,178,1476,609,Cream,32,2,true);
+   Text(panel.transform,"Choose a trail",30,16,1000,46,32,true);
+   Text(panel.transform,"Saved automatically on this device",30,62,1000,35,23,false,Muted);
+   var cards=Rect(panel.transform,"Trail choices",30,112,1416,467);FootballTrailPicker.Create(cards,1416,467,false);
+   if(CanEdit)ActionButton("Customize shared venue","Venue design",63,809,310,65,Cream,()=>Go("custom"),CoveSymbol.Paint,26);
+   ActionButton("Done customization","Done",1260,809,279,65,Mint,Back,CoveSymbol.Check,27);
+  }
   void Customize() {
    if(!hasDraft){draft=app.CurrentAppearance;hasDraft=true;detailPreview=false;}
    Heading("Make it your home ground","Try a look. Preview your venue. Save when it feels right.");
@@ -367,16 +387,17 @@ namespace WhatTheFish {
    if(joinButton)joinButton.interactable=!busy&&roomCode&&ValidCode(roomCode.text);
    if(readyButton||startButton){
     var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsSpawned&&p.IsPlayerObject).ToArray();
-    if(players.Length!=playerRows.Count&&Page=="room"&&!IsTransitioning){Rebuild();return;}
+    if((players.Length!=playerRows.Count||seatSignature!=RoomSeats.Signature())&&Page=="room"&&!IsTransitioning){Rebuild();return;}
     var own=players.FirstOrDefault(p=>p.IsOwner);bool all=players.Length>0&&players.All(p=>p.Ready.Value);
     if(readyButton)readyButton.interactable=!busy&&own;if(readyLabel)readyLabel.text=own&&own.Ready.Value?"Ready!  Tap to undo":"I'm ready";
-    if(startButton)startButton.interactable=!busy&&app.rooms.Host&&all;
+    if(startButton)startButton.interactable=!busy&&app.rooms.Host&&all&&RoomSeats.PlayingCount>0;
     if(startHint)startHint.text=busy?"Getting your crew moving…":!all?"Waiting for everyone to ready up":app.rooms.Host?"All set. Let's go together!":"All ready. Your host will start.";
-    if(roomCount)roomCount.text="Your crew  "+players.Length+" / "+app.environments.Current.maxPlayers;
-    foreach(var row in playerRows)if(row.player&&row.state)row.state.text=row.player.Ready.Value?"Ready to go":"Choosing their setup";
+    if(roomCount)roomCount.text="Players "+RoomSeats.PlayingCount+" / "+app.environments.Current.maxPlayers+"   ·   Watching "+players.Count(n=>n.IsSpectator)+" / 10";
+    foreach(var row in playerRows)if(row.player&&row.state)row.state.text=row.player.Ready.Value?"Ready":"Choosing";
    }
    if(message){
-    if(busy)message.text=Time.unscaledTime-busySince>15?"Still connecting… this is taking a little longer.":"Connecting… please wait a moment.";
+    if(Page=="room"&&app.rooms.SeatMessage.Length>0)message.text=app.rooms.SeatMessage;
+    else if(busy)message.text=Time.unscaledTime-busySince>15?"Still connecting… this is taking a little longer.":"Connecting… please wait a moment.";
     else if(!string.IsNullOrEmpty(app.rooms.Error)&&lastError!=app.rooms.Error){lastError=app.rooms.Error;message.text=FriendlyError(lastError);if(roomCode)roomCode.GetComponent<CoveFieldFeedback>().Invalid();}
     else if(lastError==""&&message.text.StartsWith("Connecting"))message.text="";
    }
@@ -385,7 +406,7 @@ namespace WhatTheFish {
    string lower=error.ToLowerInvariant();if(lower.Contains("full"))return "That room is full. Ask your host for another room.";
    if(lower.Contains("not found")||lower.Contains("invalid")||lower.Contains("code"))return "We couldn't find that room. Check the code and try again.";
    if(lower.Contains("started")||lower.Contains("locked"))return "Your crew is already playing. Ask the host to return to the room.";
-   if(lower.Contains("host left"))return "The host left and the room closed. You can create another one.";
+   if(lower.Contains("host left"))return "The room could not choose another host. Please try joining again.";
    return "We couldn't connect. Check your connection, then try again. Offline exploration is available.";
   }
  }

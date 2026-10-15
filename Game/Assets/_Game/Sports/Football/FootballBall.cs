@@ -33,12 +33,12 @@ namespace WhatTheFish {
     if(HasAuthority)return controller;
     if(!NetworkAthlete.HostPlayer)return null;
     var snapshot=NetworkAthlete.HostPlayer.Ball.Value;if(!snapshot.valid)return null;ulong id=snapshot.controllerId;
-    foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkObject>();if(net&&net.IsSpawned&&net.NetworkObjectId==id)return actor;}
+    foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.StableId==id)return actor;}
     return null;
    }
   }
   bool CanControl(Athlete actor){
-   if(PortalBusy||Time.time<propPickupDelay||!actor||!actor.isActiveAndEnabled||actor.inTransit||!actor.capsule||!actor.capsule.enabled||!actor.Grounded||actor.Airborne||actor.LoadingJump||actor.Action!=FootballAction.None)return false;
+   if(PortalBusy||Time.time<propPickupDelay||!actor||actor.IsSpectator||!actor.isActiveAndEnabled||actor.inTransit||!actor.capsule||!actor.capsule.enabled||!actor.Grounded||actor.Airborne||actor.LoadingJump||actor.Action!=FootballAction.None)return false;
    if(mustApproach.Contains(actor)){
     if(Vector3.ProjectOnPlane(Body.position-actor.transform.position,Vector3.up).magnitude<=controlDistance+.1f)return false;
     mustApproach.Remove(actor);
@@ -54,7 +54,7 @@ namespace WhatTheFish {
    if(controller&&(!controller.isActiveAndEnabled||controller.inTransit||!controller.capsule.enabled))ReleaseControl();
    // Walking, sprinting, facing and distance never eject an attached ball.
    if(!controller&&!Body.isKinematic&&candidate&&CanControl(candidate)){
-    controller=candidate;sequence++;
+    controller=candidate;sequence++;FootballMatch.Instance?.RecordTouch(candidate,true);
     Physics.IgnoreCollision(sphere,candidate.capsule,true);SetPhysicsMode(false);
     Body.interpolation=RigidbodyInterpolation.None;FollowController(candidate);FootballAudio.Emit(FootballSound.Receive,Body.position,.85f);
    }
@@ -62,7 +62,7 @@ namespace WhatTheFish {
   public float MovementSpeed(Athlete actor,bool sprint,bool charging){
    RefreshControl(actor);
    // Charging replaces the possession penalty; both use the original base speed.
-   return FootballEffort.PlayerPace*(charging&&InKickRange(actor)?4*chargeMovementMultiplier:(sprint?7:4)*(CurrentController==actor?dribbleMovementMultiplier:1));
+   return FootballEffort.PlayerPace*(charging&&!actor.FootballEffort.Dashing&&InKickRange(actor)?4*chargeMovementMultiplier:(sprint?7:4)*(CurrentController==actor?dribbleMovementMultiplier:1));
   }
   public void ForgetPlayer(Athlete actor){if(controller==actor)ReleaseControl();mustApproach.Remove(actor);}
   void ReleaseControl(Athlete excluded=null){
@@ -71,7 +71,7 @@ namespace WhatTheFish {
   }
   public void ReleaseFromTackle(Athlete victim,Athlete tackler,Vector3 direction){
    if(!HasAuthority||controller!=victim||!Allowed)return;
-   SoundContact(FootballSound.Deflection,Body.position,tackleBallSpeed);ReleaseControl(victim);if(tackler){mustApproach.Add(tackler);tackler.GetComponent<FootballTackle>()?.ClaimBallContact();}
+   FootballMatch.Instance?.RecordTouch(tackler);SoundContact(FootballSound.Deflection,Body.position,tackleBallSpeed);ReleaseControl(victim);if(tackler){mustApproach.Add(tackler);tackler.GetComponent<FootballTackle>()?.ClaimBallContact();}
    Body.WakeUp();Body.linearVelocity=Vector3.ProjectOnPlane(direction,Vector3.up).normalized*tackleBallSpeed*FootballEffort.BallPace+Vector3.up*tackleBallLift*FootballEffort.BallPace;Body.angularVelocity=Vector3.zero;impulsePending=true;
   }
   public Vector3 FootPosition(Athlete actor){
@@ -81,7 +81,7 @@ namespace WhatTheFish {
    position.y=ground+WorldRadius;return position;
   }
   public void FollowController(Athlete actor){
-   if(!actor||CurrentController!=actor||PortalBusy)return;
+   if(!actor||actor.IsSpectator||CurrentController!=actor||PortalBusy)return;
    var position=FootPosition(actor);if(BlockAttachedBall(actor,position))return;var travel=position-Body.position;
    if(travel.sqrMagnitude>.000001f)Body.rotation=Quaternion.AngleAxis(travel.magnitude/WorldRadius*Mathf.Rad2Deg,Vector3.Cross(Vector3.up,travel).normalized)*Body.rotation;
    Body.position=position;transform.SetPositionAndRotation(position,Body.rotation);
@@ -146,6 +146,7 @@ namespace WhatTheFish {
    FootballBoundaryVisual.Attach(this);
    if(!GetComponent<FootballAudio>())gameObject.AddComponent<FootballAudio>();
    if(!GetComponent<FootballPropVisual>())gameObject.AddComponent<FootballPropVisual>();
+   if(!GetComponent<FootballTrail>())gameObject.AddComponent<FootballTrail>();
   }
   Bounds InPitch(Transform frame,Bounds source){
    var bounds=new Bounds(Pitch.InverseTransformPoint(frame.TransformPoint(source.min)),Vector3.zero);
@@ -156,12 +157,13 @@ namespace WhatTheFish {
   void OnDisable(){DisableFootballWalls();ResetFootballProps();ReleaseControl();mustApproach.Clear();if(Instance==this)Instance=null;}
   void OnDestroy(){DestroyFootballWalls();}
   void SnapPose(Vector3 position,Quaternion rotation){
+   if((transform.position-position).sqrMagnitude>4)GetComponent<FootballTrail>()?.Clear();
    // A sleeping interpolated body otherwise keeps its old rendered pose until contact wakes it.
    var interpolation=Body.interpolation;Body.interpolation=RigidbodyInterpolation.None;
    Body.position=position;Body.rotation=rotation;transform.SetPositionAndRotation(position,rotation);
    Physics.SyncTransforms();Body.interpolation=interpolation;
   }
-  public void ResetBall(bool preserveInventory=false){if(!HasAuthority)return;ResetFootballProps(!preserveInventory);sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
+  public void ResetBall(bool preserveInventory=false){if(!HasAuthority)return;GetComponent<FootballTrail>()?.Clear();FootballMatch.Instance?.Statistics.ResetPlay();ResetFootballProps(!preserveInventory);sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
   void FixedUpdate(){
    authority=HasAuthority;
    bool active=FootballTackle.EnvironmentAllowed&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!Online||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
@@ -195,7 +197,7 @@ namespace WhatTheFish {
     Body.MovePosition(Vector3.Lerp(from,value.position,blend));Body.MoveRotation(Quaternion.Slerp(fromRotation,value.rotation,blend));
    }
   }
-  ulong ControllerId(){var net=controller?controller.GetComponent<NetworkObject>():null;return net&&net.IsSpawned?net.NetworkObjectId:ulong.MaxValue;}
+  ulong ControllerId(){var net=controller?controller.GetComponent<NetworkAthlete>():null;return net&&net.IsSpawned?net.StableId:ulong.MaxValue;}
   // Only the authoritative ball is bounded by pitch lines; nets have shared world collision.
   // LateUpdate catches the result of PhysX impulses, including a kick at the line.
   void LateUpdate(){ResolveAbilityBallStep();var owner=CurrentController;Body.interpolation=owner?RigidbodyInterpolation.None:freeInterpolation;if(owner&&Allowed)FollowController(owner);else if(HasAuthority&&!Body.isKinematic&&(Allowed||FootballMatch.GoalFollowThrough))KeepInsidePitch();}
@@ -240,7 +242,7 @@ namespace WhatTheFish {
   // PhysX prevents penetration; interception also removes tangential speed/spin.
   void StopAtPlayer(Athlete actor){
    if(!HasAuthority||Body.isKinematic||!Allowed)return;
-   if(SlideContact(actor))return;
+   FootballMatch.Instance?.RecordTouch(actor);if(SlideContact(actor))return;
    SoundContact(FootballSound.Deflection,Body.position,Body.linearVelocity.magnitude);ReleaseControl();Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;impulsePending=false;sequence++;
    // Grounded rolling can sleep, but an airborne contact must still fall.
    float radius=sphere.radius*transform.lossyScale.x;
@@ -264,7 +266,7 @@ namespace WhatTheFish {
    for(int i=0;i<collision.contactCount;i++){var contact=collision.GetContact(i);net.Contact(contact.point,-collision.relativeVelocity,contact.normal);}
   }
   public bool Intercept(Athlete actor){
-   if(!actor||actor.inTransit||!HasAuthority||Body.isKinematic||!Allowed)return false;
+   if(!actor||actor.IsSpectator||actor.inTransit||!HasAuthority||Body.isKinematic||!Allowed)return false;
    if(SlideContact(actor))return true;
    var toward=Vector3.ProjectOnPlane(actor.transform.position-Body.position,Vector3.up);
    if(Vector3.Dot(Body.linearVelocity,toward)<=.001f)return false;
@@ -273,8 +275,9 @@ namespace WhatTheFish {
   // The controller's rounded foot/step solver must not climb the football.
   // Sweep its horizontal footprint instead, keeping vertical terrain movement intact.
   public Vector3 ConstrainPlayerMotion(Athlete actor,Vector3 displacement,float dt){
+   displacement=ConstrainPitchMotion(actor,displacement);
    if(PortalBusy||!Allowed||actor.inTransit||!actor.capsule||!actor.capsule.enabled)return displacement;
-   if(CurrentController==actor)return ConstrainAttachedMotion(actor,displacement);
+   if(CurrentController==actor)return ConstrainPitchMotion(actor,ConstrainAttachedMotion(actor,displacement));
    var controller=actor.capsule;float ballRadius=sphere.radius*transform.lossyScale.x;
    var bounds=controller.bounds;
    if(bounds.min.y>Body.position.y+ballRadius+.1f||bounds.max.y<Body.position.y-ballRadius)return displacement;
@@ -299,7 +302,21 @@ namespace WhatTheFish {
     }
    }
    if(contact)Intercept(actor);
-   return correction+motion+Vector3.up*displacement.y;
+   return ConstrainPitchMotion(actor,correction+motion+Vector3.up*displacement.y);
+  }
+  // Match-only player boundary, independent of possession and ball collision.
+  // Finished/cancelled matches leave the island open; the next kickoff restores it.
+  Vector3 ConstrainPitchMotion(Athlete actor,Vector3 displacement){
+   var match=FootballMatch.Instance;
+   if(!match||!match.Active||match.Snapshot.phase==FootballMatchPhase.TeamSelection||!Pitch||!actor||actor.IsSpectator||actor.inTransit||!actor.capsule||!actor.capsule.enabled)return displacement;
+   var point=Pitch.InverseTransformPoint(actor.capsule.bounds.center);
+   float radius=actor.capsule.radius*Mathf.Max(Mathf.Abs(actor.transform.lossyScale.x),Mathf.Abs(actor.transform.lossyScale.z))+actor.capsule.skinWidth;
+   float mx=radius/Mathf.Abs(Pitch.lossyScale.x),mz=radius/Mathf.Abs(Pitch.lossyScale.z);
+   var target=point+Pitch.InverseTransformVector(displacement);
+   float x=Mathf.Clamp(target.x,PitchBounds.min.x+mx,PitchBounds.max.x-mx),z=Mathf.Clamp(target.z,PitchBounds.min.z+mz,PitchBounds.max.z-mz);
+   if(x!=target.x)actor.Motor.Constrain(Pitch.right*-Mathf.Sign(target.x-PitchBounds.center.x));
+   if(z!=target.z)actor.Motor.Constrain(Pitch.forward*-Mathf.Sign(target.z-PitchBounds.center.z));
+   target.x=x;target.z=z;return Pitch.TransformVector(target-point);
   }
   Vector3 ConstrainAttachedMotion(Athlete actor,Vector3 displacement){
    if(!Pitch)return displacement;
@@ -332,7 +349,7 @@ namespace WhatTheFish {
   }
   public bool InKickRange(Athlete actor){
    if(FootballMatch.Instance&&FootballMatch.Instance.AwaitingKickoff)return FootballMatch.CanAimKickoff(actor);
-   if(PortalBusy||!actor||!Allowed||actor.inTransit||!actor.Grounded||actor.Action!=FootballAction.None||CurrentController&&CurrentController!=actor)return false;
+   if(PortalBusy||!actor||actor.IsSpectator||!Allowed||actor.inTransit||!actor.Grounded||actor.Action!=FootballAction.None||CurrentController&&CurrentController!=actor)return false;
    var position=CurrentController==actor?FootPosition(actor):Body.position;
    var offset=position-(actor.transform.position+Vector3.up*WorldRadius);var horizontal=Vector3.ProjectOnPlane(offset,Vector3.up);
    if(horizontal.magnitude>maximumKickDistance||Mathf.Abs(offset.y)>.5f||Vector3.Dot(actor.transform.forward,horizontal.normalized)<.25f)return false;
@@ -346,10 +363,10 @@ namespace WhatTheFish {
    float maximum=Mathf.Max(0,kickSpeed),speed=Mathf.Lerp(Mathf.Clamp(minimumKickSpeed,0,maximum),maximum,Mathf.Clamp01(charge));
    ReleaseControl(actor);impulsePending=true;Body.WakeUp();
    // Subsequent callbacks see this velocity immediately instead of stacking deferred AddForce.
-   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace*ShotSpeedMultiplier;Body.angularVelocity=Vector3.zero;FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));Kicked?.Invoke(actor,charge);return true;
+   Body.linearVelocity=(direction*speed+Vector3.up*.25f)*FootballEffort.BallPace*ShotSpeedMultiplier;Body.angularVelocity=Vector3.zero;FootballMatch.Instance?.RecordShot(actor);FootballAudio.Emit(charge<.45f?FootballSound.KickLight:FootballSound.KickShot,Body.position,Mathf.Lerp(.7f,1,Mathf.Clamp01(charge)));Kicked?.Invoke(actor,charge);return true;
   }
   public void SweepSlideContact(Athlete actor,Vector3 before,Vector3 after,float reach){
-   if(!HasAuthority||!Allowed||PortalBusy||!actor||CurrentController==actor)return;
+   if(!HasAuthority||!Allowed||PortalBusy||!actor||actor.IsSpectator||CurrentController==actor)return;
    var path=Vector3.ProjectOnPlane(after-before,Vector3.up);var offset=Vector3.ProjectOnPlane(Body.position-before,Vector3.up);
    float t=path.sqrMagnitude>.000001f?Mathf.Clamp01(Vector3.Dot(offset,path)/path.sqrMagnitude):0;
    var nearest=Vector3.Lerp(before,after,t);
@@ -365,9 +382,9 @@ namespace WhatTheFish {
    SlideContact(actor);
   }
   bool SlideContact(Athlete actor){
-   if(!HasAuthority||Body.isKinematic||!Allowed||!actor||actor.Action!=FootballAction.Slide||!AbilityReachClear(actor,Body.position))return false;
+   if(!HasAuthority||Body.isKinematic||!Allowed||!actor||actor.IsSpectator||actor.Action!=FootballAction.Slide||!AbilityReachClear(actor,Body.position))return false;
    var slide=actor.GetComponent<FootballTackle>();
-   if(slide&&slide.ClaimBallContact()){
+   if(slide&&slide.ClaimBallContact()){FootballMatch.Instance?.RecordTouch(actor);
     SoundContact(FootballSound.Deflection,Body.position,tackleBallSpeed);ReleaseControl();
     var incoming=Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up);float speed=incoming.magnitude;
     var direction=slide.Direction;Vector3 result;

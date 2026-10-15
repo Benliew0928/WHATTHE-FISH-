@@ -13,6 +13,7 @@ namespace WhatTheFish {
   public uint Revision {get;private set;}
   public bool Running=>Phase==FootballMatchPhase.Regulation||Phase==FootballMatchPhase.Overtime;
   public bool Active=>Phase!=FootballMatchPhase.Idle&&Phase!=FootballMatchPhase.Finished&&Phase!=FootballMatchPhase.Cancelled;
+  public void Restore(FootballMatchSnapshot s,double regulation,double extra,double countdown){Phase=s.phase;Result=s.result;ScoreA=s.scoreA;ScoreB=s.scoreB;Deadline=s.deadline;Revision=s.revision;regular=regulation;overtime=extra;kickoff=countdown;remaining=s.phase==FootballMatchPhase.Kickoff||s.phase==FootballMatchPhase.TeamSelection?regulation:s.remaining;}
   public void Cancel(){if(!Active)return;Result=FootballMatchResult.None;Set(FootballMatchPhase.Cancelled,0);}
   public double Remaining(double now)=>Running||Phase==FootballMatchPhase.Kickoff||Phase==FootballMatchPhase.TeamSelection?Math.Max(0,Deadline-now):remaining;
   public void Start(double now,double regulation,double extra,double countdown){

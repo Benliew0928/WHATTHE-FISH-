@@ -41,7 +41,7 @@ namespace WhatTheFish {
   }
   void Pulse(Vector3 local,bool player){var world=transform.TransformPoint(local);LastImpactTime=Time.time;impacts[nextImpact]=new Vector4(world.x,world.y,world.z,Time.time);nextImpact=(nextImpact+1)%4;if(player)PlayerPulses++;else BallPulses++;}
   void LateUpdate(){
-   if(!ball||!wall)return;bool playing=ball.Playing;visibility=Mathf.MoveTowards(visibility,playing?1:0,Time.deltaTime*4);wall.enabled=visibility>.001f;
+   if(!ball||!wall)return;bool playing=ball.Playing&&!(BasketballMatch.Instance&&BasketballMatch.Instance.BoundaryReleased);visibility=Mathf.MoveTowards(visibility,playing?1:0,Time.deltaTime*4);wall.enabled=visibility>.001f;
    if(!playing){if(sampled)ResetContacts();properties.SetFloat("_Visibility",visibility);wall.SetPropertyBlock(properties);return;}
    var current=transform.InverseTransformPoint(ball.transform.position);uint sequence=ball.PresentationReset;
    if(!ball.Held&&sampled&&sequence==previousReset&&Crossed(previousBall,current,out var hit))Pulse(hit,false);

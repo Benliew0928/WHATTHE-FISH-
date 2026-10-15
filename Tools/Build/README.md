@@ -8,6 +8,9 @@ Run examples from the repository root. Scripts resolve the project from their ow
 | All-island character lighting and active renderer regression | `./Tools/Build/Test-CharacterLighting.ps1 -PlayerPath Builds/WindowsFinal/WhatTheFish.exe` (development player; saves matching character captures) |
 | Self-contained Android delivery with APK budget gate | `./Tools/Build/Build.ps1 -Target AndroidSubmission` |
 | Optional development APK | `./Tools/Build/Build.ps1 -Target Android` |
+| Full-capacity host succession, including spectator fallback | `./Tools/Build/Test-HostMigration.ps1 -Sport Football -Online` (repeat for Basketball, Golf and Fishing; omit `-Online` for local transport) |
+| Lobby snapshot ordering regression against the compiled SDK | `./Tools/Build/Test-LobbySnapshot.ps1` (optional `-PlayerPath` selects a candidate) |
+| Retry unchanged metadata after a failed network join | `./Tools/Build/Test-NetworkMetadataRetry.ps1` (deterministic failure; no live service required) |
 | Regenerate the integrated scene | `./Tools/Build/Build.ps1 -Target Scene` |
 | Fishing results, Crew checklist, target feedback and sound lifecycle | `./Tools/Build/Test-FishingPolish.ps1` (requires a development Windows player with graphics) |
 | Read-only commit candidate checks | `./Tools/Build/Check-TaskReady.ps1` (add `-RequireApk` for Android delivery) |

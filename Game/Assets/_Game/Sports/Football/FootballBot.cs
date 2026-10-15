@@ -25,7 +25,7 @@ namespace WhatTheFish {
    if((think-=dt)<=0){var owner=FootballBall.Instance.CurrentController;bool attacking=owner&&match.TeamOf(owner)==match.TeamOf(actor);think=(attacking?AttackDecisionMin:DecisionMin)+(float)random.NextDouble()*(attacking?AttackDecisionJitter:DecisionJitter);action=Decide(decisionElapsed);abilityRevision=FootballBall.Instance.PropSlot(actor).revision;decisionElapsed=0;Decisions++;}
    var ball=FootballBall.Instance;
    if(action.useProp&&ball&&ball.TryUseProp(actor,abilityRevision,round,action.propHeading))Abilities++;
-   var result=action.Command(actor);action.kick=action.tackle=action.useProp=false;return result;
+   var result=action.Command(actor);action.pass=action.kick=action.tackle=action.useProp=false;return result;
   }
   void FixedUpdate(){var n=GetComponent<NetworkObject>();if(n&&n.IsSpawned)return;if(!actor)return;var app=AppRoot.Instance;if(app&&app.Exploring)actor.Simulate(Read(Time.fixedDeltaTime),Time.fixedDeltaTime);}
   FootballBotAction Decide(float elapsed){
@@ -104,7 +104,7 @@ namespace WhatTheFish {
    if(tackle)nextChallenge=Time.time+ChallengeMin+(float)random.NextDouble()*ChallengeJitter;
    bool dash=!shoot&&!marking&&length>8&&actor.FootballEffort.Stamina>45&&!actor.FootballEffort.Exhausted&&Vector3.Angle(actor.transform.forward,direction)<45;
    if(marking){move=Vector3.zero;Intent=tackle?"Tackle":"Guard";}
-   return new FootballBotAction{move=new Vector2(move.x,move.z),sprint=length>3&&!shoot,dash=dash,pressure=marking,charge=shoot,kick=kick,power=power,tackle=tackle,useProp=useProp,propHeading=propHeading};
+   return new FootballBotAction{move=new Vector2(move.x,move.z),sprint=length>3&&!shoot,dash=dash,pressure=marking,charge=shoot,kick=kick&&!pass,pass=kick&&pass,passHeading=Mathf.Atan2(direction.x,direction.z)*Mathf.Rad2Deg,power=power,tackle=tackle,useProp=useProp,propHeading=propHeading};
   }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public FootballBotAction ReviewDecision(float elapsed=.23f)=>Decide(elapsed);

@@ -13,7 +13,9 @@ try {
  $offline=@('-batchmode','-screen-width','1600','-screen-height','900','-screen-fullscreen','0','-offline','-sport','Golf','-cartAudit','-exitAfter','90')
  if($Headless){$offline+='-nographics'}
  $processes+=Start-CartProbe 'offline' $offline
- $network=@('-batchmode','-nographics','-job-worker-count','2','-sport','Golf','-networkCartAudit','-port',"$Port",'-expected','2','-startAt','10','-returnAt','60','-exitAfter','65')
+ # Shared room arrivals validate their shaders, so network checks need a graphics
+ # device even when the separate offline cart audit uses -Headless.
+ $network=@('-batchmode','-force-d3d11','-screen-width','640','-screen-height','360','-screen-fullscreen','0','-job-worker-count','2','-sport','Golf','-networkCartAudit','-port',"$Port",'-expected','2','-startAt','10','-returnAt','75','-exitAfter','80')
  $processes+=Start-CartProbe 'host' ($network+'-localHost');$processes+=Start-CartProbe 'client' ($network+'-localClient')
  $deadline=(Get-Date).AddSeconds(180)
  while(($processes | Where-Object {-not $_.HasExited}) -and (Get-Date) -lt $deadline){Start-Sleep -Seconds 1}

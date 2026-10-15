@@ -12,7 +12,7 @@ public static class SoccerBallBuilder {
  public const string PrefabPath="Assets/_Game/Prefabs/Football/SoccerBall.prefab";
  const string ScenePath="Assets/_Game/Scenes/SkySail_Football.unity";
  const string Name="Soccer ball · centre spot";
- const float Diameter=.44f;
+ const float Diameter=.528f; // 20% larger than the original .44 m ball.
  const float GroundClearance=.0005f;
 
  [MenuItem("WHATTHE FISH?/Football/Install centre-spot soccer ball")]

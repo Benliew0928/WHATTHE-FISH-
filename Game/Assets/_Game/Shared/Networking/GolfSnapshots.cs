@@ -18,7 +18,9 @@ namespace WhatTheFish {
  public struct GolfBallSnapshot:INetworkSerializable,IEquatable<GolfBallSnapshot> {
   public bool valid,active;public uint round,reset,strike;public Vector3 position;public Quaternion rotation;public double time;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref valid);s.SerializeValue(ref active);s.SerializeValue(ref round);s.SerializeValue(ref reset);s.SerializeValue(ref strike);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref time);}
-  public bool Equals(GolfBallSnapshot v)=>valid==v.valid&&active==v.active&&round==v.round&&reset==v.reset&&strike==v.strike&&position==v.position&&rotation==v.rotation&&time==v.time;
+  // Default snapshots contain a zero quaternion, for which Unity's rotation ==
+  // operator is not reflexive. Field equality keeps unused balls off the wire.
+  public bool Equals(GolfBallSnapshot v)=>valid==v.valid&&active==v.active&&round==v.round&&reset==v.reset&&strike==v.strike&&position==v.position&&rotation.Equals(v.rotation)&&time==v.time;
  }
  public struct GolfPlayerRecord:INetworkSerializable,IEquatable<GolfPlayerRecord> {
   public ulong owner;public GolfPlayerSnapshot progress;

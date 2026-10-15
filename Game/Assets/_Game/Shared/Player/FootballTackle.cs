@@ -28,7 +28,7 @@ namespace WhatTheFish {
   void Awake(){athlete=GetComponent<Athlete>();}
   public void ResetAction(){State=FootballAction.None;Elapsed=0;CooldownRemaining=0;RecoveryRemaining=0;MovementMultiplier=1;immunity=0;ballHit=false;hitThisSlide.Clear();Sequence++;}
   public bool TryStart(bool grounded){
-   if(!Allowed||FootballBall.Instance&&FootballBall.Instance.PropLocked(athlete)||athlete.ControlsFootball||!grounded||State!=FootballAction.None||RecoveryRemaining>0||CooldownRemaining>0)return false;
+   if(athlete.IsSpectator||!Allowed||FootballBall.Instance&&FootballBall.Instance.PropLocked(athlete)||athlete.ControlsFootball||!grounded||State!=FootballAction.None||RecoveryRemaining>0||CooldownRemaining>0)return false;
    var carrier=athlete.FootballEffort.Pressuring?FootballPressure.CarrierFor(athlete):null;
    direction=carrier?carrier.transform.position-transform.position:transform.forward;direction.y=0;direction.Normalize();
    State=FootballAction.Slide;Elapsed=0;CooldownRemaining=cooldown;Sequence++;ballHit=false;hitThisSlide.Clear();
@@ -43,7 +43,7 @@ namespace WhatTheFish {
    return true;
   }
   public bool ReceiveHit(Vector3 push,Athlete tackler=null){
-   if(!Allowed||athlete.inTransit||athlete.Airborne||immunity>0)return false;
+   if(athlete.IsSpectator||!Allowed||athlete.inTransit||athlete.Airborne||immunity>0)return false;
    direction=push;direction.y=0;direction.Normalize();
    HitVariant=(byte)FootballMotion.FallVariant(direction,transform.rotation);
    State=FootballAction.Hit;Elapsed=0;immunity=HitDuration;CooldownRemaining=Mathf.Max(CooldownRemaining,HitDuration);Sequence++;HitsReceived++;

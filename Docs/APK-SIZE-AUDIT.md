@@ -1,5 +1,355 @@
 # APK size audit — measured release records
 
+The current limit is **1 GB**, with no lower development target and no routine
+audit requirement. The records below are historical evidence, not instructions
+to repeat size analysis. The final disconnect release is **75,006,569 bytes**;
+its hash and signature are recorded in [build size](BUILD-SIZE.md).
+
+## Abrupt guest disconnect recovery - 15 October 2026
+
+This intermediate transport-only AndroidSubmission at **21:35:54 Malaysia time**
+was superseded by the final build, which also guards teleport cleanup.
+The intermediate APK is **75,006,437 bytes**:
+**-7,900** from the opening **75,014,337**. Hard-limit headroom is
+**24,993,563 bytes**; the development target is **6,437 bytes over**.
+The enforced budget and independent APK v2 signature pass. ZIP entry count is
+unchanged at **795**. SHA-256:
+`9427D978B4F671657060C6A9B91DF7226355954E4586CD9B2D1E3F5C4E82A2B7`.
+
+| Entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| Island bundle | 42,399,892 | -4,652 |
+| IL2CPP | 12,047,024 | +99 |
+| Unity runtime | 9,192,799 | 0 |
+| Managed metadata | 2,718,056 | -3 |
+
+Every bundled asset has the same serialized byte count as the opening audit.
+Bundled assets remain **148,676,453 bytes** and player assets **12,240,598 bytes**;
+neither figure is the compressed APK size. The net reduction is lossless packing
+variation, not asset removal or reduced visual quality. There is no avoidable
+new asset payload to trim in this change, and the remaining development-target
+excess is explicitly recorded rather than treated as spare budget.
+
+The existing Unity Transport 2.7.3 package is now embedded with a buffer-release
+backport, retaining its license and upstream source. Its documentation and
+samples do not become new game assets. The Windows DLL source hash and Android
+stripped assembly both confirm the two buffer-release paths are compiled.
+The capacity probe remains development-only.
+
+Intermediate evidence: `Builds/DisconnectQA/transport-only-release-audit.json`
+and `build-android-transport-only.log`. The final APK and its fresh signature
+are recorded in `Builds/DisconnectQA/final-release.json`,
+`WhatTheFish-release.apk`, `apk-signature.txt` and `build-android.log`.
+No Android device was attached; phone rendering, memory, touch and frame rate
+remain unverified.
+
+## Spectator rooms and sky arrivals - 15 October 2026
+
+AndroidSubmission at **19:58:15 Malaysia time** is **75,014,337 bytes**:
+**+28,120** from the opening **74,986,217**, or **+11,080** from the intervening
+75,003,257-byte release. Hard-limit headroom is **24,985,663**; the development
+target is **14,337 bytes over**, not achieved. The size gate and independent
+APK v2 signature pass. ZIP entry count remains **795**. SHA-256:
+`383141E730D7740B8E94CDDF5FAD2C4907AE0FB889EC9F567ED9A35BB07621BA`.
+
+Largest compressed entries, with changes from the opening APK:
+
+| Entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| Island bundle | 42,404,544 | +6,515 |
+| IL2CPP | 12,046,925 | +18,563 |
+| Unity runtime | 9,192,799 | 0 |
+| Managed metadata | 2,718,059 | +2,699 |
+
+Serialized player assets total **12,240,598** bytes; serialized bundled assets
+total **148,676,453** bytes. These are separate measurements from the APK.
+Comparing every bundled asset with the opening audit finds only the network
+character prefab changing, **10,496 -> 10,520 bytes**. Existing textures,
+meshes, audio and other bundled asset contributions are unchanged. Small
+lossless bundle-packing changes accompany the code/schema change. No new art
+or dependency was added, and visual quality was not reduced to offset it.
+Development review code is excluded from the Android release. Waiting-room
+movement traffic is also removed to avoid unnecessary work for twenty peers.
+
+Evidence: `Builds/SpectatorQA/release-audit.json`, `entry-comparison.csv`,
+`bundle-asset-comparison.csv`, `SizeAuditBefore/`, `SizeAuditIntervening/`,
+`SizeAuditFinal/`, `apk-signature.txt`, `build-android-final.log`, `Before.apk`
+and `WhatTheFish-release.apk`. The opening delta includes concurrent pickup
+work. No Android device was attached; phone quality and performance remain
+unverified. See [verification](VERIFICATION.md#spectator-rooms-and-sky-arrivals---15-october-2026)
+for the local UDP forced-termination limitation and tested normal behavior.
+
+## Forgiving prop pickups - 15 October 2026
+
+Actual AndroidSubmission at **19:10:43 Malaysia time** is **75,003,257 bytes**,
+up **17,040** from the opening **74,986,217-byte** APK. Hard-limit headroom is
+**24,996,743**; the development target is **3,257 bytes over**, not achieved.
+The hard size gate and independent v2 signature verification pass. Entry count
+is **795**, unchanged. Signed task snapshot: `Builds/PropPickupQA/WhatTheFish-release.apk`.
+
+Largest compressed entries: island bundle **42,395,586 (-2,443)**, IL2CPP
+**12,044,964 (+16,602)**, Unity **9,192,799 (unchanged)**, and managed metadata
+**2,717,902 (+2,542)** bytes. Player serialized assets are **12,240,598** and
+bundle serialized assets **148,676,453 bytes**; these are not the APK size.
+
+The inspected growth is native code/metadata in the combined room-entry,
+seating/spectator and pickup snapshot. The pickup change adds no asset or
+shipped dependency: one existing radius constant changes and two spawn-frame
+returns are removed. Development review methods are excluded from Android
+release. No visual quality was reduced, and no new texture/audio payload was
+introduced. The small development-target excess is recorded explicitly; the
+hard-limit reserve must still be conserved for subsequent work.
+
+Evidence: `Builds/PropPickupQA/release-audit.json`, `SizeAuditBefore/`,
+`SizeAuditFinal/`, `Before.apk`, `apk-signature.txt` and `build-android-final.log`.
+No Android device is connected; phone appearance and performance are unverified.
+
+## Room teleport, post-match choices and cabin lighting - 15 October 2026
+
+Actual signed AndroidSubmission at **18:06:41 Malaysia time** is
+**74,986,217 bytes**, compared with the opening **74,943,705 bytes**
+(**+42,512**). Development reserve is **13,783 bytes** and strict-limit headroom
+is **25,013,783 bytes**. The enforced budget and APK v2 signature pass.
+SHA-256: `6CEEDCE74FF4F2BF067340C49D65C5EE8C39F3FA965C9DE6504FB60EF0DA563B`.
+
+Largest compressed entries are the island bundle **42,398,029** (+11,085),
+IL2CPP **12,028,362** (+26,567), Unity **9,192,799** (unchanged), and managed
+metadata **2,715,360 bytes** (+3,999). Serialized player assets total
+**12,240,118 bytes**, and serialized bundled assets **148,676,429 bytes**;
+these are separate from compressed APK size. Shared growth includes the
+concurrent football controls/pass guide/pressure work.
+
+Post-match cards reuse the existing island illustration atlas and fonts.
+Teleport retains its shared procedural effects and existing character assets.
+The bulb uses an existing URP unlit shader variant, drawn after the opaque
+ambient pass with solid colour and depth testing. No new texture, mesh, audio,
+animation clip or package was added. The final draw-order fix adds only
+**572 bytes** over the preceding 74,985,645-byte task candidate.
+
+Evidence: `Builds/RoomTeleportQA/baseline.json`, `SizeAuditBefore/`,
+`SizeAuditFinal/`, `entry-comparison.csv`, `release-audit.json`,
+`apk-signature.txt` and `WhatTheFish-release.apk`. Close cabin, bulb and island
+views were inspected on Windows. No physical Android device was attached;
+phone rendering and performance are not established by those captures.
+
+## Football swipe, pass guide and pressure - 15 October 2026
+
+Signed AndroidSubmission at **17:36:28 Malaysia time** is **74,980,797 bytes**,
+up **37,092** from the observed **74,943,705-byte** baseline. Hard-limit
+headroom: **25,019,203**; development reserve: **19,203 bytes**. The APK gate
+and independent v2 signature verification pass. There are **795 ZIP entries**,
+unchanged from the baseline.
+
+Largest compressed entries: island bundle **42,392,002 (+5,058)**, IL2CPP
+**12,029,011 (+27,216)**, Unity **9,192,799 (unchanged)**, managed metadata
+**2,715,321 (+3,960)** bytes. Player serialized assets are **12,240,118**;
+bundle serialized assets are **148,641,645**. Those serialized figures are
+not compressed APK sizes. Entry comparisons show code/metadata and small
+bundle growth; no new texture/audio payload was introduced by this task.
+
+The football pass guide and lock label reuse procedural UI geometry, shared
+plates and the existing sports font. Swipe routing and capped pressure are
+code changes. The combined snapshot also includes concurrent room teleport,
+post-match and cabin changes, so this delta cannot be attributed solely to
+football. No unrelated visual quality was reduced to meet the target.
+
+Evidence: `Builds/FootballSwipeQA/release-audit.json`, `SizeAuditBefore/`,
+`SizeAuditFinal/`, `apk-signature.txt`, `Before.apk` and
+`WhatTheFish-release.apk`. Physical Android quality/performance is unverified.
+
+## Character head refinement - 15 October 2026
+
+Signed AndroidSubmission at **16:54:23 Malaysia time** is **74,943,705 bytes**,
+up **189,388** from the observed **74,754,317-byte** opening APK. Hard-limit
+headroom is **25,056,295**; development reserve is **56,295 bytes**. The APK
+budget gate and independent v2 signature verification pass. This release has
+**795 ZIP entries**. The opening entry inventory and APK hash were recorded
+before edits; comparisons include concurrent game changes.
+
+Largest compressed entries: island bundle **42,386,944**, IL2CPP **12,001,795**,
+Unity **9,192,799**, and managed metadata **2,711,361 bytes**. Compared with the
+opening APK these change by **+131,484**, **+23,871**, **-229**, and **+3,727**
+respectively. Player serialized assets are **12,239,518 bytes**, and bundle
+serialized assets are **148,641,629 bytes**; these are not compressed APK sizes.
+
+Generated identity `.asset` inventory rises from **199,992 to 818,128 serialized
+bytes**. This includes the existing digit atlas/library and the refined meshes;
+the largest mesh is the near curly head at **119,224 bytes**. The shared
+CharacterHead shader is **31,804 serialized bytes**. The original body FBX's
+serialized inventory stays **2,940,648 bytes**. This refinement adds no texture,
+audio or animation clip, and does not duplicate body meshes or rig libraries.
+
+The generator removes **27,671 fully buried triangles**, retaining **68,574**
+across the twenty near/far attachment and scalp meshes. Medium mesh compression
+preserves the inspected silhouettes. The ear mask uses an otherwise unused
+negative facing coordinate; unused head number coordinates are canonicalized,
+while every triangle that can contribute to the fringe keeps its height data.
+This final packing reduces the preceding **75,142,577-byte** candidate by
+**198,872 bytes**, without reducing textures or animation quality. Both LODs,
+close-up joins and gameplay views were reviewed after packing.
+
+Evidence: `Builds/CharacterRefinementQA/Before/`, `SizeAuditFinal/`,
+`release-audit.json`, `entry-comparison.json`, `asset-comparison.json`,
+`geometry-audit.json`, `apk-signature.txt` and `WhatTheFish-release.apk`.
+Physical Android appearance, memory and FPS remain unverified.
+
+## Blue-light teleport preview - 15 October 2026
+
+Actual signed AndroidSubmission at **16:31:03 Malaysia time**:
+**75,142,885 bytes**. Opening observed APK: **74,756,265**; growth: **386,620**.
+Archived baseline: **74,754,317**; growth: **388,568**. Hard-limit headroom:
+**24,857,115 bytes**. Development target exceeded by **142,885 bytes**.
+Budget enforcement and independent APK v2 verification pass.
+
+Largest compressed entries are the island bundle **42,586,120**, IL2CPP
+**12,001,795**, Unity **9,192,799** and managed metadata **2,711,361 bytes**.
+Entry count is **795**, previously 791. Player serialized assets change from
+**12,190,550 to 12,239,518 bytes**; bundle serialized assets change from
+**147,991,237 to 148,641,629 bytes**. These are uncompressed inventory values,
+not the APK measurement.
+
+TeleportCharacter shader occupies **38,756 serialized bytes**, TeleportLight
+**8,788**, their two materials **832**, and their script metadata **488**.
+The effect adds no textures, audio, animation clips, packages or stored meshes.
+Short-lived material instances share the existing character textures; light
+geometry is shared and generated at runtime. The temporary station cabin shares
+the existing cabin meshes/materials. Source and destination detail scenes overlap
+only during the preview; phone peak-memory behavior still needs device testing.
+
+The largest shared asset growth comes from concurrent scalp/hair meshes and
+the CharacterHead shader. The final shared APK is **207,936 bytes smaller** than
+the interim 75,350,821-byte measurement after adopting the refined head packing.
+No unrelated visual assets were removed to conceal the development-target overage.
+An intervening 75,094,373-byte character release is preserved in
+`Builds/TeleportQA/SizeAuditBeforeFinal/`; the final delta from it is **48,512**.
+Shared changes and compression prevent assigning that entire delta to one feature.
+
+Evidence: `Builds/TeleportQA/SizeAuditFinal/`, `asset-comparison.json`,
+`entry-comparison.json`, `apk-comparison.json`, `apk-signature.txt` and the
+task-specific `WhatTheFish-release.apk`. SHA-256:
+`F28EF3C4996CA79943979B0AFC272DB8EFDD5CBF83524E0D291C434B8AC3B53F`.
+
+## Match exit boundaries - 15 October 2026
+
+Signed APK: **74,754,317 -> 74,810,941 bytes (+56,624)**,
+built at **15:46:57 Malaysia time**. Hard-limit headroom: **25,189,059**;
+development reserve: **189,059 bytes**. Budget and v2 signature pass.
+
+The boundary change adds no texture, mesh or audio. Growth includes concurrent
+teleport code/materials/shaders: TeleportCharacter shader 37,340 serialized bytes,
+TeleportLight shader 8,788, and their materials 784 combined. The new development
+check has a 104-byte script metadata record. No unused media was introduced by
+this task. Both mesh inventories are unchanged; bundle serialized assets remain
+147,991,237 bytes. Player serialized assets: 12,190,550 -> 12,238,054 bytes.
+These uncompressed inventory measurements are distinct from APK bytes.
+
+Largest compressed entries: islands bundle **42,259,598**, IL2CPP **11,997,463**,
+Unity **9,192,799**, managed metadata **2,711,373 bytes**. Entry count: **795**,
+previously 791. Evidence: `Builds/MatchExitQA/SizeAuditFinal/`,
+`apk-comparison.json`, `entry-comparison.json`, `asset-comparison.json` and
+`apk-signature.txt`. SHA-256: `9841BC0103E22D4096B7C0D6A733649FBC25385D81299C4C6DF3BCD2612FBF9D`.
+
+## Basketball statistics and courtside MVP - 15 October 2026
+
+Actual signed APK at **15:25:29 Malaysia time**:
+**74,728,161 -> 74,754,317 bytes (+26,156)**.
+Development reserve: **245,683 bytes**. Hard-limit headroom:
+**25,245,683 bytes**. AndroidSubmission and APK v2 verification pass.
+
+| Largest APK entries | Opening compressed bytes | Final compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 42,252,709 | 42,255,460 |
+| IL2CPP ARM64 library | 11,956,088 | 11,977,924 |
+| Unity ARM64 library | 9,193,028 | 9,193,028 |
+| Managed metadata | 2,706,317 | 2,707,634 |
+
+Entry count remains **791**. Player serialized assets change from
+**12,190,134 to 12,190,550 bytes**; the bundle changes
+from **147,991,229 to 147,991,237 bytes**.
+Both mesh inventories are unchanged. These are uncompressed serialized asset
+measurements, distinct from APK bytes. Growth is predominantly compiled code;
+the small script metadata records and network component serialization are expected.
+
+The screen shares the ten existing portraits and basketball icon atlas, uses
+the live arena, and draws basketball markings in UI geometry. No additional
+textures, meshes, audio or packages ship. No unrelated visual quality was reduced.
+Evidence: `Builds/BasketballHonoursQA/SizeAuditFinal/`, `apk-comparison.json`,
+`entry-comparison.json`, `asset-comparison.json` and `apk-signature.txt`.
+Physical Android appearance, touch and performance remain unverified.
+SHA-256: `65788D64FE66042BAACF6DF7AEA26459640692511201C888C1ACB10CFDF4549D`.
+
+## Football passing and illustrated MVP - 15 October 2026
+
+Actual signed APK at **14:15:27 Malaysia time**: **74,728,161 bytes**,
+up **740,148** from the task-opening 73,988,013-byte build and **707,776**
+from the intervening trail release. Remaining development reserve: **271,839
+bytes**. Strict-limit headroom: **25,271,839 bytes**. AndroidSubmission and
+independent APK v2 verification pass.
+
+| Largest APK entries | Opening compressed bytes | Final compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 42,257,975 | 42,252,709 |
+| IL2CPP ARM64 library | 11,929,212 | 11,956,088 |
+| Unity ARM64 library | 9,193,097 | 9,193,028 |
+| Managed metadata | 2,702,660 | 2,706,317 |
+
+There are **791 entries**, previously 779. Ten MVP portrait textures use
+512-pixel ASTC 6x6 imports with alpha and no mipmaps; high-resolution PNG
+masters remain editable in Git LFS. The portraits account for the main growth.
+No meshes, environment copies, audio banks or packages were added for MVP.
+Player serialized assets grow **832,232 bytes**, from 11,357,902 to **12,190,134**;
+the bundle grows **8 serialized bytes**, to **147,991,229**. Both mesh inventories
+are unchanged. These inventories are uncompressed serialized sizes, not APK bytes.
+
+The new screen shows the existing stadium through one pitch-level camera,
+with a sprite for the winning character. The superseded render-texture model
+was archived. No unrelated visual quality was reduced. Full and compact
+Windows renders were inspected; Android compressed visual quality and device
+performance remain unverified. Evidence: `Builds/FootballPlaymakerQA/SizeAuditFinal/`,
+`apk-comparison.json`, `entry-comparison.json`, `asset-comparison.json`,
+`portrait-packed-assets.json` and `apk-signature.txt`.
+
+SHA-256: `EB49D9B173236EA23BBF3EB1DC8F8698EEEB854AA4DDB7C6508D8033454B0026`.
+
+## Personal football trails - 15 October 2026
+
+Actual signed APK at **13:39:35 Malaysia time**:
+**73,988,013 -> 74,020,385 bytes (+32,372)**. Development reserve is **979,615
+bytes** and strict-limit headroom is **25,979,615 bytes**. AndroidSubmission and
+independent APK v2 verification pass. SHA-256:
+`6737E37E5B48912D0A496CDE0FE52E4254BF886FA2CC424C8E7A9BE77A855ABF`.
+
+| Largest APK entries | Opening compressed bytes | Current compressed bytes |
+| --- | ---: | ---: |
+| Embedded five-scene bundle | 42,257,975 | 42,250,838 |
+| IL2CPP ARM64 library | 11,929,212 | 11,960,528 |
+| Unity ARM64 library | 9,193,097 | 9,194,136 |
+| Managed metadata | 2,702,660 | 2,706,570 |
+
+There are **781 entries**, previously 779. The new trail shader occupies **9,960
+uncompressed serialized bytes** and its resource material **112 bytes**. Five
+cached runtime material variants supply lightning, blue ribbons, pink stars,
+flame filaments and aurora waves; the UI previews reuse the same shader. No new
+texture, mesh, audio bank, particle asset or package ships with the trails.
+
+Player serialized assets grow **11,088 bytes**, from 11,357,902 to **11,368,990**.
+The bundle grows only **8 serialized bytes**, from 147,991,221 to **147,991,229**,
+in the concurrent network-player prefab change. Both mesh inventories are
+unchanged. Existing ball geometry is scaled through its prefab; editable model
+bytes and pigments are retained. These serialized inventory figures are not
+compressed APK sizes.
+
+Runtime code/metadata and the small shader account for the main growth; no
+unexpected large dependency was found. The same working tree includes concurrent
+passing, controls and MVP changes, so the full delta cannot be attributed solely
+to trails. No unrelated visual quality was reduced. Windows checks include
+actual close/wide views and compact landscape previews, but do not establish
+phone quality, RAM or FPS; `adb devices` lists no connected device.
+
+Evidence: `Builds/FootballTrailQA/apk-comparison.json`, `asset-comparison.json`,
+`entry-comparison.json`, `apk-signature.txt`, `SizeAuditBefore/`, `SizeAuditFinal/`
+and [verification](VERIFICATION.md#personal-football-trails---15-october-2026).
+
 ## Longer football transitions - 15 October 2026
 
 Actual AndroidSubmission APK at **02:34:35 Malaysia time**:

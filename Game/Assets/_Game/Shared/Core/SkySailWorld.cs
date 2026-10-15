@@ -26,7 +26,7 @@ namespace WhatTheFish {
   AudioSource motor;
   bool Authority=>!app.rooms.Connected||app.rooms.Host;
   double Clock=>app.rooms.Connected?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
-  void Awake(){Instance=this;doorLeft=leftDoor.localPosition;doorRight=rightDoor.localPosition;foreach(var lod in cabin.GetComponentsInChildren<LODGroup>())lod.ForceLOD(0);}
+  void Awake(){Instance=this;doorLeft=leftDoor.localPosition;doorRight=rightDoor.localPosition;foreach(var lod in cabin.GetComponentsInChildren<LODGroup>())lod.ForceLOD(0);if(!cabin.GetComponent<SkySailCabinLighting>())cabin.gameObject.AddComponent<SkySailCabinLighting>();}
   IEnumerator Start(){while(!AppRoot.Instance||!AppRoot.Instance.environments.View)yield return null;app=AppRoot.Instance;streaming=app.environments.GetComponent<SkySailStreaming>();SetIsland(app.SelectedSport);BuildUI();BuildAudio();if(Environment.GetCommandLineArgs().Contains("-skyStation")&&!app.rooms.Connected){app.EnterOffline();app.LocalAthlete.capsule.enabled=false;app.LocalAthlete.transform.position=SkySailMap.Exit(app.SelectedSport,0);app.LocalAthlete.capsule.enabled=true;app.view.yaw=SkySailMap.Facing(app.SelectedSport).eulerAngles.y;}}
   void OnDestroy(){if(Instance==this)Instance=null;}
   public void SetIsland(SportId id){
@@ -39,12 +39,13 @@ namespace WhatTheFish {
    if(!Travelling){cabin.localPosition=SkySailMap.Berth(id);cabin.localRotation=SkySailMap.Facing(id);}
   }
   public bool CanTravel(SportId target,out string reason){
+   if(TeleportSequence.Busy||RoomTeleport.Busy){reason="Wait for the teleport to finish.";return false;}
    reason="";if(!app||!app.Exploring){reason="Enter an island first.";return false;}
    if(!Authority){reason="Your host chooses the destination.";return false;}
    if(Travelling||streaming.Busy){reason="Preparing the journey…";return false;}
    if(FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active){reason="Finish the match before travelling.";return false;}
    if(!SkySailMap.Adjacent(app.SelectedSport,target)){reason="Choose a neighboring station.";return false;}
-   var group=Group();if(group.Length>app.environments.Definition(target).maxPlayers){reason=target+" supports "+app.environments.Definition(target).maxPlayers+" players. Your group stays together.";return false;}
+   var group=Group();if(group.Count(a=>!a.IsSpectator)>app.environments.Definition(target).maxPlayers){reason=target+" supports "+app.environments.Definition(target).maxPlayers+" players. Your group stays together.";return false;}
    var port=SkySailMap.Port(app.SelectedSport);if(group.Any(p=>Vector3.Distance(p.transform.position,port)>18)){reason="Bring everyone to the Sky-Sail station.";return false;}
    return true;
   }
@@ -55,7 +56,7 @@ namespace WhatTheFish {
   }
   void SetState(SkySailJourney s){if(app.rooms.Connected){if(app.rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldTravel.Value=s;}else offlineJourney=s;}
   Athlete[] Group()=>app.rooms.Connected?FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(a=>a.IsPlayerObject).OrderBy(a=>a.OwnerClientId).Select(a=>a.GetComponent<Athlete>()).ToArray():new[]{app.LocalAthlete};
-  void Update(){
+  void Update(){if(RoomService.Paused)return;
    if(!app)return;
    Shader.SetGlobalVector("_SkySailOrigin",Origin);
    Journey=app.rooms.Connected&&NetworkAthlete.HostPlayer?NetworkAthlete.HostPlayer.WorldTravel.Value:offlineJourney;
@@ -104,17 +105,18 @@ namespace WhatTheFish {
    if(app.rooms.Connected){var local=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsPlayerObject&&p.IsOwner);if(local&&acknowledged!=sequence){acknowledged=sequence;local.TravelReadyRpc(sequence);}}
   }
   void Advance(SkySailPhase phase){var s=Journey;s.phase=phase;s.started=Clock;SetState(s);}
-  void PinPassengers(){for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;int row=i/5;var offset=new Vector3(row==0?-1.45f:1.45f,.06f,(i%5-2)*1.08f);a.transform.SetPositionAndRotation(cabin.TransformPoint(offset),cabin.rotation*Quaternion.Euler(0,row==0?90:-90,0));}}
+  void PinPassengers(){for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;int row=i/5;var offset=new Vector3(passengers.Length<=10?(row==0?-1.45f:1.45f):(row-1.5f)*.92f,.06f,(i%5-2)*1.08f);a.transform.SetPositionAndRotation(cabin.TransformPoint(offset),cabin.rotation*Quaternion.Euler(0,row==0?90:-90,0));}}
   void Arrive(){
    float yaw=app.view.yaw,pitch=app.view.pitch;int mode=app.view.mode;
    app.SelectSport(Journey.to,true);SetIsland(Journey.to);app.view.yaw=yaw;app.view.pitch=pitch;app.view.mode=mode;
-   if(app.rooms.Host&&NetworkAthlete.HostPlayer){NetworkAthlete.HostPlayer.WorldSport.Value=Journey.to;NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(LocalProfile.ForSport(Journey.to));app.rooms.SetTravelSport(Journey.to);}
+   if(app.rooms.Host&&NetworkAthlete.HostPlayer){RoomSeats.Normalize(Journey.to);NetworkAthlete.HostPlayer.WorldSport.Value=Journey.to;NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(LocalProfile.ForSport(Journey.to));app.rooms.SetTravelSport(Journey.to);}
    if(app.LocalAthlete)app.LocalAthlete.capsule.enabled=false;
   }
   void Disembark(){
-   for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;a.inTransit=false;var p=SkySailMap.Exit(app.SelectedSport,i);var q=SkySailMap.Facing(app.SelectedSport)*Quaternion.Euler(0,180,0);a.transform.SetPositionAndRotation(p,q);var nt=a.GetComponent<NetworkTransform>();if(nt){nt.enabled=true;if(Authority)nt.Teleport(p,q,Vector3.one);}a.capsule.enabled=Authority;a.ResetLocomotion();a.HideHead(false);}
+   for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;a.inTransit=false;var landing=RoomSeats.StationLanding(app.SelectedSport,i);var p=landing.position;var q=landing.rotation;a.transform.SetPositionAndRotation(p,q);var nt=a.GetComponent<NetworkTransform>();if(nt){nt.enabled=true;if(Authority)nt.Teleport(p,q,Vector3.one);}a.capsule.enabled=Authority;a.ResetLocomotion();a.HideHead(false);}
    passengers=Array.Empty<Athlete>();onlineJourney=false;app.Show(app.Exploring?"stadium":"sport");streaming.ReleaseOtherIslands(app.SelectedSport);SetIsland(app.SelectedSport);
   }
+  internal void AbortForRecovery(){if(app&&streaming&&Travelling)AbortLocal();}
   void AbortLocal(){
    onlineJourney=false;offlineJourney=default;Journey=default;seenPhase=SkySailPhase.Idle;
    foreach(var a in passengers)if(a){a.inTransit=false;var nt=a.GetComponent<NetworkTransform>();if(nt)nt.enabled=true;a.capsule.enabled=!app.rooms.Connected||app.rooms.Host;}

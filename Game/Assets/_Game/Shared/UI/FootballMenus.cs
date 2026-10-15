@@ -8,8 +8,8 @@ namespace WhatTheFish {
    float w=root.rect.width/root.rect.height>1.95f?Mathf.Min(960,root.rect.width-40):668;int body=w>700?15:12;float left=w>700?166:158,content=w-left-20;
    var bg=BasketballUIStyle.Plate(root,"Pitch menu overlay",0,0,800,450,new Color(.07f,.25f,.31f,.46f),0,0);bg.raycastTarget=true;overlay=bg.rectTransform;CoveUI.Stretch(overlay);
    settingsPanel=Panel("Pitch settings",w,390,BasketballIcon.Gear,CloseMenu);BasketballUIStyle.Text(settingsPanel,"The match keeps playing.",72,44,w-150,20,11);
-   cameraNav=FootballUIStyle.Button(settingsPanel,"Camera navigation","",20,84,left-54,64,()=>SelectMenu(0),CoveUI.Mint);BasketballUIStyle.Art(cameraNav.transform,BasketballIcon.Eye,(left-54)/2-12,8,24,24);BasketballUIStyle.Text(cameraNav.transform,"Camera",3,36,left-60,23,13,true,TextAnchor.MiddleCenter);
-   guideNav=FootballUIStyle.Button(settingsPanel,"Pitch guide navigation","",20,157,left-54,64,OpenGuide,BasketballUIStyle.Paper);BasketballUIStyle.Art(guideNav.transform,BasketballIcon.Book,(left-54)/2-12,8,24,24);BasketballUIStyle.Text(guideNav.transform,"Pitch guide",3,36,left-60,23,13,true,TextAnchor.MiddleCenter);
+   cameraNav=FootballUIStyle.Button(settingsPanel,"Camera navigation","",20,84,left-54,53,()=>SelectMenu(0),CoveUI.Mint);BasketballUIStyle.Art(cameraNav.transform,BasketballIcon.Eye,(left-54)/2-11,5,22,22);BasketballUIStyle.Text(cameraNav.transform,"Camera",3,29,left-60,23,13,true,TextAnchor.MiddleCenter);
+   guideNav=FootballUIStyle.Button(settingsPanel,"Pitch guide navigation","",20,141,left-54,53,OpenGuide,BasketballUIStyle.Paper);BasketballUIStyle.Art(guideNav.transform,BasketballIcon.Book,(left-54)/2-11,5,22,22);BasketballUIStyle.Text(guideNav.transform,"Pitch guide",3,29,left-60,23,13,true,TextAnchor.MiddleCenter);
    BasketballUIStyle.Plate(settingsPanel,"Navigation divider",left-20,84,1,228,CoveUI.Hex("DADCCC"),0,0);
    cameraPage=CoveUI.Rect(settingsPanel,"Camera page",left,82,content,230);guidePage=CoveUI.Rect(settingsPanel,"Pitch guide page",left,82,content,230);
    BasketballUIStyle.Text(cameraPage,"Your view",0,0,content*.5f,26,18,true);BasketballUIStyle.Text(cameraPage,"Changes apply instantly",content*.5f,0,content*.5f,26,11,false,TextAnchor.MiddleRight);
@@ -23,7 +23,7 @@ namespace WhatTheFish {
    leaveButton=FootballUIStyle.Button(settingsPanel,"Leave pitch","Leave pitch",20,340,146,39,OpenLeave,CoveUI.Cream,14);var leaveLabel=leaveButton.GetComponentInChildren<Text>();leaveLabel.color=CoveUI.Hex("A63438");leaveLabel.rectTransform.anchoredPosition=new Vector2(44,0);leaveLabel.rectTransform.sizeDelta=new Vector2(190,78);BasketballUIStyle.Art(leaveButton.transform,BasketballIcon.Exit,12,9,24,24);var leavePlate=leaveButton.GetComponent<BasketballPlate>();leavePlate.shadow=0;leavePlate.border=1;leavePlate.edge=CoveUI.Hex("C89F90");FootballUIStyle.Button(settingsPanel,"Back to play","Back to play",w-140,340,120,39,CloseMenu,CoveUI.Mint,14);
    leavePanel=Panel("Leave pitch?",440,256,BasketballIcon.Exit,ShowSettings);leaveText=BasketballUIStyle.Text(leavePanel,"",26,87,388,68,14,false,TextAnchor.MiddleCenter);
    FootballUIStyle.Button(leavePanel,"Keep playing","Keep playing",25,185,180,44,CloseMenu,CoveUI.Mint);var confirm=FootballUIStyle.Button(leavePanel,"Confirm leave pitch","Leave pitch",219,185,196,44,()=>{CloseMenu();AppRoot.Instance.LeaveCourt();},FootballUIStyle.Cancel);confirmText=confirm.GetComponentInChildren<Text>();
-   BuildAudio(left,content);SelectMenu(menuPage);SelectGuide(guideTab);settingsPanel.gameObject.SetActive(!wasLeave);leavePanel.gameObject.SetActive(wasLeave);overlay.gameObject.SetActive(wasOpen);if(wasOpen){PlayerView.Instance.InputBlocked=true;controls.blocksRaycasts=false;if(wasLeave)OpenLeave();else RefreshMenu();}
+   BuildAudio(left,content);BuildCustomization(left,content);SelectMenu(menuPage);SelectGuide(guideTab);settingsPanel.gameObject.SetActive(!wasLeave);leavePanel.gameObject.SetActive(wasLeave);overlay.gameObject.SetActive(wasOpen);if(wasOpen){PlayerView.Instance.InputBlocked=true;controls.blocksRaycasts=false;if(wasLeave)OpenLeave();else RefreshMenu();}
   }
   RectTransform Panel(string title,float w,float h,BasketballIcon icon,System.Action close){
    var plate=BasketballUIStyle.Plate(overlay,title,0,0,w,h,CoveUI.Cream,26,3,true);plate.shadow=6;plate.raycastTarget=true;var r=plate.rectTransform;r.anchorMin=r.anchorMax=r.pivot=Vector2.one*.5f;r.anchoredPosition=Vector2.zero;
@@ -33,9 +33,9 @@ namespace WhatTheFish {
   void Note(Transform p,float w,string text,int size){BasketballUIStyle.Plate(p,"Guide note rule",0,154,w,1,CoveUI.Hex("DADCCC"),0,0);BasketballUIStyle.Text(p,text,0,163,w,34,size,false,TextAnchor.UpperLeft);}
   void BuildControls(Transform p,float w,int size){float col=(w-18)/2;
    Card(p,0,0,col,BasketballUIStyle.Icon(BasketballIcon.Move),"Move & look","Left stick to move; push fully to run. Drag right to look.",size);
-   Card(p,col+18,0,col,FootballUIStyle.Icon(FootballIcon.Ball),"Kick with control","Tap for a light kick. Hold for power; release toward your target.",size);
-   Card(p,0,80,col,FootballUIStyle.Icon(FootballIcon.Pressure),"Defend","Hold Pressure. Slide to Jump, Dash or Tackle; return to repeat.",size);
-   Card(p,col+18,80,col,BasketballUIStyle.Icon(BasketballIcon.Jump),"Play off the ball","Jump without the ball. Hold Dash while moving for a burst.",size);
+   Card(p,col+18,0,col,FootballUIStyle.Icon(FootballIcon.Ball),"Kick with control","Tap Shoot for a light kick. Hold for power. Dash stays active.",size);
+   Card(p,0,80,col,FootballUIStyle.Icon(FootballIcon.Pressure),"Defend","Hold Pressure to mark the carrier. Tap Tackle when close.",size);
+   Card(p,col+18,80,col,FootballUIStyle.Icon(FootballIcon.Target),"Pass to a teammate","Aim and tap Pass (Space). Hold to see the receiver lock.",size);
    Note(p,w,"Changed your mind? Slide into Cancel and lift. Slide back to keep aiming.",size);
   }
   void BuildRules(Transform p,float w,int size){float col=(w-18)/2;
@@ -49,7 +49,7 @@ namespace WhatTheFish {
    FootballUIStyle.Art(p,FootballIcon.Dash,0,1,34,34);BasketballUIStyle.Text(p,"Save a burst for the break",44,0,w-44,25,17,true);BasketballUIStyle.Text(p,"Normal running does not spend stamina.",44,27,w-44,24,size);
    var bar=BasketballUIStyle.Plate(p,"Stamina example",0,61,w,9,CoveUI.Ink,4.5f,0);BasketballUIStyle.Plate(bar.transform,"Stamina example fill",2,2,w*.7f,5,BasketballUIStyle.Teal,2.5f,0);
    float col=(w-18)/2;BasketballUIStyle.Text(p,"Hold while moving",0,81,col,23,14,true);BasketballUIStyle.Text(p,"A full bar lasts about 3 seconds. Let go to recover; standing still costs nothing.",0,106,col,47,size,false,TextAnchor.UpperLeft);BasketballUIStyle.Text(p,"Empty? Release and rest",col+18,81,col,23,14,true);BasketballUIStyle.Text(p,"Lift your finger. Dash returns after stamina recovers to a quarter full.",col+18,106,col,47,size,false,TextAnchor.UpperLeft);
-   Note(p,w,"Charging ends Dash. Hold Pressure, then swipe to Tackle when close to win the ball.",size);
+   Note(p,w,"Hold Dash, slide to Shoot, then slide back to release without ending Dash.",size);
   }
   void BuildAbilities(Transform p,float w,int size){float col=(w-18)/2;
    Card(p,0,0,col,FootballPropHUD.Icon(SportsProp.Turbo),"Team Turbo","Your whole team moves at 1.5× speed for 5 seconds. Cannot stack.",size);
@@ -62,7 +62,7 @@ namespace WhatTheFish {
   void OpenMenu(bool leave){ClearInput();PlayerView.Instance.InputBlocked=true;controls.blocksRaycasts=false;settingsPanel.gameObject.SetActive(!leave);leavePanel.gameObject.SetActive(leave);overlay.gameObject.SetActive(true);RefreshMenu();}
   public void ShowSettings()=>OpenMenu(false);
   public void OpenGuide(){SelectMenu(1);ShowSettings();}
-  public void SelectMenu(int page){menuPage=Mathf.Clamp(page,0,2);cameraPage.gameObject.SetActive(menuPage==0);guidePage.gameObject.SetActive(menuPage==1);audioPage.gameObject.SetActive(menuPage==2);RefreshAudio();for(int i=0;i<3;i++){var p=(i==0?cameraNav:i==1?guideNav:audioNav).GetComponent<BasketballPlate>();p.color=i==menuPage?CoveUI.Hex("D5EBDE"):CoveUI.Cream;p.border=i==menuPage?1:0;p.edge=CoveUI.Hex("96B9AE");p.shadow=0;p.Refresh();}}
+  public void SelectMenu(int page){menuPage=Mathf.Clamp(page,0,3);cameraPage.gameObject.SetActive(menuPage==0);guidePage.gameObject.SetActive(menuPage==1);audioPage.gameObject.SetActive(menuPage==2);customizePage.gameObject.SetActive(menuPage==3);RefreshAudio();for(int i=0;i<4;i++){var p=(i==0?cameraNav:i==1?guideNav:i==2?audioNav:customizeNav).GetComponent<BasketballPlate>();p.color=i==menuPage?CoveUI.Hex("D5EBDE"):CoveUI.Cream;p.border=i==menuPage?1:0;p.edge=CoveUI.Hex("96B9AE");p.shadow=0;p.Refresh();}}
   public void SelectGuide(int tab){guideTab=Mathf.Clamp(tab,0,guidePages.Length-1);for(int i=0;i<guidePages.Length;i++){guidePages[i].SetActive(i==guideTab);guideTabs[i].GetComponent<BasketballPlate>().color=i==guideTab?CoveUI.Ink:BasketballUIStyle.Paper;guideTabs[i].GetComponentInChildren<Text>().color=i==guideTab?CoveUI.Cream:CoveUI.Ink;}}
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();RefreshMenu();}
   void RefreshMenu(){var view=PlayerView.Instance;if(!view)return;for(int i=0;i<3;i++){var p=cameraChoices[i].GetComponent<BasketballPlate>();p.color=i==view.mode?CoveUI.Hex("DCF0D8"):BasketballUIStyle.Paper;p.border=i==view.mode?2.5f:1;p.edge=i==view.mode?CoveUI.Ink:CoveUI.Hex("CAD0BD");p.shadow=i==view.mode?2:0;p.Refresh();cameraChoices[i].transform.Find("Selected camera").gameObject.SetActive(i==view.mode);}cameraNote.text=view.mode==0?"Look through your player's eyes. Drag on the open right side to look around.":view.mode==1?"Drag on the open right side to look around. Your left thumb stays on movement.":"A wider, ball-following view. Drag to pan your view; your player's aim stays independent.";leaveButton.interactable=!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling);}

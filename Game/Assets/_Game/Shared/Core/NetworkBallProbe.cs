@@ -8,14 +8,16 @@ namespace WhatTheFish {
   IEnumerator NetworkBallAudit(){
    TurnCommandActive=true;TurnCommand=default;
    while(!AppRoot.Instance||!AppRoot.Instance.Exploring||!FootballBall.Instance)yield return null;
-   var app=AppRoot.Instance;var ball=FootballBall.Instance;float start=elapsed;bool arranged=false,hostKick=false,clientKick=false,clientCharging=false,hostCharging=false,hostReleased=false;bool serverChargeSeen=false,clientControlSeen=false;float chargeMovePeak=0;float clientChargeStart=0,clientPeak=0;Vector3 centre=ball.Body.position;float clientTravel=0,hostTravel=0;
+   var app=AppRoot.Instance;var ball=FootballBall.Instance;int originalTrail=FootballTrailStyle.Selected,expectedTrail=app.rooms.Host?0:2;FootballTrailStyle.Select(expectedTrail);var personalTrail=ball.GetComponent<FootballTrail>();bool sawPersonalTrail=false,localTrailStable=true;float start=elapsed;bool arranged=false,hostKick=false,clientKick=false,clientCharging=false,hostCharging=false,hostReleased=false;bool serverChargeSeen=false,clientControlSeen=false;float chargeMovePeak=0;float clientChargeStart=0,clientPeak=0;Vector3 centre=ball.Body.position;float clientTravel=0,hostTravel=0;
    var animatedKicks=new System.Collections.Generic.HashSet<ulong>();var animatedCharges=new System.Collections.Generic.HashSet<ulong>();
+   yield return null;
    while(elapsed<start+13){
+    sawPersonalTrail|=personalTrail.Ribbon.emitting&&personalTrail.Ribbon.positionCount>2;localTrailStable&=personalTrail.Style==expectedTrail||personalTrail.Style<0;
     var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None);var snapshot=NetworkAthlete.HostPlayer.Ball.Value;
     foreach(var p in players){var m=p.GetComponent<Athlete>().FootballMotion;if(m&&m.State.charging)animatedCharges.Add(p.OwnerClientId);if(m&&m.State.gesture==FootballGesture.Kick)animatedKicks.Add(p.OwnerClientId);}
     if(app.rooms.Host&&!arranged&&elapsed>start+1){
      ball.ResetBall();centre=ball.Body.position;
-     foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-.22f,p.OwnerClientId==0?-4:-.9f);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
+     foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-ball.WorldRadius,p.OwnerClientId==0?-4:-.9f);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
      arranged=true;
     }
     if(!app.rooms.Host&&!clientKick&&!clientCharging&&snapshot.valid&&snapshot.sequence>=2&&app.LocalAthlete.KickReady){centre=snapshot.position;clientCharging=app.view.BeginKick();clientChargeStart=elapsed;}
@@ -25,7 +27,7 @@ namespace WhatTheFish {
     if(snapshot.valid&&(app.rooms.Host?arranged&&!hostKick:clientCharging||clientKick)){clientTravel=Mathf.Max(clientTravel,Vector3.Distance(ball.Body.position,centre));if(app.rooms.Host&&!ball.Body.isKinematic)clientPeak=Mathf.Max(clientPeak,ball.Body.linearVelocity.magnitude);}
     if(app.rooms.Host&&!hostKick&&elapsed>start+6){
      Check(serverChargeSeen&&chargeMovePeak>.49f&&chargeMovePeak<=.51f,"SERVER_CHARGING_MOVEMENT_PENALTY_NO_SPRINT");Record("MEASURE network chargeMovePeak="+chargeMovePeak);Check(clientTravel>2,"CLIENT_RPC_MOVES_AUTHORITATIVE_BALL");Check(clientPeak>ball.minimumKickSpeed*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier+1&&clientPeak<ball.kickSpeed*FootballEffort.BallPace*FootballBall.ShotSpeedMultiplier-1,"CLIENT_HALF_CHARGE_REACHES_SERVER");ball.ResetBall();centre=ball.Body.position;
-     foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?0:4,-.22f,p.OwnerClientId==0?-.9f:-4);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
+     foreach(var p in players){var pos=centre+new Vector3(p.OwnerClientId==0?0:4,-ball.WorldRadius,p.OwnerClientId==0?-.9f:-4);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
      hostKick=true;
     }
     if(app.rooms.Host&&hostKick&&!hostCharging&&elapsed>start+6.5f)hostCharging=app.view.BeginKick();
@@ -34,12 +36,14 @@ namespace WhatTheFish {
     yield return null;
    }
    Check(clientTravel>2&&hostTravel>2,"BOTH_PLAYERS_KICK_ONE_SHARED_BALL");
+   Check(sawPersonalTrail&&personalTrail.Style==expectedTrail,"DISTINCT_LOCAL_TRAIL_VISIBLE_FOR_HOST_AND_GUEST");
+   Check(localTrailStable,"LOCAL_TRAIL_NOT_CHANGED_BY_KICKER");
    Check(animatedKicks.Count==expected&&animatedCharges.Count==expected,"BOTH_PLAYERS_KICK_AND_CHARGE_POSES_REPLICATE");
    Check(app.rooms.Host?!ball.Body.isKinematic:ball.Body.isKinematic&&!ball.Body.detectCollisions,"ONLY_HOST_SIMULATES_PHYSICS");
    Check(Vector3.Distance(ball.Body.position,NetworkAthlete.HostPlayer.Ball.Value.position)<1,"SNAPSHOT_PRESENTATION_WITHIN_ONE_METRE");
    if(app.rooms.Host){
     ball.ResetBall();centre=ball.Body.position;
-    foreach(var p in FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None)){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-.22f,p.OwnerClientId==0?-4:2);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
+    foreach(var p in FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None)){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-ball.WorldRadius,p.OwnerClientId==0?-4:2);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
     ball.Body.WakeUp();ball.Body.linearVelocity=Vector3.forward*9;
    }
    yield return new WaitForSeconds(1.2f);
@@ -50,7 +54,7 @@ namespace WhatTheFish {
    if(app.rooms.Host)yield return new WaitForSeconds(.8f);
    if(app.rooms.Host){
     ball.ResetBall();centre=ball.Body.position;
-    foreach(var p in FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None)){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-.22f,p.OwnerClientId==0?-4:-.7f);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
+    foreach(var p in FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None)){var pos=centre+new Vector3(p.OwnerClientId==0?-4:0,-ball.WorldRadius,p.OwnerClientId==0?-4:-.7f);PlaceAthlete(p.GetComponent<Athlete>(),pos,0);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);}
    }
    yield return new WaitForSeconds(.3f);
    if(!app.rooms.Host)TurnCommand=new PlayerCommand{move=Vector2.up*.2f};
@@ -111,7 +115,10 @@ namespace WhatTheFish {
    var lastBounds=ball.GoalBounds(ball.GoalCount-1);int lastSign=ball.GoalSign(ball.GoalCount-1);float lastBack=lastSign>0?lastBounds.max.z:lastBounds.min.z;
    float netDistance=(ball.Pitch.InverseTransformPoint(guest.transform.position).z-lastBack)*lastSign;
    Check(netDistance<-.25f&&netDistance>-1,"REMOTE_NET_STOP_POSE_REPLICATES_TO_BOTH_PEERS");
-   TurnCommandActive=false;Record("NETWORK_FOOTBALL_BALL_COMPLETE");
+   app.Show("customize");yield return new WaitForSeconds(.4f);
+   Check(app.Menu.Page=="customize","HOST_AND_GUEST_CAN_OPEN_CUSTOMIZE");
+   Check(app.rooms.Host||!app.Menu.Content.GetComponentsInChildren<UnityEngine.UI.Button>().Any(b=>b.name=="Customize shared venue"),"GUEST_CUSTOMIZE_DOES_NOT_GRANT_VENUE_AUTHORITY");
+   FootballTrailStyle.Select(originalTrail);TurnCommandActive=false;Record("NETWORK_FOOTBALL_BALL_COMPLETE");
   }
  }
 }

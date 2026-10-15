@@ -10,6 +10,7 @@ namespace WhatTheFish {
   public int Count(FootballTeam team)=>choices.Values.Count(value=>value==team);
   public FootballTeam TeamOf(ulong player)=>choices.TryGetValue(player,out var team)?team:FootballTeam.None;
   public bool Contains(ulong player)=>choices.ContainsKey(player);
+  public void Restore(IEnumerable<(ulong id,FootballTeam team)> roster,int capacity,bool locked){Clear();Capacity=capacity;Locked=locked;foreach(var p in roster)choices[p.id]=p.team;}
   public void Clear(){choices.Clear();Capacity=0;Locked=false;}
   public bool Begin(IEnumerable<ulong> players,bool singlePlayerTest=false){
    var roster=players.Distinct().ToArray();

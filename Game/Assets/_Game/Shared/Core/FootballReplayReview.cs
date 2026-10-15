@@ -7,7 +7,7 @@ using Unity.Netcode;
 using UnityEngine;
 namespace WhatTheFish {
  public sealed class FootballReplayReview:MonoBehaviour {
-  string folder;bool failed,network;AppRoot app;FootballMatch match;FootballBall ball;int checks;
+  string folder;bool failed,network;AppRoot app;FootballMatch match;FootballBall ball;int checks,originalTrail;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-footballReplayReview");if(i>=0&&i+1<args.Length)new GameObject("Football replay checks").AddComponent<FootballReplayReview>().folder=args[i+1];}
   void Check(bool value,string name){checks++;failed|=!value;File.AppendAllText(Path.Combine(folder,"results.txt"),(value?"PASS ":"FAIL ")+name+"\n");}
   IEnumerator Until(Func<bool> predicate,string name,float timeout=25){float limit=Time.realtimeSinceStartup+timeout;while(!predicate()&&Time.realtimeSinceStartup<limit)yield return null;Check(predicate(),name);}
@@ -16,7 +16,7 @@ namespace WhatTheFish {
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    yield return Until(()=>AppRoot.Instance&&AppRoot.Instance.Exploring&&FootballMatch.Instance&&AppRoot.Instance.LocalAthlete,"football ready",80);
    app=AppRoot.Instance;match=FootballMatch.Instance;ball=FootballBall.Instance;if(!app||!match||!ball){Finish();yield break;}
-   DevelopmentProbe.Driving=false;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;network=app.rooms.Connected;
+   DevelopmentProbe.Driving=false;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;network=app.rooms.Connected;originalTrail=FootballTrailStyle.Selected;FootballTrailStyle.Select(network&&!match.Authority?4:2);
    if(network&&!match.Authority){yield return Guest();Finish();yield break;}
    var original=match.rules;match.rules=Instantiate(original);match.rules.teamSelectionSeconds=network?3:.3f;match.rules.kickoffSeconds=.3f;
    int start=network?1:2,end=network?2:5;
@@ -69,6 +69,7 @@ namespace WhatTheFish {
    Check(Math.Abs(replay.FootageStart-(snapshot.goalAt-4))<.001&&Math.Abs(replay.FootageEnd-(snapshot.goalAt+1))<.001,"exact four before one after "+label);
    var stage=GameObject.Find("Goal replay · visual copies only");Check(stage&&stage.GetComponentsInChildren<Collider>().Length==0&&stage.GetComponentsInChildren<Animator>().Length==0&&stage.GetComponentsInChildren<NetworkObject>().Length==0,"visual copies cannot simulate or score "+label);
    if(stage){var copy=stage.transform.Cast<Transform>().First(t=>t.name==ball.name);var screen=Camera.main.WorldToViewportPoint(copy.position);Check(screen.z>0&&screen.x>.04f&&screen.x<.96f&&screen.y>.04f&&screen.y<.96f,"recorded ball framed at replay entry "+label);}
+   var replayTrail=stage?stage.GetComponentInChildren<FootballTrail>():null;Check(replayTrail&&replayTrail.IsReplay&&replayTrail.Style==FootballTrailStyle.Selected,"replay uses viewer trail "+label);Check(!ball.GetComponent<FootballTrail>().Ribbon.enabled,"live trail hidden in replay "+label);
    yield return Capture(label+"-replay");yield return Until(()=>match.Now>=snapshot.goalAt+FootballMatch.ReplayStartOffset+4.3,"goal impact replay "+label);yield return Capture(label+"-net");
    Check(snapshot.scoreA==match.Snapshot.scoreA&&snapshot.scoreB==match.Snapshot.scoreB&&Math.Abs(remaining-match.Remaining)<.001,"score and match clock protected during playback "+label);
    yield return Transition(snapshot,label,true);
@@ -102,7 +103,7 @@ namespace WhatTheFish {
   IEnumerator Guest(){
    uint prior=0;int seen=0;float limit=Time.realtimeSinceStartup+100;
    while(seen<2&&Time.realtimeSinceStartup<limit){
-    if(match.Snapshot.goalId>0&&match.GoalSequence&&(!FootballReplay.Presenting)&&match.Now-match.Snapshot.goalAt<1){prior=match.Snapshot.goalId;yield return Until(()=>FootballReplay.Presenting,"guest receives goal replay");Check(FootballReplay.Instance.HasFootage,"guest recorded gameplay available");Check(!match.TryKickoff(app.LocalAthlete,0,1,match.Snapshot.revision),"guest cannot mutate host state");yield return Capture("guest-replay-"+seen);yield return Until(()=>!match.GoalSequence,"guest synchronized return");Check(match.Snapshot.kickoffTeam!=FootballTeam.None&&match.Snapshot.goalId==prior,"guest conceding team and goal event retained");seen++;if(seen==2){yield return Until(()=>FootballMatch.CanAimKickoff(app.LocalAthlete),"guest owns conceding kickoff");app.view.yaw=271;Check(app.view.BeginKick(),"guest can charge centre kick");yield return new WaitForSeconds(.2f);app.view.EndKick();yield return Until(()=>match.Running,"guest reliable release accepted by host");}}
+    if(match.Snapshot.goalId>0&&match.GoalSequence&&(!FootballReplay.Presenting)&&match.Now-match.Snapshot.goalAt<1){prior=match.Snapshot.goalId;yield return Until(()=>FootballReplay.Presenting,"guest receives goal replay");Check(FootballReplay.Instance.HasFootage,"guest recorded gameplay available");yield return null;var replayTrail=GameObject.Find("Goal replay \u00b7 visual copies only").GetComponentInChildren<FootballTrail>();Check(replayTrail&&replayTrail.Style==4&&FootballTrailStyle.Selected==4,"guest replay retains its own aurora trail");Check(!match.TryKickoff(app.LocalAthlete,0,1,match.Snapshot.revision),"guest cannot mutate host state");yield return Capture("guest-replay-"+seen);yield return Until(()=>!match.GoalSequence,"guest synchronized return");Check(match.Snapshot.kickoffTeam!=FootballTeam.None&&match.Snapshot.goalId==prior,"guest conceding team and goal event retained");seen++;if(seen==2){yield return Until(()=>FootballMatch.CanAimKickoff(app.LocalAthlete),"guest owns conceding kickoff");app.view.yaw=271;Check(app.view.BeginKick(),"guest can charge centre kick");yield return new WaitForSeconds(.2f);app.view.EndKick();yield return Until(()=>match.Running,"guest reliable release accepted by host");}}
     yield return null;
    }
    Check(seen==2,"human room and filled bot room both replay on guest");
@@ -116,7 +117,7 @@ namespace WhatTheFish {
    var image=new Texture2D(Screen.width,Screen.height,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,Screen.width,Screen.height),0,0);image.Apply();File.WriteAllBytes(Path.Combine(folder,name+".png"),image.EncodeToPNG());Destroy(image);camera.targetTexture=target;RenderTexture.active=prior;RenderTexture.ReleaseTemporary(rt);
    foreach(var canvas in canvases){canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.worldCamera=null;}Canvas.ForceUpdateCanvases();
   }
-  void Finish(){File.AppendAllText(Path.Combine(folder,"results.txt"),"FOOTBALL_REPLAY_COMPLETE success="+!failed+" checks="+checks+"\n");Application.Quit(failed?1:0);}
+  void Finish(){FootballTrailStyle.Select(originalTrail);File.AppendAllText(Path.Combine(folder,"results.txt"),"FOOTBALL_REPLAY_COMPLETE success="+!failed+" checks="+checks+"\n");Application.Quit(failed?1:0);}
  }
 }
 #endif

@@ -9,8 +9,8 @@ function Start-BallProbe([string]$name,[string]$arguments){
     $taskReport=Join-Path $taskOutput "$name.txt"
     if(Test-Path -LiteralPath $taskReport){throw "Archive previous evidence before rerunning: $taskReport"}
     $taskLog=Join-Path $taskOutput "$name.log"
-    # The offline aim assertions inspect shader material state, which needs a graphics device.
-    $taskGraphics=if($name -eq 'player-offline'){''}else{'-nographics'}
+    # Aim and personal-trail assertions inspect the actual renderers on both peers.
+    $taskGraphics='-force-d3d11 -screen-width 844 -screen-height 390 -screen-fullscreen 0'
     Start-Process -FilePath $taskPlayer -WindowStyle Hidden -PassThru -ArgumentList "-batchmode $taskGraphics -job-worker-count 2 $arguments -report `"$taskReport`" -logFile `"$taskLog`""
 }
 $taskProcesses=@()

@@ -24,6 +24,7 @@ namespace WhatTheFish {
   public double ShotRemaining(double now)=>Running&&Possession!=FootballTeam.None?Math.Max(0,ShotDeadline-now):Phase==BasketballMatchPhase.Restart?ShotSeconds:0;
   public static FootballTeam Other(FootballTeam team)=>team==FootballTeam.A?FootballTeam.B:FootballTeam.A;
   void Set(BasketballMatchPhase phase,double deadline){Phase=phase;Deadline=deadline;Revision++;}
+  public void Restore(BasketballMatchSnapshot s){Phase=s.phase;Result=s.result;Possession=s.possession;RestartReason=s.restart;ScoreA=s.scoreA;ScoreB=s.scoreB;Deadline=s.deadline;ShotDeadline=s.shotDeadline;Revision=s.revision;remaining=s.remaining;extra=s.phase==BasketballMatchPhase.Overtime;flight=false;}
   public void Clear(){ScoreA=ScoreB=0;Result=FootballMatchResult.None;Possession=FootballTeam.None;RestartReason=BasketballRestart.None;remaining=ShotDeadline=0;flight=extra=false;Set(BasketballMatchPhase.Idle,0);}
   public void Start(double now,double seconds,double selection=10){Clear();remaining=Math.Max(.01,seconds);Set(BasketballMatchPhase.TeamSelection,now+selection);}
   public void Confirm(double now,double countdown=3){if(Phase==BasketballMatchPhase.TeamSelection)Set(BasketballMatchPhase.Countdown,now+countdown);}

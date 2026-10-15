@@ -12,7 +12,8 @@ namespace WhatTheFish {
    s.SerializeValue(ref passAim);s.SerializeValue(ref defense);s.SerializeValue(ref finish);s.SerializeValue(ref charge);s.SerializeValue(ref score);s.SerializeValue(ref northNet);s.SerializeValue(ref southNet);
    s.SerializeValue(ref steals);s.SerializeValue(ref stealTime);s.SerializeValue(ref props);
   }
-  public bool Equals(BasketballSnapshot b)=>inbound==b.inbound&&props.Equals(b.props)&&passAim.Equals(b.passAim)&&defense.Equals(b.defense)&&valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation==b.rotation&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time&&finish.Equals(b.finish)&&charge.Equals(b.charge)&&score.Equals(b.score)&&northNet.Equals(b.northNet)&&southNet.Equals(b.southNet)&&steals==b.steals&&stealTime==b.stealTime;
+  // Quaternion == assumes normalized rotations; default network fields are zero.
+  public bool Equals(BasketballSnapshot b)=>inbound==b.inbound&&props.Equals(b.props)&&passAim.Equals(b.passAim)&&defense.Equals(b.defense)&&valid==b.valid&&held==b.held&&queued==b.queued&&holder==b.holder&&position==b.position&&rotation.Equals(b.rotation)&&reset==b.reset&&shots==b.shots&&passes==b.passes&&dribble==b.dribble&&cadence==b.cadence&&time==b.time&&finish.Equals(b.finish)&&charge.Equals(b.charge)&&score.Equals(b.score)&&northNet.Equals(b.northNet)&&southNet.Equals(b.southNet)&&steals==b.steals&&stealTime==b.stealTime;
  }
 
  // One arena-local ball. Only the host (or offline player) owns physical simulation.

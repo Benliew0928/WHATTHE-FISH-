@@ -47,6 +47,7 @@ namespace WhatTheFish {
    Check(FootballPressure.Strength(Vector3.forward,Vector3.forward,Vector3.zero)==0,"facing away has no pressure");
    Check(FootballPressure.Strength(Vector3.forward*3,Vector3.back,Vector3.zero)==0,"distant defender has no pressure");
    Check(FootballPressure.Strength(Vector3.forward+Vector3.up,Vector3.back,Vector3.zero)==0,"different elevation has no pressure");
+   foreach(int count in new[]{0,1,2,3,4,10})Check(Mathf.Abs(FootballPressure.StackedMultiplier(count)-(count==0?1:.75f-.1f*(Mathf.Min(count,3)-1)))<.001f,"pressure additive stacking and three-defender cap "+count);
    var snapshot=new FootballEffortSnapshot{stamina=43,dashing=true};var copy=new FootballEffort();copy.Receive(snapshot);Check(copy.Stamina==43&&copy.Dashing&&copy.Snapshot.Equals(snapshot),"effort presentation reads replicated state");
   }
   IEnumerator Offline(){
@@ -61,7 +62,7 @@ namespace WhatTheFish {
    Check(actor.ControlsFootball&&Mathf.Abs(actor.speed-7.993125f)<.15f,"dash dribble retains ball and possession multiplier");
    Check(Vector3.Distance(ball.transform.position,ball.FootPosition(actor))<.03f,"ball stays on foot during fast dribble");
    DevelopmentProbe.TurnCommand=new(){move=Vector2.up,dash=true,charging=true};yield return new WaitForSeconds(.3f);
-   Check(!actor.FootballEffort.Dashing&&Mathf.Abs(actor.speed-2.52f)<.15f,"charging cancels dash and moves at scaled charge speed");DevelopmentProbe.TurnCommand=default;
+   Check(actor.FootballEffort.Dashing&&Mathf.Abs(actor.speed-7.993125f)<.15f,"charging retains held dash and dribble speed");DevelopmentProbe.TurnCommand=default;
    foreach(float charge in new[]{0f,.5f,1f}){Place(actor,home);Pickup(actor);Check(actor.TryKick(charge),"kick accepted at "+charge);Check(Mathf.Abs(Vector3.ProjectOnPlane(ball.Body.linearVelocity,Vector3.up).magnitude-Mathf.Lerp(13.44f,24.64f,charge))<.02f,"football launch is twenty percent slower at charge "+charge);Check(Mathf.Abs(ball.Body.linearVelocity.y-.28f)<.001f,"shot vertical launch scales with speed at charge "+charge);}
    var rival=Instantiate(app.athletePrefab).GetComponent<Athlete>();rival.Setup();Place(actor,home);Place(rival,home+Vector3.forward*1.4f,180);Pickup(actor);
    rival.Simulate(new(){pressure=true,heading=180},.1f);
@@ -74,7 +75,13 @@ namespace WhatTheFish {
    Check(FootballPressure.Constrain(actor,Vector3.forward)==Vector3.forward,"world obstruction prevents pressure through wall");Destroy(wall);yield return null;
    Place(rival,home+Vector3.forward*1.4f,180);rival.Simulate(new(){pressure=true,heading=180},.1f);
    var other=Instantiate(app.athletePrefab).GetComponent<Athlete>();other.Setup();Place(other,home+new Vector3(.7f,0,1.4f),205);other.Simulate(new(){pressure=true,heading=205},.1f);
-   Check(Mathf.Abs(FootballPressure.Constrain(actor,Vector3.forward).z-.75f)<.001f,"multiple pressure defenders cannot stack slowdown");other.gameObject.SetActive(false);Destroy(other.gameObject);
+   Check(Mathf.Abs(FootballPressure.Constrain(actor,Vector3.forward).z-.65f)<.001f,"two defenders stack to 35 percent slowdown");
+   var third=Instantiate(app.athletePrefab).GetComponent<Athlete>();third.Setup();Place(third,home+new Vector3(-.7f,0,1.4f),155);third.Simulate(new(){pressure=true,heading=155},.1f);
+   Check(Mathf.Abs(FootballPressure.Constrain(actor,Vector3.forward).z-.55f)<.001f,"three defenders stack to 45 percent slowdown");
+   var fourth=Instantiate(app.athletePrefab).GetComponent<Athlete>();fourth.Setup();Place(fourth,home+Vector3.back*1.5f);fourth.Simulate(new(){pressure=true},.1f);
+   Check(Mathf.Abs(FootballPressure.Constrain(actor,Vector3.forward).z-.55f)<.001f,"fourth eligible defender cannot exceed three-defender cap");
+   third.gameObject.SetActive(false);fourth.gameObject.SetActive(false);Destroy(third.gameObject);Destroy(fourth.gameObject);
+   Check(Mathf.Abs(FootballPressure.Constrain(actor,Vector3.forward).z-.65f)<.001f,"leaving defenders immediately removes extra stacks");other.gameObject.SetActive(false);Destroy(other.gameObject);
    DefenseChecks(rival);
    actor.Simulate(new(){pressure=true},.02f);Check(!actor.FootballEffort.Pressuring,"ball carrier cannot defend self");
    Place(rival,home+Vector3.forward*1.4f,180);rival.Simulate(new(){pressure=true,heading=180},.1f);Loose();rival.Simulate(new(){pressure=true},.02f);Check(!rival.FootballEffort.Pressuring,"loose ball ends pressure");
@@ -83,7 +90,7 @@ namespace WhatTheFish {
    var buttons=FindObjectsByType<FootballEffortButton>(FindObjectsSortMode.None);var dash=buttons.Single(b=>!b.pressure);var pressure=buttons.Single(b=>b.pressure);
    Check(buttons.Length==2&&dash.button.interactable&&!pressure.enabled&&pressure.GetComponent<KickButton>().enabled,"dash and shared possession-aware action slot");
    var pointer=new PointerEventData(EventSystem.current){pointerId=17,button=PointerEventData.InputButton.Left};dash.OnPointerDown(pointer);Check(app.view.DashHeld,"touch hold starts dash input");
-   dash.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=18});Check(app.view.DashHeld,"unrelated finger cannot release dash");dash.OnPointerExit(pointer);Check(!app.view.DashHeld,"leaving button cancels captured dash");
+   dash.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=18});Check(app.view.DashHeld,"unrelated finger cannot release dash");dash.OnPointerExit(pointer);Check(app.view.DashHeld,"captured dash survives leaving for swipe");dash.OnPointerUp(pointer);
    dash.OnPointerDown(pointer);app.view.ClearMatchInput();Check(!app.view.DashHeld&&!app.view.PressureHeld,"menu or round reset clears football holds");dash.OnPointerUp(pointer);
    var hud=FindFirstObjectByType<FootballEffortHUD>();yield return new WaitForSeconds(.2f);Check(hud&&hud.VisibleBars>=1,"stamina bars project above visible players");
    if(capture){yield return Capture("third-person");

@@ -6,6 +6,37 @@ Release measurements are recorded in [build size](../BUILD-SIZE.md), with
 test evidence and device limits in [verification](../VERIFICATION.md).
 Local captures and raw reports are under `Builds/CharacterIdentityQA/` (ignored).
 
+## Head refinement
+
+`CharacterHeadMesh` is the editable source for the replacement heads. The shared
+scalp overlaps the jaw, neck and both ear roots; color alone no longer decides
+whether the original ear geometry survives. A small texture-aware boundary mask
+removes the fused model's colored hair strands at the temples in the forward,
+shadow and depth passes. Skin normalization uses linear color consistently, so
+the scalp and original face use the same palette.
+
+The crop has swept, tapered locks; curls use smaller overlapping clusters; the
+flat top has a level crown; the crest uses curved fins. The ponytail tapers from
+its tie, the bun and twin puffs have sculpted grooves, and both hats have shaped
+brims and trim. Shared vertex colors supply the details without new textures.
+Both geometry LODs preserve the silhouettes and joins. The original swept quiff,
+body topology, rig, grip shapes and animation clips remain shared and unchanged.
+Buried triangles inside overlapping rigid pieces are removed before delivery;
+visible surfaces retain their detail. Generated head meshes use medium mesh
+compression. The ear mask shares the otherwise unused negative jersey-facing
+value on head vertices, avoiding an extra coordinate across the whole body.
+Unused head number coordinates are canonicalized for compression; fringe
+triangles retain their height data. This removes packed entropy without changing
+body geometry, UV0, skinning or animation.
+
+`CharacterRefinementReview.Preview` renders all ten identities from front,
+quarter, side and back at both LODs, and checks finite mesh data and scalp normals.
+It explicitly selects MobileURP for consistent contact-sheet lighting; desktop
+gameplay cameras are verified separately in the built player.
+`CharacterRefinementReview.Build` creates a complete Windows player under
+`Builds/CharacterRefinementQA/Player/`. Captures and raw evidence belong under
+`Builds/CharacterRefinementQA/`, outside the shipped game.
+
 ## Asset and animation layout
 
 The ten looks share the original Rainbow Sprinter body, both body LODs, the
@@ -39,7 +70,8 @@ The initial owner preference is honored if available; collisions use a free
 identity. Leaving releases a reservation without renumbering the remaining
 players. Allocation is independent of client ownership, teams and roster order.
 Offline bots use the same lease algorithm. The saved appearance schema migrates
-legacy profiles once; protocol 57 requires matching multiplayer builds.
+legacy profiles once. Matching multiplayer builds are required; the current
+combined protocol is recorded in each player's `LATEST-BUILD.txt`.
 
 Football and basketball resolve uniforms from the active match's actual team:
 A is Blue and B is Red. Personal skin, head silhouette and shoe accents remain.

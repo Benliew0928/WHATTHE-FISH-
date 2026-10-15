@@ -52,6 +52,7 @@ namespace WhatTheFish {
   }
   void LateUpdate(){
    if(!ball||!wall)return;
+   wall.enabled=!(FootballMatch.Instance&&FootballMatch.Instance.BoundaryReleased);if(!wall.enabled)return;
    var position=ball.transform.position;var local=transform.InverseTransformPoint(position);local.y=mesh.bounds.min.y;
    float distance=float.PositiveInfinity;Vector3 closest=default;
    for(int i=0;i<endpoints.Length;i+=4){

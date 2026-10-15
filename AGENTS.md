@@ -1,12 +1,11 @@
 # Instructions for every task in this repository
 
-## APK budget is a product requirement
+## APK delivery
 
-- The self-contained hackathon APK must be **strictly below 100,000,000 bytes** (100 decimal MB, not 100 MiB). Never call an oversized build submission-ready.
-- Aim for **75,000,000 bytes or less during development**, reserving space for gameplay, animation, effects, props and audio. Being under 100 MB is not a reason to spend the remaining reserve carelessly. The current baseline is in `Docs/BUILD-SIZE.md`; do not assume the working target has already been achieved.
-- Read `Docs/BUILD-SIZE.md` and, when changing assets/rendering/build settings, `Docs/APK-SIZE-AUDIT.md`. Record the existing APK bytes before changes. Measure the resulting APK itself; source-folder sizes and uncompressed Unity reports are different measurements.
-- For changes that can affect the delivered game, run `Tools/Build/Build.ps1 -Target AndroidSubmission` after the appropriate feature checks. It builds and enforces the hard limit. Inspect `Builds/SizeAudit/latest/` for the largest contributors and unexpected growth. Report before/after bytes and remaining headroom, and update the size documentation after a new measured release. If the build cannot run, state that size is unverified; do not present an older APK as validation of new code. Documentation/housekeeping-only changes do not require rebuilding Unity.
-- Optimize continuously. Prefer removing unused shipped dependencies, sharing meshes/materials/textures, instancing, appropriate LODs, mobile import formats, and deliberate audio/animation compression. Investigate and reduce avoidable growth within the task; do not defer all optimization to the end or accept 90–95 MB as a comfortable development target.
+- The self-contained hackathon APK limit is now **1,000,000,000 bytes** (1 decimal GB), as updated by the project owner on 15 October 2026. Keep the automatic build gate below this limit. The previous 100 MB limit and 75 MB development target no longer apply.
+- For delivered gameplay or asset changes, run `Tools/Build/Build.ps1 -Target AndroidSubmission` after the appropriate feature checks. Do not present an older APK as validation of new code. Documentation/housekeeping-only changes do not require rebuilding Unity.
+- Routine tasks do **not** require reading or updating size reports, comparing APK sizes, inspecting packed assets, or optimizing for the retired size target. Automated reports may remain available for troubleshooting. Investigate size only when the build gate fails, unexpected growth indicates a problem, or the user asks for it.
+- Prioritize gameplay, visual quality and performance. Reuse suitable assets and avoid accidental unused payloads, but do not spend task time reducing size solely to meet the retired targets.
 - Preserve the intended visual quality: cabin interiors, close props, island silhouettes, animation and travel should remain attractive. Keep editable high-quality masters; derive mobile delivery assets. Check affected close/distant views and gameplay after lossy changes. Never claim phone quality/FPS from a Windows preview alone.
 - Preserve the current world model: four islands, one active game per host room, everyone travels together. Keep cabin, cables, towers and stations modular.
 
@@ -39,7 +38,7 @@
 
 ## Before handing the task back
 
-1. Run checks appropriate to the change and fix actionable failures. Check the APK budget when the game changed.
+1. Run checks appropriate to the change and fix actionable failures. The AndroidSubmission build handles the APK limit automatically.
 2. Archive obsolete files created by the task; keep current evidence and update affected documentation/links.
 3. Run `Tools/Build/Check-TaskReady.ps1` (add `-RequireApk` when delivering an Android build). Review `git diff --stat` and `git status --short`. The script is read-only; it does not certify APK freshness or replace functional/device testing.
-4. State what changed, verification, measured APK size/headroom when relevant, and any unresolved limits. Mention the archive batch if files moved. Leave all Git publishing actions to the user.
+4. State what changed, verification and any unresolved limits. Detailed size reporting is optional. Mention the archive batch if files moved. Leave all Git publishing actions to the user.

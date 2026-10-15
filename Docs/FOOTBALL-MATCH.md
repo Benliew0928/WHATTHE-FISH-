@@ -1,5 +1,16 @@
 # Football match rules
 
+The current [passing and MVP system](FOOTBALL-PLAYMAKER.md) records every
+participant's goals, direct five-second assists, completed Pass actions and
+interceptions. The MVP award follows the final replay. Protocol **61** includes
+these host-authoritative records; all room participants need matching builds.
+
+Players are contained within the pitch during a match, whether or not they
+control the ball. The boundary releases after the final replay or cancellation,
+and its energy visual disappears. **Back to pitch** restores each player's
+controls so they can explore the island immediately. A new kickoff restores
+containment; team selection still allows players to approach the pitch.
+
 The current [Touchline HUD](FootballUI/implementation.md) presents these same
 match states in the approved cream score strip. The earlier glass scoreboard
 captures and release numbers below are historical; current delivery and size

@@ -89,7 +89,9 @@ Late arrivals wait for the next scored round. A departed competitive player's
 earned score remains visible with a faded row; the contest continues. A roster
 change invalidates an unfinished Cup series, so start a new Cup with the new
 roster. A disconnect during the countdown or Crew round abandons that round.
-A lost host ends the room's activity. Local personal bests are saved separately
+Host loss triggers [automatic room recovery](HOST-MIGRATION.md), with the lowest
+occupied player number taking over, then the lowest spectator number if no
+players remain. The roster-change rules above still apply. Local personal bests are saved separately
 by mode and player count; there is no global online ranking service.
 
 ## Sports-style Fishing HUD

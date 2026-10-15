@@ -43,7 +43,7 @@ Shader "WhatTheFish/CharacterIdentity" {
     o.positionCS.z=max(o.positionCS.z,UNITY_NEAR_CLIP_VALUE);
    #endif
     return o;}
-   half4 ShadowFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g);return 0;}
+   half4 ShadowFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g,i.uv,i.number.w);return 0;}
    ENDHLSL
   }
   Pass {
@@ -52,7 +52,7 @@ Shader "WhatTheFish/CharacterIdentity" {
    #pragma vertex IdentityVertex
    #pragma fragment DepthFragment
    #include "CharacterIdentityInput.hlsl"
-   half4 DepthFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g);return i.positionCS.z;}
+   half4 DepthFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g,i.uv,i.number.w);return i.positionCS.z;}
    ENDHLSL
   }
   Pass {
@@ -61,7 +61,7 @@ Shader "WhatTheFish/CharacterIdentity" {
    #pragma vertex IdentityVertex
    #pragma fragment NormalFragment
    #include "CharacterIdentityInput.hlsl"
-   half4 NormalFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g);return half4(normalize(i.normalWS),0);}
+   half4 NormalFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g,i.uv,i.number.w);return half4(normalize(i.normalWS),0);}
    ENDHLSL
   }
  }

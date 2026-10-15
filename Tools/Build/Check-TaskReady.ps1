@@ -67,15 +67,12 @@ foreach ($path in $files) {
 $auditSource = Get-Content -LiteralPath (Join-Path $repoRoot 'Game/Assets/_Game/Editor/BuildSizeAudit.cs') -Raw
 if ($auditSource -notmatch 'LimitBytes\s*=\s*(\d+)') { throw 'Cannot read the APK limit from BuildSizeAudit.cs.' }
 $limitBytes = [long]$Matches[1]
-if ($limitBytes -ne 100000000) { $problems.Add('The hard APK limit must remain 100,000,000 bytes.') }
-if ($auditSource -notmatch 'TargetBytes\s*=\s*(\d+)') { throw 'Cannot read the working target from BuildSizeAudit.cs.' }
-$targetBytes = [long]$Matches[1]
+if ($limitBytes -ne 1000000000) { $problems.Add('The APK limit must match the current 1,000,000,000-byte requirement.') }
 $apkPath = Join-Path $repoRoot 'Builds/Android/WhatTheFish-release.apk'
 if (Test-Path -LiteralPath $apkPath -PathType Leaf) {
     $apk = Get-Item -LiteralPath $apkPath
     Write-Output ('Existing APK: {0} bytes ({1:F2} MB); headroom: {2:F2} MB; modified UTC: {3:o}' -f $apk.Length, ($apk.Length / 1e6), (($limitBytes - $apk.Length) / 1e6), $apk.LastWriteTimeUtc)
-    if ($apk.Length -ge $limitBytes) { $problems.Add('APK violates the strict under-100-MB limit.') }
-    elseif ($apk.Length -gt $targetBytes) { Write-Warning ('APK is above the {0:F2} MB working target. Preserve room for gameplay.' -f ($targetBytes / 1e6)) }
+    if ($apk.Length -ge $limitBytes) { $problems.Add('APK violates the under-1-GB limit.') }
     Write-Output 'APK freshness, signature, gameplay and phone performance require separate build/test evidence.'
 } elseif ($RequireApk) {
     $problems.Add('No release APK exists. Build AndroidSubmission before handing off an Android release.')

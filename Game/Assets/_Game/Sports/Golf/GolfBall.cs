@@ -169,6 +169,7 @@ namespace WhatTheFish {
    else Body.linearVelocity-=Vector3.ProjectOnPlane(Physics.gravity,normal)*dt;
   }
   internal GolfBallSnapshot Snapshot(uint round,double now)=>new GolfBallSnapshot{valid=true,active=Live,round=round,reset=ResetSequence,strike=StrikeSequence,position=match.transform.InverseTransformPoint(Body.position),rotation=Quaternion.Inverse(match.transform.rotation)*Body.rotation,time=now};
+  internal void RestoreRoom(GolfBallSnapshot s){ResetMotion();ResetSequence=s.reset;StrikeSequence=s.strike;Body.position=match.transform.TransformPoint(s.position);Body.rotation=match.transform.rotation*s.rotation;transform.SetPositionAndRotation(Body.position,Body.rotation);}
   internal void Receive(GolfBallSnapshot snapshot){
    if(match.Authority||!snapshot.valid||snapshot.round!=match.Round)return;
    bool snap=!received||snapshot.reset!=target.reset||snapshot.round!=target.round;

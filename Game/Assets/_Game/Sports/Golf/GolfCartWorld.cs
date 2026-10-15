@@ -17,7 +17,7 @@ namespace WhatTheFish {
   public static GolfCartWorld Ensure(){if(!Instance)new GameObject("Golf carts").AddComponent<GolfCartWorld>();return Instance;}
   void Awake(){Instance=this;}
   void OnDestroy(){foreach(var record in records.Values)if(record.view)Destroy(record.view.gameObject);if(Instance==this)Instance=null;}
-  public static ulong Key(Athlete athlete){var network=athlete?athlete.GetComponent<NetworkAthlete>():null;return network?network.OwnerClientId:OfflineOwner;}
+  public static ulong Key(Athlete athlete){var network=athlete?athlete.GetComponent<NetworkAthlete>():null;return network&&network.StableId!=ulong.MaxValue?network.StableId:OfflineOwner;}
   public static int Count=>Instance?Instance.records.Values.Count(r=>r.state.summoned):0;
   public static GolfCart Owned(Athlete athlete)=>athlete&&Instance&&Instance.records.TryGetValue(Key(athlete),out var record)&&record.state.summoned?record.view:null;
   public static bool HasCart(Athlete athlete)=>athlete&&Instance&&Instance.records.TryGetValue(Key(athlete),out var record)&&record.state.summoned;
@@ -37,7 +37,7 @@ namespace WhatTheFish {
    return found;
   }
   public static bool Execute(Athlete actor,GolfCartAction action,ulong target) {
-   if(!actor||!Authority||!Allowed||actor.inTransit)return false;
+   if(!actor||actor.IsSpectator||!Authority||!Allowed||actor.inTransit)return false;
    var world=Ensure();ulong caller=Key(actor);
    if(action==GolfCartAction.Summon)return caller==target&&world.Summon(actor,caller);
    if(action==GolfCartAction.Recall)return caller==target&&world.Recall(actor,caller);

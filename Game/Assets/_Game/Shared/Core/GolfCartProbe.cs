@@ -22,7 +22,7 @@ namespace WhatTheFish {
    args=Environment.GetCommandLineArgs();output=Value("-report",Path.Combine(Application.persistentDataPath,"cart.txt"));
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    float deadline=Time.realtimeSinceStartup+55;
-   while((!AppRoot.Instance||!AppRoot.Instance.LocalAthlete||!AppRoot.Instance.Exploring||AppRoot.Instance.SelectedSport!=SportId.Golf)&&Time.realtimeSinceStartup<deadline)yield return null;
+   while((!AppRoot.Instance||!AppRoot.Instance.LocalAthlete||!AppRoot.Instance.Exploring||AppRoot.Instance.SelectedSport!=SportId.Golf||RoomTeleport.Busy||TeleportSequence.Busy)&&Time.realtimeSinceStartup<deadline)yield return null;
    app=AppRoot.Instance;Check(app&&app.Exploring&&app.SelectedSport==SportId.Golf,"CART_GOLF_READY");if(!app||!app.Exploring)yield break;
    yield return new WaitForSeconds(.6f);
    if(args.Contains("-cartTerrainAudit")){yield return TerrainAudit();Record("CART_TERRAIN_COMPLETE");yield break;}

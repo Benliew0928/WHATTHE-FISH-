@@ -18,7 +18,7 @@ three-second opening countdown. Both sports default to three playing minutes;
 the host may choose three, five or ten minutes before everyone readies up.
 
 Only the host simulates scoring, possession, restarts and results. Guests receive
-snapshots and send owner-authorized inputs. Protocol 55 requires matching builds.
+snapshots and send owner-authorized inputs. Protocol 65 requires matching builds.
 There is one active match in the room. Travel is blocked until that match finishes
 or is voided; the four-island shared-travel model is retained.
 
@@ -85,8 +85,10 @@ If any participant departs during selection, countdown, live play or a restart,
 the host immediately marks the match void, clears pending input and active ball
 actions, and prevents further scoring. The visible score is retained without
 awarding a winner. A new match needs a fresh valid even roster and clears all
-scores. Host departure closes the room; host migration and replacement bots are
-not part of this phase. Returning to the lobby clears the current match.
+scores. Host departure instead uses [automatic host succession](HOST-MIGRATION.md)
+to restore the surviving roster and match checkpoint under the next numbered
+participant. Replacement bots are not added. Returning to the lobby clears the
+current match.
 
 Ball and input revisions prevent late previous-round network requests from
 executing after a reset. Selection requests also carry their selection revision.

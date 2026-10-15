@@ -33,10 +33,10 @@ namespace WhatTheFish {
  }
  public static class FootballPressure {
   public const float Reach=2.4f,FollowReach=8,StandOff=1.35f,DefenderMultiplier=.7f,CarrierMultiplier=.75f;
-  public static bool Eligible(Athlete a)=>!(FootballBall.Instance&&FootballBall.Instance.PropLocked(a))&&a&&a.isActiveAndEnabled&&!a.inTransit&&a.Action==FootballAction.None&&!a.Airborne&&!a.LoadingJump&&a.WhiffRemaining<=0&&FootballBall.Allowed;
+  public static bool Eligible(Athlete a)=>!(FootballBall.Instance&&FootballBall.Instance.PropLocked(a))&&a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&a.Action==FootballAction.None&&!a.Airborne&&!a.LoadingJump&&a.WhiffRemaining<=0&&FootballBall.Allowed;
   // A captured pressure gesture survives the defender's own jump or tackle.
   // The active target still requires a live opposing carrier and clear sight.
-  public static bool CanHold(Athlete a)=>a&&a.isActiveAndEnabled&&!a.inTransit&&a.Action!=FootballAction.Hit&&!(FootballBall.Instance&&FootballBall.Instance.PropLocked(a))&&FootballBall.Allowed;
+  public static bool CanHold(Athlete a)=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&a.Action!=FootballAction.Hit&&!(FootballBall.Instance&&FootballBall.Instance.PropLocked(a))&&FootballBall.Allowed;
   public static bool Opponents(Athlete a,Athlete b){
    if(!a||!b||a==b)return false;var match=FootballMatch.Instance;
    if(!match||match.Snapshot.phase==FootballMatchPhase.Idle)return true;
@@ -68,13 +68,16 @@ namespace WhatTheFish {
   }
   public static Vector3 Constrain(Athlete carrier,Vector3 displacement){
    if(!carrier.ControlsFootball||!Eligible(carrier))return displacement;
+   int count=0;
    foreach(var defender in Athlete.Active){
     if(!defender.FootballEffort.Pressuring||CarrierFor(defender)!=carrier||Strength(defender.transform.position,defender.transform.forward,carrier.transform.position)==0)continue;
-    // Applied after the motor: dash, Turbo and existing momentum all receive the
-    // same penalty. Return once so multiple defenders never stack the slowdown.
-    return new Vector3(displacement.x*CarrierMultiplier,displacement.y,displacement.z*CarrierMultiplier);
+    if(++count==3)break;
    }
-   return displacement;
+   float multiplier=StackedMultiplier(count);
+   return new Vector3(displacement.x*multiplier,displacement.y,displacement.z*multiplier);
   }
+  // Preserve the existing base penalty, then add ten percentage points per
+  // additional eligible defender. Never multiply the full debuff by the count.
+  public static float StackedMultiplier(int count)=>count<=0?1:CarrierMultiplier-.1f*(Mathf.Clamp(count,1,3)-1);
  }
 }

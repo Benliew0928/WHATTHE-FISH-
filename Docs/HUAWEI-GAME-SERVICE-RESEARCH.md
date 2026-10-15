@@ -1,30 +1,59 @@
 # Huawei Game Service integration and competition publishing
 
-Research date: **14 October 2026**, Malaysia time. Project: **WHATTHE FISH?**
+Research date: **14 October 2026**, reviewed **15 October 2026**, Malaysia time. Project: **WHATTHE FISH?**
 
-Use **current Huawei Game Service initialization and game sign-in with Account Kit** as the first integration milestone. Keep the existing Unity multiplayer rooms and four-island gameplay. Add Analytics Kit only if it provides useful demonstration evidence and fits the measured APK budget.
+Use **current Huawei Game Service initialization and game sign-in with Account Kit** as the first integration milestone. Keep the existing Unity multiplayer rooms and four-island gameplay. Consider Scan Kit for joining rooms by QR code, subject to Unity compatibility and the measured APK budget.
+
+**Correction on 15 October:** Analytics Kit is not a general option for a new entry. Huawei's developer documentation says its service access portal closed to new registrations on 30 June 2024. Obtain explicit confirmation of an existing eligible project or special organizer access before including it. Product pages and SDK downloads alone do not establish activation availability. [Huawei Analytics access notice](https://developer.huawei.com/consumer/en/doc/HMSCore-References/android-api-hianalytics-0000001050707170)
 
 **Do not plan Huawei achievements, leaderboards or cloud saves using old Game Service tutorials.** Huawei removed saved games in SDK 6.13.0.300 on 30 May 2024, then removed achievements, event reporting and leaderboards in SDK 6.14.0.300 on 27 September 2024. The current release notes list 6.14.0.300 and require HMS Core (APK) 6.12.0.300 or later. Installing an older wrapper does not restore an online service. [Huawei version history](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/version-change-history-0000001050123471)
 
 This is a development proposal. The game currently has no working Huawei integration, and SDK compatibility and package growth need a fresh Android build and physical-device testing.
 
-## Competition requirements
+## Competition requirements: participant-kit review, 15 October
 
-The supplied event is the **UMPSA x HUAWEI GameCenter Mobile App Competition 2026**. Category B is for undergraduate university, polytechnic and diploma students. Its poster requires a digital Android mobile game using **Huawei Mobile Services (HMS)**; it does not specify Game Service alone, a minimum number of kits, or mandatory public AppGallery publication.
+The supplied event is the **UMPSA x HUAWEI GameCenter Mobile App Competition 2026**. Category B covers undergraduate university, polytechnic and diploma students. The participant briefing and Category B kit now provide more specific evidence than the public poster. This section summarizes the supplied private materials; the original PDFs are retained outside Git.
 
-The Category B submission includes a PowerPoint presentation of at most **40 slides**, game files of at most **100 MB**, and a demo video of at most **3 minutes within 60 MB**, with English subtitles for non-English videos. Teams have at most three members, each person belongs to one team, and members come from the same institution. Our repository deliberately uses the stricter delivery rule of an APK **below 100,000,000 bytes**. [Official Category B poster](https://www.uxhmac.com/img/banners/category_b.png)
+Sources inspected: **UXHMAC 2026 Preliminary Round Participant Briefing Slides.pdf** (21 pages), **Category B / Preliminary Stage Sample Deck.pdf** (12 pages), and **Category B / Application Form Category B.pdf** (2 pages). The copies in the two supplied download folders have matching SHA-256 hashes. Full hashes and local extraction/render evidence are in ignored `Builds/HuaweiResearch/20261015/`; no SDK credentials or sample integration code were found in these three PDFs.
 
-The website lists registration closing **13 October at 11:59 PM**, briefing **15 October**, mobile services workshop **16–18 October**, final submission **1 November at 11:59 PM UTC+8**, preliminary judging **2–9 November**, and the top-ten finale **25 November**. Confirm the team's registration and use the briefing to settle the technical acceptance criteria. [Official competition timeline](https://www.uxhmac.com/)
+### What the kit settles
 
-Resolve these questions at the briefing or workshop:
+| Requirement | Evidence and consequence |
+|---|---|
+| HMS must serve the game | Briefing p4 says integration into core gameplay; Category B form p1 asks which feature(s)/kit(s) are used and how they support the core function. Merely installing GameCenter does not demonstrate game integration. No minimum kit count or named compulsory kit is stated. |
+| Overall scoring | Briefing p4 gives **25% pitching and 75% experience**. HMS is one component of experience, alongside gameplay, UI/UX, stability and engagement; HMS alone is not worth 75%. |
+| Category B criteria | Briefing p8 also assesses student creativity/ownership, visuals/audio, positive values and a **user guide verified against the build**. Prepare concise host/join, controls, travel and troubleshooting instructions matching the shipped APK. No individual HMS weighting is supplied. |
+| Package formats | Briefing p5 explicitly shows **APK/RPK**. Unity APK is a documented submission format; RPK is a separate quick-game format, not an APK renamed. Confirm any format-specific publication or scoring conditions before considering changes. |
+| Presentation | Briefing p6 permits **at most 40 slides**. The sample deck organizes team, concept, gameplay, innovation, technical implementation/HMS, UI/visual/audio, market/future and summary. Its technical section p8 requests technology, implementation and result, and allows discussion of other technologies/APIs. |
+| Publication evidence | Sample deck p1 says the GameCenter QR box may be deleted if the game is unreleased. This strongly suggests unpublished entries are contemplated, but is not an explicit waiver of publication at every stage. |
+| Monetization | Sample deck p10 labels monetization as applicable only when relevant. Neither supplied Category B document requires Ads or IAP. |
+| Written summary | Category B form p2 requests a summary of at most **500 words**, covering concept, purpose, audience, gameplay and innovation. |
+| Schedule | Briefing p3 lists final upload **1 November, 11:59 PM**, preliminary judging **2-9 November**, and finale **25 November**, top ten per category. The public timeline specifies UTC+8. |
+| Workshops | Briefing pp10-12: **17 October 9 AM-noon** pitching; **17 October 2-6 PM** Agentic AI/Godot/MCP Android workshop; **18 October 9 AM-noon** RPK/GameCenter publishing. Attendance at all three is stated for the e-certificate. An AI workshop does not establish unrestricted AI usage; student ownership remains assessed. |
+| Participant onboarding | Briefing pp13-17 describe GameCenter installation and Malaysia-region Huawei ID registration/login, including an onboarding KPI. P18 shows MyNext registration. These are distinct from integrating HMS into our APK; their mandatory status, proof, counts and deadlines are unspecified. |
 
-- Does demonstrated Game Service initialization plus game sign-in satisfy the HMS requirement? Are additional kits scored or required?
-- Must an entry be publicly released, approved for open testing, or simply supplied as a signed APK? Is an AppGallery application ID or listing URL required?
-- Does the entry use Huawei's joint operations program, and therefore require a `.huawei` package suffix?
-- Which phone models, OS versions, HMS Core versions and network access will judges use? Can judges supply their own Huawei IDs?
-- Are anonymous/offline Android entry paths permitted under the intended distribution arrangement? What evidence proves integration?
+### Conflicting submission limits
 
-These are unresolved acceptance details, not reasons to delay the registration and build compatibility work.
+Briefing p6 says a **maximum five-minute demo**, mandatory **YouTube upload**, and English subtitles for non-English videos. However, the poster embedded on that same page still says **three minutes within 60 MB**; the [public Category B poster](https://www.uxhmac.com/img/banners/category_b.png) also says three minutes, 60 MB and game files up to 100 MB. Do not silently treat the newer text as resolving the conflict. A three-minute video fits both duration limits while clarification is pending; confirm whether a separate video file and the 60 MB cap still apply alongside YouTube.
+
+Our repository's self-contained APK requirement remains **strictly below 100,000,000 bytes**, with a development target of 75,000,000 bytes or less. Ask whether the organizer's 100 MB applies to the APK alone or all game-file uploads. The briefing does not authorize exceeding our project budget.
+
+### Questions ready to ask the organizer
+
+1. **Core integration:** "Our Unity multiplayer game uses Huawei game sign-in, and we are considering Scan Kit so players can scan a host's QR code to join a room. Would this satisfy your requirement to integrate HMS into the game's core function? Is any particular kit or minimum number of kits required?"
+2. **Scoring:** "How is HMS integration assessed within the 75% experience score? Do you reward useful integration and reliability, the number of kits, or particular capabilities?"
+3. **APK versus RPK:** "Page 5 accepts APK and RPK, while the publishing workshop focuses on RPK. Can our Unity Android APK enter and be judged on the same basis, without conversion to an RPK?"
+4. **Publication:** "The Category B sample deck lets an unreleased game omit its GameCenter QR code. Can you confirm whether public GameCenter or AppGallery publication is optional for the preliminary round and the finale, and whether any developer verification is still required?"
+5. **Video and file limits:** "The briefing says five minutes and YouTube, while the poster says three minutes and 60 MB. Which requirements apply to Category B? Is the 100 MB limit for the APK itself or all game files together?"
+6. **Currently available services:** "Huawei's documentation says Analytics Kit is closed to new registrations, and Game Service removed achievements, leaderboards and saved games. Which currently available kits do you recommend for a new Malaysian project, and is any special service access supplied by the competition?"
+7. **Unity support:** "Will the workshop provide a supported Unity integration example or contact for current HMS SDKs? Our project uses Unity 6, IL2CPP and ARM64."
+8. **Judging setup:** "Which Android phones and HMS Core versions will judges use? Will internet access, Huawei test accounts and enough devices for a live multiplayer demonstration be available?"
+9. **Other online services:** "Our multiplayer rooms and networking use Unity services. May we keep those while integrating Huawei services for player identity and room invitations?"
+10. **KPI and registration:** "Are the GameCenter/Huawei ID KPI and MyNext registration mandatory for each team member? What counts, evidence and deadlines are required, and do they affect eligibility or judging?"
+11. **AI and ownership:** "The workshop includes AI-assisted game development. What AI-generated code or assets are allowed, and what disclosure or proof of student contribution should we submit?"
+12. **User guide:** "What format and length should the user guide have, and where should we upload it so judges can verify it against the game?"
+
+For WHATTHE FISH?, retain the current Unity room system and investigate Account Kit/Game Service plus Scan Kit as a small, visible integration. Organizer acceptance of that combination is **not yet established**. The [full HMS catalog status audit](HMS-CATALOG-STATUS.md) separates publicly documented capabilities from retired features and restricted access; a marketing listing is not proof of new-project availability.
 
 ## What the Huawei products mean
 
@@ -62,7 +91,8 @@ flowchart TD
     I --> J[Four islands and shared travel]
     J --> K[Final sport results]
     K --> L[Local progress]
-    K -. optional .-> M[Analytics Kit events]
+    G -. optional .-> M[Scan Kit room QR]
+    M --> H
 ```
 
 **Huawei game identity and Unity multiplayer identity remain separate.** A Huawei `openId` is not automatically a Unity Authentication credential. Initially, keep Unity's existing transport identity and associate Huawei identity with the local profile. Any persistent account linking or cross-device progress should use a backend that verifies Huawei authorization and applies an explicit mapping. Never transmit authorization tokens through ordinary room snapshots.
@@ -73,12 +103,12 @@ flowchart TD
 |---|---|---|
 | First | Game launch initialization and Huawei game sign-in | A real supported HMS integration with visible authorization and game player retrieval. Display a signed-in profile state in the menu. |
 | First | Lifecycle and failure handling | Handle consent rejection, cancellation, expired authorization, missing/old HMS Core, network loss and app resume without freezing or repeated pop-ups. |
-| Next, if useful | Analytics Kit | Demonstrate which sport players choose, start and finish; use the data to improve tutorials and session flow. |
+| Next, if useful | Scan Kit | Scan a host's room QR code and pass its room code to the existing join flow. |
 | Optional game feature | Local achievement book | Examples: first catch, finish five Golf cups, win a Football or Basketball match, visit four islands. These are our own features, not Huawei achievement APIs. |
 | Later | Backend progress and public rankings | Needs persistence, score validation, abuse controls and additional operational scope. Existing room rankings can remain local to the current match. |
 | Later | GameTurbo Engine | Investigate only with real Huawei performance measurements and any required Huawei API permissions. |
 
-Analytics Kit is a separate service that supports custom behavior events. It remains a possible route for telemetry after the retirement of Game Service event reporting. Proposed events are `sport_selected`, `tutorial_completed`, `match_started` and `match_completed`, with sport, mode, duration preset, human count and bot count. Do not send Huawei tokens, raw identity values or room codes as event parameters. [Analytics Kit capabilities](https://developer.huawei.com/consumer/en/hms/huawei-analyticskit/)
+Scan Kit supports QR/barcode scanning and generation. A proposed room invitation contains a format/version marker and the existing room code. Validate the scanned value before passing it to `RoomService.Join`; do not execute arbitrary URLs or include Huawei authorization credentials in invitations. Retain manual code entry for players without camera permission. This changes the invitation input, while the existing multiplayer transport remains responsible for joining. [Current Scan Kit guide](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/service-introduction-0000001050041994)
 
 Count local progress once per finalized match and per participating human player. Attach it to the authoritative finish transition in `FootballMatch`, `BasketballMatch`, `GolfMatchManager` and `FishingGame`, after reviewing each sport's final-result behavior. Separate online human matches from bot matches and practice. Host authority reduces accidental client errors but does not make a player-hosted score tamper-proof; public competitive rankings would need stronger validation. Keep global rankings out of the first competition milestone unless the rules demand them.
 
@@ -101,7 +131,7 @@ Unity 6.3 supports calling Java/Kotlin plug-ins from C# through its Android JNI 
 1. Choose a durable developer account owned by the team or institution, register as a Huawei developer and complete identity verification.
 2. Create an AppGallery Connect project and an **Android / Game** app. Finalize the publishing package identifier before configuring SDK credentials.
 3. Register the **SHA-256 signing certificate fingerprint** in Project settings. Cover the certificate of the APK actually being tested and the eventual distributed signing certificate.
-4. Enable **Game Service** and **Account Kit** in Manage APIs. Enable Analytics only if selected for the scope.
+4. Enable **Game Service** and **Account Kit** in Manage APIs. Add Scan Kit only if selected for the scope.
 
 Huawei documents the verified developer, Game category, fingerprint and API activation prerequisites. [AppGallery Connect preparations](https://developer.huawei.com/consumer/en/doc/HMSCore-Guides/config-agc-0000001281025916)
 
@@ -123,7 +153,7 @@ After initialization succeeds, authorize using Account Kit with the **game scope
 
 For the AppGallery game route, implement those gates explicitly. Keep Windows development playable with an unavailable platform adapter. Confirm the intended Android offline/guest policy with Huawei before retaining an entry path that bypasses the documented game authorization gate. A network error or denied consent must never produce a fake signed-in state.
 
-Expand the platform boundary into asynchronous initialization and sign-in operations, a small identity object, explicit states such as initializing/authorized/error, and a capability query. Wire it into `AppRoot` and the menu. Do not implement the existing `ReportResult` method by calling removed Huawei ranking APIs. Keep local progress and optional Analytics as separate responsibilities.
+Expand the platform boundary into asynchronous initialization and sign-in operations, a small identity object, explicit states such as initializing/authorized/error, and a capability query. Wire it into `AppRoot` and the menu. Do not implement the existing `ReportResult` method by calling removed Huawei ranking APIs. Keep local progress and optional QR invitations as separate responsibilities.
 
 For verified production identities, use a backend to exchange/verify authorization and compare the returned game identifier. Never embed a client secret in the APK, and do not claim a client-provided ID has been server-verified. Mainland identity verification, addiction prevention and `savePlayerRole` have additional regional requirements; the current sign-in guide says role reporting is available only in the Chinese mainland. Start with the competition's intended Malaysia distribution and resolve any expansion separately.
 
@@ -143,7 +173,7 @@ First produce an initialization/sign-in spike with no new art, ads, IAP or cloud
 | Android lifecycle | Background/foreground, authorization Activity return and any floating window behave correctly; no repeated dialogs or callback loss. |
 | Existing gameplay | Host and guest can join, travel together, play and finish all four sports; only one match runs per room. |
 | Release packaging | IL2CPP ARM64, signing fingerprint, config, merged manifest and release shrinker behavior pass on the exact submission APK. |
-| Optional Analytics | A consented real-device session produces the intended events in the Huawei console, with no sensitive payloads. |
+| Optional QR invitations | A real device scans the host's QR and joins the intended room; invalid codes and denied camera permission have usable fallbacks. |
 | Performance and size | Physical-phone touch, appearance, FPS/thermal behavior, WAN play and exact APK bytes are recorded. |
 
 After feature checks, run `Tools/Build/Build.ps1 -Target AndroidSubmission`, inspect the audit and update the size records. Promote the complete validated Windows player to `Builds/WindowsFinal/` for a delivered gameplay change, including its build record. Run `Tools/Build/Check-TaskReady.ps1 -RequireApk`. Windows tests can verify the fallback adapter and gameplay; they do not establish Huawei phone compatibility or performance.
@@ -156,7 +186,7 @@ Prepare the following release material alongside implementation:
 
 1. A tested, signed release APK with the final identifier, increasing version code, matching certificate configuration and recorded hash.
 2. The game name, description, icon, screenshots and contact details, consistent with the shipped game. Check whether the punctuation in WHATTHE FISH? is accepted in the listing.
-3. Accurate age-rating answers and privacy disclosures covering Huawei account/services, Unity multiplayer, and optional Analytics. Provide a reachable privacy policy and a practical contact/process for data rights.
+3. Accurate age-rating answers and privacy disclosures covering Huawei account/services, Unity multiplayer, and optional camera-based QR scanning. Provide a reachable privacy policy and a practical contact/process for data rights.
 4. Asset licenses/provenance and an accurate AI content declaration for generated assets or services. Match declarations to the actual package and selected territories.
 5. Reviewer instructions covering authorization, solo play, host/join and four-island travel. Keep backend services available during review and supply test access when requested.
 6. Open testing or public release as required by the organizer, leaving time for rejection fixes and another review.
@@ -171,14 +201,14 @@ Do not equate competition submission, an uploaded draft, approval for testing an
 |---|---|
 | 14–15 October | Confirm registration, account ownership, kit acceptance, publication status, package suffix and judging devices. |
 | 16–18 October | Attend the workshop; prove current initialization/sign-in on Unity 6 and a phone; measure SDK growth. |
-| 19–23 October | Finish menu/account state, lifecycle, identity handling and existing-room regression checks. Add Analytics only if justified. |
+| 19–23 October | Finish menu/account state, lifecycle, identity handling and existing-room regression checks. Add QR invitations only if justified. |
 | 24–27 October | Complete phone QA and store materials; submit the required testing/release version early. |
 | 28–31 October | Resolve review feedback, freeze the tested APK and prepare slides and the compressed demo. |
 | 1 November | Submit the exact APK, presentation and video before 11:59 PM UTC+8. |
 
 This schedule is a team planning estimate, not a Huawei delivery promise. Developer verification, native wrapper compatibility, device availability, SDK size and any required store approval are the critical dependencies.
 
-Suggested three-minute demo: show Huawei authorization and the signed-in state; create/join a room; show shared island travel and a short sport sequence; finish with final results and, if implemented, the corresponding Analytics console evidence. Allocate about 25 seconds to account integration, 100 seconds to the game, 35 seconds to services evidence and 20 seconds to the value proposition. Present real integration evidence and label local achievements/rankings accurately.
+Suggested three-minute demo: show Huawei authorization and the signed-in state; create/join a room, using Scan Kit if implemented; show shared island travel and a short sport sequence; finish with final results. Allocate about 25 seconds to account integration, 35 seconds to room joining, 100 seconds to the game and 20 seconds to the value proposition. Present real integration evidence and label local achievements/rankings accurately.
 
 ## Research verification
 

@@ -36,7 +36,7 @@ Connect a phone with USB debugging enabled and accept its debugging prompt. From
 2. In that project's Unity Gaming Services dashboard, enable Authentication with anonymous sign-in and enable Multiplayer Services/Lobby/Relay. Use the same environment for every build.
 3. Rebuild both players after linking. The cloud project ID is build configuration, not a secret. Never commit service account credentials, signing keys or access tokens.
 4. On one device choose Football, Basketball or Golf → Create internet room. Share its session code. On another internet connection enter the code and join. All players must mark ready before the host starts.
-5. A room supports one host plus nine guests. The SDK maintains the session/lobby connection; Relay carries NGO traffic. Host departure ends this prototype's room. Host migration is intentionally disabled at the application layer.
+5. A room supports ten players (five for fishing) plus ten spectators. The SDK maintains the session/lobby connection; Relay carries NGO traffic. When the host leaves or disconnects, the lowest occupied player number takes over, followed by spectator numbers if no players remain. See [automatic host succession](HOST-MIGRATION.md) for recovery behavior and testing.
 
 The project is linked to Unity cloud project `633e314c-46d1-4b48-bbbc-2dc5f6fb653c`, for a general audience. Its Authentication/Lobby/Relay services have passed real create/join tests. The current runtime uses its default `production` environment while separate development environment setup is pending dashboard access. Offline exploration stays usable independently of cloud services. No paid plan or third-party API purchase is configured by this project.
 

@@ -6,6 +6,13 @@ one use. Tap the illustrated ability button or press **G** to activate it.
 Picking up another prop later grants another use. Invalid actions retain the
 item. The player who collects an item controls its activation.
 
+The pickup area is a **1.2 m horizontal radius**, increased from 0.85 m, and
+works from every facing direction. A grounded player waiting at the spawn
+point receives the prop on the same simulation tick it appears, after the
+full countdown. Walls, jumping, transit and action locks still prevent pickup.
+The host awards one item to the nearest eligible player; there are no duplicate
+grants when several players overlap the area.
+
 Unused props stay with their collector through baskets, out-of-bounds inbounds,
 shot-clock restarts and overtime. Collecting another item replaces the single
 held slot; there is no stored second item. Activation spends the item once.

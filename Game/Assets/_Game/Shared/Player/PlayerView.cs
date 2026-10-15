@@ -26,12 +26,12 @@ namespace WhatTheFish {
   MeshRenderer kickAim;Material kickAimMaterial;Mesh kickAimMesh;
   public float Charge=>Charging&&FootballBall.Instance?FootballBall.Instance.ChargeFraction(Time.time-chargeStarted):0;
   public void RequestKick(float charge=1){if(!InputBlocked&&active&&target&&target.KickReady&&SportsPossession.Attacking(target,SportId.Football)){pendingKick=true;pendingCharge=Mathf.Clamp01(charge);}}
-  public bool BeginKick(int source=int.MinValue){if(InputBlocked||Charging||!active||!target||!target.KickReady||!SportsPossession.Attacking(target,SportId.Football))return false;Charging=true;chargeSource=source;chargeStarted=Time.time;if(source==int.MinValue)FootballAudio.PlayMenu();return true;}
+  public bool BeginKick(int source=int.MinValue){if(InputBlocked||Charging||FootballPassAiming||!active||!target||!target.KickReady||!SportsPossession.Attacking(target,SportId.Football))return false;Charging=true;chargeSource=source;chargeStarted=Time.time;if(source==int.MinValue)FootballAudio.PlayMenu();return true;}
   public void EndKick(int source=int.MinValue){if(!Charging||source!=chargeSource)return;float charge=Charge;Charging=false;HideKickAim();RequestKick(charge);}
   public void CancelKick(int source){if(Charging&&source==chargeSource){FootballAudio.PlayMenu(FootballSound.UIBack);Charging=false;HideKickAim();}}
   public bool InputBlocked {get;set;}
   public void ClearMatchInput(){CancelInput();golfFraming=0;ReturnFromGolfShot();}
-  void CancelInput(){CancelFishing();CancelGolfAim();if(PassCharging||pendingPass||pendingPassBegin)pendingPassCancel=true;ClearFootballInput();ClearDefenseInput();CancelShot();CancelPass();pendingShotBegin=pendingPassBegin=false;StealHeld=pendingSteal=false;Charging=GolfCharging=false;HideKickAim();pendingKick=pendingGolf=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingCart=GolfCartAction.None;}
+  void CancelInput(){if(FootballHUD.Instance)foreach(var swipe in FootballHUD.Instance.GetComponentsInChildren<FootballActionSwipe>())swipe.OnCancel(null);CancelFootballPass();pendingFootballPass=false;CancelFishing();CancelGolfAim();if(PassCharging||pendingPass||pendingPassBegin)pendingPassCancel=true;ClearFootballInput();ClearDefenseInput();CancelShot();CancelPass();pendingShotBegin=pendingPassBegin=false;StealHeld=pendingSteal=false;Charging=GolfCharging=false;HideKickAim();pendingKick=pendingGolf=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingCart=GolfCartAction.None;}
   void HideKickAim(){if(kickAim)kickAim.enabled=false;}
   void OnDestroy(){if(golfPreview)Destroy(golfPreview.gameObject);if(kickAimMaterial)Destroy(kickAimMaterial);if(kickAimMesh)Destroy(kickAimMesh);}
   static Mesh CreateKickAimMesh(){
@@ -113,11 +113,13 @@ namespace WhatTheFish {
    if(!FootballBall.Allowed&&!FootballMatch.CanAimKickoff(target)){Charging=false;pendingKick=false;}
    if(Charging&&(!target.KickReady||!SportsPossession.Attacking(target,SportId.Football)))Charging=false;
    if(GolfCharging&&(!GolfMatchManager.Instance||!GolfMatchManager.Instance.CanStrike(target,GolfMatchManager.Instance.Ball(chargingGolfOwner))))GolfCharging=false;
-   if(Input.GetKeyDown(KeyCode.Space)&&target.CanRequestJump){FootballAudio.PlayMenu();Charging=false;RequestJump();}
+   if(FootballPassAiming&&(!FootballBall.Instance||!FootballBall.Instance.CanPass(target)))CancelFootballPass();
+   if(AppRoot.Instance.SelectedSport==SportId.Football){if(Input.GetKeyDown(KeyCode.Space))BeginFootballPass();if(Input.GetKeyUp(KeyCode.Space))EndFootballPass();}
+   if(AppRoot.Instance.SelectedSport!=SportId.Football&&Input.GetKeyDown(KeyCode.Space)&&target.CanRequestJump){FootballAudio.PlayMenu();Charging=false;RequestJump();}
    if(ShotCharging&&(!BasketballBall.Active||!BasketballBall.Active.CanShoot(target)))CancelShot();
    if(ShotCharging){double now=BasketballMotion.Clock;shotPhase+=System.Math.Max(0,now-shotSampled)/ShotSweepSeconds;shotSampled=now;}
    if(PassCharging&&(!BasketballBall.Active||!BasketballBall.Active.CanPass(target)||passPlay!=BasketballBall.Active.Defense.play))CancelPass();
-   if(Input.GetKeyDown(KeyCode.X)){CancelShot();CancelPass();CancelFishing();CancelGolfAim();}
+   if(Input.GetKeyDown(KeyCode.X)){CancelFootballPass();CancelShot();CancelPass();CancelFishing();CancelGolfAim();}
    if(StealHeld&&(!BasketballBall.Active||!BasketballBall.Active.CanSteal(target)))EndSteal(stealSource,true);
    if(Input.GetKeyDown(KeyCode.R))RequestCartToggle();
    if(Input.GetKeyDown(KeyCode.E)){if(target.TackleReady)FootballAudio.PlayMenu();Charging=false;if(GolfCartWorld.Allowed)RequestCartUse();else if(BasketballRole==WhatTheFish.BasketballRole.Defense)RequestBlock();else {RequestTackle();BeginShot();}}
@@ -129,6 +131,13 @@ namespace WhatTheFish {
   }
   public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;FootballAudio.PlayMenu(FootballSound.UISelect);mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
   public PlayerCommand ReadCommand(){
+   if(target&&target.IsSpectator){
+    if(!active||InputBlocked||target.inTransit)return default;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    if(DevelopmentProbe.TurnCommandActive){var probe=DevelopmentProbe.TurnCommand;return new PlayerCommand{move=probe.move,heading=probe.heading,sprint=probe.sprint};}
+#endif
+    var touch=stick?stick.value:Vector2.zero;return new PlayerCommand{move=Vector2.ClampMagnitude(touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical")),1),heading=yaw,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f};
+   }
    var command=ReadInput();if(GolfAimRequested||GolfMatchManager.BlocksMovement){command.move=Vector2.zero;command.jump=command.sprint=false;command.cartAction=GolfCartAction.None;}if(command.golfSwing)command.heading=pendingGolfHeading;return command;
   }
   PlayerCommand ReadInput(){
@@ -148,7 +157,8 @@ namespace WhatTheFish {
 #endif
    var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));var result=new PlayerCommand{move=Vector2.ClampMagnitude(StadiumMovement(v),1),heading=yaw,tackle=tackle,jump=jump,shoot=shoot,finish=pendingFinish,shotReleasedAt=pendingShotReleasedAt,shotBegin=shotBegin,shotCancel=shotCancel,pass=pass,steal=steal,kick=kick,kickCharge=charge,charging=Charging,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f,cartAction=cartAction,cartOwner=cartOwner,golfSwing=golfSwing,golfCharging=GolfCharging,golfBallOwner=golfOwner,golfCharge=golfCharge,golfRound=golfRound};AddFootballInput(ref result);AddDefenseInput(ref result);AddPassInput(ref result);AddFishingInput(ref result);return result;}
   void LateUpdate(){
-   if(FootballReplay.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
+   if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
+   if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
    if(!active||!target){ResetGolfShotCamera();ResetStadiumCamera();HideKickAim();return;}
    bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;

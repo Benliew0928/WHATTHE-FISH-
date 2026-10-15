@@ -22,6 +22,12 @@ their original display size for visibility across the large pitch. Models float
 fully above the turf. Pickup distance, HUD icons, deployed walls and ability
 effects retain their gameplay sizes.
 
+Collection uses a **1.2 m horizontal radius** around the spawn point (previously
+0.85 m), regardless of which way the player faces. A grounded player already
+waiting in that area receives the prop on the same simulation tick it spawns,
+after the full countdown. Walls, jumping, transit and action locks still block
+collection; the nearest eligible player wins a contested pickup once.
+
 Walk into the floating model to collect it. Each player has one single-use slot;
 collecting another prop replaces the unused one. Tap the illustrated ability
 button, or press **G**, to activate. The football menu's **Abilities** page

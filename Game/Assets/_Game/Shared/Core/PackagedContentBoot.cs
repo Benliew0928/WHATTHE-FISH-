@@ -94,7 +94,10 @@ namespace WhatTheFish {
     }
    }
    try{
-    if(Error==null){if(!File.Exists(cached))File.Move(converted,cached);}
+    if(Error==null&&!File.Exists(cached)){
+     // Another local player may finish the same hash-keyed cache concurrently.
+     try{File.Move(converted,cached);}catch(IOException) when(File.Exists(cached)){}
+    }
     if(File.Exists(source))File.Delete(source);
     if(File.Exists(converted))File.Delete(converted);
    }catch(Exception e){Error=e.Message;}

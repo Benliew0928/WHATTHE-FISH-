@@ -3,7 +3,8 @@
 Football locomotion is **70% of the previous pace**, equally for human players,
 room guests and bots. Walking is **4.2 m/s** and running **7.35 m/s**.
 Dribbling retains its 75% possession multiplier, giving **3.15 / 5.5125 m/s**;
-charging moves at **2.52 m/s**. Dash and Team Turbo multiply these reduced
+charging without Dash moves at **2.52 m/s**. Dash keeps its normal movement
+while charging a shot. Dash and Team Turbo multiply these reduced
 speeds once. Other sports, jump physics and tackle/hit impulses retain their
 tuning. Kick launch speeds are **13.44-24.64 m/s** depending on charge,
 20% below the previous 16.8-30.8 m/s. Only the shot launch receives this new
@@ -25,8 +26,10 @@ fresh-approach rule are unchanged.
 
 ## Controls
 
-Kick and Pressure now share one possession-aware action slot; Tackle appears
-only on defense. Dash remains available in either role. Dash is above-left and Tackle is lower-left of Pressure. Keep Pressure held and slide to Jump, Dash or Tackle; return to its centre to re-arm another action. Dash lasts while the finger stays on its path. Jump/tackle trigger once per entry, subject to their existing cooldowns. See the current
+Dash occupies the main thumb slot. Shoot and Pressure share the smaller
+upper-left slot; Tackle appears only on defense. Pass replaces Jump. Hold Dash,
+slide diagonally onto Shoot, then return to Dash to release without ending the
+dash. See [passing and MVP](FOOTBALL-PLAYMAKER.md) and the current
 [team controls and pocket maps](SPORTS-HUD.md). The approved
 [Touchline UI](FootballUI/implementation.md) places stamina directly below
 Dash and moves camera/guidance/leaving into the top-right settings gear.
@@ -38,7 +41,8 @@ The desktop keys below are testing shortcuts, not on-screen button captions.
 | Dash | Hold left Ctrl while moving | Hold Dash while moving | Runs 45% faster than the new run speed |
 | Pressure | Hold Q | Hold Pressure | Automatically follows and guards an opposing carrier |
 | Tackle | E | Tackle | Existing slide challenge and miss recovery |
-| Kick | Hold/release F | Hold/release Kick | Existing charge, aim and cancel gesture |
+| Shoot | Hold/release F | Hold/release Shoot, or swipe from Dash | Charge, aim and cancel; Dash continues |
+| Pass | Space | Aim and tap Pass; hold to preview | Nearest teammate within the aim lane |
 
 Each player has a bar above their head. A second stamina meter remains visible
 for the local player in first person. Green shows available stamina, amber
@@ -51,7 +55,9 @@ A full bar contains 100 stamina. Moving dash consumes **32 per second**, so a
 continuous burst lasts approximately **3.1 seconds**. Dash speed is
 **10.6575 m/s**, or **7.993125 m/s** while dribbling. Stamina starts recovering
 after **0.6 seconds** without dash, at **15 per second**, including during
-ordinary movement and pressure. Charging a kick, falling and blocked match phases cancel dash. Standalone dash also cancels during jumping/tackling; the pressure gesture can keep dash selected while its own action completes. Holding dash while stationary costs
+ordinary movement and pressure. Falling and blocked match phases cancel Dash;
+charging a shot does not. Standalone Dash still cancels during jumping/tackling.
+Holding Dash while stationary costs
 nothing. Exhaustion requires releasing dash and recovering at least **25**
 stamina before another burst; keeping it held cannot generate automatic bursts.
 Round resets and teleports restore a full bar.
@@ -68,7 +74,7 @@ the carrier, faces them and targets a **1.35 m** goal-side marking gap.
 The defender keeps **70%** of their already-reduced movement speed: ordinary
 chase is **5.145 m/s**. Within **2.4 m**, a close, facing defender slows the
 carrier's total horizontal movement by **25%**, including sideways movement,
-dash and Turbo. Multiple defenders do not stack this slowdown. Walls, height
+dash and Turbo. Each additional eligible defender adds 10 percentage points, capped at three defenders: **25%, 35%, 45%**. It does not multiply the base penalty by the defender count; a fourth defender adds no further slowdown. Each defender must independently satisfy the distance, facing, opposition and line-of-sight checks; leaving removes that stack immediately. Walls, height
 differences, facing away, losing possession and action recovery remove the
 effect. The captured pressure hold survives the defender's jump and tackle, and Dash may run simultaneously with Pressure using the same stamina costs and slowdown. A close (at most 1.55 m), clear pressure tackle faces the carrier and dislodges the ball through the normal hit/release rules. The tackle
 cooldown remains **1.5 seconds**, with the existing **0.8 m** contact sweep.

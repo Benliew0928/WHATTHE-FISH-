@@ -157,9 +157,9 @@ namespace WhatTheFish {
      if(!f.airborne&&airborne)Play(FootballSound.Cloth,a.transform.position,.7f,"jump");
      // Gait wraps at the support contact, even when sprint stance is shorter
      // than one rendered frame. Both feet share this presentation clock.
-     if(moving&&Time.timeAsDouble-f.step>.09){if(BasketballAudio.Crossed(f.phase,m.GaitPhase,0)||m.GaitPhase<f.phase){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.LeftFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}else if(BasketballAudio.Crossed(f.phase,m.GaitPhase,.5f)){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.RightFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}}
+     if(a==AppRoot.Instance.LocalAthlete&&moving&&Time.timeAsDouble-f.step>.09){if(BasketballAudio.Crossed(f.phase,m.GaitPhase,0)||m.GaitPhase<f.phase){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.LeftFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}else if(BasketballAudio.Crossed(f.phase,m.GaitPhase,.5f)){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.RightFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}}
      if(moving&&a.ControlsFootball&&!a.Charging&&m.ContactWeight>.9f&&f.touch<=.9f)Play(FootballSound.Dribble,ball.transform.position,.8f,"foot-ball");
-     if(moving&&(Mathf.Abs(Mathf.DeltaAngle(f.yaw,a.transform.eulerAngles.y))>4||f.speed-a.speed>1.2f||effort.Pressuring)&&Time.timeAsDouble-f.cut>.55){Play(FootballSound.Cut,a.transform.position,.7f,"grass-cut");f.cut=Time.timeAsDouble;}
+     if(a==AppRoot.Instance.LocalAthlete&&moving&&(Mathf.Abs(Mathf.DeltaAngle(f.yaw,a.transform.eulerAngles.y))>4||f.speed-a.speed>1.2f||effort.Pressuring)&&Time.timeAsDouble-f.cut>.55){Play(FootballSound.Cut,a.transform.position,.7f,"grass-cut");f.cut=Time.timeAsDouble;}
      if(a.Action!=f.action){if(a.Action==FootballAction.Slide){Play(FootballSound.Slide,a.transform.position,1,"slide");Play(FootballSound.Swipe,a.transform.position,.35f,"slide-accent");}else if(a.Action==FootballAction.Hit){Play(FootballSound.Body,a.transform.position,.8f,"body-contact");f.fallAt=Time.timeAsDouble+.18;}}
      if(f.fallAt>=0&&Time.timeAsDouble>=f.fallAt){if(a.Action==FootballAction.Hit)Play(FootballSound.Fall,a.transform.position,.8f,"grounded-fall");f.fallAt=-1;}
      if(a.Charging&&!f.charging)Play(FootballSound.Cloth,a.transform.position,.6f,"gather");

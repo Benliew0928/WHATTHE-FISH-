@@ -15,7 +15,9 @@ namespace WhatTheFish {
   void ResetCourtPlayers(){if(Authority)foreach(var actor in Athlete.Active)actor.BasketballFreeRoam=false;}
   bool TryPlayerCourt(Athlete actor,out Transform arena,out Vector3 point,out Vector2 limits){
    arena=transform.parent;point=Vector3.zero;limits=PlayerCourtLimits;
-   if(!Playing||!actor||actor.inTransit||actor.BasketballFreeRoam||!actor.capsule||!actor.capsule.enabled)return false;
+   var match=BasketballMatch.Instance;
+   if(!Playing||!actor||actor.inTransit||!actor.capsule||!actor.capsule.enabled||match&&match.BoundaryReleased)return false;
+   if(actor.BasketballFreeRoam&&!(match&&match.Active&&match.Contains(actor)))return false;
    var controller=actor.capsule;
    var center=actor.transform.TransformPoint(controller.center);
    point=arena?arena.InverseTransformPoint(center):center;

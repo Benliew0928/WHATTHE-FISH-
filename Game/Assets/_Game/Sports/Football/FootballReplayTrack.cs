@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 namespace WhatTheFish {
- // A render-only copy. No Animator, script, collider, Rigidbody or NetworkObject
+ // A render-only copy. No Animator, gameplay script, collider, Rigidbody or NetworkObject
  // is instantiated, and playback never writes to the live simulation.
  internal sealed class FootballReplayTrack {
   struct Pose {public Vector3 position,scale;public Quaternion rotation;}
@@ -33,6 +33,7 @@ namespace WhatTheFish {
     if(clone){clone.sharedMaterials=r.sharedMaterials;clone.shadowCastingMode=r.shadowCastingMode;clone.receiveShadows=r.receiveShadows;r.GetPropertyBlock(block);clone.SetPropertyBlock(block);}
     draws[i]=clone;priorHidden[i]=r.forceRenderingOff;r.forceRenderingOff=true;
    }
+   if(source[0].GetComponent<FootballBall>())root.AddComponent<FootballTrail>().IsReplay=true;
    foreach(var group in source[0].GetComponentsInChildren<LODGroup>(true)){
     var clone=map[group.transform].gameObject.AddComponent<LODGroup>();var levels=group.GetLODs();
     for(int i=0;i<levels.Length;i++)levels[i].renderers=Array.ConvertAll(levels[i].renderers,r=>{int index=Array.IndexOf(renderers,r);return index>=0?draws[index]:null;});

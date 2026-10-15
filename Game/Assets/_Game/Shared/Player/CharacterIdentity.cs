@@ -53,7 +53,7 @@ namespace WhatTheFish {
    SetHidden(hidden);
   }
   public static FootballTeam ResolveTeam(Athlete actor){
-   var app=AppRoot.Instance;if(!actor||!app||!app.Exploring||actor.inTransit)return FootballTeam.None;
+   var app=AppRoot.Instance;if(!actor||actor.IsSpectator||!app||!app.Exploring||actor.inTransit)return FootballTeam.None;
    if(app.SelectedSport==SportId.Football){var m=FootballMatch.Instance;if(m&&m.Context&&m.Snapshot.phase!=FootballMatchPhase.Idle&&m.Snapshot.phase!=FootballMatchPhase.Cancelled)return m.TeamOf(actor);}
    if(app.SelectedSport==SportId.Basketball){var m=BasketballMatch.Instance;if(m&&m.Context&&m.Snapshot.phase!=BasketballMatchPhase.Idle&&m.Snapshot.phase!=BasketballMatchPhase.Cancelled)return m.TeamOf(actor);}
    return FootballTeam.None;
@@ -76,7 +76,7 @@ namespace WhatTheFish {
     nearScalp.GetComponent<MeshFilter>().sharedMesh=library.nearScalp;farScalp.GetComponent<MeshFilter>().sharedMesh=library.farScalp;
     if(!hairs[preset]){hairs[preset]=new Material(library.hairMaterial){name="Identity hair "+number};hairs[preset].SetColor("_BaseColor",LocalProfile.Hex(Hair[preset]));}
     near.sharedMaterial=far.sharedMaterial=hairs[preset];
-    if(!scalps[preset]){scalps[preset]=new Material(library.hairMaterial){name="Identity scalp "+number};scalps[preset].SetColor("_BaseColor",LocalProfile.Hex(Skin[preset])*.72f);scalps[preset].SetFloat("_Smoothness",.2f);}
+    if(!scalps[preset]){scalps[preset]=new Material(library.hairMaterial){name="Identity scalp "+number};scalps[preset].SetColor("_BaseColor",LocalProfile.Hex(Skin[preset]));scalps[preset].SetFloat("_Smoothness",.2f);}
     nearScalp.sharedMaterial=farScalp.sharedMaterial=scalps[preset];
    }else foreach(var renderer in AddedRenderers)renderer.GetComponent<MeshFilter>().sharedMesh=null;
    actor.visual.GetComponent<LODGroup>()?.RecalculateBounds();SetHidden(hidden);

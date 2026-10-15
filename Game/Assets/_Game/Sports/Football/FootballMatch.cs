@@ -11,7 +11,7 @@ namespace WhatTheFish {
   public FootballMatchRules rules;
   public readonly FootballMatchState State=new();
   public readonly FootballTeamSelection Selection=new();
-  FootballBall ball;FootballGoalDetector[] goals;bool wasContext;uint presentedRevision=uint.MaxValue;
+  FootballMVP mvp;FootballBall ball;FootballGoalDetector[] goals;bool wasContext;uint presentedRevision=uint.MaxValue;
   readonly Dictionary<ulong,Athlete> participants=new();
   System.Random kickoffRandom=new();
   static uint nextRoundRevision;uint publishedRevision,observedRuleRevision=uint.MaxValue;
@@ -26,17 +26,19 @@ namespace WhatTheFish {
   public static bool BlocksActions=>Instance&&Instance.Context&&Instance.Snapshot.phase!=FootballMatchPhase.Idle&&!Instance.Running;
   public static bool GoalFollowThrough=>Instance&&Instance.GoalSequence&&Instance.Now<Instance.Snapshot.goalAt+ReplayCaptureSeconds;
   public bool Running=>Snapshot.phase==FootballMatchPhase.Regulation||Snapshot.phase==FootballMatchPhase.Overtime;
+  public bool BoundaryReleased=>Context&&(Snapshot.phase==FootballMatchPhase.Finished||Snapshot.phase==FootballMatchPhase.Cancelled)&&!GoalSequence;
   public double Remaining {get{var s=Snapshot;return s.phase==FootballMatchPhase.Regulation||s.phase==FootballMatchPhase.Overtime||s.phase==FootballMatchPhase.Kickoff||s.phase==FootballMatchPhase.TeamSelection?Math.Max(0,s.deadline-Now):s.remaining;}}
   public int EligiblePlayers=>Eligible().Count();
   public bool Active=>Context&&(GoalSequence||Snapshot.phase!=FootballMatchPhase.Idle&&Snapshot.phase!=FootballMatchPhase.Finished&&Snapshot.phase!=FootballMatchPhase.Cancelled);
   public bool MatchMode=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening||FootballBots.Instance&&FootballBots.Instance.Solo;
   public bool CanStart=>Authority&&Context&&MatchMode&&!Active&&EligiblePlayers>=2&&EligiblePlayers<=10&&EligiblePlayers%2==0;
   static ulong PlayerId(Athlete actor)=>FootballBots.Id(actor);
-  static IEnumerable<Athlete> Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.inTransit&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
+  static IEnumerable<Athlete> Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
   bool RosterValid()=>participants.Count>0&&participants.All(p=>p.Value&&p.Value.isActiveAndEnabled&&!p.Value.inTransit)&&Eligible().Select(PlayerId).OrderBy(id=>id).SequenceEqual(participants.Keys.OrderBy(id=>id));
   public void CancelMatch(){if(!Authority||!State.Active)return;goalFollowThroughUntil=0;State.Cancel();ClearGoalSequence();goals=null;ClearInputs();ball.ResetBall();Publish();}
-  void Awake(){ball=GetComponent<FootballBall>();if(!rules)rules=Resources.Load<FootballMatchRules>("FootballMatchRules");if(!rules)throw new InvalidOperationException("Missing FootballMatchRules resource.");gameObject.AddComponent<FootballReplay>();}
+  void Awake(){ball=GetComponent<FootballBall>();if(!rules)rules=Resources.Load<FootballMatchRules>("FootballMatchRules");if(!rules)throw new InvalidOperationException("Missing FootballMatchRules resource.");gameObject.AddComponent<FootballReplay>();mvp=FootballMVP.Create();}
   void OnEnable(){Instance=this;}
+  void OnDestroy(){if(mvp)Destroy(mvp.gameObject);}
   void OnDisable(){if(Authority)ClearMatch();participants.Clear();Selection.Clear();goals=null;if(Instance==this)Instance=null;}
   FootballMatchSnapshot Capture(){
    if(observedRuleRevision!=State.Revision){
@@ -46,9 +48,9 @@ namespace WhatTheFish {
    }
    return new FootballMatchSnapshot{phase=State.Phase,result=State.Result,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,goalAt=goalAt,goalId=goalId,kickoffTeam=kickoffTeam,kickoffPlayer=kickoffPlayer,remaining=State.Running||State.Phase==FootballMatchPhase.Kickoff||State.Phase==FootballMatchPhase.TeamSelection?0:State.Remaining(Now),revision=publishedRevision,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),teamCapacity=Selection.Capacity};
   }
-  void Publish(){if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.Match.Value=Capture();}
+  void Publish(){PublishStatistics();if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.Match.Value=Capture();}
   public FootballTeam TeamOf(Athlete actor){if(!actor)return FootballTeam.None;var net=actor.GetComponent<NetworkAthlete>();return net&&net.IsSpawned?net.Team.Value:Selection.TeamOf(PlayerId(actor));}
-  void SyncTeams(){foreach(var pair in participants){if(!pair.Value)continue;var net=pair.Value.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned)net.Team.Value=Selection.TeamOf(pair.Key);}}
+  void SyncTeams(){foreach(var pair in participants){if(!pair.Value)continue;var net=pair.Value.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned)net.Team.Value=Selection.TeamOf(pair.Key);}RefreshStatisticsRoster();}
   public bool StartMatch()=>BeginMatch(false);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   // Explicit local-only exception; normal Start Match always enforces an even roster.
@@ -57,7 +59,7 @@ namespace WhatTheFish {
   bool BeginMatch(bool singlePlayerTest,float? episodeSeconds=null){
    if(!Authority||!Context||Active||!singlePlayerTest&&!MatchMode||!ball.Pitch||ball.GoalCount!=2)return false;
    var roster=Eligible().OrderBy(PlayerId).ToArray();if(!Selection.Begin(roster.Select(PlayerId),singlePlayerTest))return false;
-   participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);SyncTeams();
+   Statistics.Clear();participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);SyncTeams();
    goals=new FootballGoalDetector[ball.GoalCount];
    for(int i=0;i<goals.Length;i++){int sign=ball.GoalSign(i);float paintedEdge=(sign>0?ball.PitchBounds.max.z:ball.PitchBounds.min.z)+sign*rules.goalLineWidth*.5f;float line=sign*Mathf.Max(sign*paintedEdge,sign*ball.GoalFront(i));goals[i]=new FootballGoalDetector(ball.GoalBounds(i),line,sign);}
    ClearGoalSequence();ball.ResetFootballProps();goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,episodeSeconds??MenuMatchRules.RegulationSeconds(rules.regulationSeconds),rules.overtimeSeconds,rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();
@@ -72,7 +74,7 @@ namespace WhatTheFish {
    var actor=AppRoot.Instance.LocalAthlete;if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();
    if(net&&net.IsSpawned){if(net.IsOwner)net.ChooseFootballTeamRpc(team,Snapshot.revision);}else if(!ChooseTeam(actor,team,Snapshot.revision))FootballAudio.PlayMenu(FootballSound.UIError);
   }
-  public void ClearMatch(){goalFollowThroughUntil=0;ClearGoalSequence();State.Clear();goals=null;participants.Clear();Selection.Clear();foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.Team.Value=FootballTeam.None;}ClearInputs();ball.ResetBall();Publish();}
+  public void ClearMatch(){Statistics.Clear();goalFollowThroughUntil=0;ClearGoalSequence();State.Clear();goals=null;participants.Clear();Selection.Clear();foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.Team.Value=FootballTeam.None;}ClearInputs();ball.ResetBall();Publish();}
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public bool StartBotReviewMatch(int seed,float seconds){if(State.Active||NetworkManager.Singleton&&NetworkManager.Singleton.IsListening||!FootballBots.Instance||!FootballBots.Instance.Solo||!float.IsFinite(seconds)||seconds<=0)return false;kickoffRandom=new System.Random(seed);return BeginMatch(false,seconds);}
 #endif
@@ -135,7 +137,7 @@ namespace WhatTheFish {
     var r=new Vector3(radius/Mathf.Abs(scale.x),radius/Mathf.Abs(scale.y),radius/Mathf.Abs(scale.z));
     for(int i=0;i<goals.Length;i++)if(goals[i].Sample(point,r,now,out double crossedAt)){
      if(crossedAt>=State.Deadline)State.Advance(crossedAt);
-     if(State.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt)){goalAt=crossedAt;goalId++;goalEffectsCleared=false;kickoffTeam=goals[i].Sign>0?FootballTeam.B:FootballTeam.A;goalFollowThroughUntil=goalAt+GoalFollowThroughSeconds;ClearInputs();break;}
+     if(State.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt)){Statistics.Goal(goals[i].Sign>0?FootballTeam.A:FootballTeam.B,crossedAt);goalAt=crossedAt;goalId++;goalEffectsCleared=false;kickoffTeam=goals[i].Sign>0?FootballTeam.B:FootballTeam.A;goalFollowThroughUntil=goalAt+GoalFollowThroughSeconds;ClearInputs();break;}
     }
    }
   }

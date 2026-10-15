@@ -41,7 +41,7 @@ namespace WhatTheFish {
   ulong PropPlayerId(Athlete actor)=>Online?SportsAbilityRules.PlayerId(actor):FootballBots.Id(actor);
   public Athlete PropActor(ulong id){foreach(var a in Athlete.Active)if(PropPlayerId(a)==id)return a;return null;}
   public bool PropLocked(Athlete actor)=>actor&&PortalBusy&&(HasAuthority?portalReceiver==actor:SportsAbilityRules.PlayerId(actor)==Props.receiver);
-  bool PropEligible(Athlete actor)=>PropsLive&&actor&&actor.isActiveAndEnabled&&!actor.inTransit&&actor.capsule&&PropTeam(actor)!=FootballTeam.None;
+  bool PropEligible(Athlete actor)=>PropsLive&&actor&&!actor.IsSpectator&&actor.isActiveAndEnabled&&!actor.inTransit&&actor.capsule&&PropTeam(actor)!=FootballTeam.None;
   public SportsPropSlot PropSlot(Athlete actor){if(!actor)return default;var n=actor.GetComponent<NetworkAthlete>();if(!HasAuthority&&n&&n.IsSpawned)return n.FootballProp.Value;return footballSlots.TryGetValue(actor,out var s)?s:default;}
   void GiveFootballProp(Athlete actor,SportsProp kind){if(!actor)return;var slot=new SportsPropSlot{kind=kind,revision=++slotRevision};footballSlots[actor]=slot;var n=actor.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned&&n.IsServer)n.FootballProp.Value=slot;}
   public float TurboRemaining(Athlete actor)=>PropEligible(actor)?Mathf.Max(0,(float)((PropTeam(actor)==FootballTeam.B?Props.turboB:Props.turboA)-PropClock)):0;
@@ -146,7 +146,7 @@ namespace WhatTheFish {
   }
   void StepFootballPickup(){
    ref var spawn=ref footballProps.pickup;
-   if(spawn.kind==SportsProp.None){if(SportsAbilityRules.WarnPickup(ref spawn,PropClock))publishTimer=0;if(PropClock<spawn.respawn)return;spawn.kind=FootballPropRules.NextKind(previousProp,abilityRandom.Next(previousProp==SportsProp.None?3:2));previousProp=spawn.kind;spawn.countingDown=false;FootballAudio.Emit(FootballSound.Spawn,PropAnchor(spawn.anchor),.9f);publishTimer=0;return;}
+   if(spawn.kind==SportsProp.None){if(SportsAbilityRules.WarnPickup(ref spawn,PropClock))publishTimer=0;if(PropClock<spawn.respawn)return;spawn.kind=FootballPropRules.NextKind(previousProp,abilityRandom.Next(previousProp==SportsProp.None?3:2));previousProp=spawn.kind;spawn.countingDown=false;FootballAudio.Emit(FootballSound.Spawn,PropAnchor(spawn.anchor),.9f);publishTimer=0;}
    var point=PropAnchor(spawn.anchor);Athlete winner=null;float best=SportsAbilityRules.PickupRadius*SportsAbilityRules.PickupRadius;
    foreach(var actor in Athlete.Active){if(!PropEligible(actor)||!actor.Grounded||actor.Airborne||actor.LoadingJump||PropLocked(actor)||actor.Action!=FootballAction.None)continue;
     var delta=actor.transform.position-point;float distance=Vector3.ProjectOnPlane(delta,Vector3.up).sqrMagnitude;

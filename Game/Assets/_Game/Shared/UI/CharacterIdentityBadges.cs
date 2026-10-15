@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- // Reuse the sports font and ten small UI views. No new badge sprites/font atlas.
+ // Reuse the sports font and a small badge view per visible room member. No new badge sprites/font atlas.
  [DefaultExecutionOrder(10000)]
  public sealed class CharacterIdentityBadges:MonoBehaviour {
   sealed class Badge {public RectTransform root;public Image background;public Text text;public Outline outline;}
@@ -25,7 +25,7 @@ namespace WhatTheFish {
   void LateUpdate(){
    var app=AppRoot.Instance;var camera=Camera.main;int count=0;occupied.Clear();locations.Clear();hudBounds.Clear();
    for(int i=hud.Count-1;i>=0;i--){var bounds=hud[i];if(!bounds){hud.RemoveAt(i);continue;}if(!bounds.gameObject.activeInHierarchy)continue;bounds.GetWorldCorners(corners);hudBounds.Add(new Rect(corners[0].x,Screen.height-corners[2].y,corners[2].x-corners[0].x,corners[2].y-corners[0].y));}
-   bool show=app&&app.Exploring&&camera&&!FootballReplay.Presenting;canvas.enabled=show;
+   bool show=app&&app.Exploring&&camera&&!FootballReplay.Presenting&&!BasketballMVP.Presenting;canvas.enabled=show;
    if(show){
     float scale=Mathf.Clamp(Screen.height/720f,.8f,2);
     foreach(var actor in Athlete.Active){
@@ -36,7 +36,7 @@ namespace WhatTheFish {
      if(screen.z<=camera.nearClipPlane||screen.x<0||screen.x>Screen.width||screen.y<0||screen.y>Screen.height)continue;
      Vector3 delta=world-camera.transform.position;
      if(Physics.Raycast(camera.transform.position,delta.normalized,delta.magnitude-.15f,1<<8,QueryTriggerInteraction.Ignore))continue;
-     var safe=Screen.safeArea;float width=(local?73:38)*scale,height=25*scale;
+     var safe=Screen.safeArea;float width=(actor.IsSpectator?(local?102:65):local?73:38)*scale,height=25*scale;
      var rect=new Rect(screen.x-width*.5f,Screen.height-screen.y-height,width,height);
      if(rect.x<safe.xMin||rect.xMax>safe.xMax||rect.y<Screen.height-safe.yMax+58*scale||rect.yMax>Screen.height-safe.yMin-70*scale)continue;
      foreach(var obstacle in hudBounds)if(obstacle.Overlaps(rect))rect.y=obstacle.yMax+5*scale;
@@ -45,7 +45,7 @@ namespace WhatTheFish {
      if(occupied.Exists(r=>r.Overlaps(rect))||hudBounds.Exists(r=>r.Overlaps(rect))||rect.x<safe.xMin||rect.xMax>safe.xMax||rect.yMax>Screen.height-safe.yMin-70*scale)continue;occupied.Add(rect);locations[actor]=rect;
      var view=Get(count++);view.root.gameObject.SetActive(true);view.root.anchoredPosition=new Vector2(rect.x,-rect.y);view.root.sizeDelta=rect.size;
      var team=id.UniformTeam;var color=team==FootballTeam.None?new Color(.08f,.13f,.19f,.94f):CharacterIdentity.TeamColor(team);color.a=.94f;view.background.color=color;
-     view.outline.enabled=local;view.text.fontSize=Mathf.RoundToInt(15*scale);view.text.text=(local?"YOU ":"")+id.Number.ToString("00");
+     view.outline.enabled=local;view.text.fontSize=Mathf.RoundToInt(15*scale);view.text.text=(local?"YOU ":"")+(actor.IsSpectator?"S ":"")+id.Number.ToString("00");
     }
    }
    for(int i=count;i<views.Count;i++)views[i].root.gameObject.SetActive(false);

@@ -7,11 +7,12 @@ namespace WhatTheFish {
  public sealed class FootballEffortButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,IInitializePotentialDragHandler,IBeginDragHandler,IDragHandler,IEndDragHandler,ICancelHandler {
   public bool pressure,illustrated;public Button button;public Text label;
   public RectTransform dashTarget,jumpTarget,tackleTarget;
-  bool pressed;int pointer,choice;FootballPressureGuide guide;
+  public KickButton shootTarget;
+  bool pressed,swipeShot;int pointer,choice;FootballPressureGuide guide;
   public bool Tracking=>pressed;
   void Update()=>Refresh();
   public void Refresh(){
-   var view=PlayerView.Instance;bool eligible=view&&(pressure?view.FootballPressureReady&&FootballPressure.CarrierFor(view.target):view.FootballInputReady&&!view.Charging);
+   var view=PlayerView.Instance;bool eligible=view&&(pressure?view.FootballPressureReady&&FootballPressure.CarrierFor(view.target):view.FootballInputReady);
    if(!eligible||pressed&&pressure&&!view.PressureHeld)Clear();button.interactable=eligible&&(pressure||pressed||!view.target.FootballEffort.Exhausted);
    bool held=view&&(pressure?view.PressureHeld:view.DashHeld);
    if(illustrated)return;
@@ -22,15 +23,25 @@ namespace WhatTheFish {
    if(e.button!=PointerEventData.InputButton.Left||pressed||!button.interactable)return;var v=PlayerView.Instance;
    if(pressure?v.BeginPressure(e.pointerId):v.BeginDash(e.pointerId)){
     pressed=true;pointer=e.pointerId;choice=0;
-    if(pressure&&dashTarget&&jumpTarget&&tackleTarget){if(!guide)guide=FootballPressureGuide.Create((RectTransform)transform,dashTarget,jumpTarget,tackleTarget);guide.gameObject.SetActive(true);guide.Select(0);}
+    GetComponent<FootballActionSwipe>()?.Capture(e);
+    if(pressure&&!GetComponent<FootballActionSwipe>()&&dashTarget&&jumpTarget&&tackleTarget){if(!guide)guide=FootballPressureGuide.Create((RectTransform)transform,dashTarget,jumpTarget,tackleTarget);guide.gameObject.SetActive(true);guide.Select(0);}
    }
   }
-  public void OnPointerUp(PointerEventData e){if(pressed&&pointer==e.pointerId)Clear();}
-  public void OnPointerExit(PointerEventData e){if(pressure)Track(e);else if(pressed&&pointer==e.pointerId)Clear();}
+  public void OnPointerUp(PointerEventData e){if(pressed&&pointer==e.pointerId){if(swipeShot&&shootTarget){shootTarget.OnPointerUp(e);swipeShot=false;}Clear();}}
+  public void OnPointerExit(PointerEventData e){if(GetComponent<FootballActionSwipe>())return;if(pressure||shootTarget)Track(e);else if(pressed&&pointer==e.pointerId)Clear();}
   public void OnInitializePotentialDrag(PointerEventData e){e.useDragThreshold=false;}
   public void OnBeginDrag(PointerEventData e)=>Track(e);
   public void OnDrag(PointerEventData e)=>Track(e);
   void Track(PointerEventData e){
+   var swipe=GetComponent<FootballActionSwipe>();if(swipe){swipe.Track(e);return;}
+   if(!pressure&&pressed&&e.pointerId==pointer&&shootTarget){
+    if(!swipeShot&&shootTarget.enabled&&RectTransformUtility.RectangleContainsScreenPoint((RectTransform)shootTarget.transform,e.position,e.pressEventCamera)){shootTarget.OnPointerDown(e);swipeShot=shootTarget.Tracking;}
+    else if(swipeShot){
+     // Returning the same finger to Dash releases the shot while Dash stays held.
+     if(RectTransformUtility.RectangleContainsScreenPoint((RectTransform)transform,e.position,e.pressEventCamera)){shootTarget.OnPointerUp(e);swipeShot=false;}
+     else shootTarget.OnDrag(e);
+    }return;
+   }
    if(!pressure||!pressed||e.pointerId!=pointer||!dashTarget||!RectTransformUtility.ScreenPointToLocalPointInRectangle((RectTransform)transform,e.position,e.pressEventCamera,out var delta))return;
    int next=0;
    if(delta.magnitude>((RectTransform)transform).rect.width*.5f+6){
@@ -42,10 +53,10 @@ namespace WhatTheFish {
    }
    if(next==choice)return;
    var view=PlayerView.Instance;if(choice==1)view.EndDash(pointer);choice=next;
-   if(next==1)view.BeginDash(pointer);else if(next==2)view.RequestJump();else if(next==3)view.RequestTackle();
+   if(next==1)view.BeginDash(pointer);else if(next==2){if(view.BeginFootballPass(pointer))view.EndFootballPass(pointer);}else if(next==3)view.RequestTackle();
    if(guide)guide.Select(next);
   }
-  public void Clear(){if(pressed){if(pressure){PlayerView.Instance?.EndPressure(pointer);PlayerView.Instance?.EndDash(pointer);}else PlayerView.Instance?.EndDash(pointer);}pressed=false;choice=0;if(guide)guide.gameObject.SetActive(false);}
+  public void Clear(){if(swipeShot&&shootTarget)shootTarget.CancelGesture();swipeShot=false;if(pressed){if(pressure){PlayerView.Instance?.EndPressure(pointer);PlayerView.Instance?.EndDash(pointer);}else PlayerView.Instance?.EndDash(pointer);}pressed=false;choice=0;if(guide)guide.gameObject.SetActive(false);}
   public void OnCancel(BaseEventData e)=>Clear();
   public void OnEndDrag(PointerEventData e){if(pressed&&e.pointerId==pointer)Clear();}
   void OnDisable()=>Clear();

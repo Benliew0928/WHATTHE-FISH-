@@ -106,6 +106,7 @@ namespace WhatTheFish {
    return (x>6.731f||z>0&&new Vector2(x,z).magnitude>7.2644f)?(byte)3:(byte)2;
   }
   void BeginAttempt(Transform hoop,Athlete shooter,Vector3 start){
+   BasketballMatch.Instance?.RecordShot(shooter);
    attemptedHoop=hoop.GetComponent<BasketballHoop>();
    attemptedPoints=ShotValue(hoop.InverseTransformPoint(shooter.transform.position));
    score.attempts++;score.result=BasketballResult.Flying;score.lastPoints=0;score.shooter=PlayerId(shooter);score.changed=BasketballMotion.Clock;score.sequence++;
@@ -115,7 +116,7 @@ namespace WhatTheFish {
   void ResolveAttempt(bool made){
    if(score.result!=BasketballResult.Flying)return;
    score.result=made?BasketballResult.Scored:BasketballResult.Missed;score.lastPoints=made?attemptedPoints:(byte)0;
-   if(made){score.made++;score.points+=attemptedPoints;BasketballMatch.Instance?.Basket(attemptedHoop?attemptedHoop.transform:null,attemptedPoints);BasketballAudio.Emit(BasketballSound.Score,Body.position,.8f);}else {score.missed++;BasketballMatch.Instance?.Miss();}
+   if(made){score.made++;score.points+=attemptedPoints;BasketballMatch.Instance?.Basket(attemptedHoop?attemptedHoop.transform:null,attemptedPoints,score.shooter);BasketballAudio.Emit(BasketballSound.Score,Body.position,.8f);}else {score.missed++;BasketballMatch.Instance?.Miss();}
    score.changed=BasketballMotion.Clock;score.sequence++;sendAt=0;attemptedHoop=null;
   }
   bool MatchCanScore=>BasketballMatch.Instance&&BasketballMatch.Instance.Competitive&&(BasketballMatch.Instance.Live||BasketballMatch.Instance.Snapshot.phase==BasketballMatchPhase.Buzzer&&score.result==BasketballResult.Flying);

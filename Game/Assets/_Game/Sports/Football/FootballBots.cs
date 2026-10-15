@@ -15,10 +15,10 @@ namespace WhatTheFish {
   public static bool IsBot(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;return n&&n.IsSpawned?n.BotSlot.Value>0&&n.BotSport.Value==SportId.Football:actor&&actor!=AppRoot.Instance.LocalAthlete&&actor.GetComponent<FootballBot>();}
   public static ulong Id(Athlete actor){
    var n=actor?actor.GetComponent<NetworkAthlete>():null;
-   if(n&&n.IsSpawned)return n.BotSlot.Value>0?(1UL<<63)+n.BotSlot.Value:n.OwnerClientId;
+   if(n&&n.IsSpawned)return n.BotSlot.Value>0?(1UL<<63)+n.BotSlot.Value:n.StableId;
    var bot=actor?actor.GetComponent<FootballBot>():null;return bot&&actor!=AppRoot.Instance.LocalAthlete?(1UL<<63)+(ulong)bot.Slot:ulong.MaxValue;
   }
-  public static Athlete[] Roster=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.inTransit).OrderBy(Id).ToArray();
+  public static Athlete[] Roster=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit).OrderBy(Id).ToArray();
   public int Count=>Athlete.Active.Count(IsBot);
   public bool CanFill=>CanFillSize(PreferredTeamSize);
   public bool CanFillSize(int size)=>ValidTeamSize(size)&&AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Football&&AppRoot.Instance.rooms.Host&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&FootballMatch.Instance&&!FootballMatch.Instance.Active&&Count==0&&Roster.Length<size*2;

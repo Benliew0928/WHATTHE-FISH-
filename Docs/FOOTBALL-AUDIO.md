@@ -1,5 +1,9 @@
 # Football audio integration
 
+Current locality rule: grass walk, run and turning footsteps play only for the
+local player. Opponent and teammate footsteps are silent on that client.
+Shared ball contacts, tackles and match sounds retain their existing behavior.
+
 All sounds approved and integrated on 12 October 2026. The complete validated
 Windows player is in `Builds/WindowsFinal/`; launch `Explore-Football.cmd` there.
 The [original analysis](FOOTBALL-AUDIO-PLAN.md) and

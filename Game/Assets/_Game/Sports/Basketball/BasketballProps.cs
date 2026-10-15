@@ -128,8 +128,7 @@ namespace WhatTheFish {
     int number=spawn.CountdownNumber(BasketballMotion.Clock);if(number!=audioCountdown){audioCountdown=number;BasketballAudio.Emit(BasketballSound.Countdown,transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor)),.65f);}
     if(BasketballMotion.Clock<spawn.respawn)return;
     spawn.kind=BasketballPropRules.NextKind(lastSpawnedProp,propRandom.Next(lastSpawnedProp==SportsProp.None?3:2));lastSpawnedProp=spawn.kind;spawn.countingDown=false;audioCountdown=0;BasketballAudio.Emit(BasketballSound.Spawn,transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor)));sendAt=0;
-    // Leave a materialization frame before collecting, even if a player waited here.
-    return;
+    // Continue into collection so a waiting player receives it on this tick.
    }
    if(BasketballMatch.BlocksActions||InboundPending)return;
    var point=transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor));Athlete winner=null;float best=BasketballPropRules.PickupRadius*BasketballPropRules.PickupRadius;
