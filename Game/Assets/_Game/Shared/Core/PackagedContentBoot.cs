@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace WhatTheFish {
  [Serializable] public sealed class PackagedContentCatalog {
@@ -23,30 +22,44 @@ namespace WhatTheFish {
   public static double PreparationSeconds {get;private set;}
   public static string Error {get;private set;}
   static AssetBundle content;
-  Canvas canvas;
-  Text status;
-  Image progress;
-  Button retry;
+  StartupWelcome welcome;
   Camera loadingCamera;
-  float fraction;
+  float fraction;bool busy;int attempts;
+  static string contentHash;
 
-  void Awake(){Ready=false;Error=null;CreateLoadingView();}
+  void Awake(){
+   Ready=false;CacheHit=false;Error=null;
+   loadingCamera=new GameObject("Loading camera").AddComponent<Camera>();loadingCamera.clearFlags=CameraClearFlags.SolidColor;loadingCamera.backgroundColor=new Color(.05f,.16f,.14f);loadingCamera.cullingMask=0;
+   welcome=StartupWelcome.Ensure(true);welcome.SetRetry(()=>{if(!busy)StartCoroutine(Boot());});
+  }
   IEnumerator Start(){yield return Boot();}
   IEnumerator Boot(){
-   Error=null;fraction=0;retry.gameObject.SetActive(false);
+   if(busy)yield break;busy=true;Error=null;fraction=0;welcome.BeginLoading();SetProgress(0,"Preparing your islands...");
    var started=Time.realtimeSinceStartupAsDouble;
    yield return Prepare();
    PreparationSeconds=Time.realtimeSinceStartupAsDouble-started;
-   if(Error!=null){status.text="Could not prepare islands. Please retry.";retry.gameObject.SetActive(true);Debug.LogError("CONTENT_LOAD_FAILED "+Error);yield break;}
+   if(Error!=null){Fail();yield break;}
    Debug.Log($"CONTENT_PREPARED cacheHit={CacheHit} seconds={PreparationSeconds:F3} allocatedBytes={UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong()}");
-   var load=SceneManager.LoadSceneAsync("Bootstrap",LoadSceneMode.Additive);
-   yield return load;
-   SceneManager.SetActiveScene(SceneManager.GetSceneByName("Bootstrap"));
-   while(!AppRoot.Instance||!AppRoot.Instance.Menu)yield return null;
-   Ready=true;canvas.gameObject.SetActive(false);loadingCamera.gameObject.SetActive(false);
+   AsyncOperation load=null;var scene=SceneManager.GetSceneByName("Bootstrap");
+   if(!scene.isLoaded){
+    try{load=SceneManager.LoadSceneAsync("Bootstrap",LoadSceneMode.Additive);}catch(Exception e){Error=e.Message;}
+    if(Error!=null||load==null){Error??="Could not start game scene";Fail();yield break;}
+    while(!load.isDone){SetProgress(.9f+.07f*Mathf.Clamp01(load.progress/.9f),"Loading your islands...");yield return null;}
+    scene=SceneManager.GetSceneByName("Bootstrap");
+   }
+   if(!scene.IsValid()||!scene.isLoaded){Error="Game scene unavailable";Fail();yield break;}
+   SceneManager.SetActiveScene(scene);SetProgress(.98f,"Getting your menu ready...");
+   double deadline=Time.realtimeSinceStartupAsDouble+120;
+   while((!AppRoot.Instance||!AppRoot.Instance.Menu)&&Time.realtimeSinceStartupAsDouble<deadline)yield return null;
+   if(!AppRoot.Instance||!AppRoot.Instance.Menu){Error="Game menu did not become ready";Fail();yield break;}
+   Ready=true;busy=false;loadingCamera.gameObject.SetActive(false);welcome.SetReady();
    Debug.Log($"CONTENT_BOOT_READY seconds={Time.realtimeSinceStartupAsDouble-started:F3}");
   }
   IEnumerator Prepare(){
+   attempts++;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(attempts==1&&Array.IndexOf(Environment.GetCommandLineArgs(),"-welcomeFailOnce")>=0){Error="Development fixture: first preparation fails";yield break;}
+#endif
    PackagedContentCatalog catalog=null;
    using(var request=UnityWebRequest.Get(StreamingUrl("catalog.json"))){
     yield return request.SendWebRequest();
@@ -55,6 +68,8 @@ namespace WhatTheFish {
     catch(Exception e){Error=e.Message;}
    }
    if(catalog==null||catalog.version!=1||catalog.bundle!="islands.bundle"||catalog.sha256==null||!System.Text.RegularExpressions.Regex.IsMatch(catalog.sha256,"^[a-f0-9]{64}$")||catalog.scenes==null||catalog.scenes.Length!=5){Error="Invalid packaged content catalog";yield break;}
+   if(content&&contentHash==catalog.sha256){SetProgress(.9f,"Loading your islands...");yield break;}
+   SetProgress(.03f,"Preparing your islands...");
    string cacheRoot=Path.Combine(Application.persistentDataPath,"PackagedContent-v1");
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    var args=Environment.GetCommandLineArgs();int cacheArg=Array.IndexOf(args,"-contentCache");
@@ -65,8 +80,8 @@ namespace WhatTheFish {
    if(Error!=null)yield break;
    CacheHit=File.Exists(cached);
    if(CacheHit){
-    var warm=AssetBundle.LoadFromFileAsync(cached);yield return warm;content=warm.assetBundle;
-    if(content){fraction=1;yield break;}
+    var warm=AssetBundle.LoadFromFileAsync(cached);while(!warm.isDone){SetProgress(.03f+.87f*warm.progress,"Loading your islands...");yield return null;}content=warm.assetBundle;
+    if(content){contentHash=catalog.sha256;SetProgress(.9f,"Loading your islands...");yield break;}
     try{File.Delete(cached);}catch(Exception e){Error=e.Message;}
     CacheHit=false;if(Error!=null)yield break;
    }
@@ -75,10 +90,11 @@ namespace WhatTheFish {
    using(var request=UnityWebRequest.Get(StreamingUrl(catalog.bundle))){
     request.downloadHandler=new DownloadHandlerFile(source){removeFileOnAbort=true};
     var operation=request.SendWebRequest();
-    while(!operation.isDone){fraction=.3f*request.downloadProgress;yield return null;}
+    while(!operation.isDone){SetProgress(.03f+.27f*Mathf.Clamp01(request.downloadProgress),"Preparing your islands...");yield return null;}
     if(request.result!=UnityWebRequest.Result.Success)Error=request.error;
    }
    if(Error==null){
+    SetProgress(.30f,"Checking game content...");
     var hash=Task.Run(()=>{using var stream=File.OpenRead(source);using var sha=SHA256.Create();return BitConverter.ToString(sha.ComputeHash(stream)).Replace("-","").ToLowerInvariant();});
     while(!hash.IsCompleted)yield return null;
     if(hash.IsFaulted)Error=hash.Exception.GetBaseException().Message;
@@ -89,7 +105,7 @@ namespace WhatTheFish {
     try{operation=AssetBundle.RecompressAssetBundleAsync(source,converted,BuildCompression.LZ4Runtime,catalog.crc,ThreadPriority.Low);}
     catch(Exception e){Error=e.Message;}
     if(operation!=null){
-     while(!operation.isDone){fraction=.3f+.6f*operation.progress;yield return null;}
+     while(!operation.isDone){SetProgress(.35f+.49f*operation.progress,"Preparing your islands...");yield return null;}
      if(!operation.success)Error=operation.humanReadableResult;
     }
    }
@@ -102,26 +118,15 @@ namespace WhatTheFish {
     if(File.Exists(converted))File.Delete(converted);
    }catch(Exception e){Error=e.Message;}
    if(Error!=null)yield break;
-   var load=AssetBundle.LoadFromFileAsync(cached);yield return load;content=load.assetBundle;
+   var load=AssetBundle.LoadFromFileAsync(cached);while(!load.isDone){SetProgress(.84f+.06f*load.progress,"Loading your islands...");yield return null;}content=load.assetBundle;
    if(!content){Error="Could not open prepared content";yield break;}
-   fraction=1;
+   contentHash=catalog.sha256;SetProgress(.9f,"Loading your islands...");
   }
   static string StreamingUrl(string name){
    string path=Application.streamingAssetsPath+"/PackagedContent/"+name;
    return path.Contains("://")?path:new Uri(path).AbsoluteUri;
   }
-  void Update(){if(progress)progress.rectTransform.anchorMax=new Vector2(fraction,1);if(status&&Error==null)status.text=CacheHit?"Loading islands...":"Preparing islands... "+Mathf.RoundToInt(fraction*100)+"%";}
-  void CreateLoadingView(){
-   loadingCamera=new GameObject("Loading camera").AddComponent<Camera>();loadingCamera.clearFlags=CameraClearFlags.SolidColor;loadingCamera.backgroundColor=new Color(.05f,.16f,.14f);loadingCamera.cullingMask=0;
-   canvas=new GameObject("Island loading",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;
-   var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
-   Text Label(string name,string value,float y,int size){var text=new GameObject(name,typeof(RectTransform),typeof(Text)).GetComponent<Text>();text.transform.SetParent(canvas.transform,false);text.rectTransform.sizeDelta=new Vector2(720,70);text.rectTransform.anchoredPosition=new Vector2(0,y);text.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");text.fontSize=size;text.alignment=TextAnchor.MiddleCenter;text.color=Color.white;text.text=value;return text;}
-   Label("Title","WHATTHE FISH?",65,36);status=Label("Status","Preparing islands...",0,22);
-   var track=new GameObject("Progress",typeof(RectTransform),typeof(Image)).GetComponent<Image>();track.transform.SetParent(canvas.transform,false);track.rectTransform.sizeDelta=new Vector2(360,4);track.rectTransform.anchoredPosition=new Vector2(0,-48);track.color=new Color(.15f,.32f,.29f);
-   progress=new GameObject("Fill",typeof(RectTransform),typeof(Image)).GetComponent<Image>();progress.transform.SetParent(track.transform,false);progress.rectTransform.anchorMin=Vector2.zero;progress.rectTransform.anchorMax=Vector2.one;progress.rectTransform.offsetMin=progress.rectTransform.offsetMax=Vector2.zero;progress.color=new Color(.6f,.88f,.7f);
-   progress.rectTransform.anchorMax=new Vector2(0,1);
-   var retryText=Label("Retry","Retry",-100,24);retry=retryText.gameObject.AddComponent<Button>();retry.targetGraphic=retryText;retry.onClick.AddListener(()=>StartCoroutine(Boot()));
-   if(!FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>())new GameObject("Loading input",typeof(UnityEngine.EventSystems.EventSystem),typeof(UnityEngine.EventSystems.StandaloneInputModule));
-  }
+  void SetProgress(float value,string label){fraction=Mathf.Max(fraction,value);if(welcome)welcome.SetProgress(fraction,label);}
+  void Fail(){busy=false;welcome.ShowError();Debug.LogError("CONTENT_LOAD_FAILED "+Error);}
  }
 }

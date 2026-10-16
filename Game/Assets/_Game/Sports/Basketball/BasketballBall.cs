@@ -67,7 +67,8 @@ namespace WhatTheFish {
    }
    bool dynamic=simulate&&(!match||match.BallLive)&&!Held&&!PortalBusy;
    if(Body.isKinematic==dynamic)Body.isKinematic=!dynamic;
-   Simulating=simulate;Body.detectCollisions=authority&&!Held&&!PortalBusy;
+   // The reserved dead ball must not obstruct the collector's final step.
+   Simulating=simulate;Body.detectCollisions=authority&&!Held&&!PortalBusy&&(!match||match.BallLive);
    Body.interpolation=dynamic?RigidbodyInterpolation.Interpolate:RigidbodyInterpolation.None;
    if(simulate&&!OutsidePaint(CourtPoint(Body.position))&&(transform.localPosition.y < -3||transform.localPosition.y>25||Mathf.Abs(transform.localPosition.x)>35||Mathf.Abs(transform.localPosition.z)>45))ResetHome();
    if(connected&&authority&&host&&host.IsSpawned&&Time.unscaledTime>=sendAt){

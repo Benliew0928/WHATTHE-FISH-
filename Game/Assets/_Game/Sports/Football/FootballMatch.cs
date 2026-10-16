@@ -31,6 +31,8 @@ namespace WhatTheFish {
   public int EligiblePlayers=>Eligible().Count();
   public bool Active=>Context&&(GoalSequence||Snapshot.phase!=FootballMatchPhase.Idle&&Snapshot.phase!=FootballMatchPhase.Finished&&Snapshot.phase!=FootballMatchPhase.Cancelled);
   public bool MatchMode=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening||FootballBots.Instance&&FootballBots.Instance.Solo;
+  public bool SoloTeamSelection=>FootballBots.Instance&&FootballBots.Instance.Solo&&!(NetworkManager.Singleton&&NetworkManager.Singleton.IsListening);
+  public bool CanConfirmSoloTeam=>Authority&&Context&&SoloTeamSelection&&State.Phase==FootballMatchPhase.TeamSelection&&TeamOf(AppRoot.Instance.LocalAthlete)!=FootballTeam.None;
   public bool CanStart=>Authority&&Context&&MatchMode&&!Active&&EligiblePlayers>=2&&EligiblePlayers<=10&&EligiblePlayers%2==0;
   static ulong PlayerId(Athlete actor)=>FootballBots.Id(actor);
   static IEnumerable<Athlete> Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
@@ -62,17 +64,21 @@ namespace WhatTheFish {
    Statistics.Clear();participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);SyncTeams();
    goals=new FootballGoalDetector[ball.GoalCount];
    for(int i=0;i<goals.Length;i++){int sign=ball.GoalSign(i);float paintedEdge=(sign>0?ball.PitchBounds.max.z:ball.PitchBounds.min.z)+sign*rules.goalLineWidth*.5f;float line=sign*Mathf.Max(sign*paintedEdge,sign*ball.GoalFront(i));goals[i]=new FootballGoalDetector(ball.GoalBounds(i),line,sign);}
-   ClearGoalSequence();ball.ResetFootballProps();goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,episodeSeconds??MenuMatchRules.RegulationSeconds(rules.regulationSeconds),rules.overtimeSeconds,rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();
-   if(FootballBots.Instance&&FootballBots.Instance.Solo){ChooseTeam(AppRoot.Instance.LocalAthlete,FootballTeam.A,Snapshot.revision);foreach(var mate in roster.Where(FootballBots.IsBot).Take(Selection.Capacity-1))ChooseTeam(mate,FootballTeam.A,Snapshot.revision);}
+   ClearGoalSequence();ball.ResetFootballProps();goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,episodeSeconds??MenuMatchRules.RegulationSeconds(rules.regulationSeconds),rules.overtimeSeconds,SoloTeamSelection?0:rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();
    return true;
   }
   public bool ChooseTeam(Athlete actor,FootballTeam team,uint selectionRevision){
-   if(!Authority||!Context||!actor||State.Phase!=FootballMatchPhase.TeamSelection||Now>=State.Deadline||selectionRevision!=Snapshot.revision)return false;
+   if(!Authority||!Context||!actor||State.Phase!=FootballMatchPhase.TeamSelection||!SoloTeamSelection&&Now>=State.Deadline||selectionRevision!=Snapshot.revision)return false;
    if(!Selection.Choose(PlayerId(actor),team))return false;SyncTeams();Publish();return true;
   }
   public void RequestTeam(FootballTeam team){
    var actor=AppRoot.Instance.LocalAthlete;if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();
    if(net&&net.IsSpawned){if(net.IsOwner)net.ChooseFootballTeamRpc(team,Snapshot.revision);}else if(!ChooseTeam(actor,team,Snapshot.revision))FootballAudio.PlayMenu(FootballSound.UIError);
+  }
+  public bool ConfirmSoloTeam(){if(!CanConfirmSoloTeam||!RosterValid())return false;return ConfirmTeams(Now);}
+  bool ConfirmTeams(double now){
+   Selection.Complete(kickoffRandom);SyncTeams();kickoffTeam=kickoffRandom.Next(2)==0?FootballTeam.A:FootballTeam.B;
+   if(!ResetRound()){ClearMatch();return false;}State.TeamsConfirmed(now);Publish();return true;
   }
   public void ClearMatch(){Statistics.Clear();goalFollowThroughUntil=0;ClearGoalSequence();State.Clear();goals=null;participants.Clear();Selection.Clear();foreach(var actor in Athlete.Active){var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.Team.Value=FootballTeam.None;}ClearInputs();ball.ResetBall();Publish();}
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
@@ -149,7 +155,7 @@ namespace WhatTheFish {
    double now=Now;
    if(State.Phase==FootballMatchPhase.TeamSelection){
     // A changed roster requires a fresh selection, rather than silently changing capacities.
-    if(now>=State.Deadline){Selection.Complete(kickoffRandom);SyncTeams();kickoffTeam=kickoffRandom.Next(2)==0?FootballTeam.A:FootballTeam.B;if(!ResetRound()){ClearMatch();return;}State.TeamsConfirmed(now);}
+    if(!SoloTeamSelection&&now>=State.Deadline)ConfirmTeams(now);
     Publish();return;
    }
    ResolvePendingGoals();

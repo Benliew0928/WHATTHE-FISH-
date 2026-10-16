@@ -10,7 +10,12 @@ Cancelling that shot does not cancel the independent Dash hold. Exhaustion,
 hits, menu changes and match transitions still stop invalid input.
 
 Pass replaces the football Jump button. Aim with the camera and tap Pass;
-hold it to see a dashed directional ground-pass path, receiver ring and LOCKED # jersey number, then release. Free passes show the direction without a teammate lock. Space performs the same action
+hold it to see a continuous world-space energy ribbon using the football
+shooting material and a small landing halo, then release. No floating lock
+badge covers the receiver.
+The endpoint eases into and out of a receiver lock, while the mint tint and
+halo ease in smoothly. The ribbon uses metre-spaced flow like basketball
+and keeps its arrowhead compact at long range. Free passes show the direction without a teammate lock. Space performs the same action
 on keyboard; F remains Shoot and Left Control remains Dash. Charging a shot
 while dashing preserves dash movement and stamina drain. Without Dash, the
 existing charging movement penalty remains.
@@ -81,3 +86,5 @@ Network protocol 61 requires matching builds (including basketball match statist
 with `Tools/Build/Test-FootballPlaymaker.ps1`; release measurements and device
 limits are recorded in [verification](VERIFICATION.md) and
 [build size](BUILD-SIZE.md).
+
+Latest change validation: [bot start and pass presentation](BOT-START-PASS-VERIFICATION.md).

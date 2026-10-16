@@ -15,7 +15,7 @@ namespace WhatTheFish {
   bool SupportsCustomization=>SelectedSport==SportId.Football||SelectedSport==SportId.Basketball;
   public GameObject athletePrefab; Athlete offline; Canvas canvas;RectTransform safe,page;Font font;Sprite rounded;Text status,roster,fps,controlHint;float rosterTimer;string screen="home",appliedWorld="";bool lastExploring; InputField code;Button cameraControl;
   readonly Color ink=LocalProfile.Hex("173834"),mint=LocalProfile.Hex("BFEBCB"),cream=LocalProfile.Hex("FFF9E9");
-  void Awake(){Instance=this;gameObject.AddComponent<FootballBots>();gameObject.AddComponent<BasketballBots>();Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
+  void Awake(){Instance=this;StartupWelcome.Ensure();gameObject.AddComponent<FootballBots>();gameObject.AddComponent<BasketballBots>();Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
   SportId? pendingSelection; uint selectionVersion;
   IEnumerator Start(){
    font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");rounded=MakeRound();
@@ -39,6 +39,7 @@ namespace WhatTheFish {
   void ApplySafeArea(){var a=Screen.safeArea;safe.anchorMin=new Vector2(a.x/Screen.width,a.y/Screen.height);safe.anchorMax=new Vector2(a.xMax/Screen.width,a.yMax/Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;}
   void OnRoomChanged(){if(!rooms.Connected){appliedWorld="";stadium?.Apply(CurrentAppearance);}if(rooms.Connected){offline.gameObject.SetActive(false);if(screen=="home"||screen=="sport"||screen=="sports"||screen=="create"||screen=="join")Show("room");}else if(screen=="room"||screen=="stadium"&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}UpdateStatus();}
   void Update(){
+   if(StartupWelcome.Blocking){if(view){view.active=false;view.InputBlocked=true;}return;}
    if(RoomService.Paused)return;
    if(safe)ApplySafeArea();if(cameraControl)cameraControl.interactable=!view.GolfAimRequested;
    if(!Exploring){if(screen=="character"){view.transform.position=offline.transform.position+new Vector3(1.4f,1.25f,3.7f);view.transform.LookAt(offline.transform.position+new Vector3(1.4f,1.1f,0));}else {view.transform.position=environments.Current.menuCamera;view.transform.LookAt(environments.Current.menuFocus);}}

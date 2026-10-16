@@ -7,8 +7,11 @@ automatic policy replacements.
 ## Playing
 
 Select either sport, choose **Play vs bots**, then choose **2v2 to 5v5**.
-The human starts on Team A with the remaining slots filled by bots. Match
-length is set in Match length. In a room, the host can fill missing slots
+Select **Choose team**, pick **Blue** or **Red**, then click **Start match**.
+Solo selection has no timer or team-count labels, and Start stays disabled
+until a team is chosen. Bots fill the remaining places evenly, preserving
+the human's choice. Start immediately opens football kickoff or basketball
+play. Match length is set in Match length. In a room, the host can fill missing slots
 before starting a match, or remove bots while no match is active. Humans
 still choose teams; remaining places are assigned when selection expires.
 
@@ -74,3 +77,5 @@ Each batch contains its original-path, byte-count and SHA-256 recovery
 manifest. Historical release records describe their original builds, not
 an active training workflow. Unity caches and the installed local Python
 environment remain ignored and unreferenced, per repository instructions.
+
+Latest change validation: [bot start and pass presentation](BOT-START-PASS-VERIFICATION.md).

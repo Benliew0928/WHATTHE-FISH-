@@ -18,7 +18,7 @@ three-second opening countdown. Both sports default to three playing minutes;
 the host may choose three, five or ten minutes before everyone readies up.
 
 Only the host simulates scoring, possession, restarts and results. Guests receive
-snapshots and send owner-authorized inputs. Protocol 65 requires matching builds.
+snapshots and send owner-authorized inputs. Protocol 66 requires matching builds.
 There is one active match in the room. Travel is blocked until that match finishes
 or is voided; the four-island shared-travel model is retained.
 
@@ -43,8 +43,15 @@ or is voided; the four-island shared-travel model is retained.
   than the midpoint to the corner. Out-of-bounds restarts retain the exact exit
   point, shifting only along that same line if architecture blocks standing.
   Shot-clock violations use a sideline restart.
-- A two-second setup pause places players on their own halves. Then teammates
-  may move to receive; opponents cannot cross centre. The inbounder stays
+- Restarts preserve player positions and have no global freeze or formation reset.
+  Inbound duty rotates in stable player order separately for each team. The
+  assigned player runs to a clear spot outside the line and collects the ball;
+  their movement is automatic until arrival. After a basket, scoring players
+  outside their own half automatically run back and regain control individually
+  on reaching it. Players already in their half keep control. The receiving
+  teammates remain free to move and jump throughout. A small top HUD notice
+  explains either automatic run to the affected player.
+- Scoring players stay in their half until the inbound pass. The inbounder stays
   planted outside the line, cannot jump/shoot/use abilities and must pass to a
   teammate. Free-direction or outward inbounds are rejected. Both clocks stay
   paused until the physical pass releases; that release unlocks centre crossing
@@ -100,7 +107,10 @@ from the competitive state.
 - [Basketball match state](../Game/Assets/_Game/Sports/Basketball/BasketballMatchState.cs)
   holds deadline, possession, scoring and outcome rules without scene dependencies.
 - [Basketball match controller](../Game/Assets/_Game/Sports/Basketball/BasketballMatch.cs)
-  owns roster, fixed hoops, formation/restart placement and snapshot publication.
+  owns roster, fixed hoops, opening formation, inbound turns and snapshot publication.
+- [Individual restart movement](../Game/Assets/_Game/Sports/Basketball/BasketballRestartMovement.cs)
+  runs affected players through the normal character motor and replicates their
+  control locks. Inbound turns and collection state survive room checkpoint recovery.
 - [Football match controller](../Game/Assets/_Game/Sports/Football/FootballMatch.cs)
   checks the locked roster before scoring and every active match step.
 - [Pure rule checks](../Game/Assets/_Game/Shared/Core/RoomMatchRuleChecks.cs) and
@@ -119,3 +129,9 @@ The major match-rules phase is implemented and desktop-validated. See
 [measured build size](BUILD-SIZE.md#room-matches-12-october-2026). Phone and WAN
 qualification remain open. Both sports now have programmed bots; learned AI
 training has been retired and its source and artifacts archived locally.
+
+`Tools/Build/Test-BasketballRestart.ps1 -Build` builds and checks the continuous
+basket flow; `-Local` repeats it with a host and guest. The fixture uses physical
+rim crossings, tests a full rotation on both teams, detects reset teleports,
+checks individual control return and captures both automatic-movement notices.
+Evidence belongs under `Builds/BasketballRestartQA/`.

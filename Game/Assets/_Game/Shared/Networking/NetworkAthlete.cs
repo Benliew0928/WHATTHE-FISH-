@@ -67,7 +67,7 @@ namespace WhatTheFish {
   public void ClearMatchInput(){command=default;lastInput=0;}
   uint MatchRevision=>HostPlayer?HostPlayer.WorldSport.Value==SportId.Basketball?HostPlayer.BasketballMatch.Value.revision:HostPlayer.Match.Value.revision:0;
   bool AcceptRound(uint round){if(IsSpectator||RoomTeleport.Busy||athlete&&athlete.inTransit)return false;if(WhatTheFish.BasketballMatch.Instance&&WhatTheFish.BasketballMatch.Instance.Context)return !WhatTheFish.BasketballMatch.BlocksMovement&&round==MatchRevision;return !FootballMatch.Instance||!FootballMatch.Instance.Context||(!FootballMatch.BlocksMovement||FootballMatch.CanAimKickoff(athlete))&&round==MatchRevision;}
-  bool AcceptBasketball(uint round)=>AcceptRound(round)&&!WhatTheFish.BasketballMatch.BlocksActions;
+  bool AcceptBasketball(uint round)=>AcceptRound(round)&&!WhatTheFish.BasketballMatch.BlocksActions&&!(WhatTheFish.BasketballMatch.Instance&&WhatTheFish.BasketballMatch.Instance.AutomaticMovement(athlete));
   public NetworkVariable<BasketballMotionState> BasketballPose=new();
   public NetworkVariable<bool> BasketballFreeRoam=new(false);
   public NetworkVariable<FootballMotionState> FootballPose=new();
@@ -98,14 +98,14 @@ namespace WhatTheFish {
    if(IsServer&&IsPlayerObject)AppRoot.Instance.rooms.RestoreMember(this);
    AppearanceData.OnValueChanged+=OnAppearance;OnAppearance(default,AppearanceData.Value);
    if(BotSlot.Value>0&&IsServer){if(BotSport.Value==SportId.Basketball)gameObject.AddComponent<BasketballBot>().Initialize(BotSlot.Value);else gameObject.AddComponent<FootballBot>().Initialize(BotSlot.Value,FootballBots.Instance?FootballBots.Instance.Seed:1729);}
-   if(IsOwner&&IsPlayerObject){RecoveryAcknowledgedRpc();if(!AppRoot.Instance.rooms.Recovering){AppearanceRpc(JsonUtility.ToJson(LocalProfile.Character));NicknameRpc(CleanNickname(PlayerPrefs.GetString("fishing.nickname",OwnerClientId==0?"HOST":"FRIEND "+OwnerClientId)));}AppRoot.Instance.LocalAthlete=athlete;}
+   if(IsOwner&&IsPlayerObject){RecoveryAcknowledgedRpc();if(!AppRoot.Instance.rooms.Recovering){AppearanceRpc(JsonUtility.ToJson(LocalProfile.Character));NicknameRpc(PlayerIdentity.DisplayName);}AppRoot.Instance.LocalAthlete=athlete;}
   }
   public override void OnNetworkDespawn(){if(HostPlayer==this)AppRoot.Instance.rooms.HostDespawned();IdentityNumber.OnValueChanged-=OnIdentity;GolfCartWorld.Forget(athlete);AppearanceData.OnValueChanged-=OnAppearance;if(HostPlayer==this)HostPlayer=null;}
   void OnIdentity(byte previous,byte current){if(athlete&&current>0)CharacterIdentity.Ensure(athlete).SetNumber(current);}
   void OnAppearance(FixedString128Bytes oldValue,FixedString128Bytes newValue){if(newValue.Length>0)athlete.Appearance(JsonUtility.FromJson<CharacterAppearance>(newValue.ToString()));}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void AppearanceRpc(FixedString128Bytes json){CharacterAppearance a;try{a=JsonUtility.FromJson<CharacterAppearance>(json.ToString());}catch(System.ArgumentException){return;}a.Clamp();if(!appearanceInitialized&&IsPlayerObject&&!(HostPlayer&&HostPlayer.Exploring.Value)){byte preferred=RoomSeats.Free(AppRoot.Instance.rooms.Sport,IsSpectator,a.preset);if(preferred!=RoomSeats.Unassigned&&preferred%10==a.preset)SetRoomSeat(preferred);}appearanceInitialized=true;a.preset=IdentityNumber.Value-1;AppearanceData.Value=JsonUtility.ToJson(a);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ReadyRpc(bool value){if(!HostPlayer||!HostPlayer.Exploring.Value)Ready.Value=value;}
-  public static string CleanNickname(string value)=>new string((value??"").Where(c=>char.IsLetterOrDigit(c)||c==' '||c=='_'||c=='-').Take(16).ToArray()).Trim();
+  public static string CleanNickname(string value)=>PlayerIdentity.CleanName(value);
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void NicknameRpc(FixedString64Bytes value){string text=CleanNickname(value.ToString());Nickname.Value=text.Length>0?text:OwnerClientId==0?"HOST":"FRIEND "+OwnerClientId;}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseFootballTeamRpc(FootballTeam team,uint selectionRevision){if(IsSpectator)return;if(IsSpawned&&FootballMatch.Instance&&!FootballMatch.Instance.ChooseTeam(athlete,team,selectionRevision))FootballTeamRejectedRpc();}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseBasketballTeamRpc(FootballTeam team,uint revision){if(IsSpectator)return;if(IsSpawned&&WhatTheFish.BasketballMatch.Instance)WhatTheFish.BasketballMatch.Instance.ChooseTeam(athlete,team,revision);}

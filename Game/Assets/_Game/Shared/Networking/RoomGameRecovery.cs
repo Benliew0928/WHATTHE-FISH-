@@ -42,6 +42,7 @@ namespace WhatTheFish {
    Statistics.Clear();foreach(var p in host.BasketballPlayers)Statistics.Players[p.id]=p;
    observed=State.Revision;published=s.revision;nextRevision=Math.Max(nextRevision,s.revision);presented=s.phase;wasContext=true;
    ball.RestoreRoom(host.Basketball.Value);
+   RestoreRestartMovement(s);
   }
  }
  public sealed partial class BasketballBall {

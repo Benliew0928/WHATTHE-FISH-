@@ -11,23 +11,28 @@ namespace WhatTheFish {
   string folder;bool failed;AppRoot app;bool basketball;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var a=Environment.GetCommandLineArgs();int i=Array.IndexOf(a,"-programmedBotsReview");if(i>=0&&i+1<a.Length)new GameObject("Programmed bots review").AddComponent<ProgrammedBotsReview>().folder=a[i+1];}
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
+  void FixedUpdate(){if(basketball&&app&&!app.rooms.Connected&&BasketballMatch.Instance)foreach(var actor in Roster){var bot=actor.GetComponent<BasketballBot>();if(bot&&!bot.enabled&&BasketballMatch.Instance.AutomaticMovement(actor))actor.Simulate(default,Time.fixedDeltaTime);}}
   IEnumerator Until(Func<bool> predicate,string label,float seconds=25){float end=Time.realtimeSinceStartup+seconds;while(!predicate()&&Time.realtimeSinceStartup<end){var m=FootballMatch.Instance;if(!basketball&&m&&m.Authority&&m.KickoffReady&&m.KickoffActor)m.TryKickoff(m.KickoffActor,m.BotKickoffHeading(m.KickoffActor),.3f,m.Snapshot.revision);yield return null;}Check(predicate(),label);}
   Athlete[] Roster=>basketball?BasketballBots.Roster:FootballBots.Roster;
   int Count=>basketball?BasketballBots.Instance.Count:FootballBots.Instance.Count;
   bool Running=>basketball?BasketballMatch.Instance.Running:FootballMatch.Instance.Running;
   FootballTeam Team(Athlete a)=>basketball?BasketballMatch.Instance.TeamOf(a):FootballMatch.Instance.TeamOf(a);
   ulong Id(Athlete a)=>basketball?BasketballMatch.PlayerId(a):FootballBots.Id(a);
-  bool StartMatch()=>basketball?BasketballMatch.Instance.StartMatch():FootballMatch.Instance.StartMatch();
+  bool BeginSelection()=>basketball?BasketballMatch.Instance.StartMatch():FootballMatch.Instance.StartMatch();
+  bool Confirm()=>basketball?BasketballMatch.Instance.ConfirmSoloTeam():FootballMatch.Instance.ConfirmSoloTeam();
+  void Choose(FootballTeam team){if(basketball)BasketballMatch.Instance.RequestTeam(team);else FootballMatch.Instance.RequestTeam(team);}
+  bool Selecting=>basketball?BasketballMatch.Instance.State.Phase==BasketballMatchPhase.TeamSelection:FootballMatch.Instance.State.Phase==FootballMatchPhase.TeamSelection;
+  bool StartMatch(){if(!BeginSelection())return false;if(!app.rooms.Connected){Choose(FootballTeam.A);return Confirm();}return true;}
   void ClearMatch(){if(basketball)BasketballMatch.Instance.Clear();else FootballMatch.Instance.ClearMatch();}
   void ClearBots(){if(basketball)BasketballBots.Instance.Clear();else FootballBots.Instance.Clear();}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   yield return Until(()=>AppRoot.Instance&&AppRoot.Instance.LocalAthlete&&AppRoot.Instance.Exploring,"entered selected sport",80);
+   yield return Until(()=>DevelopmentProbe.ReadyToReviewSport,"entered selected sport",80);
    app=AppRoot.Instance;if(!app||!app.Exploring){Finish();yield break;}basketball=app.SelectedSport==SportId.Basketball;
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;app.view.mode=2;
    if(app.rooms.Connected){yield return Room();Finish();yield break;}
    Check(Count==0&&!StartMatch(),"Explore Offline has no bots or competitive start");
-   app.Show("home");yield return Until(()=>!app.Menu.IsTransitioning,"menu ready");
+   app.Show("sport");yield return Until(()=>!app.Menu.IsTransitioning,"sport menu ready");
    var button=app.Menu.Content.GetComponentsInChildren<Button>().FirstOrDefault(b=>b.name=="Play vs AI");Check(button,"Play vs bots entry exists");if(!button){Finish();yield break;}button.onClick.Invoke();
    yield return Until(()=>app.Menu.Page=="ai"&&!app.Menu.IsTransitioning,"bot setup opens");
    Check(app.Menu.Content.GetComponentsInChildren<Button>().Count(b=>b.name.StartsWith("AI team size "))==4,"2v2 through 5v5 options");yield return Capture("setup");
@@ -37,8 +42,19 @@ namespace WhatTheFish {
     yield return null;Check(Count==size*2-1&&Roster.Length==size*2,"human plus correct bot roster "+size);
     Check(Roster.Select(Id).Distinct().Count()==size*2,"unique identities "+size);
     Check(!(basketball?BasketballBots.Instance.StartSolo(6):FootballBots.Instance.StartSolo(6))&&Roster.Length==size*2,"invalid size leaves roster intact "+size);
-    Check(StartMatch(),"match starts "+size);yield return Until(()=>Running,"regulation starts "+size);
-    Check(Roster.Count(a=>Team(a)==FootballTeam.A)==size&&Roster.Count(a=>Team(a)==FootballTeam.B)==size&&Team(app.LocalAthlete)==FootballTeam.A,"balanced teams and local A "+size);
+    Check(BeginSelection(),"team picker opens "+size);yield return null;
+    Check(Selecting&&Team(app.LocalAthlete)==FootballTeam.None&&!Confirm(),"explicit team required before start "+size);
+    var start=FindObjectsByType<Button>(FindObjectsSortMode.None).First(b=>b.name=="Start bot match"&&b.gameObject.activeInHierarchy);
+    Check(!start.interactable,"start disabled before team choice "+size);
+    if(size==2){yield return new WaitForSeconds(11);Check(Selecting&&!Running,"solo does not auto-start after old ten-second deadline");yield return Capture("team-picker");}
+    var chosen=size%2==0?FootballTeam.B:FootballTeam.A;
+    Choose(FootballTeam.A);Choose(FootballTeam.B);Choose(chosen);yield return null;
+    Check(Team(app.LocalAthlete)==chosen&&start.interactable,"both teams selectable and start enabled "+size);
+    var labels=start.transform.parent.GetComponentsInChildren<Text>();Check(!labels.Any(t=>t.text.Contains(" / ")||t.text.Contains("countdown")||t.text.Contains("expires")),"solo picker hides counts and timer instructions "+size);
+    yield return Capture("selected-"+size);start.onClick.Invoke();
+    Check(!Selecting&&(basketball?Running:FootballMatch.Instance.KickoffReady),"start button immediately opens play "+size);
+    Check(!Confirm(),"duplicate start rejected "+size);yield return Until(()=>Running,"regulation starts "+size);
+    Check(Roster.Count(a=>Team(a)==FootballTeam.A)==size&&Roster.Count(a=>Team(a)==FootballTeam.B)==size&&Team(app.LocalAthlete)==chosen,"balanced teams preserve human choice "+size);
     if(basketball)foreach(var a in Roster)foreach(float heading in new[]{0f,180f})Check(BasketballBall.Active.SelectHoop(a.transform.position,heading,a)==BasketballMatch.Instance.AttackingHoop(a),"assigned hoop "+Id(a)+" facing "+heading);
     yield return new WaitForSeconds(8);
     Check(Roster.Where(a=>a!=app.LocalAthlete).All(a=>basketball?a.GetComponent<BasketballBot>().Decisions>5:a.GetComponent<FootballBot>().Decisions>5),"all bots make delayed decisions "+size);
@@ -121,7 +137,7 @@ namespace WhatTheFish {
    MonoBehaviour driver;
    if(basketball){var bot=app.LocalAthlete.gameObject.AddComponent<BasketballBot>();bot.Initialize(0);driver=bot;}
    else {var bot=app.LocalAthlete.gameObject.AddComponent<FootballBot>();bot.Initialize(0,1729);driver=bot;}
-   bool started=basketball?BasketballMatch.Instance.ReviewStart(Roster,60,1):FootballMatch.Instance.StartBotReviewMatch(1729,60);Check(started,"full match fixture starts");
+   bool started=basketball?BasketballMatch.Instance.ReviewStart(Roster,60,1):FootballMatch.Instance.StartBotReviewMatch(1729,60);Check(started,"full match fixture starts");Choose(FootballTeam.A);Check(Confirm(),"full match explicit solo confirmation");
    yield return Until(()=>Running,"full match regulation");
    float end=Time.realtimeSinceStartup+100;bool restart=false;uint shots=0,passes=0;int kicks=0,score=0;
    while(Time.realtimeSinceStartup<end){
@@ -137,6 +153,7 @@ namespace WhatTheFish {
   IEnumerator Room(){
    var host=NetworkAthlete.HostPlayer;var local=app.LocalAthlete;
    if(app.rooms.Host){
+    yield return Until(()=>Roster.Length==2&&!app.view.InputBlocked,"both room humans finish arrival before bot fill");
     Check(basketball?BasketballBots.Instance.FillRoom(2):FootballBots.Instance.FillRoom(2),"host fills room to 2v2");yield return new WaitForSeconds(2);
     Check(Count==2&&Roster.Length==4&&Roster.Select(Id).Distinct().Count()==4,"room bot roster has distinct identities");
     Check(NetworkAthlete.HostPlayer==host&&app.LocalAthlete==local,"bots do not overwrite host or local human");Check(StartMatch(),"host starts filled match");
@@ -150,7 +167,7 @@ namespace WhatTheFish {
     ClearMatch();ClearBots();yield return new WaitForSeconds(3);Check(Count==0&&NetworkAthlete.HostPlayer==host&&local,"remove bots retains room humans");
    }else {
     Check(!(basketball?BasketballBots.Instance.FillRoom(2):FootballBots.Instance.FillRoom(2)),"guest cannot create bots");
-    yield return Until(()=>Count==2,"guest receives both bots");Check(Roster.Select(Id).Distinct().Count()==4,"guest has unique participant identities");
+    yield return Until(()=>Count==2&&Roster.Length==4,"guest receives both bots and all arrived humans");Check(Roster.Select(Id).Distinct().Count()==4,"guest has unique participant identities");
     Check(Roster.All(a=>!a.GetComponent<BasketballBot>()&&!a.GetComponent<FootballBot>()),"guest never runs bot decisions");
     yield return Until(()=>Running,"guest sees filled match running");bool seenCarrier=!basketball;float end=Time.realtimeSinceStartup+45;
     while(Count>0&&Time.realtimeSinceStartup<end){if(basketball&&BasketballBall.Active.Held&&BasketballBall.Active.HolderId>=(1UL<<63)){var holder=BasketballBall.Active.Holder;seenCarrier|=holder&&holder!=local&&BasketballMatch.PlayerId(holder)==BasketballBall.Active.HolderId;}yield return null;}

@@ -10,7 +10,9 @@ try {
   $folder=Join-Path $out $role;New-Item -ItemType Directory -Path $folder | Out-Null;$folders+=$folder
   $arguments=@('-batchmode','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2','-probe','-sport','Basketball','-basketballDefenseReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'),'-exitAfter','180','-defenseRate',$Fps)
   if($PassOnly){$arguments+='-defensePassOnly'}
-  if($NoCapture){$arguments+=@('-nographics','-defenseNoCapture')}
+  # The packaged startup and animated rigs need rendered frames even when
+  # screenshots are disabled. Headless graphics can stall their initialization.
+  if($NoCapture){$arguments+='-defenseNoCapture'}
   if($role -eq 'offline'){$arguments+='-offline'}else{$arguments+=@($(if($role -eq 'host'){'-localHost'}else{'-localClient'}),'-port',$Port,'-expected','2','-startAt','12','-returnAt','175')}
   $processes+=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru
   if($role -eq 'host'){Start-Sleep -Seconds 3}

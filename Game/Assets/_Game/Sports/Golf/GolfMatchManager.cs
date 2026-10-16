@@ -54,7 +54,7 @@ namespace WhatTheFish {
   public bool StartMatch(){
    if(!CanStart)return false;
    double countdown=System.Environment.GetCommandLineArgs().Any(a=>a.Contains("Audit")||a.Contains("Review")||a.Contains("-probe"))?0:5.0;
-   return Begin(Eligible().Select(a=>(GolfCartWorld.Key(a),a,a.GetComponent<NetworkAthlete>()?(GolfCartWorld.Key(a)==0?"Host":"Player "+GolfCartWorld.Key(a)):"You")).ToArray(),countdown);
+   return Begin(Eligible().Select(a=>(GolfCartWorld.Key(a),a,a.GetComponent<NetworkAthlete>() is NetworkAthlete net&&net.IsSpawned?net.Nickname.Value.ToString():PlayerIdentity.DisplayName)).ToArray(),countdown);
   }
   bool Begin((ulong id,Athlete actor,string name)[] roster,double countdown=5.0){
    if(!Authority||!Context||State.Running||Course.holes.Length!=5||Course.holes.Select(h=>h.number).OrderBy(n=>n).SequenceEqual(new[]{1,2,3,4,5})==false||Course.holes.Any(h=>!h.cup||!h.tee))return false;

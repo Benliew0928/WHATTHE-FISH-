@@ -11,7 +11,8 @@ foreach($selected in $sports){
   try{
    foreach($side in $modes){
     $folder=Join-Path $run "$selected-$side";New-Item -ItemType Directory -Force -Path $folder | Out-Null
-    $arguments=@('-batchmode','-force-d3d11','-screen-width',$Width,'-screen-height',$Height,'-screen-fullscreen','0','-job-worker-count','2','-probe','-sport',$selected,'-characterIdentityReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'))
+    $reviewName=if($side -eq 'offline'){'WWWWWWWWWWWWWWWW'}elseif($side -eq 'host'){'Host Name'}else{'Guest Name'}
+    $arguments=@('-batchmode','-force-d3d11','-screen-width',$Width,'-screen-height',$Height,'-screen-fullscreen','0','-job-worker-count','2','-probe','-sport',$selected,'-guestProfile',((Split-Path $run -Leaf)+$selected+$side),'-identityName',('"'+$reviewName+'"'),'-characterIdentityReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'))
     if($side -eq 'offline'){$arguments+='-offline'}else{$arguments+=@($(if($side -eq 'host'){'-localHost'}else{'-localClient'}),'-expected','2','-startAt','5','-returnAt','300','-port','7993')}
     $process=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru
     $null=$process.Handle;$running+=@{process=$process;folder=$folder};if($side -eq 'host'){Start-Sleep -Seconds 2}

@@ -1,5 +1,96 @@
 # Verification records
 
+## Player number, team and name plates - 16 October 2026
+
+Overhead identity tags use a small Blue/Red number tab beside the live player
+name on a warm neutral plate. The local player has a gold **YOU** chip and a
+spectator has a quiet **SPEC** chip. The whole plate is no longer saturated with
+the team colour. Existing line-of-sight hiding, safe-area and scoreboard
+avoidance, crowded-label separation and football stamina alignment remain.
+Tags also avoid basketball's automatic-movement hint. The name area uses the
+font's measured text width, with padding before the role chip.
+
+The final complete Windows player passed **817 assertions**: 183 offline
+basketball, 140 host and 128 guest at 1280 x 720; 183 compact basketball and 183
+compact football at 844 x 390. Distinct host and guest names agreed on both
+peers alongside all ten numbers and team assignments. Offline reviews use a
+maximum-length wide-glyph name, and assertions inspect actual rendered tags,
+text bounds and role-chip separation. Gameplay, lineup and long-name captures
+were inspected. Evidence is under
+`Builds/CharacterIdentityQA/Run-20261016-205510/` and
+`Builds/CharacterIdentityQA/Run-20261016-205604/`.
+
+The complete 325-file candidate was promoted to `Builds/WindowsFinal/` after an
+all-file SHA-256 comparison. The superseded player is recoverable from
+`Legacy/20261016-204255-566-character-nameplates-windows/` and
+`Legacy/20261016-205709-562-character-nameplates-final-windows/`. The superseded
+APK is in `Legacy/20261016-205529-309-character-nameplates-android/`.
+Source/content hashes and final delivery checks are recorded in
+`Builds/CharacterNameplateQA/` and `Builds/WindowsFinal/LATEST-BUILD.txt`.
+Superseded review iterations and the duplicate tested player are in
+`Legacy/20261016-205910-124-character-nameplates-review/`.
+A fresh `Build.ps1 -Target AndroidSubmission` build passed the automatic APK
+gate and independent APK v2 signature verification. All 433 source hashes
+matched the validated snapshot through that build. The unrelated Golf prefab's
+generated serialization was restored after comparing its 14 objects and all
+fields/references with local IDs normalized.
+Desktop captures do not establish physical Android appearance, touch behavior
+or frame rate.
+
+## Continuous basketball restarts and easier blocking - 16 October 2026
+
+Competitive baskets preserve player positions. Scoring players run into their
+own half through the normal character motor, then regain control individually.
+The receiving team rotates inbound duty in stable player order; only that
+collector runs automatically to the outside pickup spot. Other receiving players
+keep movement and jumping. Compact top HUD notices explain both automatic roles.
+An early inbound pass can resume play while unfinished return runs continue.
+Playing clocks still wait for the physical inbound release. Protocol **66**
+replicates the individual locks, collector, and per-team turn counters.
+
+Standing blocks now accept contact from 0.05 to 0.46 seconds, and jump blocks
+from 0.16 to 0.98 seconds. The hand contact radius increases from 0.12 to 0.30 m;
+walls, body shielding, reach, recovery, stale requests and rim protection still
+apply. See [match rules](ROOM-MATCH-RULES.md) and [defense](BASKETBALL-DEFENSE.md).
+
+| Validation | Passing checks | Evidence under ignored `Builds/` |
+| --- | ---: | --- |
+| Six physical scores, both inbound rotations, return runs, early pass, room checkpoint, guest hints and locks | 251 | `BasketballRestartQA/Run-20261016-201118-874/` |
+| Compact 844 x 390 view and default runner paths in a copied checkout with spaces, launched from an unrelated directory | 245 | `BasketballRestartQA/Portable-validation/` |
+| Passing, guarding, four boundary directions and scored inbound | 97 | `BasketballControlQA/Run-20261016-201118-872/` |
+| 2v2-5v5 bots, physical shot/pass/guard and a completed match | 153 | `ProgrammedBotsQA/Run-20261016-200841/` |
+| Host/guest blocks against dribble, shot, pass, both hoops' layups and dunks; wall, torso and range rejection | 74 | `BasketballDefenseQA/Reviews/Local-60-20261016-200525-831/` |
+| Expanded coverage/timing, rig reach, head clearance, landing and both character LODs at a 20 FPS simulation rate | 252 | `BasketballDefenseQA/Reviews/Offline-20-20261016-201118-892/` |
+
+All 1,072 checks pass. The final fixture corrections account for shared arrival,
+per-player completion and retained player positions; they do not change gameplay
+between these passing runs. Rendered desktop and compact captures were inspected.
+No physical Android device was attached, so phone touch, appearance and FPS remain
+unverified. This task tests checkpoint restoration locally, not a new WAN host
+succession campaign.
+
+The complete 325-file Windows player was promoted to `WindowsFinal/` and compared
+by hash before updating its build stamp. Its packed scene content matches the
+full build after script refreshes. The source snapshot includes the pre-existing
+uncommitted guest identity, startup welcome, football pass, bot and HUD work.
+The delivery record and Android build result are in
+`WindowsFinal/LATEST-BUILD.txt`; source hashes and the assertion summary are in
+`BasketballRestartQA/`. Nothing is staged, committed or pushed.
+
+Superseded Android output is recoverable from
+`Legacy/20261016-200908-290-basketball-continuous-android/`. The previous complete
+Windows player and completed portable test copy are in
+`Legacy/20261016-201253-460-basketball-continuous-windows/`. Current portable
+evidence was copied out before archiving that test checkout.
+The duplicate tested candidate is in
+`Legacy/20261016-201648-906-basketball-continuous-candidate/` after promotion.
+The fresh `Build.ps1 -Target AndroidSubmission` completed successfully, passed
+its automatic APK gate, and passed independent APK signature verification.
+`Check-TaskReady.ps1 -RequireApk` and the portable-path scan passed. Unity's
+unrelated Golf ball serialization was restored after comparing all 14 objects:
+all fields and references match after normalizing regenerated local file IDs.
+The comparison evidence is in `BasketballRestartQA/golf-serialization-check.json`.
+
 ## Automatic host succession - 16 October 2026
 
 [Host recovery](HOST-MIGRATION.md) now preserves the room when its host leaves,
@@ -6510,3 +6601,13 @@ Evidence: `Builds/NetworkQA/*.txt` and `*.log`, `Builds/smoke.txt`, `Builds/scen
 - The startup art uses solid colours, not image textures. It does not depend on an external asset pack.
 - Native desktop drag automation delivered pointer-down but no subsequent drag events in the touch-pad trace. Actual multitouch dragging still needs testing on the phone; this check has not been counted as passed.
 - Scene rebuild and art regeneration intentionally replace generated outputs; save manual variants separately.
+
+## Approved sports home menu — 16 October 2026
+
+The post-login home now uses the original official logo, approved four-card 2D sports artwork, dedicated sport play menus, a global venue hub and a separate guide hub. See [implementation, validation and limits](SPORTS-MENU.md#delivered-validation--16-october-2026).
+
+Final menu checks: 989 offline + 143 host + 140 guest. Welcome/login checks: 153 cold + 145 wide + 145 tablet. Replicated guest names: 6 host + 6 guest. The complete Windows player matches all 324 tested runtime/support files, with its build stamp handled separately. AndroidSubmission was freshly built and passed its automatic gate. All 432 C#/shader hashes matched the final Windows source through Android packaging. Current evidence is under `Builds/SportyMenuQA/` and `Builds/StorybookMenuQA/Sporty-Final/`.
+
+The menu's bot entry/setup passes, but broader unattended Basketball simulations remain unqualified: one no-score result and one finish timeout during inbound collection. Preserve those diagnostic runs; the menu task changed no production Basketball gameplay logic. Physical Android quality/performance and interactive clipboard roundtrip remain unverified. Nothing was staged, committed or pushed.
+
+The delivered Windows player's separate Football bot regression passed 94 assertions, including entry/setup, all team sizes, physical actions, complete unattended match and cleanup (`Builds/ProgrammedBotsQA/Run-20261016-204919/Football-offline/`). The Basketball limitation above remains open.

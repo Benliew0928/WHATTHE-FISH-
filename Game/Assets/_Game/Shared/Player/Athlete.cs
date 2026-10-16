@@ -26,7 +26,7 @@ namespace WhatTheFish {
   public bool PresentingJump=>remote?receivedJump.preparing||receivedJump.airborne||receivedJump.landing<JumpMotor.LandingDuration:Jump.Presenting;
   public float JumpPose=>remote?JumpMotor.Pose(receivedJump.preparing,receivedJump.load,receivedJump.airborne,receivedJump.velocity,receivedJump.landing):Jump.PoseTime;
   public bool ControlsFootball=>FootballBall.Instance&&FootballBall.Instance.CurrentController==this;
-  public bool CanRequestJump=>!IsSpectator&&!(FootballBall.Instance&&FootballBall.Instance.PropLocked(this))&&!(BasketballBall.Active&&(BasketballBall.Active.PropLocked(this)||BasketballBall.Active.IsInbound(this)))&&!(FishingGame.Instance&&FishingGame.Instance.Busy(this))&&!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!BasketballMatch.BlocksActions&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
+  public bool CanRequestJump=>!IsSpectator&&!(FootballBall.Instance&&FootballBall.Instance.PropLocked(this))&&!(BasketballBall.Active&&(BasketballBall.Active.PropLocked(this)||BasketballBall.Active.IsInbound(this)))&&!(FishingGame.Instance&&FishingGame.Instance.Busy(this))&&!(BasketballMotion&&(BasketballMotion.Challenging||BasketballMotion.Finishing))&&!(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this))&&!(GolfClubMotion&&GolfClubMotion.Busy)&&!GolfCartWorld.Driving(this)&&!ControlsFootball&&!FootballMatch.BlocksActions&&!BasketballMatch.BlocksJump(this)&&!inTransit&&Action==FootballAction.None&&(!football||football.RecoveryRemaining<=0)&&AppRoot.Instance&&AppRoot.Instance.Exploring;
   public void RequestJump(){if(!initialized)Setup();if(CanRequestJump)Jump.Request();}
   public JumpSnapshot JumpState()=>new JumpSnapshot{airborne=Jump.Airborne,preparing=Jump.Preparing,load=Jump.LoadElapsed,velocity=Jump.Velocity,landing=Jump.Landing,sequence=Jump.Sequence};
   public void ApplyJump(JumpSnapshot value){receivedJump=value;}
@@ -62,6 +62,7 @@ namespace WhatTheFish {
   public void Simulate(PlayerCommand command,float dt){
    if(!initialized)Setup();if(inTransit||dt<=0){FootballEffort.Stop();return;}
    if(IsSpectator){SpectatorMovement.Simulate(this,command,dt);return;}
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.AutomaticCommand(this,out var automatic))command=automatic;
    if(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this)){command.move=Vector2.zero;command.jump=false;command.cartAction=GolfCartAction.None;}
    if(BasketballBall.Active&&BasketballBall.Active.PropLocked(this)){command.move=Vector2.zero;command.jump=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=false;}
    if(FootballBall.Instance&&FootballBall.Instance.PropLocked(this)){command.move=Vector2.zero;command.footballPass=command.jump=command.kick=command.tackle=command.dash=command.pressure=command.charging=false;}
@@ -70,7 +71,7 @@ namespace WhatTheFish {
    if(!capsule.enabled)return;remote=false;
    if(FootballMatch.KickoffInput(this,command)){FootballEffort.Stop();speed=0;return;}
    if(FootballMatch.BlocksMovement||BasketballMatch.BlocksMovement||GolfMatchManager.BlocksMovement){FootballEffort.Stop();Charging=false;speed=0;return;}
-   if(BasketballMatch.BlocksActions){command.jump=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=false;}
+   if(BasketballMatch.BlocksActions){command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=false;}
    if(FootballMatch.BlocksActions){command.footballPass=command.dash=command.pressure=command.kick=command.tackle=command.jump=command.shoot=command.pass=command.steal=command.charging=false;}
    if(FootballBall.Instance){FootballBall.Instance.SyncFootballWalls();FootballBall.Instance.RefreshControl(this);}
    if(command.footballPass&&FootballBall.Instance)FootballBall.Instance.TryPass(this,command.heading);

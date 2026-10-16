@@ -52,7 +52,7 @@ namespace WhatTheFish {
   public void RecordPass(Athlete actor){if(Authority&&Running&&Contains(actor))Statistics.Pass(PlayerId(actor),Now);}
   public void RecordShot(Athlete actor){if(Authority&&Running&&Contains(actor))Statistics.Shot(PlayerId(actor),Now);}
   void RefreshStatisticsRoster(){
-   foreach(var pair in participants){var a=pair.Value;if(!a)continue;Statistics.Players.TryGetValue(pair.Key,out var r);r.id=pair.Key;r.team=Selection.TeamOf(pair.Key);r.number=CharacterIdentity.Ensure(a).Number;var net=a.GetComponent<NetworkAthlete>();var bot=a.GetComponent<BasketballBot>();r.name=net&&net.IsSpawned?net.Nickname.Value:new FixedString64Bytes(bot?"BOT "+bot.Slot:PlayerPrefs.GetString("fishing.nickname","YOU"));Statistics.Players[pair.Key]=r;}
+   foreach(var pair in participants){var a=pair.Value;if(!a)continue;Statistics.Players.TryGetValue(pair.Key,out var r);r.id=pair.Key;r.team=Selection.TeamOf(pair.Key);r.number=CharacterIdentity.Ensure(a).Number;var net=a.GetComponent<NetworkAthlete>();var bot=a.GetComponent<BasketballBot>();r.name=net&&net.IsSpawned?net.Nickname.Value:new FixedString64Bytes(bot?"BOT "+bot.Slot:PlayerIdentity.DisplayName);Statistics.Players[pair.Key]=r;}
   }
   void PublishStatistics(){var host=NetworkAthlete.HostPlayer;if(!Authority||!host||!host.IsSpawned)return;var records=Statistics.Players.Values.OrderBy(p=>p.id).ToArray();if(host.BasketballPlayers.Count!=records.Length){host.BasketballPlayers.Clear();foreach(var r in records)host.BasketballPlayers.Add(r);}else for(int i=0;i<records.Length;i++)if(!host.BasketballPlayers[i].Equals(records[i]))host.BasketballPlayers[i]=records[i];}
  }

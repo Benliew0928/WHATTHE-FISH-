@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhatThe Fish? — 3D cartoon startup concepts</title>
+<style>
+:root{color-scheme:light;font-family:system-ui,sans-serif;color:#183f45;background:#f5f4ee}*{box-sizing:border-box}body{margin:0}main{max-width:1500px;margin:auto;padding:36px 24px}h1{font-size:clamp(25px,4vw,42px);letter-spacing:-.035em;margin:8px 0 12px}p{line-height:1.65;color:#536b6e;margin:8px 0 22px}.eyebrow{font-size:12px;letter-spacing:.13em;font-weight:700;text-transform:uppercase;color:#527974}nav{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 18px}button{font:inherit;padding:12px 19px;background:#fffdf4;color:#21474c;border:1px solid #b3c7c3;border-radius:12px;cursor:pointer}button[aria-selected=true]{background:#214f53;color:#fffdf4;border-color:#214f53}button:focus-visible,a:focus-visible{outline:3px solid #ecad3d;outline-offset:4px}figure{margin:0}img{display:block;width:100%;height:auto;border-radius:12px}figcaption{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:14px 0;font-size:14px;color:#50696a}a{color:#275f62;text-underline-offset:3px}footer{font-size:13px;border-top:1px solid #d5ded9;padding-top:16px;margin-top:28px;color:#536b6e;line-height:1.7}[hidden]{display:none!important}@media(max-width:540px){main{padding:24px 12px}nav{gap:7px}button{padding:10px 12px;font-size:13px}}
+</style>
+</head>
+<body><main>
+<div class="eyebrow">WhatThe Fish? · Startup UI concepts</div>
+<h1>Cute, playful, fully 3D.</h1>
+<p>Three compositions using the game’s character artwork, scenery and branding as references. Cable-car Welcome is the selected design. Its implemented loading panel sits beside the character’s legs, then the same screen reveals the starting menu.</p>
+<nav role="tablist" aria-label="Concept selection">
+<button id="cable-tab" role="tab" aria-controls="cable-panel" aria-selected="true" type="button">Cable-car Welcome</button>
+<button id="island-tab" role="tab" aria-controls="island-panel" aria-selected="false" type="button">Island Playground</button>
+<button id="crew-tab" role="tab" aria-controls="crew-panel" aria-selected="false" type="button">Crew Getaway</button>
+</nav>
+<section id="cable-panel" role="tabpanel" aria-labelledby="cable-tab"><figure><img src="01-cable-car-welcome.png" alt="Cartoon 3D athlete beside a teal cable car, with a right-side Huawei and guest sign-in panel and an alternate loading panel below."><figcaption><span>Character + cable car · Right-side menu</span><a href="01-cable-car-welcome.png">Open full image</a></figcaption></figure></section>
+<section id="island-panel" role="tabpanel" aria-labelledby="island-tab" hidden><figure><img src="02-island-playground.png" alt="Stylized 3D sports-island world with a lower central sign-in dock and alternate loading progress below."><figcaption><span>Island world · Centered menu</span><a href="02-island-playground.png">Open full image</a></figcaption></figure></section>
+<section id="crew-panel" role="tabpanel" aria-labelledby="crew-tab" hidden><figure><img src="03-crew-getaway.png" alt="Two cute 3D athletes on a tropical boardwalk beside a left-side sign-in menu, with a loading variation below."><figcaption><span>Character duo · Left-side menu</span><a href="03-crew-getaway.png">Open full image</a></figcaption></figure></section>
+<footer>Concept boards. Cable-car Welcome is implemented with live loading progress and guest entry; Huawei sign-in, language and startup settings remain placeholders. <a href="../../STARTUP-WELCOME.md">Implementation details</a><br>Created with built-in image generation using project references. <a href="DESIGN-NOTES.txt">Design notes</a> · <a href="generation-prompts.json">References and full prompts</a></footer>
+</main>
+<script>
+const tabs=[...document.querySelectorAll('[role="tab"]')];
+function select(tab){for(const item of tabs){const active=item===tab;item.setAttribute('aria-selected',String(active));document.getElementById(item.getAttribute('aria-controls')).hidden=!active;}}
+for(const tab of tabs){tab.addEventListener('click',()=>select(tab));tab.addEventListener('keydown',event=>{const step=event.key==='ArrowRight'?1:event.key==='ArrowLeft'?-1:0;if(step){event.preventDefault();const next=tabs[(tabs.indexOf(tab)+step+tabs.length)%tabs.length];select(next);next.focus();}});}
+</script>
+</body></html>

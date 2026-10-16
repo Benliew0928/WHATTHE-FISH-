@@ -6,7 +6,7 @@ namespace WhatTheFish {
 
  // Match deadlines use playing time. Every restart preserves the remaining period.
  public sealed class BasketballMatchState {
-  public const double ShotSeconds=20,RestartSeconds=2,OvertimeSeconds=60,FlightSeconds=8;
+  public const double ShotSeconds=20,RestartSeconds=0,OvertimeSeconds=60,FlightSeconds=8;
   public BasketballMatchPhase Phase {get;private set;}
   public FootballMatchResult Result {get;private set;}
   public FootballTeam Possession {get;private set;}

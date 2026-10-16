@@ -1,0 +1,15 @@
+{
+  "base": "repository root",
+  "height": 941,
+  "width": 1672,
+  "files": [
+    {
+      "path": "ArtSource/StartupWelcome/cable-car-welcome-master.png",
+      "sha256": "09B9E631E7224698425F9CFA3F33537B904CBFC67845A2B24B38BB0CECD01ECB"
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/StartupWelcome/Background.png",
+      "sha256": "09B9E631E7224698425F9CFA3F33537B904CBFC67845A2B24B38BB0CECD01ECB"
+    }
+  ]
+}
