@@ -2,8 +2,40 @@
 
 The current limit is **1 GB**, with no lower development target and no routine
 audit requirement. The records below are historical evidence, not instructions
-to repeat size analysis. The final disconnect release is **75,006,569 bytes**;
-its hash and signature are recorded in [build size](BUILD-SIZE.md).
+to repeat size analysis. The current measured release and its signature are recorded below and in
+[build size](BUILD-SIZE.md).
+
+## Main sync and Fishing integration - 16 October 2026
+
+Fresh AndroidSubmission at **21:41:00 Malaysia time** measures
+**73,459,821 -> 75,053,357 bytes (+1,593,536)**. Independent APK v2 signature verification
+passes. SHA-256: `EB1E8A61B41F130AA470EE259B402B9ED8BC003D6B05D75D57E98A96DFA11377`.
+The APK is **24,946,643 bytes below 100 MB**, also satisfying
+the incoming repository's 1 GB gate. This is a measured APK, rather than a source
+folder estimate. The older 75 MB target has -53,357 bytes
+of reserve against this build; the incoming repository policy retires that target.
+
+Actual compressed ZIP payload delta: **+1,590,776 bytes**;
+container/signing overhead delta: **+2,760 bytes**.
+ZIP entries: **795**. The bundle length and SHA-256 match
+the embedded catalog, which contains Bootstrap and all four island scenes.
+Only ARM64 native libraries are present.
+
+| Largest actual compressed APK entries | Bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 42,391,138 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,092,950 |
+| `lib/arm64-v8a/libunity.so` | 9,193,322 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,722,535 |
+| `assets/bin/Data/35850a973745b614aa108f2ab1f630a5` | 909,802 |
+| `assets/bin/Data/Resources/unity default resources` | 798,971 |
+
+The growth includes the incoming character, replay, spectator and travel work.
+This integration adds no image, model, recorded audio or package. Generated
+Windows scene/material/proxy records were refreshed by the existing builder.
+Serialized asset-report totals remain distinct from compressed APK contributions.
+Current reports are in `Builds/SizeAudit/latest/`; measured ZIP and source
+integrity evidence is in `Builds/GitSync/Task-20261016-200323/`.
 
 ## Abrupt guest disconnect recovery - 15 October 2026
 
@@ -466,6 +498,238 @@ This release was built from `Builds/FootballReplayQA/SourceSnapshot` to exclude
 concurrent unfinished character-identity changes. See
 [verification](VERIFICATION.md#illustrated-football-goal-replay---15-october-2026)
 for compiled-source checks, complete Windows delivery and device limits.
+
+
+
+
+## Fishing two-button Hold the Glow restoration - 15 October 2026
+
+Fresh AndroidSubmission written **22:14:33 Malaysia time** measures
+**73,456,241 -> 73,459,821 bytes (+3,580)**.
+Headroom to the strict 100,000,000-byte boundary: **26,540,179 bytes**.
+Development reserve below 75,000,000: **1,540,179 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `79D7A6F34CF6072214C3E5975EB542B8FE078C3156D0A70C037A1BB2752AFA54`.
+
+Fishing restores the pictured **Hold & Countersteer** controls: one Left and
+one Right button. Hold the glowing direction, switch when it changes and release
+both to cool the line. The fish/gold-band meter and clear navy Catch/Tension
+captions return. Timed-tap gating is removed. Continuous winding uses the earlier
+law with a modest 20% speed assist. Correct-side reel drag can slip under a
+sudden load to leave reaction time; spring, accumulated strain and fish forces
+remain, and players still release to cool.
+The shared tutorial uses the same live controls and opens once for the revision.
+
+Current camera switching and directional framing, rod grip/lean, attached rope,
+fish swimming, gravity-driven splashes and landing feedback are retained. Scoring,
+Wanted, Round/Cup/Crew, six abilities/two favourites, four islands and shared room
+travel remain. Matching peers require protocol **57**. No texture, font, model,
+shader, recorded audio, package or realtime light is added.
+[Controls and simulation](FISHING-COUNTERSTEER.md).
+
+Actual compressed ZIP payload delta: **+3,582 bytes**;
+container/signature overhead delta: **-2 bytes**.
+ZIP entries: **779 -> 779**.
+Both player and bundle inventories are inspected. Combined mesh rows remain
+**1,788 -> 1,788**, with identical geometry,
+compression and bounds; no new texture is shipped. Serialized report sizes are
+uncompressed measurements, not APK size contributions.
+
+| Largest actual compressed APK entries | Bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 41,771,138 |
+| `lib/arm64-v8a/libil2cpp.so` | 11,893,182 |
+| `lib/arm64-v8a/libunity.so` | 9,190,935 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,698,136 |
+| `assets/bin/Data/35850a973745b614aa108f2ab1f630a5` | 909,802 |
+| `assets/bin/Data/Resources/unity default resources` | 798,971 |
+
+Embedded catalog, bundle byte count, SHA-256 and five scene names match the
+build audit. Forbidden desktop pipeline/SSAO/BlueNoise256 dependencies remain
+absent from the combined Android inventories; development review types are
+stripped. Current raw evidence is in `Builds/SizeAudit/latest/` and
+`Builds/FishingHold/Task-20261015-201923/`.
+
+## Local content startup recovery - 15 October 2026
+
+Fresh AndroidSubmission written **17:17:47 Malaysia time** measures
+**73,452,461 -> 73,456,241 bytes (+3,780)**.
+Headroom to the strict 100,000,000-byte boundary: **26,543,759 bytes**.
+Development reserve below 75,000,000: **1,543,759 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `7F39D1F12038005F6028A80600148A792394C8C1442E263DBA164358535A5FE6`.
+
+First-launch preparation reads an embedded filesystem bundle directly,
+avoiding an unnecessary compressed-source copy on Windows. APK archive assets
+retain their required temporary copy. Both paths retain length/SHA-256 and
+conversion-CRC checks. Preparation is serialized between launches; owned failed
+and interrupted temporary files are cleaned. Obsolete hash caches are pruned
+after the current content successfully loads, preserving other files and saves.
+The loading screen offers a usable storage/retry message. All four islands,
+the existing Fishing gameplay and protocol **56** are retained. No asset,
+recorded audio, model, shader, texture, package or realtime light is added.
+[Loader and storage behavior](CONTENT-PACKAGING.md#first-launch-and-storage).
+
+Actual compressed ZIP payload delta: **+3,776 bytes**;
+container/signature overhead delta: **+4 bytes**.
+ZIP entries: **779 -> 779**.
+Both player and bundle inventories are inspected. Combined mesh rows remain
+**1,788 -> 1,788**, with identical geometry,
+compression and bounds; no new texture is shipped. Serialized report sizes are
+uncompressed measurements, not APK size contributions.
+
+| Largest actual compressed APK entries | Bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 41,765,418 |
+| `lib/arm64-v8a/libil2cpp.so` | 11,895,370 |
+| `lib/arm64-v8a/libunity.so` | 9,190,935 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,698,087 |
+| `assets/bin/Data/35850a973745b614aa108f2ab1f630a5` | 909,802 |
+| `assets/bin/Data/Resources/unity default resources` | 798,971 |
+
+Embedded catalog, bundle byte count, SHA-256 and five scene names match the
+build audit. Forbidden desktop pipeline/SSAO/BlueNoise256 dependencies remain
+absent from the combined Android inventories; development review types are
+stripped. Current raw evidence is in `Builds/SizeAudit/latest/` and
+`Builds/LaunchRecovery/Task-20261015-165153/`.
+
+## Fishing timed pulls and directional camera - 15 October 2026
+
+Fresh AndroidSubmission written **16:14:33 Malaysia time** measures
+**73,442,073 -> 73,452,461 bytes (+10,388)**.
+Headroom to the strict 100,000,000-byte boundary: **26,547,539 bytes**.
+Development reserve below 75,000,000: **1,547,539 bytes**.
+The enforced hard limit and independent APK v2 signature verification pass.
+SHA-256: `E94EAA6B2F1C8A6FA1BB88BCC4C34532A4A7D1B5463CF249AFA24848B82AE940`.
+
+Tap Reel when the moving circle enters gold. Every third sweep asks for a
+timed Left/Right counterpull through the same controls. Each sweep allows one
+attempt; holding and spam never repeat a stroke. Clear arrow cues brighten at
+the tap window, with contained hit/miss feedback and no keyboard guides. The
+rod, torso and fish forces respond to accepted pulls, and a restrained camera
+shoulder shift keeps the opposing direction readable. A tension-sensitive reel
+clutch softens short strokes under load. Host and guest receive equal fixed
+stroke duration; timestamp and duplicate guards remain host-owned. The revised
+tutorial reopens once and shares the live widgets with How to Play.
+
+Scoring, Wanted, Round/Cup/Crew goals, six skills/two favourites, existing catch
+feedback, all four islands and shared room travel remain. Matching peers require
+protocol **56**. No new image, model, shader, recorded audio file, package or
+realtime light is added. [Controls and simulation](FISHING-TIMING.md).
+
+Actual compressed APK ZIP payload changes **+10,388 bytes**;
+container/signature overhead changes **+0**.
+ZIP entries: **779 -> 779**.
+Both player and scene-bundle inventories are reviewed: **1,788
+-> 1,788 mesh rows**, with unchanged geometry,
+compression and bounds. No new shipped texture appears. Serialized asset sizes
+are uncompressed measurements, not APK byte estimates.
+
+| Largest actual APK ZIP payload | Compressed bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 41,768,150 |
+| `lib/arm64-v8a/libil2cpp.so` | 11,889,293 |
+| `lib/arm64-v8a/libunity.so` | 9,190,935 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,697,657 |
+| `assets/bin/Data/35850a973745b614aa108f2ab1f630a5` | 909,802 |
+| `assets/bin/Data/Resources/unity default resources` | 798,971 |
+
+The embedded catalog equals the build audit; actual bundle bytes, SHA-256, CRC
+and all five scene names are checked. Combined player/bundle inventories contain
+no forbidden desktop pipeline/SSAO shader/BlueNoise256 dependency. Selected
+development review types are stripped from release metadata. See
+`Builds/SizeAudit/latest/` and `Builds/FishingTiming/Task-20261015-151017/` for ZIP/asset deltas, source and
+native payload proofs, independent signature output and final review reports.
+
+## Fishing clarity, camera and catch feedback - 15 October 2026
+
+Fresh AndroidSubmission written **14:31:37 Malaysia time** measures
+**73,446,373 -> 73,442,073 bytes (-4,300)**.
+Headroom to the strict 100,000,000-byte boundary: **26,557,927
+bytes**. Development reserve below 75,000,000: **1,557,927 bytes**.
+The enforced hard size gate and independent APK v2 signature verification pass.
+SHA-256: `F39B0474F0F59EFFFA8F850482356F0FB26EE8BF976511742B18629343A00D56`.
+
+Fishing now has a circular accepted-input cue and gold target socket,
+explicit hold/switch/release instructions with stable cooling guidance, a framed
+cast/wait/hook hint, contextual utility visibility, a smooth accepted-hook camera
+with return to the chosen view, and confirmed local fish/points landing feedback.
+Reduced Motion retains the chosen camera and simplifies the new effects. Held
+gear stays clear of the landing card. The tutorial reuses the live circular meter.
+No new image, model, shader, recorded audio file or package is added. Rules,
+scoring, fish forces, timing, six skills/two favourites and host authority remain
+unchanged. All four islands and shared room travel remain self-contained.
+Matching peers use protocol **55**.
+
+Actual compressed ZIP payloads change **-4,293 bytes**;
+container/signature overhead changes **-7**.
+ZIP entries: **779 -> 779**.
+Both the player and scene-bundle asset inventories are checked; their serialized
+sizes are uncompressed measurements and are not APK-size estimates.
+Combined mesh rows: **1788 ->
+1788**, with matching geometry, compression and
+bounds. No new shipped texture is present. No lossy art or geometry change is
+made to pay for the UX additions.
+
+| Largest actual APK ZIP payload | Compressed bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 41,762,019 |
+| `lib/arm64-v8a/libil2cpp.so` | 11,885,289 |
+| `lib/arm64-v8a/libunity.so` | 9,190,935 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,697,453 |
+| `assets/bin/Data/35850a973745b614aa108f2ab1f630a5` | 909,802 |
+| `assets/bin/Data/Resources/unity default resources` | 798,971 |
+
+The actual APK embedded catalog matches the build audit. The embedded bundle
+has **41,762,019 bytes** before ZIP accounting, five
+scenes, matching SHA-256 and catalog CRC. Combined player/bundle inventories
+contain no forbidden desktop pipeline, SSAO shader or BlueNoise256 dependency.
+Release metadata excludes the selected development-only review types.
+Current reports: `Builds/SizeAudit/latest/`; before/after ZIP hashes, combined
+asset/mesh comparison, signature output and source proofs: `Builds/FishingClarity/Task-20261015-131941/`.
+
+## Local rebuild of pulled main - 14 October 2026
+
+Fresh local AndroidSubmission written **20:45:42 Malaysia time** measures
+**90,388,492 -> 73,446,373 bytes (-16,942,119)** against
+the older APK on this laptop. Headroom to the strict 100,000,000-byte boundary:
+**26,553,627 bytes**. Development reserve below 75,000,000:
+**1,553,627 bytes**. Enforced hard limit and independent APK v2 signature pass.
+SHA-256: `51723F75318AE12D75C7494F674A1A08B79DA67C2A25F119FB4933745F7C715A`.
+
+Actual APK compressed ZIP payloads change **-16,919,221 bytes**;
+container/signature overhead changes **-22,898**.
+APK entries: **919 -> 779**.
+The embedded scene bundle measures **41,769,305 bytes** before ZIP
+container accounting; its catalog lists all five scenes, byte length, SHA-256
+and CRC. The APK's embedded catalog/bundle bytes are independently checked.
+
+The baseline APK predates lossless scene-bundle sharing. Its old player-only
+asset/mesh rows cannot be compared directly to the new player-only report as
+proof of deleted art. Current player serialized totals **11,357,050**
+and scene-bundle serialized totals **146,871,897** are separate,
+uncompressed inventories; do not add them as an APK size estimate or claim the
+smaller player-only inventory describes the entire game.
+
+| Largest scene-bundle source | Uncompressed serialized bytes |
+| --- | ---: |
+| `Assets/_Game/Art/RefinedIslands/Fishing/Fishing_TerrainControl.png` | 22,369,760 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Golf_TerrainControl.png` | 22,369,756 |
+| `Assets/_Game/Art/RefinedIslands/Fishing/Fishing_WaterDepth.png` | 5,592,564 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Golf_WaterDepth.png` | 5,592,560 |
+| `Assets/_Game/Art/Football/Sunvale/Stadium.fbx` | 3,569,800 |
+| `Assets/_Game/Art/RefinedIslands/Golf/Structures.fbx` | 2,617,296 |
+
+Existing terrain control/depth assets remain major serialized contributors;
+this rebuild uses the upstream lossless dependency sharing rather than changing
+their art. MobileURP/MobileRenderer remain in the player and the combined player
+and scene inventory is checked for forbidden desktop delivery dependencies.
+Requested development review types are absent from IL2CPP release metadata.
+
+Current bundle/player packing CSVs, actual ZIP hashes/deltas, signature result,
+source snapshots and full-player promotion proof: `Builds/LocalRebuild/Task-20261014-195856/`. No new imported
+art, shader, audio or package was authored by this local rebuild. Android device
+appearance/FPS, first launch and installed cache storage remain unverified.
 
 ## Golf buggy control and shot camera - 14 October 2026
 

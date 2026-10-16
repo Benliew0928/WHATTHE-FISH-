@@ -55,7 +55,7 @@ namespace WhatTheFish {
    for(int i=0;i<steps;i++){
     float span=1.35f+.45f*size,thrust=p.pull*(3.2f+.7f*size+p.surge*4.8f);
     float stretch=Mathf.Max(0,p.distance-p.lineLength);
-    float lateralForce=thrust-p.fightOffset.x*(1.8f+2.4f*p.progress)-9*stretch*p.fightOffset.x/Mathf.Max(1,p.distance);
+    float lateralForce=thrust+(p.held?p.steer*1.8f:0)-p.fightOffset.x*(1.8f+2.4f*p.progress)-9*stretch*p.fightOffset.x/Mathf.Max(1,p.distance);
     p.fightMotion.x=(p.fightMotion.x+lateralForce/mass*h)/(1+2.5f/mass*h);
     p.fightOffset.x+=p.fightMotion.x*h;
     bool wet=p.fightOffset.y>0;float neutral=.54f+.10f*size;

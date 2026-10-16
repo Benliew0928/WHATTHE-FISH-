@@ -52,6 +52,7 @@ namespace WhatTheFish {
     game.State.Receive(match,players,savedFish);ui.Tick(game,app.LocalAthlete,true);yield return Frame();
     check(ui.Visible&&ui.ModalBlocksRaycasts&&ui.ResultRound==round&&ui.Title=="ROUND RESULTS","ENDED_ROUND_OPENS_ONE_MODAL");
     check(ui.ShownRounds==beforeDelayed+1,"DELAYED_LOCAL_RECORD_RETRIES_AND_OPENS_ROUND_EXACTLY_ONCE");
+    check(!PostMatchFlow.Instance||!PostMatchFlow.Instance.Visible,"DELAYED_FISHING_RESULTS_TAKE_PRIORITY_OVER_NEXT_ADVENTURE");
     check(EventSystem.current.currentSelectedGameObject&&EventSystem.current.currentSelectedGameObject.transform.IsChildOf(ui.CardRect),"RESULT_MODAL_OWNS_KEYBOARD_AND_CONTROLLER_SELECTION");
     check(ui.CardRect.GetComponentsInChildren<Button>().All(b=>b.navigation.mode==Navigation.Mode.Explicit&&new[]{b.navigation.selectOnLeft,b.navigation.selectOnRight,b.navigation.selectOnUp,b.navigation.selectOnDown}.All(s=>s&&s.transform.IsChildOf(ui.CardRect))),"RESULT_CONTROLLER_NAVIGATION_CANNOT_REACH_UNDERLYING_HUD");
     check(ui.StatTexts.Contains("SMALL × 2")&&ui.StatTexts.Contains("MEDIUM × 3")&&ui.StatTexts.Contains("LARGE × 2")&&ui.StatTexts.Contains("WANTED BONUS +6")&&ui.StatTexts.Contains("MISSED 2")&&ui.StatTexts.Contains("SNAPPED 1")&&ui.StatTexts.Contains("CANCELLED 3")&&ui.StatTexts.Contains("TIMED OUT 1"),"RESULTS_SHOW_HOST_RECORD_STATS_WITHOUT_BONUS_DOUBLE_COUNT");
@@ -61,6 +62,8 @@ namespace WhatTheFish {
     game.State.Receive(match,players,savedFish);ui.Tick(game,app.LocalAthlete,true);
     DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right};check(app.view.ReadCommand().move==Vector2.zero,"OPEN_RESULT_MODAL_BLOCKS_WALKING_INPUT");
     Click(ui.CloseButton,check,"CLOSE");check(app.view.ReadCommand().move==Vector2.right,"CLOSE_RESTORES_WALKING_INPUT_IMMEDIATELY");DevelopmentProbe.TurnCommand=savedTurn;yield return Frame();check(!ui.Visible&&ui.ReopenButton.gameObject.activeInHierarchy,"CLOSE_RETURNS_TO_ISLAND_WITH_RESULTS_BUTTON");check(!EventSystem.current.currentSelectedGameObject,"CLOSE_CLEARS_MODAL_SUBMIT_TARGET");
+    if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){var keep=PostMatchFlow.Instance.GetComponentsInChildren<Button>().First(b=>b.name=="Keep exploring");Click(keep,check,"KEEP_EXPLORING");yield return Frame();}
+    check(!app.view.InputBlocked,"KEEP_EXPLORING_RESTORES_INPUT_AFTER_SHARED_NEXT_ADVENTURE");
     for(int i=0;i<4;i++)ui.Tick(game,app.LocalAthlete,true);check(!ui.Visible&&ui.ShownRounds==shown,"CLOSED_CARD_NEVER_AUTO_REOPENS_SAME_ROUND");
     Click(ui.ReopenButton,check,"REOPEN");yield return Frame();check(ui.Visible&&!ui.ReopenButton.gameObject.activeInHierarchy&&ui.ShownRounds==shown,"REOPEN_REUSES_SAME_COMPLETED_ROUND");
     app.enabled=false;

@@ -1,5 +1,63 @@
 # Verification records
 
+## Main sync and Fishing integration - 16 October 2026
+
+Incoming main `c64bacb` is combined with the preserved local Fishing and startup
+work. Incoming networking and embedded packages are retained; RoomService differs
+only by the required protocol increment to **66**. Matching peers must rebuild.
+Fishing uses continuous Left/Right holds, with the retained camera, rod, rope and
+water presentation. Its delayed result card now takes pointer/controller priority
+over the shared next-adventure card.
+
+| Final local Windows check | Passing assertions |
+| --- | ---: |
+| Rendered Fishing gameplay and native UI | 2,362 |
+| Rendered Fishing host / guest, including abilities and rematch | 46 / 49 |
+| Feedback, results and delayed-card pointer regression | 178 |
+| Spectators and shared four-island travel, host / guest | 223 / 147 |
+| Character identities, Football / Basketball | 122 / 122 |
+| Archive-source copy and interrupted-startup retry | 61 |
+
+These nine reports contain **3,310 runtime assertions**. Lobby snapshot regressions
+also pass 11 checks; unchanged-metadata network retry passes against the compiled
+embedded SDK. The 1,571 Fishing rule checks are included in the offline count,
+and separately pass during the guarded script refresh.
+
+The full Windows build succeeds. Later code refreshes preserve its native data,
+catalog and complete island-bundle hashes. The last production adjustment only
+closes an overlapping next-adventure card when Fishing results open; it adds no
+serialized fields or assets. The source comparison after Android reports no
+runtime C# changes. The complete tested player remains in `Builds/WindowsFinal/`.
+
+Initial harness failures are retained: the old 65-second probe expired during
+cold cache preparation; headless clients could not validate arrival shaders;
+the guest was launched before the host was ready; and simulated gear input ran
+during an arrival-page transition. The harness now waits for a live room, uses
+rendered clients, waits for arrival and active controls, and follows the native
+Keep exploring action before rematching. The results-pointer regression exposed
+and now covers the actual delayed-card overlap fixed in this merge.
+
+Separate loader measurements on this laptop were **71.64 s cold / 4.95 s warm**,
+including **67.92 s / 1.18 s** cache preparation. This is Windows first-launch
+evidence, not phone timing. The copy/retry path also completes with one expected
+failure, preserves unrelated files and cleans interrupted preparation files.
+
+Fresh AndroidSubmission at **21:41:00 Malaysia time** measures
+**73,459,821 -> 75,053,357 bytes (+1,593,536)**. Independent APK v2 signature verification
+passes. SHA-256: `EB1E8A61B41F130AA470EE259B402B9ED8BC003D6B05D75D57E98A96DFA11377`.
+The APK is **24,946,643 bytes below 100 MB**, also satisfying
+the incoming repository's 1 GB gate. This is a measured APK, rather than a source
+folder estimate. The older 75 MB target has -53,357 bytes
+of reserve against this build; the incoming repository policy retires that target.
+
+Evidence: `Builds/GitSync/Task-20261016-200323/`, with the final report folders recorded in its QA logs.
+The spectator run uses two actual local Windows processes and synthetic seat
+fixtures; it does not establish fifteen/twenty physical clients. Full host
+succession and WAN behavior were not rerun in this sync. Physical Android touch,
+appearance, first-launch storage and sustained FPS remain unverified.
+Superseded local deliveries were archived in the `20261016-200853-871-git-sync-windows`
+and `20261016-212327-589-git-sync-apk` batches.
+
 ## Automatic host succession - 16 October 2026
 
 [Host recovery](HOST-MIGRATION.md) now preserves the room when its host leaves,
@@ -916,6 +974,388 @@ Reviewed superseded output was archived with byte/hash recovery inventories:
 
 Current captures, reports, the tested source snapshot and approved references
 remain available. No staging, commit, push or history rewrite was performed.
+
+
+
+
+## Fishing two-button Hold the Glow restoration - 15 October 2026
+
+Fresh AndroidSubmission written **22:14:33 Malaysia time** measures
+**73,456,241 -> 73,459,821 bytes (+3,580)**.
+Headroom to the strict 100,000,000-byte boundary: **26,540,179 bytes**.
+Development reserve below 75,000,000: **1,540,179 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `79D7A6F34CF6072214C3E5975EB542B8FE078C3156D0A70C037A1BB2752AFA54`.
+
+Fishing restores the pictured **Hold & Countersteer** controls: one Left and
+one Right button. Hold the glowing direction, switch when it changes and release
+both to cool the line. The fish/gold-band meter and clear navy Catch/Tension
+captions return. Timed-tap gating is removed. Continuous winding uses the earlier
+law with a modest 20% speed assist. Correct-side reel drag can slip under a
+sudden load to leave reaction time; spring, accumulated strain and fish forces
+remain, and players still release to cool.
+The shared tutorial uses the same live controls and opens once for the revision.
+
+Current camera switching and directional framing, rod grip/lean, attached rope,
+fish swimming, gravity-driven splashes and landing feedback are retained. Scoring,
+Wanted, Round/Cup/Crew, six abilities/two favourites, four islands and shared room
+travel remain. Matching peers require protocol **57**. No texture, font, model,
+shader, recorded audio, package or realtime light is added.
+[Controls and simulation](FISHING-COUNTERSTEER.md).
+
+**2,767 passing runtime assertions across seven final reports:**
+
+Evidence paths below are relative to the repository root.
+
+| Review | Passes | Evidence |
+| --- | ---: | --- |
+| Fishing holds, camera, feedback and results | 176 | `Builds/FishingPolishQA/Run-20261015-215205/polish.txt` |
+| Fishing rendered gameplay | 2360 | `Builds/FishingGameplayQA/Run-20261015-215227/offline.txt` |
+| Fishing host | 45 | `Builds/FishingGameplayQA/Run-20261015-215401/host.txt` |
+| Fishing client | 47 | `Builds/FishingGameplayQA/Run-20261015-215401/client.txt` |
+| Golf offline | 70 | `Builds/GolfAimQA/Run-20261015-221544/offline.txt` |
+| Golf host | 35 | `Builds/GolfAimQA/Run-20261015-220024/host.txt` |
+| Golf client | 34 | `Builds/GolfAimQA/Run-20261015-220024/client.txt` |
+
+All **1,571 Fishing rule assertions** also pass during the final Windows refresh.
+Coverage includes valid directional holds, immediate release, renewed safety
+leases, stale-release rejection, pointer takeover, all fish sizes over four cast
+ranges, landing/scoring/Wanted, tension, tutorial/native glyph bounds at landscape
+sizes, camera return and Reduced Motion, actual fish movement, physical water
+contact/splash, rod grip/line endpoints, catch feedback, results/rematch, and
+host/guest replication. Golf offline/network checks cover the shared controls.
+Rendered captures were visually reviewed for both buttons, meter spacing and
+retained camera/rope. Natural surface contacts are recorded during catches.
+Because a fast catch need not breach, a separate controlled body-surface crossing
+exercises the production splash observer and its real bounded gravity arcs;
+it does not call the burst implementation or change product swimming/forces.
+
+Complete **324-file** Windows player is promoted together to
+`Builds/WindowsFinal/`; **323 runtime/support files** match the tested
+candidate hashes. Full native build: `2026-10-15T07:38:05.3822437Z`; code refresh:
+`2026-10-15T13:48:32.0493990Z`. Native player data, catalog and scene-bundle hashes
+are unchanged. A dedicated source proof confirms that the current camera block,
+rod, fish, splash, startup loader and serialized Fishing wire-record declarations
+are unchanged by this task. Only the input/simulation/UI methods and review
+fixtures change. Runtime C# is unchanged after final Windows QA. Generated scene
+copies, canonical Golf Ball graph/IDs, desktop SSAO resource registrations and
+configured text endings are checked separately. Source is main `4b20c6b` plus
+preserved unstaged work; the commit alone does not contain this delivery.
+
+Reviewed previous complete player is archived with the repository tool in
+`Legacy/20261015-221826-672-fishing-hold-player/Builds/WindowsFinal/`. The previous APK is retained in the
+separate fishing-hold-apk archive batch, with its initial SHA and ZIP inventory.
+No staging, commit or push is performed.
+
+Physical Android touch, appearance, first-launch storage, memory peaks, sustained
+FPS and WAN play remain unverified. Windows captures render the real overlays
+through the game camera; they do not qualify a phone. Full evidence: `Builds/FishingHold/Task-20261015-201923/`.
+
+## Local content startup recovery - 15 October 2026
+
+Fresh AndroidSubmission written **17:17:47 Malaysia time** measures
+**73,452,461 -> 73,456,241 bytes (+3,780)**.
+Headroom to the strict 100,000,000-byte boundary: **26,543,759 bytes**.
+Development reserve below 75,000,000: **1,543,759 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `7F39D1F12038005F6028A80600148A792394C8C1442E263DBA164358535A5FE6`.
+
+First-launch preparation reads an embedded filesystem bundle directly,
+avoiding an unnecessary compressed-source copy on Windows. APK archive assets
+retain their required temporary copy. Both paths retain length/SHA-256 and
+conversion-CRC checks. Preparation is serialized between launches; owned failed
+and interrupted temporary files are cleaned. Obsolete hash caches are pruned
+after the current content successfully loads, preserving other files and saves.
+The loading screen offers a usable storage/retry message. All four islands,
+the existing Fishing gameplay and protocol **56** are retained. No asset,
+recorded audio, model, shader, texture, package or realtime light is added.
+[Loader and storage behavior](CONTENT-PACKAGING.md#first-launch-and-storage).
+
+The reported player log fails while writing the converted bundle, not while
+running Fishing. At investigation the drive had **727,629,824 bytes** free.
+The old Windows preparation needed at least **778,366,109 bytes** of working
+files: a **295,364,236-byte** copied source plus a **483,001,873-byte** runtime
+cache, before filesystem/Unity overhead. Direct file preparation removes the
+source-copy requirement. These Windows numbers do not estimate phone storage.
+
+The original exact source/catalog successfully loads all four islands when its
+previously validated cache is restored. Three obsolete app-generated hash caches
+are then removed, reclaiming **1,449,005,567 bytes**; saves, preferences, source
+assets and Editor caches are preserved. Verified identical review/runtime caches
+share disk blocks through hard links rather than occupying repeated copies.
+
+**443 passing runtime assertions across six final reports:**
+
+| Review | Passes | Evidence |
+| --- | ---: | --- |
+| normal cold | 52 | `Builds/LaunchRecovery/Task-20261015-165153/DefaultCache/cold/results.txt` |
+| normal warm | 52 | `Builds/LaunchRecovery/Task-20261015-165153/DefaultCache/warm/results.txt` |
+| portable copy and retry | 61 | `Builds/LaunchRecovery/Task-20261015-165153/Portable Checkout With Spaces/Builds/PortableRetryQA/results.txt` |
+| concurrent first | 52 | `Builds/LaunchRecovery/Task-20261015-165153/Concurrent/first/results.txt` |
+| concurrent second | 52 | `Builds/LaunchRecovery/Task-20261015-165153/Concurrent/second/results.txt` |
+| native Fishing | 174 | `Builds/FishingPolishQA/Run-20261015-170611/polish.txt` |
+
+The normal cold/warm test uses the actual application cache without
+`-contentCache`. Cold preparation is **55.83 seconds**, including concurrent
+source hashing for evidence; warm preparation is **1.24 seconds**. The portable
+retry test deliberately blocks its private cache with a one-byte file, verifies
+the error screen and Retry button, then completes conversion through the copied
+source path and checks owned temporary/old-cache cleanup and unrelated-file
+preservation. It uses a directory with spaces, the tool's default player path
+and a working directory outside the checkout. Exactly one conversion occurs
+when two players start concurrently against a fresh cache. The native Fishing
+run omits batch mode and starts through the normal cache without preparation
+errors. All **1,576** existing Fishing rule assertions pass during the build.
+
+Complete **324-file** Windows player is promoted together to
+`Builds/WindowsFinal/`; **323 runtime/support files** match the tested
+candidate hashes. Full native build: `2026-10-15T07:38:05.3822437Z`; code refresh:
+`2026-10-15T08:59:55.1521879Z`. Native data, catalog and scene-bundle hashes are
+unchanged; only loader and development-review methods changed. No serialized
+component fields are added. Runtime C# is unchanged after final Windows QA.
+Platform-generated scene copies, canonical Golf Ball graph/IDs, desktop SSAO
+resource registrations and configured working-copy text endings are checked
+separately. Source is main `4b20c6b` plus preserved unstaged work; the commit alone
+does not contain this delivery.
+
+Reviewed previous complete player is archived with the repository tool in
+`Legacy/20261015-194101-883-launch-recovery-player/Builds/WindowsFinal/`. The previous APK is retained in the
+separate launch-recovery-apk archive batch, with its initial SHA and ZIP inventory.
+No staging, commit or push is performed.
+
+Physical Android first-launch storage, memory peaks, touch, appearance, sustained
+FPS and WAN play remain unverified. Desktop tests of the copied-source path do
+not qualify a real phone. Full evidence: `Builds/LaunchRecovery/Task-20261015-165153/`.
+
+## Fishing timed pulls and directional camera - 15 October 2026
+
+Fresh AndroidSubmission written **16:14:33 Malaysia time** measures
+**73,442,073 -> 73,452,461 bytes (+10,388)**.
+Headroom to the strict 100,000,000-byte boundary: **26,547,539 bytes**.
+Development reserve below 75,000,000: **1,547,539 bytes**.
+The enforced hard limit and independent APK v2 signature verification pass.
+SHA-256: `E94EAA6B2F1C8A6FA1BB88BCC4C34532A4A7D1B5463CF249AFA24848B82AE940`.
+
+Tap Reel when the moving circle enters gold. Every third sweep asks for a
+timed Left/Right counterpull through the same controls. Each sweep allows one
+attempt; holding and spam never repeat a stroke. Clear arrow cues brighten at
+the tap window, with contained hit/miss feedback and no keyboard guides. The
+rod, torso and fish forces respond to accepted pulls, and a restrained camera
+shoulder shift keeps the opposing direction readable. A tension-sensitive reel
+clutch softens short strokes under load. Host and guest receive equal fixed
+stroke duration; timestamp and duplicate guards remain host-owned. The revised
+tutorial reopens once and shares the live widgets with How to Play.
+
+Scoring, Wanted, Round/Cup/Crew goals, six skills/two favourites, existing catch
+feedback, all four islands and shared room travel remain. Matching peers require
+protocol **56**. No new image, model, shader, recorded audio file, package or
+realtime light is added. [Controls and simulation](FISHING-TIMING.md).
+
+Complete Windows delivery: **324 files**, including
+**323 runtime/support files** hash-verified against the
+tested candidate. The complete folder is promoted to `Builds/WindowsFinal/`.
+Full native build UTC: `2026-10-15T07:38:05.3822437Z`; final code refresh UTC:
+`2026-10-15T07:57:30.0162606Z`. Native data, catalog and scene-bundle hashes
+remain identical through the code refreshes. Source is main `4b20c6b` plus the
+preserved unstaged preceding clarity work and this local timing revision; the
+commit alone does not contain the delivered feature.
+
+**2,853 passing assertions across 9 final reports:**
+
+| Review | Passes | Evidence |
+| --- | ---: | --- |
+| Packaging cold | 52 | `Builds/FishingTiming/Task-20261015-151017/Packaging/cold/results.txt` |
+| Packaging warm | 52 | `Builds/FishingTiming/Task-20261015-151017/Packaging/warm/results.txt` |
+| Golf offline | 70 | `Builds/GolfAimQA/Run-20261015-155841/offline.txt` |
+| Fishing clarity and results | 174 | `Builds/FishingPolishQA/Run-20261015-155916/polish.txt` |
+| Fishing offline | 2,343 | `Builds/FishingGameplayQA/Run-20261015-155934/offline.txt` |
+| Fishing host | 46 | `Builds/FishingGameplayQA/Run-20261015-160103/host.txt` |
+| Fishing client | 47 | `Builds/FishingGameplayQA/Run-20261015-160103/client.txt` |
+| Golf host | 35 | `Builds/GolfAimQA/Run-20261015-160142/host.txt` |
+| Golf client | 34 | `Builds/GolfAimQA/Run-20261015-160142/client.txt` |
+
+Fishing covers all 30 fish at four ranges, timed success/miss/wrong side, one
+attempt per sweep, bounded original-clock input, equal guest stroke duration,
+wire serialization, same-frame touch down/up, no held repeat, camera shifts and
+return, Reduced Motion, safe-frame layouts, native labels, tutorial reuse,
+skills, scoring, claims and round results. Golf checks shared camera/control
+regressions; cold/warm packaging covers all islands. Packaging reports precede the final HUD-label and development-probe corrections.
+Their protected native payload and bootstrap/loading code are unchanged. The
+remaining seven reports use the final refreshed player. Review wrappers only
+adjust their relative root and share one explicit runtime cache; original
+script hashes and exact changes are recorded in evidence.
+
+Initial force tuning snapped lines too quickly; the reel clutch and final
+calibration pass all catch fixtures. The first rendered run stopped at the old
+Jump-visibility expectation, which was corrected without changing gameplay.
+An intermediate screenshot wait also invalidated the frame-sampling fixture;
+removing that extra yield restores zero measured line-endpoint error. Labels
+move inside their bars after inspecting the rendered overlap. Those attempts
+and final reports are retained in ignored evidence. Selected
+real frames are inspected; batch captures render overlay canvases through a
+camera and do not independently qualify native overlay compositing.
+
+Runtime C# is unchanged between final Windows QA and Android. All14 generated
+Golf Ball objects and GUID references match the incoming graph; equivalent
+identifier drift is restored with a format-aware proof. Full native Windows
+source includes two desktop resource registrations beyond Android; exact bytes
+are reconstructed and checked. Project/Quality settings differ only in proved
+configured working-copy line endings. The entire tested player is moved together,
+avoiding a redundant runtime copy. The reviewed previous complete player is
+archived by the repository tool in `Legacy/20261015-161920-551-fishing-timing/Builds/WindowsFinal/`.
+No staging, commit or push is performed.
+
+Physical Android touch, appearance, sustained FPS, installed/cache storage and
+real internet multiplayer remain unverified. Windows automated events and
+renders do not qualify a phone. Evidence: `Builds/FishingTiming/Task-20261015-151017/`.
+
+## Fishing clarity, camera and catch feedback - 15 October 2026
+
+Fishing now has a circular accepted-input cue and gold target socket,
+explicit hold/switch/release instructions with stable cooling guidance, a framed
+cast/wait/hook hint, contextual utility visibility, a smooth accepted-hook camera
+with return to the chosen view, and confirmed local fish/points landing feedback.
+Reduced Motion retains the chosen camera and simplifies the new effects. Held
+gear stays clear of the landing card. The tutorial reuses the live circular meter.
+No new image, model, shader, recorded audio file or package is added. Rules,
+scoring, fish forces, timing, six skills/two favourites and host authority remain
+unchanged. All four islands and shared room travel remain self-contained.
+Matching peers use protocol **55**.
+
+Complete **324-file Windows player** refreshed in
+`Builds/WindowsFinal/`; all **323 runtime/support hashes** match
+the tested candidate, plus `LATEST-BUILD.txt`. Full content build UTC:
+**2026-10-15T05:54:57.7990599Z**.
+Final code-only refresh UTC: **2026-10-15T06:13:25.9603889Z**, with matching full
+native-data, catalog and scene-bundle hashes. Native inputs are retained in
+the full-content snapshot; final compiled code inputs have their own snapshot.
+Source: `main` at `4b20c6b` plus local,
+unstaged Fishing changes; the commit alone does not contain this feature.
+Exact source inputs and runtime hashes are retained with the evidence.
+
+**2,755 assertions pass across 9 final reports**:
+
+| Review | Passes | Local evidence |
+| --- | ---: | --- |
+| Golf offline | 70 | `Builds/GolfAimQA/Run-20261015-141519/offline.txt` |
+| Fishing clarity and results | 164 | `Builds/FishingPolishQA/Run-20261015-141556/polish.txt` |
+| Fishing offline | 2247 | `Builds/FishingGameplayQA/Run-20261015-141612/offline.txt` |
+| Fishing host | 50 | `Builds/FishingGameplayQA/Run-20261015-141738/host.txt` |
+| Fishing client | 51 | `Builds/FishingGameplayQA/Run-20261015-141738/client.txt` |
+| Golf host | 35 | `Builds/GolfAimQA/Run-20261015-141817/host.txt` |
+| Golf client | 34 | `Builds/GolfAimQA/Run-20261015-141817/client.txt` |
+| Packaging cold | 52 | `Builds/FishingClarity/Task-20261015-131941/Packaging/cold/results.txt` |
+| Packaging warm | 52 | `Builds/FishingClarity/Task-20261015-131941/Packaging/warm/results.txt` |
+
+Rendered Fishing controls, directions, caught points and camera views were
+inspected. Checks include actual cast/hook/steer/catch input, inactive controls
+having no pointer targets, narrow safe frames, accepted award totals, stale and
+repeated snapshots, cooling hysteresis, held-gear separation, cancellation from
+first-person/overhead and Reduced Motion. First attempts are retained in the
+task record; a hidden-Cancel parent lookup in the check was corrected and a
+held-gear/card overlap was fixed before the final build. An initial rendered
+Golf guest did not observe the ball-following phase; final rerun evidence is
+listed above. No Golf gameplay code was changed.
+An initial guest Hook did not enter Reeling; an unchanged-code repeat passed,
+as did the final host/guest suite. The quick build initially omitted additional
+StreamingAssets; the native hash guard stopped it, exact matching payload files
+were restored, and the corrected build processor passed before final QA.
+
+Runtime C# hashes are unchanged between the final Windows QA and Android.
+Generated packaging scene copies vary by platform. All14 Golf Ball objects and
+external GUID references match the incoming graph; regenerated IDs are restored
+only after field-aware proof. The full Windows content source has two desktop
+SSAO registrations beyond Android; the final code-only build retains the same
+native player data. Combined player/bundle mesh inventories
+match the baseline. Full source, native-graph, embedded-bundle and promotion
+proofs: `Builds/FishingClarity/Task-20261015-131941/`.
+
+Fresh AndroidSubmission written **14:31:37 Malaysia time** measures
+**73,446,373 -> 73,442,073 bytes (-4,300)**.
+Headroom to the strict 100,000,000-byte boundary: **26,557,927
+bytes**. Development reserve below 75,000,000: **1,557,927 bytes**.
+The enforced hard size gate and independent APK v2 signature verification pass.
+SHA-256: `F39B0474F0F59EFFFA8F850482356F0FB26EE8BF976511742B18629343A00D56`.
+
+Windows checks do not qualify Android phone touch, appearance, sustained FPS,
+first startup or installed/cache storage. Local host/guest tests do not establish
+WAN behavior. Formal round-win celebrations are not part of this change.
+Reviewed previous complete player archived with the repository tool under
+`Legacy/20261015-144256-647-fishing-clarity/Builds/WindowsFinal`, as required by the current AGENTS.md.
+Sizes, SHA-256 hashes and recovery paths are recorded. Current evidence stays
+under ignored Builds. No Git stage, commit or push requested.
+
+## Local rebuild of pulled main - 14 October 2026
+
+Complete Windows player refreshed in `Builds/WindowsFinal/`: all
+**323 runtime/support file hashes** match the tested candidate,
+plus `LATEST-BUILD.txt` (**324 files**). Full content build UTC:
+**2026-10-14T12:13:45.2423825Z**. The delivery includes the embedded catalog and scene bundle.
+
+Rebuilds pulled `main` at `4b20c6b`. No new gameplay or art change
+is authored. All four islands, shared room travel, Golf camera/buggy/flags/trail,
+programmed sports bots, current match/prop rules, network movement, live renderer
+lighting and Fishing's existing features are retained. Protocol **55** requires
+matching players. Lossless scene AssetBundle sharing and release minification
+are the upstream packaging changes; this is not removal of islands or an
+external content download. Installed storage also includes the expanded runtime
+cache and must be measured separately on a phone.
+
+**3,546 assertions pass in 17 reports**, with no failures
+or runtime exceptions in those suites:
+
+| Review | Passes | Local evidence |
+| --- | ---: | --- |
+| Packaging cold | 52 | `Builds/LocalRebuild/Task-20261014-195856/Packaging/cold/results.txt` |
+| Packaging warm | 52 | `Builds/LocalRebuild/Task-20261014-195856/Packaging/warm/results.txt` |
+| Character lighting | 102 | `Builds/LocalRebuild/Task-20261014-195856/Lighting/results.txt` |
+| Golf offline | 70 | `Builds/GolfAimQA/Run-20261014-201726/offline.txt` |
+| Golf host | 35 | `Builds/GolfAimQA/Run-20261014-201726/host.txt` |
+| Golf client | 34 | `Builds/GolfAimQA/Run-20261014-201726/client.txt` |
+| Fishing offline | 2232 | `Builds/FishingGameplayQA/Run-20261014-201859/offline.txt` |
+| Fishing host | 45 | `Builds/FishingGameplayQA/Run-20261014-202017/host.txt` |
+| Fishing client | 46 | `Builds/FishingGameplayQA/Run-20261014-202017/client.txt` |
+| Basketball match offline | 166 | `Builds/RoomMatchQA/Run-20261014-202055/Basketball-offline/results.txt` |
+| Basketball match host | 157 | `Builds/RoomMatchQA/Run-20261014-202055/Basketball-host/results.txt` |
+| Basketball match guest | 100 | `Builds/RoomMatchQA/Run-20261014-202055/Basketball-guest/results.txt` |
+| Basketball bots | 124 | `Builds/ProgrammedBotsQA/Run-20261014-202254/Basketball-offline/results.txt` |
+| Football match offline | 88 | `Builds/RoomMatchQA/Run-20261014-202055/Football-offline/results.txt` |
+| Football match host | 91 | `Builds/RoomMatchQA/Run-20261014-202055/Football-host/results.txt` |
+| Football match guest | 89 | `Builds/RoomMatchQA/Run-20261014-202055/Football-guest/results.txt` |
+| Football bots | 63 | `Builds/ProgrammedBotsQA/Run-20261014-202254/Football-offline/results.txt` |
+
+Selected island, character-lighting, Fishing, Golf and sports-bot renders were
+inspected. Cold Windows startup took **55.16 s**, including **52.69 s** preparing
+the cache; warm startup took **3.14 s** on this laptop. These do not qualify
+Android startup, touch, visual quality, sustained FPS or installed storage.
+Local host/guest tests do not establish real WAN behavior. Other development
+suites were not rerun merely because they exist.
+
+Runtime C# hashes remain unchanged between Windows QA and Android. Generated
+packaging scene copies vary by platform. Both Windows and Android Golf Ball
+prefab graphs preserve all14 objects and external GUID targets relative to the
+pulled index; regenerated IDs were restored only after field-aware comparison.
+Two desktop SSAO runtime resource registrations explain the platform settings
+difference; reconstructing them matches the exact tested Windows bytes and
+the Android graph equals the pulled index. Evidence: `Builds/LocalRebuild/Task-20261014-195856/`.
+
+Fresh local AndroidSubmission written **20:45:42 Malaysia time** measures
+**90,388,492 -> 73,446,373 bytes (-16,942,119)** against
+the older APK on this laptop. Headroom to the strict 100,000,000-byte boundary:
+**26,553,627 bytes**. Development reserve below 75,000,000:
+**1,553,627 bytes**. Enforced hard limit and independent APK v2 signature pass.
+SHA-256: `51723F75318AE12D75C7494F674A1A08B79DA67C2A25F119FB4933745F7C715A`.
+
+Prior Windows files were replaced in place under the user's no-backup preference;
+only their metadata inventory is retained. No new archive batch. Build output
+stays ignored; this rebuild creates no Git commit or push. Fresh measured-size
+documentation remains available for user review.
+
+The first Android attempt failed when Gradle hashed a transient `libgame.so.tmp`
+file after it disappeared. Its diagnostics are retained as `android-attempt-1.log`
+and `FailedAndroidAudit-1/` in the task evidence. A cached retry succeeded;
+runtime C# did not change between attempts. The older local APK was not treated
+as validation while the first attempt was failing.
 
 ## Golf buggy control and shot camera - 14 October 2026
 

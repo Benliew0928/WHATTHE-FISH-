@@ -90,7 +90,7 @@ namespace WhatTheFish {
    bool fresh=double.IsFinite(now)&&double.IsFinite(cueAt)&&now>=cueAt-.15&&now-cueAt<=1.1&&(player.phase!=FishingPhase.Bite||now<player.hookUntil);
    if(cue!=FishingFeedbackCue.None&&(seen&(1<<(int)cue))==0&&fresh)Play(cue);
    seen|=Through(player.phase);
-   bool held=locallyHeld&&player.held&&player.phase==FishingPhase.Reeling;
+   bool held=player.held&&player.phase==FishingPhase.Reeling;
    UpdateLoop(held,player.tension);
    if(player.tension<.56f)highStrain=false;
    if(held&&player.tension>=.74f&&!highStrain&&clock>=strainAgainAt) {
@@ -109,7 +109,7 @@ namespace WhatTheFish {
    cueCounts[(int)cue]++;
 #endif
    if(MenuPreferences.MasterVolume>.001f)effects.PlayOneShot(clips[(int)cue],cue==FishingFeedbackCue.Bite?.36f:cue==FishingFeedbackCue.Strain?.2f:.24f);
-   if(cue==FishingFeedbackCue.Bite||cue==FishingFeedbackCue.Hook||cue==FishingFeedbackCue.Snapped||cue==FishingFeedbackCue.Strain)Haptic();
+   if(cue==FishingFeedbackCue.Bite||cue==FishingFeedbackCue.Hook||cue==FishingFeedbackCue.Landed||cue==FishingFeedbackCue.Snapped||cue==FishingFeedbackCue.Strain)Haptic();
   }
   void StopSources() {
    if(effects)effects.Stop();if(reel)reel.Stop();loopWanted=false;
@@ -169,8 +169,8 @@ namespace WhatTheFish {
      case FishingFeedbackCue.Splash:value=(filtered*.7f+Tone(270-480*t,t)*.18f)*tail;break;
      case FishingFeedbackCue.Bite:float segment=Mathf.Repeat(t,.11f);value=(Tone(t<.11f?740:990,segment)*.36f+Tone(1480,segment)*.06f)*Mathf.Sin(Mathf.PI*segment/.11f);break;
      case FishingFeedbackCue.Hook:value=(Tone(430+2100*t,t)*.34f+n*.07f)*tail;break;
-     // A quiet water plop marks an ordinary landing; it is not a win fanfare.
-     case FishingFeedbackCue.Landed:value=(Tone(190-350*t,t)*.3f+filtered*.4f)*tail;break;
+     // A short rising pair confirms a catch without masking the next bite.
+     case FishingFeedbackCue.Landed:value=(Tone(t<.09f?660:990,t)*.28f+Tone(1320,t)*.06f+filtered*.08f)*tail;break;
      case FishingFeedbackCue.Missed:value=Tone(310-650*t,t)*.24f*tail;break;
      case FishingFeedbackCue.Snapped:value=(n*.42f+Tone(1200,t)*.17f)*Mathf.Exp(-t*35);break;
      default:value=(Tone(660,t)*.3f+Tone(880,t)*.1f)*tail;break;
@@ -234,7 +234,8 @@ namespace WhatTheFish {
     check(feedback.ReviewCueCount(FishingFeedbackCue.Hook)==1,"FISHING_AUDIO_HOOK_ACKNOWLEDGES_ACCEPTANCE");
     check(feedback.ReviewLoopWanted==(volume>.001f),"FISHING_AUDIO_REEL_OBEYS_GAME_VOLUME");
     feedback.ReviewConsume(1,p,12.4,false);
-    check(!feedback.ReviewLoopWanted,"FISHING_AUDIO_RELEASE_STOPS_LOOP_IMMEDIATELY");
+    check(feedback.ReviewLoopWanted==(volume>.001f),"FISHING_AUDIO_TAP_RELEASE_PRESERVES_ACCEPTED_SHORT_STROKE");
+    p.held=false;feedback.ReviewConsume(1,p,12.45,false);check(!feedback.ReviewLoopWanted,"FISHING_AUDIO_FINISHED_STROKE_STOPS_LOOP");p.held=true;
     feedback.ReviewConsume(1,p,12.5,true,false);
     check(!feedback.ReviewLoopWanted,"FISHING_AUDIO_CONTEXT_EXIT_STOPS_LOOP");
     feedback.ReviewConsume(1,p,12.6);feedback.ReviewConsume(1,p,12.7);

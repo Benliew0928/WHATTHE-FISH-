@@ -38,12 +38,12 @@ namespace WhatTheFish {
    if(p.phase==FishingPhase.Reeling){
     float pump=p.held?Mathf.Clamp(-p.velocity,0,2)*2:0;FightLean=7+p.tension*9+p.surge*5+pump;
     if(spine)spine.rotation=Quaternion.AngleAxis(-FightLean,facing*Vector3.right)*Quaternion.AngleAxis(-shownPull*7,facing*Vector3.forward)*spine.rotation;
-    if(chest)chest.rotation=Quaternion.AngleAxis(shownSteer*9,facing*Vector3.up)*chest.rotation;
+    if(chest)chest.rotation=Quaternion.AngleAxis(shownSteer*15,facing*Vector3.up)*chest.rotation;
    }
    float elapsed=(float)(game.Now-p.phaseAt);var forward=facing*Vector3.forward;float lift=p.Busy?.4f:-.15f;
    if(p.phase==FishingPhase.Casting){float t=Mathf.Clamp01(elapsed/.65f);lift=Mathf.Lerp(1.45f,.4f,Mathf.SmoothStep(0,1,t));forward=facing*new Vector3(0,0,Mathf.Lerp(-.8f,1,t));}
    shownSteer=Mathf.Lerp(shownSteer,p.phase==FishingPhase.Reeling?p.steer:0,1-Mathf.Exp(-10*Time.deltaTime));shownPull=Mathf.Lerp(shownPull,p.pull,1-Mathf.Exp(-10*Time.deltaTime));
-   if(p.phase==FishingPhase.Reeling){forward+=facing*Vector3.right*(shownSteer*.40f+shownPull*.12f);}
+   if(p.phase==FishingPhase.Reeling){forward+=facing*Vector3.right*(shownSteer*.82f+shownPull*.16f);float stroke=(float)FishingState.StrokeSeconds(p.tapGrade);lift+=p.held?Mathf.Sin(Mathf.Clamp01((float)(game.Now-p.reelLease+stroke)/stroke)*Mathf.PI)*.32f:0;}
    if(p.phase==FishingPhase.Reeling)lift+=p.tension*.52f+p.surge*.16f+Mathf.Clamp(-p.fightMotion.y,-1,1)*.055f;
    if(p.phase==FishingPhase.Caught)lift=.75f;
    var direction=(forward+Vector3.up*lift).normalized;var rotation=Quaternion.FromToRotation(Vector3.up,direction)*facing;
@@ -61,13 +61,13 @@ namespace WhatTheFish {
     float cycle=p.held?(float)game.Now*16:0;var wrist=palm-facing*Vector3.right*.12f+facing*Vector3.forward*.03f+facing*Vector3.up*(-.10f+Mathf.Sin(cycle)*.045f);
     Arm(leftUpper,leftLower,leftHand,wrist,-transform.right-Vector3.up*.6f);leftHand.rotation=Quaternion.LookRotation(direction,-(facing*Vector3.right));
    }
-   if(head&&PlayerView.Instance&&PlayerView.Instance.active&&PlayerView.Instance.target==actor&&PlayerView.Instance.mode==0){headScale=head.localScale;head.localScale=Vector3.one*.001f;hiddenHead=true;}
+   if(head&&PlayerView.Instance&&PlayerView.Instance.active&&PlayerView.Instance.target==actor&&PlayerView.Instance.mode==0&&!PlayerView.Instance.FishingFightCameraActive){headScale=head.localScale;head.localScale=Vector3.one*.001f;hiddenHead=true;}
    bool show=p.Busy||p.phase==FishingPhase.Caught&&elapsed<1.4f;line.enabled=floatRing.enabled=show;if(!show)return;
    var endpoint=presentation.HookPoint(p);
    if(p.phase==FishingPhase.Casting){float t=Mathf.Clamp01(elapsed/.65f);endpoint=Vector3.Lerp(Tip,endpoint,t)+Vector3.up*Mathf.Sin(t*Mathf.PI)*2;}
    if(p.phase==FishingPhase.Bite)endpoint.y-=.08f+.08f*Mathf.Sin((float)game.Now*18);
    for(int i=0;i<line.positionCount;i++){float t=i/(float)(line.positionCount-1);var point=Vector3.Lerp(Tip,endpoint,t);point.y-=Mathf.Sin(t*Mathf.PI)*(p.phase==FishingPhase.Reeling?Mathf.Lerp(.22f,.015f,p.tension):.16f);line.SetPosition(i,point);}
-   floatRing.startColor=floatRing.endColor=p.phase==FishingPhase.Bite?new Color(1,.72f,.12f):p.phase==FishingPhase.Reeling&&p.tension>.75f?new Color(1,.32f,.18f):new Color(.2f,1,1);
+   floatRing.startColor=floatRing.endColor=p.phase==FishingPhase.Bite||p.phase==FishingPhase.Reeling&&p.held?new Color(1,.72f,.12f):p.phase==FishingPhase.Reeling&&p.tension>.75f?new Color(1,.32f,.18f):new Color(.2f,1,1);
    float radius=p.phase==FishingPhase.Bite?.20f+.035f*Mathf.Sin((float)game.Now*10):p.phase==FishingPhase.Reeling?.15f+p.surge*.2f:.11f;
    for(int i=0;i<floatRing.positionCount;i++){float angle=i*Mathf.PI*2/floatRing.positionCount;var centre=endpoint;if(p.phase==FishingPhase.Reeling)centre.y=game.WaterHeight(centre);floatRing.SetPosition(i,centre+new Vector3(Mathf.Cos(angle)*radius,.018f,Mathf.Sin(angle)*radius));}
   }

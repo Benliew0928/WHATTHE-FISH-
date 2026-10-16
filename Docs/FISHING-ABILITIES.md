@@ -35,7 +35,7 @@ suppressing bobs and button pops. Skills never automatically catch a fish,
 award points, or steal another player's claimed fish.
 
 The host owns kits, inventory, cooldowns, treasure reservations, recipients
-and expiry. Both peers need **protocol 49**; the three removed abilities
+and expiry. Both peers need **protocol 66**; the three removed abilities
 are rejected rather than silently mapped to another skill. Match endings,
 disconnects and island travel clear the active fishing state.
 
@@ -47,8 +47,8 @@ the card so you can walk. The **?** on Fishing's leaderboard reopens it while
 idle. Fishing's **How to Play** uses the exact same component, pictures and
 copy in [FishingTutorialUI.cs](../Game/Assets/_Game/Shared/UI/FishingTutorialUI.cs).
 
-The tutorial uses the live skill icons, mirrored Left/Right circles, fish
-pull guide, Catch/Tension bars and gear duration meter. Its supporting
+The tutorial uses the live skill icons, mirrored Left/Right circles, timing
+circle, Catch/Tension bars and gear duration meter. Its supporting
 illustrations are small compressed atlases. Sonar shares the sports radar;
 Power Reel shares Fishing's rod/reel image. Source art and reproducible
 delivery hashes are in [the learning art folder](../ArtSource/Fishing/UI/Learning/).
@@ -60,3 +60,7 @@ and at least one catch from every player, within the same three minutes.
 Small/medium/large score 2/5/10; Wanted adds +3 once per minute per player.
 See [Fishing rules](FISHING-MINIGAME.md) and
 [verification limits](FISHING-VERIFICATION.md).
+
+The current [Hold the Glow controls](FISHING-COUNTERSTEER.md) restore continuous holding;
+gear choices and acquisition rules above remain. The shared tutorial uses the
+live fish/gold-band meter and the two Left/Right hold controls without keyboard captions.

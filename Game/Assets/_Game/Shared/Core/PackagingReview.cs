@@ -18,9 +18,18 @@ namespace WhatTheFish {
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    bool packaged=FindFirstObjectByType<PackagedContentBoot>();
+   bool retryReview=Array.IndexOf(Environment.GetCommandLineArgs(),"-packagingRetryReview")>=0;
+   if(retryReview)yield return ReviewRetry();
+   if(failed){Application.Quit(1);yield break;}
    double deadline=Time.realtimeSinceStartupAsDouble+120;
    while((!AppRoot.Instance||!AppRoot.Instance.Menu||!AppRoot.Instance.LocalAthlete||packaged&&!PackagedContentBoot.Ready)&&Time.realtimeSinceStartupAsDouble<deadline)yield return null;
    var app=AppRoot.Instance;Check(app&&app.Menu&&app.LocalAthlete,"World and home ready");if(failed){Application.Quit(1);yield break;}
+   if(retryReview){
+    string cache=ReviewCachePath();
+    Check(File.Exists(Path.Combine(cache,"keep-me.txt")),"Cache cleanup preserves unrelated files");
+    Check(!File.Exists(Path.Combine(cache,new string('a',64)+".bundle")),"Old complete cache removed only after successful load");
+    Check(!Directory.GetFiles(cache).Any(p=>p.EndsWith(".download")||p.EndsWith(".partial")||p.EndsWith(".tmp")),"Interrupted and current preparation files cleaned");
+   }
    double startup=Time.realtimeSinceStartupAsDouble;measuringStartup=false;
    Check(!packaged||PackagedContentBoot.Ready,"Packaged bootstrap completed");
    Check(app.environments.definitions.Length==4&&app.environments.definitions.All(d=>d&&d.available),"All four sports available");
@@ -46,6 +55,31 @@ namespace WhatTheFish {
    var report=new Report{success=!failed,packaged=packaged,cacheHit=PackagedContentBoot.CacheHit,startupSeconds=startup,preparationSeconds=PackagedContentBoot.PreparationSeconds,maxPreparationFrameSeconds=maxFrame,peakAllocatedBytes=peak,loads=loads.ToArray()};
    File.WriteAllText(Path.Combine(folder,"timings.json"),JsonUtility.ToJson(report,true));
    File.AppendAllText(Path.Combine(folder,"results.txt"),"PACKAGING_REVIEW_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);
+  }
+  string ReviewCachePath(){
+   var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-contentCache");
+   return i>=0&&i+1<args.Length?Path.GetFullPath(args[i+1]):"";
+  }
+  IEnumerator ReviewRetry(){
+   double deadline=Time.realtimeSinceStartupAsDouble+15;
+   while(PackagedContentBoot.Error==null&&Time.realtimeSinceStartupAsDouble<deadline)yield return null;
+   Check(PackagedContentBoot.Error!=null,"Blocked cache produces a recoverable preparation error");
+   Check(!PackagedContentBoot.Ready&&!AppRoot.Instance,"Failed preparation never starts a partial world");
+   var button=FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None).FirstOrDefault(b=>b.name=="Retry");
+   var text=FindObjectsByType<UnityEngine.UI.Text>(FindObjectsSortMode.None).FirstOrDefault(t=>t.name=="Status");
+   Check(button&&button.gameObject.activeInHierarchy&&button.interactable,"Retry remains visible and usable");
+   Check(text&&text.text.Contains("storage"),"Failure explains storage recovery in the loading screen");
+   string cache=ReviewCachePath();
+   bool owned=cache.StartsWith(Path.GetFullPath(folder)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase)&&File.Exists(cache)&&new FileInfo(cache).Length==1;
+   Check(owned,"Recovery fixture is confined to the explicit review output");
+   if(failed||!owned)yield break;
+   File.Delete(cache);Directory.CreateDirectory(cache);
+   File.WriteAllText(Path.Combine(cache,"keep-me.txt"),"Unrelated file must survive");
+   File.WriteAllBytes(Path.Combine(cache,new string('a',64)+".bundle"),Array.Empty<byte>());
+   string temporary=Path.Combine(cache,new string('a',64)+"-"+new string('b',32));
+   foreach(string suffix in new[]{".download",".partial",".partial.tmp"})File.WriteAllBytes(temporary+suffix,Array.Empty<byte>());
+   button.onClick.Invoke();
+   Check(PackagedContentBoot.Error==null&&!button.gameObject.activeSelf,"Retry resets the error and hides itself during preparation");
   }
   void Capture(Camera camera,string name){
    var target=RenderTexture.GetTemporary(1280,720,24);var previous=RenderTexture.active;var original=camera.targetTexture;

@@ -39,15 +39,27 @@ The tiny entry scene displays a progress bar while local content is prepared.
 It verifies the embedded LZMA bundle's SHA-256, length and CRC, then recompresses
 it asynchronously into an LZ4 runtime cache. Successful temporary output is moved
 into place atomically. Failed preparation offers Retry. Interrupted temporary
-files are not treated as completed bundles.
+files are not treated as completed bundles. The error screen explains that free
+storage should be checked before retrying.
+
+Where StreamingAssets is a regular filesystem directory, preparation reads the
+original bundle directly instead of first duplicating it into the cache. Android
+APK assets still need the temporary local copy before conversion. SHA-256, length
+and conversion CRC checks remain in both paths. A cache-folder file lease serializes
+preparation between simultaneous launches. Owned download, partial and Unity
+partial-temporary files are cleaned after failure and on the next preparation;
+the original embedded bundle is never deleted.
 
 The cache lives at `Application.persistentDataPath/PackagedContent-v1/`, keyed by
 the embedded content hash. Later launches reuse it. Clearing app data or changing
 the content hash requires preparation again. The APK is smaller, but installed
 storage includes this additional cache; it is not a reduction in all disk usage.
-Old hash caches are retained, so repeated development upgrades may accumulate
-cache files until app data is cleared. Do not promise Android startup or storage
-figures based on the much larger Windows bundle.
+After the current bundle successfully loads, the loader removes obsolete hash
+caches from its own folder. Other files, preferences, saves and Unity Editor
+caches are untouched. Previous complete caches are retained if the new content
+fails to prepare. Do not promise Android startup or storage figures based on the
+much larger Windows bundle. APK size and first-launch working space are separate
+requirements.
 
 Bootstrap loads additively. The small boot scene remains alive so runtime-created
 services and development probes survive. Existing Sky-Sail streaming continues
@@ -79,6 +91,16 @@ as the assertions; pixel checks alone do not establish visual quality.
 
 ## Validation
 
+For Windows code-only iterations after a complete build,
+`FishingPolishBuild.WindowsScripts` reuses the same packaged boot scene,
+bundle manifest and full-build payload. It registers the additional
+StreamingAssets again and requires unchanged hashes for native player data,
+catalog and scene bundle. Unity recreates StreamingAssets even for a
+scripts-only build; omitting that registration produces an incomplete player.
+Only use this path when serialized assets and type layouts are unchanged.
+Asset, scene, rendering or serialized-field changes require the full build.
+Validate and deliver the entire resulting player folder, including the bundle.
+
 Build a separate review player with Unity execute method
 `PackagedContentBuild.BuildWindows`, then run:
 
@@ -94,6 +116,16 @@ material support, nonblank rendered views and runtime diagnostics. Startup times
 use Unity's runtime clock rather than full OS process launch time. A physical
 Android device is still required to qualify first launch, installed storage,
 memory peaks, touch controls and frame rate.
+
+Use `-UseDefaultCache` to test the normal application cache without an override.
+It expects a cold cache for the current catalog on the first run; it does not clear
+app data automatically. `-RetryReview` creates a one-byte blocker only inside a
+fresh review output, verifies the usable error screen, removes that fixture,
+retries and checks cleanup and all four islands. Add `-CopySource` to exercise
+the temporary-copy path used for APK assets on a desktop player. The corresponding
+player arguments are development-only. Keep failure/retry and normal-path evidence
+alongside isolated-cache results; an isolated warm cache cannot qualify a user's
+cold launch or available storage.
 
 `PackagedContentBuild.BuildBaselineWindows` is a development-only unpackaged
 comparison build. `Test-Packaging.ps1 -Baseline -PlayerPath <baseline-player>`

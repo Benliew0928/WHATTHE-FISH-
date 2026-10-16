@@ -12,14 +12,21 @@ namespace WhatTheFish {
   string[] args;string report;int checks;AppRoot app;FishingGame game;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Boot(){var a=Environment.GetCommandLineArgs();if(a.Contains("-fishingGameplayAudit")||a.Contains("-networkFishingAudit"))new GameObject("Fishing gameplay review").AddComponent<FishingGameplayProbe>();}
   string Value(string key,string fallback){int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback;}
-  void Check(bool pass,string name){File.AppendAllText(report,(pass?"PASS ":"FAIL ")+name+"\n");if(!pass)throw new Exception(name);checks++;}
+  void Check(bool pass,string name){File.AppendAllText(report,(pass?"PASS ":"FAIL ")+name+"\n");if(!pass){Diagnose(name);throw new Exception(name);}checks++;}
+  void Diagnose(string name){
+   var record=game&&app?game.Player(app.LocalAthlete):null;var ui=FishingHUD.Instance;var view=app?app.view:null;
+   object pending=view?typeof(PlayerView).GetField("pendingFishing",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic)?.GetValue(view):null;
+   File.AppendAllText(report,$"CONTEXT {name} active={(view&&view.active)} blocked={(view&&view.InputBlocked)} modal={(ui&&ui.BlocksGameplay)} tutorial={(ui&&ui.Tutorial&&ui.Tutorial.Visible)} next={(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible)} transit={(app&&app.LocalAthlete&&app.LocalAthlete.inTransit)} phase={(game?game.State.Match.phase:default)} round={(game?game.State.Match.round:0)} owner={record?.owner} sequence={record?.sequence} ready={record?.ready} favourites={record?.favourites} pending={pending}\n");
+  }
   IEnumerator Start(){
    args=Environment.GetCommandLineArgs();report=Value("-report",Path.Combine(Application.persistentDataPath,"fishing-review.txt"));DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
-   float end=Time.realtimeSinceStartup+65;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!FishingGame.Instance||!FishingGame.Instance.Context)&&Time.realtimeSinceStartup<end)yield return null;
+   // First-launch bundle preparation is separate from room arrival. A cold
+   // desktop cache can exceed the earlier 65-second gameplay allowance.
+   float end=Time.realtimeSinceStartup+180;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!FishingGame.Instance||!FishingGame.Instance.Context)&&Time.realtimeSinceStartup<end&&PackagedContentBoot.Error==null)yield return null;
    app=AppRoot.Instance;game=FishingGame.Instance;Check(app&&game&&game.Context,"FISHING_CONTEXT");
    Check(Unity.Netcode.NetworkManager.Singleton.NetworkConfig.ProtocolVersion==RoomService.ProtocolVersion,"FISHING_TIMING_AND_RECAP_PROTOCOL_MATCHES");
-   end=Time.realtimeSinceStartup+15;while(!app.view.active&&Time.realtimeSinceStartup<end)yield return null;
-   Check(app.view.active,"ARRIVAL_HANDS_CONTROL_TO_PLAYER");
+   end=Time.realtimeSinceStartup+60;while((!app.view.active||!game.Context||RoomTeleport.Busy||TeleportSequence.Busy||app.LocalAthlete.inTransit)&&Time.realtimeSinceStartup<end)yield return null;
+   Check(app.view.active&&game.Context&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!app.LocalAthlete.inTransit,"ARRIVAL_HANDS_CONTROL_TO_PLAYER");
    if(args.Contains("-networkFishingAudit"))yield return Network();else{Rules();yield return Offline();}
    File.AppendAllText(report,"FISHING_GAMEPLAY_COMPLETE checks="+checks+"\n");
   }
@@ -64,29 +71,59 @@ namespace WhatTheFish {
    until=Time.time+2;while(game.Player(actor).Value.phase!=FishingPhase.Reeling&&Time.time<until)yield return null;
    Check(game.Player(actor).Value.phase==FishingPhase.Reeling,"HOOK_ENTERS_REELING");
    yield return PoseFrame();Check(!ui.HookCue.Visible,"ACCEPTED_HOOK_CLEARS_ALERT_"+size);
+   Check(view.FishingFightCameraActive||MenuPreferences.ReducedMotion,"ACCEPTED_HOOK_ENTERS_FIGHT_CAMERA_OR_RESPECTS_REDUCED_MOTION_"+size);
+   Check(ui.TimingGuideVisible&&ui.StatusText=="RIGHT"&&ui.CounterControlsVisible,"HOOK_SHOWS_ONE_LEFT_ONE_RIGHT_AND_FISH_PULL_GUIDE_"+size);
    Check(feedback.ReviewCueCount(FishingFeedbackCue.Hook)==hookSound+1&&!view.FishingHookPending,"ACCEPTED_HOOK_RUNS_PRODUCTION_AUDIO_AND_CLEARS_PENDING_"+size);
-   yield return new WaitForSeconds(.15f);yield return PoseFrame();Check(ui.FitsSafeFrame()&&ui.RegionsSeparate(),"LIVE_GAUGES_FIT_WITHOUT_CONTROL_OVERLAP");Capture("hooked");HudRefinement(ui,"fighting-"+size);CaptureGrip();var motion=actor.GetComponent<FishingRodMotion>();Check(motion&&motion.FightLean>3&&motion.GripError<.002f,"STRONG_FIGHT_POSE_KEEPING_AUTHORED_HAND_CONTACT");Check(!view.SelectFishingFish(game.NearestPier(actor)*FishingState.FishPerPier+1),"CANNOT_RETARGET_ACTIVE_LINE");bool holding=false,danger=false,pointerChecked=false,splashCaptured=false;int pulse=ui.ScorePulseCount,burstsBefore=game.Presentation.Splash.BurstCount;
-   foreach(var rect in new[]{ui.CounterLeftRect,ui.ActionRect}){var caption=rect.GetComponentsInChildren<UnityEngine.UI.Text>().First(t=>t.text=="LEFT"||t.text=="RIGHT");var before=caption.rectTransform.anchoredPosition;var scale=caption.rectTransform.localScale;var press=new PointerEventData(EventSystem.current){pointerId=91,button=PointerEventData.InputButton.Left};var feedbackButton=rect.GetComponent<BasketballButtonFeedback>();feedbackButton.OnPointerDown(press);yield return new WaitForSeconds(.12f);yield return PoseFrame();Check(caption.rectTransform.anchoredPosition==before&&caption.rectTransform.localScale==scale&&RenderedTextInside(caption,rect),"DIRECTION_LABEL_STAYS_INSIDE_WHILE_PRESSED_"+caption.text+"_"+size);Capture("held-label-"+caption.text+"-"+size);feedbackButton.OnPointerUp(press);yield return new WaitForSeconds(.1f);Check(caption.rectTransform.anchoredPosition==before,"DIRECTION_LABEL_RETURNS_WITHOUT_CAST_OFFSET_"+caption.text+"_"+size);}
-   int heldSide=0;bool release=false;var fightingFish=game.transform.Find("Swimming fish "+game.Player(actor).Value.fish);var previousFish=fightingFish.position;var previousRotation=fightingFish.rotation;float previousTime=Time.time,maxSwimSpeed=0,maxTurnRate=0,maxEndpointError=0;var fishingLine=actor.GetComponentsInChildren<LineRenderer>().First(l=>l.name=="Fishing line");
+   yield return new WaitForSeconds(.15f);yield return PoseFrame();Check(ui.FitsSafeFrame()&&ui.RegionsSeparate(),"LIVE_GAUGES_FIT_WITHOUT_CONTROL_OVERLAP");Capture("hooked");HudRefinement(ui,"fighting-"+size);CaptureGrip();var motion=actor.GetComponent<FishingRodMotion>();Check(motion&&motion.FightLean>3&&motion.GripError<.002f,"STRONG_FIGHT_POSE_KEEPING_AUTHORED_HAND_CONTACT");Check(!view.SelectFishingFish(game.NearestPier(actor)*FishingState.FishPerPier+1),"CANNOT_RETARGET_ACTIVE_LINE");bool danger=false,pointerChecked=false,splashCaptured=false;int pulse=ui.ScorePulseCount,burstsBefore=game.Presentation.Splash.BurstCount;
+   RectTransform pressedRect=null;UnityEngine.UI.Text pressedCaption=null;Vector2 captionAt=default;Vector3 captionScale=default;int pressedBeat=0;
+   int activeSide=0;bool release=false;int catchCues=ui.CatchCue.Starts;int savedMode=view.mode;float savedYaw=view.yaw,savedPitch=view.pitch;bool cameraFramed=false;var fightingFish=game.transform.Find("Swimming fish "+game.Player(actor).Value.fish);var previousFish=fightingFish.position;var previousRotation=fightingFish.rotation;float previousTime=Time.time,maxSwimSpeed=0,maxTurnRate=0,maxEndpointError=0;var fishingLine=actor.GetComponentsInChildren<LineRenderer>().First(l=>l.name=="Fishing line");
    while(game.Player(actor).Value.phase==FishingPhase.Reeling&&Time.time<end){
+    if(pressedRect){Check(pressedCaption.rectTransform.anchoredPosition==captionAt&&pressedCaption.rectTransform.localScale==captionScale&&RenderedTextInside(pressedCaption,pressedRect),"HELD_LABEL_INSIDE_PRESSED_BUTTON_"+pressedCaption.text+"_"+size+"_"+pressedBeat);Capture("timed-"+pressedCaption.text+"-"+size+"-"+pressedBeat);pressedRect.GetComponent<BasketballButtonFeedback>().OnPointerUp(e);pressedRect=null;}
     var p=game.Player(actor).Value;if(p.tension>.84f)release=true;else if(p.tension<.58f)release=false;
-    int side=release?0:FishingState.CounterSide(p,game.Now);
-    if(side!=heldSide){
-     if(touch){ui.OnPointerUp(e);ui.CounterLeftRect.GetComponent<FishingCounterButton>().OnPointerUp(e);}else view.EndFishing();holding=false;
-     if(side!=0){if(touch){var button=side<0?ui.CounterLeftRect.GetComponent<FishingCounterButton>():null;if(button)button.OnPointerDown(e);else ui.OnPointerDown(e);}else view.BeginCountersteer(side);holding=view.FishingHeld;}
-     if(holding)heldSide=side;else heldSide=0;
-     if(touch&&holding&&!pointerChecked){pointerChecked=true;view.EndFishing(72);Check(view.FishingHeld,"OTHER_FINGER_CANNOT_RELEASE");}
+    if(!cameraFramed&&game.Now-p.phaseAt>1){var screen=view.FishingCamera.WorldToViewportPoint(game.Presentation.HookPoint(p));cameraFramed=screen.z>0&&screen.x>.08f&&screen.x<.92f&&screen.y>.23f&&screen.y<.88f;}
+    int side=FishingState.CounterSide(p,game.Now);
+    if(release&&view.FishingHeld){if(touch){ui.OnPointerUp(e);ui.CounterLeftRect.GetComponent<FishingCounterButton>().OnPointerUp(e);}else view.EndFishing();activeSide=0;}
+    if(!release&&(!view.FishingHeld||activeSide!=side)){
+     if(touch){ui.OnPointerUp(e);ui.CounterLeftRect.GetComponent<FishingCounterButton>().OnPointerUp(e);}else view.EndFishing();
+     activeSide=side;
+     if(touch){if(side<0)ui.CounterLeftRect.GetComponent<FishingCounterButton>().OnPointerDown(e);else ui.OnPointerDown(e);}else view.BeginCountersteer(side);
+     if(touch&&view.FishingHeld&&!pointerChecked){pointerChecked=true;view.EndFishing(72);Check(view.FishingHeld,"OTHER_FINGER_CANNOT_RELEASE_CURRENT_HOLD");}
+     if(args.Contains("-fishingCapture")){
+      pressedRect=side<0?ui.CounterLeftRect:ui.ActionRect;pressedCaption=pressedRect.GetComponentInChildren<UnityEngine.UI.Text>();captionAt=pressedCaption.rectTransform.anchoredPosition;captionScale=pressedCaption.rectTransform.localScale;pressedBeat++;
+      pressedRect.GetComponent<BasketballButtonFeedback>().OnPointerDown(e);
+     }
     }
     // Coroutines resume before LateUpdate: the rod still contains the previous
     // rendered frame's endpoint, so compare it with that frame's fish pose.
     float sampleDt=Time.time-previousTime;if(sampleDt>.0001f){maxSwimSpeed=Mathf.Max(maxSwimSpeed,Vector3.Distance(previousFish,fightingFish.position)/sampleDt);maxTurnRate=Mathf.Max(maxTurnRate,Quaternion.Angle(previousRotation,fightingFish.rotation)/sampleDt);maxEndpointError=Mathf.Max(maxEndpointError,Vector3.Distance(fishingLine.GetPosition(fishingLine.positionCount-1),previousFish));}previousTime=Time.time;previousFish=fightingFish.position;previousRotation=fightingFish.rotation;
     if(!danger&&p.tension>.74f){danger=true;Capture("danger-"+size);}if(!splashCaptured&&game.Presentation.Splash.ArcVisible){splashCaptured=true;Capture("physical-splash-"+size);}yield return null;
    }
-   Check(maxSwimSpeed<12.5f&&maxTurnRate<205&&maxEndpointError<.02f,"SMOOTH_FISH_SPEED_TURN_CAP_AND_ATTACHED_LINE_"+size);File.AppendAllText(report,"FISH_MOTION speed="+maxSwimSpeed+" angular="+maxTurnRate+" endpoint="+maxEndpointError+"\n");
-   Check(game.Presentation.Splash.LiveDrops<=48,"WATER_DROPLET_POOL_STAYS_BOUNDED_"+size);if(size==2)Check(game.Presentation.Splash.BurstCount>burstsBefore&&splashCaptured,"SURGING_LARGE_FISH_EMITS_WATER_CONTACT_SPLASH");
+   if(pressedRect)pressedRect.GetComponent<BasketballButtonFeedback>().OnPointerUp(e);
+   File.AppendAllText(report,"FISH_MOTION speed="+maxSwimSpeed+" angular="+maxTurnRate+" endpoint="+maxEndpointError+"\n");Check(maxSwimSpeed<12.5f&&maxTurnRate<205&&maxEndpointError<.02f,"SMOOTH_FISH_SPEED_TURN_CAP_AND_ATTACHED_LINE_"+size);
+   Check(game.Presentation.Splash.LiveDrops<=48,"WATER_DROPLET_POOL_STAYS_BOUNDED_"+size);
+   File.AppendAllText(report,"WATER_CONTACT naturalBursts="+(game.Presentation.Splash.BurstCount-burstsBefore)+" visibleArc="+splashCaptured+" fishSize="+size+"\n");
+   var ended=game.Player(actor).Value;File.AppendAllText(report,"FIGHT_END phase="+ended.phase+" result="+ended.result+" progress="+ended.progress+" tension="+ended.tension+" elapsed="+(game.Now-ended.phaseAt)+"\n");
    if(touch){ui.OnPointerUp(e);ui.CounterLeftRect.GetComponent<FishingCounterButton>().OnPointerUp(e);}else view.EndFishing();Check(game.Player(actor).Value.phase==FishingPhase.Caught,"INPUT_LANDS_CATCH_"+size);yield return PoseFrame();Check(ui.ScorePulseCount>pulse,"LIVE_SCORE_AWARD_ANIMATES_"+size);HudRefinement(ui,"award-visible-"+size,true);Capture("landed-"+size);yield return new WaitForSeconds(.2f);
     Check(feedback.ReviewCueCount(FishingFeedbackCue.Landed)==landSound+1&&!feedback.ReviewLoopWanted,"ACCEPTED_LANDING_RUNS_PRODUCTION_AUDIO_ONCE_AND_STOPS_REEL_"+size);
+   Check(MenuPreferences.ReducedMotion||cameraFramed,"FIGHT_CAMERA_KEEPS_FISH_CLEAR_OF_EDGE_AND_BOTTOM_CONTROLS_"+size);
+   Check(ui.CatchCue.Visible&&ui.CatchCue.Starts==catchCues+1&&ui.CatchCue.PointsText=="+"+game.Player(actor).Value.lastAward+" POINTS","LOCAL_LANDING_CONFIRMS_EXACT_ACCEPTED_AWARD_ONCE_"+size);
+   yield return new WaitForSeconds(.8f);Check(!view.FishingFightCameraActive&&view.mode==savedMode&&Mathf.Abs(view.yaw-savedYaw)<.01f&&Mathf.Abs(view.pitch-savedPitch)<.01f,"CATCH_RETURNS_CAMERA_WITHOUT_CHANGING_PREFERRED_VIEW_"+size);
    }finally{feedback.SendMessage("OnApplicationFocus",restoreFocus);}
+  }
+  IEnumerator WaterContactSplash(){
+   // A faster catch need not breach the surface. Exercise a controlled body
+   // crossing through the production observer, then observe its real droplets.
+   // This never calls Burst or changes the swimming/force implementation.
+   yield return PoseFrame();float limit=Time.time+2;
+   while(Time.deltaTime>.1f&&Time.time<limit)yield return PoseFrame();
+   Check(Time.deltaTime>0&&Time.deltaTime<=.1f,"WATER_CONTACT_OBSERVATION_USES_VALID_PHYSICS_FRAME");
+   var splash=game.Presentation.Splash;int id=FishingState.FishCount-1;var point=game.FishPosition(id,game.Now);point.y=game.WaterHeight(point)-.3f;
+   splash.Clear();int before=splash.BurstCount;float water=game.WaterHeight(point);
+   splash.Observe(id,point,water-.025f,true,1);
+   splash.Observe(id,point+Vector3.up*(Time.deltaTime*2),water+.025f,true,1);
+   Check(splash.BurstCount==before+1&&splash.LiveDrops>0&&splash.LiveDrops<=48,"BODY_SURFACE_CROSSING_EMITS_BOUNDED_PRODUCTION_SPLASH");
+   limit=Time.time+.5f;while(!splash.ArcVisible&&Time.time<limit)yield return PoseFrame();
+   Check(splash.ArcVisible,"SURFACE_CONTACT_DROPLETS_FORM_VISIBLE_GRAVITY_ARC");Capture("physical-splash-contact");
   }
   void Capture(string name){
    if(!args.Contains("-fishingCapture"))return;
@@ -140,20 +177,22 @@ namespace WhatTheFish {
     Check(awards.Length==rows.Length&&awards.All(t=>t&&t.color==LocalProfile.Hex("F17C27")&&t.font==display&&t.fontStyle==FontStyle.Normal&&t.fontSize>=28&&NativeOutline(t,2)&&!t.transform.parent.GetComponent<FishingStickerGraphic>()&&!t.transform.parent.GetComponent<UnityEngine.UI.Image>()),"NAKED_ORANGE_AWARD_POINTS_OUTLINE_TWO_HAVE_NO_PANEL_"+view);
     if(requireAward){var award=local?local.GetComponentsInChildren<UnityEngine.UI.Text>(true).FirstOrDefault(t=>t.name=="Award points"):null;var p=game.Player(app.LocalAthlete);Check(award&&p.HasValue&&p.Value.lastAward>0&&RenderedTextInside(award,award.rectTransform)&&(award.text=="+"+(p.Value.lastAward-p.Value.lastBonus)||p.Value.lastBonus>0&&award.text=="+"+p.Value.lastBonus),"VISIBLE_POP_DISPLAYS_ACTUAL_CATCH_AWARD_"+view);}
     var gaugeLabels=frame.GetComponentsInChildren<FishingStickerGraphic>(true).Where(g=>g.name=="Catch gauge"||g.name=="Tension gauge").SelectMany(g=>g.GetComponentsInChildren<UnityEngine.UI.Text>(true)).ToArray();
-    Check(gaugeLabels.Length==2&&gaugeLabels.All(t=>t.fontStyle==FontStyle.Normal&&t.color==LocalProfile.Hex("143B50")&&t.GetComponents<UnityEngine.UI.Shadow>().All(sh=>!sh.enabled)&&(!t.gameObject.activeInHierarchy||RenderedTextInside(t,t.rectTransform)))&&ui.ActionRect.GetComponentsInChildren<UnityEngine.UI.Text>().All(t=>t.GetComponents<UnityEngine.UI.Shadow>().All(sh=>!sh.enabled||sh is UnityEngine.UI.Outline&&Mathf.Abs(sh.effectDistance.x)<=1)),"SIDE_BY_SIDE_NAVY_GAUGE_LABELS_AND_CONTAINED_ACTION_"+view);
+    Check(gaugeLabels.Length==2&&gaugeLabels.All(t=>t.fontStyle==FontStyle.Normal&&t.color==LocalProfile.Hex("143B50")&&t.GetComponents<UnityEngine.UI.Shadow>().All(sh=>!sh.enabled)&&(!t.gameObject.activeInHierarchy||RenderedTextInside(t,(RectTransform)t.transform.parent.parent)))&&ui.ActionRect.GetComponentsInChildren<UnityEngine.UI.Text>().All(t=>t.GetComponents<UnityEngine.UI.Shadow>().All(sh=>!sh.enabled||sh is UnityEngine.UI.Outline&&Mathf.Abs(sh.effectDistance.x)<=1)),"PICTURED_NAVY_CAPTIONS_INSIDE_CARD_AND_CONTAINED_ACTION_"+view);
     if(gaugeLabels.Any(t=>t.gameObject.activeInHierarchy)){
-     var left=ui.CounterLeftRect.GetComponent<FishingStickerGraphic>();var right=ui.ActionRect.GetComponent<FishingStickerGraphic>();
-     var leftText=ui.CounterLeftRect.GetComponentInChildren<UnityEngine.UI.Text>();var rightText=ui.ActionRect.GetComponentInChildren<UnityEngine.UI.Text>();
-     Check(left&&right&&left.Illustration&&right.Illustration&&Mathf.Abs(left.Illustration.rectTransform.localEulerAngles.y)<.1f&&Mathf.Abs(right.Illustration.rectTransform.localEulerAngles.y-180)<.1f&&leftText&&rightText&&RenderedTextInside(leftText,ui.CounterLeftRect)&&RenderedTextInside(rightText,ui.ActionRect)&&(leftText.text=="LEFT"||leftText.text=="RELEASE")&&(rightText.text=="RIGHT"||rightText.text=="RELEASE"),"ONE_LEFT_ONE_RIGHT_ILLUSTRATED_CIRCLE_WITH_NATIVE_INTERNAL_LABELS_"+view);
-     foreach(var label in new[]{leftText,rightText}){var container=(RectTransform)label.transform.parent;var mesh=label.canvasRenderer.GetMesh();Check(mesh&&mesh.vertices.All(v=>{var point=container.InverseTransformPoint(label.rectTransform.TransformPoint(v));return point.x*point.x+point.y*point.y<=84*84;})&&label.cachedTextGenerator.lineCount==1,"DIRECTION_CAPTION_GLYPHS_INSIDE_COLOURED_DISC_"+label.text+"_"+view);}
+     var guide=gaugeLabels[0].transform.parent.parent.GetComponentInChildren<FishingFightGuide>(true);
+     Check(guide&&gaugeLabels.Where(t=>t.gameObject.activeInHierarchy).All(t=>t.cachedTextGenerator.verts.All(v=>guide.rectTransform.InverseTransformPoint(t.rectTransform.TransformPoint(v.position/t.pixelsPerUnit)).y<guide.rectTransform.rect.yMin-1)),"RENDERED_CAPTION_GLYPHS_CLEAR_OF_FISH_GUIDE_"+view);
+     var right=ui.ActionRect.GetComponent<FishingStickerGraphic>();var rightText=ui.ActionRect.GetComponentInChildren<UnityEngine.UI.Text>();
+     Check(right&&right.Illustration&&rightText&&RenderedTextInside(rightText,ui.ActionRect)&&(rightText.text=="RIGHT"||rightText.text=="REEL"),"CLEAR_PRIMARY_REEL_OR_DIRECTIONAL_LABEL_"+view);
+     if(ui.CounterControlsVisible){var left=ui.CounterLeftRect.GetComponent<FishingStickerGraphic>();var leftText=ui.CounterLeftRect.GetComponentInChildren<UnityEngine.UI.Text>();Check(left&&left.Illustration&&leftText&&leftText.text=="LEFT"&&rightText.text=="RIGHT"&&Mathf.Abs(right.Illustration.rectTransform.localEulerAngles.y-180)<.1f&&RenderedTextInside(leftText,ui.CounterLeftRect),"ALWAYS_ONE_LEFT_ONE_RIGHT_MIRRORED_CONTROLS_"+view);}
     }
     var setup=frame.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="Fishing match setup");var setupButtons=setup.GetComponentsInChildren<UnityEngine.UI.Button>(true);var modePanels=setupButtons.Where(b=>b.name.StartsWith("Mode ")).Select(b=>b.targetGraphic as FishingStickerGraphic).ToArray();
     Check(setupButtons.Length==7&&setupButtons.Count(b=>b.name=="Fishing favourites")==1&&setupButtons.All(b=>{var skin=b.targetGraphic as FishingStickerGraphic;var caption=b.GetComponentsInChildren<UnityEngine.UI.Text>(true).FirstOrDefault();return b.enabled&&skin&&skin.SolidPanel&&skin.raycastTarget&&caption&&caption.enabled&&!caption.raycastTarget&&caption.fontStyle==FontStyle.Normal&&!string.IsNullOrWhiteSpace(caption.text)&&(!b.gameObject.activeInHierarchy||RenderedTextInside(caption,caption.rectTransform));})&&modePanels.Length==3&&modePanels.Count(g=>g&&g.tint==LocalProfile.Hex("4CDED6"))==1&&modePanels.Count(g=>g&&g.tint==LocalProfile.Hex("FFF3D7"))==2,"SETUP_NATIVE_CAPTIONS_AND_SELECTED_MODE_USE_SOLID_TINTED_BUTTONS_"+view);
-   var glyphs=frame.GetComponentsInChildren<FishingStickerGraphic>();var camera=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Camera);var jump=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Jump);var close=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Close);
-   Check(camera&&jump&&close&&Mathf.Abs(camera.rectTransform.rect.width/camera.rectTransform.rect.height-1.1f/.95f)<.01f&&new[]{camera,jump,close}.All(g=>g.isActiveAndEnabled&&!g.raycastTarget&&g.rectTransform.rect.width>10&&g.rectTransform.rect.height>10),"VISIBLE_SLIM_CAMERA_JUMP_CANCEL_GLYPHS_IGNORE_RAYS_"+view);
-   var cameraButton=camera.GetComponentInParent<UnityEngine.UI.Button>();var jumpHandler=jump.GetComponentInParent<JumpButton>();var cancelButton=close.GetComponentInParent<UnityEngine.UI.Button>();var cancelPanel=cancelButton?cancelButton.GetComponent<FishingStickerGraphic>():null;
-   Check(cameraButton&&cameraButton.isActiveAndEnabled&&cameraButton.targetGraphic&&cameraButton.GetComponentsInChildren<UnityEngine.UI.Text>(true).All(t=>!t.enabled)&&jumpHandler&&jumpHandler.isActiveAndEnabled&&jumpHandler.button&&jumpHandler.button.isActiveAndEnabled&&jumpHandler.label&&!jumpHandler.label.enabled&&jumpHandler.button.targetGraphic,"NATIVE_ICON_CONTROLS_PRESERVE_BUTTONS_AND_JUMP_HANDLER_"+view);
-   Check(cancelButton&&cancelButton.isActiveAndEnabled&&cancelPanel&&cancelPanel.SolidPanel&&cancelPanel.tint==LocalProfile.Hex("F7656A")&&cancelButton.targetGraphic==cancelPanel,"SOLID_RED_CANCEL_BUTTON_HAS_NATIVE_X_"+view);
+   var glyphs=frame.GetComponentsInChildren<FishingStickerGraphic>(true);var camera=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Camera);var jump=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Jump);var close=glyphs.FirstOrDefault(g=>g.name=="Fishing cancel X");
+   bool lineBusy=game.Player(app.LocalAthlete).HasValue&&game.Player(app.LocalAthlete).Value.Busy;
+   Check(camera&&jump&&close&&Mathf.Abs(camera.rectTransform.rect.width/camera.rectTransform.rect.height-1.1f/.95f)<.01f&&new[]{camera,jump,close}.All(g=>g.enabled&&!g.raycastTarget&&g.rectTransform.rect.width>10&&g.rectTransform.rect.height>10)&&camera.gameObject.activeInHierarchy==!lineBusy&&jump.gameObject.activeInHierarchy==(!lineBusy&&game.NearestPier(app.LocalAthlete)<0)&&close.gameObject.activeInHierarchy==lineBusy,"CONTEXTUAL_SLIM_CAMERA_JUMP_CANCEL_GLYPHS_IGNORE_RAYS_"+view);
+   var cameraButton=camera.GetComponentInParent<UnityEngine.UI.Button>(true);var jumpHandler=jump.GetComponentInParent<JumpButton>(true);var cancelButton=close.GetComponentInParent<UnityEngine.UI.Button>(true);var cancelPanel=cancelButton?cancelButton.GetComponent<FishingStickerGraphic>():null;
+   Check(cameraButton&&cameraButton.enabled&&cameraButton.targetGraphic&&cameraButton.GetComponentsInChildren<UnityEngine.UI.Text>(true).All(t=>!t.enabled)&&jumpHandler&&jumpHandler.enabled&&jumpHandler.button&&jumpHandler.button.enabled&&jumpHandler.label&&!jumpHandler.label.enabled&&jumpHandler.button.targetGraphic,"NATIVE_ICON_CONTROLS_PRESERVE_BUTTONS_AND_JUMP_HANDLER_"+view);
+   Check(cancelButton&&cancelButton.enabled&&cancelPanel&&cancelPanel.SolidPanel&&cancelPanel.tint==LocalProfile.Hex("F7656A")&&cancelButton.targetGraphic==cancelPanel,"SOLID_RED_CANCEL_BUTTON_HAS_NATIVE_X_"+view);
     foreach(var button in new[]{cameraButton,jumpHandler.button}){
      var rect=(RectTransform)button.transform;var skin=button.targetGraphic as FishingStickerGraphic;var outer=new Vector3[4];var inner=new Vector3[4];rect.GetWorldCorners(outer);if(skin)skin.rectTransform.GetWorldCorners(inner);
      float expectedWidth=button==cameraButton?104:120;Check(Mathf.Abs(rect.rect.width-expectedWidth)<.1f&&skin&&skin.SolidPanel&&Mathf.Abs(skin.cornerRadius-36)<.1f&&skin.rectTransform.anchorMin==Vector2.zero&&skin.rectTransform.anchorMax==Vector2.one&&skin.rectTransform.offsetMin==Vector2.zero&&skin.rectTransform.offsetMax==Vector2.zero&&outer.Zip(inner,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.1f),"NARROW_ROUNDED_UTILITY_SKIN_MATCHES_NATIVE_HIT_RECT_"+button.name+"_"+view);
@@ -161,7 +200,7 @@ namespace WhatTheFish {
    foreach(var button in new[]{cameraButton,jumpHandler.button,cancelButton}){
     var rect=(RectTransform)button.transform;var pointer=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center))};var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);
     var unavailable=button.GetComponentInParent<UnityEngine.CanvasGroup>();bool busy=game.Player(app.LocalAthlete).HasValue&&game.Player(app.LocalAthlete).Value.Busy;
-    if(button!=cancelButton&&busy)Check(unavailable&&!unavailable.blocksRaycasts&&!unavailable.interactable&&unavailable.alpha<=.5f,"BUSY_UTILITY_FADES_AND_BLOCKS_INPUT_"+button.name+"_"+view);
+    if(!button.gameObject.activeInHierarchy)Check(!hits.Any(h=>h.gameObject.GetComponentInParent<UnityEngine.UI.Button>()==button),"IRRELEVANT_HIDDEN_UTILITY_HAS_NO_POINTER_TARGET_"+button.name+"_"+view);
     else Check(hits.Count>0&&hits[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>()==button,"DECORATIVE_ICON_RETAINS_NATIVE_POINTER_TARGET_"+button.name+"_"+view);
    }
   }
@@ -216,7 +255,7 @@ namespace WhatTheFish {
     for(int i=0;i<assets.Length;i++){var sprite=Resources.Load<Sprite>("FishingUI/"+assets[i]);Check(sprite&&sprite.texture.width<=limits[i]&&sprite.texture.height<=limits[i],"COMPRESSED_UI_SIZE_"+assets[i]);}
    }
    yield return MissedHookCue();yield return StickerFixtures();yield return HookCueFixtures();yield return GripSportTransition();
-   Place(app.LocalAthlete,0);yield return new WaitForSeconds(.15f);yield return CatchWithInput(false,2);
+   Place(app.LocalAthlete,0);yield return new WaitForSeconds(.15f);yield return CatchWithInput(false,2);yield return WaterContactSplash();
   }
   IEnumerator MissedHookCue(){
    var actor=app.LocalAthlete;var ui=FindFirstObjectByType<FishingHUD>();int score=game.Player(actor).Value.score;
@@ -274,12 +313,16 @@ namespace WhatTheFish {
    yield return AimFish(0,1);ReviewBite(0);yield return null;yield return PoseFrame();
    var artwork=ui.ActionRect.GetComponent<FishingStickerGraphic>().Illustration;Check(artwork&&artwork.sprite==Resources.Load<Sprite>("FishingUI/ReelButton")&&ui.ActionRect.GetComponent<BasketballButtonFeedback>(),"HOOK_ALERT_RESTORES_CIRCULAR_REEL_ART_AND_NATIVE_PRESS_FEEDBACK");
    int repeatedStarts=ui.HookCue.CueStarts;float originalRemaining=ui.HookCue.Remaining01;var originalArea=new Vector3[4];ui.ActionRect.GetWorldCorners(originalArea);Capture("bite-alert-onset");
-   float minScale=float.MaxValue,maxScale=float.MinValue,sampleEnd=Time.time+.35f;
-   while(Time.time<sampleEnd){float scale=artwork.rectTransform.localScale.x;minScale=Mathf.Min(minScale,scale);maxScale=Mathf.Max(maxScale,scale);yield return null;}
+   float minScale=float.MaxValue,maxScale=float.MinValue;var pulsePlayer=game.State.Players[0];double pulseStart=pulsePlayer.hookUntil-FishingState.HookSeconds;
+   // Capture encoding can stall a frame by exactly one pulse period. Sample
+   // the production presenter at controlled clock points instead of aliasing
+   // its animation against capture/GPU timing. Real Hook paths run above.
+   foreach(float age in new[]{.03f,.10f,.20f,.30f}){ui.HookCue.Tick(pulsePlayer,game.State.Match.round,pulseStart+age,true,app.view.FishingCamera,game.Presentation.HookPoint(pulsePlayer));float scale=artwork.rectTransform.localScale.x;minScale=Mathf.Min(minScale,scale);maxScale=Mathf.Max(maxScale,scale);}
    game.State.Receive(game.State.Match,game.State.Players.ToArray(),game.State.Fish.ToArray());yield return PoseFrame();var repeatedArea=new Vector3[4];ui.ActionRect.GetWorldCorners(repeatedArea);
+   File.AppendAllText(report,"MEASURE hook pulse visible="+ui.HookCue.Visible+" scaleRange="+(maxScale-minScale)+" hitAreaDelta="+originalArea.Zip(repeatedArea,(a,b)=>Vector3.Distance(a,b)).Max()+" remaining="+ui.HookCue.Remaining01+" reduced="+MenuPreferences.ReducedMotion+"\n");
    Check(ui.HookCue.Visible&&maxScale-minScale>.005f&&originalArea.Zip(repeatedArea,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.05f),"HOOK_ART_PULSES_WITHOUT_MOVING_PRIMARY_HIT_AREA");
    Check(ui.HookCue.CueStarts==repeatedStarts&&ui.HookCue.Remaining01<originalRemaining,"REPEATED_BITE_SNAPSHOT_CANNOT_REPLAY_OR_EXTEND_CUE");Capture("bite-alert-pulse");
-   sampleEnd=Time.time+1.4f;while(ui.HookCue.Remaining01>.2f&&ui.HookCue.Visible&&Time.time<sampleEnd)yield return null;yield return PoseFrame();Check(ui.HookCue.Visible&&ui.HookCue.Remaining01<=.2f,"HOOK_ALERT_COUNTDOWN_REACHES_REAL_DEADLINE");Capture("bite-alert-deadline");
+   ui.HookCue.Tick(pulsePlayer,game.State.Match.round,pulsePlayer.hookUntil-.18,true,app.view.FishingCamera,game.Presentation.HookPoint(pulsePlayer));Check(ui.HookCue.Visible&&ui.HookCue.Remaining01<=.2f,"HOOK_ALERT_COUNTDOWN_REACHES_REAL_DEADLINE");Capture("bite-alert-deadline");
    for(int mode=0;mode<3;mode++){
     var ready=game.State.Players[0];ready.phase=FishingPhase.Ready;ready.fish=-1;game.State.Players[0]=ready;game.State.Fish[0]=new FishingFishRecord{id=0};yield return AimFish(0,mode);ReviewBite(0);yield return PoseFrame();
     Check(ui.HookCue.Visible&&ui.HookCue.WorldCueVisible&&ui.HookCue.FitsSafeFrame()&&ui.HookCue.DecorationsIgnoreRaycast,"BITE_ALERT_FITS_AND_MARKS_FISH_CAMERA_"+mode);Capture("bite-camera-"+mode);
@@ -310,7 +353,7 @@ namespace WhatTheFish {
    game.State.Receive(savedMatch,savedPlayers,savedFish);game.ReviewSnapshot=false;yield return null;yield return PoseFrame();
   }
   IEnumerator TutorialInterface(FishingHUD hud){
-   var tutorial=hud.Tutorial;string key="fishing.tutorial.v2";bool existed=PlayerPrefs.HasKey(key);int saved=PlayerPrefs.GetInt(key,0);var frame=tutorial.transform.parent;
+   var tutorial=hud.Tutorial;string key=FishingTutorialUI.SeenKey;bool existed=PlayerPrefs.HasKey(key);int saved=PlayerPrefs.GetInt(key,0);var frame=tutorial.transform.parent;
    UnityEngine.UI.Button Button(string name)=>tutorial.GetComponentsInChildren<UnityEngine.UI.Button>(true).First(b=>b.name==name);
    try{
     PlayerPrefs.DeleteKey(key);tutorial.ReviewEntry=true;yield return PoseFrame();yield return PoseFrame();Check(tutorial.Visible&&hud.BlocksGameplay,"FIRST_ISLAND_ENTRY_OPENS_TUTORIAL_AND_BLOCKS_INPUT");tutorial.ReviewEntry=false;
@@ -353,6 +396,10 @@ namespace WhatTheFish {
    }else{
     end=Time.time+8;while(Vector3.Distance(actor.transform.position,game.SupplyPosition(0))>2.6f&&Time.time<end)yield return null;Check(Vector3.Distance(actor.transform.position,game.SupplyPosition(0))<=2.6f,"GUEST_RECEIVES_HOST_SHORE_SUPPLY_POSITION");
     actor.GetComponent<NetworkAthlete>().FishingRpc(FishingAction.Supply,game.State.Match.round,game.Player(actor).Value.sequence,1,game.Now-2);yield return new WaitForSeconds(.15f);Check(game.Player(actor).Value.item==FishingAbility.None,"STALE_GUEST_PICKUP_TIMESTAMP_REJECTED");
+    // Arrival restores the stadium page after committing the shared journey.
+    // Wait for its native controls before simulating a player press.
+    end=Time.realtimeSinceStartup+8;while((!app.view.active||app.view.InputBlocked||FishingHUD.Instance.BlocksGameplay)&&Time.realtimeSinceStartup<end)yield return null;
+    Check(app.view.active&&!app.view.InputBlocked&&!FishingHUD.Instance.BlocksGameplay,"GUEST_GEAR_CONTROLS_ACTIVE_AFTER_ARRIVAL_PAGE_TRANSITION");
     app.view.FishingAbilityInput(FishingAction.Favourites,130);end=Time.time+3;while(game.Player(actor).Value.favourites!=130&&Time.time<end)yield return null;Check(game.Player(actor).Value.favourites==130,"GUEST_FAVOURITES_ACKNOWLEDGED_BY_HOST");
     app.view.FishingAbilityInput(FishingAction.Supply,1);end=Time.time+3;while(game.Player(actor).Value.item!=FishingAbility.Sonar&&Time.time<end)yield return null;Check(game.Player(actor).Value.item==FishingAbility.Sonar&&game.State.SupplyReady(0)>game.Now,"GUEST_RECEIVES_INVENTORY_AND_SHARED_REFILL_SNAPSHOT");
     app.view.FishingAbilityInput(FishingAction.UseAbility);end=Time.time+3;while(game.Player(actor).Value.sonarUntil<=game.Now&&Time.time<end)yield return null;Check(game.Player(actor).Value.item==FishingAbility.None&&game.Player(actor).Value.sonarUntil>game.Now,"GUEST_ABILITY_CONSUMPTION_AND_EFFECT_REPLICATED");
@@ -369,6 +416,8 @@ namespace WhatTheFish {
     yield return CatchWithInput(false,2);Check(game.Player(actor).Value.score==10&&game.State.Rank(0)==1&&game.State.Rank(FishingGame.Key(guest))==2,"HOST_LARGE_CATCH_OVERTAKES_GUEST");
     yield return new WaitForSeconds(1);uint old=game.State.Match.round;game.State.Advance(game.State.Match.deadline,0);yield return new WaitForSeconds(.6f);Check(game.State.Match.phase==FishingRoundPhase.Ended,"HOST_SHARED_RESULTS_DEADLINE");
     var ui=FindFirstObjectByType<FishingHUD>();Check(ui.Results.Visible,"HOST_RECEIVES_RECAP_BEFORE_REMATCH");ui.Results.Close();yield return PoseFrame();
+    if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){PostMatchFlow.Instance.GetComponentsInChildren<UnityEngine.UI.Button>().First(b=>b.name=="Keep exploring").onClick.Invoke();yield return PoseFrame();}
+    Check(!app.view.InputBlocked,"HOST_NEXT_ADVENTURE_CLOSE_RESTORES_INPUT");
     app.view.ReadyFishing();end=Time.time+10;while(!game.State.AllReady&&Time.time<end)yield return null;Check(game.StartMatch()&&game.State.Match.round!=old&&game.State.Players.All(p=>p.score==0),"READY_REMATCH_RESETS_BOTH_PEERS");
     Check(game.State.Players.All(p=>p.smallCatches==0&&p.mediumCatches==0&&p.largeCatches==0&&p.bonusTotal==0),"HOST_REMATCH_CLEARS_REPLICATED_RECAP");
    }else{
@@ -382,6 +431,8 @@ namespace WhatTheFish {
     Check(game.State.Player(0).Value.score==10&&game.State.Rank(FishingGame.Key(actor))==2,"GUEST_OBSERVES_OTHER_PLAYER_OVERTAKE");
     end=Time.time+8;while(game.State.Match.phase!=FishingRoundPhase.Ended&&Time.time<end)yield return null;Check(game.State.Match.phase==FishingRoundPhase.Ended,"GUEST_RECEIVES_FINAL_RESULTS");
     var ui=FindFirstObjectByType<FishingHUD>();yield return PoseFrame();Check(ui.Results.Visible,"GUEST_RECEIVES_RECAP_BEFORE_REMATCH");ui.Results.Close();yield return PoseFrame();
+    if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){PostMatchFlow.Instance.GetComponentsInChildren<UnityEngine.UI.Button>().First(b=>b.name=="Keep exploring").onClick.Invoke();yield return PoseFrame();}
+    Check(!app.view.InputBlocked,"GUEST_NEXT_ADVENTURE_CLOSE_RESTORES_INPUT");
     uint old=game.State.Match.round;app.view.ReadyFishing();end=Time.time+8;while(game.State.Match.round==old&&Time.time<end)yield return null;Check(game.State.Match.round!=old&&game.Player(actor).Value.score==0,"GUEST_RECEIVES_CLEAN_REMATCH");
     Check(game.State.Players.All(p=>p.smallCatches==0&&p.mediumCatches==0&&p.largeCatches==0&&p.bonusTotal==0),"GUEST_REMATCH_CLEARS_REPLICATED_RECAP");
    }

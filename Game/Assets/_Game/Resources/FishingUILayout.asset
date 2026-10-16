@@ -23,8 +23,8 @@ MonoBehaviour:
   fightControlSize: {x: 218, y: 218}
   fightLabelPosition: {x: 0, y: -40}
   fightLabelSize: {x: 126, y: 32}
-  guideSize: {x: 510, y: 38}
-  guidePosition: {x: 0, y: 28}
+  guideSize: {x: 510, y: 48}
+  guidePosition: {x: 0, y: 22}
   progressSize: {x: 242, y: 28}
   catchPosition: {x: -134, y: -56}
   tensionPosition: {x: 134, y: -56}
@@ -53,3 +53,9 @@ MonoBehaviour:
   hookCuePulse: 0.1
   hookCuePadding: 8
   hookCueReducedMotion: 0
+  actionHintSize: {x: 64, y: 64}
+  fightCamera: 1
+  fightCameraDistance: 7.2
+  fightCameraHeight: 4.2
+  fightCameraShoulder: 1.1
+  fightCameraTransition: 0.7

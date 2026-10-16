@@ -1,42 +1,63 @@
-# Fishing: Hold & Countersteer
+# Fishing: Hold the Glow
 
-Selected **B — Hold & Countersteer**, 12 October 2026.
-[Approved concept](FishingUI/Hold-Countersteer-Reference.png) is an authoring
-reference outside Unity; it is not shipped as a screen-sized texture.
+Current gameplay restores the pictured first **Hold & Countersteer** version:
+one **LEFT** and one **RIGHT** button, the fish marker and gold direction band.
+The timed-tap experiment is superseded. Matching peers require protocol **66**.
+Current camera, rod, rope, swimming, splashes and landing feedback remain.
 
-Aim and Cast / **F** still select a real available fish. React to **Hook / F**
-inside the existing 1.8-second bite window. After Hook, the joystick becomes
-**Hold Left** and the right action becomes **Hold Right**. Hold the gold side
-against the fish's pull, switch when the other side lights up, and release both
-to recover tension. On a keyboard, use **A/D** or **Left/Right arrows**.
-F casts/hooks only; it cannot bypass steering during the fight.
+## Playing
 
-The bottom guide previews turns with a moving fish marker and shows your actual
-steer. Correct steering shortens the line; wrong steering adds strain without
-normal reeling progress. Catch and Tension labels sit above their side-by-side
-bars inside the illustrated fight card.
-At high tension both buttons receive a warm warning tint and say **Release**. At 100% the line
-snaps. Bigger fish retain stronger surges and require release timing. Cancel / X
-remains available. Walking and jumping are blocked during the active line;
-movement, jump and camera controls visibly fade while unavailable. They recover
-after landing, escape or cancellation. Rod lean and lateral fish motion follow
-the same fight state seen by peers. Sharper lateral darts, short breaches and
-water wakes and gravity-driven contact splashes make fish surges visible; the line follows the actual fish endpoint.
-The fisher leans back and countersteers with the torso while feet remain planted
-and both hands retain their authored rod contacts. These presentation motions
-reuse the existing models, rig and materials.
+1. Aim until the reticle turns teal. Tap Cast, then tap Hook when the fish shows
+   **!**, inside the existing 1.8-second bite window.
+2. **Hold the glowing Left or Right button** against the fish's pull. There is
+   no tap window or one-attempt sweep. Keep holding while that side is useful.
+3. Switch when the glow changes sides. The title says **HOLD THE GLOW**, or
+   **SWITCH SIDES** if the held direction is wrong. The fish previews the lateral
+   pull; the gold band always agrees with the lit button.
+4. Release both when **RELEASE TO COOL** appears. This hint stays until tension
+   falls below 58%, avoiding flicker. Hold the glowing side again after cooling.
+   At 100% tension the line snaps. An unattended fight ends after 30 seconds.
+5. Correct holding continuously winds the physical line. Spring, drag, fish pull
+   and distance determine Catch progress. Wrong-side holding builds strain without
+   normal winding. The original winding law returns, with a modest 20% speed
+   assist over the earlier continuous-hold baseline. A physical reel-drag limit
+   lets line slip under a sudden correct-side load, leaving time to react to a
+   large fish's initial surge. Accumulated strain still requires cooling, and
+   wrong-side holds can snap the line. The timed-stroke clutch is removed.
 
-Round, Cup, Crew, Wanted bonuses, 2/5/10 base points, seven-second respawns,
-30-second fight timeout and results are unchanged. A competitive round still
-ends after three minutes. Crew still requires 20 points times starting players,
-all three sizes and a catch from everyone.
+The bottom card matches the reference: title, fish/gold band, then navy native
+Catch/Tension captions above the two bars inside the frame. Buttons retain fixed
+touch bounds and text while their artwork presses and glows. There are no early/
+late penalties, timing grades, keyboard guides or extra fight buttons. Development
+keyboard shortcuts remain off the mobile HUD. The same four-page tutorial and
+How to Play reuse the live buttons and meter; the updated guide opens once.
+
+## Retained presentation and multiplayer
+
+Accepted-hook framing, smooth directional shoulder shifts, obstruction handling
+and return to the preferred camera are unchanged. Reduced Motion retains the
+preferred view. Rod grip/lean, attached line rendering, aggressive fish swimming
+and gravity-driven splashes retain their current implementations. Movement,
+jump, manual camera switching and travel hide while unavailable; Cancel stays
+available. Held gear, Fish Landed/points feedback, sound and rankings remain.
+
+The host accepts explicit directional presses and renewals during a valid fight.
+A 0.8-second safety lease refreshes while the thumb stays down; missing releases,
+focus loss, cancellation and travel cannot leave an indefinite hold. A new finger
+can take over; releasing an older finger cannot stop it. Timestamp, ownership,
+cast/round tokens, scoring, fish claims and ability validity remain host-controlled.
+Repeated commands without simulation time never create progress or points.
+
+Round, Cup, Crew, Wanted, six skills/two favourites, 2/5/10 points, seven-second
+respawns and results remain. Competitive rounds last three minutes. Crew requires
+20 points times starting players, all sizes and a catch from everyone.
 
 ## Shared sports artwork and editable layout
 
 Fishing reuses the Football/Basketball fonts and shared press animation. The
 13 October refinement uses cream-bevelled aqua/gold circles for **one Left and
 one Right**, with single-line **LEFT** and **RIGHT** native labels inside the
-coloured discs. The guide says **HOLD THE GLOW**, avoiding repeated captions.
+coloured discs. The guide names the required side and confirms correct holding.
 Right reverses the arrow artwork horizontally without reversing its text.
 Gold marks the active side; pressure warnings and restrained pulses retain
 fixed touch bounds. The familiar circular illustrated reel returns for Cast/Hook.
@@ -85,7 +106,7 @@ is a stylized force model, rather than a fluid simulation.
 
 ## Authority and input recovery
 
-Matching room players require **protocol 49** because the replicated Fishing
+The earlier clarity release used **protocol 55** because the replicated Fishing
 record includes physical swim velocity/depth and [gear inventory](FISHING-ABILITIES.md),
 alongside signed steering, its accepted time and fish pull. Fishing
 extends its action enum; Football/Basketball request payloads and rules remain

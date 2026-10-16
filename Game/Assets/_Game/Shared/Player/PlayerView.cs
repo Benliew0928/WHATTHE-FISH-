@@ -63,7 +63,7 @@ namespace WhatTheFish {
    kickAim.transform.localScale=new Vector3(Mathf.Lerp(.85f,1.25f,charge),1,Mathf.Lerp(2.2f,4.4f,charge));
    kickAim.enabled=true;
   }
-  void OnDisable(){ClearMatchInput();ResetGolfShotCamera();ResetStadiumCamera();if(Instance==this)Instance=null;}
+  void OnDisable(){ClearMatchInput();ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();if(Instance==this)Instance=null;}
   void OnEnable(){Instance=this;}
   void OnApplicationFocus(bool focus){if(!focus)CancelInput();}
   void OnApplicationPause(bool paused){if(paused)CancelInput();}
@@ -160,11 +160,11 @@ namespace WhatTheFish {
    if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
    if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
-   if(!active||!target){ResetGolfShotCamera();ResetStadiumCamera();HideKickAim();return;}
+   if(!active||!target){ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();HideKickAim();return;}
    bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;
    if(!InputBlocked&&!fishingModal&&Input.GetKeyDown(KeyCode.C))Switch();
    if(!InputBlocked&&!fishingModal&&Input.GetMouseButton(1)){LookDelta+=new Vector2(Input.GetAxis("Mouse X")*14,Input.GetAxis("Mouse Y")*14);}
-   if(fishingModal)LookDelta=Vector2.zero;
+   if(fishingModal||FishingFightLocksLook)LookDelta=Vector2.zero;
    yaw+=LookDelta.x*.13f;pitch=Mathf.Clamp(pitch-LookDelta.y*.10f,-25,65);LookDelta=Vector2.zero;
    if(!StadiumField(out _,out _,out _))ResetStadiumCamera();
    if(SkySailWorld.Instance&&SkySailWorld.Instance.RideCamera(cam,yaw,pitch,mode)){ResetGolfShotCamera();HideKickAim();return;}
@@ -182,8 +182,10 @@ namespace WhatTheFish {
    if(distance>0&&Physics.SphereCast(focus,.2f,cameraPath.normalized,out var hit,cameraPath.magnitude,1<<8,QueryTriggerInteraction.Ignore))desired=focus+cameraPath.normalized*Mathf.Max(.35f,hit.distance-.15f);
    target.HideHead(viewMode==0||Vector3.Distance(desired,focus)<1.15f);
    PresentGolfShotCamera(ref desired,ref rotation);
+   PresentFishingFightCamera(ref desired,ref rotation);
    if(GolfShotCameraActive)target.HideHead(Vector3.Distance(desired,target.transform.position+Vector3.up*1.57f)<.85f);
-   cam.nearClipPlane=viewMode==0&&!GolfShotCameraActive?.06f:.15f;transform.SetPositionAndRotation(desired,rotation);
+   if(FishingFightCameraActive)target.HideHead(Vector3.Distance(desired,target.transform.position+Vector3.up*1.57f)<.85f);
+   cam.nearClipPlane=viewMode==0&&!GolfShotCameraActive&&!FishingFightCameraActive?.06f:.15f;transform.SetPositionAndRotation(desired,rotation);
    UpdateKickAim();UpdateGolfPreview();UpdateFishingAim();
   }
   // Follow the displayed seat position, while only player look input rotates

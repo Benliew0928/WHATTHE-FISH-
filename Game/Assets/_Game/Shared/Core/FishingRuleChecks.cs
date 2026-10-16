@@ -10,8 +10,9 @@ namespace WhatTheFish {
   static void Ready(FishingState s,double now){foreach(var p in s.Players.ToArray())Act(s,FishingAction.Ready,now,p.owner);}
   static FishingState Round(int count,FishingMode mode,uint token=2){var s=new FishingState();s.Begin(Enumerable.Range(0,count).Select(i=>(ulong)i),1,0,false);Ready(s,0);if(!s.Start(s.Players.Select(p=>p.owner).ToArray(),token,0,mode))throw new Exception("Start fixture");s.Advance(3,0);return s;}
   static void Hook(FishingState s,ref double now,int fish,ulong id=0,float distance=7){if(!Act(s,FishingAction.Cast,now,id,fish,distance))throw new Exception("Cast fixture "+fish);now=P(s,id).biteAt;s.Advance(now,0);if(!Act(s,FishingAction.Hook,now,id))throw new Exception("Hook fixture");}
-  static double Land(FishingState s,ref double now,int fish,ulong id=0,float distance=7){Hook(s,ref now,fish,id,distance);bool held=false;double hookedAt=now,limit=now+31;
-   while(P(s,id).phase==FishingPhase.Reeling&&now<limit){var p=P(s,id);if(p.tension>.84f)held=false;else if(p.tension<.58f)held=true;Act(s,held?FishingState.CounterAction(p,now):FishingAction.ReelStop,now,id);now+=.02;s.Advance(now,.02f);}
+  static double Land(FishingState s,ref double now,int fish,ulong id=0,float distance=7){Hook(s,ref now,fish,id,distance);double hookedAt=now,limit=now+31;bool hold=true;
+   while(P(s,id).phase==FishingPhase.Reeling&&now<limit){var p=P(s,id);if(p.tension>.82f)hold=false;else if(p.tension<.56f)hold=true;Act(s,hold?FishingState.CounterAction(p,now):FishingAction.ReelStop,now,id);now+=.02;s.Advance(now,.02f);}
+
    return now-hookedAt;
   }
   static void Scores(FishingState s,params int[] scores){for(int i=0;i<scores.Length;i++){var p=s.Players[i];p.score=scores[i];s.Players[i]=p;}}
@@ -49,24 +50,32 @@ namespace WhatTheFish {
    s=new FishingState();s.Begin(new ulong[]{0},1,0,false);Act(s,FishingAction.Cast,0,0,0);p=P(s);s.Advance(p.hookUntil,0);
    check(P(s).result==FishingResult.Missed&&P(s).missedBites==1&&!s.Fish[0].claimed,"HOST_OFFLINE_EXACT_DEADLINE_REMAINS_IMMEDIATE_MISS");
   }
-  static void Countersteering(Action<bool,string> check){
-   var s=new FishingState();s.Begin(new ulong[]{0},1,0,false);double now=0;Hook(s,ref now,1);
-   check(!Act(s,FishingAction.ReelStart,now),"LEGACY_SINGLE_REEL_ACTION_CANNOT_BYPASS_STEERING");
-   var p=P(s);var right=s.Players.ToArray();var fish=s.Fish.ToArray();double hookAt=now;
-   for(int i=0;i<120;i++){Act(s,FishingState.CounterAction(P(s),now),now);now+=.02;s.Advance(now,.02f);}float goodProgress=P(s).progress,goodStrain=P(s).strain;
-   s.Receive(s.Match,right,fish);now=hookAt;
-   for(int i=0;i<120;i++){Act(s,FishingState.CounterSide(P(s),now)<0?FishingAction.ReelRight:FishingAction.ReelLeft,now);now+=.02;s.Advance(now,.02f);}
-   check(goodProgress>P(s).progress+.025f&&P(s).strain>goodStrain,"CORRECT_COUNTER_REELS_FASTER_AND_WRONG_SIDE_STRAINS_LINE");
-   float strain=P(s).strain;Act(s,FishingAction.ReelStop,now);for(int i=0;i<20;i++){now+=.02;s.Advance(now,.02f);}
-   check(P(s).strain<strain&&!P(s).held&&P(s).steer==0,"RELEASING_BOTH_RECOVERS_STRAIN_AND_CLEARS_STEER");
-   p=P(s);var action=FishingState.CounterAction(p,now);check(s.Act(0,1,p.sequence,action,0,Vector3.zero,now,-1,7,now,true),"TIMESTAMPED_REMOTE_DIRECTION_ACCEPTED");
-   check(!s.Act(0,1,p.sequence,FishingAction.ReelStop,0,Vector3.zero,now+.05,-1,7,now-.01,true)&&P(s).held,"OLD_RELEASE_CANNOT_CANCEL_A_NEWER_DIRECTION");
-   check(!s.Act(0,1,p.sequence,action,0,Vector3.zero,now+.1,-1,7,now+.151,true),"FUTURE_DIRECTION_TIMESTAMP_REJECTED");
-   var copy=P(s);var clone=copy;clone.steer=(sbyte)-copy.steer;check(!copy.Equals(clone),"DIRECTION_CHANGE_INVALIDATES_REPLICATED_EQUALITY");clone=copy;clone.pull+=.1f;check(!copy.Equals(clone),"PULL_CHANGE_INVALIDATES_REPLICATED_EQUALITY");
-   bool left=false,rightSeen=false;for(int i=0;i<200;i++){int side=FishingState.CounterSide(p,now+i*.02);left|=side<0;rightSeen|=side>0;}check(left&&rightSeen,"FISH_PULL_REQUIRES_BOTH_SIDES_WITHIN_FOUR_SECONDS");
+  static void HeldFishing(Action<bool,string> check){
+   FishingState Fresh(){var f=new FishingState();f.Begin(new ulong[]{0},1,0,false);double t=0;Hook(f,ref t,1);return f;}
+   var s=Fresh();double start=P(s).phaseAt,edge=start+.1;
+   check(!Act(s,FishingAction.ReelStart,edge)&&!Act(s,FishingAction.ReelTap,edge),"RETIRED_NEUTRAL_AND_TIMING_ACTIONS_CANNOT_BYPASS_DIRECTIONAL_HOLD");
+   var direction=FishingState.CounterAction(P(s),edge);
+   check(Act(s,direction,edge)&&P(s).held&&P(s).steer==(direction==FishingAction.ReelLeft?-1:1),"DIRECTIONAL_PRESS_ACCEPTED_WITHOUT_TIMING_WINDOW");
+   double lease=P(s).reelLease;check(Act(s,direction,edge+.2)&&P(s).reelLease>lease,"HELD_INPUT_RENEWS_BOUNDED_LEASE");
+   check(Act(s,FishingAction.ReelStop,edge+.21)&&!P(s).held&&P(s).steer==0,"RELEASE_STOPS_REELING_IMMEDIATELY");
+   check(Act(s,FishingAction.ReelLeft,edge+.22)&&Act(s,FishingAction.ReelRight,edge+.23)&&P(s).steer==1,"NEW_DIRECTION_TAKES_OVER_WITHOUT_WAITING_FOR_A_SWEEP");
+   check(!s.Act(0,1,P(s).sequence,FishingAction.ReelStop,0,Vector3.zero,edge+.24,-1,7,edge+.225,true)&&P(s).steer==1,"LATE_OLD_RELEASE_CANNOT_STOP_NEW_DIRECTION");
+   lease=P(s).reelLease;s.Advance(lease+.001,.02f);check(!P(s).held&&P(s).steer==0,"LOST_RELEASE_EXPIRES_HOLD_SAFELY");
+   s=Fresh();var p=P(s);edge=p.phaseAt+.3;
+   check(s.Act(0,1,p.sequence,FishingAction.ReelLeft,0,Vector3.zero,edge+.24,-1,7,edge,true)&&P(s).held,"REMOTE_HOLD_USES_ORIGINAL_CLOCK_WITH_BOUNDED_TRANSIT");
+   check(Math.Abs(P(s).reelLease-(edge+.24)-FishingState.LeaseSeconds)<.000001,"GUEST_AND_HOST_RECEIVE_EQUAL_HOLD_LEASE");
+   check(!s.Act(0,1,p.sequence,FishingAction.ReelRight,0,Vector3.zero,edge+.81,-1,7,edge,true),"EXPIRED_REMOTE_HOLD_REJECTED");
+   check(!s.Act(0,1,p.sequence,FishingAction.ReelLeft,0,Vector3.zero,edge,-1,7,edge+.051,true)&&!s.Act(0,1,p.sequence,FishingAction.ReelLeft,0,Vector3.zero,edge,-1,7,double.NaN,true),"FUTURE_AND_NONFINITE_HOLDS_REJECTED");
+   check(!s.Act(0,0,p.sequence,FishingAction.ReelLeft,0,Vector3.zero,edge)&&!s.Act(0,1,p.sequence-1,FishingAction.ReelLeft,0,Vector3.zero,edge),"STALE_ROUND_AND_CAST_HOLDS_REJECTED");
+   s=Fresh();p=P(s);edge=p.phaseAt+.1;for(int i=0;i<50;i++)Act(s,FishingAction.ReelLeft,edge);
+   check(P(s).progress==0&&P(s).score==0&&P(s).distance==p.distance,"REPEATED_COMMANDS_WITHOUT_TIME_NEVER_AWARD_PROGRESS");
+   check(FishingState.CounterSide(p,p.phaseAt+4)!=FishingState.CounterSide(p,p.phaseAt+9),"FISH_SWAY_STILL_ALTERNATES_REQUIRED_SIDE");
   }
   public static void Run(Action<bool,string> check){
-   HookTiming(check);Countersteering(check);FishingAbilityChecks.Run(check);
+   HookTiming(check);HeldFishing(check);FishingAbilityChecks.Run(check);
+   var surge=new FishingState();surge.Begin(new ulong[]{0},1,0,false);double surgeNow=0;Hook(surge,ref surgeNow,2);double surgeEnd=surgeNow+1.2;
+   while(surgeNow<surgeEnd&&P(surge).phase==FishingPhase.Reeling){Act(surge,FishingState.CounterAction(P(surge),surgeNow),surgeNow);surgeNow+=.02;surge.Advance(surgeNow,.02f);}
+   check(P(surge).phase==FishingPhase.Reeling&&P(surge).tension<1&&P(surge).score==0,"LARGE_FISH_CORRECT_HOLD_SURVIVES_INITIAL_SURGE_REACTION_TIME");
    var s=new FishingState();double now=100;s.Begin(new ulong[]{0,1,2,3},1,now,false);
    check(s.Players.Count==4&&s.Fish.Count==30,"PRACTICE_FIVE_SHARED_SCHOOLS_SIX_FISH_EACH");
    for(int pier=0;pier<FishingState.PierCount;pier++)check(s.Fish.Count(f=>FishingState.PierForFish(f.id)==pier)==6&&Enumerable.Range(0,FishingState.SizeCount).All(size=>s.Fish.Count(f=>FishingState.PierForFish(f.id)==pier&&FishingState.SizeForFish(f.id)==size)==2),"TWO_OF_EACH_TIER_AT_PIER_"+pier);
@@ -78,9 +87,6 @@ namespace WhatTheFish {
    check(!Act(s,FishingAction.Cast,now,1,1)&&Act(s,FishingAction.Cast,now,1,0)&&Act(s,FishingAction.Cast,now,2,2)&&!Act(s,FishingAction.Cast,now,3,0),"EXCLUSIVE_FISH_CLAIMS");
    check(!s.Act(0,1,0,FishingAction.Cancel,0,Vector3.zero,now),"STALE_CAST_SEQUENCE");
    now=P(s).hookUntil;s.Advance(now,0);check(P(s).result==FishingResult.Missed&&P(s).score==0,"EXACT_HOOK_BOUNDARY_MISSES");
-   // Baseline from the prior delivered countersteer report (0.1s precision), release above .84 / resume below .58.
-   // Guard both directions: the slight easing must improve catches without removing their challenge.
-   double[,] originalReelSeconds={{2.8,4.4,6.5,7.7},{4.25,7.75,11.05,13.35},{8.2,14.1,20.4,22.6}};
    float[] ranges={5.5f,8f,10.5f,12f};
    for(int fish=0;fish<FishingState.FishCount;fish++)for(int r=0;r<ranges.Length;r++){
     float range=ranges[r];s.Begin(new ulong[]{0},2,0,false);now=0;
@@ -88,16 +94,16 @@ namespace WhatTheFish {
     double reelSeconds=Land(s,ref now,fish,0,range);
     check(P(s).phase==FishingPhase.Caught&&P(s).score==FishingState.Points(fish),"BALANCED_LINE_LANDS_"+fish+"_AT_"+range.ToString("0.0",System.Globalization.CultureInfo.InvariantCulture)+"m_"+now.ToString("0.0",System.Globalization.CultureInfo.InvariantCulture)+"s");
     var landed=P(s);check(landed.smallCatches+landed.mediumCatches+landed.largeCatches==1&&landed.catches==1&&landed.bonusTotal==0&&(FishingState.SizeForFish(fish)==0?landed.smallCatches==1:FishingState.SizeForFish(fish)==1?landed.mediumCatches==1:landed.largeCatches==1),"EXACT_SIZE_AND_PRACTICE_STAT_"+fish+"_"+range);
-    if(fish<3){double saved=originalReelSeconds[fish,r]-reelSeconds;check(saved>.1&&saved<2.7,"MODEST_REEL_EASING_"+fish+"_"+range);}
-    if(FishingState.SizeForFish(fish)==2)check(reelSeconds>=6&&reelSeconds<28,"LARGE_FISH_RETAINS_CONTROL_CHALLENGE_"+fish+"_"+range);
+    check(reelSeconds>=2&&reelSeconds<28,"CONTINUOUS_HOLD_CATCH_RETAINS_PLAYABLE_DURATION_"+fish+"_"+range);
+    if(FishingState.SizeForFish(fish)==2)check(reelSeconds>=5&&reelSeconds<28,"LARGE_FISH_RETAINS_CONTROL_CHALLENGE_"+fish+"_"+range);
     int award=P(s).score;check(!Act(s,FishingAction.Hook,now)&&P(s).score==award&&s.Fish[fish].respawnAt>now,"ONCE_ONLY_AWARD_AND_RESPAWN_"+fish+"_"+range);
    }
    s.Begin(new ulong[]{0,1},2,0,false);check(Act(s,FishingAction.Cast,0,0,0)&&Act(s,FishingAction.Cast,0,1,3)&&s.Fish[0].claimed&&s.Fish[3].claimed,"SAME_TIER_FISH_HAVE_INDEPENDENT_RESERVATIONS");
-   s.Begin(new ulong[]{0},3,0,false);now=0;Hook(s,ref now,2);Act(s,FishingState.CounterAction(P(s),now),now);now+=1;s.Advance(now,.02f);check(!P(s).held,"LOST_RELEASE_LEASE");
+   s.Begin(new ulong[]{0},3,0,false);now=0;Hook(s,ref now,2);now+=.1;Act(s,FishingState.CounterAction(P(s),now),now);now+=1.2;s.Advance(now,.02f);check(!P(s).held,"UNRENEWED_HOLD_EXPIRES");
    Act(s,FishingAction.Cancel,now);check(!s.Fish.Any(f=>f.claimed)&&P(s).score==0&&P(s).cancels==1&&!Act(s,FishingAction.Cancel,now)&&P(s).cancels==1,"CANCEL_RELEASE_NO_POINTS_ONCE_ONLY_STAT");
-   for(int fish=2;fish<FishingState.FishCount;fish+=FishingState.SizeCount){s.Begin(new ulong[]{0},4,0,false);now=0;Hook(s,ref now,fish,0,5.5f);for(int i=0;i<1500&&P(s).phase==FishingPhase.Reeling;i++){Act(s,FishingState.CounterAction(P(s),now),now);now+=.02;s.Advance(now,.02f);}
-    check(P(s).result==FishingResult.Snapped&&P(s).score==0&&P(s).snappedLines==1,"CONTINUOUS_LARGE_OVERREEL_SNAPS_"+fish);
-   }
+   s.Begin(new ulong[]{0},4,0,false);now=0;Hook(s,ref now,2);double hookAt=now;
+   for(int i=0;i<1500&&P(s).phase==FishingPhase.Reeling;i++){Act(s,FishingAction.ReelTap,now);now+=.02;s.Advance(now,.02f);}
+   check(P(s).score==0&&P(s).result!=FishingResult.Landed,"RETIRED_TAP_SPAM_NEVER_REELS");
    s.Begin(new ulong[]{0},5,0,false);now=0;Hook(s,ref now,0);s.Advance(now+30,.02f);check(P(s).result==FishingResult.TimedOut&&P(s).score==0&&P(s).timeouts==1,"NO_REEL_TIMEOUT");
    s.Begin(new ulong[]{0,1},6,0,false);Act(s,FishingAction.Ready,0);check(!s.Start(new ulong[]{0,1},7,0,FishingMode.Round),"EVERYONE_MUST_READY");
    Act(s,FishingAction.Ready,0,1);check(s.Start(new ulong[]{0,1},7,0,FishingMode.Round)&&s.Match.phase==FishingRoundPhase.Countdown&&!Act(s,FishingAction.Cast,2,0,0),"THREE_SECOND_COUNTDOWN_BLOCKS_CAST");

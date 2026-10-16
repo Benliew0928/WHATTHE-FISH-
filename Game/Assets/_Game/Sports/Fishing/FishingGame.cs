@@ -80,7 +80,7 @@ namespace WhatTheFish {
   public bool Execute(Athlete actor,FishingAction action,uint round,uint sequence,int fish=-1,double pressedAt=double.NaN){
    if(!Authority||!Context||!actor||actor.inTransit||!Eligible().Contains(actor))return false;
    var p=Player(actor);if(!p.HasValue)return false;int pier=action==FishingAction.Cast?NearestPier(actor):p.Value.pier;
-   if(action>=FishingAction.Favourites){
+   if(action>=FishingAction.Favourites&&action<=FishingAction.UseAbility){
     bool remote=NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&actor.GetComponent<NetworkAthlete>()&&actor.GetComponent<NetworkAthlete>().OwnerClientId!=NetworkManager.ServerClientId;
     if(remote&&(!double.IsFinite(pressedAt)||pressedAt>Now+FishingState.HookClockTolerance||Now-pressedAt>FishingState.LeaseSeconds))return false;
     if(action==FishingAction.Supply){pier=Enumerable.Range(0,FishingState.PierCount).OrderBy(i=>Vector3.Distance(actor.transform.position,SupplyPosition(i))).First();if(actor.Airborne||actor.LoadingJump||!actor.Grounded||Vector3.Distance(actor.transform.position,SupplyPosition(pier))>2.6f)return false;}

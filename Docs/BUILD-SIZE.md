@@ -5,6 +5,31 @@ on 15 October 2026. The 75 MB development target and routine size-audit work are
 retired. Older records below retain the limits applicable when they were made;
 they do not define the current policy. See [AGENTS.md](../AGENTS.md).
 
+## Main sync and Fishing integration - 16 October 2026
+
+Fresh AndroidSubmission at **21:41:00 Malaysia time** measures
+**73,459,821 -> 75,053,357 bytes (+1,593,536)**. Independent APK v2 signature verification
+passes. SHA-256: `EB1E8A61B41F130AA470EE259B402B9ED8BC003D6B05D75D57E98A96DFA11377`.
+The APK is **24,946,643 bytes below 100 MB**, also satisfying
+the incoming repository's 1 GB gate. This is a measured APK, rather than a source
+folder estimate. The older 75 MB target has -53,357 bytes
+of reserve against this build; the incoming repository policy retires that target.
+
+The combined source keeps incoming goal replay, ten character identities,
+teleport, spectators and host recovery. Fishing retains Hold the Glow,
+directional camera, rod/rope/splash presentation, six abilities and two favourites.
+Local content startup retains checksum validation, a preparation lease, safe
+desktop source handling and owned temporary-file cleanup. Delayed Fishing
+results now close an already-open next-adventure card before taking input.
+Peers require **protocol 66** because the combined Fishing record layout differs
+from incoming protocol 65.
+
+The complete Windows player is in `Builds/WindowsFinal/`.
+**3,310 runtime assertions across nine final reports pass**, alongside the
+compiled SDK regressions. Runtime C# is unchanged after Windows validation.
+See [verification](VERIFICATION.md#main-sync-and-fishing-integration---16-october-2026).
+Evidence: `Builds/GitSync/Task-20261016-200323/`. Physical-phone and WAN qualification remain outstanding.
+
 ## Abrupt guest disconnect recovery - 15 October 2026
 
 Fresh AndroidSubmission at **21:54:03 Malaysia time** measures
@@ -326,6 +351,138 @@ regressions. This isolated source snapshot excludes concurrent unfinished
 character-identity work in the shared checkout. Physical Android appearance,
 touch and performance remain unverified. Current evidence is under
 `Builds/FootballReplayQA/`, including `SizeAuditFinal/`.
+
+
+
+
+## Fishing two-button Hold the Glow restoration - 15 October 2026
+
+Fresh AndroidSubmission written **22:14:33 Malaysia time** measures
+**73,456,241 -> 73,459,821 bytes (+3,580)**.
+Headroom to the strict 100,000,000-byte boundary: **26,540,179 bytes**.
+Development reserve below 75,000,000: **1,540,179 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `79D7A6F34CF6072214C3E5975EB542B8FE078C3156D0A70C037A1BB2752AFA54`.
+
+Fishing restores the pictured **Hold & Countersteer** controls: one Left and
+one Right button. Hold the glowing direction, switch when it changes and release
+both to cool the line. The fish/gold-band meter and clear navy Catch/Tension
+captions return. Timed-tap gating is removed. Continuous winding uses the earlier
+law with a modest 20% speed assist. Correct-side reel drag can slip under a
+sudden load to leave reaction time; spring, accumulated strain and fish forces
+remain, and players still release to cool.
+The shared tutorial uses the same live controls and opens once for the revision.
+
+Current camera switching and directional framing, rod grip/lean, attached rope,
+fish swimming, gravity-driven splashes and landing feedback are retained. Scoring,
+Wanted, Round/Cup/Crew, six abilities/two favourites, four islands and shared room
+travel remain. Matching peers require protocol **57**. No texture, font, model,
+shader, recorded audio, package or realtime light is added.
+[Controls and simulation](FISHING-COUNTERSTEER.md).
+
+Complete Windows player: **324 files**. **2,767 runtime checks** and **1,571 rule checks** pass.
+[Verification](VERIFICATION.md#fishing-two-button-hold-the-glow-restoration---15-october-2026), [size audit](APK-SIZE-AUDIT.md#fishing-two-button-hold-the-glow-restoration---15-october-2026).
+Evidence: `Builds/FishingHold/Task-20261015-201923/`. Physical-phone and WAN verification remain outstanding.
+
+## Local content startup recovery - 15 October 2026
+
+Fresh AndroidSubmission written **17:17:47 Malaysia time** measures
+**73,452,461 -> 73,456,241 bytes (+3,780)**.
+Headroom to the strict 100,000,000-byte boundary: **26,543,759 bytes**.
+Development reserve below 75,000,000: **1,543,759 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `7F39D1F12038005F6028A80600148A792394C8C1442E263DBA164358535A5FE6`.
+
+First-launch preparation reads an embedded filesystem bundle directly,
+avoiding an unnecessary compressed-source copy on Windows. APK archive assets
+retain their required temporary copy. Both paths retain length/SHA-256 and
+conversion-CRC checks. Preparation is serialized between launches; owned failed
+and interrupted temporary files are cleaned. Obsolete hash caches are pruned
+after the current content successfully loads, preserving other files and saves.
+The loading screen offers a usable storage/retry message. All four islands,
+the existing Fishing gameplay and protocol **56** are retained. No asset,
+recorded audio, model, shader, texture, package or realtime light is added.
+[Loader and storage behavior](CONTENT-PACKAGING.md#first-launch-and-storage).
+
+Complete Windows player: **324 files**. **443 runtime checks** and **1,576 rule checks** pass.
+[Verification](VERIFICATION.md#local-content-startup-recovery---15-october-2026), [size audit](APK-SIZE-AUDIT.md#local-content-startup-recovery---15-october-2026).
+Evidence: `Builds/LaunchRecovery/Task-20261015-165153/`. Physical-phone and WAN verification remain outstanding.
+
+## Fishing timed pulls and directional camera - 15 October 2026
+
+Fresh AndroidSubmission written **16:14:33 Malaysia time** measures
+**73,442,073 -> 73,452,461 bytes (+10,388)**.
+Headroom to the strict 100,000,000-byte boundary: **26,547,539 bytes**.
+Development reserve below 75,000,000: **1,547,539 bytes**.
+The enforced hard limit and independent APK v2 signature verification pass.
+SHA-256: `E94EAA6B2F1C8A6FA1BB88BCC4C34532A4A7D1B5463CF249AFA24848B82AE940`.
+
+Tap Reel when the moving circle enters gold. Every third sweep asks for a
+timed Left/Right counterpull through the same controls. Each sweep allows one
+attempt; holding and spam never repeat a stroke. Clear arrow cues brighten at
+the tap window, with contained hit/miss feedback and no keyboard guides. The
+rod, torso and fish forces respond to accepted pulls, and a restrained camera
+shoulder shift keeps the opposing direction readable. A tension-sensitive reel
+clutch softens short strokes under load. Host and guest receive equal fixed
+stroke duration; timestamp and duplicate guards remain host-owned. The revised
+tutorial reopens once and shares the live widgets with How to Play.
+
+Scoring, Wanted, Round/Cup/Crew goals, six skills/two favourites, existing catch
+feedback, all four islands and shared room travel remain. Matching peers require
+protocol **56**. No new image, model, shader, recorded audio file, package or
+realtime light is added. [Controls and simulation](FISHING-TIMING.md).
+
+Complete Windows delivery: **324 files**, **2,853 passing assertions**.
+[Verification](VERIFICATION.md#fishing-timed-pulls-and-directional-camera---15-october-2026), [packing audit](APK-SIZE-AUDIT.md#fishing-timed-pulls-and-directional-camera---15-october-2026).
+Evidence: `Builds/FishingTiming/Task-20261015-151017/`. Physical-phone and WAN qualification remain outstanding.
+
+## Fishing clarity, camera and catch feedback - 15 October 2026
+
+Fresh AndroidSubmission written **14:31:37 Malaysia time** measures
+**73,446,373 -> 73,442,073 bytes (-4,300)**.
+Headroom to the strict 100,000,000-byte boundary: **26,557,927
+bytes**. Development reserve below 75,000,000: **1,557,927 bytes**.
+The enforced hard size gate and independent APK v2 signature verification pass.
+SHA-256: `F39B0474F0F59EFFFA8F850482356F0FB26EE8BF976511742B18629343A00D56`.
+
+Fishing now has a circular accepted-input cue and gold target socket,
+explicit hold/switch/release instructions with stable cooling guidance, a framed
+cast/wait/hook hint, contextual utility visibility, a smooth accepted-hook camera
+with return to the chosen view, and confirmed local fish/points landing feedback.
+Reduced Motion retains the chosen camera and simplifies the new effects. Held
+gear stays clear of the landing card. The tutorial reuses the live circular meter.
+No new image, model, shader, recorded audio file or package is added. Rules,
+scoring, fish forces, timing, six skills/two favourites and host authority remain
+unchanged. All four islands and shared room travel remain self-contained.
+Matching peers use protocol **55**.
+
+Complete Windows delivery: **324 files**, **2,755 passing
+assertions** across 9 final reports. [Verification](VERIFICATION.md#fishing-clarity-camera-and-catch-feedback---15-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#fishing-clarity-camera-and-catch-feedback---15-october-2026), [controls and camera](FISHING-COUNTERSTEER.md).
+Evidence: `Builds/FishingClarity/Task-20261015-131941/`. Physical Android and WAN qualification remain outstanding.
+
+## Local rebuild of pulled main - 14 October 2026
+
+Fresh local AndroidSubmission written **20:45:42 Malaysia time** measures
+**90,388,492 -> 73,446,373 bytes (-16,942,119)** against
+the older APK on this laptop. Headroom to the strict 100,000,000-byte boundary:
+**26,553,627 bytes**. Development reserve below 75,000,000:
+**1,553,627 bytes**. Enforced hard limit and independent APK v2 signature pass.
+SHA-256: `51723F75318AE12D75C7494F674A1A08B79DA67C2A25F119FB4933745F7C715A`.
+
+Rebuilds pulled `main` at `4b20c6b`. No new gameplay or art change
+is authored. All four islands, shared room travel, Golf camera/buggy/flags/trail,
+programmed sports bots, current match/prop rules, network movement, live renderer
+lighting and Fishing's existing features are retained. Protocol **55** requires
+matching players. Lossless scene AssetBundle sharing and release minification
+are the upstream packaging changes; this is not removal of islands or an
+external content download. Installed storage also includes the expanded runtime
+cache and must be measured separately on a phone.
+
+Complete 324-file Windows player is delivered with
+**3,546 passing assertions** and matching runtime hashes.
+[Verification](VERIFICATION.md#local-rebuild-of-pulled-main---14-october-2026), [audit](APK-SIZE-AUDIT.md#local-rebuild-of-pulled-main---14-october-2026).
+Evidence: `Builds/LocalRebuild/Task-20261014-195856/`. No physical-phone or WAN qualification is claimed.
 
 ## Golf buggy control and shot camera - 14 October 2026
 

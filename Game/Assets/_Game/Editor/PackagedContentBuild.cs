@@ -14,6 +14,16 @@ public static class PackagedContentBuild {
  const string Generated="Assets/_Game/GeneratedPackaging";
  public static string PayloadDirectory {get;private set;}
  public static bool IsPrepared(Scene scene)=>scene.path.StartsWith(Generated+"/",StringComparison.Ordinal);
+ // Code-only iteration retains the last full scene bundle. Register its
+ // payload again: Unity recreates StreamingAssets even for BuildScriptsOnly.
+ // Call only after a full build with unchanged serialized assets/type layouts.
+ public static BuildReport BuildScripts(BuildTarget target,string output,BuildOptions options){
+  string root=ProjectBuilder.ResolveBuildOutputPath("../Builds/PackagedContent/"+target);
+  string payload=Path.Combine(root,"Payload"),manifest=Path.Combine(root,target+".manifest"),boot=Generated+"/PackagedBoot.unity";
+  if(!Directory.Exists(payload)||!File.Exists(manifest)||!AssetDatabase.LoadAssetAtPath<SceneAsset>(boot))throw new BuildFailedException("A full packaged build must precede a code-only refresh.");
+  try{PayloadDirectory=payload;return BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=new[]{boot},assetBundleManifestPath=manifest,target=target,locationPathName=output,options=options|BuildOptions.BuildScriptsOnly});}
+  finally{PayloadDirectory=null;}
+ }
  public static void CopyContentAudit(BuildTarget target){
   string audit=Path.Combine(BuildSizeAudit.Output,"content-"+target),latest=Path.Combine(BuildSizeAudit.Output,"latest");
   foreach(string file in new[]{"packed-assets.csv","packed-layout.csv","meshes.csv","summary.txt"})File.Copy(Path.Combine(audit,file),Path.Combine(latest,"bundle-"+file),true);

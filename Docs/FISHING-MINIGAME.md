@@ -3,7 +3,7 @@
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **52** players. The room shares one activity and travels together.
+protocol **66** players. The room shares one activity and travels together.
 Fishing supports **two to five friends**, with solo free practice and a solo
 timed practice option. Walk to the end of any of the five coloured piers.
 Each pier has **six fish: two small, two medium and two large**, for **30 fish**
@@ -22,29 +22,27 @@ See [abilities and acquisition rules](FISHING-ABILITIES.md).
    tracking brackets and a cyan water ring identify it, and the Cast button
    shows its size and base points. A forgiving aim cone and stable selection
    reduce flicker as fish swim. You do not need to tap the fish itself.
-2. **Cast:** tap Cast or press **F**. The character turns toward the target,
+2. **Cast:** tap Cast. The character turns toward the target,
    swings the rod and throws the line/float in an arc. A fish already claimed
    by someone else cannot be taken; aim at another fish or wait. Casting commits
    the highlighted fish; camera movement does not switch it during the catch.
 3. **Hook:** a [gold ! cue](FISHING-HOOK-CUE.md) appears above the biting fish
-   and **HOOK!** pulses, with a gold rim showing the remaining time. Tap it or press
-   **F** within **1.8 seconds** of the bite; input is available immediately.
-4. **Hold & Countersteer:** hold the glowing **Left / A** or **Right / D**
-   against the fish's pull. Switch sides when it turns; release both to recover
-   tension. Left/Right arrow keys also work. Wrong steering builds strain without
-   normal catch progress. At high tension both buttons get a warning tint and say Release;
-   **100% tension snaps the line**. The guide previews turns, the catch bar follows
-   distance and the tension bar follows stretch/strain. F cannot reel by itself.
+   and **HOOK!** pulses, with a gold rim showing the remaining time. Tap it within **1.8 seconds** of the bite; input is available immediately.
+4. **Hold the Glow:** hold the glowing Left or Right button against the fish.
+   Switch with the glow; release both when tension turns red. There is no tap
+   window or one-attempt sweep. The fish marker, gold band and lit button show
+   the opposing direction. Correct holding winds the physical line continuously.
+   At **100% tension the line snaps**. See
+   [hold controls, camera and multiplayer rules](FISHING-COUNTERSTEER.md).
 5. **Land:** small/medium/large fish earn **2 / 5 / 10** base points.
    Landing briefly lifts the fish, updates points and animates the ranking.
    Caught fish return after **seven seconds**.
 
-Cancel with the Cancel button or **X**. Moving away, jumping out of casting
+Cancel with the Cancel button. Moving away, jumping out of casting
 position, travelling or leaving the game releases the line. Misses, cancellation,
-snaps and the **30-second reel timeout** award no points. Pointer release/exit,
-focus loss, pause and round changes end held input. Only the finger that started
-reeling can release it; the host's **0.8-second renewable lease** also recovers
-from a missing release message. Use Camera to switch among all three views before casting. Camera and jump fade while the active line blocks them.
+snaps and the **30-second reel timeout** award no points. Pointer release/exit does not erase a queued tap. Focus loss, pause and round
+changes clear local input; the host expires each accepted short stroke without
+requiring a release message. Use Camera to switch among all three views before casting. Irrelevant utility controls hide while the line is active.
 
 The reaction window remains **1.8 seconds**. A remote Hook carries its press
 time on the synchronized room clock. The host can receive that already-timely
@@ -96,7 +94,8 @@ by mode and player count; there is no global online ranking service.
 
 ## Sports-style Fishing HUD
 
-[B is the current approved design reference](FishingUI/Hold-Countersteer-Reference.png).
+[Timed pulls](FISHING-TIMING.md) supersede the continuous hold mechanic in the
+[historical B artwork reference](FishingUI/Hold-Countersteer-Reference.png).
 The top-left cream/navy card contains player names, cartoon avatars, shared
 ranks and animated points. Catch awards pop beside the name; the base award
 appears first and a Wanted **+3** follows when earned. Rows slide when another
@@ -105,17 +104,17 @@ flame; crossing the milestone celebrates briefly without ending the contest.
 Crew rows show contribution checks rather than competitive ranks.
 
 The clock/Wanted card holds the time and crew checklist. Catch and Tension
-labels sit above two side-by-side bottom gauges, inside their illustrated card.
+labels sit inside two side-by-side bottom gauges, with a thin navy outline for contrast.
 The fill, shine and flame accents animate;
-the danger triangle and **RELEASE!** cue reinforce the red warning. Cast, Hook,
+the danger triangle reinforces high tension. Skip a timing sweep to recover. Cast, Hook,
 Left/Right, Cancel, Camera, Jump and exit controls keep their text contained.
 Players can set a short room nickname before a round.
 
-The current [Hold & Countersteer HUD](FISHING-COUNTERSTEER.md) reuses the sports
+The current [timed-pull HUD](FISHING-TIMING.md) reuses the sports
 fonts and press animation. The circular Cast/Hook reel illustration returns;
 Left and Right share aqua/gold circular artwork with their own native labels.
-A small sliced illustrated frame surrounds the native countersteer track and
-progress bars. The four new/restored compressed delivery PNGs total 201,479
+A small sliced illustrated frame surrounds the native circle timing track and
+progress bars. The four existing compressed delivery PNGs total 201,479
 bytes before APK packing. Editable masters stay outside Unity. Round controls
 use fixed safe-area touch frames. Sharper fish darts/breaches and stronger rod
 and torso motion reuse existing models and materials; feet remain planted.
@@ -142,9 +141,9 @@ border so the contribution line stays on the coloured background. The existing
 target and completion rules remain unchanged.
 
 Accepted local actions play short cast, splash, bite, Hook, landing, miss and
-snap sounds. Held reeling adds a quiet ratchet loop and rising strain gives a
+snap sounds. Accepted timed strokes add a quiet ratchet loop and rising strain gives a
 warning. Cues suppress duplicate/stale snapshots and stop on focus loss, pause,
-release or island exit. They obey Game volume and use short synthesized mono
+stroke expiry or island exit. They obey Game volume and use short synthesized mono
 waveforms; no imported sound pack is added.
 
 **Settings → Fishing vibration** is off by default. Android uses short native
@@ -176,7 +175,7 @@ The float follows the ripple equation. Existing lighting and cameras remain.
 ## Checks and rebuilding
 
 `Tools/Build/Test-FishingGameplay.ps1 -Render` checks real screen-space
-reticle targeting, touch/button and keyboard action paths, catch scoring, hold/release,
+reticle targeting, touch/button and keyboard action paths, catch scoring, timed taps/counterpulls,
 camera targeting, swimming containment, reflection/light availability, ranking
 animations and Fishing/Golf hand-grip transitions. It also runs host/guest
 target validation, Wanted scoring, an overtake, shared results and ready rematch.
