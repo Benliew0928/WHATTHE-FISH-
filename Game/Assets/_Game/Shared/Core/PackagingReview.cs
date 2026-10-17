@@ -65,10 +65,11 @@ namespace WhatTheFish {
    while(PackagedContentBoot.Error==null&&Time.realtimeSinceStartupAsDouble<deadline)yield return null;
    Check(PackagedContentBoot.Error!=null,"Blocked cache produces a recoverable preparation error");
    Check(!PackagedContentBoot.Ready&&!AppRoot.Instance,"Failed preparation never starts a partial world");
-   var button=FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None).FirstOrDefault(b=>b.name=="Retry");
-   var text=FindObjectsByType<UnityEngine.UI.Text>(FindObjectsSortMode.None).FirstOrDefault(t=>t.name=="Status");
+   var welcome=StartupWelcome.Instance;
+   var button=welcome?welcome.RetryButton:null;
+   bool storageGuidance=welcome&&welcome.HasError&&welcome.LoadingPanel.GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.gameObject.activeInHierarchy&&t.text.Contains("storage"));
    Check(button&&button.gameObject.activeInHierarchy&&button.interactable,"Retry remains visible and usable");
-   Check(text&&text.text.Contains("storage"),"Failure explains storage recovery in the loading screen");
+   Check(storageGuidance,"Failure explains storage recovery in the loading screen");
    string cache=ReviewCachePath();
    bool owned=cache.StartsWith(Path.GetFullPath(folder)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase)&&File.Exists(cache)&&new FileInfo(cache).Length==1;
    Check(owned,"Recovery fixture is confined to the explicit review output");

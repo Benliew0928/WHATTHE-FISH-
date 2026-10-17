@@ -30,7 +30,7 @@ namespace WhatTheFish {
   void Place(Athlete who,Vector3 p,float yaw=0){who.capsule.enabled=false;who.transform.SetPositionAndRotation(p,Quaternion.Euler(0,yaw,0));who.capsule.enabled=ball.Authority;who.ResetLocomotion();var net=who.GetComponent<NetworkTransform>();if(net&&net.IsSpawned&&ball.Authority)net.Teleport(p,who.transform.rotation,Vector3.one);Physics.SyncTransforms();}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);Directory.CreateDirectory(Path.Combine(folder,"frames"));shared=Directory.GetParent(folder).FullName;File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!app.Exploring||!app.LocalAthlete||!BasketballBall.Active)&&Time.realtimeSinceStartup<end)yield return null;
+   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!DevelopmentProbe.ReadyToReviewSport||!BasketballBall.Active)&&Time.realtimeSinceStartup<end)yield return null;
    actor=app?app.LocalAthlete:null;ball=BasketballBall.Active;if(!actor||!ball){Check(false,"court initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.7f);
    review=new GameObject("Defense review camera").AddComponent<Camera>();review.CopyFrom(Camera.main);review.enabled=false;capture&=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;app.view.mode=1;actor.HideHead(false);
@@ -47,7 +47,10 @@ namespace WhatTheFish {
    Check(!Sweep(Vector3.zero,Vector3.right,new Vector3(float.NaN,0,0),Vector3.zero),"nonfinite contact rejected");
    Check(Sweep(Vector3.zero,Vector3.zero,Vector3.right*.1f,Vector3.right*.1f),"stationary overlapping spheres contact");
    Check(!Sweep(Vector3.zero,Vector3.zero,Vector3.right,Vector3.right),"stationary separated spheres miss");
-   foreach(float t in new[]{0f,.11f,.31f,.69f})Check(!BasketballDefenseRules.Active(BasketballAction.Block,t),"standing block inactive at "+t);
+   foreach(float t in new[]{0f,.04f,.47f,.69f})Check(!BasketballDefenseRules.Active(BasketballAction.Block,t),"standing block inactive at "+t);
+   foreach(float t in new[]{.05f,.11f,.31f,.46f})Check(BasketballDefenseRules.Active(BasketballAction.Block,t),"forgiving standing timing at "+t);
+   Check(BasketballDefenseRules.Sweep(Vector3.zero,Vector3.zero,new Vector3(.38f,0,-1),new Vector3(.38f,0,1),BasketballBall.Radius+BasketballDefenseRules.HandRadius,out _),"near-hand pass caught by expanded coverage");
+   Check(!BasketballDefenseRules.Sweep(Vector3.zero,Vector3.zero,new Vector3(.6f,0,-1),new Vector3(.6f,0,1),BasketballBall.Radius+BasketballDefenseRules.HandRadius,out _),"expanded coverage still rejects distant passes");
    Check(BasketballDefenseRules.Active(BasketballAction.Block,.2f)&&BasketballDefenseRules.Active(BasketballAction.JumpBlock,.6f),"distinct standing and airborne contact windows");
    var hoop=Vector3.forward*12;float Pressure(Vector3 p,Vector3 f)=>BasketballDefenseRules.Pressure(p,f,Vector3.zero,hoop);
    Check(Pressure(Vector3.forward,-Vector3.forward)>.7f,"close facing defender contests shot");
@@ -211,6 +214,8 @@ namespace WhatTheFish {
    ball.TryBlock(actor,90,false);yield return WaitCapture(.8f);Check(ball.Defense.blocks==before&&ball.Holder==guest,"carrier torso shields far-side block");
    yield return Possess(guest,actor,new Vector3(0,.07f,0),new Vector3(2.8f,.07f,.32f));
    // The same main button selects an airborne block using its owning finger.
+   // Room HUD refreshes can replace the controls after the earlier possession.
+   guard=FindObjectsByType<BasketballDefenseButton>(FindObjectsSortMode.None).Single(p=>p.guard);block=guard;block.Refresh();touch.position=RectTransformUtility.WorldToScreenPoint(null,block.transform.position);
    block.OnPointerDown(touch);var drag=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41,position=RectTransformUtility.WorldToScreenPoint(null,block.transform.TransformPoint(new Vector2(0,130)))};block.OnDrag(drag);
    block.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=42});yield return new WaitForSeconds(.08f);Check(!actor.BasketballMotion.JumpBlocking,"other finger cannot commit block gesture");
    block.OnPointerUp(drag);yield return new WaitForSeconds(.22f);Check(actor.BasketballMotion.Action==BasketballAction.Block,"upward guard gesture commits standing block");yield return WaitCapture(1.25f);

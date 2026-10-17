@@ -16,6 +16,7 @@ namespace WhatTheFish {
   bool TryPlayerCourt(Athlete actor,out Transform arena,out Vector3 point,out Vector2 limits){
    arena=transform.parent;point=Vector3.zero;limits=PlayerCourtLimits;
    var match=BasketballMatch.Instance;
+   if(match&&match.RetrievingInbound(actor))return false;
    if(!Playing||!actor||actor.inTransit||!actor.capsule||!actor.capsule.enabled||match&&match.BoundaryReleased)return false;
    if(actor.BasketballFreeRoam&&!(match&&match.Active&&match.Contains(actor)))return false;
    var controller=actor.capsule;

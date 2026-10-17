@@ -42,20 +42,20 @@ finishes that fall back to a timed shot receive the normal guarded-shot penalty.
 ## Blocking and recovery
 
 Standing Block loads and reaches through a committed point. Its active window
-is 0.12–0.30 s, with 0.70 s total recovery. The current dribble or incoming
+is 0.05–0.46 s, with 0.70 s total recovery. The current dribble or incoming
 flight is predicted once at the start; the hand does not chase subsequent
 changes. Low dribbles may be knocked loose when exposed, while the body shields
 the far side. Unguarded steals retain their low swipe and dribble-exposure rules.
 
 Jump Block has a 0.16 s load, a 2.20 m physical root rise, an active hand window
-of 0.22–0.88 s and a 1.30 s action. This stylized jump reaches the existing dunk
+of 0.16–0.98 s and a 1.30 s action. This stylized jump reaches the existing dunk
 height. It uses gravity, bounded air steering and ordinary ceiling/floor
 contacts. Takeoff carries movement but has no target-seeking displacement.
 Early or late jumps can miss. Standing, jumping and stealing cannot cancel
 one another to bypass recovery.
 
 The host sweeps the ball and the blocking palm between physics samples using
-the 0.15 m ball radius and 0.12 m hand radius. Contacts require the active
+the 0.15 m ball radius and a forgiving 0.30 m hand radius. Contacts require the active
 window, actual height/reach, a forward approach, and a clear path past scenery
 and player torsos. Rig-calibrated shoulder positions and arm lengths bound the
 same palm path used by the visible pose. Clients cannot supply a success flag,

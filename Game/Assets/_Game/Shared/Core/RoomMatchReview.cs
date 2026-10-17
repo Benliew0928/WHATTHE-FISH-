@@ -13,10 +13,11 @@ namespace WhatTheFish {
   string folder;bool failed;AppRoot app;BasketballBall ball;BasketballMatch match;Athlete actor,partner,mateA,mateB;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var a=Environment.GetCommandLineArgs();int i=Array.IndexOf(a,"-roomMatchReview");if(i>=0&&i+1<a.Length)new GameObject("Room match review").AddComponent<RoomMatchReview>().folder=a[i+1];}
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
+  void FixedUpdate(){if(ball&&ball.Authority&&app&&!app.rooms.Connected)foreach(var a in new[]{partner,mateA,mateB})if(a&&match.AutomaticMovement(a))a.Simulate(default,Time.fixedDeltaTime);}
   IEnumerator Until(Func<bool> condition,string name,float seconds=15){float end=Time.realtimeSinceStartup+seconds;while(!condition()&&Time.realtimeSinceStartup<end)yield return null;Check(condition(),name);}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");RoomMatchRuleChecks.Run(Check);
-   yield return Until(()=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.LocalAthlete,"entered sport",80);
+   yield return Until(()=>DevelopmentProbe.ReadyToReviewSport,"entered sport",80);
    app=AppRoot.Instance;if(!app||!app.Exploring){Finish();yield break;}actor=app.LocalAthlete;
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;app.view.mode=2;yield return new WaitForSeconds(.6f);
    if(app.SelectedSport==SportId.Football){yield return Football();Finish();yield break;}
@@ -49,11 +50,11 @@ namespace WhatTheFish {
    var propOwners=new[]{actor,partner,mateA,mateB};foreach(var owner in propOwners)ball.ReviewGiveProp(owner,SportsProp.Portal);var heldProps=propOwners.Select(ball.PropSlot).ToArray();
    var pickupDeadline=ball.Props.pickup.respawn;Check(pickupDeadline>match.Now&&!ball.Props.pickup.countingDown,"competitive match schedules first pickup ten seconds after play starts");yield return Capture("regulation");
    yield return Drop(actor,aHoop,3);Check(match.State.ScoreA==3&&match.State.ScoreB==0&&match.State.Phase==BasketballMatchPhase.Restart,"physical three pointer credited to A");
-   Check(ball.Holder&&match.TeamOf(ball.Holder)==FootballTeam.B&&match.State.Possession==FootballTeam.B,"conceding team gets protected baseline ball");
+   Check(match.TeamOf(match.Snapshot.inbounder)==FootballTeam.B&&match.State.Possession==FootballTeam.B,"conceding team gets baseline collection duty");
    Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same)&&ball.TurboRemaining(actor)==0,"score retains every player's inventory and clears active effects");
    Check(!ball.BeginShotCharge(partner,0)&&!ball.TrySteal(actor,0)&&!ball.TryUseProp(actor,ball.PropSlot(actor).revision),"restart gates shots steals and abilities");
    double frozen=match.Remaining;Vector3 before=actor.transform.position;actor.Simulate(new PlayerCommand{move=Vector2.one,jump=true,heading=0},.1f);
-   Check(Vector3.Distance(before,actor.transform.position)<.001f&&match.Remaining==frozen,"restart freezes movement and match clock");
+   Check(Vector3.Distance(before,actor.transform.position)>.1f&&match.Remaining==frozen,"scorer runs home while playing clock waits for inbound");
    if(online){var n=actor.GetComponent<NetworkAthlete>();Check(!(bool)typeof(NetworkAthlete).GetMethod("AcceptBasketball",BindingFlags.NonPublic|BindingFlags.Instance).Invoke(n,new object[]{selection}),"old network round rejected");}
    Check(ball.Props.pickup.respawn==pickupDeadline,"basket inbound preserves pickup deadline");ball.ReviewAdvanceSpawn(10);yield return new WaitForFixedUpdate();yield return new WaitForEndOfFrame();var worldPickup=ball.Props.pickup;var worldModel=ball.GetComponent<BasketballPropVisual>().ReviewPickup();Check(worldPickup.kind!=SportsProp.None&&worldModel&&worldModel.gameObject.activeInHierarchy,"pickup materializes during inbound without waiting for play to resume");yield return Capture("basket-restart");var propHud=FindFirstObjectByType<BasketballPropHUD>();Check(propHud&&propHud.GetComponent<CanvasGroup>().alpha>.99f&&!propHud.GetComponent<Button>().interactable,"basket keeps held prop visible during protected restart");yield return OpenRestart();
    Check(!ball.InboundPending&&match.Running,"legal pass opens restart");
@@ -61,7 +62,7 @@ namespace WhatTheFish {
    Check(match.State.ShotRemaining(match.Now)>17,"fresh possession clock");
    ball.autoPickup=false;ball.Body.isKinematic=false;ball.Place(new Vector3(7,3,0),Quaternion.identity,ball.transform.parent.right*8,Vector3.zero);match.Touch(partner);
    yield return Until(()=>match.State.Phase==BasketballMatchPhase.Restart,"out of bounds detected");
-   Check(match.State.Possession==FootballTeam.A&&ball.Holder&&match.TeamOf(ball.Holder)==FootballTeam.A,"last-touch opponent owns sideline restart");
+   Check(match.State.Possession==FootballTeam.A&&match.TeamOf(match.Snapshot.inbounder)==FootballTeam.A,"last-touch opponent owns sideline restart");
    Check(propOwners.Select((owner,i)=>ball.PropSlot(owner).Equals(heldProps[i])).All(same=>same),"out of bounds retains all held props");yield return new WaitForEndOfFrame();Check(ball.Props.pickup.Equals(worldPickup)&&ball.GetComponent<BasketballPropVisual>().ReviewPickup()==worldModel&&worldModel.gameObject.activeInHierarchy,"out of bounds preserves same world prop instance and location");
    yield return OpenRestart();
    yield return Until(()=>match.State.Phase==BasketballMatchPhase.Restart,"20-second shot clock expires",25);

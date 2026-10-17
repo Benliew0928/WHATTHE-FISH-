@@ -11,7 +11,7 @@ namespace WhatTheFish {
     s.Control(FootballTeam.A,8);check(s.ShotDeadline==21,"teammate receives without clock reset");
     s.Control(FootballTeam.B,9);check(s.ShotDeadline==29,"opponent possession resets clock");
     s.Advance(29);check(s.Phase==BasketballMatchPhase.Restart&&s.Possession==FootballTeam.A&&s.RestartReason==BasketballRestart.ShotClock,"shot clock turnover");
-    double saved=s.Remaining(29);s.Advance(30.99);check(s.Phase==BasketballMatchPhase.Restart&&s.Remaining(30.99)==saved,"restart protected for two seconds");
+    double saved=s.Remaining(29);s.Advance(30.99);check(s.Phase==BasketballMatchPhase.Restart&&s.Remaining(30.99)==saved,"clock waits for inbound release");
     s.Advance(31);check(s.Phase==BasketballMatchPhase.Restart&&s.Remaining(31)==saved,"restart waits for a pass after setup");check(!s.OpenInbound(FootballTeam.B,31)&&s.OpenInbound(FootballTeam.A,31),"only inbound side opens play");check(s.Running&&s.ShotDeadline==51&&s.Deadline==minutes*60+2,"legal inbound resumes both clocks");
     check(s.Release(32),"legal physical release");check(s.Basket(FootballTeam.A,3,33),"three point basket accepted");
     check(s.ScoreA==3&&s.Possession==FootballTeam.B,"basket awards conceding team possession");
@@ -26,7 +26,7 @@ namespace WhatTheFish {
    b=Start(5);b.Advance(5);b.Control(FootballTeam.B,6);b.Release(6);check(b.Basket(FootballTeam.B,3,7)&&b.Result==FootballMatchResult.TeamB,"golden basket ends immediately");
    b=Start();b.Control(FootballTeam.A,0);b.Release(19.9);b.Advance(20);check(b.Running,"legal shot continues beyond shot clock");b.Rim(20.1);b.Control(FootballTeam.A,21);check(b.ShotDeadline==40.1,"offensive rim rebound receives refreshed clock");
    b=Start();b.Control(FootballTeam.A,0);b.Release(19.9);b.Miss();b.Advance(20);check(b.Phase==BasketballMatchPhase.Restart&&b.Possession==FootballTeam.B,"airball at expired shot clock turns over");
-   b=Start();b.Control(FootballTeam.A,0);b.Restart(FootballTeam.B,BasketballRestart.Boundary,4);check(b.Possession==FootballTeam.B&&b.Deadline==6&&b.Remaining(5)==176,"boundary pause and ownership");
+   b=Start();b.Control(FootballTeam.A,0);b.Restart(FootballTeam.B,BasketballRestart.Boundary,4);check(b.Possession==FootballTeam.B&&b.Deadline==4&&b.Remaining(5)==176,"boundary ownership without a fixed countdown");
    b=Start();check(b.Basket(FootballTeam.B,2,1)&&b.ScoreB==2,"accidental own basket credits hoop owner");
    foreach(int count in Enumerable.Range(1,11)){
     var teams=new FootballTeamSelection();check(teams.Begin(Enumerable.Range(0,count).Select(i=>(ulong)i))==(count>=2&&count<=10&&count%2==0),"even roster gate "+count);

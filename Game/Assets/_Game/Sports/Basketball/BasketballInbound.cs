@@ -45,14 +45,14 @@ namespace WhatTheFish {
    if(Connected&&NetworkManager.Singleton.ConnectedClients.Count!=1||!Eligible(actor)){ResetHome();return;}
    BeginInbound(actor,boundaryExit);
   }
-  public bool BeginInbound(Athlete actor,Vector3 exit){
-   if(!Authority||!actor||!actor.capsule)return false;
+  public bool TryInboundSpot(Athlete actor,Vector3 exit,out Vector3 world,out Vector3 inward){
+   world=inward=default;if(!actor||!actor.capsule)return false;
    var limits=PaintedCourtLimits;
    bool side=Mathf.Abs(exit.x)>=limits.x-.001f;
    var outward=side?new Vector3(Mathf.Sign(exit.x),0,0):new Vector3(0,0,Mathf.Sign(exit.z));
    float clearance=actor.capsule.radius+actor.capsule.skinWidth+.12f;
    var spot=exit+outward*clearance;var tangent=side?Vector3.forward:Vector3.right;
-   float span=side?limits.y:limits.x;bool found=false;Vector3 world=default;
+   float span=side?limits.y:limits.x;bool found=false;
    // Basket bases may occupy the crossing point. Use the nearest clear spot
    // along that same touchline, never warp into the support or across the court.
    for(int i=0;i<100;i++){
@@ -64,12 +64,19 @@ namespace WhatTheFish {
     if(Physics.CheckCapsule(center+Vector3.up*(height*.5f-radius),center-Vector3.up*(height*.5f-radius),radius,1<<8,QueryTriggerInteraction.Ignore))continue;
     found=true;break;
    }
-   if(!found)return false; // Retry while retaining the original exit; do not lose the ball.
+   inward=transform.parent?transform.parent.TransformDirection(-outward):-outward;return found;
+  }
+  public bool BeginInbound(Athlete actor,Vector3 exit,bool placeActor=true){
+   if(!Authority||!TryInboundSpot(actor,exit,out var world,out var inward))return false;
+   if(!placeActor&&Vector3.ProjectOnPlane(actor.transform.position-world,Vector3.up).magnitude>.2f)return false;
    ClearPossession();boundaryExit=exit;NewDefensePlay();inboundActor=actor;
    if(PlayerView.Instance&&PlayerView.Instance.target==actor)PlayerView.Instance.ClearMatchInput();
-   var inward=transform.parent?transform.parent.TransformDirection(-outward):-outward;float heading=Quaternion.LookRotation(inward).eulerAngles.y;
-   bool enabled=actor.capsule.enabled;actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(world,Quaternion.Euler(0,heading,0));actor.capsule.enabled=enabled;actor.ResetLocomotion();
-   var net=actor.GetComponent<NetworkTransform>();if(net&&net.IsSpawned)net.Teleport(world,actor.transform.rotation,actor.transform.localScale);
+   float heading=Quaternion.LookRotation(inward).eulerAngles.y;
+   if(placeActor){
+    bool enabled=actor.capsule.enabled;actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(world,Quaternion.Euler(0,heading,0));actor.capsule.enabled=enabled;
+    var net=actor.GetComponent<NetworkTransform>();if(net&&net.IsSpawned)net.Teleport(world,actor.transform.rotation,actor.transform.localScale);
+   }else actor.transform.rotation=Quaternion.Euler(0,heading,0);
+   actor.ResetLocomotion();
    if(PlayerView.Instance&&PlayerView.Instance.target==actor)PlayerView.Instance.yaw=heading;
    holder=actor;pendingAction=BasketballAction.None;dribblePhase=0;looseFor=outsideFor=0;
    Body.isKinematic=false;Body.linearVelocity=Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;

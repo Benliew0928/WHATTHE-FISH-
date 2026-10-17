@@ -9,6 +9,16 @@ namespace WhatTheFish {
  // Explicit command-line opt-in. These checks do not run in normal play.
  public sealed partial class DevelopmentProbe:MonoBehaviour {
   public static bool Driving;public static float Heading;
+  // Startup briefly exposes the offline athlete while a requested room joins.
+  // Network reviews must wait for the spawned owner and replicated exploration.
+  public static bool ReadyToReviewSport {
+   get {
+    var app=AppRoot.Instance;if(!app||!app.Exploring||!app.LocalAthlete||app.LocalAthlete.inTransit||RoomTeleport.Busy||TeleportSequence.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return false;
+    var args=Environment.GetCommandLineArgs();bool online=args.Contains("-localHost")||args.Contains("-localClient")||args.Contains("-cloudHost")||args.Contains("-cloudCode");
+    if(!online)return true;var player=app.LocalAthlete.GetComponent<NetworkAthlete>();var host=NetworkAthlete.HostPlayer;
+    return app.rooms.Connected&&player&&player.IsSpawned&&player.IsOwner&&player.IsPlayerObject&&host&&host.Exploring.Value&&host.WorldSport.Value==app.SelectedSport;
+   }
+  }
   string[] args;string output;bool ready;float elapsed,next;int expected;bool started,returned,preset;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){if(Environment.GetCommandLineArgs().Contains("-probe"))new GameObject("Development probe").AddComponent<DevelopmentProbe>();}
   IEnumerator Start(){

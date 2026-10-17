@@ -26,6 +26,7 @@ namespace WhatTheFish {
     Check(online?match.StartMatch():match.ReviewStart(BasketballBots.Roster,180,.15),"start match "+size);
     if(online)foreach(var a in BasketballBots.Roster)match.ChooseTeam(a,BasketballBots.IsBot(a)?FootballTeam.B:FootballTeam.A,match.Snapshot.revision);
     else if(size==5){Check(match.ChooseTeam(app.LocalAthlete,FootballTeam.B,match.Snapshot.revision),"local selects red team");Check(match.ChooseTeam(BasketballBots.Roster.First(BasketballBots.IsBot),FootballTeam.B,match.Snapshot.revision),"teammate selects red team");}
+    if(!online){if(size!=5)match.RequestTeam(FootballTeam.A);Check(match.ConfirmSoloTeam(),"explicit solo start");}
     yield return Until(()=>match.Running,"match live",20);Check(match.PlayerRecords.Count()==size*2&&match.PlayerRecords.Sum(p=>p.points+p.assists+p.passes+p.interceptions)==0,"full roster starts with zero stats "+size);
     foreach(var participant in BasketballBots.Roster)MatchBoundaryChecks.Verify(participant,true,true,Check);
     passer=app.LocalAthlete;mate=BasketballBots.Roster.First(a=>a!=passer&&match.TeamOf(a)==match.TeamOf(passer));hoop=match.AttackingHoop(passer);

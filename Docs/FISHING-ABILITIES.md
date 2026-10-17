@@ -35,7 +35,7 @@ suppressing bobs and button pops. Skills never automatically catch a fish,
 award points, or steal another player's claimed fish.
 
 The host owns kits, inventory, cooldowns, treasure reservations, recipients
-and expiry. Both peers need **protocol 66**; the three removed abilities
+and expiry. Both peers need **protocol 67**; the three removed abilities
 are rejected rather than silently mapped to another skill. Match endings,
 disconnects and island travel clear the active fishing state.
 

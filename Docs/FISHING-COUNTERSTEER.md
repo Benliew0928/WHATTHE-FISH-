@@ -2,7 +2,7 @@
 
 Current gameplay restores the pictured first **Hold & Countersteer** version:
 one **LEFT** and one **RIGHT** button, the fish marker and gold direction band.
-The timed-tap experiment is superseded. Matching peers require protocol **66**.
+The timed-tap experiment is superseded. Matching peers require protocol **67**.
 Current camera, rod, rope, swimming, splashes and landing feedback remain.
 
 ## Playing

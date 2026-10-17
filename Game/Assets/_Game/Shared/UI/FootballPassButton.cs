@@ -13,31 +13,58 @@ namespace WhatTheFish {
   public void Cancel(){if(held)PlayerView.Instance?.CancelFootballPass();held=false;}
   void OnDisable()=>Cancel();void OnApplicationFocus(bool focus){if(!focus)Cancel();}void OnApplicationPause(bool pause){if(pause)Cancel();}
  }
- // Screen-space receiver marker follows all three football cameras.
+ // World-space energy ribbon shares the shooting material; a small halo marks the receiver.
  public sealed class FootballPassMarker:MaskableGraphic {
-  Text receiver;BasketballPlate receiverPlate;
+  const int Steps=48;
+  MeshRenderer lane;Mesh mesh;Material laneMaterial;
+  readonly Vector3[] vertices=new Vector3[(Steps+1)*2];readonly Vector2[] uv=new Vector2[(Steps+1)*2];
+  Vector3 endpoint,velocity;float visibility,lockBlend;bool tracking;
+  public Vector3 DisplayedEndpoint=>endpoint;
+  public float LockBlend=>lockBlend;
+  public bool PathVisible=>lane&&lane.enabled;
   Camera EventCamera {get{var canvas=GetComponentInParent<Canvas>();return canvas&&canvas.renderMode!=RenderMode.ScreenSpaceOverlay?canvas.worldCamera:null;}}
   bool Project(Camera camera,Vector3 world,out Vector2 point){var screen=camera.WorldToScreenPoint(world);RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform,screen,EventCamera,out point);return screen.z>camera.nearClipPlane;}
+  void CreateLane(){
+   var source=Resources.Load<Material>("FootballKickAim");if(!source)return;
+   laneMaterial=new Material(source){name="Football pass energy path"};mesh=new Mesh{name="Football pass ribbon"};mesh.MarkDynamic();
+   var indices=new int[Steps*6];for(int i=0;i<Steps;i++){int v=i*2,t=i*6;indices[t]=v;indices[t+1]=v+2;indices[t+2]=v+1;indices[t+3]=v+1;indices[t+4]=v+2;indices[t+5]=v+3;}
+   mesh.vertices=vertices;mesh.uv=uv;mesh.triangles=indices;
+   var go=new GameObject("Football pass trajectory");go.layer=2;go.AddComponent<MeshFilter>().sharedMesh=mesh;
+   lane=go.AddComponent<MeshRenderer>();lane.sharedMaterial=laneMaterial;lane.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;lane.receiveShadows=false;
+  }
   protected override void OnPopulateMesh(VertexHelper v){
-   v.Clear();var view=PlayerView.Instance;var target=view?view.FootballPassTarget:null;var camera=Camera.main;
-   if(!view||!view.FootballPassAiming||!view.target||!camera||FootballReplay.Presenting)return;
-   var start=FootballBall.Instance?FootballBall.Instance.transform.position:view.target.transform.position+Vector3.up*.12f;
-   var end=target?target.transform.position+Vector3.up*.12f:view.target.transform.position+Quaternion.Euler(0,view.yaw,0)*Vector3.forward*12+Vector3.up*.12f;
-   var color=target?CoveUI.Mint:CoveUI.Cream;
-   // Sample in world space so the ground-pass guide follows perspective in all cameras.
-   for(int i=0;i<40;i++){if(i%5==4)continue;if(Project(camera,Vector3.Lerp(start,end,i/40f),out var a)&&Project(camera,Vector3.Lerp(start,end,(i+1)/40f),out var b)){BasketballUIMesh.Line(v,a,b,CoveUI.Ink,7);BasketballUIMesh.Line(v,a,b,color,4);}}
-   if(!Project(camera,end,out var p))return;
-   if(Project(camera,Vector3.Lerp(start,end,.88f),out var before)){var direction=(p-before).normalized;var side=new Vector2(-direction.y,direction.x);BasketballUIMesh.Line(v,p-direction*13+side*7,p,color,4);BasketballUIMesh.Line(v,p-direction*13-side*7,p,color,4);}
-   for(int i=0;i<48;i++){float a=i*Mathf.PI/24,b=(i+1)*Mathf.PI/24;var x=p+new Vector2(Mathf.Cos(a)*24,Mathf.Sin(a)*9);var y=p+new Vector2(Mathf.Cos(b)*24,Mathf.Sin(b)*9);BasketballUIMesh.Line(v,x,y,CoveUI.Ink,6);BasketballUIMesh.Line(v,x,y,color,3);}
-   if(!target||!Project(camera,target.transform.position+Vector3.up*2.5f,out var q))return;
-   BasketballUIMesh.Line(v,q+new Vector2(-7,7),q,CoveUI.Mint,3);BasketballUIMesh.Line(v,q+new Vector2(7,7),q,CoveUI.Mint,3);
+   v.Clear();var camera=Camera.main;if(!tracking||!camera||visibility<.01f)return;
+   // A restrained world-sized landing halo, with no dashed overlay or chunky outline.
+   var tint=Color.Lerp(new Color(.25f,.88f,1),CoveUI.Mint,lockBlend);tint.a=visibility*(.35f+.65f*lockBlend);
+   float radius=Mathf.Lerp(.48f,.65f,lockBlend);
+   for(int i=0;i<64;i++){
+    float a=i*Mathf.PI/32,b=(i+1)*Mathf.PI/32;
+    if(Project(camera,endpoint+new Vector3(Mathf.Cos(a),0,Mathf.Sin(a))*radius,out var x)&&Project(camera,endpoint+new Vector3(Mathf.Cos(b),0,Mathf.Sin(b))*radius,out var y))BasketballUIMesh.Line(v,x,y,tint,2);
+   }
   }
   void LateUpdate(){
-   if(!receiver){receiverPlate=BasketballUIStyle.Plate(transform,"Locked pass receiver",0,0,114,24,CoveUI.Mint,8,1.5f,true);receiverPlate.rectTransform.anchorMin=receiverPlate.rectTransform.anchorMax=rectTransform.pivot;receiverPlate.rectTransform.pivot=Vector2.one*.5f;receiver=BasketballUIStyle.Text(receiverPlate.transform,"",0,0,114,24,12,true,TextAnchor.MiddleCenter,CoveUI.Ink);receiver.raycastTarget=false;}
-   var view=PlayerView.Instance;var target=view?view.FootballPassTarget:null;var camera=Camera.main;
-   bool visible=target&&camera&&!FootballReplay.Presenting;Vector2 p=default;if(visible)visible=Project(camera,target.transform.position+Vector3.up*.12f,out p);
-   receiver.enabled=visible;receiverPlate.gameObject.SetActive(visible);if(visible){var identity=target.GetComponent<CharacterIdentity>();receiver.text=identity?"LOCKED  #"+identity.Number.ToString("00"):"TEAMMATE LOCKED";receiverPlate.rectTransform.anchoredPosition=p+Vector2.down*26;}
+   var view=PlayerView.Instance;var ball=FootballBall.Instance;var camera=Camera.main;
+   bool active=view&&view.active&&!view.InputBlocked&&view.FootballPassAiming&&view.target&&ball&&ball.CanPass(view.target)&&camera&&!FootballReplay.Presenting;
+   if(!active){Hide();return;}
+   if(!lane)CreateLane();if(!lane)return;
+   var target=view.FootballPassTarget;var start=ball.transform.position+Vector3.up*.06f;
+   var desired=target?target.transform.position:view.target.transform.position+Quaternion.Euler(0,view.yaw,0)*Vector3.forward*12;
+   desired.y=start.y;
+   if(!tracking){endpoint=desired;velocity=Vector3.zero;tracking=true;}
+   endpoint=Vector3.SmoothDamp(endpoint,desired,ref velocity,.12f,Mathf.Infinity,Time.unscaledDeltaTime);
+   visibility=Mathf.MoveTowards(visibility,1,Time.unscaledDeltaTime*8);
+   lockBlend=Mathf.Lerp(lockBlend,target?1:0,1-Mathf.Exp(-14*Time.unscaledDeltaTime));
+   var direction=Vector3.ProjectOnPlane(endpoint-start,Vector3.up);float length=Mathf.Max(1,direction.magnitude);direction=direction.sqrMagnitude>.001f?direction.normalized:view.target.transform.forward;
+   var side=Vector3.Cross(Vector3.up,direction);
+   for(int i=0;i<=Steps;i++){
+    float t=Mathf.Lerp(-.12f/length,1+.12f/length,i/(float)Steps);var point=start+direction*(t*length);
+    vertices[i*2]=point-side*.67f;vertices[i*2+1]=point+side*.67f;uv[i*2]=new Vector2(-.67f,t);uv[i*2+1]=new Vector2(.67f,t);
+   }
+   mesh.vertices=vertices;mesh.uv=uv;mesh.RecalculateBounds();laneMaterial.SetFloat("_Length",length);laneMaterial.SetFloat("_Opacity",visibility*.86f);laneMaterial.SetFloat("_Lock",lockBlend);lane.enabled=true;
    SetVerticesDirty();
   }
+  void Hide(){tracking=false;visibility=lockBlend=0;velocity=Vector3.zero;if(lane)lane.enabled=false;SetVerticesDirty();}
+  protected override void OnDisable(){Hide();base.OnDisable();}
+  protected override void OnDestroy(){if(lane)Destroy(lane.gameObject);if(mesh)Destroy(mesh);if(laneMaterial)Destroy(laneMaterial);base.OnDestroy();}
  }
 }

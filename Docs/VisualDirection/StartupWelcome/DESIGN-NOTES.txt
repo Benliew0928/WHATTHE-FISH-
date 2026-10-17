@@ -1,0 +1,44 @@
+STARTUP WELCOME - STYLIZED 3D CARTOON CONCEPTS
+16 October 2026
+
+Direction
+The user requested three startup/menu prototypes. They rejected realistic
+scenery, then rejected flat vector illustrations as too simple. The target is
+cute, playful, modeled 3D with enough detail and depth to relate to this game.
+
+Current concepts (paths relative to this directory)
+01-cable-car-welcome.png: welcoming athlete beside a teal cable car; right menu.
+02-island-playground.png: sports-island overview; centered lower action dock.
+03-crew-getaway.png: two expressive sports characters; menu on the left.
+
+Each board contains a large ready-state mockup and a smaller alternate loading
+module below. The user selected 01-cable-car-welcome.png for implementation.
+The implemented loading panel is low on the boardwalk, immediately to the right
+of the character's legs. Real progress clears after completion, while the same
+page reveals its sign-in choices. The concept's depicted 68% is illustrative.
+Huawei, language and startup settings remain placeholders. Continue as guest
+now opens the existing main menu; it does not establish an online identity.
+
+References inspected
+Actual football and basketball stadium captures; world overview; cable-car
+interior; golf overview and fishing lagoon path; a current football player
+capture; the existing athlete concept sheet and branding logo.
+Generation used four project references, identified relative to the repository
+root in generation-prompts.json alongside the full prompts.
+
+Review and limitations
+Checked all three images for 3D cartoon style, readable sign-in choices, loading
+status and persistent utilities. These are generated concept artworks, not
+gameplay screenshots, final export-ready UI or approval of invented scene props.
+The images vary cabin counts and scene composition; implementation must preserve
+the existing four-island world, one active game per room and shared group travel.
+The selected composition is reproduced with a static raster backdrop and live
+Unity controls. The master and delivery asset retain the same dimensions and
+placement. No phone performance claim is made.
+
+Delivery
+Built-in image_gen was used for the concepts and the selected background edit.
+See ../../STARTUP-WELCOME.md for implementation, testing and delivery details.
+The high-quality master is ../../../ArtSource/StartupWelcome/.
+Earlier rejected concepts were moved to ignored local Legacy archive batches
+with integrity manifests. The current gallery is index.html.

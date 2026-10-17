@@ -362,7 +362,20 @@ namespace WhatTheFish {
      Check(!tutorial.Visible&&PlayerPrefs.GetInt(key)==1,"TUTORIAL_COMPLETION_SAVES_SEEN_"+size[0]);
     }
     Screen.SetResolution(1600,900,false);tutorial.Open();Button("Fishing tutorial next").onClick.Invoke();Button("Fishing tutorial back").onClick.Invoke();Check(tutorial.Step==0,"TUTORIAL_BACK_RETURNS_TO_SKILL_SELECTION");Button("Fishing tutorial skip").onClick.Invoke();Check(!tutorial.Visible&&!hud.BlocksGameplay,"TUTORIAL_SKIP_RESTORES_WALKING");
-    app.Show("help");while(app.Menu.IsTransitioning)yield return null;yield return PoseFrame();var help=app.Menu.Content.GetComponentInChildren<FishingTutorialUI>();Check(help&&help.Visible&&help.Body==FishingTutorialUI.Copy[0],"HOW_TO_PLAY_USES_IDENTICAL_TUTORIAL_VIEW_AND_CONTENT");var tab=app.Menu.Content.GetComponentsInChildren<UnityEngine.UI.Button>().First(b=>b.name=="Choose Football");var tabRect=(RectTransform)tab.transform;var pointer=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,tabRect.TransformPoint(tabRect.rect.center))};var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);Check(hits.Count>0&&hits[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>()==tab,"EMBEDDED_TUTORIAL_PRESERVES_SPORT_TAB_POINTER_TARGET");Capture("tutorial-how-to-play");app.Show("stadium");while(app.Menu.IsTransitioning||!app.view.active)yield return null;
+    app.Show("help");while(app.Menu.IsTransitioning)yield return null;yield return PoseFrame();
+    var help=app.Menu.Content.GetComponentInChildren<FishingTutorialUI>();Check(help&&help.Visible&&help.Body==FishingTutorialUI.Copy[0],"HOW_TO_PLAY_USES_IDENTICAL_TUTORIAL_VIEW_AND_CONTENT");
+    bool PointerReaches(string name){
+     var button=app.Menu.Content.GetComponentsInChildren<UnityEngine.UI.Button>().FirstOrDefault(b=>b.name==name);
+     if(!button)return false;
+     var rect=(RectTransform)button.transform;var pointer=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center))};
+     var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);
+     return hits.Count>0&&hits[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>()==button;
+    }
+    Check(PointerReaches("Back"),"EMBEDDED_TUTORIAL_PRESERVES_MENU_BACK_POINTER_TARGET");Capture("tutorial-how-to-play");
+    // The sports menu replaced the old inline sport tabs with a guide hub.
+    app.Show("guides");while(app.Menu.IsTransitioning)yield return null;yield return PoseFrame();
+    Check(PointerReaches("Guide - Football"),"GUIDE_HUB_PRESERVES_SPORT_CARD_POINTER_TARGET");
+    app.Show("stadium");while(app.Menu.IsTransitioning||!app.view.active)yield return null;
    }finally{tutorial.ReviewEntry=false;tutorial.Close();if(existed)PlayerPrefs.SetInt(key,saved);else PlayerPrefs.DeleteKey(key);PlayerPrefs.Save();}
    yield return PoseFrame();
   }

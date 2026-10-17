@@ -17,16 +17,18 @@ namespace WhatTheFish {
   void BotsOff(){foreach(var a in FootballBots.Roster){var b=a.GetComponent<FootballBot>();if(b)b.enabled=false;}}
   FootballPlayerRecord Record(Athlete a)=>match.PlayerRecords.First(p=>p.id==FootballBots.Id(a));
   void Place(Athlete a,Vector3 p,float yaw){bool enabled=a.capsule.enabled;a.capsule.enabled=false;a.transform.SetPositionAndRotation(p,Quaternion.Euler(0,yaw,0));a.ResetLocomotion();var n=a.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned&&n.IsServer)a.GetComponent<NetworkTransform>().Teleport(p,a.transform.rotation,a.transform.localScale);a.capsule.enabled=enabled;Physics.SyncTransforms();}
-  void Fixture(){ball.ResetBall(true);var centre=ball.KickoffPosition;centre.y=passer.transform.position.y;int i=0;foreach(var a in FootballBots.Roster)Place(a,centre+ball.Pitch.right*15+forward*(-15+i++*3),heading);Place(passer,centre-forward*4,heading);Place(mate,centre+forward*5,heading+180);ball.ReviewFootballBall(passer.transform.position+forward*.8f+Vector3.up*ball.WorldRadius,Vector3.zero);ball.RefreshControl(passer);match.ResetAbilityGoalTracking();app.view.yaw=heading;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=heading};}
+  void Fixture(){ball.ResetBall(true);var centre=ball.KickoffPosition;centre.y=passer.transform.position.y;int i=0;foreach(var a in FootballBots.Roster)Place(a,centre+ball.Pitch.right*15+forward*(-10-i++*2),heading);Place(passer,centre-forward*4,heading);Place(mate,centre+forward*5,heading+180);ball.ReviewFootballBall(passer.transform.position+forward*.8f+Vector3.up*ball.WorldRadius,Vector3.zero);ball.RefreshControl(passer);match.ResetAbilityGoalTracking();app.view.yaw=heading;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=heading};}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");yield return Until(()=>AppRoot.Instance&&AppRoot.Instance.Exploring&&FootballMatch.Instance&&AppRoot.Instance.LocalAthlete,"football ready",90);
    app=AppRoot.Instance;match=FootballMatch.Instance;ball=FootballBall.Instance;if(!app||!match||!ball){Finish();yield break;}DevelopmentProbe.Driving=false;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    if(!match.Authority){yield return Guest();Finish();yield break;}
    bool online=app.rooms.Connected;var old=match.rules;match.rules=Instantiate(old);match.rules.teamSelectionSeconds=online?2:.25f;match.rules.kickoffSeconds=.25f;
+   if(online)yield return Until(()=>FootballBots.Roster.Length==2&&!app.view.InputBlocked,"both humans arrive before room fill");
    for(int size=2;size<=(online?2:5);size++){
     if(online)Check(FootballBots.Instance.FillRoom(2),"fill room to 2v2");else Check(FootballBots.Instance.StartSolo(size),"VS AI "+size+"v"+size);
-    yield return null;Check(match.StartMatch(),"start match "+size);BotsOff();
+    yield return Until(()=>app.view.active&&!app.view.InputBlocked&&!app.LocalAthlete.inTransit&&!app.Menu.IsTransitioning,"arrival releases player input "+size);Check(match.StartMatch(),"start match "+size);BotsOff();
     if(online)foreach(var a in FootballBots.Roster)match.ChooseTeam(a,FootballBots.IsBot(a)?FootballTeam.B:FootballTeam.A,match.Snapshot.revision);
+    else {match.RequestTeam(FootballTeam.A);Check(match.ConfirmSoloTeam(),"explicit solo start");}
     yield return Until(()=>match.KickoffReady,"kickoff ready");Check(match.TryKickoff(match.KickoffActor,90,.3f,match.Snapshot.revision),"kickoff");
     foreach(var participant in FootballBots.Roster)MatchBoundaryChecks.Verify(participant,false,true,Check);
     passer=app.LocalAthlete;mate=FootballBots.Roster.First(a=>a!=passer&&match.TeamOf(a)==match.TeamOf(passer));enemy=FootballBots.Roster.First(a=>match.TeamOf(a)!=match.TeamOf(passer));forward=ball.Pitch.TransformDirection(Vector3.forward).normalized;heading=Mathf.Atan2(forward.x,forward.z)*Mathf.Rad2Deg;
@@ -57,7 +59,7 @@ namespace WhatTheFish {
     }
     if(!online&&size==2){yield return SwipeDefense();Fixture();yield return null;}
     Check(app.view.BeginFootballPass(),"pass hold begins");Check(app.view.FootballPassTarget==mate,"receiver highlight locks teammate");yield return Capture("pass-lock-"+size);
-    if(!online&&size==2){foreach(int mode in new[]{0,1,2}){app.view.mode=mode;yield return new WaitForSeconds(.2f);yield return Capture("pass-lock-camera-"+mode);var lockLabel=FootballHUD.Instance.GetComponentsInChildren<Text>().FirstOrDefault(t=>t.enabled&&t.text.StartsWith("LOCKED  #"));Check(lockLabel&&Vector2.Distance(RectTransformUtility.WorldToScreenPoint(null,lockLabel.transform.parent.TransformPoint(Vector3.up*26)),Camera.main.WorldToScreenPoint(mate.transform.position+Vector3.up*.12f))<3,"named receiver label projects beside locked player in camera "+mode);}app.view.yaw=heading+90;yield return null;Check(!app.view.FootballPassTarget,"free pass removes receiver lock");yield return Capture("pass-free-path");app.view.yaw=heading;app.view.mode=1;}
+    if(!online&&size==2){foreach(int mode in new[]{0,1,2}){app.view.mode=mode;yield return new WaitForSeconds(.2f);yield return Capture("pass-lock-camera-"+mode);var marker=FootballHUD.Instance.GetComponentInChildren<FootballPassMarker>();Check(marker.PathVisible&&marker.LockBlend>.9f&&Vector3.ProjectOnPlane(marker.DisplayedEndpoint-mate.transform.position,Vector3.up).magnitude<.15f,"route and halo track receiver in camera "+mode);Check(!FootballHUD.Instance.GetComponentsInChildren<Text>().Any(t=>t.text.StartsWith("LOCKED  #")),"no floating lock badge in camera "+mode);}yield return PassTransitions();app.view.mode=1;}
     app.view.EndFootballPass();
     // The normal offline/network driver consumes this edge on the next frame.
     yield return Until(()=>ball.CurrentController==mate,"physical pass received "+size,5);Check(Record(passer).passes==1,"one successful new Pass action "+size);
@@ -74,6 +76,22 @@ namespace WhatTheFish {
     if(online)yield return new WaitForSeconds(2);match.ClearMatch();yield return null;
    }
    match.rules=old;Finish();
+  }
+  IEnumerator PassTransitions(){
+   var marker=FootballHUD.Instance.GetComponentInChildren<FootballPassMarker>();
+   int rate=Application.targetFrameRate;
+   foreach(int fps in new[]{20,60,120}){
+    Application.targetFrameRate=fps;app.view.yaw=heading;yield return new WaitForSeconds(.6f);
+    Check(marker.PathVisible&&marker.LockBlend>.98f,"energy path locks at "+fps+" fps cap");
+    var locked=marker.DisplayedEndpoint;app.view.yaw=heading+90;yield return null;yield return new WaitForEndOfFrame();
+    var free=passer.transform.position+Quaternion.Euler(0,app.view.yaw,0)*Vector3.forward*12;free.y=locked.y;
+    Check(!app.view.FootballPassTarget&&Vector3.Distance(marker.DisplayedEndpoint,free)>.1f&&marker.LockBlend>0,"unlock eases rather than snapping "+fps);
+    yield return new WaitForSeconds(.6f);Check(Vector3.Distance(marker.DisplayedEndpoint,free)<.15f&&marker.LockBlend<.02f,"free aim settles "+fps);yield return Capture("pass-free-path-"+fps);
+    app.view.yaw=heading;yield return null;yield return new WaitForEndOfFrame();Check(marker.LockBlend<.99f&&Vector3.Distance(marker.DisplayedEndpoint,locked)>.1f,"acquisition eases rather than snapping "+fps);
+    yield return new WaitForSeconds(.6f);Check(marker.LockBlend>.98f&&Vector3.Distance(marker.DisplayedEndpoint,locked)<.15f,"receiver lock settles "+fps);yield return Capture("pass-locked-path-"+fps);
+   }
+   Application.targetFrameRate=rate;app.view.CancelFootballPass();yield return null;yield return new WaitForEndOfFrame();Check(!marker.PathVisible,"cancel removes pass ribbon");
+   app.view.BeginFootballPass();yield return new WaitForSeconds(.2f);ball.ResetBall(true);yield return null;yield return new WaitForEndOfFrame();Check(!marker.PathVisible,"possession loss removes pass ribbon");Fixture();yield return null;app.view.BeginFootballPass();yield return new WaitForSeconds(.3f);
   }
   IEnumerator SwipeDefense(){
    Fixture();ball.ResetBall(true);Place(enemy,passer.transform.position+forward*1.8f,heading+180);ball.ReviewFootballBall(ball.FootPosition(enemy),Vector3.zero);ball.RefreshControl(enemy);yield return null;

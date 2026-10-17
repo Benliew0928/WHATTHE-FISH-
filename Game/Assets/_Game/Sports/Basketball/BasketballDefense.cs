@@ -11,8 +11,8 @@ namespace WhatTheFish {
   public bool Equals(BasketballDefenseSnapshot b)=>blocks==b.blocks&&play==b.play&&time==b.time&&blocker==b.blocker&&originator==b.originator&&passing==b.passing&&contact==b.contact;
  }
  public static class BasketballDefenseRules {
-  public const float GuardSpeed=3,GuardRange=1.25f,GuardMultiplier=.70f,GuardMeterMultiplier=1.30f,GuardShotPenalty=.20f,HandRadius=.12f,BlockStart=.12f,BlockEnd=.30f,BlockDuration=.70f;
-  public const float JumpLoad=.16f,JumpHeight=2.20f,JumpStart=.22f,JumpEnd=.88f,JumpDuration=1.30f,Recovery=.58f;
+  public const float GuardSpeed=3,GuardRange=1.25f,GuardMultiplier=.70f,GuardMeterMultiplier=1.30f,GuardShotPenalty=.20f,HandRadius=.30f,BlockStart=.05f,BlockEnd=.46f,BlockDuration=.70f;
+  public const float JumpLoad=.16f,JumpHeight=2.20f,JumpStart=.16f,JumpEnd=.98f,JumpDuration=1.30f,Recovery=.58f;
   public static bool IsBlock(BasketballAction action)=>action==BasketballAction.Block||action==BasketballAction.JumpBlock;
   public static bool Active(BasketballAction action,float time)=>IsBlock(action)&&time>=(action==BasketballAction.JumpBlock?JumpStart:BlockStart)&&time<=(action==BasketballAction.JumpBlock?JumpEnd:BlockEnd);
   public static float Window(float pressure)=>BasketballBall.SweetWindow;
@@ -54,7 +54,7 @@ namespace WhatTheFish {
   uint defensePlay,blocks;double blockTime=-100;ulong blocker=ulong.MaxValue;Vector3 blockContact;
   public BasketballDefenseSnapshot Defense=>Authority?new BasketballDefenseSnapshot{blocks=blocks,play=defensePlay,time=blockTime,blocker=blocker,originator=lastShooter?PlayerId(lastShooter):ulong.MaxValue,passing=passing,contact=blockContact}:haveTarget?target.defense:default;
   public BasketballRole Role(Athlete actor){
-   if(!Playing||BasketballMatch.BlocksActions||InboundPending&&Holder!=actor||!actor||actor.inTransit||actor.BasketballFreeRoam)return BasketballRole.Inactive;
+   if(!Playing||BasketballMatch.BlocksActions||BasketballMatch.Instance&&BasketballMatch.Instance.AutomaticMovement(actor)||InboundPending&&Holder!=actor||!actor||actor.inTransit||actor.BasketballFreeRoam)return BasketballRole.Inactive;
    if(Held)return SportsPossession.SameTeam(Holder,actor,SportId.Basketball)?BasketballRole.Attack:BasketballRole.Defense;
    bool flight=Score.result==BasketballResult.Flying||Defense.passing;
    bool own=Authority?SportsPossession.SameTeam(lastShooter,actor,SportId.Basketball):Defense.originator!=ulong.MaxValue&&SportsPossession.BasketballTeam(Defense.originator)==SportsPossession.TeamOf(actor,SportId.Basketball);

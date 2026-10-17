@@ -24,13 +24,16 @@ namespace WhatTheFish {
   public bool Active=>Context&&Snapshot.phase!=BasketballMatchPhase.Idle&&Snapshot.phase!=BasketballMatchPhase.Finished&&Snapshot.phase!=BasketballMatchPhase.Cancelled;
   public bool Running=>Snapshot.phase==BasketballMatchPhase.Regulation||Snapshot.phase==BasketballMatchPhase.Overtime;
   public bool BoundaryReleased=>Context&&(Snapshot.phase==BasketballMatchPhase.Finished||Snapshot.phase==BasketballMatchPhase.Cancelled);
-  public bool RestartReady=>Snapshot.phase==BasketballMatchPhase.Restart&&Now>=Snapshot.deadline;
+  public bool RestartReady=>Snapshot.phase==BasketballMatchPhase.Restart&&ball.InboundPending&&Now>=Snapshot.deadline;
   public bool Live=>!Competitive||Running&&Now<Snapshot.deadline||RestartReady;
   public bool BallLive=>Live||Competitive&&Snapshot.phase==BasketballMatchPhase.Buzzer;
   public static bool BlocksActions=>Instance&&Instance.Context&&!Instance.Live;
-  public static bool BlocksMovement=>Instance&&Instance.Context&&(Instance.Snapshot.phase==BasketballMatchPhase.Countdown||Instance.Snapshot.phase==BasketballMatchPhase.Restart&&!Instance.RestartReady||Instance.Snapshot.phase==BasketballMatchPhase.Buzzer);
+  public static bool BlocksJump(Athlete actor)=>Instance&&Instance.Context&&(Instance.AutomaticMovement(actor)||BlocksActions&&Instance.Snapshot.phase!=BasketballMatchPhase.Restart);
+  public static bool BlocksMovement=>Instance&&Instance.Context&&(Instance.Snapshot.phase==BasketballMatchPhase.Countdown||Instance.Snapshot.phase==BasketballMatchPhase.Buzzer);
   public double Remaining=>Running?Math.Max(0,Snapshot.deadline-Now):Snapshot.remaining;
   public bool MatchMode=>Room||BasketballBots.Instance&&BasketballBots.Instance.Solo;
+  public bool SoloTeamSelection=>!Room&&BasketballBots.Instance&&BasketballBots.Instance.Solo;
+  public bool CanConfirmSoloTeam=>Authority&&Context&&SoloTeamSelection&&State.Phase==BasketballMatchPhase.TeamSelection&&TeamOf(AppRoot.Instance.LocalAthlete)!=FootballTeam.None;
   public bool CanStart=>Authority&&MatchMode&&Context&&Roster().Count()>=4&&Roster().Count()<=10&&Roster().Count()%2==0&&!Active;
   public static ulong PlayerId(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;if(n&&n.IsSpawned)return n.BotSlot.Value>0?(1UL<<63)+n.BotSlot.Value:n.StableId;var bot=actor?actor.GetComponent<BasketballBot>():null;return bot?(1UL<<63)+(ulong)bot.Slot:actor?(ulong)(uint)actor.GetInstanceID():ulong.MaxValue;}
   IEnumerable<Athlete> Roster()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(!Room||a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
@@ -41,40 +44,46 @@ namespace WhatTheFish {
   void OnDestroy(){if(BasketballMVP.Instance)Destroy(BasketballMVP.Instance.gameObject);}
   void OnEnable(){Instance=this;}
   void OnDisable(){if(Authority)Clear();if(Instance==this)Instance=null;}
-  BasketballMatchSnapshot Capture()=>new BasketballMatchSnapshot{phase=State.Phase,result=State.Result,possession=State.Possession,restart=State.RestartReason,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,remaining=State.Remaining(Now),shotDeadline=State.ShotDeadline,revision=published,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),capacity=Selection.Capacity};
+  BasketballMatchSnapshot Capture()=>new BasketballMatchSnapshot{phase=State.Phase,result=State.Result,possession=State.Possession,restart=State.RestartReason,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,remaining=State.Remaining(Now),shotDeadline=State.ShotDeadline,revision=published,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),capacity=Selection.Capacity,inbounder=inbounder,automaticPlayers=AutomaticPlayers(),inboundExit=inboundExit,inboundTurnA=InboundTurn(FootballTeam.A),inboundTurnB=InboundTurn(FootballTeam.B)};
   void Publish(){PublishStatistics();if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.BasketballMatch.Value=Capture();}
   public bool StartMatch(){if(!CanStart)return false;return Begin(Roster().OrderBy(PlayerId).ToArray(),MenuMatchRules.BasketballSeconds,10);}
   bool Begin(Athlete[] roster,double seconds,double selection){
    if(!Authority||!Context||Active||roster.Length<4||!Selection.Begin(roster.Select(PlayerId)))return false;
-   Statistics.Clear();participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);
-   if(BasketballBots.Instance&&BasketballBots.Instance.Solo){Selection.Choose(PlayerId(AppRoot.Instance.LocalAthlete),FootballTeam.A);foreach(var mate in roster.Where(BasketballBots.IsBot).Take(Selection.Capacity-1))Selection.Choose(PlayerId(mate),FootballTeam.A);}
+   ResetRestartMovement();inboundTurns.Clear();Statistics.Clear();participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);
    SyncTeams();lastTouch=FootballTeam.None;State.Start(Now,seconds,selection);ball.ResetMatchBall(true);Synchronize();wasContext=true;return true;
   }
   public bool ChooseTeam(Athlete actor,FootballTeam team,uint revision){
-   if(!Authority||!Context||State.Phase!=BasketballMatchPhase.TeamSelection||Now>=State.Deadline||revision!=published||!Contains(actor)||!Selection.Choose(PlayerId(actor),team))return false;
+   if(!Authority||!Context||State.Phase!=BasketballMatchPhase.TeamSelection||!SoloTeamSelection&&Now>=State.Deadline||revision!=published||!Contains(actor)||!Selection.Choose(PlayerId(actor),team))return false;
    SyncTeams();Publish();return true;
   }
   public void RequestTeam(FootballTeam team){var actor=AppRoot.Instance.LocalAthlete;if(!actor)return;var n=actor.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned){if(n.IsOwner)n.ChooseBasketballTeamRpc(team,Snapshot.revision);}else ChooseTeam(actor,team,Snapshot.revision);}
+  public bool ConfirmSoloTeam(){if(!CanConfirmSoloTeam||!RosterValid())return false;return ConfirmTeams();}
+  bool ConfirmTeams(){
+   Selection.Complete(random);SyncTeams();if(!PlaceFormation()){Cancel();return false;}
+   ball.Place(Vector3.up*.25f,Quaternion.identity,Vector3.zero,Vector3.zero);State.Confirm(Now,SoloTeamSelection?0:3);State.Advance(Now);Synchronize();return true;
+  }
   void SyncTeams(){RefreshStatisticsRoster();foreach(var pair in participants){var n=pair.Value?pair.Value.GetComponent<NetworkAthlete>():null;if(n&&n.IsSpawned&&n.IsServer)n.BasketballTeam.Value=Selection.TeamOf(pair.Key);}}
   void ClearInputs(){PlayerView.Instance?.ClearMatchInput();foreach(var actor in Athlete.Active){actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();}}
-  public void Clear(){Statistics.Clear();State.Clear();Selection.Clear();participants.Clear();lastTouch=FootballTeam.None;foreach(var actor in Athlete.Active){var n=actor.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned&&n.IsServer)n.BasketballTeam.Value=FootballTeam.None;}ball.ResetMatchBall(false);Synchronize();}
+  public void Clear(){ResetRestartMovement();inboundTurns.Clear();Statistics.Clear();State.Clear();Selection.Clear();participants.Clear();lastTouch=FootballTeam.None;foreach(var actor in Athlete.Active){var n=actor.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned&&n.IsServer)n.BasketballTeam.Value=FootballTeam.None;}ball.ResetMatchBall(false);Synchronize();}
   bool RosterValid()=>participants.All(p=>p.Value&&p.Value.isActiveAndEnabled&&!p.Value.inTransit&&(!Room||p.Value.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
   public void Cancel(){if(!Authority||!State.Active)return;State.Cancel();Synchronize();}
   void FixedUpdate(){
+   UpdateAutomaticInput();
    if(!Authority){if(observed!=Snapshot.revision){observed=Snapshot.revision;if(BlocksActions)PlayerView.Instance?.ClearMatchInput();}return;}
    if(!Context){if(wasContext||State.Phase!=BasketballMatchPhase.Idle)Clear();wasContext=false;return;}wasContext=true;
    if(!State.Active)return;
    if(!RosterValid()){Cancel();return;}
-   if(State.Phase==BasketballMatchPhase.TeamSelection&&Now>=State.Deadline){Selection.Complete(random);SyncTeams();if(!PlaceFormation()){Cancel();return;}ball.Place(Vector3.up*.25f,Quaternion.identity,Vector3.zero,Vector3.zero);State.Confirm(Now);Synchronize();}
+   StepRestartMovement();
+   if(State.Phase==BasketballMatchPhase.TeamSelection&&!SoloTeamSelection&&Now>=State.Deadline)ConfirmTeams();
   }
   public void AfterBallStep(){if(!Authority||!Context)return;State.Advance(Now);Synchronize();}
   void Synchronize(){
    if(observed!=State.Revision){
-    bool continuous=presented==BasketballMatchPhase.Regulation&&State.Phase==BasketballMatchPhase.Overtime||presented==BasketballMatchPhase.Restart&&State.Running;
+    bool continuous=presented==BasketballMatchPhase.Regulation&&State.Phase==BasketballMatchPhase.Overtime||presented==BasketballMatchPhase.Restart&&State.Running||State.Phase==BasketballMatchPhase.Restart;
     observed=State.Revision;presented=State.Phase;if(!continuous)published=++nextRevision;
     if(!continuous)ClearInputs();
     if(State.Phase==BasketballMatchPhase.Restart){Statistics.ResetPlay();if(!PrepareRestart()){State.Cancel();Synchronize();return;}}
-    else if(State.Phase==BasketballMatchPhase.Cancelled||State.Phase==BasketballMatchPhase.Finished){Statistics.ResetPlay();ball.ResetMatchBall(false);}
+    else if(State.Phase==BasketballMatchPhase.Cancelled||State.Phase==BasketballMatchPhase.Finished){ResetRestartMovement();Statistics.ResetPlay();ball.ResetMatchBall(false);}
    }
    Publish();
   }
@@ -123,21 +132,34 @@ namespace WhatTheFish {
    foreach(var pose in poses)Place(pose.actor,pose.world);Physics.SyncTransforms();return true;
   }
   bool PrepareRestart(){
-   ball.ResetMatchBall(false,preserveInventory:true);if(!PlaceFormation())return false;
+   ResetRestartMovement();ball.ResetMatchBall(false,preserveInventory:true);
    var limit=BasketballBall.PaintedCourtLimits;
    // Right from the court facing the conceding hoop, closer to the stand
    // than the midpoint between hoop centre and baseline corner.
    float sign=State.Possession==FootballTeam.A?-1:1;
    var point=State.RestartReason==BasketballRestart.Basket?new Vector3(sign*2,0,sign*limit.y):State.RestartReason==BasketballRestart.ShotClock?new Vector3(limit.x,0,0):restartPoint;
-   var recipient=participants.Values.Where(a=>TeamOf(a)==State.Possession).OrderBy(PlayerId).FirstOrDefault();
-   if(!recipient||!ball.BeginInbound(recipient,point))return false;
+   var teammates=participants.Values.Where(a=>TeamOf(a)==State.Possession).OrderBy(PlayerId).ToArray();
+   if(teammates.Length==0)return false;
+   inboundTurns.TryGetValue(State.Possession,out int turn);var recipient=teammates[turn%teammates.Length];
+   if(!ball.TryInboundSpot(recipient,point,out var spot,out _))return false;
+   inboundTurns[State.Possession]=(turn+1)%teammates.Length;inbounder=PlayerId(recipient);inboundExit=point;
+   ball.Place(ball.transform.parent.InverseTransformPoint(spot)+Vector3.up*(BasketballBall.Radius+.02f),Quaternion.identity,Vector3.zero,Vector3.zero);
+   StartAutomaticMove(recipient,spot,true);
+   if(State.RestartReason==BasketballRestart.Basket){
+    foreach(var scorer in participants.Values.Where(a=>TeamOf(a)!=State.Possession).OrderBy(PlayerId)){
+     var local=ball.transform.parent.InverseTransformPoint(scorer.transform.position);float home=TeamOf(scorer)==FootballTeam.A?-1:1;
+     if(local.z*home>=scorer.capsule.radius+scorer.capsule.skinWidth+.15f)continue;
+     local.x=Mathf.Clamp(local.x,-limit.x+1,limit.x-1);local.z=home*2;
+     if(!Ground(local,out var destination))return false;StartAutomaticMove(scorer,destination,false);
+    }
+   }
    lastTouch=State.Possession;return true;
   }
   public bool OpenInbound(Athlete actor){
    if(!Authority||!ball.IsInbound(actor)||!State.OpenInbound(TeamOf(actor),Now))return false;
    lastTouch=TeamOf(actor);Synchronize();return true;
   }
-  public bool RestrictedHalf(Athlete actor)=>Competitive&&Snapshot.phase==BasketballMatchPhase.Restart&&TeamOf(actor)!=FootballTeam.None&&TeamOf(actor)!=Snapshot.possession;
+  public bool RestrictedHalf(Athlete actor)=>Competitive&&Snapshot.phase==BasketballMatchPhase.Restart&&Snapshot.restart==BasketballRestart.Basket&&TeamOf(actor)!=FootballTeam.None&&TeamOf(actor)!=Snapshot.possession&&!AutomaticMovement(actor);
 
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public bool ReviewStart(Athlete[] actors,double seconds=180,double selection=0)=>!Room&&Begin(actors,seconds,selection);

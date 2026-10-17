@@ -14,6 +14,7 @@ namespace WhatTheFish {
   string folder;bool failed;AppRoot app;BasketballBall ball;BasketballMatch match;Athlete actor;Athlete[] roster;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var a=Environment.GetCommandLineArgs();int i=Array.IndexOf(a,"-basketballControlsReview");if(i>=0&&i+1<a.Length)new GameObject("Basketball controls review").AddComponent<BasketballControlsReview>().folder=a[i+1];}
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
+  void FixedUpdate(){if(ball&&ball.Authority&&!app.rooms.Connected&&roster!=null)foreach(var a in roster)if(a&&a!=actor&&match.AutomaticMovement(a))a.Simulate(default,Time.fixedDeltaTime);}
   IEnumerator Until(Func<bool> condition,string label,float seconds=8){float end=Time.realtimeSinceStartup+seconds;while(!condition()&&Time.realtimeSinceStartup<end)yield return null;Check(condition(),label);}
   void Place(Athlete a,Vector3 point,float heading=0){var world=ball.transform.parent.TransformPoint(point);var rotation=ball.transform.parent.rotation*Quaternion.Euler(0,heading,0);a.capsule.enabled=false;a.transform.SetPositionAndRotation(world,rotation);a.ResetLocomotion();a.capsule.enabled=true;var net=a.GetComponent<NetworkTransform>();if(net&&net.IsSpawned)net.Teleport(world,rotation,a.transform.localScale);Physics.SyncTransforms();}
   Vector3 Local(Athlete a)=>ball.transform.parent.InverseTransformPoint(a.transform.position);
@@ -21,7 +22,7 @@ namespace WhatTheFish {
   void Park(){app.view.ClearMatchInput();DevelopmentProbe.TurnCommand=default;ball.ResetHome();for(int i=0;i<roster.Length;i++)Place(roster[i],new Vector3(i%2==0?-5:5,.07f,-10+i*3));ball.autoPickup=false;}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   yield return Until(()=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.LocalAthlete&&BasketballBall.Active,"court ready",85);
+   yield return Until(()=>DevelopmentProbe.ReadyToReviewSport&&BasketballBall.Active,"court ready",85);
    app=AppRoot.Instance;ball=BasketballBall.Active;match=BasketballMatch.Instance;actor=app.LocalAthlete;
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;app.view.mode=1;yield return new WaitForSeconds(.5f);
    if(!ball.Authority){yield return Guest();Finish();yield break;}
@@ -72,19 +73,23 @@ namespace WhatTheFish {
   IEnumerator Inbounds(){
    Park();match.Control(actor);var limits=BasketballBall.PaintedCourtLimits;
    foreach(var exit in new[]{new Vector3(limits.x,.07f,3),new Vector3(-limits.x,.07f,-4),new Vector3(3,.07f,limits.y),new Vector3(-3,.07f,-limits.y)}){
+    // Continuous restarts retain everyone, so reset this test's receiving lane
+    // explicitly instead of relying on the removed formation teleport.
+    Park();match.Control(actor);
     match.Touch(actor);Check(match.Boundary(exit),"boundary event accepted "+exit);yield return new WaitForFixedUpdate();yield return new WaitForFixedUpdate();
-    Check(match.Snapshot.phase==BasketballMatchPhase.Restart&&ball.InboundPending,"restart retains inbound possession");var inbound=ball.Holder;if(!inbound)yield break;
-    bool side=Mathf.Abs(exit.x)>limits.x-.01f;var local=Local(inbound);Check((side?Mathf.Abs(local.x)>limits.x:Mathf.Abs(local.z)>limits.y)&&Mathf.Abs(side?local.z-exit.z:local.x-exit.x)<.01f,"inbounder immediately outside exact crossing");
+    Check(match.Snapshot.phase==BasketballMatchPhase.Restart,"restart begins collection");yield return Until(()=>ball.InboundPending,"inbounder reaches crossing");var inbound=ball.Holder;if(!inbound)yield break;
+    bool side=Mathf.Abs(exit.x)>limits.x-.01f;var local=Local(inbound);Check((side?Mathf.Abs(local.x)>limits.x:Mathf.Abs(local.z)>limits.y)&&Mathf.Abs(side?local.z-exit.z:local.x-exit.x)<.15f,"inbounder runs outside exact crossing");
     double remaining=match.Remaining;yield return Until(()=>match.RestartReady,"restart setup ready");yield return new WaitForSeconds(.25f);Check(match.Snapshot.phase==BasketballMatchPhase.Restart&&Math.Abs(match.Remaining-remaining)<.001,"clocks stay paused until pass");
     Vector3 before=inbound.transform.position;inbound.Simulate(new PlayerCommand{move=Vector2.one,jump=true,shoot=true},.1f);Check(Vector3.Distance(before,inbound.transform.position)<.01f&&!ball.CanShoot(inbound)&&!inbound.CanRequestJump,"inbounder cannot move jump or shoot");
-    var opponent=roster.First(a=>match.TeamOf(a)!=match.TeamOf(inbound));float sign=match.TeamOf(opponent)==FootballTeam.A?-1:1;Place(opponent,new Vector3(0,.07f,sign*.5f));var move=ball.transform.parent.forward*(-sign*3);var constrained=ball.ConstrainPlayerMotion(opponent,move);var target=ball.transform.parent.InverseTransformPoint(opponent.transform.position+constrained);Check(target.z*sign>=opponent.capsule.radius,"opponents cannot cross centre before inbound");
+    var opponent=roster.First(a=>match.TeamOf(a)!=match.TeamOf(inbound));float sign=match.TeamOf(opponent)==FootballTeam.A?-1:1;Place(opponent,new Vector3(0,.07f,sign*.5f));var move=ball.transform.parent.forward*(-sign*3);var constrained=ball.ConstrainPlayerMotion(opponent,move);var target=ball.transform.parent.InverseTransformPoint(opponent.transform.position+constrained);Check(target.z*sign<0,"boundary restart preserves opponent movement without a formation reset");
     var mate=roster.First(a=>a!=inbound&&match.TeamOf(a)==match.TeamOf(inbound));var inward=side?new Vector3(-Mathf.Sign(exit.x),0,0):new Vector3(0,0,-Mathf.Sign(exit.z));Place(mate,exit+inward*3);float heading=Heading(inbound,mate);
+    int parked=0;foreach(var other in roster.Where(a=>a!=inbound&&a!=mate))Place(other,new Vector3(-5+parked++*3,.07f,0));
     Check(ball.BeginPassCharge(inbound,heading+180,ball.Defense.play),"inbound may aim");Check(!ball.ReleasePassCharge(inbound,heading+180,ball.Defense.play,ball.PassClock)&&ball.IsInbound(inbound),"outward free inbound rejected");ball.AimPass(inbound,heading);
     yield return Capture("inbound-"+(side?"side":"baseline")+Mathf.Sign(side?exit.x:exit.z));
     ball.autoPickup=true;Check(ball.ReleasePassCharge(inbound,heading,ball.Defense.play,ball.PassClock),"teammate inbound commits");yield return Until(()=>match.Running&&!ball.InboundPending,"pass release opens match");Check(!match.RestrictedHalf(opponent)&&match.State.ShotRemaining(match.Now)>18,"release unlocks half and starts shot clock");yield return Until(()=>ball.Holder==mate,"inbound enters court and teammate receives",4);ball.autoPickup=false;
    }
    Park();var hoop=match.AttackingHoop(actor);var start=hoop.TransformPoint(new Vector3(0,3.65f,0));ball.Place(ball.transform.parent.InverseTransformPoint(start),Quaternion.identity,Vector3.down*3,Vector3.zero);match.Control(actor);Check(match.Release(actor),"score fixture records legal shot");typeof(BasketballBall).GetMethod("BeginAttempt",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(ball,new object[]{hoop,actor,start});yield return Until(()=>match.Snapshot.phase==BasketballMatchPhase.Restart,"physical basket opens conceding baseline restart");
-   var spot=Local(ball.Holder);float baselineSign=match.Snapshot.possession==FootballTeam.A?-1:1;Check(Mathf.Abs(spot.x-baselineSign*2)<.01f&&spot.z*baselineSign>limits.y&&Mathf.Abs(spot.x)<limits.x*.5f,"score restart right of hoop closer to stand than midpoint");yield return Capture("scored-inbound");
+   yield return Until(()=>match.RestartReady,"scored inbounder collects ball");var spot=Local(ball.Holder);float baselineSign=match.Snapshot.possession==FootballTeam.A?-1:1;Check(Mathf.Abs(spot.x-baselineSign*2)<.15f&&spot.z*baselineSign>limits.y&&Mathf.Abs(spot.x)<limits.x*.5f,"score restart right of hoop closer to stand than midpoint");yield return Capture("scored-inbound");
   }
   IEnumerator Guest(){
    bool guard=false,stealGuard=false,locked=false,inbound=false;float end=Time.realtimeSinceStartup+150;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");

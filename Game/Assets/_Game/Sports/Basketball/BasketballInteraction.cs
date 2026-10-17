@@ -40,7 +40,7 @@ namespace WhatTheFish {
   bool Connected=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   bool Eligible(Athlete athlete){
    if(!athlete||athlete.IsSpectator||!athlete.gameObject.activeInHierarchy||athlete.inTransit||athlete.BasketballFreeRoam)return false;
-   if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.Instance.Live&&BasketballMatch.Instance.Contains(athlete);
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.Instance.Live&&BasketballMatch.Instance.Contains(athlete)&&!BasketballMatch.Instance.AutomaticMovement(athlete);
    if(!Connected)return AppRoot.Instance&&AppRoot.Instance.LocalAthlete==athlete;
    var net=athlete.GetComponent<NetworkAthlete>();return net&&net.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(net.OwnerClientId);
   }

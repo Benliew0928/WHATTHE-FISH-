@@ -5,6 +5,69 @@ audit requirement. The records below are historical evidence, not instructions
 to repeat size analysis. The current measured release and its signature are recorded below and in
 [build size](BUILD-SIZE.md).
 
+## Main menu merge - 17 October 2026
+
+Merged incoming `ae9dc3b` (sports menu, startup welcome, persistent guest names,
+football passing and basketball restarts) with the validated Fishing hold controls
+and resilient content preparation. Incoming networking is preserved, with the
+combined protocol raised to **67**: both parent deliveries independently used 66
+for different serialized gameplay records, so mixed builds must not connect.
+Fishing keeps its current camera, rod, rope, swimming and splash presentation.
+The welcome screen now uses the existing safe preparation lease, checksum and
+length validation, direct desktop source read and owned temporary-file cleanup.
+
+The complete `Builds/WindowsFinal/` player and AndroidSubmission were freshly
+rebuilt from this combined source. All seven integration suites pass, reporting
+**4,659 assertions/checks** across startup/profile layouts, two-player names,
+offline/online sports menus, Fishing controls/network, results, interrupted
+copy-source preparation/retry and basketball restarts. All **406 C# files under `Game/Assets/`**
+remain unchanged between the Windows validation snapshot and Android build.
+The initial probes still expected removed inline sport tabs and old loading
+control names. They now use the guide hub, header Back target and the welcome's
+Retry button. Storage-recovery guidance was restored on the welcome error card.
+Guarded scripts-only refreshes preserved native player data, catalog and bundle
+hashes. Name/menu tests passed on unchanged code before these corrections;
+Fishing/results passed after the navigation correction. Startup/profile layouts
+were rerun after the storage message change, followed by recovery and restarts.
+Earlier failed probe evidence is retained for diagnosis.
+Generated scene/prefab graphs were compared by named objects and component references.
+Only Bootstrap protocol 49 -> 67 changed semantically; equivalent ID/order churn
+was restored to the incoming serialization. Native player content is unchanged.
+The incoming six menu/welcome PNGs pass their recorded hashes and PNG CRCs.
+Rendered welcome, retry, sports-menu and hooked-Fishing captures were visually
+inspected on Windows.
+Documentation links also pass from a relocated folder with spaces and an
+unrelated working directory. Runtime evidence is under
+`Builds/GitSync/Task-20261016-200323/MenuMerge/`.
+
+APK: **75,053,357 -> 78,456,347 bytes
+(+3,402,990)**, built 2026-10-17T01:56:46 Malaysia time.
+It retains **21,543,653 bytes below 100 MB**, satisfying
+the task's stricter budget as well as the repository's current 1 GB gate.
+The old 75 MB target has -3,456,347 bytes of reserve;
+the incoming repository policy retires that target. Independent APK v2 signature,
+ARM64-only libraries and embedded five-scene bundle length/SHA-256 checks pass.
+APK SHA-256: `0E8979906AD38453F6F7B61D91F88F39C8C08DBC050BF2A31202F5EB0A0A094C`.
+
+Physical Android touch, keyboard, performance, phone cutouts and WAN behavior
+remain unverified. Huawei login/cloud recovery is still coming soon; the new
+guest profile is local to the device. Superseded complete players/APKs were
+archived with the repository tool; batch paths are in the delivery stamp.
+
+Measured growth is principally the incoming menu/welcome artwork. The three new
+UI textures total **3,286,535 compressed bytes**; the scene bundle grows by only **5,031 compressed bytes**.
+
+| Largest actual compressed APK entries | Bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 42,396,169 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,137,139 |
+| `lib/arm64-v8a/libunity.so` | 9,193,322 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,728,470 |
+| `assets/bin/Data/ea98f7a1d32efd144a9ac765d6e2a920` | 1,432,392 |
+| `assets/bin/Data/f1f277fb7d419384f835cb091df49952` | 1,366,171 |
+| `assets/bin/Data/35850a973745b614aa108f2ab1f630a5` | 909,802 |
+| `assets/bin/Data/Resources/unity default resources` | 798,971 |
+
 ## Main sync and Fishing integration - 16 October 2026
 
 Fresh AndroidSubmission at **21:41:00 Malaysia time** measures

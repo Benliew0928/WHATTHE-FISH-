@@ -25,6 +25,7 @@ namespace WhatTheFish {
     else Check(FootballBots.Instance.StartSolo(size),"VS AI setup "+size+"v"+size);
     yield return null;Check(match.StartMatch(),"match begins "+size);
     if(network){foreach(var actor in FootballBots.Roster)match.ChooseTeam(actor,FootballBots.Id(actor)%2==0?FootballTeam.A:FootballTeam.B,match.Snapshot.revision);}
+    if(!network){match.RequestTeam(FootballTeam.A);Check(match.ConfirmSoloTeam(),"explicit solo start");}
     Bots(false);yield return Until(()=>match.KickoffReady,"centre ready "+size);
     var taker=match.KickoffActor;Check(taker&&match.TeamOf(taker)==match.Snapshot.kickoffTeam,"assigned kickoff team "+size);
     if(!taker){Finish();yield break;}

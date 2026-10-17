@@ -5,6 +5,8 @@ Run examples from the repository root. Scripts resolve the project from their ow
 | Task | Entry point |
 | --- | --- |
 | Complete Windows player | `./Tools/Build/Build.ps1 -Target Windows` |
+| Basketball continuous scoring, rotating inbounds and individual movement hints | `./Tools/Build/Test-BasketballRestart.ps1 -Build` then `-Local` (candidate under `Builds/BasketballRestartQA/Player/`; `-PlayerPath` can select a delivered player) |
+| Startup artwork, real loading progress, retry, placeholders and guest entry | `./Tools/Build/Test-StartupWelcome.ps1 -PlayerPath Builds/WindowsFinal/WhatTheFish.exe` (development player; cold/warm cache, three landscape sizes and simulated cutouts) |
 | All-island character lighting and active renderer regression | `./Tools/Build/Test-CharacterLighting.ps1 -PlayerPath Builds/WindowsFinal/WhatTheFish.exe` (development player; saves matching character captures) |
 | Self-contained Android delivery with APK budget gate | `./Tools/Build/Build.ps1 -Target AndroidSubmission` |
 | Optional development APK | `./Tools/Build/Build.ps1 -Target Android` |
@@ -20,6 +22,8 @@ Run examples from the repository root. Scripts resolve the project from their ow
 `Install-Android.ps1` and `Repair-CMake.ps1` support the editor's Android toolchain. `Prepare-CoveFonts.py` and `Prepare-CartLabels.py` regenerate delivery assets; `analyze_packed_apk.py` inspects APK packing. Keep these with the source project.
 
 The `Test-*.ps1` scripts are reusable feature and networking checks. Use a matching player and the script's parameters; local tests exercise host/guest authority without Relay, while cloud tests use real service quota. The passing, trajectory and stadium-camera checks remain available for the latest gameplay. See [verification](../../Docs/VERIFICATION.md) for feature coverage and device limits.
+
+The [sports home menu](../../Docs/SPORTS-MENU.md) uses Unity build method `WhatTheFish.Editor.SportyMenuBuild.Windows` for a complete candidate in `Builds/SportyMenuQA/Player`. Its `Scripts` method is only for C# iteration after that full build and restores the matching packaged content. Verify with `Test-StorybookMenu.ps1`, `Test-StartupWelcome.ps1`, `Test-PlayerIdentity.ps1` and `Test-ProgrammedBots.ps1 -OfflineOnly`, passing the candidate player path. Promote the entire validated player, then use the normal AndroidSubmission build for Android delivery.
 
 `Review-*.ps1`, `Benchmark-RefinedIslands.ps1`, the gallery builders and walkthrough encoders reproduce curated visual evidence. `check_basketball_evidence.py` checks room movement reports. These tools remain useful even though they are not part of the runtime. Art generators and audits live in [Tools/Blender](../Blender), with authoring instructions alongside the masters in `ArtSource/`.
 

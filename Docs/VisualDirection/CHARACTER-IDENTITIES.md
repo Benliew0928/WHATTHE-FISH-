@@ -75,8 +75,14 @@ combined protocol is recorded in each player's `LATEST-BUILD.txt`.
 
 Football and basketball resolve uniforms from the active match's actual team:
 A is Blue and B is Red. Personal skin, head silhouette and shoe accents remain.
-Shared front/back numbers and compact depth-tested number badges identify
-players at gameplay distance. The local badge adds YOU and a white outline.
+Shared front/back numbers and compact depth-tested identity badges identify
+players at gameplay distance. Each badge uses a small Blue/Red number tab beside
+the player's name on a warm neutral plate, so team recognition stays immediate
+without filling the whole label with saturated colour. The local badge adds a
+small gold YOU chip; spectators use a quiet SPEC chip. Badge width follows the
+actual rendered name width, including the saved 16-character name limit, and
+scales down for the compact viewport. The name has its own padding before the
+role chip, including for wide letters and maximum-length names.
 Badges avoid the team scoreboards and separate crowded labels; football stamina
 bars sit immediately below their matching badge. Basketball shot-clock and team
 status stay inside its scoreboard. One/two chest bands provide another team cue.
