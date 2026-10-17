@@ -1,5 +1,50 @@
 # Build size — measured release records
 
+## Manual cart camera with retained feet - 17 October 2026
+
+AndroidSubmission attempted; Gradle/JDK failed with java.io.IOException:
+Unable to establish loopback connection. New APK size/growth unverified.
+Retained pre-merge APK: 95,067,465 bytes; 1 GB headroom 904,932,535 bytes.
+Failed log/report in Builds/SizeAudit/latest and task evidence; older CSV
+reports there do not validate this source. Check-TaskReady passed; evidence
+Builds/GolfManualCartCameraQA/readiness.out. No Git publishing.
+
+
+User selected merged camera behavior again, while retaining the restored
+pre-merge seated feet. PlayerView.cs and GolfCart.cs match c933361 exactly;
+GolfCartDriverPose.cs is unchanged from the prior fix. Steering/reverse/coast
+move the camera position with the cart but do not rotate the player's chosen
+world-space yaw. Manual look and all camera modes remain. Cart entry no
+longer forces yaw/pitch. Local-driver guard and upstream shot cameras remain.
+This supersedes the camera portion of the previous cart-fix record only.
+Evidence: Builds/GolfManualCartCameraQA. Historical opening APK 95,067,465
+bytes; 1 GB headroom 904,932,535 bytes. No new assets or vehicle physics.
+
+
+## Restore cart pose and steering camera after merge - 17 October 2026
+
+AndroidSubmission attempted; Gradle/JDK initialization failed with
+java.io.IOException: Unable to establish loopback connection. Retained
+pre-merge APK remains 95,067,465 bytes; fresh cart-fix APK size/growth
+unverified. Historical headroom under 1 GB: 904,932,535 bytes. Failed
+log/report retained in Builds/SizeAudit/latest and task evidence; other
+CSV/summary reports there still describe an earlier successful release.
+No fresh contributor audit produced.
+
+
+Upstream replaced the pre-merge seating foot rotations and cart camera
+follow behavior. Restore GolfCartDriverPose exactly from 86d48c3. Restore
+PlayerView cart heading-delta follow, third-person reverse 180-degree
+SmoothDamp transition (.45 s, 180 deg/s), input sampling and lifecycle resets.
+GolfCart.Apply aligns local camera heading/pitch at entry again. Camera uses
+the displayed cart after replication interpolation, for both local host and
+driving client. Other players cannot rotate the local view. Retain merged
+menu/networking, Fishing and Golf shot-camera functionality. No assets,
+vehicle physics, steering, scoring or shot parameters are changed.
+Opening retained APK: 95,067,465 bytes; 1 GB headroom 904,932,535 bytes.
+This pre-merge APK does not validate the fix. Evidence: Builds/GolfCartMergeFixQA.
+
+
 ## Golf and upstream integration - 17 October 2026
 
 Merged-source AndroidSubmission attempted; Gradle/JDK initialization failed:

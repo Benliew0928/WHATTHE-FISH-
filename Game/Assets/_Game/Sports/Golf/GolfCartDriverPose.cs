@@ -26,12 +26,9 @@ namespace WhatTheFish {
    // Extend both legs forward into the footwell without bending the knees.
    SeatLeg(leftThigh,leftShin,leftFoot,forward,up);
    SeatLeg(rightThigh,rightShin,rightFoot,forward,up);
-   // Imported shin axes are not the toe direction. Set the relaxed pitch from
-   // the actual toe segments, with the neutral stance preserving foot roll.
-   var stance=athlete.GetComponent<TurnFootPlacement>();
-   if(stance){leftFoot.rotation=cart.transform.rotation*stance.left.initialRotation;rightFoot.rotation=cart.transform.rotation*stance.right.initialRotation;}
-   var toes=Quaternion.AngleAxis(22,right)*forward;
-   FaceFoot(leftFoot,toes);FaceFoot(rightFoot,toes);
+   // Pitch the feet naturally downward from the straight leg for a relaxed seated pose.
+   if(leftFoot&&leftShin)leftFoot.rotation=Quaternion.AngleAxis(-22,right)*leftShin.rotation;
+   if(rightFoot&&rightShin)rightFoot.rotation=Quaternion.AngleAxis(-22,right)*rightShin.rotation;
    var wheel=cart.seat.position+forward*.53f+up*.20f;
    Solve(leftArm,leftForearm,leftHand,wheel-right*.12f,-right-up*.4f);
    Solve(rightArm,rightForearm,rightHand,wheel+right*.12f,right-up*.4f);
@@ -39,7 +36,7 @@ namespace WhatTheFish {
   static void FaceFoot(Transform foot,Vector3 forward){
    if(!foot||foot.childCount==0)return;
    // Imported foot axes differ from the cart axes. Use the actual toe segment
-   // so the requested direction is independent of the imported bone axes.
+   // so the toes point forward rather than dropping below the straight leg.
    var toe=foot.GetChild(0);var direction=toe.childCount>0?toe.GetChild(0).position-toe.position:toe.position-foot.position;
    if(direction.sqrMagnitude>.000001f)foot.rotation=Quaternion.FromToRotation(direction,forward)*foot.rotation;
   }
