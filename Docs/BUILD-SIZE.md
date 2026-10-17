@@ -1,5 +1,31 @@
 # Build size — measured release records
 
+## Golf and upstream integration - 17 October 2026
+
+Merged-source AndroidSubmission attempted; Gradle/JDK initialization failed:
+java.io.IOException: Unable to establish loopback connection. Retained APK
+remains the pre-merge 95,067,465-byte file; new merged-source APK size and
+growth are unverified. Historical headroom under 1 GB is 904,932,535 bytes.
+Builds/SizeAudit/latest/build.log and LastBuild.buildreport show this failure;
+other CSV/summary entries there still belong to the earlier successful build
+and cannot validate merged content. Task failure log: Builds/GolfPublishQA.
+No fresh APK contributor audit was produced. Historical largest estimated
+entries include mobile timber, character albedo and Golf structure meshes.
+
+
+Merged local Golf completion (86d48c3) with origin/main (9312948), including
+menu/guest profiles, Fishing startup/hold controls, replay/characters and
+networking. Both branches' verification and size history are retained.
+Human-provided AGENTS 1 GB rule and audit workflow take precedence over the
+incoming older policy wording. Local V5 obstacles/water, ball visuals and
+feedback are preserved; upstream contact-shading field removal and generated
+ball object-ID churn are resolved without discarding local course objects.
+Local opening APK: 95,067,465 bytes; 1 GB headroom 904,932,535 bytes.
+Incoming pre-merge APK record 78,456,347 bytes also describes different source.
+Neither historical APK validates this new merged snapshot. Current build
+and publication evidence is under ignored Builds/GolfPublishQA.
+
+
 ## User-recorded Golf GO and walkway audio — 17 October 2026
 
 Fresh AndroidSubmission **2026-10-17 19:34:26 Malaysia time**:
@@ -810,6 +836,790 @@ possible. Unused relocated terrain/grass derivatives were archived. Fresh
 compressed growth and largest contributors cannot be measured until Android
 build succeeds. See [verification](VERIFICATION.md#circular-golf-course--14-october-2026).
 
+The project owner raised the APK limit to **1,000,000,000 bytes (1 decimal GB)**
+on 15 October 2026. The 75 MB development target is retired; current size-audit requirements
+are defined by AGENTS.md. Older records below retain the limits applicable when they were made;
+they do not define the current policy. See [AGENTS.md](../AGENTS.md).
+
+## Main menu merge - 17 October 2026
+
+Merged incoming `ae9dc3b` (sports menu, startup welcome, persistent guest names,
+football passing and basketball restarts) with the validated Fishing hold controls
+and resilient content preparation. Incoming networking is preserved, with the
+combined protocol raised to **67**: both parent deliveries independently used 66
+for different serialized gameplay records, so mixed builds must not connect.
+Fishing keeps its current camera, rod, rope, swimming and splash presentation.
+The welcome screen now uses the existing safe preparation lease, checksum and
+length validation, direct desktop source read and owned temporary-file cleanup.
+
+The complete `Builds/WindowsFinal/` player and AndroidSubmission were freshly
+rebuilt from this combined source. All seven integration suites pass, reporting
+**4,659 assertions/checks** across startup/profile layouts, two-player names,
+offline/online sports menus, Fishing controls/network, results, interrupted
+copy-source preparation/retry and basketball restarts. All **406 C# files under `Game/Assets/`**
+remain unchanged between the Windows validation snapshot and Android build.
+The initial probes still expected removed inline sport tabs and old loading
+control names. They now use the guide hub, header Back target and the welcome's
+Retry button. Storage-recovery guidance was restored on the welcome error card.
+Guarded scripts-only refreshes preserved native player data, catalog and bundle
+hashes. Name/menu tests passed on unchanged code before these corrections;
+Fishing/results passed after the navigation correction. Startup/profile layouts
+were rerun after the storage message change, followed by recovery and restarts.
+Earlier failed probe evidence is retained for diagnosis.
+Generated scene/prefab graphs were compared by named objects and component references.
+Only Bootstrap protocol 49 -> 67 changed semantically; equivalent ID/order churn
+was restored to the incoming serialization. Native player content is unchanged.
+The incoming six menu/welcome PNGs pass their recorded hashes and PNG CRCs.
+Rendered welcome, retry, sports-menu and hooked-Fishing captures were visually
+inspected on Windows.
+Documentation links also pass from a relocated folder with spaces and an
+unrelated working directory. Runtime evidence is under
+`Builds/GitSync/Task-20261016-200323/MenuMerge/`.
+
+APK: **75,053,357 -> 78,456,347 bytes
+(+3,402,990)**, built 2026-10-17T01:56:46 Malaysia time.
+It retains **21,543,653 bytes below 100 MB**, satisfying
+the task's stricter budget as well as the repository's current 1 GB gate.
+The old 75 MB target has -3,456,347 bytes of reserve;
+the incoming repository policy retires that target. Independent APK v2 signature,
+ARM64-only libraries and embedded five-scene bundle length/SHA-256 checks pass.
+APK SHA-256: `0E8979906AD38453F6F7B61D91F88F39C8C08DBC050BF2A31202F5EB0A0A094C`.
+
+Physical Android touch, keyboard, performance, phone cutouts and WAN behavior
+remain unverified. Huawei login/cloud recovery is still coming soon; the new
+guest profile is local to the device. Superseded complete players/APKs were
+archived with the repository tool; batch paths are in the delivery stamp.
+
+## Main sync and Fishing integration - 16 October 2026
+
+Fresh AndroidSubmission at **21:41:00 Malaysia time** measures
+**73,459,821 -> 75,053,357 bytes (+1,593,536)**. Independent APK v2 signature verification
+passes. SHA-256: `EB1E8A61B41F130AA470EE259B402B9ED8BC003D6B05D75D57E98A96DFA11377`.
+The APK is **24,946,643 bytes below 100 MB**, also satisfying
+the incoming repository's 1 GB gate. This is a measured APK, rather than a source
+folder estimate. The older 75 MB target has -53,357 bytes
+of reserve against this build; the incoming repository policy retires that target.
+
+The combined source keeps incoming goal replay, ten character identities,
+teleport, spectators and host recovery. Fishing retains Hold the Glow,
+directional camera, rod/rope/splash presentation, six abilities and two favourites.
+Local content startup retains checksum validation, a preparation lease, safe
+desktop source handling and owned temporary-file cleanup. Delayed Fishing
+results now close an already-open next-adventure card before taking input.
+Peers require **protocol 66** because the combined Fishing record layout differs
+from incoming protocol 65.
+
+The complete Windows player is in `Builds/WindowsFinal/`.
+**3,310 runtime assertions across nine final reports pass**, alongside the
+compiled SDK regressions. Runtime C# is unchanged after Windows validation.
+See [verification](VERIFICATION.md#main-sync-and-fishing-integration---16-october-2026).
+Evidence: `Builds/GitSync/Task-20261016-200323/`. Physical-phone and WAN qualification remain outstanding.
+
+## Abrupt guest disconnect recovery - 15 October 2026
+
+Fresh AndroidSubmission at **21:54:03 Malaysia time** measures
+**75,006,569 bytes** and has **924,993,431 bytes** below the new 1 GB limit.
+Independent APK v2 signature verification passes. SHA-256:
+`C58D93EEC18676D089ADE3BFCEAC06EB7DB38B122798FFB608B857A2C0EBC795`.
+
+[Disconnect recovery](DISCONNECTS.md) embeds the existing Unity Transport 2.7.3
+dependency with a narrow receive-buffer fix and guards restoration of a
+despawned traveller. No art or quality reduction is part of this change. The
+build completed before the policy update and passed the former stricter gate;
+the updated readiness check validates this same APK against 1 GB. Editor-only
+policy changes are separately compiled and do not change the delivered game.
+The preceding transport-only candidate's optional detailed audit is retained
+in [the audit history](APK-SIZE-AUDIT.md#abrupt-guest-disconnect-recovery---15-october-2026).
+
+Current delivery evidence is under `Builds/DisconnectQA/`, with the complete
+Windows player in `Builds/WindowsFinal/`. Both builds use protocol **64**.
+See [verification](VERIFICATION.md#abrupt-guest-disconnect-recovery---15-october-2026)
+for capacity results and the limits of local Windows testing.
+
+## Spectator rooms and sky arrivals - 15 October 2026
+
+Fresh AndroidSubmission at **19:58:15 Malaysia time** measures
+**74,986,217 -> 75,014,337 bytes (+28,120)** against the task's starting APK.
+The intervening pickup release was 75,003,257 bytes; growth from it is
+**11,080 bytes**. Strict-limit headroom is **24,985,663 bytes**. The
+75,000,000-byte development target is **exceeded by 14,337 bytes** and is not
+achieved. The enforced hard budget and independent APK v2 signature pass.
+SHA-256: `383141E730D7740B8E94CDDF5FAD2C4907AE0FB889EC9F567ED9A35BB07621BA`.
+
+[Spectator rooms](SPECTATORS.md) reuse the same ten character models, existing
+stadium seating and teleport effects. No new texture, mesh, audio, animation
+clip or package is shipped. The bundle's asset-by-asset serialized comparison
+changes only the network-character prefab by **24 bytes**. Native code,
+metadata and small lossless packing changes explain the compressed growth;
+the opening delta also includes concurrent prop-pickup work. The small
+development-target excess is recorded rather than treated as spare budget.
+See [the detailed audit](APK-SIZE-AUDIT.md#spectator-rooms-and-sky-arrivals---15-october-2026).
+
+The complete validated Windows player is in `Builds/WindowsFinal/`. Current APK,
+signature, source hashes, audits and test evidence are under
+`Builds/SpectatorQA/`. [Verification](VERIFICATION.md#spectator-rooms-and-sky-arrivals---15-october-2026)
+records 1,555 passing checks, stable normal replacements in 20/15-process rooms,
+the preceding-candidate limits and the forced-process-termination UDP stress
+case that was unresolved at that release, subsequently fixed by
+[disconnect recovery](DISCONNECTS.md). Physical Android and WAN/Relay validation
+remain outstanding.
+
+## Forgiving prop pickups - 15 October 2026
+
+Fresh AndroidSubmission at **19:10:43 Malaysia time** measures
+**74,986,217 -> 75,003,257 bytes (+17,040)**. Strict-limit headroom is
+**24,996,743 bytes**. The 75 MB development target is **exceeded by 3,257 bytes**;
+it is not achieved. The enforced hard budget and independent APK v2 signature
+verification pass. SHA-256:
+`AAFEEDBB84D0FCD6F7374F204AED387DEB8258D6F47275E030DDAE7D3450E437`.
+
+[Football](FOOTBALL-ABILITIES.md) and [basketball](BASKETBALL-PROPS.md) prop
+pickup radius increases from **0.85 to 1.2 m**, with collection on the spawn
+simulation tick for eligible waiting players. This is a shared constant and
+two control-flow changes; no texture, mesh, material, audio or package was added.
+The snapshot also contains concurrent room-entry/seat/spectator work. Growth is
+code/metadata, while the compressed scene bundle shrinks 2,443 bytes; it is not
+an isolated size measurement of the pickup fix. See [the packing audit](APK-SIZE-AUDIT.md#forgiving-prop-pickups---15-october-2026).
+
+The complete 325-file Windows player is updated in `Builds/WindowsFinal/`.
+[Verification](VERIFICATION.md#forgiving-prop-pickups---15-october-2026) records
+1,021 assertions, code-equivalent candidate limits and archives. Current APK,
+baseline and audits are under `Builds/PropPickupQA/`. Physical Android touch,
+appearance, RAM/FPS and WAN play remain unverified.
+
+## Room teleport, post-match choices and cabin lighting - 15 October 2026
+
+Fresh AndroidSubmission at **18:06:41 Malaysia time** measures
+**74,943,705 -> 74,986,217 bytes (+42,512)** against the task's opening APK.
+It is **13,783 bytes below the 75,000,000-byte development target**, with
+**25,013,783 bytes** of headroom to the strict 100,000,000-byte ceiling.
+The size gate and independent APK v2 signature verification pass. SHA-256:
+`6CEEDCE74FF4F2BF067340C49D65C5EE8C39F3FA965C9DE6504FB60EF0DA563B`.
+
+[Room teleport](TELEPORT.md) now connects the reusable animation to host choices
+after all four sports, with coordinated arrival and rollback. Cabin bulbs render
+after ambient shading; inside and nearby cabin views avoid noisy contact shading.
+The change reuses existing art, fonts and shaders, adding no textures, meshes,
+audio or packages. The opening-to-final delta also includes concurrent football
+swipe/pass/pressure changes; it is not an isolated feature measurement. Growth
+from the intervening 74,980,797-byte release is **5,420 bytes**. The final bulb
+draw-order correction costs **572 bytes** versus the preceding task candidate.
+
+The complete validated Windows player is in `Builds/WindowsFinal/`. Current APK,
+audit and verification evidence are retained under `Builds/RoomTeleportQA/`.
+See [the packing audit](APK-SIZE-AUDIT.md#room-teleport-post-match-choices-and-cabin-lighting---15-october-2026)
+and [verification](VERIFICATION.md#room-teleport-post-match-choices-and-cabin-lighting---15-october-2026).
+The development reserve remains small. No Android device was attached; phone
+appearance, touch, peak RAM and FPS remain unverified.
+
+## Football swipe, pass guide and pressure - 15 October 2026
+
+Fresh AndroidSubmission at **17:36:28 Malaysia time** measures
+**74,943,705 -> 74,980,797 bytes (+37,092)**. Development reserve is
+**19,203 bytes** below 75,000,000; strict-limit headroom is **25,019,203 bytes**.
+The enforced APK budget and independent APK v2 signature verification pass.
+SHA-256: `0D6C9ADDC50165A543CEF68E092B9F1C5430DEC91DD7A103479F970373F9D474`.
+
+[Football controls and passing](FOOTBALL-PLAYMAKER.md) now support captured
+swipes across all four action hitboxes, a contrasting ground-pass path and
+receiver jersey label. [Pressure](FOOTBALL-PACE-AND-PRESSURE.md) retains the
+25% base and adds ten percentage points per extra eligible defender, capped at
+three (25/35/45%). This task adds no textures, meshes, audio or packages.
+The shared build also includes concurrent room teleport/post-match/cabin work;
+its growth is not an isolated measurement of the football changes.
+
+The complete 325-file validated Windows player is in `Builds/WindowsFinal/`.
+[Verification](VERIFICATION.md#football-swipe-pass-guide-and-pressure---15-october-2026)
+records 658 final assertions, compact 844 x 390 captures and source snapshot
+limits. The [packing audit](APK-SIZE-AUDIT.md#football-swipe-pass-guide-and-pressure---15-october-2026)
+records contributors. Task APK and evidence: `Builds/FootballSwipeQA/`.
+Physical Android touch, appearance, RAM/FPS and WAN play remain unverified.
+
+## Character head refinement - 15 October 2026
+
+Fresh AndroidSubmission at **16:54:23 Malaysia time** measures
+**74,754,317 -> 74,943,705 bytes (+189,388)**. The release is **56,295 bytes
+below the 75 MB development target**, with **25,056,295 bytes** of headroom to
+the strict 100,000,000-byte ceiling. Budget enforcement and APK v2 signature
+verification pass. SHA-256:
+`07E1A1C32583F255FC7CCE28491E1AD8AEA7DC99B6CDE4F9FB6CFCF61FB731D5`.
+
+The [refined collection](VisualDirection/CHARACTER-IDENTITIES.md#head-refinement)
+fixes ear/head joins, improves scalp shading and adds sculpted hair and hat
+details at both LODs. The original body, rig, textures, grips and animation clips
+remain shared. Hidden triangles and unused head coordinates were removed from
+delivery data, retaining visible detail. The final APK is **198,872 bytes
+smaller** than the preceding 75,142,577-byte character candidate. The opening
+to final delta includes concurrent match-boundary and teleport work; it is not
+an isolated measurement of the head feature.
+
+See [the packing audit](APK-SIZE-AUDIT.md#character-head-refinement---15-october-2026)
+and [verification](VERIFICATION.md#character-head-refinement---15-october-2026).
+The exact APK and audit snapshot are retained under `Builds/CharacterRefinementQA/`.
+The small development reserve still requires care with future additions.
+No physical Android device was connected; phone quality and FPS are unverified.
+
+## Blue-light teleport preview - 15 October 2026
+
+Fresh AndroidSubmission at **16:31:03 Malaysia time** measures
+**74,756,265 -> 75,142,885 bytes (+386,620)** against the opening observed APK.
+The archived comparison baseline was an intervening 74,754,317-byte release;
+growth from that baseline is **388,568 bytes**. Strict-limit headroom is
+**24,857,115 bytes**. This is **142,885 bytes above the 75 MB development target**;
+the development target is not achieved. The hard budget and APK v2 signature pass.
+SHA-256: `F28EF3C4996CA79943979B0AFC272DB8EFDD5CBF83524E0D291C434B8AC3B53F`.
+
+The [teleport preview](TELEPORT.md) adds reusable blue-light effects, visible
+camera travel and eight capacity-checked destination sets. It uses procedural
+shared geometry and existing character materials/textures. Shared growth includes
+concurrent character-head refinements; their packed assets reduced the interim
+75,350,821-byte build to this measured release. See the [packing audit](APK-SIZE-AUDIT.md#blue-light-teleport-preview---15-october-2026).
+The signed task snapshot is retained at `Builds/TeleportQA/WhatTheFish-release.apk`
+with `SizeAuditFinal/`; a concurrent release may later replace the shared Android
+output. Physical Android appearance, touch, peak RAM and FPS remain unverified.
+
+## Match exit boundaries - 15 October 2026
+
+Fresh AndroidSubmission at **15:46:57 Malaysia time** measures
+**74,754,317 -> 74,810,941 bytes (+56,624)**.
+Development reserve: **189,059 bytes**; strict-limit headroom:
+**25,189,059 bytes**. Budget and APK v2 signature verification pass.
+SHA-256: `9841BC0103E22D4096B7C0D6A733649FBC25385D81299C4C6DF3BCD2612FBF9D`.
+
+Football and basketball release player boundaries after the final result;
+closing MVP allows island exploration. Active matches restore containment.
+The size delta also includes concurrent teleport code, two materials and two
+shaders. This boundary fix adds no textures, meshes or audio. See the
+[packing audit](APK-SIZE-AUDIT.md#match-exit-boundaries---15-october-2026) and
+[verification](VERIFICATION.md) for source snapshot limits. Physical Android
+appearance, touch and performance remain unverified.
+
+## Basketball statistics and courtside MVP - 15 October 2026
+
+Fresh AndroidSubmission at **15:25:29 Malaysia time** measures
+**74,728,161 -> 74,754,317 bytes (+26,156)**.
+The development reserve below 75,000,000 bytes is **245,683**;
+headroom to the strict 100,000,000-byte ceiling is **25,245,683 bytes**.
+The enforced APK budget and independent APK v2 signature verification pass.
+SHA-256: `65788D64FE66042BAACF6DF7AEA26459640692511201C888C1ACB10CFDF4549D`.
+
+This release adds [basketball per-player statistics and MVP](BASKETBALL-HONOURS.md)
+to VS AI 2v2-5v5 and rooms. The award reuses the existing character portraits,
+basketball icons and actual arena; basketball seams and team accents are UI
+geometry. No texture, mesh, audio bank or environment copy was introduced.
+See [the packing audit](APK-SIZE-AUDIT.md#basketball-statistics-and-courtside-mvp---15-october-2026)
+and [verification](VERIFICATION.md) for measured contributors and build limits.
+No physical Android device was connected; device quality and FPS are unverified.
+
+## Football passing and illustrated MVP - 15 October 2026
+
+Fresh AndroidSubmission at **14:15:27 Malaysia time** measures
+**73,988,013 -> 74,728,161 bytes (+740,148)** against this task's opening APK.
+The intervening trail release was 74,020,385 bytes; growth from that release
+is **707,776 bytes**. The development reserve below 75,000,000 bytes is
+**271,839 bytes**; headroom to the strict 100,000,000-byte ceiling is
+**25,271,839 bytes**. The enforced size gate and independent APK v2 signature
+verification pass. SHA-256:
+`EB49D9B173236EA23BBF3EB1DC8F8698EEEB854AA4DDB7C6508D8033454B0026`.
+
+This release adds the [Pass action, match statistics and illustrated MVP](FOOTBALL-PLAYMAKER.md),
+Dash/Shoot gestures and local-only footsteps. Ten 1024 x 1536 PNG masters use
+512-pixel ASTC 6x6 Android imports with no mipmaps or read/write copies. The
+award reuses the real pitch and stadium; no duplicate environment is shipped.
+The opening-to-final delta includes the concurrent trail work. Largest-entry
+and asset comparisons are in [the packing audit](APK-SIZE-AUDIT.md#football-passing-and-illustrated-mvp---15-october-2026).
+Windows validation and source limits are in [verification](VERIFICATION.md).
+No connected Android device was available for touch, appearance or FPS testing.
+
+## Personal football trails - 15 October 2026
+
+Fresh AndroidSubmission at **13:39:35 Malaysia time** measures
+**73,988,013 -> 74,020,385 bytes (+32,372)**. The reserve below 75,000,000 bytes
+is **979,615 bytes**; headroom to the strict 100,000,000-byte ceiling is
+**25,979,615 bytes**. The enforced gate and independent APK v2 signature
+verification pass. SHA-256:
+`6737E37E5B48912D0A496CDE0FE52E4254BF886FA2CC424C8E7A9BE77A855ABF`.
+
+The football diameter increases from **44 to 52.8 cm**, with matching mesh,
+collider and centre height. [Five personal trails](FOOTBALL-TRAILS.md) share one
+procedural shader and material resource. Each viewer's saved selection applies
+throughout live play and replay, independently of the kicker. No textures,
+meshes, audio or packages were added for this feature. Both mesh inventories
+are unchanged; see the [packing audit](APK-SIZE-AUDIT.md#personal-football-trails---15-october-2026).
+The measured delta also includes concurrent passing, controls and MVP work;
+it is not an isolated trail-only size benchmark.
+
+The complete **324-file** Windows player built at **13:32:03**, protocol **60**,
+was promoted to `Builds/WindowsFinal/` at **13:37:21** with every file verified.
+[Verification](VERIFICATION.md#personal-football-trails---15-october-2026)
+records **661 passing assertions**, actual rendered previews and source limits.
+Android includes three later concurrent MVP/review source edits; this task's
+production code matches the tested Windows source. Physical Android appearance
+and performance remain unverified. Evidence: `Builds/FootballTrailQA/`, including
+`SizeAuditBefore/`, `SizeAuditFinal/` and `apk-comparison.json`.
+
+## Longer football transitions - 15 October 2026
+
+Fresh AndroidSubmission at **02:34:35 Malaysia time** measures
+**73,991,313 -> 73,988,013 bytes (-3,300)**. Development reserve below
+75,000,000 bytes is **1,011,987 bytes**; headroom to the strict 100,000,000-byte
+ceiling is **26,011,987 bytes**. The enforced gate and independent APK v2
+signature verification pass. SHA-256:
+`2A5FE9F9529AD344062771496CD1B9CD17C7C7E77570AAE9398E42FCB1CF4643`.
+
+The goal card now lasts **1.6 seconds**, including a full **1.0-second hold**.
+The return lasts **0.8 seconds**, with camera switches and the centre reset
+under the covered holds. Replay footage remains five seconds. No assets,
+textures, meshes, audio or packages were added; both serialized inventories
+and mesh inventories are unchanged. See the
+[audit](APK-SIZE-AUDIT.md#longer-football-transitions---15-october-2026).
+
+The complete **324-file** Windows player built at **02:28:43**, protocol **58**,
+is delivered in `Builds/WindowsFinal/`, retaining the current character identities
+and earlier gameplay. Every delivered file matches the tested candidate.
+[Verification](VERIFICATION.md#longer-football-transitions---15-october-2026)
+records **271 passing assertions** and **16 rendered timing traces** across
+VS AI and local rooms. Physical Android quality and performance remain
+unverified. Evidence: `Builds/FootballReplayTimingQA/` and its `SizeAuditFinal/`.
+
+## Ten player identities - 15 October 2026
+
+Fresh AndroidSubmission at **02:11:35 Malaysia time** measures
+**73,482,037 -> 73,991,313 bytes (+509,276)** against the preceding illustrated
+replay release. Development reserve below 75,000,000 bytes is **1,008,687 bytes**;
+headroom to the strict 100,000,000-byte ceiling is **26,008,687 bytes**.
+The enforced APK gate and independent APK v2 signature verification pass.
+SHA-256: `701974B45CE7F671149E9DA9B729E0928CF7350AAA05E6EAE0073B9E212186AA`.
+
+Ten unique heads and room numbers share the existing body, textures and nine
+animation clips. Football/basketball use Blue/Red uniforms; other activities
+retain personal colors. One shared digit atlas and small head/scalp meshes
+provide the new art. Number-coordinate quantization reduced the first measured
+identity APK from **74,006,669 to 73,991,313 bytes (-15,356)**. Growth is
+**9,276 bytes above** the plan's 500,000-byte engineering target; the working
+APK target remains satisfied. No unrelated world or texture quality was cut.
+See the [packing audit](APK-SIZE-AUDIT.md#ten-player-identities---15-october-2026).
+
+The opening APK was 73,446,301 bytes. Its combined delta is +545,012 bytes,
+including the intervening replay release (+35,736); it is not all attributable
+to character identities. The complete **324-file** Windows player built at
+**01:47:28**, protocol **57**, is delivered in `Builds/WindowsFinal/`.
+It includes the latest illustrated replay and the shared working tree's prior
+gameplay changes. [Verification](VERIFICATION.md#ten-player-identities---15-october-2026)
+records final-player checks, earlier regressions and source limits. Physical
+Android appearance and performance remain unverified.
+
+Evidence: `Builds/CharacterIdentityQA/release-audit.json`, `character-storage-final.json`,
+`apk-signature.txt`, `verification.json` and `SizeAuditFinal/`.
+
+## Illustrated football goal replay - 15 October 2026
+
+Fresh AndroidSubmission at **00:37:32 Malaysia time** measures
+**73,446,301 -> 73,482,037 bytes (+35,736)**. Development reserve below
+75,000,000 bytes is **1,517,963 bytes**; headroom to the strict
+100,000,000-byte ceiling is **26,517,963 bytes**. The enforced build gate and
+independent APK v2 signature verification pass. SHA-256:
+`FDA8B748C4919FE05441A8A35D0E2EE320E9D4CF890A15726B6D46D099F5A216`.
+
+The [illustrated Broadcast Slash](GoalReplay/README.md) reuses the official
+logo and native vector drawings. Five seconds of recorded goal footage precede
+a conceding-team centre kick with free aiming. VS AI, human rooms and rooms
+filled with bots share this flow. No texture, mesh, audio bank or package was
+added. Both mesh inventories and the bundle's serialized asset total are
+unchanged; see the [packing audit](APK-SIZE-AUDIT.md#illustrated-football-goal-replay---15-october-2026).
+
+The complete **324-file** Windows player built at **00:31:09** is delivered in
+`Builds/WindowsFinal/`, protocol **56**, with every file hash-verified against
+the tested candidate. [Verification](VERIFICATION.md#illustrated-football-goal-replay---15-october-2026)
+records **360 passing final-player assertions** and separate earlier gameplay
+regressions. This isolated source snapshot excludes concurrent unfinished
+character-identity work in the shared checkout. Physical Android appearance,
+touch and performance remain unverified. Current evidence is under
+`Builds/FootballReplayQA/`, including `SizeAuditFinal/`.
+
+
+
+
+## Fishing two-button Hold the Glow restoration - 15 October 2026
+
+Fresh AndroidSubmission written **22:14:33 Malaysia time** measures
+**73,456,241 -> 73,459,821 bytes (+3,580)**.
+Headroom to the strict 100,000,000-byte boundary: **26,540,179 bytes**.
+Development reserve below 75,000,000: **1,540,179 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `79D7A6F34CF6072214C3E5975EB542B8FE078C3156D0A70C037A1BB2752AFA54`.
+
+Fishing restores the pictured **Hold & Countersteer** controls: one Left and
+one Right button. Hold the glowing direction, switch when it changes and release
+both to cool the line. The fish/gold-band meter and clear navy Catch/Tension
+captions return. Timed-tap gating is removed. Continuous winding uses the earlier
+law with a modest 20% speed assist. Correct-side reel drag can slip under a
+sudden load to leave reaction time; spring, accumulated strain and fish forces
+remain, and players still release to cool.
+The shared tutorial uses the same live controls and opens once for the revision.
+
+Current camera switching and directional framing, rod grip/lean, attached rope,
+fish swimming, gravity-driven splashes and landing feedback are retained. Scoring,
+Wanted, Round/Cup/Crew, six abilities/two favourites, four islands and shared room
+travel remain. Matching peers require protocol **57**. No texture, font, model,
+shader, recorded audio, package or realtime light is added.
+[Controls and simulation](FISHING-COUNTERSTEER.md).
+
+Complete Windows player: **324 files**. **2,767 runtime checks** and **1,571 rule checks** pass.
+[Verification](VERIFICATION.md#fishing-two-button-hold-the-glow-restoration---15-october-2026), [size audit](APK-SIZE-AUDIT.md#fishing-two-button-hold-the-glow-restoration---15-october-2026).
+Evidence: `Builds/FishingHold/Task-20261015-201923/`. Physical-phone and WAN verification remain outstanding.
+
+## Local content startup recovery - 15 October 2026
+
+Fresh AndroidSubmission written **17:17:47 Malaysia time** measures
+**73,452,461 -> 73,456,241 bytes (+3,780)**.
+Headroom to the strict 100,000,000-byte boundary: **26,543,759 bytes**.
+Development reserve below 75,000,000: **1,543,759 bytes**.
+The enforced build limit and independent APK v2 signature verification pass.
+SHA-256: `7F39D1F12038005F6028A80600148A792394C8C1442E263DBA164358535A5FE6`.
+
+First-launch preparation reads an embedded filesystem bundle directly,
+avoiding an unnecessary compressed-source copy on Windows. APK archive assets
+retain their required temporary copy. Both paths retain length/SHA-256 and
+conversion-CRC checks. Preparation is serialized between launches; owned failed
+and interrupted temporary files are cleaned. Obsolete hash caches are pruned
+after the current content successfully loads, preserving other files and saves.
+The loading screen offers a usable storage/retry message. All four islands,
+the existing Fishing gameplay and protocol **56** are retained. No asset,
+recorded audio, model, shader, texture, package or realtime light is added.
+[Loader and storage behavior](CONTENT-PACKAGING.md#first-launch-and-storage).
+
+Complete Windows player: **324 files**. **443 runtime checks** and **1,576 rule checks** pass.
+[Verification](VERIFICATION.md#local-content-startup-recovery---15-october-2026), [size audit](APK-SIZE-AUDIT.md#local-content-startup-recovery---15-october-2026).
+Evidence: `Builds/LaunchRecovery/Task-20261015-165153/`. Physical-phone and WAN verification remain outstanding.
+
+## Fishing timed pulls and directional camera - 15 October 2026
+
+Fresh AndroidSubmission written **16:14:33 Malaysia time** measures
+**73,442,073 -> 73,452,461 bytes (+10,388)**.
+Headroom to the strict 100,000,000-byte boundary: **26,547,539 bytes**.
+Development reserve below 75,000,000: **1,547,539 bytes**.
+The enforced hard limit and independent APK v2 signature verification pass.
+SHA-256: `E94EAA6B2F1C8A6FA1BB88BCC4C34532A4A7D1B5463CF249AFA24848B82AE940`.
+
+Tap Reel when the moving circle enters gold. Every third sweep asks for a
+timed Left/Right counterpull through the same controls. Each sweep allows one
+attempt; holding and spam never repeat a stroke. Clear arrow cues brighten at
+the tap window, with contained hit/miss feedback and no keyboard guides. The
+rod, torso and fish forces respond to accepted pulls, and a restrained camera
+shoulder shift keeps the opposing direction readable. A tension-sensitive reel
+clutch softens short strokes under load. Host and guest receive equal fixed
+stroke duration; timestamp and duplicate guards remain host-owned. The revised
+tutorial reopens once and shares the live widgets with How to Play.
+
+Scoring, Wanted, Round/Cup/Crew goals, six skills/two favourites, existing catch
+feedback, all four islands and shared room travel remain. Matching peers require
+protocol **56**. No new image, model, shader, recorded audio file, package or
+realtime light is added. [Controls and simulation](FISHING-TIMING.md).
+
+Complete Windows delivery: **324 files**, **2,853 passing assertions**.
+[Verification](VERIFICATION.md#fishing-timed-pulls-and-directional-camera---15-october-2026), [packing audit](APK-SIZE-AUDIT.md#fishing-timed-pulls-and-directional-camera---15-october-2026).
+Evidence: `Builds/FishingTiming/Task-20261015-151017/`. Physical-phone and WAN qualification remain outstanding.
+
+## Fishing clarity, camera and catch feedback - 15 October 2026
+
+Fresh AndroidSubmission written **14:31:37 Malaysia time** measures
+**73,446,373 -> 73,442,073 bytes (-4,300)**.
+Headroom to the strict 100,000,000-byte boundary: **26,557,927
+bytes**. Development reserve below 75,000,000: **1,557,927 bytes**.
+The enforced hard size gate and independent APK v2 signature verification pass.
+SHA-256: `F39B0474F0F59EFFFA8F850482356F0FB26EE8BF976511742B18629343A00D56`.
+
+Fishing now has a circular accepted-input cue and gold target socket,
+explicit hold/switch/release instructions with stable cooling guidance, a framed
+cast/wait/hook hint, contextual utility visibility, a smooth accepted-hook camera
+with return to the chosen view, and confirmed local fish/points landing feedback.
+Reduced Motion retains the chosen camera and simplifies the new effects. Held
+gear stays clear of the landing card. The tutorial reuses the live circular meter.
+No new image, model, shader, recorded audio file or package is added. Rules,
+scoring, fish forces, timing, six skills/two favourites and host authority remain
+unchanged. All four islands and shared room travel remain self-contained.
+Matching peers use protocol **55**.
+
+Complete Windows delivery: **324 files**, **2,755 passing
+assertions** across 9 final reports. [Verification](VERIFICATION.md#fishing-clarity-camera-and-catch-feedback---15-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#fishing-clarity-camera-and-catch-feedback---15-october-2026), [controls and camera](FISHING-COUNTERSTEER.md).
+Evidence: `Builds/FishingClarity/Task-20261015-131941/`. Physical Android and WAN qualification remain outstanding.
+
+## Local rebuild of pulled main - 14 October 2026
+
+Fresh local AndroidSubmission written **20:45:42 Malaysia time** measures
+**90,388,492 -> 73,446,373 bytes (-16,942,119)** against
+the older APK on this laptop. Headroom to the strict 100,000,000-byte boundary:
+**26,553,627 bytes**. Development reserve below 75,000,000:
+**1,553,627 bytes**. Enforced hard limit and independent APK v2 signature pass.
+SHA-256: `51723F75318AE12D75C7494F674A1A08B79DA67C2A25F119FB4933745F7C715A`.
+
+Rebuilds pulled `main` at `4b20c6b`. No new gameplay or art change
+is authored. All four islands, shared room travel, Golf camera/buggy/flags/trail,
+programmed sports bots, current match/prop rules, network movement, live renderer
+lighting and Fishing's existing features are retained. Protocol **55** requires
+matching players. Lossless scene AssetBundle sharing and release minification
+are the upstream packaging changes; this is not removal of islands or an
+external content download. Installed storage also includes the expanded runtime
+cache and must be measured separately on a phone.
+
+Complete 324-file Windows player is delivered with
+**3,546 passing assertions** and matching runtime hashes.
+[Verification](VERIFICATION.md#local-rebuild-of-pulled-main---14-october-2026), [audit](APK-SIZE-AUDIT.md#local-rebuild-of-pulled-main---14-october-2026).
+Evidence: `Builds/LocalRebuild/Task-20261014-195856/`. No physical-phone or WAN qualification is claimed.
+
+## Golf buggy control and shot camera - 14 October 2026
+
+Fresh AndroidSubmission at **18:54:34 Malaysia time** measures
+**73,453,793 -> 73,446,301 bytes (-7,492)** against this task's opening APK.
+Development reserve below 75,000,000 bytes is **1,553,699 bytes**; headroom to
+the strict 100,000,000-byte ceiling is **26,553,699 bytes**. The enforced build
+gate and independent APK v2 signature verification pass. SHA-256:
+`E4BF71D7D11845B843582F145C0A46D773E2ABBA72B56205319FDE195BDC4DDE`.
+
+Buggy steering and reverse preserve the player's camera angle. Accepted aiming
+recalls the player's buggy until manually summoned again. Confirmed impact
+starts a smooth ball-follow camera through flight and landing, then a smooth
+return to the golfer. No new art, audio or shipped dependency was added.
+Both mesh inventories are unchanged. The combined working-tree measurement
+also includes concurrent sports prop-cycle and lighting work, so the full byte
+delta is not attributable to the golf changes alone. See the
+[packing audit](APK-SIZE-AUDIT.md#golf-buggy-control-and-shot-camera---14-october-2026).
+
+The complete **324-file** Windows player built at **18:48:50** is delivered in
+`Builds/WindowsFinal/`, protocol **55**, with every file hash-verified against
+the tested candidate. [Verification](VERIFICATION.md#golf-buggy-control-and-shot-camera---14-october-2026)
+records **632 passing assertions**, rendered camera checks and source limits.
+This is `bd62f78` plus preserved uncommitted work. Physical Android appearance,
+touch and performance remain unverified. Current evidence is in
+`Builds/GolfCameraQA/`; its `SizeAuditFinal/` preserves the measured audit.
+
+## Live renderer lighting fix - 14 October 2026
+
+Fresh AndroidSubmission at **18:43:03 Malaysia time** measures
+**73,453,793 -> 73,448,789 bytes (-5,004)** against this task's opening APK.
+The development reserve is **1,551,211 bytes** below 75,000,000, with
+**26,551,211 bytes** to the strict 100,000,000-byte ceiling. The enforced build
+gate and independent APK v2 signature check pass. SHA-256:
+`00F95C3C789CB3BCDF83E76A7AC8391AFABAA3EA7CAEE76B884574F356501EB5`.
+
+Island lighting now controls the active camera's SSAO feature instead of a
+bundled duplicate. The fix restores the intended Windows contact shading;
+it does not reduce character textures, materials, geometry or normal shadows.
+All four islands and lossless packaging remain. Both mesh inventories are
+unchanged. This shared-checkout build also includes concurrent sports prop-cycle
+and Golf camera work, so its byte delta is not an isolated lighting benchmark.
+See the [audit](APK-SIZE-AUDIT.md#live-renderer-lighting-fix---14-october-2026).
+
+The complete **324-file** Windows player built at **18:35:38** is delivered in
+`Builds/WindowsFinal/`, protocol **55**. [Verification](VERIFICATION.md#live-renderer-lighting-fix---14-october-2026)
+records **495 passing assertions**, four-island character comparisons and source
+snapshot limits. A later development-only `GolfAimProbe.cs` update is outside
+this Windows snapshot; delivered gameplay and lighting code match. Phone visual
+quality/FPS remain unverified. Current evidence is in `Builds/CharacterLightingQA/`.
+
+## Continuous sports prop spawning - 14 October 2026
+
+Fresh AndroidSubmission at **18:40:11 Malaysia time** measures
+**73,453,793 -> 73,444,625 bytes (-9,168)**. Development reserve below
+75,000,000 bytes is **1,555,375 bytes**; headroom to the strict 100,000,000-byte
+ceiling is **26,555,375 bytes**. The enforced build gate and APK v2 signature
+verification pass. SHA-256:
+`DA0F0EEB65B860B9E7E74C719FBF6619DEF3D26BFEBA76B33F79EF5CAF71D624`.
+
+Both sports spawn the first pickup ten seconds after live play begins, show a
+countdown only during the final five seconds, and schedule the next pickup ten
+seconds after collection. An uncollected pickup and pending deadline survive
+baskets, out-of-bounds inbounds, shot-clock restarts and football goals/kickoff.
+Protocol **55** requires matching builds. One held slot and slower football
+shots from the preceding release are retained.
+
+The complete **324-file** Windows player built at **18:26:20** was promoted to
+`Builds/WindowsFinal/` and hash-verified after **1,404 passing assertions**.
+Source includes preserved uncommitted work on `bd62f78` and concurrent golf and
+lighting work available at build time. Android includes later golf camera and
+development-review edits; the tested sports implementation is unchanged.
+See [source limits and checks](VERIFICATION.md#continuous-sports-prop-spawning---14-october-2026)
+and [packing audit](APK-SIZE-AUDIT.md#continuous-sports-prop-spawning---14-october-2026).
+No physical Android or WAN validation is claimed. Current evidence is in
+`Builds/PropCycleQA/`, including a preserved `AndroidAudit/` snapshot.
+
+## Persistent sports props and slower football shots - 14 October 2026
+
+Fresh AndroidSubmission at **17:43:53 Malaysia time** measures
+**73,446,145 -> 73,453,793 bytes (+7,648)**. It remains below the
+75,000,000-byte development target with **1,546,207 bytes** reserved, and has
+**26,546,207 bytes** of headroom to the strict 100,000,000-byte ceiling.
+The enforced build gate and independent APK v2 signature check pass. SHA-256:
+`18CA85CD5E90D740F9CC109C2B0810733AC953C48AB972D3DE48DEF33C674A7D`.
+
+Both sports retain each player's unused single prop through goals and restarts;
+another pickup replaces it, activation consumes it, and match end clears it.
+Football shot launch speed is reduced by 20%; attached dribbling is unchanged.
+Protocol **54** requires matching peers. Existing lossless island packaging and
+art quality are preserved; serialized asset and mesh inventories are unchanged.
+See the [packing audit](APK-SIZE-AUDIT.md#persistent-sports-props-and-slower-football-shots---14-october-2026).
+
+The complete **323-file** Windows player built at **17:38:15** is delivered in
+`Builds/WindowsFinal/`, with every file matching the tested candidate.
+[Verification](VERIFICATION.md#persistent-sports-props-and-slower-football-shots---14-october-2026)
+records **1,825 passing assertions**, source provenance and archive batches.
+This is `bd62f78` plus uncommitted task changes. Physical Android quality,
+loading, memory/FPS and WAN play remain unverified. Current evidence is in
+`Builds/PropRetentionQA/` and `Builds/SizeAudit/latest/`.
+
+## Lossless island packaging - 14 October 2026
+
+Fresh AndroidSubmission at **16:38:21 Malaysia time** measures
+**91,647,416 -> 73,446,145 bytes (-18,201,271; 19.86%)**. This achieves the
+75,000,000-byte development target with **1,553,855 bytes** remaining. Headroom
+to the strict 100,000,000-byte ceiling is **26,553,855 bytes**. Preserve that
+reserve. The enforced build gate and independent APK v2 signature check pass.
+SHA-256:
+`B95490F5D3FFE178099FD8A26130CBE43B43D9F00172177858AC41EF3E4F54C9`.
+
+All four islands remain embedded and playable offline. Shared scene content is
+losslessly LZMA-packed; Android Java minification removes unused Java code.
+No art resolution, geometry, animation, lighting or rendering setting was reduced.
+The actual before/after APK payload comparison matches **2,022 mesh, texture and
+animation objects across 823 asset/type groups**, including texture image bytes.
+High-quality editable masters are retained. See [packaging](CONTENT-PACKAGING.md)
+and the [detailed audit](APK-SIZE-AUDIT.md#lossless-island-packaging---14-october-2026).
+
+First launch prepares a local LZ4 cache; this reduces APK size, not total installed
+storage. Windows cold preparation and warm loading were measured separately.
+All-island travel, sports gameplay and local host/guest checks are recorded in
+[verification](VERIFICATION.md#lossless-island-packaging---14-october-2026).
+No physical Android device is available: phone loading, quality, memory and FPS
+remain unverified. Current evidence is in `Builds/PackagingQA/` and
+`Builds/SizeAudit/latest/`. The complete Windows delivery includes the existing
+controls and programmed bots, protocol **53**, on the preserved dirty `3a0456d`
+working tree; it is not a clean commit snapshot.
+
+## Basketball and football defense swipes - 14 October 2026
+
+Fresh AndroidSubmission at **15:48:33 Malaysia time** measures
+**91,634,440 -> 91,647,416 bytes (+12,976)**. Headroom to the strict
+100,000,000-byte boundary is **8,352,584 bytes**. The 75,000,000-byte
+development target remains exceeded by **16,647,416 bytes**; the existing
+reserve deficit is unresolved. The enforced size gate and independent APK v2
+signature verification pass. SHA-256:
+`B5840A3429B40C6D251E2DC1CC9ABF33C4C907D6431E8A62551CAC1874D90B18`.
+
+Adds basketball Guard/Steal/Block swipes, close guard effects, camera teammate
+passing and manual team inbounds, plus football Pressure swipes and close
+pressure tackles. The UI reuses existing artwork, fonts and geometry. No new
+textures, audio, animation clips, meshes or packages are introduced. Protocol
+**53** requires matching peers. All **1,788 packed mesh rows are unchanged**.
+Growth is principally compiled gameplay code and metadata; see the
+[packing audit](APK-SIZE-AUDIT.md#basketball-and-football-defense-swipes---14-october-2026).
+
+The complete **322-file** Windows player, built at **15:43:27**, is delivered
+in `Builds/WindowsFinal/`; its hashes match the tested candidate. See
+[2,617 passing assertions and limits](VERIFICATION.md#basketball-and-football-defense-swipes---14-october-2026).
+Current evidence is retained in `Builds/BasketballControlQA/` and
+`Builds/SizeAudit/latest/`. This includes preserved uncommitted local sports
+work on `main` `3a0456d`. Physical Android quality/FPS and WAN play are unverified.
+
+## Programmed sports bots and training retirement - 14 October 2026
+
+Fresh AndroidSubmission at **14:09:27 Malaysia time** measures
+**91,700,774 -> 91,634,440 bytes (-66,334)**. Headroom to the strict
+100,000,000-byte boundary is **8,365,560 bytes**. The 75,000,000-byte
+development target remains exceeded by **16,634,440 bytes**; the reserve
+deficit is unresolved. The enforced size gate and independent APK v2 signature
+verification pass. SHA-256:
+`63B343211DD71D6F732CBFE0F4CC6F486C44E8A57532A6A7966722D408923F97`.
+
+Adds basketball programmed bots and solo/room setup for 2v2-5v5, retains the
+casual football policy, and removes the learned training pipeline, ML-Agents,
+Inference Engine and App UI. Protocol **52** requires matching builds.
+No trained weights, new art or reduced visual quality are introduced.
+All **1,788 packed mesh rows are unchanged**. The small APK reduction reflects
+the previously stripped inference code/shaders and remaining package resources,
+not a large model removal: no learned model had been shipped.
+
+The complete **322-file** validated Windows player, built at **14:04:16**,
+is delivered in `Builds/WindowsFinal/`; its hashes match the tested player.
+See [1,692 passing assertions and limits](VERIFICATION.md#programmed-sports-bots-and-training-retirement---14-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#programmed-sports-bots-and-training-retirement---14-october-2026)
+and [programmed bots](PROGRAMMED-BOTS.md). Evidence is retained under
+`Builds/ProgrammedBotsQA/` and `Builds/SizeAudit/latest/`. This includes
+pre-existing local sports work on `main` `3a0456d`, not a clean commit snapshot.
+Physical Android quality/FPS and real WAN play remain unverified.
+
+## Latest upstream Golf merge - 14 October 2026
+
+Fast-forwarded `main` from `ca979d5` to `3a0456d`, including `cb0b6e2`.
+Preserved local sports/AI work and protocol 51; combined both sides of release
+records and retained the incoming Golf ball prefab with coherent object IDs.
+
+Fresh AndroidSubmission at **01:16:04 Malaysia time** measures
+**90,518,282 -> 91,700,774 bytes (+1,182,492)**. Headroom to the strict
+100,000,000-byte boundary is **8,299,226 bytes**. The 75,000,000-byte
+development target remains exceeded by **16,700,774 bytes**. The enforced
+budget gate and independent APK v2 signature verification pass. SHA-256:
+`4977FBE6105F4E7ADFD0A2B250FFF127C6C6A9431F238E9BA53698FD04867E52`.
+
+Audit growth is primarily the five incoming flag textures (**315,116 serialized
+bytes each**) and refined flagpole/cloth meshes (**+121,668 / +51,044 bytes**).
+Serialized assets total **157,634,778 bytes**, up **1,789,632**; serialized
+measurements are not compressed APK bytes. The largest compressed entries are
+IL2CPP **11,837,737**, Unity **9,114,056**, managed metadata **2,689,497** and
+`classes.dex` **2,356,543 bytes**. Preserve shared masters and the existing
+mobile imports; the development reserve deficit remains unresolved.
+
+Current audit is in `Builds/SizeAudit/latest/`. Before-build APK/audit and asset
+comparison are retained in `Builds/PullMergeQA/`. This is a merged working-tree
+build, including pre-existing uncommitted work, not a clean commit snapshot.
+Physical Android appearance, FPS and WAN play are unverified. Concurrent
+BasketballBot/BasketballBots scripts added after both builds are excluded from
+this validated source snapshot; final readiness flags their missing metadata.
+
+## Football radial pickup and reduced pace - 14 October 2026
+
+Fresh AndroidSubmission built **00:48:57 Malaysia time** measures
+**90,515,790 -> 90,518,282 bytes (+2,492)**. It passes the strict
+100,000,000-byte limit with **9,481,718 bytes** to the boundary. The
+**75,000,000-byte development target remains exceeded by 15,518,282 bytes**;
+the existing reserve deficit is not resolved. APK v2 signature verification
+passes. SHA-256:
+`11E14C28F9E2065C473D62A0F7C52AB42F5671478693CFAF4794ABD3C2E70829`.
+
+Includes 360-degree close football pickup, 70% human/bot locomotion and
+protocol **51**, preserving the previously integrated sports/AI work.
+No new art, packages or trained weights are shipped. Serialized asset bytes
+and all **1,788 mesh rows** are unchanged; growth is compiled code/metadata
+and package bookkeeping. See the [packing audit](APK-SIZE-AUDIT.md#football-radial-pickup-and-reduced-pace---14-october-2026)
+and [803 passing gameplay assertions](VERIFICATION.md#football-radial-pickup-and-reduced-pace-14-october-2026).
+
+The complete 344-file validated Windows player is in `Builds/WindowsFinal/`.
+Evidence, hashes and archived-output manifests are in `Builds/FootballControlQA/`.
+Training remains paused; no physical Android phone or WAN qualification was
+performed. Windows views do not establish Android appearance or FPS.
+
+## Training recovery and Fishing merge - 13 October 2026
+
+Fresh AndroidSubmission at **22:44:55 Malaysia time** measures
+**90,384,954 -> 90,515,790 bytes (+130,836)**, with **9,484,210 bytes** to
+the strict 100,000,000-byte boundary. The **75,000,000-byte development
+target is still exceeded by 15,515,790 bytes**. This is not a comfortable
+development budget. APK v2 signature verification and the enforced limit pass.
+SHA-256: `CA05A8BB6FB2820FC5FA478408F49716F03718AB64F4857375E5BD92799B6B01`.
+
+Merged teammate `ca979d5` and preserved local sports/AI work; matching peers
+now require protocol **50**. Incoming Fishing countersteer, skills/tutorial
+art and swimming/splash work account for the asset changes. The recovery
+trainer remains development-only, and no learned weights are shipped.
+All 1,788 packed mesh rows are unchanged. See the [packing audit](APK-SIZE-AUDIT.md#training-recovery-and-fishing-merge---13-october-2026),
+[verification](VERIFICATION.md#training-recovery-and-fishing-merge-13-october-2026)
+and [one-hour training instructions](PROGRAMMED-BOTS.md#retired-training).
+
+Complete Windows delivery and source/merge/build evidence are retained under
+`Builds/WindowsFinal/` and `Builds/TrainingRepairQA/`. No Android device is
+available; size/signature checks do not establish phone quality or FPS.
+
 ## Reference flags and turf bounces - 13 October 2026 build limitation
 
 The measured opening APK is **90,334,226 bytes**. All three new AndroidSubmission
@@ -1008,6 +1818,140 @@ feedback and Football/Basketball UI regressions. Full content build finished at
 [packing comparison](APK-SIZE-AUDIT.md#fishing-hold--countersteer--12-october-2026).
 The development target, physical-phone touch/visual/FPS, real WAN and new
 celebrations remain unresolved/deferred. Older records below are historical.
+## Teammate merge and training launcher (13 October 2026)
+
+Fresh AndroidSubmission APK written at **17:31:11 Malaysia time**:
+**90,242,332 -> 90,384,954 bytes (+142,622)**. Hard-boundary headroom:
+**9,615,046 bytes**. The **75 MB development target remains exceeded by
+15,384,954 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**01858A6A58EF24430126DF1DCDAD0AD5B19598C452F79B4A25535BE69E12C5FC**.
+
+Combines teammate Golf/Fishing commit `9b4eb15` with the preserved local sports
+rules, defense and AI work. Protocol is **49**. Adds a development-only skill
+curriculum and [user-run local training launcher](PROGRAMMED-BOTS.md#retired-training);
+trained weights remain under ignored `Builds/`, not in the APK or normal play.
+The full-contract smoke model is **186,592 bytes**, separate from APK size.
+Existing inference GPU/App UI exclusions remain in place. All **1,788 mesh
+records** match; the incoming six countdown images account for nearly all new
+serialized asset bytes. No art quality was reduced.
+
+[Verification](VERIFICATION.md#teammate-merge-and-training-launcher-13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#teammate-merge-and-training-launcher-13-october-2026).
+No phone was available. Under the hard limit does not resolve the development
+budget shortfall or establish phone FPS, touch quality or inference cost.
+
+## Football training checkpoint (13 October 2026)
+
+Fresh AndroidSubmission APK written at **16:25:08 Malaysia time**:
+**90,151,502 -> 90,242,332 bytes (+90,830)**. Hard-boundary headroom:
+**9,757,668 bytes**. The **75 MB development target remains exceeded by
+15,242,332 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**2B44048F1BF45ACC546A2DA904E9B8569F893D97DFA8CF6AE01CE320ADAA3448**.
+
+Adds selectable 2v2-5v5 football and a development-only ML-Agents bridge.
+The learned prototype remains local under `Builds/`, not the normal opponent
+or a shipped model. Its ONNX is 76,086 bytes; that is separate from package
+overhead. Unused inference GPU shader variants and App UI player features are
+excluded. All **1,788 mesh records** and existing art/audio sizes match.
+[Checkpoint](PROGRAMMED-BOTS.md#retired-training),
+[verification](VERIFICATION.md#football-training-checkpoint-13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#football-training-checkpoint-13-october-2026).
+No Android device was connected. This is within the hard limit, not a
+comfortable development budget or proof of phone quality/FPS/inference cost.
+
+## Casual football calibration (13 October 2026)
+
+Fresh AndroidSubmission APK written at **14:48:39 Malaysia time**:
+**90,152,442 -> 90,151,502 bytes (-940)**. Hard-boundary headroom:
+**9,848,498 bytes**. The **75 MB development target remains exceeded by
+15,151,502 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**7155D7C37CA0EA1D51DCD2D06A7FEC7B5864BB7CF2B3240A4033A0B6B74B17F3**.
+
+Calibrates the programmed football policy without new art, audio, ML packages
+or model weights. Serialized asset sizes and all **1,788 mesh records** match
+the baseline. The small compressed-code decrease is not an asset optimization
+or resolution of the development-size shortfall.
+[Policy](PROGRAMMED-BOTS.md),
+[verification](VERIFICATION.md#casual-football-calibration-13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#casual-football-calibration-13-october-2026).
+No Android device was connected; touch, visuals/FPS and AI runtime cost remain
+unverified. AI training has not started.
+
+## Football defense and tactical AI (13 October 2026)
+
+Fresh AndroidSubmission APK written at **13:46:59 Malaysia time**:
+**90,143,514 -> 90,152,442 bytes (+8,928)**. Hard-boundary headroom:
+**9,847,558 bytes**. The **75 MB development target remains exceeded by
+15,152,442 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**FA2B24E7549C796BD4480AA6CFE27BD8BF264ABCBDEEA469BECC2E44057ECD37**.
+
+Adds assisted defense and tactical football bots using existing characters,
+physics and abilities. No new art, audio, ML package or model weights. All
+**1,788 mesh records** match; serialized assets add only **104 bytes** of script
+metadata. [Scope and limits](PROGRAMMED-BOTS.md),
+[verification](VERIFICATION.md#football-defense-and-tactical-ai-13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#football-defense-and-tactical-ai-13-october-2026).
+No Android device was connected. Phone controls, visuals/FPS, bot runtime cost
+and WAN/Relay play remain unverified. This is below the hard limit, not a
+comfortable development budget; the existing 75 MB shortfall remains open.
+
+## Football AI foundation (13 October 2026)
+
+Fresh AndroidSubmission APK written at **00:23:01 Malaysia time**:
+**90,126,542 -> 90,143,514 bytes (+16,972)**. Hard-boundary headroom:
+**9,856,486 bytes**. The **75 MB development target remains exceeded by
+15,143,514 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**12C855C57F86D761D6BD43E39B2CD9CCF2E633FDF23CDFC5CD0AA4AB5FED97E2**.
+
+Adds football baseline bots, Play vs AI and a development-only episode harness.
+No new art, audio, ML dependencies or model weights. All **1,788 mesh records**
+match the baseline. Serialized assets add **508 bytes**, separate from compressed
+APK growth. [Scope and limits](PROGRAMMED-BOTS.md),
+[verification](VERIFICATION.md#football-ai-foundation-13-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#football-ai-foundation-13-october-2026).
+No Android device was connected. Phone controls, visuals/FPS, bot runtime cost
+and WAN/Relay play remain unverified; the development-size shortfall is open.
+
+## Room matches (12 October 2026)
+
+Fresh AndroidSubmission APK written at **22:37:28 Malaysia time**:
+**90,099,110 -> 90,126,542 bytes (+27,432)**. Hard-boundary headroom:
+**9,873,458 bytes**. The **75 MB development target remains exceeded by
+15,126,542 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**B22263175CBE5BAC232E341032444D73BAFC98EF11808CADBBE565DB7BA2C647**.
+
+Adds authoritative basketball room rules, fixed attacking hoops and disconnect
+cancellation in both sports. Reuses existing physics, team selection and UI art;
+no new textures, meshes or audio. All **1,788 mesh records** match the baseline.
+Serialized assets add **648 bytes**, separate from compressed APK growth.
+[Rules](ROOM-MATCH-RULES.md), [verification](VERIFICATION.md#room-matches-12-october-2026),
+[packing audit](APK-SIZE-AUDIT.md#room-matches-12-october-2026).
+No Android device was connected. Phone touch, visuals/FPS, WAN latency and
+the development-size shortfall remain unverified or unresolved.
+
+## Hosted sports movement — 12 October 2026
+
+Fresh AndroidSubmission APK written at **18:38:41 Malaysia time**:
+**90,099,410 → 90,099,110 bytes (−300)**. Hard-boundary headroom:
+**9,900,890 bytes**. The **75 MB development target remains exceeded by
+15,099,110 bytes**. Budget enforcement and independent APK v2 signature
+verification pass. SHA-256:
+**4757624B75044FC54E7F7AA438924F22A52BFA265AB1D668360134B52636C5A1**.
+
+The host's local football/basketball motor now runs once per rendered frame.
+No gameplay art, sound or geometry was added. All existing packed asset sizes
+and **1,788 imported mesh records** match; the new opt-in review script adds
+only **112 serialized bytes** of script metadata. Its probe logic is excluded
+from the release build. [Verification](VERIFICATION.md#hosted-sports-movement--12-october-2026),
+[diagnosis](NETWORK-MOVEMENT.md), [packing audit](APK-SIZE-AUDIT.md#hosted-sports-movement--12-october-2026).
+No Android device was connected. Phone touch, visuals/FPS and real WAN latency
+remain unverified; the development-size shortfall remains open.
 
 ## Combined Football, Basketball and Fishing release — 12 October 2026
 

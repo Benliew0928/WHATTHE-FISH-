@@ -9,7 +9,7 @@ namespace WhatTheFish {
   public bool CancelArmed {get;private set;}
   void Update()=>Refresh();
   public void Refresh(){var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;var view=PlayerView.Instance;button.interactable=view&&view.active&&!view.InputBlocked&&actor&&actor.KickReady&&SportsPossession.Attacking(actor,SportId.Football);if(tracking&&(!button.interactable||!view.Charging))CancelGesture();if(!illustrated&&label)label.text=view&&view.Charging?$"Kick\n{Mathf.RoundToInt(view.Charge*100)}%":"Kick";}
-  public void OnPointerDown(PointerEventData data){if(tracking||data.button!=PointerEventData.InputButton.Left||!button.interactable||!PlayerView.Instance||!PlayerView.Instance.BeginKick(data.pointerId))return;pointer=data.pointerId;tracking=true;CancelArmed=false;if(guide)guide.Begin();else if(cancelArea)cancelArea.gameObject.SetActive(true);}
+  public void OnPointerDown(PointerEventData data){if(tracking||data.button!=PointerEventData.InputButton.Left||!button.interactable||!PlayerView.Instance||!PlayerView.Instance.BeginKick(data.pointerId))return;pointer=data.pointerId;tracking=true;CancelArmed=false;GetComponent<FootballActionSwipe>()?.Capture(data);if(guide)guide.Begin();else if(cancelArea)cancelArea.gameObject.SetActive(true);}
   public void OnInitializePotentialDrag(PointerEventData data){data.useDragThreshold=false;}
   public void OnBeginDrag(PointerEventData data)=>Track(data);
   public void OnDrag(PointerEventData data)=>Track(data);
@@ -20,7 +20,7 @@ namespace WhatTheFish {
    Track(data);if(CancelArmed||CanceledTouch(pointer)){CancelGesture();return;}
    if(PlayerView.Instance)PlayerView.Instance.EndKick(pointer);Finish();
   }
-  static bool CanceledTouch(int id){var module=EventSystem.current?EventSystem.current.currentInputModule as StandaloneInputModule:null;var input=module?module.inputOverride:null;int count=input?input.touchCount:Input.touchCount;for(int i=0;i<count;i++){var touch=input?input.GetTouch(i):Input.GetTouch(i);if(touch.fingerId==id)return touch.phase==TouchPhase.Canceled;}return false;}
+  internal static bool CanceledTouch(int id){var module=EventSystem.current?EventSystem.current.currentInputModule as StandaloneInputModule:null;var input=module?module.inputOverride:null;int count=input?input.touchCount:Input.touchCount;for(int i=0;i<count;i++){var touch=input?input.GetTouch(i):Input.GetTouch(i);if(touch.fingerId==id)return touch.phase==TouchPhase.Canceled;}return false;}
   public void CancelGesture(){if(tracking&&PlayerView.Instance)PlayerView.Instance.CancelKick(pointer);Finish();}
   void Finish(){tracking=CancelArmed=false;pointer=int.MinValue;if(guide)guide.End();else if(cancelArea)cancelArea.gameObject.SetActive(false);}
   public void OnEndDrag(PointerEventData data){if(tracking&&data.pointerId==pointer)CancelGesture();}

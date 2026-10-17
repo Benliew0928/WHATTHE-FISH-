@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9afadf1b66824e4db544d82d8ff86bf, type: 3}
+  m_Name: Library
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.CharacterIdentityLibrary
+  bodyMaterial: {fileID: 2100000, guid: 34701d2bdf09552469aba760dd7b6b1e, type: 2}
+  hairMaterial: {fileID: 2100000, guid: 96893246c03deef40baf30056b339e4d, type: 2}
+  nearHair:
+  - {fileID: 0}
+  - {fileID: 4300000, guid: 5f36f264b73e1674ca39052f4f12caa3, type: 2}
+  - {fileID: 4300000, guid: 9cb2233a2fba453498e0e4b0af10797a, type: 2}
+  - {fileID: 4300000, guid: 4aa10df79c929244aa4c124dcee6434a, type: 2}
+  - {fileID: 4300000, guid: d50491be7a8b62144ad71793f477fdb9, type: 2}
+  - {fileID: 4300000, guid: b89eae3ea92bfba4fad36e5c57c95dc6, type: 2}
+  - {fileID: 4300000, guid: 51b903809cf7ebb4b9a9c9041ec6b41f, type: 2}
+  - {fileID: 4300000, guid: f1cdf18ce8e575f4a9bdb7a9f9db7dc4, type: 2}
+  - {fileID: 4300000, guid: 4663a0a6b62b3084caeeda0ae31278d7, type: 2}
+  - {fileID: 4300000, guid: 0f43fa4e8233f5343a621127dec6a3bb, type: 2}
+  farHair:
+  - {fileID: 0}
+  - {fileID: 4300000, guid: 83f828f0955e6b045ba3af14fa1eaf39, type: 2}
+  - {fileID: 4300000, guid: 9f01f02e00cf1ef418af1c36e5251f81, type: 2}
+  - {fileID: 4300000, guid: 843c15735c8d7834f9260812a069ef47, type: 2}
+  - {fileID: 4300000, guid: 338f1817ca09d574db96d6b8d1ce1ab3, type: 2}
+  - {fileID: 4300000, guid: c1552d11f545c0044bbf23c524db52f3, type: 2}
+  - {fileID: 4300000, guid: 21e3c4686f54d5742b0bd228d7b5aa03, type: 2}
+  - {fileID: 4300000, guid: dd763849cbdc5fb44a3b36e255faa3fa, type: 2}
+  - {fileID: 4300000, guid: 9fcc1cd110926564e93b20d5d3db53b7, type: 2}
+  - {fileID: 4300000, guid: b1115f960694cb34f95836b23b388d63, type: 2}
+  nearScalp: {fileID: 4300000, guid: 2cf5f648997e9334797213119af13ca4, type: 2}
+  farScalp: {fileID: 4300000, guid: faee239868eb70646b25c3d86cd53b94, type: 2}
+  headPosition: {x: 0.0036710412, y: 1.0135577, z: 0.061916053}
+  headRotation: {x: 0.026932746, y: 0.016180575, z: 0.016180499, w: 0.99937534}
+  sourceHash: 0315D22AA8B474D61B2BF7491E83E48F2A4FC55FDB9BE046A53F8F56395AA96270AE788C552DFFDAA6884A79AEBB1C0DB7A785034E03AF7F817129E245F50392dc367ffee37986a37ea81dad03a972b3

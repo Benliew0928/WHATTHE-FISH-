@@ -1,19 +1,52 @@
 # Football match rules
 
+The current [passing and MVP system](FOOTBALL-PLAYMAKER.md) records every
+participant's goals, direct five-second assists, completed Pass actions and
+interceptions. The MVP award follows the final replay. Protocol **61** includes
+these host-authoritative records; all room participants need matching builds.
+
+Players are contained within the pitch during a match, whether or not they
+control the ball. The boundary releases after the final replay or cancellation,
+and its energy visual disappears. **Back to pitch** restores each player's
+controls so they can explore the island immediately. A new kickoff restores
+containment; team selection still allows players to approach the pitch.
+
 The current [Touchline HUD](FootballUI/implementation.md) presents these same
 match states in the approved cream score strip. The earlier glass scoreboard
 captures and release numbers below are historical; current delivery and size
 are recorded in [verification](VERIFICATION.md) and [BUILD-SIZE](BUILD-SIZE.md).
 
 Formal matches and Explore Offline include [Team Turbo, Portal Steal and Wall](FOOTBALL-ABILITIES.md).
-Midfield touchline pickups use a blue five-second countdown. A goal or match
-termination clears inventory and effects; overtime continues them normally.
+Midfield touchline pickups use a blue five-second countdown. Regular goals
+preserve held items and the world pickup cycle; match termination clears
+inventory. Temporary active effects end after the goal follow-through.
+
+## Broadcast Slash replay and centre kickoff — 15 October 2026
+
+VS AI, human rooms and rooms with bots share the [Broadcast Slash replay](GoalReplay/README.md).
+A goal records four seconds before its accepted crossing and one second after.
+The navy/aqua/coral wipe lasts 1.6 seconds (0.3 seconds in, 1.0-second hold,
+0.3 seconds out) and introduces five seconds of playback from a smooth
+three-quarter camera. The return wipe lasts 0.8 seconds (0.25 seconds in,
+0.3-second hold, 0.25 seconds out). Camera switches and the centre reset happen
+under the fully covered holds. The conceding team
+takes the centre kick. A winning golden goal gets the same replay before the
+result is shown. Playback and both wipes do not consume playing time.
+
+After the initial countdown or the return from replay, the designated taker
+can aim through 360 degrees and hold/release Kick (F on keyboard). The first
+contact starts the clock and releases everyone else from their formation.
+AI takers restart automatically; a human's charge does not auto-release.
+Eye level, Follow and Stadium camera preferences are restored after playback.
+The first match kickoff chooses its team; subsequent kickoffs always belong
+to the team that conceded. Protocol **58** requires matching host/guest builds,
+including the shared transition timing and current character identities.
 
 ## Playing a match
 
 Enter Football through the existing offline Explore or room Start flow. Exploration keeps the original ball interactions and does not score. The host presses **Start match** in the Football HUD; formal matches require an even roster of two to ten players (1v1 through 5v5). Guests cannot start or restart a match. For solo verification, enter Football in Play and use **WHATTHE FISH? > Football > Start single-player test match**. This explicit editor/development-only exception is separate from the normal start button.
 
-The independent Football phase starts with 10 seconds of TeamSelection, then the existing Kickoff countdown and Regulation. A valid regulation goal adds one point, resets the round and returns to Kickoff. Regulation ends only when its playing-time deadline expires. A lead wins; a tie immediately enters Overtime without freezing, resetting or clearing inputs. The first overtime goal wins immediately. No goal by the overtime deadline produces a draw. Finished scores are immutable. New match starts at 0:0. Room/exploration phase remains unchanged by match results.
+The independent Football phase starts with 10 seconds of TeamSelection, then the Kickoff countdown and an explicit centre kick. A valid regulation goal adds one point, plays its recap and returns to protected Kickoff. Regulation ends only when its playing-time deadline expires. A lead wins; a tie immediately enters Overtime without freezing, resetting or clearing inputs. The first overtime goal fixes the result immediately and presents its recap before full time. No goal by the overtime deadline produces a draw. Finished scores are immutable. New match starts at 0:0. Room/exploration phase remains unchanged by match results.
 
 `Assets/_Game/Resources/FootballMatchRules.asset` centralizes the Inspector defaults: regulation 180 s, golden-goal overtime 60 s, kickoff/restart countdown 3 s, team selection 10 s, painted line width 0.12 m. Tied regulation flows directly into overtime with the current positions, velocities, actions and scores.
 
@@ -23,7 +56,9 @@ The independent Football phase starts with 10 seconds of TeamSelection, then the
 - `FootballTeamSelection`: authority roster, capacity enforcement, exclusive choices and randomized remaining seats.
 - `FootballMatchState`: pure scoring, phases, deadline clock and outcome rules.
 - `FootballMatch`: scene lifecycle, authoritative sampling, team assignment, round reset and snapshot publication. Created by the existing FootballBall after its authored pitch/goal geometry is resolved, so existing scenes and their generators use the same rules.
-- `FootballMatchSnapshot` / `NetworkAthlete`: existing NGO authority and server-owned state. Protocol 17; earlier protocol clients cannot join. Team and match fields use the existing player network object; no parallel network manager.
+- `FootballMatchSnapshot` / `NetworkAthlete`: existing NGO authority and server-owned state. Protocol 58; earlier protocol clients cannot join. Team, goal timing and kickoff assignment use the existing player network object; no parallel network manager.
+- `FootballReplay` / `FootballReplayTrack`: bounded local pose history and render-only playback. No live transform, collider or scoring state is rewound.
+- `FootballReplayHUD`: native Broadcast Slash transition, recorded-footage label and centre-kick prompt.
 - `FootballMatchHUD`: read-only presentation of scores, clock, local team and result; host/offline start request. No gameplay decision is implemented in UI.
 
 A defends the south/negative-pitch-Z goal and attacks north; B defends north and attacks south. Formal matches require an even roster of at least two players, with half the roster as each team's capacity. Every start clears prior choices. Owner-authorized RPCs submit only that player's choice and selection revision; the host rejects full teams, invalid IDs and expired/stale requests. Repeated choice occupies one seat, and switching releases the old seat only after the destination has space. Counts/capacity replicate in the existing match snapshot; each player's team replicates on their existing network object.
@@ -32,7 +67,7 @@ The host waits the full configured 10 seconds, preserves accepted choices, shuff
 
 ## Fixed kickoff formations
 
-The existing ball kickoff anchor is preserved: `FootballBall.KickoffPosition` reads the same parent-relative origin already used by `ResetBall`. Formation code never writes that origin or changes stadium, goals or field dimensions. Every initial kickoff and regulation goal restart uses **fixed slots -> reset players and ball -> existing three-second countdown -> both teams released together**. Overtime remains continuous, and its winning goal ends the match under the existing golden-goal rule.
+The existing ball kickoff anchor is preserved: `FootballBall.KickoffPosition` reads the same parent-relative origin already used by `ResetBall`. Formation code never writes that origin or changes stadium, goals or field dimensions. The designated taker stands 0.8 m from the ball and rotates around it while aiming. Other players occupy their fixed slots. The initial countdown remains three seconds; the return from a goal recap uses a short settling countdown. Both teams are released when the taker's kick makes contact. Overtime remains continuous, and its winning goal ends the match after the recap presentation.
 
 Edit **Game/Assets/_Game/Resources/FootballMatchRules.asset** in the Unity Inspector. `onePlayer`, `twoPlayers`, `threePlayers`, `fourPlayers` and `fivePlayers` are separate arrays: each must contain exactly the indicated number of slots. Each `Vector2` has **X = lateral offset** and **Y = depth toward the defending goal**, in pitch-local metres relative to the unchanged ball anchor. Team A defends the existing negative-sign goal, Team B the positive-sign goal; the axis comes from the two goal centres in the pitch frame. The teams' offsets mirror through the ball anchor. Camera direction and world X/Z do not select team sides. All players face the ball automatically in `FootballMatch.TryKickoffPose`; changing an offset recomputes facing, rather than preserving an arbitrary yaw.
 
@@ -44,7 +79,7 @@ Edit **Game/Assets/_Game/Resources/FootballMatchRules.asset** in the Unity Inspe
 | 4 | (0, 9.5), (-3.5, 13.5), (3.5, 13.5), (0, 17.5) |
 | 5 | (0, 9.5), (-3.5, 13.5), (3.5, 13.5), (-3.5, 17.5), (3.5, 17.5) |
 
-The authored centre circle radius is 9.15 m. The front centre slot is 9.5 m away (about 1.36 seconds at unladen 7 m/s before acceleration), paired row slots are 7 m apart, and successive rows are 4 m apart. Corresponding opponents have the same distance to the ball. These are kickoff locations only; they impose no position, role or movement restriction after countdown. To adjust spacing, edit the explicit X/Y values in the desired array; no smaller roster takes a subset of the five-player preset.
+The authored centre circle radius is 9.15 m. The front centre slot is 9.5 m away, paired row slots are 7 m apart, and successive rows are 4 m apart. The designated taker's slot is replaced by the centre-ball position. These are kickoff locations only; they impose no position, role or movement restriction after the first kick. To adjust spacing, edit the explicit X/Y values in the desired array; no smaller roster takes a subset of the five-player preset.
 
 `FootballTeamSelection.AllocateKickoffSlots` shuffles each locked team's player IDs once per reset, without modifying team choices or generating coordinates. Every member occupies one slot, each slot one member, and Host has no reserved front slot. A new shuffle occurs on every regulation goal restart; a random shuffle may legitimately repeat a prior arrangement. `ResetRound` is called only on the selection deadline or GoalReset transition. UI refreshes and incoming network snapshots do not draw slots. Only the authority plans and teleports players; the existing server-owned `NetworkTransform` transmits positions/facing to all clients. Clients never execute the draw.
 

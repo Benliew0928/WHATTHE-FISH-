@@ -38,7 +38,8 @@ namespace WhatTheFish {
    TurnCommandActive=true;TurnCommand=default;yield return new WaitForSeconds(.5f);
    var actor=app.LocalAthlete;var origin=actor.transform.position;
    var button=FindFirstObjectByType<JumpButton>();Check(button&&button.button.interactable,"JUMP_BUTTON_AVAILABLE");
-   Check(FindFirstObjectByType<TackleButton>().label.text=="Tackle [E]","TACKLE_E_LABEL");
+   var tackle=FindFirstObjectByType<TackleButton>();
+   Check(tackle&&tackle.button.interactable&&tackle.label.text==(tackle.illustrated||Application.isMobilePlatform?"Tackle":"Tackle\nE"),"TACKLE_READY_LABEL");
    foreach(int fps in new[]{20,30,60,120}){
     var clone=Instantiate(app.athletePrefab).GetComponent<Athlete>();clone.Setup();PlaceAthlete(clone,origin+Vector3.right*8,0);
     for(int i=0;i<10;i++)clone.Simulate(default,1f/fps);

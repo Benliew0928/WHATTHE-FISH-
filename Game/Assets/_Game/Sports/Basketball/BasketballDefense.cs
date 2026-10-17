@@ -11,11 +11,11 @@ namespace WhatTheFish {
   public bool Equals(BasketballDefenseSnapshot b)=>blocks==b.blocks&&play==b.play&&time==b.time&&blocker==b.blocker&&originator==b.originator&&passing==b.passing&&contact==b.contact;
  }
  public static class BasketballDefenseRules {
-  public const float GuardSpeed=3,GuardRange=3.5f,HandRadius=.12f,BlockStart=.12f,BlockEnd=.30f,BlockDuration=.70f;
-  public const float JumpLoad=.16f,JumpHeight=2.20f,JumpStart=.22f,JumpEnd=.88f,JumpDuration=1.30f,Recovery=.58f;
+  public const float GuardSpeed=3,GuardRange=1.25f,GuardMultiplier=.70f,GuardMeterMultiplier=1.30f,GuardShotPenalty=.20f,HandRadius=.30f,BlockStart=.05f,BlockEnd=.46f,BlockDuration=.70f;
+  public const float JumpLoad=.16f,JumpHeight=2.20f,JumpStart=.16f,JumpEnd=.98f,JumpDuration=1.30f,Recovery=.58f;
   public static bool IsBlock(BasketballAction action)=>action==BasketballAction.Block||action==BasketballAction.JumpBlock;
   public static bool Active(BasketballAction action,float time)=>IsBlock(action)&&time>=(action==BasketballAction.JumpBlock?JumpStart:BlockStart)&&time<=(action==BasketballAction.JumpBlock?JumpEnd:BlockEnd);
-  public static float Window(float pressure)=>Mathf.Lerp(BasketballBall.SweetWindow,.025f,Mathf.Clamp01(pressure));
+  public static float Window(float pressure)=>BasketballBall.SweetWindow;
   // Solve relative sphere motion. Endpoint overlap alone misses fast releases.
   public static bool Sweep(Vector3 hand0,Vector3 hand1,Vector3 ball0,Vector3 ball1,float radius,out float fraction){
    fraction=0;if(!Finite(hand0)||!Finite(hand1)||!Finite(ball0)||!Finite(ball1)||!float.IsFinite(radius)||radius<=0)return false;
@@ -54,7 +54,7 @@ namespace WhatTheFish {
   uint defensePlay,blocks;double blockTime=-100;ulong blocker=ulong.MaxValue;Vector3 blockContact;
   public BasketballDefenseSnapshot Defense=>Authority?new BasketballDefenseSnapshot{blocks=blocks,play=defensePlay,time=blockTime,blocker=blocker,originator=lastShooter?PlayerId(lastShooter):ulong.MaxValue,passing=passing,contact=blockContact}:haveTarget?target.defense:default;
   public BasketballRole Role(Athlete actor){
-   if(!Playing||!actor||actor.inTransit||actor.BasketballFreeRoam)return BasketballRole.Inactive;
+   if(!Playing||BasketballMatch.BlocksActions||BasketballMatch.Instance&&BasketballMatch.Instance.AutomaticMovement(actor)||InboundPending&&Holder!=actor||!actor||actor.inTransit||actor.BasketballFreeRoam)return BasketballRole.Inactive;
    if(Held)return SportsPossession.SameTeam(Holder,actor,SportId.Basketball)?BasketballRole.Attack:BasketballRole.Defense;
    bool flight=Score.result==BasketballResult.Flying||Defense.passing;
    bool own=Authority?SportsPossession.SameTeam(lastShooter,actor,SportId.Basketball):Defense.originator!=ulong.MaxValue&&SportsPossession.BasketballTeam(Defense.originator)==SportsPossession.TeamOf(actor,SportId.Basketball);
@@ -65,20 +65,26 @@ namespace WhatTheFish {
    if(!Authority||!actor||!actor.BasketballMotion)return;var motion=actor.BasketballMotion;
    bool allowed=held&&!PropLocked(actor)&&!PortalBusy&&Role(actor)==BasketballRole.Defense&&Eligible(actor)&&actor.Grounded&&!actor.Airborne&&!actor.LoadingJump&&float.IsFinite(heading);
    if(!allowed){motion.EndGuard();return;}
-   if(motion.Busy)return;
    var point=Holder?Holder.transform.position:Body.position;var delta=Vector3.ProjectOnPlane(point-actor.transform.position,Vector3.up);
-   if(delta.sqrMagnitude>.01f&&delta.sqrMagnitude<BasketballDefenseRules.GuardRange*BasketballDefenseRules.GuardRange&&Vector3.Dot(actor.transform.forward,delta.normalized)>-.3f)heading=Quaternion.LookRotation(delta).eulerAngles.y;
+   if(delta.sqrMagnitude>.01f)heading=Quaternion.LookRotation(delta).eulerAngles.y;
+   if(motion.Busy&&motion.Action!=BasketballAction.Steal)return;
    motion.Guard(heading);
   }
+  public bool CloseGuard(Athlete defender,Athlete carrier){
+   if(!Playing||!defender||!carrier||defender==carrier||!defender.BasketballMotion||!defender.BasketballMotion.GuardActive||defender.inTransit||defender.BasketballFreeRoam||defender.Airborne||!defender.isActiveAndEnabled||SportsPossession.SameTeam(defender,carrier,SportId.Basketball))return false;
+   var delta=carrier.transform.position-defender.transform.position;
+   return Mathf.Abs(delta.y)<.8f&&Vector3.ProjectOnPlane(delta,Vector3.up).sqrMagnitude<=BasketballDefenseRules.GuardRange*BasketballDefenseRules.GuardRange&&!Physics.Linecast(defender.transform.position+Vector3.up,carrier.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore);
+  }
+  public float GuardMovementMultiplier(Athlete actor){
+   if(!Held)return 1;
+   if(actor!=Holder)return CloseGuard(actor,Holder)?BasketballDefenseRules.GuardMultiplier:1;
+   foreach(var defender in Athlete.Active)if(CloseGuard(defender,actor))return BasketballDefenseRules.GuardMultiplier;
+   return 1;
+  }
   public float ShotPressure(Athlete shooter,Transform hoop){
-   if(!shooter||!hoop)return 0;float pressure=0;
-   foreach(var defender in Athlete.Active){
-    if(SportsPossession.SameTeam(defender,shooter,SportId.Basketball)||!defender.gameObject.activeInHierarchy||defender.inTransit||defender.BasketballFreeRoam||!defender.BasketballMotion||!defender.BasketballMotion.Guarding||defender.Airborne)continue;
-    float candidate=BasketballDefenseRules.Pressure(defender.transform.position,defender.transform.forward,shooter.transform.position,hoop.position);
-    if(candidate<=pressure||Physics.Linecast(defender.transform.position+Vector3.up,shooter.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore))continue;
-    pressure=candidate;
-   }
-   return Mathf.Clamp01(pressure);
+   if(!shooter||!hoop)return 0;
+   foreach(var defender in Athlete.Active)if(CloseGuard(defender,shooter))return 1;
+   return 0;
   }
   public bool TryBlock(Athlete actor,float heading,bool jumping,uint play=uint.MaxValue){
    if(!Authority||!CanBlock(actor)||!Eligible(actor)||!actor.Grounded||Outside(actor.transform.position)||!float.IsFinite(heading)||play!=uint.MaxValue&&play!=defensePlay)return false;
@@ -140,13 +146,14 @@ namespace WhatTheFish {
     // completed earlier in this same physics step cannot be erased by a hand.
     if(!Held&&samplingFlight){
      bool made=false;
-     foreach(var hoop in baskets)if(hoop&&hoop.StepBall(flightPrevious,hit,Body,Radius,score.result==BasketballResult.Flying&&hoop==attemptedHoop)){ResolveAttempt(true);made=true;}
+     foreach(var hoop in baskets)if(hoop&&hoop.StepBall(flightPrevious,hit,Body,Radius,MatchCanScore||score.result==BasketballResult.Flying&&hoop==attemptedHoop)){ResolveBasket(hoop);made=true;}
      flightPrevious=hit;if(made)return;
     }
     ApplyBlock(winner.actor,hit,handHit,handVelocity);NewDefensePlay();
    }
   }
   void ApplyBlock(Athlete defender,Vector3 point,Vector3 hand,Vector3 handVelocity){
+   BasketballMatch.Instance?.Touch(defender);
    EndPropAim();guidedPropShot=false;propState.guided=false;
    passBounceArmed=false;
    var victim=holder;var forward=defender.BasketballMotion.Facing*Vector3.forward;

@@ -1,6 +1,6 @@
 # Instructions for every task in this repository
 
-## APK budget is a product requirement
+## APK delivery
 
 - The self-contained hackathon APK must be **strictly below 1,000,000,000 bytes** (1 decimal GB, not 1 GiB; updated by the user on 17 October 2026). Never call an oversized build submission-ready.
 - The former 75,000,000-byte development target and 100 MB cap are retired. Do not constrain requested features to those old budgets. The current measured baseline is in `Docs/BUILD-SIZE.md`.
@@ -39,7 +39,7 @@
 
 ## Before handing the task back
 
-1. Run checks appropriate to the change and fix actionable failures. Check the APK budget when the game changed.
+1. Run checks appropriate to the change and fix actionable failures. The AndroidSubmission build handles the APK limit automatically.
 2. Archive obsolete files created by the task; keep current evidence and update affected documentation/links.
 3. Run `Tools/Build/Check-TaskReady.ps1` (add `-RequireApk` when delivering an Android build). Review `git diff --stat` and `git status --short`. The script is read-only; it does not certify APK freshness or replace functional/device testing.
-4. State what changed, verification, measured APK size/headroom when relevant, and any unresolved limits. Mention the archive batch if files moved. Leave all Git publishing actions to the user.
+4. State what changed, verification and any unresolved limits. Detailed size reporting is optional. Mention the archive batch if files moved. Leave all Git publishing actions to the user.

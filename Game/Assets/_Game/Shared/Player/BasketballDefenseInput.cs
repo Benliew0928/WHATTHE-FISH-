@@ -9,6 +9,10 @@ namespace WhatTheFish {
    if(GuardHeld||!active||BasketballRole!=WhatTheFish.BasketballRole.Defense)return false;
    GuardHeld=true;guardSource=source;guardPlay=BasketballBall.Active.Defense.play;return true;
   }
+  public bool RequestGuardSteal(int source){
+   var ball=BasketballBall.Active;if(!GuardHeld||source!=guardSource||InputBlocked||!ball||!ball.CanSteal(target)||target.BasketballMotion.Busy)return false;
+   pendingSteal=true;return true;
+  }
   public void EndGuard(int source=int.MinValue){if(GuardHeld&&source==guardSource)GuardHeld=false;}
   public bool RequestBlock(bool jumping=false){
    var ball=BasketballBall.Active;if(!active||!ball||!ball.CanBlock(target)||pendingBlock||pendingJumpBlock)return false;

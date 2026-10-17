@@ -59,7 +59,7 @@ namespace WhatTheFish {
    }
    bool sweet=timing&&Mathf.Abs(power-BasketballBall.SweetSpot)<=window;
    cuePlate.color=Choice==BasketballDragChoice.Cancel?CoveUI.Hex("FFC5AE"):ready||sweet?CoveUI.Mint:CoveUI.Cream;
-   cue.text=Choice==BasketballDragChoice.Cancel?"Release to cancel":Choice==BasketballDragChoice.Outside?"Slide back to button":selected?(pass?(Choice==BasketballDragChoice.Upper?"Loft · release":"Bounce · release"):timing?"Timed shot · green":Choice==BasketballDragChoice.Upper?"Release to dunk":"Release for layup"):pass?(power<.35f?"Short pass · release":power<.85f?"Building distance…":"Full pass · release"):"Release in green";
+   cue.text=Choice==BasketballDragChoice.Cancel?"Release to cancel":Choice==BasketballDragChoice.Outside?"Slide back to button":selected?(pass?(Choice==BasketballDragChoice.Upper?"Loft · release":"Bounce · release"):timing?"Timed shot · green":Choice==BasketballDragChoice.Upper?"Release to dunk":"Release for layup"):pass?(BasketballBall.Active&&BasketballBall.Active.PassAim.locked?"Teammate locked · release":"Free pass · release"):"Release in green";
    hint.text=Choice==BasketballDragChoice.Cancel?"Lift to cancel · slide back to keep aiming":Choice==BasketballDragChoice.Outside?"Outside the paths · slide back to the button":selected&&!pass&&timing?(reason==BasketballFinishReason.Closer?"Too far for "+(Choice==BasketballDragChoice.Upper?"Dunk":"Layup"):BasketballFinishRules.ShortHint(reason))+" · release a timed shot":selected?"Lift your finger to use the selected action":"Keep holding · slide along a path";
    SetVerticesDirty();
   }

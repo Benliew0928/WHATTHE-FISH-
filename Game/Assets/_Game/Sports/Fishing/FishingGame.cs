@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace WhatTheFish {
  [DefaultExecutionOrder(60)]
- public sealed class FishingGame:MonoBehaviour {
+ public sealed partial class FishingGame:MonoBehaviour {
   public static FishingGame Instance {get;private set;}
   static uint nextRound;
   public readonly FishingState State=new();
@@ -19,9 +19,9 @@ namespace WhatTheFish {
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
   public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Fishing&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Fishing);
-  public static ulong Key(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;return n&&n.IsSpawned?n.OwnerClientId:0;}
-  public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?NetworkAthlete.CleanNickname(PlayerPrefs.GetString("fishing.nickname","YOU")):id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"YOU";}
-  Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned:a==AppRoot.Instance.LocalAthlete)).OrderBy(Key).ToArray();
+  public static ulong Key(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;return n&&n.IsSpawned?n.StableId:0;}
+  public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?PlayerIdentity.DisplayName:id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"Guest";}
+  Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned&&a.GetComponent<NetworkAthlete>().IsPlayerObject:a==AppRoot.Instance.LocalAthlete)).OrderBy(Key).ToArray();
   public int ParticipantCount=>Eligible().Length;
   public bool CanStart(FishingMode mode)=>Authority&&Context&&State.Match.phase!=FishingRoundPhase.Playing&&State.Match.phase!=FishingRoundPhase.Countdown&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
   void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);gameObject.AddComponent<FishingAbilityPresentation>();}
@@ -80,8 +80,8 @@ namespace WhatTheFish {
   public bool Execute(Athlete actor,FishingAction action,uint round,uint sequence,int fish=-1,double pressedAt=double.NaN){
    if(!Authority||!Context||!actor||actor.inTransit||!Eligible().Contains(actor))return false;
    var p=Player(actor);if(!p.HasValue)return false;int pier=action==FishingAction.Cast?NearestPier(actor):p.Value.pier;
-   if(action>=FishingAction.Favourites){
-    bool remote=NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&Key(actor)!=NetworkManager.ServerClientId;
+   if(action>=FishingAction.Favourites&&action<=FishingAction.UseAbility){
+    bool remote=NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&actor.GetComponent<NetworkAthlete>()&&actor.GetComponent<NetworkAthlete>().OwnerClientId!=NetworkManager.ServerClientId;
     if(remote&&(!double.IsFinite(pressedAt)||pressedAt>Now+FishingState.HookClockTolerance||Now-pressedAt>FishingState.LeaseSeconds))return false;
     if(action==FishingAction.Supply){pier=Enumerable.Range(0,FishingState.PierCount).OrderBy(i=>Vector3.Distance(actor.transform.position,SupplyPosition(i))).First();if(actor.Airborne||actor.LoadingJump||!actor.Grounded||Vector3.Distance(actor.transform.position,SupplyPosition(pier))>2.6f)return false;}
     if(action==FishingAction.Salvage){pier=NearestPier(actor);if(pier<0)return false;}
@@ -91,7 +91,7 @@ namespace WhatTheFish {
    if(action==FishingAction.Cast&&(!CanCast(actor,fish)||Physics.Linecast(actor.transform.position+Vector3.up*1.4f,FishPosition(fish,Now),1<<8,QueryTriggerInteraction.Ignore)))return false;
    if(action!=FishingAction.Cancel&&action!=FishingAction.ReelStop&&action!=FishingAction.Cast&&action!=FishingAction.Ready&&action!=FishingAction.Unready&&pier!=NearestPier(actor))return false;
    float distance=action==FishingAction.Cast?Vector3.ProjectOnPlane(FishPosition(fish,Now)-actor.transform.position,Vector3.up).magnitude:7;
-   bool accepted=State.Act(Key(actor),round,sequence,action,pier,actor.transform.position,Now,fish,distance,pressedAt,NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&Key(actor)!=NetworkManager.ServerClientId,action==FishingAction.Cast?FishPosition(fish,Now):action==FishingAction.Hook?FishPosition(p.Value.fish,Now):(Vector3?)null,WaterY);if(accepted)Publish();return accepted;
+   bool accepted=State.Act(Key(actor),round,sequence,action,pier,actor.transform.position,Now,fish,distance,pressedAt,NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&actor.GetComponent<NetworkAthlete>()&&actor.GetComponent<NetworkAthlete>().OwnerClientId!=NetworkManager.ServerClientId,action==FishingAction.Cast?FishPosition(fish,Now):action==FishingAction.Hook?FishPosition(p.Value.fish,Now):(Vector3?)null,WaterY);if(accepted)Publish();return accepted;
   }
   public void Input(Athlete actor,PlayerCommand command){if(command.fishingAction!=FishingAction.None)Execute(actor,command.fishingAction,command.fishingRound,command.fishingSequence,command.fishingFish,command.fishingPressedAt);}
   void FixedUpdate(){

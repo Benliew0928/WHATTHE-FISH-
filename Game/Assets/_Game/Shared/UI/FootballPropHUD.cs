@@ -40,7 +40,8 @@ namespace WhatTheFish {
    if(awaiting&&(slot.revision!=previewRevision||Time.unscaledTime-requestAt>2))awaiting=false;
    if(Placing&&(!ball.PropsLive||view.InputBlocked||view.Charging||slot.kind!=SportsProp.Wall||slot.revision!=previewRevision||actor.Action!=FootballAction.None||actor.inTransit||actor.Airborne))Cancel();
    string reason=ball.PropUnavailable(actor);if(Placing){PlacementValid=ball.TryWallPlacement(actor,view.yaw,out var pose,out reason);if(!pose.active)pose=new FootballWallState{position=actor.transform.position+Quaternion.Euler(0,view.yaw,0)*Vector3.forward*2,heading=view.yaw};Preview=pose;}
-   bool visible=ball.PropsLive&&kind!=SportsProp.None&&!view.Charging&&!view.InputBlocked;group.alpha=visible?1:0;group.blocksRaycasts=visible;
+   bool retained=slot.kind!=SportsProp.None&&FootballMatch.Instance&&FootballMatch.Instance.Context&&FootballMatch.Instance.Active;
+   bool visible=(ball.PropsLive||retained)&&kind!=SportsProp.None&&!view.Charging&&!view.InputBlocked;group.alpha=visible?1:0;group.blocksRaycasts=visible;
    button.interactable=visible&&!awaiting&&!receiving&&(Placing?PlacementValid:reason=="");icon.sprite=Icon(kind==SportsProp.None?SportsProp.Wall:kind);icon.color=button.interactable?Color.white:new Color(1,1,1,.65f);
    caption.text=Placing?"Place":receiving?"Receiving":kind==SportsProp.Turbo?"Turbo":kind==SportsProp.Portal?"Portal":"Wall";badge.text=awaiting?"...":"1";
    cancel.gameObject.SetActive(Placing&&visible);hint.text=Time.unscaledTime<rejectedUntil?rejection:Placing?(PlacementValid?"Aim, then tap Place":reason):reason!="Find a touchline prop"?reason:"";

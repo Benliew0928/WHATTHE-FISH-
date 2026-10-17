@@ -16,12 +16,12 @@ namespace WhatTheFish {
    float span=(power<BasketballBall.SweetSpot?BasketballBall.SweetSpot:1-BasketballBall.SweetSpot)-window;
    return Mathf.Clamp01(1-error/span);
   }
-  public static float Chance(float distance,float power,float window=BasketballBall.SweetWindow){
+  public static float Chance(float distance,float power,float window=BasketballBall.SweetWindow,float pressure=0){
    if(!float.IsFinite(distance)||!float.IsFinite(power)||!float.IsFinite(window))return 0;
    float best=DistanceCurve(distance,.95f,.80f,.30f,.05f);
    float floor=DistanceCurve(distance,.08f,.04f,.01f,.002f);
-   float quality=Quality(power,window),pressure=Mathf.InverseLerp(BasketballBall.SweetWindow,.025f,window);
-   return Mathf.Lerp(floor,best,quality*quality)*Mathf.Lerp(1,.75f,pressure);
+   float quality=Quality(power,window);
+   return Mathf.Clamp01(Mathf.Lerp(floor,best,quality*quality)-BasketballDefenseRules.GuardShotPenalty*Mathf.Clamp01(pressure));
   }
  }
  public sealed partial class BasketballBall {
@@ -42,7 +42,7 @@ namespace WhatTheFish {
   bool ShotVelocity(Athlete athlete,Vector3 start,Transform hoop,out Vector3 velocity){
    if(propShotQueued){LastShotChance=1;velocity=Vector3.up;return true;}
    float distance=Vector3.ProjectOnPlane(hoop.position-athlete.transform.position,Vector3.up).magnitude;
-   LastShotChance=BasketballShotOdds.Chance(distance,pendingPower,pendingWindow);
+   LastShotChance=BasketballShotOdds.Chance(distance,pendingPower,pendingWindow,pendingPressure);
    bool make=RollShot()<LastShotChance;
    float variation=(float)shotRandom.NextDouble();
    var goal=hoop.TransformPoint(new Vector3(0,BasketballHoop.RimHeight,0));

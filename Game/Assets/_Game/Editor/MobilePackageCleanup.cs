@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
-using UnityEditor.Build;
-using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -91,18 +89,6 @@ public static class MobilePackageCleanup {
    foreach(var t in root.GetComponentsInChildren<Transform>(true))if(GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)>0)throw new Exception("Missing script: "+scene.path+" / "+t.name);
    foreach(var r in root.GetComponentsInChildren<Renderer>(true))if(r.sharedMaterials.Any(m=>!m))throw new Exception("Missing material: "+scene.path+" / "+r.name);
    foreach(var f in root.GetComponentsInChildren<MeshFilter>(true))if(!f.sharedMesh)throw new Exception("Missing mesh: "+scene.path+" / "+f.name);
-  }
- }
-}
-
-// Changes only build copies of scenes, preserving desktop contact shading.
-public sealed class AndroidSceneDependencies : IProcessSceneWithReport {
- public int callbackOrder=>0;
- public void OnProcessScene(Scene scene,BuildReport report){
-  if(report==null||report.summary.platform!=BuildTarget.Android)return;
-  foreach(var root in scene.GetRootGameObjects()){
-   foreach(var coast in root.GetComponentsInChildren<CoastalEnvironment>(true))coast.exteriorContactShading=null;
-   foreach(var island in root.GetComponentsInChildren<RefinedIslandEnvironment>(true))island.contactShading=null;
   }
  }
 }

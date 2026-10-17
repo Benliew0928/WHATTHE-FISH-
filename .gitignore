@@ -36,3 +36,7 @@ __pycache__/
 # Unity crash-recovery scene backups are local evidence, not active game assets.
 Game/Assets/_Recovery/
 Game/Assets/_Recovery.meta
+
+# Recreated from the authored scenes for lossless player packaging.
+Game/Assets/_Game/GeneratedPackaging/
+Game/Assets/_Game/GeneratedPackaging.meta

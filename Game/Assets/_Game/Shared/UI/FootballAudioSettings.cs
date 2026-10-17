@@ -5,7 +5,7 @@ namespace WhatTheFish {
   RectTransform audioPage;Button audioNav;readonly Slider[] audioSliders=new Slider[4];readonly Text[] audioLabels=new Text[4];
   static readonly string[] AudioNames={"Master","Pitch sounds","Buttons","Ambience"};
   void BuildAudio(float left,float width){
-   audioNav=FootballUIStyle.Button(settingsPanel,"Audio navigation","Sound",20,230,left-54,64,()=>SelectMenu(2),BasketballUIStyle.Paper,16);
+   audioNav=FootballUIStyle.Button(settingsPanel,"Audio navigation","Sound",20,198,left-54,53,()=>SelectMenu(2),BasketballUIStyle.Paper,16);
    audioPage=CoveUI.Rect(settingsPanel,"Sound page",left,82,width,230);
    BasketballUIStyle.Text(audioPage,"Sound",0,0,width,28,18,true);
    for(int i=0;i<4;i++){

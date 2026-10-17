@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace WhatTheFish {
- public enum FishingAction:byte {None,Cast,Hook,ReelStart,ReelStop,Cancel,Ready,Unready,ReelLeft,ReelRight,Favourites,Supply,Salvage,UseAbility}
+ public enum FishingAction:byte {None,Cast,Hook,ReelStart,ReelStop,Cancel,Ready,Unready,ReelLeft,ReelRight,Favourites,Supply,Salvage,UseAbility,ReelTap}
  public enum FishingPhase:byte {Ready,Casting,Waiting,Bite,Reeling,Caught,Escaped,Salvaging}
  public enum FishingRoundPhase:byte {Idle,Practice,Playing,Ended,Countdown}
  public enum FishingResult:byte {None,Landed,Missed,Snapped,Cancelled,TimedOut}
@@ -26,7 +26,7 @@ namespace WhatTheFish {
   public int fish,pier,score,catches,casts,hooks,lastAward,lastBonus,cupPoints,cupScore;
   public int smallCatches,mediumCatches,largeCatches,bonusTotal,missedBites,snappedLines,cancels,timeouts;
   public byte wantedMask,catchMask;public bool held,connected,ready;public double phaseAt,biteAt,hookUntil,reelLease;
-  public sbyte steer;public double steerAt;public float pull;
+  public sbyte steer;public double steerAt;public float pull;public int reelBeat;public FishingTapGrade tapGrade;
   public float progress,tension,distance,lineLength,velocity,strain,castDistance,surge;public Vector3 origin;
   public Vector3 fightHeading;public Vector2 fightOffset,fightMotion;
   public ushort favourites;public FishingAbility item,active,salvageItem;public uint itemSequence;public double activeAt,activeUntil,sonarUntil,speedUntil;public bool quickLure,bubbleGuard;
@@ -37,9 +37,9 @@ namespace WhatTheFish {
    s.SerializeValue(ref smallCatches);s.SerializeValue(ref mediumCatches);s.SerializeValue(ref largeCatches);s.SerializeValue(ref bonusTotal);s.SerializeValue(ref missedBites);s.SerializeValue(ref snappedLines);s.SerializeValue(ref cancels);s.SerializeValue(ref timeouts);
    s.SerializeValue(ref lastAward);s.SerializeValue(ref lastBonus);s.SerializeValue(ref cupPoints);s.SerializeValue(ref cupScore);s.SerializeValue(ref wantedMask);s.SerializeValue(ref catchMask);
    s.SerializeValue(ref held);s.SerializeValue(ref connected);s.SerializeValue(ref ready);s.SerializeValue(ref phaseAt);s.SerializeValue(ref biteAt);s.SerializeValue(ref hookUntil);s.SerializeValue(ref reelLease);
-   s.SerializeValue(ref steer);s.SerializeValue(ref steerAt);s.SerializeValue(ref pull);s.SerializeValue(ref progress);s.SerializeValue(ref tension);s.SerializeValue(ref distance);s.SerializeValue(ref lineLength);s.SerializeValue(ref velocity);s.SerializeValue(ref strain);s.SerializeValue(ref castDistance);s.SerializeValue(ref surge);s.SerializeValue(ref origin);s.SerializeValue(ref fightHeading);s.SerializeValue(ref fightOffset);s.SerializeValue(ref fightMotion);s.SerializeValue(ref favourites);s.SerializeValue(ref item);s.SerializeValue(ref active);s.SerializeValue(ref salvageItem);s.SerializeValue(ref itemSequence);s.SerializeValue(ref activeAt);s.SerializeValue(ref activeUntil);s.SerializeValue(ref sonarUntil);s.SerializeValue(ref speedUntil);s.SerializeValue(ref quickLure);s.SerializeValue(ref bubbleGuard);
+   s.SerializeValue(ref steer);s.SerializeValue(ref steerAt);s.SerializeValue(ref pull);s.SerializeValue(ref reelBeat);s.SerializeValue(ref tapGrade);s.SerializeValue(ref progress);s.SerializeValue(ref tension);s.SerializeValue(ref distance);s.SerializeValue(ref lineLength);s.SerializeValue(ref velocity);s.SerializeValue(ref strain);s.SerializeValue(ref castDistance);s.SerializeValue(ref surge);s.SerializeValue(ref origin);s.SerializeValue(ref fightHeading);s.SerializeValue(ref fightOffset);s.SerializeValue(ref fightMotion);s.SerializeValue(ref favourites);s.SerializeValue(ref item);s.SerializeValue(ref active);s.SerializeValue(ref salvageItem);s.SerializeValue(ref itemSequence);s.SerializeValue(ref activeAt);s.SerializeValue(ref activeUntil);s.SerializeValue(ref sonarUntil);s.SerializeValue(ref speedUntil);s.SerializeValue(ref quickLure);s.SerializeValue(ref bubbleGuard);
   }
-  public bool Equals(FishingPlayerRecord v)=>owner==v.owner&&sequence==v.sequence&&awardSequence==v.awardSequence&&phase==v.phase&&result==v.result&&fish==v.fish&&pier==v.pier&&score==v.score&&catches==v.catches&&casts==v.casts&&hooks==v.hooks&&smallCatches==v.smallCatches&&mediumCatches==v.mediumCatches&&largeCatches==v.largeCatches&&bonusTotal==v.bonusTotal&&missedBites==v.missedBites&&snappedLines==v.snappedLines&&cancels==v.cancels&&timeouts==v.timeouts&&lastAward==v.lastAward&&lastBonus==v.lastBonus&&cupPoints==v.cupPoints&&cupScore==v.cupScore&&wantedMask==v.wantedMask&&catchMask==v.catchMask&&held==v.held&&connected==v.connected&&ready==v.ready&&phaseAt==v.phaseAt&&biteAt==v.biteAt&&hookUntil==v.hookUntil&&reelLease==v.reelLease&&steer==v.steer&&steerAt==v.steerAt&&pull==v.pull&&progress==v.progress&&tension==v.tension&&distance==v.distance&&lineLength==v.lineLength&&velocity==v.velocity&&strain==v.strain&&castDistance==v.castDistance&&surge==v.surge&&origin==v.origin&&fightHeading==v.fightHeading&&fightOffset==v.fightOffset&&fightMotion==v.fightMotion&&favourites==v.favourites&&item==v.item&&active==v.active&&salvageItem==v.salvageItem&&itemSequence==v.itemSequence&&activeAt==v.activeAt&&activeUntil==v.activeUntil&&sonarUntil==v.sonarUntil&&speedUntil==v.speedUntil&&quickLure==v.quickLure&&bubbleGuard==v.bubbleGuard;
+  public bool Equals(FishingPlayerRecord v)=>owner==v.owner&&sequence==v.sequence&&awardSequence==v.awardSequence&&phase==v.phase&&result==v.result&&fish==v.fish&&pier==v.pier&&score==v.score&&catches==v.catches&&casts==v.casts&&hooks==v.hooks&&smallCatches==v.smallCatches&&mediumCatches==v.mediumCatches&&largeCatches==v.largeCatches&&bonusTotal==v.bonusTotal&&missedBites==v.missedBites&&snappedLines==v.snappedLines&&cancels==v.cancels&&timeouts==v.timeouts&&lastAward==v.lastAward&&lastBonus==v.lastBonus&&cupPoints==v.cupPoints&&cupScore==v.cupScore&&wantedMask==v.wantedMask&&catchMask==v.catchMask&&held==v.held&&connected==v.connected&&ready==v.ready&&phaseAt==v.phaseAt&&biteAt==v.biteAt&&hookUntil==v.hookUntil&&reelLease==v.reelLease&&steer==v.steer&&steerAt==v.steerAt&&pull==v.pull&&reelBeat==v.reelBeat&&tapGrade==v.tapGrade&&progress==v.progress&&tension==v.tension&&distance==v.distance&&lineLength==v.lineLength&&velocity==v.velocity&&strain==v.strain&&castDistance==v.castDistance&&surge==v.surge&&origin==v.origin&&fightHeading==v.fightHeading&&fightOffset==v.fightOffset&&fightMotion==v.fightMotion&&favourites==v.favourites&&item==v.item&&active==v.active&&salvageItem==v.salvageItem&&itemSequence==v.itemSequence&&activeAt==v.activeAt&&activeUntil==v.activeUntil&&sonarUntil==v.sonarUntil&&speedUntil==v.speedUntil&&quickLure==v.quickLure&&bubbleGuard==v.bubbleGuard;
  }
  public struct FishingFishRecord:INetworkSerializable,IEquatable<FishingFishRecord> {
   public int id;public bool claimed;public ulong owner;public double respawnAt;
@@ -59,10 +59,6 @@ namespace WhatTheFish {
   public FishingPlayerRecord? Player(ulong id){int i=Players.FindIndex(p=>p.owner==id);return i<0?null:Players[i];}
   public static int PierForFish(int fish)=>fish>=0&&fish<FishCount?fish/FishPerPier:-1;
   public static int SizeForFish(int fish)=>fish>=0&&fish<FishCount?fish%SizeCount:-1;
-  // A smooth visible pull warns of each turn; the opposite side is the counter.
-  public static float Pull(FishingPlayerRecord p,double now)=>Mathf.Sin((float)(now-p.phaseAt)*(1.05f+.12f*SizeForFish(p.fish))+p.fish*.7f+.65f);
-  public static int CounterSide(FishingPlayerRecord p,double now)=>Pull(p,now)>=0?-1:1;
-  public static FishingAction CounterAction(FishingPlayerRecord p,double now)=>CounterSide(p,now)<0?FishingAction.ReelLeft:FishingAction.ReelRight;
   public static int Points(int fish)=>SizeForFish(fish) switch {0=>2,1=>5,_=>10};
   public static string SizeName(int fish)=>SizeForFish(fish) switch {0=>"SMALL",1=>"MEDIUM",_=>"LARGE"};
   public int Window(double now)=>Mathf.Clamp((int)((now-Match.started)/60),0,2);
@@ -111,14 +107,15 @@ namespace WhatTheFish {
      if(!double.IsFinite(hookAt)||hookAt>now+HookClockTolerance||now-hookAt>HookTransitSeconds)return false;
      hookAt=Math.Min(hookAt,now);
      if(p.phase!=FishingPhase.Bite||hookAt<p.biteAt||hookAt>=p.hookUntil||remoteHook&&(!remoteHookCasts.TryGetValue(owner,out var castSequence)||castSequence!=sequence))return false;
-     remoteHookCasts.Remove(owner);p.phase=FishingPhase.Reeling;p.phaseAt=now;p.held=false;p.steer=0;p.steerAt=now;p.pull=Pull(p,now);p.hooks++;if(fishWorld.HasValue){p.fightHeading=Vector3.ProjectOnPlane(fishWorld.Value-p.origin,Vector3.up).normalized;p.fightOffset.y=waterSurface-fishWorld.Value.y;}break;
-    case FishingAction.ReelStart: return false; // The old one-button shortcut cannot bypass countersteering.
+     remoteHookCasts.Remove(owner);p.phase=FishingPhase.Reeling;p.phaseAt=now;p.held=false;p.steer=0;p.steerAt=now;p.reelBeat=-1;p.tapGrade=FishingTapGrade.None;p.pull=Pull(p,now);p.hooks++;if(fishWorld.HasValue){p.fightHeading=Vector3.ProjectOnPlane(fishWorld.Value-p.origin,Vector3.up).normalized;p.fightOffset.y=waterSurface-fishWorld.Value.y;}break;
+    case FishingAction.ReelStart: return false; // Both directional holds remain explicit.
+    case FishingAction.ReelTap: return false; // Retired timing edge cannot renew a hold.
     case FishingAction.ReelLeft:
     case FishingAction.ReelRight:
     case FishingAction.ReelStop:
      if(p.phase!=FishingPhase.Reeling)return false;
      double edge=double.IsNaN(pressedAt)&&!remoteHook?now:pressedAt;
-     if(!double.IsFinite(edge)||edge>now+HookClockTolerance||now-edge>LeaseSeconds||edge<p.steerAt)return false;
+     if(!double.IsFinite(edge)||edge<p.phaseAt||edge>now+HookClockTolerance||now-edge>LeaseSeconds||edge<p.steerAt)return false;
      p.steerAt=Math.Min(edge,now);p.steer=(sbyte)(action==FishingAction.ReelLeft?-1:action==FishingAction.ReelRight?1:0);
      p.held=p.steer!=0;p.reelLease=now+LeaseSeconds;break;
     case FishingAction.Cancel:if(!p.Busy)return false;Finish(ref p,FishingPhase.Escaped,FishingResult.Cancelled,now);p.sequence++;break;
@@ -148,15 +145,20 @@ namespace WhatTheFish {
     if(p.phase==FishingPhase.Bite&&now>=hookResolveAt)Finish(ref p,FishingPhase.Escaped,FishingResult.Missed,now);
     if(p.phase==FishingPhase.Reeling){
      if(now>=p.reelLease){p.held=false;p.steer=0;}
-      p.pull=Pull(p,now);bool countering=p.held&&p.steer==CounterSide(p,now);
+     p.pull=Pull(p,now);bool countering=p.held&&p.steer==CounterSide(p,now);
      float step=Mathf.Min(dt,.05f),size=SizeForFish(p.fish);
      p.surge=Mathf.Pow(Mathf.Max(0,Mathf.Sin((float)(now-p.phaseAt)*(1.7f-.2f*size)+p.fish*.8f)),6);
-     float mass=.45f+.2f*size,pull=.8f+.65f*size+p.surge*(.36f+.73f*size),speed=(size==0?1.48f:size==1?1.05f:.73f)*1.06f;
+     float mass=.45f+.2f*size,pull=.8f+.65f*size+p.surge*(.36f+.73f*size),speed=(size==0?1.48f:size==1?1.05f:.73f)*1.06f*1.2f;
      bool boosted=p.active==FishingAbility.PowerReel&&now<p.activeUntil,cooled=p.active==FishingAbility.CoolSpool&&now<p.activeUntil;
      // Limited early winding assist: mainly trims longer fights, without automatic progress.
       if(now-p.phaseAt<5)speed+=.18f;
      if(boosted)speed*=1.28f;
+     // Restore continuous winding. Catch progress still comes from the real
+     // spring/drag line simulation, rather than a timed stroke or score shortcut.
      p.lineLength=Mathf.Clamp(p.lineLength+(countering?-speed:p.held?.04f:.16f)*step,.9f,p.castDistance+1);
+     // The reel drag slips under a sudden correct-side load. Keep the real
+     // spring force and accumulated strain, but leave time to release and cool.
+     if(countering)p.lineLength=Mathf.Clamp(Mathf.Max(p.lineLength,p.distance-Mathf.Max(.08f,.86f-p.strain)*6.85f/8),.9f,p.castDistance+1);
      float stretch=Mathf.Max(0,p.distance-p.lineLength);
      p.velocity=Mathf.Clamp((p.velocity+(pull-stretch*8)/mass*step)/(1+1.5f/mass*step),-2.5f,1.5f);
      p.distance=Mathf.Clamp(p.distance+p.velocity*step,.9f,p.castDistance+1.2f);

@@ -17,3 +17,7 @@
 *.prefab whitespace=-blank-at-eol
 *.mat whitespace=-blank-at-eol
 *.controller whitespace=-blank-at-eol
+
+# Preserve upstream Unity package formatting; project sources keep normal checks.
+Game/Packages/com.unity.services.multiplayer/** whitespace=-blank-at-eol,-blank-at-eof
+Game/Packages/com.unity.transport/** whitespace=-blank-at-eol,-blank-at-eof

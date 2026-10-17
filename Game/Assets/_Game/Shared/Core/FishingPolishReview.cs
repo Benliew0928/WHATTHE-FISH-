@@ -24,6 +24,7 @@ namespace WhatTheFish {
    yield return TargetFeedback();
    yield return app.view.ReviewFishingHookPending(Check);
    yield return LiveFeedback();
+   yield return ClarityFeedback();
    yield return FishingResultsChecks.Run(app,game,Check,report);
    File.AppendAllText(report,"FISHING_POLISH_COMPLETE checks="+checks+Environment.NewLine);
   }
@@ -72,6 +73,57 @@ namespace WhatTheFish {
    }finally {
     feedback.SendMessage("OnApplicationPause",false);feedback.SendMessage("OnApplicationFocus",Application.isFocused);game.State.Receive(match,players,fish);game.ReviewSnapshot=review;
    }
+   yield return null;
+  }
+  IEnumerator ClarityFeedback(){
+   var ui=FishingHUD.Instance;var view=app.view;var actor=app.LocalAthlete;
+   var match=game.State.Match;var players=game.State.Players.ToArray();var fish=game.State.Fish.ToArray();bool review=game.ReviewSnapshot,motion=MenuPreferences.ReducedMotion;int mode=view.mode;float yaw=view.yaw,pitch=view.pitch;
+   var position=actor.transform.position;var rotation=actor.transform.rotation;
+   try {
+    game.ReviewSnapshot=true;MenuPreferences.SetMotion(false);ui.SendMessage("OnApplicationFocus",true);
+    Check(Physics.Raycast(game.Pier(0)+Vector3.up*12,Vector3.down,out var floor,30,1<<8,QueryTriggerInteraction.Ignore),"CLARITY_FIXTURE_REAL_PIER_FLOOR");
+    actor.capsule.enabled=false;actor.transform.position=floor.point+Vector3.up*.04f;actor.ResetLocomotion();actor.capsule.enabled=true;Physics.SyncTransforms();
+    game.State.Begin(new[]{FishingGame.Key(actor)},match.round+60000,game.Now,false);yield return null;yield return null;
+    int starts=ui.CatchCue.Starts;
+    var input=game.State.Players[0];input.phase=FishingPhase.Reeling;input.phaseAt=game.Now-FishingState.TimingPeriod*.5;input.steerAt=input.phaseAt;input.reelBeat=-1;input.pier=0;input.fish=0;input.origin=actor.transform.position;input.castDistance=input.distance=input.lineLength=6;game.State.Players[0]=input;
+    view.ClearMatchInput();view.ReadCommand();
+    Check(view.BeginCountersteer(-1,311),"TOUCH_DOWN_STARTS_DIRECTIONAL_HOLD");view.EndFishing(312);Check(view.FishingHeld,"UNRELATED_TOUCH_CANNOT_RELEASE_HELD_DIRECTION");
+    var command=view.ReadCommand();Check(command.fishingAction==FishingAction.ReelLeft&&view.FishingHeld,"REAL_QUEUE_SENDS_LEFT_HOLD");
+    Check(game.Execute(actor,command.fishingAction,command.fishingRound,command.fishingSequence,command.fishingFish,command.fishingPressedAt)&&game.Player(actor).Value.held,"HOST_ACCEPTS_HELD_DIRECTION_WITHOUT_TIMING");
+    double originalLease=game.Player(actor).Value.reelLease;
+    yield return new WaitForSeconds(.23f);command=view.ReadCommand();
+    if(command.fishingAction==FishingAction.ReelLeft)game.Execute(actor,command.fishingAction,command.fishingRound,command.fishingSequence,command.fishingFish,command.fishingPressedAt);
+    Check(view.FishingHeld&&game.Player(actor).Value.reelLease>originalLease,"HELD_FINGER_RENEWS_PRODUCTION_INPUT_LEASE");
+    Check(view.BeginCountersteer(1,312),"NEW_FINGER_CAN_TAKE_OVER_RIGHT");view.ReadCommand();view.EndFishing(311);Check(view.FishingHeld,"OLD_FINGER_UP_CANNOT_CANCEL_NEW_HOLD");view.EndFishing(312);
+    command=view.ReadCommand();Check(command.fishingAction==FishingAction.ReelStop&&!view.FishingHeld,"MATCHING_FINGER_RELEASE_QUEUES_REAL_STOP");
+    var p=game.State.Players[0];p.fish=0;p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.origin=actor.transform.position;p.castDistance=p.distance=p.lineLength=6;p.tension=.86f;p.held=false;p.reelBeat=-1;p.tapGrade=FishingTapGrade.None;p.steerAt=game.Now;p.steer=0;p.item=FishingAbility.Sonar;game.State.Players[0]=p;yield return null;yield return null;
+    Check(ui.TimingGuideVisible&&ui.GuidanceText=="RELEASE TO COOL","HIGH_TENSION_SHOWS_RELEASE_TO_COOL");
+    var frame=ui.ActionRect.parent.parent;var labels=frame.GetComponentsInChildren<UnityEngine.UI.Text>(true);
+    Check(!labels.First(t=>t.text=="LAGOON CUP").transform.parent.Find("Fishing match setup").gameObject.activeSelf,"PRACTICE_SETUP_HIDDEN_WHILE_FIGHTING");
+    Check(ui.GetComponentInParent<Canvas>().GetComponentsInChildren<UnityEngine.UI.Image>(true).Count(i=>i.name=="Fish pull marker")==1,"PICTURED_METER_HAS_ONE_FISH_PULL_MARKER");
+    p.held=false;p.steer=0;p.tension=.68f;game.State.Players[0]=p;yield return null;yield return null;
+    Check(ui.TimingGuideVisible&&ui.GuidanceText=="RELEASE TO COOL","COOLING_GUIDANCE_PERSISTS_UNTIL_SAFE");
+    p.tension=.5f;game.State.Players[0]=p;yield return null;yield return null;Check(!labels.Any(t=>t.gameObject.activeInHierarchy&&(t.text.Contains("CLICK")||t.text.Contains("Keyboard")||t.text.Contains(" / F")))&&FishingTutorialUI.Copy.All(c=>!c.Contains("Keyboard")),"MOBILE_HUD_AND_SHARED_TUTORIAL_HAVE_NO_KEYBOARD_GUIDES");
+    var guide=ui.GetComponentInParent<Canvas>().GetComponentInChildren<FishingFightGuide>();float marker=guide.MarkerPosition;yield return new WaitForSeconds(.12f);Check(Mathf.Abs(marker-guide.MarkerPosition)>.005f,"FISH_MARKER_FOLLOWS_CURRENT_SWAY");
+    foreach(int turnBeat in new[]{2,5}){p.phaseAt=game.Now-FishingState.TimingPeriod*(turnBeat+.05);game.State.Players[0]=p;yield return new WaitForSeconds(.8f);Check(ui.CounterControlsVisible&&Mathf.Sign(view.FishingFightSide)==FishingState.CounterSide(p,game.Now)&&Mathf.Abs(view.FishingFightSide)>.6f,"CAMERA_SHOULDER_FOLLOWS_OPPOSING_PULL_"+turnBeat);}
+    foreach(int chosenMode in new[]{0,2}){
+     view.mode=chosenMode;yield return new WaitForSeconds(.8f);Check(view.FishingFightCameraActive,"FIGHT_FRAMING_AVAILABLE_FROM_PREFERRED_MODE_"+chosenMode);
+     p.phase=FishingPhase.Escaped;p.result=FishingResult.Cancelled;game.State.Players[0]=p;yield return new WaitForSeconds(.85f);
+     Check(!view.FishingFightCameraActive&&view.mode==chosenMode&&Mathf.Abs(view.yaw-yaw)<.01f&&Mathf.Abs(view.pitch-pitch)<.01f,"CANCEL_RETURNS_PREFERRED_CAMERA_WITHOUT_CHANGING_ANGLE_"+chosenMode);
+     p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.result=FishingResult.None;game.State.Players[0]=p;yield return null;
+    }
+    MenuPreferences.SetMotion(true);yield return null;yield return null;Check(!view.FishingFightCameraActive,"REDUCED_MOTION_KEEPS_PREFERRED_CAMERA_DURING_FIGHT");
+    p.phase=FishingPhase.Caught;p.result=FishingResult.Landed;p.phaseAt=game.Now;p.awardSequence++;p.lastAward=5;p.lastBonus=3;game.State.Players[0]=p;yield return null;yield return null;
+    Check(ui.CatchCue.Visible&&ui.CatchCue.PointsText=="+5 POINTS"&&ui.CatchCue.Starts==starts+1,"CATCH_CARD_USES_ACCEPTED_TOTAL_INCLUDING_WANTED");
+    Check(ui.FitsSafeFrame()&&ui.RegionsSeparate(),"HELD_GEAR_REMAINS_CLEAR_OF_LANDING_CARD");
+    var heading=ui.CatchCue.GetComponentsInChildren<UnityEngine.UI.Text>().First(t=>t.name=="Catch confirmed");Check(heading.cachedTextGenerator.vertexCount>0,"LANDING_HEADING_RENDERS_NATIVE_GLYPHS_WITHOUT_VERTICAL_CLIPPING");
+    p.item=FishingAbility.None;game.State.Players[0]=p;yield return null;yield return null;
+    Check(ui.RegionsSeparate()&&!ui.GetComponent<FishingAbilityHUD>().VisibleRegions.Any(r=>r.name=="Fishing supplies"||r.name=="Fishing salvage"),"PICKUP_SHORTCUTS_STAY_HIDDEN_DURING_LANDING_FEEDBACK");
+    yield return null;Check(ui.CatchCue.Starts==starts+1&&ui.CatchCue.GetComponentsInChildren<UnityEngine.UI.Graphic>().All(g=>!g.raycastTarget),"REPEATED_AWARD_SNAPSHOT_NEVER_REPLAYS_OR_BLOCKS_INPUT");
+    ui.SendMessage("OnApplicationFocus",false);ui.SendMessage("OnApplicationFocus",true);yield return null;yield return null;
+    Check(!ui.CatchCue.Visible&&ui.CatchCue.Starts==starts+1,"REFOCUS_ESTABLISHES_SILENT_CATCH_BASELINE");
+    p.awardSequence++;p.phaseAt=game.Now-4;game.State.Players[0]=p;yield return null;yield return null;Check(!ui.CatchCue.Visible&&ui.CatchCue.Starts==starts+1,"STALE_CATCH_SNAPSHOT_HAS_NO_FALSE_CELEBRATION");
+   }finally {game.State.Receive(match,players,fish);game.ReviewSnapshot=review;MenuPreferences.SetMotion(motion);view.mode=mode;view.yaw=yaw;view.pitch=pitch;actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(position,rotation);actor.ResetLocomotion();actor.capsule.enabled=true;Physics.SyncTransforms();ui.SendMessage("OnApplicationFocus",Application.isFocused);}
    yield return null;
   }
  }

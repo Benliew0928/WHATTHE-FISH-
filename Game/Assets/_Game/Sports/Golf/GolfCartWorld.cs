@@ -17,7 +17,7 @@ namespace WhatTheFish {
   public static GolfCartWorld Ensure(){if(!Instance)new GameObject("Golf carts").AddComponent<GolfCartWorld>();return Instance;}
   void Awake(){Instance=this;}
   void OnDestroy(){foreach(var record in records.Values)if(record.view)Destroy(record.view.gameObject);if(Instance==this)Instance=null;}
-  public static ulong Key(Athlete athlete){var network=athlete?athlete.GetComponent<NetworkAthlete>():null;return network?network.OwnerClientId:OfflineOwner;}
+  public static ulong Key(Athlete athlete){var network=athlete?athlete.GetComponent<NetworkAthlete>():null;return network&&network.StableId!=ulong.MaxValue?network.StableId:OfflineOwner;}
   public static int Count=>Instance?Instance.records.Values.Count(r=>r.state.summoned):0;
   public static GolfCart Owned(Athlete athlete)=>athlete&&Instance&&Instance.records.TryGetValue(Key(athlete),out var record)&&record.state.summoned?record.view:null;
   public static bool HasCart(Athlete athlete)=>athlete&&Instance&&Instance.records.TryGetValue(Key(athlete),out var record)&&record.state.summoned;
@@ -37,7 +37,7 @@ namespace WhatTheFish {
    return found;
   }
   public static bool Execute(Athlete actor,GolfCartAction action,ulong target) {
-   if(!actor||!Authority||!Allowed||actor.inTransit)return false;
+   if(!actor||actor.IsSpectator||!Authority||!Allowed||actor.inTransit)return false;
    var world=Ensure();ulong caller=Key(actor);
    if(action==GolfCartAction.Summon)return caller==target&&world.Summon(actor,caller);
    if(action==GolfCartAction.Recall)return caller==target&&world.Recall(actor,caller);
@@ -46,6 +46,7 @@ namespace WhatTheFish {
    return false;
   }
   bool Summon(Athlete owner,ulong key){
+   if(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(owner))return false;
    if(records.TryGetValue(key,out var existing)&&existing.state.summoned)return false;
    if(!prefab)prefab=Resources.Load<GolfCart>("GolfCart");if(!prefab)return false;
    var forward=owner.transform.forward;forward.y=0;forward.Normalize();
@@ -63,7 +64,7 @@ namespace WhatTheFish {
    if(!records.TryGetValue(key,out var record)||record.owner!=owner||!record.state.summoned)return false;
    var driver=Actor(record.state.driver);if(driver)Exit(driver,key,true);
    record.state.summoned=false;record.state.driver=GolfCartState.NoDriver;record.state.speed=0;record.state.revision++;
-   if(record.view)Destroy(record.view.gameObject);record.view=null;return true;
+   if(record.view){record.view.gameObject.SetActive(false);Destroy(record.view.gameObject);}record.view=null;return true;
   }
   bool Enter(Athlete actor,ulong key){
    if(Driving(actor)||actor.Airborne||actor.LoadingJump||!actor.Grounded||!records.TryGetValue(key,out var record)||!record.state.summoned||record.state.driver!=GolfCartState.NoDriver||!record.view)return false;
@@ -75,7 +76,7 @@ namespace WhatTheFish {
    actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();actor.capsule.enabled=false;
    record.state.driver=Key(actor);record.state.speed=0;record.state.revision++;
    record.view.Apply(record.state,true);record.view.PlaceDriver(actor);
-   if(App.LocalAthlete==actor){App.view.ClearMatchInput();App.view.yaw=record.state.rotation.eulerAngles.y;App.view.pitch=17;}
+   if(App.LocalAthlete==actor)App.view.ClearMatchInput();
    return true;
   }
   bool Exit(Athlete actor,ulong key,bool relocate){

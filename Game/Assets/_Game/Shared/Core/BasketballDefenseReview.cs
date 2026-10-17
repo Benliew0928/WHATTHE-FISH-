@@ -30,12 +30,12 @@ namespace WhatTheFish {
   void Place(Athlete who,Vector3 p,float yaw=0){who.capsule.enabled=false;who.transform.SetPositionAndRotation(p,Quaternion.Euler(0,yaw,0));who.capsule.enabled=ball.Authority;who.ResetLocomotion();var net=who.GetComponent<NetworkTransform>();if(net&&net.IsSpawned&&ball.Authority)net.Teleport(p,who.transform.rotation,Vector3.one);Physics.SyncTransforms();}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);Directory.CreateDirectory(Path.Combine(folder,"frames"));shared=Directory.GetParent(folder).FullName;File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!app.Exploring||!app.LocalAthlete||!BasketballBall.Active)&&Time.realtimeSinceStartup<end)yield return null;
+   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!DevelopmentProbe.ReadyToReviewSport||!BasketballBall.Active)&&Time.realtimeSinceStartup<end)yield return null;
    actor=app?app.LocalAthlete:null;ball=BasketballBall.Active;if(!actor||!ball){Check(false,"court initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.7f);
    review=new GameObject("Defense review camera").AddComponent<Camera>();review.CopyFrom(Camera.main);review.enabled=false;capture&=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;app.view.mode=1;actor.HideHead(false);
    ball.DefenseTrace=line=>File.AppendAllText(Path.Combine(folder,"contact.csv"),stage+","+line+"\n");
-   Check(RoomService.ProtocolVersion==49,"matching basketball protocol 49");
+   Check(Unity.Netcode.NetworkManager.Singleton.NetworkConfig.ProtocolVersion==RoomService.ProtocolVersion,"matching basketball protocol");
    if(app.rooms.Connected){if(ball.Authority)yield return Host();else yield return Guest();}
    else {Rules();Time.captureFramerate=rate;if(passOnly)yield return PassMotion();else yield return Motion();}
    Finish();
@@ -47,14 +47,17 @@ namespace WhatTheFish {
    Check(!Sweep(Vector3.zero,Vector3.right,new Vector3(float.NaN,0,0),Vector3.zero),"nonfinite contact rejected");
    Check(Sweep(Vector3.zero,Vector3.zero,Vector3.right*.1f,Vector3.right*.1f),"stationary overlapping spheres contact");
    Check(!Sweep(Vector3.zero,Vector3.zero,Vector3.right,Vector3.right),"stationary separated spheres miss");
-   foreach(float t in new[]{0f,.11f,.31f,.69f})Check(!BasketballDefenseRules.Active(BasketballAction.Block,t),"standing block inactive at "+t);
+   foreach(float t in new[]{0f,.04f,.47f,.69f})Check(!BasketballDefenseRules.Active(BasketballAction.Block,t),"standing block inactive at "+t);
+   foreach(float t in new[]{.05f,.11f,.31f,.46f})Check(BasketballDefenseRules.Active(BasketballAction.Block,t),"forgiving standing timing at "+t);
+   Check(BasketballDefenseRules.Sweep(Vector3.zero,Vector3.zero,new Vector3(.38f,0,-1),new Vector3(.38f,0,1),BasketballBall.Radius+BasketballDefenseRules.HandRadius,out _),"near-hand pass caught by expanded coverage");
+   Check(!BasketballDefenseRules.Sweep(Vector3.zero,Vector3.zero,new Vector3(.6f,0,-1),new Vector3(.6f,0,1),BasketballBall.Radius+BasketballDefenseRules.HandRadius,out _),"expanded coverage still rejects distant passes");
    Check(BasketballDefenseRules.Active(BasketballAction.Block,.2f)&&BasketballDefenseRules.Active(BasketballAction.JumpBlock,.6f),"distinct standing and airborne contact windows");
    var hoop=Vector3.forward*12;float Pressure(Vector3 p,Vector3 f)=>BasketballDefenseRules.Pressure(p,f,Vector3.zero,hoop);
    Check(Pressure(Vector3.forward,-Vector3.forward)>.7f,"close facing defender contests shot");
    Check(Pressure(Vector3.back,Vector3.forward)==0&&Pressure(Vector3.forward,Vector3.forward)==0,"behind and facing-away players do not contest");
    Check(Pressure(Vector3.forward*4,-Vector3.forward)==0,"distant guard does not contest");
-   Check(BasketballDefenseRules.Window(0)==BasketballBall.SweetWindow&&Mathf.Abs(BasketballDefenseRules.Window(1)-.025f)<.0001f,"pressure has bounded visible tolerance");
-   Check(BasketballShotOdds.Chance(4,.65f,.025f)<BasketballShotOdds.Chance(4,.65f),"pressure lowers perfect shot chance");
+   Check(BasketballDefenseRules.Window(0)==BasketballBall.SweetWindow&&BasketballDefenseRules.Window(1)==BasketballBall.SweetWindow,"guard preserves green width while speeding the meter");
+   Check(Mathf.Abs(BasketballShotOdds.Chance(4,.65f,pressure:1)-(BasketballShotOdds.Chance(4,.65f)-.2f))<.0001f,"pressure lowers perfect shot chance");
    Check(BasketballShotOdds.Chance(4,.69f,.025f)<BasketballShotOdds.Chance(4,.69f,.045f),"contested edge release lowers scoring odds");
    var normal=Vector3.back;var deflected=BasketballDefenseRules.Deflect(Vector3.forward*10,Vector3.zero,normal,normal);
    Check(deflected.z<0&&deflected.magnitude<=13,"direct block reflects incoming flight with bounded speed");
@@ -181,18 +184,18 @@ namespace WhatTheFish {
    yield return Await("guest-ready");var guest=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).First(p=>!p.IsOwner).GetComponent<Athlete>();
    yield return Possess(guest,actor,new Vector3(0,.07f,0),new Vector3(0,.07f,1.05f),180);
    Check(ball.Role(actor)==BasketballRole.Defense&&ball.Role(guest)==BasketballRole.Attack,"roles follow host possession");
-   var guard=FindObjectsByType<BasketballDefenseButton>(FindObjectsSortMode.None).Single(p=>p.guard);var block=FindObjectsByType<BasketballDefenseButton>(FindObjectsSortMode.None).Single(p=>!p.guard);
+   var guard=FindObjectsByType<BasketballDefenseButton>(FindObjectsSortMode.None).Single(p=>p.guard);var block=guard;
    Check(guard.enabled&&block.enabled&&!FindObjectsByType<BasketballShootButton>(FindObjectsSortMode.None).Any(p=>p.enabled),"defender shows defense handlers only");
-   var touch=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41,position=new Vector2(900,300)};
+   var touch=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41,position=RectTransformUtility.WorldToScreenPoint(null,guard.transform.position)};
    guard.OnPointerDown(touch);yield return new WaitForSeconds(.3f);stage="guard-stationary";yield return WaitCapture(.7f);
    Check(app.view.GuardHeld&&actor.BasketballMotion.Guarding,"hold enters replicated guard stance");CaptureControls("defender-controls");
    guard.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=42});Check(app.view.GuardHeld,"other finger cannot release guard");
    Check(ball.BeginShotCharge(guest,0),"attacker charges against guard");yield return new WaitForSeconds(.25f);
-   Check(ball.Charge.pressure>.5f&&BasketballDefenseRules.Window(ball.Charge.pressure)<.04f,"real frontal guarding narrows host shot window");
+   Check(ball.Charge.pressure>.5f&&BasketballDefenseRules.Window(ball.Charge.pressure)==BasketballBall.SweetWindow,"real frontal guarding applies the host shot penalty");
    var wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.layer=8;wall.transform.position=new Vector3(0,1,.5f);wall.transform.localScale=new Vector3(2,2,.05f);Physics.SyncTransforms();
    Check(ball.ShotPressure(guest,ball.ChargeHoop(guest,0))==0,"wall prevents pressure");Destroy(wall);yield return null;
    stage="guard-shuffle";var initial=actor.transform.position;DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.right,heading=180,sprint=true};yield return WaitCapture(.6f);
-   Check(actor.speed>2.5f&&actor.speed<3.2f&&Vector3.Distance(initial,actor.transform.position)>1,"guard overrides sprint with lateral movement");
+   Check(actor.speed>2.5f&&actor.speed<=7.1f&&Vector3.Distance(initial,actor.transform.position)>1,"guard supports lateral movement while facing the carrier");
    Check(Vector3.Dot(actor.transform.forward,(guest.transform.position-actor.transform.position).normalized)>.8f,"shuffle keeps chest toward attacker");
    DevelopmentProbe.TurnCommand=new PlayerCommand{heading=180};guard.OnPointerUp(touch);yield return new WaitForSeconds(.3f);Check(!app.view.GuardHeld&&!actor.BasketballMotion.Guarding,"release exits guard");ball.CancelShotCharge(guest);
    yield return Possess(guest,actor,new Vector3(0,.07f,0),new Vector3(.83f,.07f,.32f));
@@ -211,9 +214,11 @@ namespace WhatTheFish {
    ball.TryBlock(actor,90,false);yield return WaitCapture(.8f);Check(ball.Defense.blocks==before&&ball.Holder==guest,"carrier torso shields far-side block");
    yield return Possess(guest,actor,new Vector3(0,.07f,0),new Vector3(2.8f,.07f,.32f));
    // The same main button selects an airborne block using its owning finger.
-   block.OnPointerDown(touch);var drag=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41,position=touch.position+Vector2.up*90};block.OnDrag(drag);
+   // Room HUD refreshes can replace the controls after the earlier possession.
+   guard=FindObjectsByType<BasketballDefenseButton>(FindObjectsSortMode.None).Single(p=>p.guard);block=guard;block.Refresh();touch.position=RectTransformUtility.WorldToScreenPoint(null,block.transform.position);
+   block.OnPointerDown(touch);var drag=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41,position=RectTransformUtility.WorldToScreenPoint(null,block.transform.TransformPoint(new Vector2(0,130)))};block.OnDrag(drag);
    block.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=42});yield return new WaitForSeconds(.08f);Check(!actor.BasketballMotion.JumpBlocking,"other finger cannot commit block gesture");
-   block.OnPointerUp(drag);yield return new WaitForSeconds(.22f);Check(actor.BasketballMotion.JumpBlocking&&actor.Airborne,"upward block gesture launches real jump");yield return WaitCapture(1.25f);
+   block.OnPointerUp(drag);yield return new WaitForSeconds(.22f);Check(actor.BasketballMotion.Action==BasketballAction.Block,"upward guard gesture commits standing block");yield return WaitCapture(1.25f);
    yield return Possess(guest,actor,new Vector3(0,.07f,0),new Vector3(.83f,.07f,.32f));
    Check(ball.TryBlock(actor,270,false),"standing block accepted");int accepted=0;for(int i=0;i<100;i++)if(ball.TryBlock(actor,270,true))accepted++;Check(accepted==0&&!actor.CanRequestJump,"spam and jump cannot cancel committed block");
    ball.ResetHome();before=ball.Defense.blocks;yield return new WaitForSeconds(.8f);Check(ball.Defense.blocks==before,"reset cancels pending contact");

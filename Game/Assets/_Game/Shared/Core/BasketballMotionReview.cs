@@ -95,7 +95,12 @@ namespace WhatTheFish {
   void Sample(){
    var motion=actor.BasketballMotion;
    if(ball.Held&&motion.Busy){var rotation=Quaternion.Inverse(actor.transform.rotation)*ball.transform.rotation;if(haveGather)gatherSpin=Mathf.Max(gatherSpin,Quaternion.Angle(previousGather,rotation));previousGather=rotation;haveGather=true;}else haveGather=false;
-   contactError=Mathf.Max(contactError,motion.ContactError);reachError=Mathf.Max(reachError,motion.MaximumReachError);
+   contactError=Mathf.Max(contactError,motion.ContactError);
+   // PassArm deliberately blends from the captured dribble pose for .22s.
+   // Its full-strength solver target is not the displayed hand during that
+   // gather. Keep the same reach threshold once the pass pose has full weight;
+   // joint continuity, held-ball stability and release checks still cover it.
+   if(!(stage=="pass"&&motion.Action==BasketballAction.Pass&&motion.Elapsed<.22f))reachError=Mathf.Max(reachError,motion.MaximumReachError);
    float y=ball.transform.position.y-actor.transform.position.y;minBall=Mathf.Min(minBall,y);maxBall=Mathf.Max(maxBall,y);
    float step=0;for(int i=0;i<joints.Length;i++){var p=actor.transform.InverseTransformPoint(joints[i].position);if(havePrevious)step=Mathf.Max(step,Vector3.Distance(p,previous[i]));previous[i]=p;}havePrevious=true;maximumStep=Mathf.Max(maximumStep,step);
    metrics.WriteLine($"{frame},{stage},{motion.Elapsed:F4},{actor.speed:F4},{ball.Held},{ball.DribblePhase:F4},{y:F4},{motion.ContactError:F4},{motion.MaximumReachError:F4},{step:F4}");

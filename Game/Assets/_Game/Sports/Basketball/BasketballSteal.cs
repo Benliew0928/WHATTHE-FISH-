@@ -54,6 +54,7 @@ namespace WhatTheFish {
   public bool CanSteal(Athlete actor)=>!PropLocked(actor)&&!PortalBusy&&Held&&Role(actor)==BasketballRole.Defense&&Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump;
   public bool TrySteal(Athlete actor,float heading){
    if(!Authority||!CanSteal(actor)||!Eligible(actor)||!float.IsFinite(heading)||!actor.Grounded||Outside(actor.transform.position)||!actor.BasketballMotion||actor.BasketballMotion.Busy)return false;
+   if(actor.BasketballMotion.GuardActive&&holder)heading=Quaternion.LookRotation(Vector3.ProjectOnPlane(holder.transform.position-actor.transform.position,Vector3.up)).eulerAngles.y;
    heading%=360;var facing=Quaternion.Euler(0,heading,0);
    var point=holder?CarryPosition(holder):actor.transform.position+facing*new Vector3(0,.65f,.75f);
    if(holder&&!holder.Airborne&&!holder.LoadingJump&&!holder.BasketballMotion.CarryingPose){
@@ -75,9 +76,10 @@ namespace WhatTheFish {
     // A pass/shot that has already reached its release key beats a late swipe.
     if(pendingAction!=BasketballAction.None&&holder.BasketballMotion.BeforeRelease==false&&holder.BasketballMotion.Busy)continue;
     var point=CarryPosition(holder);bool secured=holder.Airborne||holder.LoadingJump||holder.BasketballMotion.CarryingPose;
-    if(!BasketballStealRules.Contact(actor.transform.position,motion.Facing,holder.transform.position,point,motion.State.leftHand,DribblePhase,secured,out float quality))continue;
+    float quality=1;bool guarded=CloseGuard(actor,holder);
+    if(!guarded&&!BasketballStealRules.Contact(actor.transform.position,motion.Facing,holder.transform.position,point,motion.State.leftHand,DribblePhase,secured,out quality))continue;
     var shoulder=BasketballStealRules.Shoulder(actor.transform.position,motion.Facing,point,motion.State.leftHand);
-    if(Vector3.Dot(actor.transform.forward,(point-actor.transform.position).normalized)<.35f||Physics.Linecast(shoulder,point,1<<8,QueryTriggerInteraction.Ignore)||Physics.CheckSphere(point,Radius+.005f,1<<8,QueryTriggerInteraction.Ignore))continue;
+    if(!guarded&&Vector3.Dot(actor.transform.forward,(point-actor.transform.position).normalized)<.35f||Physics.Linecast(shoulder,point,1<<8,QueryTriggerInteraction.Ignore)||Physics.CheckSphere(point,Radius+.005f,1<<8,QueryTriggerInteraction.Ignore))continue;
     bool blocked=false;
     foreach(var other in Athlete.Active)if(other!=actor&&other!=holder&&other.capsule&&other.capsule.enabled&&BasketballStealRules.Shielded(shoulder,point,other.transform.position,other.capsule.radius)){blocked=true;break;}
     if(blocked)continue;
@@ -85,6 +87,7 @@ namespace WhatTheFish {
    }
   }
   void KnockLoose(Athlete actor,Vector3 point,float quality,bool secured){
+   BasketballMatch.Instance?.Touch(actor);
    var victim=holder;var motion=actor.BasketballMotion;
    var velocity=BasketballStealRules.Deflection(actor.transform.position,point,victim.Motor.Velocity,actor.Motor.Velocity,DribblePhase,dribbleCadence,secured,motion.State.leftHand,quality,point.y-victim.transform.position.y);
    NewDefensePlay();CancelShotCharge(victim);pendingAction=BasketballAction.None;ResetShotTracking();passAim=default;passing=false;

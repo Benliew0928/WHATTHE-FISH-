@@ -15,7 +15,7 @@ namespace WhatTheFish {
   bool SupportsCustomization=>SelectedSport==SportId.Football||SelectedSport==SportId.Basketball;
   public GameObject athletePrefab; Athlete offline; Canvas canvas;RectTransform safe,page;Font font;Sprite rounded;Text status,roster,fps,controlHint;float rosterTimer;string screen="home",appliedWorld="";bool lastExploring; InputField code;Button cameraControl;
   readonly Color ink=LocalProfile.Hex("173834"),mint=LocalProfile.Hex("BFEBCB"),cream=LocalProfile.Hex("FFF9E9");
-  void Awake(){Instance=this;Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
+  void Awake(){Instance=this;StartupWelcome.Ensure();gameObject.AddComponent<FootballBots>();gameObject.AddComponent<BasketballBots>();Application.targetFrameRate=Application.isMobilePlatform?30:60;Screen.sleepTimeout=SleepTimeout.NeverSleep;}
   SportId? pendingSelection; uint selectionVersion;
   IEnumerator Start(){
    font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");rounded=MakeRound();
@@ -28,32 +28,44 @@ namespace WhatTheFish {
    var streaming=environments.GetComponent<SkySailStreaming>();if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(SportId.Football);
    environments.Activate(SportId.Football);stadium?.Apply(CurrentAppearance);Show("home");
    var args=Environment.GetCommandLineArgs();int sportArg=Array.IndexOf(args,"-sport");if(sportArg>=0&&sportArg+1<args.Length&&Enum.TryParse<SportId>(args[sportArg+1],true,out var requested)&&environments.Definition(requested)&&environments.Definition(requested).available){if(streaming&&streaming.enabledForWorld)yield return streaming.Prepare(requested);SelectSport(requested);}if(args.Contains("-offline"))EnterOffline();
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   StartOnlineProbe();
+#endif
    if(args.Contains("-localHost")||args.Contains("-localClient")){ushort port=7777;int ix=Array.IndexOf(args,"-port");if(ix>=0&&ix+1<args.Length)ushort.TryParse(args[ix+1],out port);offline.gameObject.SetActive(false);rooms.StartLocal(args.Contains("-localHost"),port);Show("room");}
   }
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+  async void StartOnlineProbe(){var args=Environment.GetCommandLineArgs();if(args.Contains("-onlineHost"))await rooms.Create(SelectedSport);int i=Array.IndexOf(args,"-onlineJoin");if(i>=0&&i+1<args.Length)await rooms.Join(args[i+1]);}
+#endif
   void ApplySafeArea(){var a=Screen.safeArea;safe.anchorMin=new Vector2(a.x/Screen.width,a.y/Screen.height);safe.anchorMax=new Vector2(a.xMax/Screen.width,a.yMax/Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;}
   void OnRoomChanged(){if(!rooms.Connected){appliedWorld="";stadium?.Apply(CurrentAppearance);}if(rooms.Connected){offline.gameObject.SetActive(false);if(screen=="home"||screen=="sport"||screen=="sports"||screen=="create"||screen=="join")Show("room");}else if(screen=="room"||screen=="stadium"&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}UpdateStatus();}
   void Update(){
+   if(StartupWelcome.Blocking){if(view){view.active=false;view.InputBlocked=true;}return;}
+   if(RoomService.Paused)return;
    if(safe)ApplySafeArea();if(cameraControl)cameraControl.interactable=!view.GolfAimRequested;
    if(!Exploring){if(screen=="character"){view.transform.position=offline.transform.position+new Vector3(1.4f,1.25f,3.7f);view.transform.LookAt(offline.transform.position+new Vector3(1.4f,1.1f,0));}else {view.transform.position=environments.Current.menuCamera;view.transform.LookAt(environments.Current.menuFocus);}}
    if(!rooms.Connected&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}
    if(rooms.Connected&&NetworkAthlete.HostPlayer){
-    var world=NetworkAthlete.HostPlayer;if(SelectedSport!=world.WorldSport.Value&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)){SelectSport(world.WorldSport.Value,true);if(screen=="room")Show("room");}string json=world.WorldAppearance.Value.ToString();if(json.Length>0&&json!=appliedWorld){appliedWorld=json;stadium?.Apply(JsonUtility.FromJson<StadiumAppearance>(json));}
-    if(world.Exploring.Value!=lastExploring){lastExploring=world.Exploring.Value;Exploring=lastExploring;Show(Exploring?"stadium":"room");}
+    var world=NetworkAthlete.HostPlayer;if(SelectedSport!=world.WorldSport.Value&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)){SelectSport(world.WorldSport.Value,true);if(screen=="room")Show("room");}string json=world.WorldAppearance.Value.ToString();if(json.Length>0&&json!=appliedWorld){appliedWorld=json;stadium?.Apply(JsonUtility.FromJson<StadiumAppearance>(json));}
+    if(world.Exploring.Value!=lastExploring){lastExploring=world.Exploring.Value;Exploring=lastExploring;Show(Exploring?(RoomTeleport.Busy&&RoomTeleport.Instance.State.entry?"loading":"stadium"):"room");}
    }
    view.target=LocalAthlete;view.active=Exploring&&(!Menu||!Menu.IsTransitioning);
    if(controlHint)controlHint.text=view.GolfAimRequested?"Drag right to aim • Hold, then release • Cancel to walk":GolfCartWorld.Allowed&&GolfCartWorld.Driving(LocalAthlete)?"Left stick: drive & steer • Drag right to look":view.mode==2&&!(LocalAthlete&&LocalAthlete.inTransit)&&(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)?SelectedSport==SportId.Basketball?"Drag right to aim • Push stick fully to run":"Broadcast view • Push stick fully to run":"Drag right to look • Push stick fully to run";
-   if(Exploring&&!rooms.Connected&&LocalAthlete&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
+   if(Exploring&&!rooms.Connected&&LocalAthlete&&!LocalAthlete.GetComponent<FootballBot>()&&!LocalAthlete.GetComponent<BasketballBot>()&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
    if(!Exploring&&LocalAthlete)LocalAthlete.HideHead(false);
    if((rosterTimer-=Time.deltaTime)<0){rosterTimer=.5f;RefreshRoster();if(fps)fps.text=$"{Mathf.RoundToInt(1/Mathf.Max(Time.smoothDeltaTime,.001f))} FPS   •   {(rooms.Connected?"ONLINE":"OFFLINE")}";}
-   if(Input.GetKeyDown(KeyCode.Escape)){if(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)FishingHUD.Instance.CloseOverlay();else if(Exploring&&SelectedSport==SportId.Basketball&&BasketballHUD.Instance)BasketballHUD.Instance.ToggleSettings();else if(Exploring&&SelectedSport==SportId.Football&&FootballHUD.Instance)FootballHUD.Instance.ToggleSettings();else if(view.GolfAimRequested)view.CancelGolfAim();else if(Exploring)Return();else if(Menu)Menu.Back();else Show(rooms.Connected?"room":"home");}
+   if(Input.GetKeyDown(KeyCode.Escape)){if(TeleportSequence.Busy||RoomTeleport.Busy)return;if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){PostMatchFlow.Instance.Close();return;}if(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)FishingHUD.Instance.CloseOverlay();else if(Exploring&&SelectedSport==SportId.Basketball&&BasketballHUD.Instance)BasketballHUD.Instance.ToggleSettings();else if(Exploring&&SelectedSport==SportId.Football&&FootballHUD.Instance)FootballHUD.Instance.ToggleSettings();else if(view.GolfAimRequested)view.CancelGolfAim();else if(Exploring)Return();else if(Menu)Menu.Back();else Show(rooms.Connected?"room":"home");}
   }
   void UpdateStatus(){if(status)status.text=rooms.busy?"Connecting…":rooms.Error??"";}
   public void SelectSport(SportId sport,bool fromHost=false){if(rooms.Connected&&!fromHost)return;var streaming=environments.GetComponent<SkySailStreaming>();if(streaming&&streaming.enabledForWorld&&!streaming.Loaded(sport)){if(pendingSelection!=sport){pendingSelection=sport;Show(screen);StartCoroutine(SelectLoaded(sport,fromHost,++selectionVersion));}return;}pendingSelection=null;selectionVersion++;if(sport!=SelectedSport)GolfCartWorld.ParkDrivers(false);environments.Activate(sport);appliedWorld="";stadium?.Apply(CurrentAppearance);if(offline&&!rooms.Connected)ResetOfflineSpawn();view.yaw=0;view.pitch=16;PlayerView.LookDelta=Vector2.zero;}
   IEnumerator SelectLoaded(SportId sport,bool fromHost,uint version){yield return environments.GetComponent<SkySailStreaming>().Prepare(sport);if(version!=selectionVersion)yield break;pendingSelection=null;if(!environments.GetComponent<SkySailStreaming>().Loaded(sport)){Debug.LogError("Could not load "+sport);yield break;}SelectSport(sport,fromHost);Show(screen);}
   IEnumerator EnterWhenReady(){while(pendingSelection.HasValue)yield return null;EnterOffline();}
   void ResetOfflineSpawn(){offline.capsule.enabled=false;offline.transform.SetPositionAndRotation(environments.Current.Spawn(0),Quaternion.identity);offline.capsule.enabled=true;offline.ResetLocomotion();}
-  public void EnterOffline(){if(pendingSelection.HasValue){StartCoroutine(EnterWhenReady());return;}Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium?.Apply(CurrentAppearance);Show("stadium");}
-  async void Return(){if(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return;if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
+  public void EnterOffline(){if(pendingSelection.HasValue){StartCoroutine(EnterWhenReady());return;}FootballMatch.Instance?.ClearMatch();BasketballMatch.Instance?.Clear();FootballBots.Instance?.Clear();BasketballBots.Instance?.Clear();Exploring=true;lastExploring=false;offline.gameObject.SetActive(true);LocalAthlete=offline;ResetOfflineSpawn();stadium?.Apply(CurrentAppearance);Show("stadium");}
+  public int BotTeamSize {get=>SelectedSport==SportId.Basketball?BasketballBots.PreferredTeamSize:FootballBots.PreferredTeamSize;set{if(SelectedSport==SportId.Basketball)BasketballBots.PreferredTeamSize=value;else FootballBots.PreferredTeamSize=value;}}
+  public void PlayAgainstAI()=>PlayAgainstAI(BotTeamSize);
+  public void PlayAgainstAI(int teamSize){if((SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)&&!rooms.Connected&&!pendingSelection.HasValue&&FootballBots.ValidTeamSize(teamSize))StartCoroutine(StartAI(teamSize));}
+  IEnumerator StartAI(int teamSize){var sport=SelectedSport;if(!(sport==SportId.Basketball?BasketballBots.Instance.StartSolo(teamSize):FootballBots.Instance.StartSolo(teamSize)))yield break;yield return new WaitForFixedUpdate();if(SelectedSport!=sport||rooms.Connected)yield break;if(sport==SportId.Basketball)BasketballMatch.Instance?.StartMatch();else FootballMatch.Instance?.StartMatch();}
+  async void Return(){if(TeleportSequence.Busy||RoomTeleport.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return;if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
   public void LeaveCourt()=>Return();
   void Clear(){PlayerView.LookDelta=Vector2.zero;view.InputBlocked=false;if(page){page.gameObject.SetActive(false);Destroy(page.gameObject);}page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;controlHint=null;}
   public void Show(string which){
@@ -69,13 +81,14 @@ namespace WhatTheFish {
    if(!Menu){Menu=gameObject.AddComponent<StorybookMenu>();Menu.Initialize(this,safe);}
    Menu.Show(pendingSelection.HasValue?"loading":which);
   }
-  NetworkAthlete LocalNetwork()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
-  void RefreshRoster(){if(!roster)return;var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).OrderBy(p=>p.OwnerClientId).ToArray();roster.text=string.Join("\n",players.Select(p=>{
-   return $"{(p.OwnerClientId==0?"HOST":"PLAYER "+p.OwnerClientId)}{(p.IsOwner?" (you)":"")}  ·  Rainbow Sprinter  ·  {(p.Ready.Value?"READY":"choosing…")}";}));}
+  NetworkAthlete LocalNetwork()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsPlayerObject&&p.IsOwner);
+  void RefreshRoster(){if(!roster)return;var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsPlayerObject).OrderBy(p=>p.OwnerClientId).ToArray();roster.text=string.Join("\n",players.Select(p=>{
+   return $"{(p.OwnerClientId==0?"HOST":"PLAYER "+p.OwnerClientId)}{(p.IsOwner?" (you)":"")}  ·  #{p.IdentityNumber.Value:00}  ·  {(p.Ready.Value?"READY":"choosing…")}";}));}
   public void SaveStadium(StadiumAppearance a){if(!SupportsCustomization||rooms.Connected&&!rooms.Host)return;a.Clamp();LocalProfile.SaveSport(SelectedSport,a);stadium?.Apply(a);if(rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldAppearance.Value=JsonUtility.ToJson(a);}
   void Heading(string title,string caption){Label(page,title,0,new Vector2(82,714),new Vector2(510,80),44,ink);Label(page,caption,0,new Vector2(82,643),new Vector2(490,64),22,ink);}
   void Back(string target){Button("← Back",new Vector2(165,91),()=>Show(target),Color.white,new Vector2(165,54));}
   void HUD(){
+   if(LocalAthlete&&LocalAthlete.IsSpectator){SpectatorHUD();return;}
    if(SelectedSport==SportId.Football){FootballHUD.Create(page,font);FootballEffortHUD.Create(this,page,SportsUIStyle.TextFont,true);StadiumPlayerIndicator.Create(page,SportsUIStyle.DisplayFont);return;}
    if(SelectedSport==SportId.Basketball){BasketballHUD.Create(page,font);StadiumPlayerIndicator.Create(page,SportsUIStyle.DisplayFont);return;}
    var look=Panel(page,new Vector2(1170,480),new Vector2(820,720),new Color(1,1,1,.001f));look.gameObject.AddComponent<TouchPad>().look=true;
@@ -117,6 +130,16 @@ namespace WhatTheFish {
    if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball)StadiumPlayerIndicator.Create(page,SportsUIStyle.DisplayFont);
    if(SelectedSport==SportId.Football||SelectedSport==SportId.Basketball){controlHint.rectTransform.anchorMin=controlHint.rectTransform.anchorMax=new Vector2(.5f,0);controlHint.rectTransform.anchoredPosition=new Vector2(-285,SelectedSport==SportId.Football?193:148);controlHint.alignment=TextAnchor.MiddleCenter;controlHint.fontSize=18;}
   }
+  void SpectatorHUD(){
+   var look=Panel(page,new Vector2(1170,480),new Vector2(820,720),new Color(1,1,1,.001f));look.gameObject.AddComponent<TouchPad>().look=true;
+   var bg=Panel(page,new Vector2(190,178),new Vector2(176,176),new Color(1,1,1,.25f));var pad=bg.gameObject.AddComponent<TouchPad>();var knob=Panel(bg,Vector2.zero,new Vector2(82,82),cream);knob.anchorMin=knob.anchorMax=new Vector2(.5f,.5f);foreach(var r in new[]{bg,knob}){r.GetComponent<Image>().sprite=MakeCircle();r.GetComponent<Image>().type=Image.Type.Simple;}pad.knob=knob;view.stick=pad;
+   Pill("SPECTATOR  "+LocalAthlete.GetComponent<NetworkAthlete>().IdentityNumber.Value.ToString("00"),new Vector2(260,818),new Vector2(410,62));
+   cameraControl=Button("Camera",new Vector2(1460,90),view.Switch,mint,new Vector2(170,66));
+   Button(rooms.Host?"Return to room":"Leave room",new Vector2(1400,818),Return,cream,new Vector2(270,62));
+   if(rooms.Host)Button("Start match",new Vector2(800,818),()=>{switch(SelectedSport){case SportId.Football:FootballMatch.Instance?.StartMatch();break;case SportId.Basketball:BasketballMatch.Instance?.StartMatch();break;case SportId.Golf:GolfMatchManager.Instance?.StartMatch();break;case SportId.Fishing:FishingGame.Instance?.StartMatch();break;}},mint,new Vector2(230,62));
+   Label(page,"Walk around the stands · Drag right to look",0,new Vector2(530,72),new Vector2(570,40),23,Color.white);
+   page.gameObject.AddComponent<SpectatorHUD>();
+  }
   void Pill(string s,Vector2 p,Vector2 size){var r=Panel(page,p,size,cream);var t=Label(r,s,0,Vector2.zero,size,23,ink);t.alignment=TextAnchor.MiddleCenter;var rt=t.rectTransform;rt.anchorMin=rt.anchorMax=new Vector2(.5f,.5f);rt.pivot=new Vector2(.5f,.5f);}
   public RectTransform Panel(Transform parent,Vector2 p,Vector2 size,Color c){var o=new GameObject("Card",typeof(RectTransform),typeof(Image));var r=o.GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=Vector2.zero;r.sizeDelta=size;r.anchoredPosition=p;AnchorHud(r,p);var im=o.GetComponent<Image>();im.sprite=rounded;im.type=Image.Type.Sliced;im.color=c;return r;}
   void AnchorHud(RectTransform rect,Vector2 point){
@@ -129,7 +152,7 @@ namespace WhatTheFish {
    if(point.y>=700){anchor.y=1;point.y-=900;}
    rect.anchorMin=rect.anchorMax=anchor;rect.anchoredPosition=point;
   }
-  Text Label(Transform parent,string text,int unused,Vector2 p,Vector2 size,int points,Color c){var o=new GameObject("Text",typeof(RectTransform),typeof(Text));var t=o.GetComponent<Text>();t.transform.SetParent(parent,false);var r=t.rectTransform;r.anchorMin=r.anchorMax=Vector2.zero;r.pivot=new Vector2(0,.5f);r.anchoredPosition=p;r.sizeDelta=size;t.font=font;t.fontSize=points;t.color=c;t.text=text;t.supportRichText=false;t.raycastTarget=false;t.verticalOverflow=VerticalWrapMode.Overflow;AnchorHud(r,p);return t;}
+  public Text Label(Transform parent,string text,int unused,Vector2 p,Vector2 size,int points,Color c){var o=new GameObject("Text",typeof(RectTransform),typeof(Text));var t=o.GetComponent<Text>();t.transform.SetParent(parent,false);var r=t.rectTransform;r.anchorMin=r.anchorMax=Vector2.zero;r.pivot=new Vector2(0,.5f);r.anchoredPosition=p;r.sizeDelta=size;t.font=font;t.fontSize=points;t.color=c;t.text=text;t.supportRichText=false;t.raycastTarget=false;t.verticalOverflow=VerticalWrapMode.Overflow;AnchorHud(r,p);return t;}
   Button Button(string text,Vector2 p,Action action,Color c,Vector2 size=default){if(size==default)size=new Vector2(495,80);var r=Panel(page,p,size,c);var b=r.gameObject.AddComponent<Button>();b.interactable=action!=null;b.onClick.AddListener(()=>{if(!rooms.busy)action?.Invoke();});var t=Label(r,text,0,Vector2.zero,size-new Vector2(18,0),25,ink);t.alignment=TextAnchor.MiddleCenter;t.rectTransform.anchorMin=t.rectTransform.anchorMax=new Vector2(.5f,.5f);t.rectTransform.pivot=new Vector2(.5f,.5f);return b;}
   InputField Field(string placeholder,Vector2 p,Vector2 size,string value,int limit){var r=Panel(page,p,size,Color.white);var input=r.gameObject.AddComponent<InputField>();var t=Label(r,value,0,Vector2.zero,size-new Vector2(32,0),24,ink);t.rectTransform.anchorMin=t.rectTransform.anchorMax=new Vector2(.5f,.5f);t.rectTransform.pivot=new Vector2(.5f,.5f);input.textComponent=t;input.text=value;input.characterLimit=limit;var ph=Label(r,placeholder,0,Vector2.zero,size-new Vector2(32,0),23,new Color(.35f,.45f,.4f));ph.rectTransform.anchorMin=ph.rectTransform.anchorMax=new Vector2(.5f,.5f);ph.rectTransform.pivot=new Vector2(.5f,.5f);input.placeholder=ph;t.alignment=TextAnchor.MiddleLeft;ph.alignment=TextAnchor.MiddleLeft;ph.gameObject.SetActive(string.IsNullOrEmpty(value));return input;}
   static Sprite MakeCircle(){var t=new Texture2D(64,64,TextureFormat.RGBA32,false);for(int y=0;y<64;y++)for(int x=0;x<64;x++)t.SetPixel(x,y,new Color(1,1,1,Mathf.Clamp01(32-Vector2.Distance(new Vector2(x,y),new Vector2(31.5f,31.5f)))));t.Apply();return Sprite.Create(t,new Rect(0,0,64,64),new Vector2(.5f,.5f));}

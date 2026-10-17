@@ -2,6 +2,9 @@ Shader "WhatTheFish/FootballKickCharge" {
  Properties {
   _BaseColor("Charge tint",Color)=(.08,.85,1,.9)
   _Charge("Charge",Range(0,1))=0
+  _Length("Pass length (zero for kick)",Float)=0
+  _Opacity("Opacity",Range(0,1))=1
+  _Lock("Receiver lock",Range(0,1))=0
   [HideInInspector] _Surface("Surface",Float)=1
   [HideInInspector] _ZWrite("Depth write",Float)=0
  }
@@ -18,7 +21,7 @@ Shader "WhatTheFish/FootballKickCharge" {
    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
    CBUFFER_START(UnityPerMaterial)
     half4 _BaseColor;
-    float _Charge,_Surface,_ZWrite;
+    float _Charge,_Surface,_ZWrite,_Length,_Opacity,_Lock;
    CBUFFER_END
    struct Attributes {float4 positionOS:POSITION;float2 uv:TEXCOORD0;};
    struct Varyings {float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;};
@@ -27,19 +30,23 @@ Shader "WhatTheFish/FootballKickCharge" {
    half3 Spectrum(float t){return .5+.5*cos(6.28318*(t+float3(0,.67,.33)));}
    half4 frag(Varyings i):SV_Target{
     float2 p=i.uv;float t=_Time.y;
+    if(_Length>0)p.y*=_Length;
+    float tip=_Length>0?_Length:1.02;
+    float shoulderY=tip-.33,railY=tip-.27;
     float aa=max(fwidth(p.x),fwidth(p.y))*.8+.002;
     // Two uninterrupted, straight aiming rails. Nothing moves their direction.
-    float rail=Line(float2(abs(p.x),p.y),float2(.26,.02),float2(.26,.75));
-    float head=Line(float2(abs(p.x),p.y),float2(.54,.69),float2(0,1.02));
-    float shoulder=Line(float2(abs(p.x),p.y),float2(.26,.75),float2(.54,.69));
+    float rail=Line(float2(abs(p.x),p.y),float2(.26,.02),float2(.26,railY));
+    float head=Line(float2(abs(p.x),p.y),float2(.54,shoulderY),float2(0,tip));
+    float shoulder=Line(float2(abs(p.x),p.y),float2(.26,railY),float2(.54,shoulderY));
     float edge=min(rail,min(head,shoulder));
-    half hot=1-smoothstep(.008,.008+aa,edge);
+    float strokeWidth=_Length>0?.016:.008;
+    half hot=1-smoothstep(strokeWidth,strokeWidth+aa,edge);
     half neon=exp2(-edge*70);
     half halo=exp2(-edge*24);
-    half shaft=(1-smoothstep(.21,.21+aa,abs(p.x)))*smoothstep(.015,.04,p.y)*(1-smoothstep(.72,.75,p.y));
-    half headFill=smoothstep(.675,.70,p.y)*(1-smoothstep(.99,1.02,p.y))*(1-smoothstep((1.02-p.y)*1.63,(1.02-p.y)*1.63+aa,abs(p.x)));
+    half shaft=(1-smoothstep(.21,.21+aa,abs(p.x)))*smoothstep(.015,.04,p.y)*(1-smoothstep(railY-.03,railY,p.y));
+    half headFill=smoothstep(shoulderY-.015,shoulderY+.01,p.y)*(1-smoothstep(tip-.03,tip,p.y))*(1-smoothstep((tip-p.y)*1.63,(tip-p.y)*1.63+aa,abs(p.x)));
     half fill=max(shaft,headFill);
-    float chevron=abs(frac(p.y*5+abs(p.x)*2.3-t*(1.1+_Charge*1.8))-.5);
+    float chevron=abs(frac(p.y*(_Length>0?.8:5)+abs(p.x)*2.3-t*(1.1+_Charge*1.8))-.5);
     half flow=1-smoothstep(.045,.045+aa*4,chevron);
     half bead=pow(saturate(.5+.5*cos((p.y-t*(.7+_Charge))*24)),12)*neon;
     half pulse=(.5+.5*sin(t*7))*smoothstep(.9,1,_Charge);
@@ -52,7 +59,8 @@ Shader "WhatTheFish/FootballKickCharge" {
     color=lerp(color,_BaseColor.rgb,saturate(p.y-.75)*_Charge*.5);
     half alpha=saturate(hot*.88+neon*.7+halo*.2+fill*(.42+flow*.43+pulse*.12));
     half spine=(1-smoothstep(.009,.009+aa,abs(p.x)))*fill*(.4+flow*.6);
-    return half4(lerp(color,half3(.95,1,1),spine*.6),max(alpha,spine*.8));
+    color=lerp(color,half3(.28,1,.78),_Lock*.55);
+    return half4(lerp(color,half3(.95,1,1),spine*.6),max(alpha,spine*.8)*_Opacity);
    }
    ENDHLSL
   }

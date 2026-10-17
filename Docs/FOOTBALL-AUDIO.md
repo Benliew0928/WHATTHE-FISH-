@@ -1,5 +1,9 @@
 # Football audio integration
 
+Current locality rule: grass walk, run and turning footsteps play only for the
+local player. Opponent and teammate footsteps are silent on that client.
+Shared ball contacts, tackles and match sounds retain their existing behavior.
+
 All sounds approved and integrated on 12 October 2026. The complete validated
 Windows player is in `Builds/WindowsFinal/`; launch `Explore-Football.cmd` there.
 The [original analysis](FOOTBALL-AUDIO-PLAN.md) and
@@ -42,7 +46,7 @@ follow match transitions; Explore has no scoring or match whistles.
 
 Authoritative contacts use live, sequenced RPCs with a bounded queue and stale
 event rejection, so entering an existing match does not replay past hits.
-Initial presentation snapshots seed state. **Room protocol 46** includes the
+Initial presentation snapshots seed state. **Room protocol 51** includes the
 football audio event RPC; all players in a room need the updated build.
 
 UI factories and held-action pointer feedback share the approved button palette.

@@ -210,11 +210,16 @@ public static partial class ProjectBuilder {
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Golf.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Golf -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-Basketball.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -sport Basketball -offline\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Explore-SkySail.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -skyStation\r\n");
+  File.WriteAllText(Path.Combine(outputDirectory,"Preview-Teleport.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -teleportPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 900\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Review-Fishing-Rods.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Fishing -fishingRodPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"Review-Golf-Equipment.cmd"),"@echo off\r\nstart \"\" \"%~dp0WhatTheFish.exe\" -offline -sport Golf -golfEquipmentPreview -screen-fullscreen 0 -screen-width 1600 -screen-height 1000\r\n");
   File.WriteAllText(Path.Combine(outputDirectory,"LATEST-BUILD.txt"),"Built UTC: "+DateTime.UtcNow.ToString("O")+"\nFootball: Touchline HUD; Team Turbo, Portal Steal and 15-second Wall; centre-line pickups and blue countdown\nBasketball: B1 coastal arena with sports minimap and three courtside abilities\nGolf: G2 Limestone Cove Links with aim lock, cycling power and physical shot guide\nFishing: Lagoon Stickers HUD, crisp native fonts, centre reticle, animated Hook and fish ! bite cue, six fish per pier, tuned spring/drag line reeling, 3-minute Round, 3-round Cup and Crew Catch (20 per starting player), action sound, round results and live Crew checklist\nMultiplayer: combined protocol "+RoomService.ProtocolVersion+"; matching builds required\nScene: Assets/_Game/Scenes/Bootstrap.unity\nRebuild: Tools/Build/Build.ps1 -Target Windows\n");
  }
  public static void BuildFootballMatchVerification(){Build(BuildTarget.StandaloneWindows64,"../Builds/FootballMatchQA/Player/WhatTheFish.exe");}
+ public static void BuildFootballSwipeVerification()=>BuildWindowsPlayer("../Builds/FootballSwipeQA/Player/WhatTheFish.exe");
+ public static void BuildPropPickupVerification()=>BuildWindowsPlayer("../Builds/PropPickupQA/Player/WhatTheFish.exe");
+ public static void BuildHostMigrationVerification()=>BuildWindowsPlayer("../Builds/HostMigrationQA/Player/WhatTheFish.exe");
+ public static void BuildDisconnectVerification()=>BuildWindowsPlayer("../Builds/DisconnectQA/Player/WhatTheFish.exe");
  public static void BuildWindowsReview(){Build(BuildTarget.StandaloneWindows64,"../Builds/BasketballReview/WhatTheFish.exe");}
  public static void SetupAndBuildWindows(){BuildWindows();}
  static void SelectMobileRenderPipeline(){
@@ -235,6 +240,7 @@ public static partial class ProjectBuilder {
   EditorUserBuildSettings.buildAppBundle=false;
   PlayerSettings.SetManagedStrippingLevel(UnityEditor.Build.NamedBuildTarget.Android,ManagedStrippingLevel.Medium);
   PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.Android,UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
+  PlayerSettings.Android.minifyRelease=true;
   Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.None);
  }
  [MenuItem("WHATTHE FISH?/Build Android submission APK (under 1 GB)")]
@@ -242,6 +248,7 @@ public static partial class ProjectBuilder {
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
   path=ResolveBuildOutputPath(path);
   FootballPropBuild.Prepare();
+  CharacterIdentityBuild.Prepare();
   JumpAnimationBuilder.Prepare();
   GolfCartBuilder.Prepare();
   GolfClubBuilder.Prepare();
@@ -252,7 +259,9 @@ public static partial class ProjectBuilder {
   // URP can retain the previous platform's pipeline after a build in this editor.
   // Recompute build resources so Android does not inherit desktop SSAO textures.
   UnityEditor.Rendering.CoreBuildData.instance.Dispose();
-  var report=BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport});
+  var report=Environment.GetEnvironmentVariable("WTF_UNPACKAGED_REVIEW")=="1"
+   ?BuildPipeline.BuildPlayer(new BuildPlayerOptions{scenes=SkySailBuilder.BuildScenes(),locationPathName=path,target=target,options=options|BuildOptions.DetailedBuildReport})
+   :PackagedContentBuild.Build(target,path,options);
   if(report.summary.result!=BuildResult.Succeeded)throw new Exception("Build failed: "+report.summary.result);
   if(target==BuildTarget.StandaloneWindows64&&(options&BuildOptions.CompressWithLz4HC)!=0){
    string data=Path.Combine(Path.GetDirectoryName(path),Path.GetFileNameWithoutExtension(path)+"_Data","data.unity3d");
@@ -261,6 +270,6 @@ public static partial class ProjectBuilder {
   }
   if(target==BuildTarget.StandaloneWindows64&&(options&BuildOptions.Development)!=0)WhatTheFish.Editor.BasketballDefenseBuild.Geometry(Path.GetDirectoryName(path));
   Debug.Log("BUILD_OK "+target+" bytes="+report.summary.totalSize);
-  if(target==BuildTarget.Android){BuildSizeAudit.Write(report,"latest");BuildSizeAudit.CheckApk(path,false);}
+  if(target==BuildTarget.Android){BuildSizeAudit.Write(report,"latest");if(Environment.GetEnvironmentVariable("WTF_UNPACKAGED_REVIEW")!="1")PackagedContentBuild.CopyContentAudit(target);BuildSizeAudit.CheckApk(path,false);}
  }
 }

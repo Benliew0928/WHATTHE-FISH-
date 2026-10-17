@@ -105,6 +105,7 @@ public static class MobileGeometryBuilder {
 public sealed class MobileGeometryBuildProcessor:IProcessSceneWithReport {
  public int callbackOrder=>-10;
  public void OnProcessScene(Scene scene,BuildReport report){
+  if(PackagedContentBuild.IsPrepared(scene))return;
   if(report!=null&&(report.summary.platform==BuildTarget.Android||Environment.GetEnvironmentVariable("WTF_MOBILE_PREVIEW")=="1"))MobileGeometryBuilder.Apply(scene);
  }
 }

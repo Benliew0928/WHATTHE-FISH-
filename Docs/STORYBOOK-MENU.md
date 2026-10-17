@@ -1,5 +1,7 @@
 # Storybook Cove menu
 
+The post-login home was replaced by the approved [sports menu](SPORTS-MENU.md) on 16 October 2026. This document records the earlier island-card direction and the shared interaction foundation; use the sports-menu guide for current navigation and appearance.
+
 The selected first direction is implemented as a native Unity UI. The four
 illustrated islands and the original WHATTHE FISH? logo lead into private rooms,
 offline exploration, conditions, venue customization, settings and controls.

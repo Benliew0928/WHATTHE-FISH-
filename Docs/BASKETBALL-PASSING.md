@@ -1,5 +1,20 @@
 # Basketball passing
 
+## Camera teammate lock — 14 October 2026
+
+Camera heading selects the nearest eligible teammate along the passer's forward
+ray. The selected teammate gets a mint **PASS TO** badge. A selected player
+remains locked while the ray is within **two player widths** of their centre
+(four capsule radii); aiming beyond that band returns to a free directional
+pass. Opponents, inactive/out-of-court players and teammates behind walls are
+excluded. The host resolves and replicates the receiver, and revalidates at
+release. The physical chest, loft or bounce trajectory meets the receiver's
+position at launch; it does not home after launch. The shared ribbon uses that
+same trajectory. Competitive inbounds require a selected teammate.
+
+The following records describe the original free-pass trajectory implementation.
+
+
 Hold, aim and release follow the football controls. Basketball adds a live
 curved trajectory: teal for chest, blue for loft and orange for bounce, with
 flowing chevrons, amber charge accents and a short release pulse. Every player

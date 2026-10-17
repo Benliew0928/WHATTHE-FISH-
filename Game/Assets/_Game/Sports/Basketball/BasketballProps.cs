@@ -38,7 +38,7 @@ namespace WhatTheFish {
   int audioCountdown;bool audioPortalIn,audioPortalOut;bool propShotQueued,guidedPropShot;Vector3 propShotStart,propShotEnd,propShotDetour;double propShotAt;float propShotDuration;
   public BasketballPropsState Props=>Authority?propState:haveTarget?target.props:default;
   public bool PortalBusy=>Props.transferring;
-  public Athlete PropActor(ulong id){if(!Connected)return AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;foreach(var a in Athlete.Active)if(PlayerId(a)==id)return a;return null;}
+  public Athlete PropActor(ulong id){if(!Connected&&!(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive))return AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;foreach(var a in Athlete.Active)if(PlayerId(a)==id)return a;return null;}
   public FootballTeam PropTeam(Athlete actor){var team=SportsPossession.TeamOf(actor,SportId.Basketball);return team==FootballTeam.None?FootballTeam.A:team;}
   public SportsPropSlot PropSlot(Athlete actor){
    if(!actor)return default;var net=actor.GetComponent<NetworkAthlete>();
@@ -57,6 +57,7 @@ namespace WhatTheFish {
   }
   public bool InOwnHalf(Athlete actor)=>InsidePaintedCourt(actor)&&BasketballPropRules.OwnHalf(transform.parent.InverseTransformPoint(actor.transform.position),PropTeam(actor));
   Transform PropTargetHoop(Athlete actor){
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.Instance.AttackingHoop(actor);
    // Imported North/South names reflect Blender axes, which are reversed in
    // Unity. Select the enemy end in the same arena frame as the own-half rule.
    float direction=PropTeam(actor)==FootballTeam.B?-1:1,best=0;Transform target=null;
@@ -64,6 +65,7 @@ namespace WhatTheFish {
    return target;
   }
   public string PropUnavailable(Athlete actor){
+   if(BasketballMatch.BlocksActions||InboundPending)return "WAIT FOR PLAY";
    if(!Playing||!actor||actor.inTransit||actor.BasketballFreeRoam)return "JOIN THE COURT";
    var kind=PropSlot(actor).kind;if(kind==SportsProp.None)return "FIND A COURTSIDE PROP";
    if(IsInbound(actor))return "PASS TO RESTART PLAY";
@@ -92,7 +94,7 @@ namespace WhatTheFish {
    BasketballAudio.Emit(BasketballSound.TurboStart,actor.transform.position);
    }else if(kind==SportsProp.Portal){
     // Resolve an already completed physical crossing before reserving possession.
-    StepShotPhysics();var source=Held?CarryPosition(holder):Body.position;
+    StepShotPhysics();if(BasketballMatch.BlocksActions)return false;var source=Held?CarryPosition(holder):Body.position;
     ClearPossession();portalReceiver=actor;actor.Motor.Reset(actor.transform.eulerAngles.y);
     propState.transferring=true;propState.receiver=PlayerId(actor);propState.portalAt=BasketballMotion.Clock;propState.portalSequence++;propState.portalOutcome=0;
     propState.source=source;propState.destination=actor.transform.TransformPoint(new Vector3(0,1.05f,.5f));
@@ -105,24 +107,30 @@ namespace WhatTheFish {
   void SetPortalBall(Vector3 point){Body.position=point;transform.position=point;}
   void EndPropAim(){if(propState.aiming&&propAimer)BasketballAudio.Emit(BasketballSound.Interrupt,propAimer.transform.position,.7f);var actor=propAimer;propAimer=null;propHoop=null;propShotQueued=false;propState.aiming=false;if(actor){pendingAction=BasketballAction.None;CancelShotCharge(actor);}sendAt=0;}
   void CancelPropBall(){EndPropAim();guidedPropShot=false;propState.guided=false;if(portalReceiver&&portalReceiver.BasketballMotion)portalReceiver.BasketballMotion.ResetPose();portalReceiver=null;propState.transferring=false;sendAt=0;}
-  void ResetProps(bool spawn=true){
-   CancelPropBall();foreach(var pair in propSlots)if(pair.Key){var net=pair.Key.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.BasketballProp.Value=new SportsPropSlot{revision=++propRevision};}
-   propSlots.Clear();propState=default;lastSpawnedProp=SportsProp.None;audioCountdown=0;audioPortalIn=audioPortalOut=false;
-   if(spawn&&Authority&&Playing)BeginPropCountdown();
+  void ResetProps(bool spawn=true,bool clearInventory=true){
+   CancelPropBall();
+   if(clearInventory){foreach(var pair in propSlots)if(pair.Key){var net=pair.Key.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned&&net.IsServer)net.BasketballProp.Value=new SportsPropSlot{revision=++propRevision};}propSlots.Clear();}
+   var pickup=propState.pickup;propState=default;if(!clearInventory)propState.pickup=pickup;
+   if(clearInventory){lastSpawnedProp=SportsProp.None;audioCountdown=0;}audioPortalIn=audioPortalOut=false;
+   if(clearInventory&&spawn&&Authority&&Playing&&(!BasketballMatch.Instance||!BasketballMatch.Instance.Competitive))SchedulePickup();
   }
-  void BeginPropCountdown(){
-   propState.pickup=new SportsPropSpawn{anchor=(byte)propRandom.Next(2),respawn=BasketballMotion.Clock+BasketballPropRules.CountdownSeconds,countingDown=true};sendAt=0;
+  void SchedulePickup(){
+   propState.pickup=SportsAbilityRules.SchedulePickup(BasketballMotion.Clock,propRandom.Next(2));sendAt=0;
   }
   void StepPickup(){
+   var match=BasketballMatch.Instance;
+   if(match&&match.Competitive&&!match.Active)return;
+   if(propState.pickup.respawn==0&&propState.pickup.kind==SportsProp.None){if(match&&match.Competitive&&!match.Running)return;SchedulePickup();}
    ref var spawn=ref propState.pickup;
    if(spawn.kind==SportsProp.None){
-    if(!spawn.countingDown){if(BasketballMotion.Clock>=spawn.respawn-BasketballPropRules.CountdownSeconds)BeginPropCountdown();return;}
+    if(SportsAbilityRules.WarnPickup(ref spawn,BasketballMotion.Clock))sendAt=0;
+    if(!spawn.countingDown)return;
     int number=spawn.CountdownNumber(BasketballMotion.Clock);if(number!=audioCountdown){audioCountdown=number;BasketballAudio.Emit(BasketballSound.Countdown,transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor)),.65f);}
     if(BasketballMotion.Clock<spawn.respawn)return;
     spawn.kind=BasketballPropRules.NextKind(lastSpawnedProp,propRandom.Next(lastSpawnedProp==SportsProp.None?3:2));lastSpawnedProp=spawn.kind;spawn.countingDown=false;audioCountdown=0;BasketballAudio.Emit(BasketballSound.Spawn,transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor)));sendAt=0;
-    // Leave a materialization frame before collecting, even if a player waited here.
-    return;
+    // Continue into collection so a waiting player receives it on this tick.
    }
+   if(BasketballMatch.BlocksActions||InboundPending)return;
    var point=transform.parent.TransformPoint(BasketballPropRules.Anchor(spawn.anchor));Athlete winner=null;float best=BasketballPropRules.PickupRadius*BasketballPropRules.PickupRadius;
    foreach(var actor in Athlete.Active){
     if(!Eligible(actor)||actor.Airborne||actor.LoadingJump||PropLocked(actor)||!actor.Grounded)continue;
@@ -131,12 +139,11 @@ namespace WhatTheFish {
     if(winner&&Mathf.Abs(distance-best)<.00001f&&PlayerId(actor)>=PlayerId(winner))continue;
     winner=actor;best=distance;
    }
-   if(winner){BasketballAudio.Emit(BasketballSound.Pickup,winner.transform.position);GiveProp(winner,spawn.kind);spawn.kind=SportsProp.None;spawn.respawn=BasketballMotion.Clock+BasketballPropRules.RespawnSeconds;sendAt=0;}
+   if(winner){BasketballAudio.Emit(BasketballSound.Pickup,winner.transform.position);GiveProp(winner,spawn.kind);SchedulePickup();}
   }
   void StepProps(){
    expiredPropActors.Clear();foreach(var pair in propSlots)if(!Eligible(pair.Key))expiredPropActors.Add(pair.Key);
    foreach(var actor in expiredPropActors){if(actor)GiveProp(actor,SportsProp.None);propSlots.Remove(actor);}
-   StepPickup();
    if(propState.aiming){
     if(!propAimer||!Eligible(propAimer)||holder!=propAimer||!InsidePaintedCourt(propAimer)||!propHoop){EndPropAim();}
     else if(!propShotQueued&&BasketballMotion.Clock>=propState.aimUntil-BasketballMotion.ReleaseTime(BasketballAction.Shoot)){
@@ -154,7 +161,7 @@ namespace WhatTheFish {
    SetPortalBall(phase<.5f?propState.source:propState.destination);
    if(phase<1)return;
    var receiver=portalReceiver;portalReceiver=null;propState.transferring=false;propState.portalOutcome=1;
-   holder=receiver;receiver.BasketballMotion.Begin(BasketballAction.Cancel,receiver.transform.eulerAngles.y,Quaternion.Inverse(receiver.transform.rotation)*(propState.destination-receiver.transform.position));dribblePhase=0;pendingAction=BasketballAction.None;Body.isKinematic=true;Body.detectCollisions=false;looseFor=outsideFor=0;NewDefensePlay();Follow(receiver);BasketballAudio.Emit(BasketballSound.Catch,Body.position);BasketballAudio.Emit(BasketballSound.PortalClose,propState.destination);BasketballAudio.Emit(BasketballSound.PortalClose,propState.source,.7f);reset++;sendAt=0;
+   holder=receiver;BasketballMatch.Instance?.Control(receiver);receiver.BasketballMotion.Begin(BasketballAction.Cancel,receiver.transform.eulerAngles.y,Quaternion.Inverse(receiver.transform.rotation)*(propState.destination-receiver.transform.position));dribblePhase=0;pendingAction=BasketballAction.None;Body.isKinematic=true;Body.detectCollisions=false;looseFor=outsideFor=0;NewDefensePlay();Follow(receiver);BasketballAudio.Emit(BasketballSound.Catch,Body.position);BasketballAudio.Emit(BasketballSound.PortalClose,propState.destination);BasketballAudio.Emit(BasketballSound.PortalClose,propState.source,.7f);reset++;sendAt=0;
   }
   bool EasyPropBlock(Athlete defender){
    if(!propState.aiming||!propAimer||SportsPossession.SameTeam(defender,propAimer,SportId.Basketball))return false;

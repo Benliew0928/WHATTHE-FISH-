@@ -22,7 +22,7 @@ namespace WhatTheFish {
    if(coast)coast.Apply(mainCamera,mainLight);
    var island=roots[Array.FindIndex(definitions,d=>d.id==sport)].GetComponent<RefinedIslandEnvironment>();
    if(island)island.Apply(mainCamera,mainLight);
-   if(Application.isPlaying&&SkySailWorld.Instance){SkySailWorld.Instance.SetIsland(sport);if(!SkySailWorld.Instance.Travelling)streaming.ReleaseOtherIslands(sport);}
+   if(Application.isPlaying&&SkySailWorld.Instance){SkySailWorld.Instance.SetIsland(sport);if(!SkySailWorld.Instance.Travelling&&!TeleportSequence.Busy)streaming.ReleaseOtherIslands(sport);}
   }
  }
 }

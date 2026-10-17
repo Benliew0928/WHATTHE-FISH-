@@ -3,8 +3,26 @@ $ErrorActionPreference='Stop'
 if($NetworkOnly -and $OfflineOnly){throw 'Choose either NetworkOnly or OfflineOnly.'}
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if(!$PlayerPath){$PlayerPath=Join-Path $taskRoot 'Builds/WindowsFinal/WhatTheFish.exe'}
+$PlayerPath=(Resolve-Path -LiteralPath $PlayerPath).Path
 $taskOutput=Join-Path $taskRoot ('Builds/GolfAimQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $taskOutput | Out-Null
+# Prepare a packaged player's local cache once before starting timed gameplay
+# probes. Parallel cold decompression can otherwise consume their entire budget.
+$taskCatalog=Join-Path (Split-Path $PlayerPath -Parent) 'WhatTheFish_Data/StreamingAssets/PackagedContent/catalog.json'
+if(Test-Path -LiteralPath $taskCatalog){
+ $taskWarmLog=Join-Path $taskOutput 'warmup.log';$taskWarmReport=Join-Path $taskOutput 'warmup.txt'
+ $taskWarmOptions="-batchmode -nographics -job-worker-count 2 -offline -sport Golf -probe -exitAfter 180 -report `"$taskWarmReport`" -logFile `"$taskWarmLog`""
+ $taskWarm=Start-Process -FilePath $PlayerPath -ArgumentList $taskWarmOptions -WindowStyle Hidden -PassThru
+ try {
+  $taskWarmDeadline=(Get-Date).AddSeconds(180);$taskWarmReady=$false
+  do {
+   if(Test-Path -LiteralPath $taskWarmLog){$taskWarmReady=Select-String -LiteralPath $taskWarmLog -Pattern 'CONTENT_BOOT_READY' -Quiet}
+   if($taskWarmReady -or $taskWarm.HasExited){break}
+   Start-Sleep -Milliseconds 500
+  }while((Get-Date) -lt $taskWarmDeadline)
+  if(!$taskWarmReady){throw "Packaged player could not prepare its cache: $taskWarmLog"}
+ }finally{if(!$taskWarm.HasExited){Stop-Process -Id $taskWarm.Id}}
+}
 function Invoke-GolfProbes($Specs){
  $taskProcesses=@()
  try {

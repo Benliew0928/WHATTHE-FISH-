@@ -9,12 +9,23 @@ regular gear, attached power arc and connected cancellation landing. Logical
 800 × 450 placements match the proposal. Controls anchor to the safe edges;
 wide phones expand the settings panel and use larger guide body text.
 
-Kick / Pressure share the main slot. Dash has its own stamina bar; Jump and
-Tackle retain football eligibility and cooldowns. Support controls disappear
-while charging. The minimap moves to the upper left and the score remains at
+The [15 October controls update](../FOOTBALL-PLAYMAKER.md) moves Dash into the
+main thumb slot and Shoot / Pressure diagonally above-left. Pass replaces
+Jump. Dash and Pass remain visible while charging. Dash can continue through
+a shot, including a swipe onto Shoot and back to Dash. The minimap is upper
+left and the score remains at
 the top centre, with actual team selection, host start, kickoff, regulation,
 goal reset, golden goal and results. The roster gate still requires even teams.
 Permanent venue, FPS, station-distance and desktop-key labels are absent.
+
+All four action hitboxes now share captured swipes. Dash and Pressure stay
+held while the finger visits another eligible action. Shoot-to-Pass or
+Pass-to-Shoot cancels the previous aim; returning to Dash releases it.
+Even an unavailable visible action can be the start of a swipe to an eligible
+button. Holding Pass draws a contrasting dashed ground path, endpoint arrow,
+receiver ring and **LOCKED #** jersey label in all three cameras. A free pass
+uses a cream path without a teammate label. The guide uses procedural UI
+geometry and the existing font; no new texture or material is required.
 
 The original finger owns Kick until release. Dragging into Cancel only arms it;
 sliding out preserves charge. Release inside the landing cancels without a

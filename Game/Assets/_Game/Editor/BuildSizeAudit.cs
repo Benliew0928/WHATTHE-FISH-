@@ -11,7 +11,6 @@ using UnityEngine.Rendering;
 
 // Serialized asset bytes are uncompressed; use the APK itself for the submission budget.
 public static class BuildSizeAudit {
- public const long TargetBytes=1000000000;
  public const long LimitBytes=1000000000;
  public static string Output=>ProjectBuilder.ResolveBuildOutputPath("../Builds/SizeAudit")+Path.DirectorySeparatorChar;
  public static void AuditLatest(){Write(BuildReport.GetLatestReport(),"before");}
@@ -55,10 +54,10 @@ public static class BuildSizeAudit {
  public static void CheckApk(string path,bool enforce){
   path=ProjectBuilder.ResolveBuildOutputPath(path);
   long bytes=new FileInfo(path).Length;
-  string result=bytes>=LimitBytes?"OVER_LIMIT":bytes>TargetBytes?"ABOVE_WORKING_TARGET":"WITHIN_TARGET";
+  string result=bytes>=LimitBytes?"OVER_LIMIT":"WITHIN_LIMIT";
   Directory.CreateDirectory(Output);
-  File.WriteAllText(Output+"latest-apk.txt",$"APK: {Path.GetFullPath(path)}\nUTC: {DateTime.UtcNow:O}\nBytes: {bytes}\nDecimal MB: {(bytes/1000000d).ToString("F2",CultureInfo.InvariantCulture)}\nTarget bytes: {TargetBytes}\nMust be below: {LimitBytes}\nBudget: {result}\n");
-  if(bytes>TargetBytes)Debug.LogWarning("APK_BUDGET "+result+" bytes="+bytes+" target="+TargetBytes+" limit="+LimitBytes);
+  File.WriteAllText(Output+"latest-apk.txt",$"APK: {Path.GetFullPath(path)}\nUTC: {DateTime.UtcNow:O}\nBytes: {bytes}\nDecimal MB: {(bytes/1000000d).ToString("F2",CultureInfo.InvariantCulture)}\nMust be below: {LimitBytes}\nBudget: {result}\n");
+  if(bytes>=LimitBytes)Debug.LogWarning("APK_BUDGET "+result+" bytes="+bytes+" limit="+LimitBytes);
   else Debug.Log("APK_BUDGET "+result+" bytes="+bytes);
   if(enforce&&bytes>=LimitBytes)throw new UnityEditor.Build.BuildFailedException("APK exceeds the hackathon limit: "+bytes+" bytes; must be below "+LimitBytes);
  }

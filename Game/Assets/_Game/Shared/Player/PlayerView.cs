@@ -17,11 +17,7 @@ namespace WhatTheFish {
   public void EndGolfSwing(int source=int.MinValue){if(!GolfCharging||source!=golfSource)return;float charge=GolfDisplayedCharge,heading=chargePresented?presentedHeading:yaw;GolfCharging=false;QueueGolfSwing(charge,chargingGolfOwner);pendingGolfHeading=heading;}
   public void CancelGolfSwing(int source){if(GolfCharging&&source==golfSource)GolfCharging=false;}
   public void RequestGolfSwing(float charge){if(!GolfAimRequested)BeginGolfAim();var match=GolfMatchManager.Instance;if(GolfAiming)QueueGolfSwing(charge,aimOwner);}
-  void QueueGolfSwing(float charge,ulong owner){var match=GolfMatchManager.Instance;if(!active||golfReleased||!GolfAiming||!match||!match.CanStrike(target,match.Ball(owner)))return;pendingGolfHeading=yaw;pendingGolf=true;golfReleased=true;pendingGolfOwner=owner;pendingGolfRound=match.Round;pendingGolfCharge=Mathf.Clamp01(charge);}
-  [Header("Golf cart camera")]
-  [Min(.01f)] public float cartReverseTurnTime=.45f;
-  [Min(1)] public float cartReverseTurnSpeed=180;
-  GolfCart followedCart;Vector2 cartMove;float previousCartHeading,cartReverseAngle,cartReverseVelocity;bool cartReversing;
+  void QueueGolfSwing(float charge,ulong owner){var match=GolfMatchManager.Instance;if(!active||golfReleased||!GolfAiming||!match||!match.CanStrike(target,match.Ball(owner)))return;WatchGolfShot(match.Ball(owner));pendingGolfHeading=yaw;pendingGolf=true;golfReleased=true;pendingGolfOwner=owner;pendingGolfRound=match.Round;pendingGolfCharge=Mathf.Clamp01(charge);}
   [Header("Golf match third-person framing")]
   [Min(0)] public float golfShoulderOffset=1.8f;
   [Min(1)] public float golfViewDistance=3.5f;
@@ -30,12 +26,12 @@ namespace WhatTheFish {
   MeshRenderer kickAim;Material kickAimMaterial;Mesh kickAimMesh;
   public float Charge=>Charging&&FootballBall.Instance?FootballBall.Instance.ChargeFraction(Time.time-chargeStarted):0;
   public void RequestKick(float charge=1){if(!InputBlocked&&active&&target&&target.KickReady&&SportsPossession.Attacking(target,SportId.Football)){pendingKick=true;pendingCharge=Mathf.Clamp01(charge);}}
-  public bool BeginKick(int source=int.MinValue){if(InputBlocked||Charging||!active||!target||!target.KickReady||!SportsPossession.Attacking(target,SportId.Football))return false;Charging=true;chargeSource=source;chargeStarted=Time.time;if(source==int.MinValue)FootballAudio.PlayMenu();return true;}
+  public bool BeginKick(int source=int.MinValue){if(InputBlocked||Charging||FootballPassAiming||!active||!target||!target.KickReady||!SportsPossession.Attacking(target,SportId.Football))return false;Charging=true;chargeSource=source;chargeStarted=Time.time;if(source==int.MinValue)FootballAudio.PlayMenu();return true;}
   public void EndKick(int source=int.MinValue){if(!Charging||source!=chargeSource)return;float charge=Charge;Charging=false;HideKickAim();RequestKick(charge);}
   public void CancelKick(int source){if(Charging&&source==chargeSource){FootballAudio.PlayMenu(FootballSound.UIBack);Charging=false;HideKickAim();}}
   public bool InputBlocked {get;set;}
-  public void ClearMatchInput(){CancelInput();golfFraming=0;}
-  void CancelInput(){CancelFishing();CancelGolfAim();if(PassCharging||pendingPass||pendingPassBegin)pendingPassCancel=true;ClearFootballInput();ClearDefenseInput();CancelShot();CancelPass();pendingShotBegin=pendingPassBegin=false;StealHeld=pendingSteal=false;Charging=GolfCharging=false;HideKickAim();pendingKick=pendingGolf=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingCart=GolfCartAction.None;cartMove=Vector2.zero;}
+  public void ClearMatchInput(){CancelInput();golfFraming=0;ReturnFromGolfShot();}
+  void CancelInput(){if(FootballHUD.Instance)foreach(var swipe in FootballHUD.Instance.GetComponentsInChildren<FootballActionSwipe>())swipe.OnCancel(null);CancelFootballPass();pendingFootballPass=false;CancelFishing();CancelGolfAim();if(PassCharging||pendingPass||pendingPassBegin)pendingPassCancel=true;ClearFootballInput();ClearDefenseInput();CancelShot();CancelPass();pendingShotBegin=pendingPassBegin=false;StealHeld=pendingSteal=false;Charging=GolfCharging=false;HideKickAim();pendingKick=pendingGolf=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingCart=GolfCartAction.None;}
   void HideKickAim(){if(kickAim)kickAim.enabled=false;}
   void OnDestroy(){if(golfPreview)Destroy(golfPreview.gameObject);if(kickAimMaterial)Destroy(kickAimMaterial);if(kickAimMesh)Destroy(kickAimMesh);}
   static Mesh CreateKickAimMesh(){
@@ -48,7 +44,7 @@ namespace WhatTheFish {
   }
   void UpdateKickAim(){
    var ball=FootballBall.Instance;
-   if(!Charging||!active||!target||!target.KickReady||!ball||!FootballBall.Allowed){HideKickAim();return;}
+   if(!Charging||!active||!target||!target.KickReady||!ball||!FootballBall.Allowed&&!FootballMatch.CanAimKickoff(target)){HideKickAim();return;}
    if(!kickAim){
     var source=Resources.Load<Material>("FootballKickAim");if(!source)return;
     // An authored transparent material keeps its shader variant in player builds.
@@ -67,7 +63,7 @@ namespace WhatTheFish {
    kickAim.transform.localScale=new Vector3(Mathf.Lerp(.85f,1.25f,charge),1,Mathf.Lerp(2.2f,4.4f,charge));
    kickAim.enabled=true;
   }
-  void OnDisable(){ClearMatchInput();ResetCartCamera();ResetStadiumCamera();if(Instance==this)Instance=null;}
+  void OnDisable(){ClearMatchInput();ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();if(Instance==this)Instance=null;}
   void OnEnable(){Instance=this;}
   void OnApplicationFocus(bool focus){if(!focus)CancelInput();}
   void OnApplicationPause(bool paused){if(paused)CancelInput();}
@@ -86,7 +82,7 @@ namespace WhatTheFish {
   public float ShotPower {get{if(!ShotCharging)return 0;var ball=BasketballBall.Active;return BasketballBall.PowerAtPhase(ball&&ball.IsCharging(target)?ball.PresentedChargePhase:shotPhase+(BasketballMotion.Clock-shotSampled)/ShotSweepSeconds);}}
   public bool BeginShot(int source=int.MinValue){
    if(InputBlocked||ShotCharging||PassCharging||pendingPass||pendingPassBegin||!active||!target||!BasketballBall.Active||!BasketballBall.Active.CanShoot(target))return false;
-   shotHoop=BasketballBall.Active.SelectHoop(target.transform.position,yaw);if(!shotHoop)return false;
+   shotHoop=BasketballBall.Active.SelectHoop(target.transform.position,yaw,target);if(!shotHoop)return false;
    ShotCharging=true;ShotFinish=BasketballFinish.Shot;shotPhase=0;shotSampled=BasketballMotion.Clock;shotSource=source;pendingShotBegin=true;return true;
   }
   public void EndShot(int source=int.MinValue){if(!ShotCharging||source!=shotSource)return;pendingFinish=ShotFinish;var ball=BasketballBall.Active;pendingShotReleasedAt=ball&&ball.IsCharging(target)?ball.PresentedChargeTime:BasketballMotion.Clock;ShotCharging=false;pendingShoot=true;}
@@ -109,19 +105,21 @@ namespace WhatTheFish {
    pendingCart=driving?GolfCartAction.Leave:GolfCartAction.Drive;pendingCartOwner=cart.Owner;
   }
   void Update(){
-   if(!active||InputBlocked||!target||target.inTransit||FootballMatch.BlocksActions||GolfMatchManager.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return;}
+   if(!active||InputBlocked||!target||target.inTransit||FootballMatch.BlocksActions&&!FootballMatch.CanAimKickoff(target)||GolfMatchManager.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return;}
    if(EventSystem.current&&EventSystem.current.currentSelectedGameObject){var field=EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>();if(field&&field.isFocused){CancelInput();return;}}
    UpdateFishingTargetInput();UpdateCountersteerKeyboard();
    UpdateFootballInput();UpdateDefenseInput();UpdateGolfAim();
    if(Input.GetKeyDown(KeyCode.G))ToggleGolfAim();
-   if(!FootballBall.Allowed){Charging=false;pendingKick=false;}
+   if(!FootballBall.Allowed&&!FootballMatch.CanAimKickoff(target)){Charging=false;pendingKick=false;}
    if(Charging&&(!target.KickReady||!SportsPossession.Attacking(target,SportId.Football)))Charging=false;
    if(GolfCharging&&(!GolfMatchManager.Instance||!GolfMatchManager.Instance.CanStrike(target,GolfMatchManager.Instance.Ball(chargingGolfOwner))))GolfCharging=false;
-   if(Input.GetKeyDown(KeyCode.Space)&&target.CanRequestJump){FootballAudio.PlayMenu();Charging=false;RequestJump();}
+   if(FootballPassAiming&&(!FootballBall.Instance||!FootballBall.Instance.CanPass(target)))CancelFootballPass();
+   if(AppRoot.Instance.SelectedSport==SportId.Football){if(Input.GetKeyDown(KeyCode.Space))BeginFootballPass();if(Input.GetKeyUp(KeyCode.Space))EndFootballPass();}
+   if(AppRoot.Instance.SelectedSport!=SportId.Football&&Input.GetKeyDown(KeyCode.Space)&&target.CanRequestJump){FootballAudio.PlayMenu();Charging=false;RequestJump();}
    if(ShotCharging&&(!BasketballBall.Active||!BasketballBall.Active.CanShoot(target)))CancelShot();
    if(ShotCharging){double now=BasketballMotion.Clock;shotPhase+=System.Math.Max(0,now-shotSampled)/ShotSweepSeconds;shotSampled=now;}
    if(PassCharging&&(!BasketballBall.Active||!BasketballBall.Active.CanPass(target)||passPlay!=BasketballBall.Active.Defense.play))CancelPass();
-   if(Input.GetKeyDown(KeyCode.X)){CancelShot();CancelPass();CancelFishing();CancelGolfAim();}
+   if(Input.GetKeyDown(KeyCode.X)){CancelFootballPass();CancelShot();CancelPass();CancelFishing();CancelGolfAim();}
    if(StealHeld&&(!BasketballBall.Active||!BasketballBall.Active.CanSteal(target)))EndSteal(stealSource,true);
    if(Input.GetKeyDown(KeyCode.R))RequestCartToggle();
    if(Input.GetKeyDown(KeyCode.E)){if(target.TackleReady)FootballAudio.PlayMenu();Charging=false;if(GolfCartWorld.Allowed)RequestCartUse();else if(BasketballRole==WhatTheFish.BasketballRole.Defense)RequestBlock();else {RequestTackle();BeginShot();}}
@@ -133,10 +131,18 @@ namespace WhatTheFish {
   }
   public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;FootballAudio.PlayMenu(FootballSound.UISelect);mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
   public PlayerCommand ReadCommand(){
-   var command=ReadInput();if(GolfAimRequested||GolfMatchManager.BlocksMovement){command.move=Vector2.zero;command.jump=command.sprint=false;command.cartAction=GolfCartAction.None;}if(command.golfSwing)command.heading=pendingGolfHeading;cartMove=command.move;return command;
+   if(target&&target.IsSpectator){
+    if(!active||InputBlocked||target.inTransit)return default;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    if(DevelopmentProbe.TurnCommandActive){var probe=DevelopmentProbe.TurnCommand;return new PlayerCommand{move=probe.move,heading=probe.heading,sprint=probe.sprint};}
+#endif
+    var touch=stick?stick.value:Vector2.zero;return new PlayerCommand{move=Vector2.ClampMagnitude(touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical")),1),heading=yaw,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f};
+   }
+   var command=ReadInput();if(GolfAimRequested||GolfMatchManager.BlocksMovement){command.move=Vector2.zero;command.jump=command.sprint=false;command.cartAction=GolfCartAction.None;}if(command.golfSwing)command.heading=pendingGolfHeading;return command;
   }
   PlayerCommand ReadInput(){
    if(InputBlocked){CancelInput();var canceled=new PlayerCommand{heading=yaw,shotCancel=pendingShotCancel,passCancel=pendingPassCancel};pendingShotCancel=pendingPassCancel=false;return canceled;}
+   if(FootballMatch.CanAimKickoff(target)){bool released=pendingKick;pendingKick=false;return new PlayerCommand{heading=yaw,kick=released,kickCharge=pendingCharge,charging=Charging};}
    if(FootballMatch.BlocksMovement||GolfMatchManager.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return default;}
    if(FootballMatch.BlocksActions)CancelInput();
    if(StealHeld&&Time.unscaledTime>=repeatStealAt){pendingSteal=true;repeatStealAt=Time.unscaledTime+BasketballStealRules.Repeat;}
@@ -151,17 +157,18 @@ namespace WhatTheFish {
 #endif
    var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));var result=new PlayerCommand{move=Vector2.ClampMagnitude(StadiumMovement(v),1),heading=yaw,tackle=tackle,jump=jump,shoot=shoot,finish=pendingFinish,shotReleasedAt=pendingShotReleasedAt,shotBegin=shotBegin,shotCancel=shotCancel,pass=pass,steal=steal,kick=kick,kickCharge=charge,charging=Charging,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f,cartAction=cartAction,cartOwner=cartOwner,golfSwing=golfSwing,golfCharging=GolfCharging,golfBallOwner=golfOwner,golfCharge=golfCharge,golfRound=golfRound};AddFootballInput(ref result);AddDefenseInput(ref result);AddPassInput(ref result);AddFishingInput(ref result);return result;}
   void LateUpdate(){
+   if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
+   if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
-   if(!active||!target){ResetCartCamera();ResetStadiumCamera();HideKickAim();return;}
+   if(!active||!target){ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();HideKickAim();return;}
    bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;
    if(!InputBlocked&&!fishingModal&&Input.GetKeyDown(KeyCode.C))Switch();
    if(!InputBlocked&&!fishingModal&&Input.GetMouseButton(1)){LookDelta+=new Vector2(Input.GetAxis("Mouse X")*14,Input.GetAxis("Mouse Y")*14);}
-   if(fishingModal)LookDelta=Vector2.zero;
+   if(fishingModal||FishingFightLocksLook)LookDelta=Vector2.zero;
    yaw+=LookDelta.x*.13f;pitch=Mathf.Clamp(pitch-LookDelta.y*.10f,-25,65);LookDelta=Vector2.zero;
    if(!StadiumField(out _,out _,out _))ResetStadiumCamera();
-   if(SkySailWorld.Instance&&SkySailWorld.Instance.RideCamera(cam,yaw,pitch,mode)){ResetCartCamera();HideKickAim();return;}
+   if(SkySailWorld.Instance&&SkySailWorld.Instance.RideCamera(cam,yaw,pitch,mode)){ResetGolfShotCamera();HideKickAim();return;}
    var cart=GolfCartWorld.Driving(target);if(cart&&GolfCartWorld.Allowed){HideKickAim();return;}
-   ResetCartCamera();
    if(StadiumField(out _,out _,out _))return;
    bool golf=GolfAiming;
    golfFraming=golf?Mathf.MoveTowards(golfFraming,1,4*Time.deltaTime):0;
@@ -174,27 +181,18 @@ namespace WhatTheFish {
    var cameraPath=desired-focus;
    if(distance>0&&Physics.SphereCast(focus,.2f,cameraPath.normalized,out var hit,cameraPath.magnitude,1<<8,QueryTriggerInteraction.Ignore))desired=focus+cameraPath.normalized*Mathf.Max(.35f,hit.distance-.15f);
    target.HideHead(viewMode==0||Vector3.Distance(desired,focus)<1.15f);
-   cam.nearClipPlane=viewMode==0?.06f:.15f;transform.SetPositionAndRotation(desired,rotation);
+   PresentGolfShotCamera(ref desired,ref rotation);
+   PresentFishingFightCamera(ref desired,ref rotation);
+   if(GolfShotCameraActive)target.HideHead(Vector3.Distance(desired,target.transform.position+Vector3.up*1.57f)<.85f);
+   if(FishingFightCameraActive)target.HideHead(Vector3.Distance(desired,target.transform.position+Vector3.up*1.57f)<.85f);
+   cam.nearClipPlane=viewMode==0&&!GolfShotCameraActive&&!FishingFightCameraActive?.06f:.15f;transform.SetPositionAndRotation(desired,rotation);
    UpdateKickAim();UpdateGolfPreview();UpdateFishingAim();
   }
-  void ResetCartCamera(){followedCart=null;cartReverseAngle=cartReverseVelocity=0;cartReversing=false;}
-  // Called after the cart interpolates its displayed pose, so camera and seat
-  // follow the same turn on both the host and the driving client.
+  // Follow the displayed seat position, while only player look input rotates
+  // the view. Steering, coasting and reversing never change the chosen angle.
   public void UpdateCartCamera(GolfCart cart){
    if(!isActiveAndEnabled||!active||!target||target.inTransit||!GolfCartWorld.Allowed||GolfCartWorld.Driving(target)!=cart)return;
-   float heading=GolfCartMotor.Heading(cart.transform.rotation);
-   if(followedCart!=cart){ResetCartCamera();followedCart=cart;previousCartHeading=heading;}
-   yaw+=Mathf.DeltaAngle(previousCartHeading,heading);
-   previousCartHeading=heading;
-   // Input chooses the view immediately when changing direction; actual speed
-   // is the fallback while coasting. Neutral input keeps the last travel view.
-   if(cartMove.y>.08f)cartReversing=false;
-   else if(cartMove.y<-.08f)cartReversing=true;
-   else if(cart.State.speed>.15f)cartReversing=false;
-   else if(cart.State.speed<-.15f)cartReversing=true;
-   if(mode==1)cartReverseAngle=Mathf.SmoothDamp(cartReverseAngle,cartReversing?180:0,ref cartReverseVelocity,Mathf.Max(.01f,cartReverseTurnTime),Mathf.Max(1,cartReverseTurnSpeed),Time.deltaTime);
-   else cartReverseAngle=cartReverseVelocity=0;
-   target.HideHead(mode==0);cart.Camera(cam,yaw+(mode==1?cartReverseAngle:0),pitch,mode);
+   ResetGolfShotCamera();target.HideHead(mode==0);cart.Camera(cam,yaw,pitch,mode);
   }
  }
 }

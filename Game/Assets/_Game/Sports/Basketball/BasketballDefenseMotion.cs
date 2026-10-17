@@ -5,6 +5,7 @@ namespace WhatTheFish {
   float defenseMotorTime,guardBlend,shufflePhase;bool defenseLaunched;
   Vector3 leftShoulder,rightShoulder;float leftReach,rightReach;
   Vector3[] defenseBasePositions;Quaternion[] defenseBaseRotations;
+  public bool GuardActive=>Guarding||Action==BasketballAction.Steal&&State.guardHeld;
   public bool Guarding=>Action==BasketballAction.Guard;
   public bool Blocking=>BasketballDefenseRules.IsBlock(Action);
   public bool JumpBlocking=>Action==BasketballAction.JumpBlock;
@@ -16,10 +17,10 @@ namespace WhatTheFish {
    rightReach=Vector3.Distance(right.upper.position,right.lower.position)+Vector3.Distance(right.lower.position,right.end.position)-.018f;
   }
   public void Guard(float heading){
-   if(!Guarding)BeginDefense(BasketballAction.Guard,heading,transform.position+transform.forward);
-   var value=State;value.heading=heading%360;State=value;
+   if(!Guarding&&Action!=BasketballAction.Steal)BeginDefense(BasketballAction.Guard,heading,transform.position+transform.forward);
+   var value=State;value.guardHeld=true;value.heading=heading%360;State=value;
   }
-  public void EndGuard(){if(Guarding)BeginDefense(BasketballAction.GuardRecover,State.heading,State.contact);}
+  public void EndGuard(){if(Guarding)BeginDefense(BasketballAction.GuardRecover,State.heading,State.contact);var value=State;value.guardHeld=false;State=value;}
   public void BeginDefense(BasketballAction action,float heading,Vector3 point){
    Begin(action,heading,Vector3.zero);var value=State;value.contact=point;value.finishOrigin=transform.position;
    value.leftHand=Vector3.Dot(point-transform.position,Quaternion.Euler(0,heading,0)*Vector3.right)<0;

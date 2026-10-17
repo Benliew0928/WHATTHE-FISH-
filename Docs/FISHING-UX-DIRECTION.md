@@ -1,5 +1,9 @@
 # Fishing interaction and cartoon HUD direction
 
+**Current interaction:** [Hold the Glow](FISHING-COUNTERSTEER.md) restores the
+first two-button hold controls and fish/gold-band meter. Timed taps are superseded;
+current camera and rope effects remain. Earlier exploration below is background.
+
 Current direction: [B — Hold & Countersteer](FISHING-COUNTERSTEER.md), selected
 12 October 2026, supersedes the single Reel control and ornamental delivery
 frame described in the historical A direction below. The 13 October refinement

@@ -24,7 +24,7 @@ namespace WhatTheFish {
   void Style(Renderer r,Color color,int mode){block.Clear();block.SetColor("_Tint",color);block.SetFloat("_Mode",mode);r.SetPropertyBlock(block);}
   static Color ColorOf(SportsProp k)=>k==SportsProp.Turbo?new Color(.1f,.9f,.65f):k==SportsProp.Wall?new Color(1,.52f,.15f):new Color(.12f,.65f,1);
   void LateUpdate(){
-   if(!root||!ball)return;bool live=ball.PropsLive;var state=ball.Props;root.gameObject.SetActive(live);PickupModel=null;
+   if(!root||!ball)return;bool live=ball.PropsVisible;var state=ball.Props;root.gameObject.SetActive(live);PickupModel=null;
    if(!live){ScaleBall(1);ClearTrails();return;}
    var spawn=state.pickup;bool warning=spawn.countingDown&&spawn.kind==SportsProp.None;var anchor=ball.PropAnchor(spawn.anchor);
    for(int i=0;i<models.Length;i++)if(models[i]){bool visible=(int)spawn.kind==i+2;models[i].SetActive(visible);if(visible){PickupModel=models[i].transform;PickupModel.SetPositionAndRotation(anchor+Vector3.up*((.95f+Mathf.Sin(Time.time*2)*.075f)*SpawnDisplayScale),Quaternion.Euler(0,Time.time*30,0));PickupModel.localScale=Vector3.one*(1.12f*SpawnDisplayScale);}}

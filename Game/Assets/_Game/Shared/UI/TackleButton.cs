@@ -14,6 +14,6 @@ namespace WhatTheFish {
    if(illustrated)return;
    label.text=cooldown>.05f?$"Tackle\n{cooldown:F1}s":Application.isMobilePlatform?"Tackle":"Tackle\nE";
   }
-  public void OnPointerDown(PointerEventData data){if(data.button==PointerEventData.InputButton.Left&&button.interactable)PlayerView.Instance.RequestTackle();}
+  public void OnPointerDown(PointerEventData data){if(data.button==PointerEventData.InputButton.Left&&button.interactable){PlayerView.Instance.RequestTackle();GetComponent<FootballActionSwipe>()?.Capture(data);}}
  }
 }

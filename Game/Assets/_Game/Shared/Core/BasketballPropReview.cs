@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Unity.Netcode;
 using Unity.Netcode.Components;
 using UnityEngine;
@@ -23,13 +24,16 @@ namespace WhatTheFish {
   bool Use(SportsProp kind){ball.ReviewGiveProp(actor,kind);return ball.TryUseProp(actor,ball.PropSlot(actor).revision);}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);shared=Directory.GetParent(folder).FullName;File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!app.Exploring||app.SelectedSport!=SportId.Basketball)&&Time.realtimeSinceStartup<end)yield return null;
+   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!app.Exploring||app.SelectedSport!=SportId.Basketball||!app.LocalAthlete||app.LocalAthlete.inTransit||RoomTeleport.Busy||TeleportSequence.Busy)&&Time.realtimeSinceStartup<end)yield return null;
    ball=BasketballBall.Active;actor=app?app.LocalAthlete:null;if(!ball||!actor){Check(false,"initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    if(!ball.Authority){yield return Guest();Finish();yield break;}
    var peers=Athlete.Active.Where(a=>a.GetComponent<NetworkObject>()&&a.GetComponent<NetworkObject>().IsSpawned).OrderBy(a=>a.GetComponent<NetworkObject>().OwnerClientId).ToArray();
    foreach(var peer in peers)Place(peer,new Vector3(peer==actor?0:4,.08f,peer==actor?-8:6));
-   Check(ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None,"session starts with countdown, not an immediate pickup");
+   // Room-entry travel may have advanced the arena's countdown before this
+   // fixture starts. Establish a fresh cycle before checking its quiet phase.
+   ball.ReviewResetProps();
+   Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None,"fresh cycle starts with a quiet five seconds, not an immediate pickup");
    yield return SpawnVisuals();
    yield return SpawnSequence();
    var old=ball.PropSlot(actor);ball.ReviewGiveProp(actor,SportsProp.Turbo);Check(!ball.TryUseProp(actor,old.revision)&&ball.PropSlot(actor).kind==SportsProp.Turbo,"stale request cannot spend replacement inventory");
@@ -66,9 +70,12 @@ namespace WhatTheFish {
    Place(actor,new Vector3(0,.08f,0));yield return new WaitForSeconds(.15f);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision),"centre line excluded from home half");
    Place(actor,new Vector3(0,.08f,-8));ball.Place(new Vector3(3,1,8),Quaternion.identity,Vector3.right*3,Vector3.zero);yield return new WaitForSeconds(.15f);
    var portalSlot=ball.PropSlot(actor);Check(ball.TryUseProp(actor,portalSlot.revision),"own-half portal accepts airborne loose ball");Check(!ball.TryUseProp(actor,portalSlot.revision),"duplicate transfer rejected");
-   yield return new WaitForSeconds(.2f);Check(actor.BasketballMotion.Charging,"receiver holds a receiving pose");Check(ball.PortalBusy&&!ball.Held&&ball.Body.isKinematic&&!ball.Body.detectCollisions,"ball reserved exclusively during transfer");Capture("portal-open",new Vector3(5,3.3f,11),new Vector3(3,1,8));
+   yield return new WaitForSeconds(.2f);Check(actor.BasketballMotion.Charging,"receiver holds a receiving pose");Check(ball.PortalBusy&&!ball.Held&&ball.Body.isKinematic&&!ball.Body.detectCollisions,"ball reserved exclusively during transfer");
    yield return new WaitForSeconds(.36f);yield return new WaitForEndOfFrame();
-   Check(Vector3.Distance(actor.BasketballMotion.RightPalm,ball.Props.destination)<.24f,"portal destination stays within receiving hand reach");
+   // Read the animated hand while the transfer is active, before synchronous
+   // screenshot readback can outlast the remaining portal lifetime.
+   Check(ball.PortalBusy&&Vector3.Distance(actor.BasketballMotion.RightPalm,ball.Props.destination)<.24f,"portal destination stays within receiving hand reach");
+   Capture("portal-open",new Vector3(5,3.3f,11),new Vector3(3,1,8));
    Capture("portal-catch",new Vector3(2,2,-5),new Vector3(0,1,-8));yield return new WaitForSeconds(.3f);
    Check(ball.Holder==actor&&!ball.PortalBusy&&!ball.PropLocked(actor),"portal ends with one owner and unlocked controls");
    ball.ReviewGiveProp(actor,SportsProp.Portal);Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision)&&ball.PropSlot(actor).kind==SportsProp.Portal,"self-steal is disabled without spending");
@@ -131,7 +138,7 @@ namespace WhatTheFish {
    }
   }
   IEnumerator ObserveCountdown(bool capture){
-   float timeout=Time.time+8;while(!ball.Props.pickup.countingDown&&Time.time<timeout)yield return null;
+   float timeout=Time.time+12;while(!ball.Props.pickup.countingDown&&Time.time<timeout)yield return null;
    var initial=ball.Props.pickup;Check(initial.countingDown,"countdown snapshot received");int seen=0;bool stable=true,noPickup=true,noEarlyGrant=true;var slot=ball.PropSlot(actor);var visual=ball.GetComponent<BasketballPropVisual>();
    while(ball.Props.pickup.countingDown&&Time.time<timeout){
     yield return new WaitForEndOfFrame();var state=ball.Props.pickup;if(!state.countingDown)break;
@@ -147,6 +154,7 @@ namespace WhatTheFish {
    yield return new WaitForEndOfFrame();Check(!ball.Props.pickup.countingDown&&!visual.ReviewHologram.enabled,"hologram disappears at materialization");
   }
   IEnumerator SpawnSequence(){
+   PickupSensitivityChecks();
    for(int side=0;side<2;side++){
     var p=BasketballPropRules.Anchor(side);Check(p.z==0&&Mathf.Abs(p.x)<BasketballBall.PaintedCourtLimits.x-.4f&&Mathf.Abs(p.x)>BasketballBall.PaintedCourtLimits.x-1,"reachable centre-line sideline location "+side);
     Check(!Physics.CheckSphere(ball.transform.parent.TransformPoint(p)+Vector3.up*.5f,.4f,1<<8,QueryTriggerInteraction.Ignore),"centre-line location clears architecture "+side);
@@ -154,23 +162,23 @@ namespace WhatTheFish {
    foreach(var previous in new[]{SportsProp.LockOn,SportsProp.Turbo,SportsProp.Portal}){
     var a=BasketballPropRules.NextKind(previous,0);var b=BasketballPropRules.NextKind(previous,1);Check(a!=previous&&b!=previous&&a!=b&&a!=SportsProp.None&&b!=SportsProp.None,"both random choices exclude previous "+previous);
    }
-   ball.ReviewResetProps();double started=BasketballMotion.Clock;Signal("countdown-start");yield return ObserveCountdown(true);
-   Check(BasketballMotion.Clock-started>=5&&BasketballMotion.Clock-started<5.3,"initial spawn waits five full seconds");CheckPickup(ball.Props.pickup);
-   var first=ball.Props.pickup;File.WriteAllText(Path.Combine(shared,"spawn-location"),first.anchor.ToString());Signal("countdown-materialized");
+   ball.ReviewResetProps();double started=BasketballMotion.Clock;Check(!ball.Props.pickup.countingDown&&Math.Abs(ball.Props.pickup.respawn-started-10)<.02,"first deadline is ten seconds with warning initially hidden");Signal("countdown-start");yield return ObserveCountdown(true);
+   Check(BasketballMotion.Clock-started>=10&&BasketballMotion.Clock-started<10.4,"initial spawn waits ten full seconds");CheckPickup(ball.Props.pickup);
+   var first=ball.Props.pickup;yield return new WaitForSeconds(.2f);Check(ball.Props.pickup.Equals(first),"uncollected pickup does not reschedule or duplicate");File.WriteAllText(Path.Combine(shared,"spawn-location"),first.anchor.ToString());Signal("countdown-materialized");
    if(Athlete.Active.Count>=3){yield return Wait("countdown-observed-1",5);yield return Wait("countdown-observed-2",5);}
    Place(actor,BasketballPropRules.Anchor(first.anchor));yield return new WaitForSeconds(.2f);
    Check(ball.PropSlot(actor).kind==first.kind&&ball.Props.pickup.kind==SportsProp.None,"walk-through collects one shared prop");double collectedUntil=ball.Props.pickup.respawn;
-   Check(collectedUntil-BasketballMotion.Clock>19.7&&!ball.Props.pickup.countingDown,"collection starts twenty-second respawn interval");
-   Place(actor,new Vector3(0,.08f,-8));ball.ReviewGiveProp(actor,SportsProp.None);yield return new WaitForSeconds(14);
+   Check(collectedUntil-BasketballMotion.Clock>9.7&&!ball.Props.pickup.countingDown,"collection starts ten-second respawn interval");
+   Place(actor,new Vector3(0,.08f,-8));ball.ReviewGiveProp(actor,SportsProp.None);yield return new WaitForSeconds(4);
    Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None,"cooldown remains empty before final five seconds");
    float timeout=Time.time+2;while(!ball.Props.pickup.countingDown&&Time.time<timeout)yield return null;
-   Check(Math.Abs(ball.Props.pickup.respawn-collectedUntil)<.08,"five-second warning is included in twenty-second respawn");
+   Check(Math.Abs(ball.Props.pickup.respawn-collectedUntil)<.08,"five-second warning is included in ten-second respawn");
    Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return ObserveCountdown(false);yield return new WaitForSeconds(.15f);
    Check(ball.PropSlot(actor).kind!=SportsProp.None&&ball.PropSlot(actor).kind!=first.kind,"waiting player receives a different prop only after countdown");
    var last=ball.PropSlot(actor).kind;
-   // Drive many real host transitions without spending twenty seconds per sample.
+   // Drive many real host transitions without spending ten seconds per sample.
    for(int i=0;i<16;i++){
-    Place(actor,new Vector3(0,.08f,-8));ball.ReviewAdvanceSpawn(15);yield return new WaitForFixedUpdate();yield return null;
+    Place(actor,new Vector3(0,.08f,-8));ball.ReviewAdvanceSpawn(5);yield return new WaitForFixedUpdate();yield return null;
     Check(ball.Props.pickup.countingDown&&ball.Props.pickup.anchor<=1&&ball.Props.pickup.CountdownNumber(BasketballMotion.Clock)==5,"next cycle announces one fixed side "+i);
     ball.ReviewAdvanceSpawn(5);yield return new WaitForFixedUpdate();yield return null;
     var next=ball.Props.pickup;Check(next.kind!=SportsProp.None&&next.kind!=last,"consecutive host spawn differs "+i);last=next.kind;
@@ -178,8 +186,24 @@ namespace WhatTheFish {
    }
    Place(actor,new Vector3(0,.08f,-8));ball.ReviewResetProps();yield return new WaitForEndOfFrame();ball.enabled=false;yield return new WaitForEndOfFrame();
    Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.kind==SportsProp.None&&!ball.GetComponent<BasketballPropVisual>().ReviewHologram.enabled,"disabling arena clears pending countdown and its hologram");
-   ball.enabled=true;yield return new WaitForFixedUpdate();yield return null;Check(ball.Props.pickup.countingDown&&ball.Props.pickup.CountdownNumber(BasketballMotion.Clock)==5,"re-entering starts a fresh five-second countdown");
-   ball.ReviewAdvanceSpawn(5);yield return new WaitForFixedUpdate();yield return null;Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return new WaitForSeconds(.2f);
+   ball.enabled=true;yield return new WaitForFixedUpdate();yield return null;Check(!ball.Props.pickup.countingDown&&ball.Props.pickup.respawn-BasketballMotion.Clock>9.8,"re-entering schedules a fresh ten-second cycle");
+   ball.ReviewAdvanceSpawn(10);yield return new WaitForFixedUpdate();yield return null;Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return new WaitForSeconds(.2f);
+  }
+  void PickupSensitivityChecks(){
+   var step=typeof(BasketballBall).GetMethod("StepPickup",BindingFlags.Instance|BindingFlags.NonPublic);
+   Vector3 Schedule(){ball.ReviewResetProps();return BasketballPropRules.Anchor(ball.Props.pickup.anchor);}
+   for(int i=-1;i<8;i++){
+    var point=Schedule();var radial=i<0?Vector3.zero:Quaternion.Euler(0,i*45,0)*Vector3.forward*1.1f;
+    Place(actor,point+radial);actor.transform.rotation=Quaternion.Euler(0,137,0);Physics.SyncTransforms();
+    step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"waiting player cannot collect before spawn at angle "+i);
+    ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);
+    var slot=ball.PropSlot(actor);Check(slot.kind!=SportsProp.None&&ball.Props.pickup.kind==SportsProp.None,"same-tick spawn pickup from centre or 1.1m at angle "+i);
+    step.Invoke(ball,null);Check(ball.PropSlot(actor).Equals(slot)&&ball.Props.pickup.respawn-BasketballMotion.Clock>9.9,"pickup grants once and starts full cooldown at angle "+i);
+   }
+   var centre=Schedule();Place(actor,centre+Vector3.right*1.3f);ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None&&ball.Props.pickup.kind!=SportsProp.None,"1.3m remains outside widened pickup area");
+   centre=Schedule();Place(actor,centre+Vector3.right*1.1f);var barrier=GameObject.CreatePrimitive(PrimitiveType.Cube);barrier.layer=8;barrier.transform.SetPositionAndRotation(ball.transform.parent.TransformPoint(centre+new Vector3(.55f,.5f,0)),ball.transform.parent.rotation);barrier.transform.localScale=new Vector3(.06f,1.2f,.8f);Physics.SyncTransforms();ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"widened pickup cannot cross a wall");barrier.SetActive(false);Destroy(barrier);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind!=SportsProp.None,"clearing obstruction immediately permits pickup");
+   centre=Schedule();Place(actor,centre+Vector3.up);ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"airborne height cannot collect ground prop");
+   Place(actor,new Vector3(0,.08f,-8));ball.ReviewResetProps();
   }
   IEnumerator Gallery(){
    ball.autoPickup=false;Place(actor,new Vector3(0,.08f,-5));

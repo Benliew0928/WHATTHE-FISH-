@@ -56,7 +56,7 @@ namespace WhatTheFish {
    PlayerCount=0;var app=AppRoot.Instance;var own=app?app.LocalAthlete:null;
    if(app&&app.Exploring&&app.SelectedSport==sport&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)){
     foreach(var actor in Athlete.Active){if(!actor||actor.inTransit||!actor.gameObject.activeInHierarchy)continue;PlayerCount++;
-     var p=MapPoint(actor.transform.position);var c=SportsPossession.SameTeam(own,actor,sport)?OurTeam:Opponent;
+     var p=MapPoint(actor.transform.position);var assigned=CharacterIdentity.ResolveTeam(actor);var c=assigned==FootballTeam.None?CoveUI.Cream:CharacterIdentity.TeamColor(assigned);
      if(actor==own)Dot(v,p,5.6f,Color.white);
      if((!football||IllustratedFootball)&&!SportsPossession.SameTeam(own,actor,sport)){int n=v.currentVertCount;v.AddVert(p+Vector2.up*4,c,Vector2.zero);v.AddVert(p+new Vector2(-4,-3),c,Vector2.zero);v.AddVert(p+new Vector2(4,-3),c,Vector2.zero);v.AddTriangle(n,n+1,n+2);}else Dot(v,p,actor==own?4:3.5f,c);
     }

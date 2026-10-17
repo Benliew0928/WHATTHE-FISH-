@@ -9,6 +9,9 @@ from pathlib import Path
 
 apk, layout, output = map(Path, sys.argv[1:])
 archive = zipfile.ZipFile(apk)
+if 'assets/PackagedContent/islands.bundle' in archive.namelist():
+    bundle = archive.getinfo('assets/PackagedContent/islands.bundle')
+    print(f'Embedded scene bundle: {bundle.compress_size} exact APK bytes. The estimates below cover player-side assets only; inspect bundle-packed-assets.csv for the scene inventory.')
 groups = defaultdict(list)
 for row in csv.DictReader(layout.open()):groups[row['file']].append(row)
 totals = defaultdict(lambda: [0, 0])

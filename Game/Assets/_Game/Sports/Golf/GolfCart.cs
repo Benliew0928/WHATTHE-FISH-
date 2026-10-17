@@ -16,7 +16,7 @@ namespace WhatTheFish {
    if(!initialized||snap){bool first=!initialized;transform.SetPositionAndRotation(state.position,state.rotation);initialized=true;smoothing=Vector3.zero;if(first){previousWheelPosition=transform.position;previousWheelRotation=transform.rotation;wheelsReady=true;}}
    if(entered){
     var app=AppRoot.Instance;
-    if(app&&app.LocalAthlete&&GolfCartWorld.Key(app.LocalAthlete)==state.driver){app.view.ClearMatchInput();app.view.yaw=state.rotation.eulerAngles.y;app.view.pitch=17;}
+    if(app&&app.LocalAthlete&&GolfCartWorld.Key(app.LocalAthlete)==state.driver)app.view.ClearMatchInput();
    }
   }
   public void PlaceDriver(Athlete athlete){

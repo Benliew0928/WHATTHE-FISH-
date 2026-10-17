@@ -1,6 +1,6 @@
 # APK budget and commit handoff
 
-The root [AGENTS.md](../AGENTS.md) carries the standing instructions for new agent tasks: keep the APK strictly below **100,000,000 bytes**, pursue the **75,000,000-byte working target**, preserve visual quality and leave publishing to the user. Codex discovers repository instructions through [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). Other agent tools must also be configured to read that file if they do not support it automatically.
+The root [AGENTS.md](../AGENTS.md) carries the standing instructions for new agent tasks: use the **1,000,000,000-byte APK limit**, preserve visual quality and leave publishing to the user. The former 100 MB limit, 75 MB development target and routine size-audit requirements were retired on 15 October 2026. Codex discovers repository instructions through [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). Other agent tools must also be configured to read that file if they do not support it automatically.
 
 ## What belongs in Git
 
@@ -27,7 +27,7 @@ Moving files into `Legacy/` preserves local recovery, but does not free disk spa
 
 ## At the end of a task
 
-For delivered game changes, build and measure:
+For delivered game changes, build and run the readiness check:
 
 ```powershell
 ./Tools/Build/Build.ps1 -Target AndroidSubmission
@@ -40,7 +40,7 @@ For documentation or housekeeping changes, run only:
 ./Tools/Build/Check-TaskReady.ps1
 ```
 
-The read-only check examines the files a root-level `git add .` would include. It checks whitespace/conflict markers, unresolved merges, tracked ignored files, local artifacts, missing asset metadata, large files without LFS and the existing APK size. It warns above 75 MB and fails at 100 MB. It does not build, install hooks, stage files, verify APK freshness/signing, scan arbitrary file contents for secrets, or replace gameplay/device tests.
+The read-only check examines the files a root-level `git add .` would include. It checks whitespace/conflict markers, unresolved merges, tracked ignored files, local artifacts, missing asset metadata, large files without LFS and the existing APK size against the 1 GB limit. There is no lower development target or size warning. It does not build, install hooks, stage files, verify APK freshness/signing, scan arbitrary file contents for secrets, or replace gameplay/device tests.
 
 After reviewing the changes, the user runs:
 

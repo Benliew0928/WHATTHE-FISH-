@@ -162,8 +162,9 @@ receive a success by doing nothing.
 - A crew member leaving makes the cooperative attempt incomplete: keep its
   progress visible, end it without a medal, then let the smaller roster restart
   with a newly displayed target. Do not award a success under changed rules.
-- If the host disconnects, the attempt is abandoned. Host migration and
-  competitive reconnect recovery are outside this first version.
+- The original first version abandoned attempts on host disconnect. The current
+  implementation supports [automatic host succession](HOST-MIGRATION.md) and
+  checkpoint recovery; the roster rules above still determine match outcomes.
 
 ## Reasons to play again
 

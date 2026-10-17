@@ -80,7 +80,6 @@ public static class CoastalIslandBuilder {
   var spec=manifest.islands.Single(i=>i.sport==sport);
   var root=new GameObject("Palm Shore Island - Walkable Coast");root.transform.SetParent(venue.transform,false);
   var marker=root.AddComponent<CoastalEnvironment>();marker.basketball=sport=="Basketball";marker.islandRadii=new Vector2(spec.rx,spec.ry);
-  marker.exteriorContactShading=AssetDatabase.LoadAllAssetsAtPath("Assets/_Game/Settings/DesktopCoastRenderer.asset").OfType<ScreenSpaceAmbientOcclusion>().Single();
   marker.sky=GetMaterial("Coast_DaylightSky","WhatTheFish/CoastalSky");
   var art=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Art+sport+"_Coast.fbx"));
   art.transform.SetParent(root.transform,false);art.transform.localRotation=Quaternion.Euler(0,180,0);

@@ -10,7 +10,7 @@ namespace WhatTheFish {
 
   bool StadiumField(out Transform frame,out Bounds bounds,out bool football){
    frame=null;bounds=default;football=false;var app=AppRoot.Instance;
-   if(mode!=2||!active||!target||!target.isActiveAndEnabled||target.inTransit||!app||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return false;
+   if(mode!=2||!active||!target||!target.isActiveAndEnabled||target.IsSpectator||target.inTransit||!app||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return false;
    football=app.SelectedSport==SportId.Football;
    if(football){var ball=FootballBall.Instance;if(!ball||!ball.Pitch)return false;frame=ball.Pitch;bounds=ball.PitchBounds;}
    else if(app.SelectedSport==SportId.Basketball){var ball=BasketballBall.Active;if(!ball||!ball.transform.parent)return false;frame=ball.transform.parent;var half=BasketballBall.PlayerCourtLimits;bounds=new Bounds(Vector3.zero,new Vector3(half.x*2,0,half.y*2));}
@@ -30,6 +30,7 @@ namespace WhatTheFish {
   // Invoked after ball presentation, including guest interpolation and held
   // animation. PlayerView retains its early update order for input sampling.
   internal void PresentStadiumCamera(){
+   if(FootballReplay.Presenting)return;
    if(!isActiveAndEnabled||!StadiumField(out var frame,out var field,out bool football)){ResetStadiumCamera();return;}
    var ball=football?FootballBall.Instance.transform:BasketballBall.Active.transform;
    var point=frame.InverseTransformPoint(ball.position);

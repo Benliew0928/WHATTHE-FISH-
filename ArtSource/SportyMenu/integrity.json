@@ -1,0 +1,29 @@
+{
+  "base": "repository root",
+  "files": [
+    {
+      "path": "ArtSource/SportyMenu/SportCards-master.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "21f746dc801dc9a0f96d28a4511490c028873bd65f4b95a39e2c262e915535f4"
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/SportyMenu/SportCards.png",
+      "width": 1536,
+      "height": 1024,
+      "sha256": "21f746dc801dc9a0f96d28a4511490c028873bd65f4b95a39e2c262e915535f4"
+    },
+    {
+      "path": "ArtSource/SportyMenu/Mascot-master.png",
+      "width": 1227,
+      "height": 1282,
+      "sha256": "8c967f422a17b97c9a3586892636f373c6c5a85a2b99bfdb49b2c4fff2934896"
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/SportyMenu/Mascot.png",
+      "width": 1227,
+      "height": 1282,
+      "sha256": "8c967f422a17b97c9a3586892636f373c6c5a85a2b99bfdb49b2c4fff2934896"
+    }
+  ]
+}

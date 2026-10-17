@@ -76,7 +76,9 @@ MonoBehaviour:
   capsule: {fileID: 8587167767446482221}
   visual: {fileID: 2522548452682047024}
   controlled: 0
+  inTransit: 0
   speed: 0
+  identityLibrary: {fileID: 11400000, guid: 895d7946499c6af4eac6054b0ed032db, type: 2}
 --- !u!114 &2893273042507227528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -89,7 +91,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a07d68b08cc66b469a234d7b04a4920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.FootballTackle
-  cooldown: 4
+  cooldown: 1.5
   whiffRecovery: 0.8
 --- !u!114 &6481158643221054622
 MonoBehaviour:

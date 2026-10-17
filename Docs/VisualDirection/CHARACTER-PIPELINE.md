@@ -1,5 +1,10 @@
 # Character production plan — 23 September 2026
 
+For the current ten-player implementation plan, including Blue/Red sports
+uniforms, unique on-field identities and animation preservation, see
+[Character identity plan](CHARACTER-IDENTITY-PLAN.md). The dated integration
+notes below describe the earlier foundation.
+
 ## Decision
 
 Build **one canonical cartoon athlete** in an editable Blender file, with **one shared skeleton**. Treat Meshy or Tripo image-to-3D output as optional shape exploration. Any generated mesh must pass deformation, customization, and Unity import checks before becoming the master asset. Codex/Astra can help create and refine Blender geometry, materials, rig, exports, and Unity integration; it is not a one-click 3D character generator.

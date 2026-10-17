@@ -32,7 +32,7 @@ namespace WhatTheFish {
    actor=app?app.LocalAthlete:null;ball=BasketballBall.Active;if(!actor||!ball){Check(false,"court initialized");Finish();yield break;}
    lane=ball.GetComponent<BasketballPassVisual>();DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    review=new GameObject("Pass review camera").AddComponent<Camera>();review.CopyFrom(Camera.main);review.enabled=false;capture&=SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null;
-   Check(RoomService.ProtocolVersion==49,"matching pass protocol 49");if(capture)Check(Resources.Load<Material>("BasketballPassAim").shader.isSupported,"pass shader supported by rendered player");
+   Check(Unity.Netcode.NetworkManager.Singleton.NetworkConfig.ProtocolVersion==RoomService.ProtocolVersion,"matching pass protocol");if(capture)Check(Resources.Load<Material>("BasketballPassAim").shader.isSupported,"pass shader supported by rendered player");
    if(app.rooms.Connected){if(ball.Authority)yield return Host();else yield return Guest();}else yield return Offline();Finish();
   }
   IEnumerator Observe(float seconds,string stage){
@@ -90,7 +90,7 @@ namespace WhatTheFish {
   }
   IEnumerator Guest(){
    Check(!ball.Authority&&!ball.BeginPassCharge(actor,0,ball.Defense.play),"guest cannot author ball simulation");Signal("guest-ready");
-   float end=Time.time+12;while((ball.PassAim.phase!=1||Mathf.Abs(Mathf.DeltaAngle(ball.PassAim.heading,25))>.1f||!lane.Visible||ball.PassPower<=.75f)&&Time.time<end)yield return null;
+   float end=Time.time+12;while((ball.PassAim.phase!=1||Mathf.Abs(Mathf.DeltaAngle(ball.PassAim.heading,25))>.1f||!lane.Visible||ball.PassPower<=.75f||ball.PassAim.bend<=.95f)&&Time.time<end)yield return null;
    Check(lane.Visible&&ball.PassPower>.75f,"observer sees host direction and charge");Check(ball.PassAim.bend>.95f&&lane.Path.Point(lane.Path.duration*.5f).y-lane.Path.start.y>1,"observer sees host loft arc");Signal("saw-host-lane");yield return Observe(.2f,"remote-host-lane");
    end=Time.time+8;while(ball.PassCount<1&&Time.time<end)yield return null;Check(ball.PassCount==1,"guest receives host pass result");Signal("saw-host-release");yield return Await("guest-turn");
    end=Time.time+4;while(ball.Holder!=actor&&Time.time<end)yield return null;yield return new WaitForSeconds(.2f);

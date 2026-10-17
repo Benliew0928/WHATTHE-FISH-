@@ -12,6 +12,12 @@ using Unity.Netcode;
 using WhatTheFish;
 
 public static class SkySailBuilder {
+ public static void ConfigureLamp(Material lamp){
+  lamp.shader=Shader.Find("Universal Render Pipeline/Unlit");lamp.shaderKeywords=Array.Empty<string>();lamp.SetColor("_BaseColor",new Color(1.35f,1.18f,.78f,1));
+  // The desktop renderer composites SSAO after opaque objects. Draw the solid
+  // luminous bulb after that pass, before glass, and retain normal depth testing.
+  lamp.SetFloat("_Surface",1);lamp.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");lamp.SetFloat("_SrcBlend",(float)BlendMode.One);lamp.SetFloat("_DstBlend",(float)BlendMode.Zero);lamp.SetFloat("_ZWrite",1);lamp.SetOverrideTag("RenderType","Transparent");lamp.renderQueue=(int)RenderQueue.Transparent-10;EditorUtility.SetDirty(lamp);
+ }
  const string Art="Assets/_Game/Art/SkySail/",Prefabs="Assets/_Game/Prefabs/SkySail/",Scenes="Assets/_Game/Scenes/";
  static Dictionary<string,Material> materials=new();
  [Serializable] class Spec {public Mat[] materials;}
@@ -95,7 +101,7 @@ public static class SkySailBuilder {
    string texture=s.name switch {"SS_Timber"=>"Timber","SS_Teal"=>"Teal","SS_Cream"=>"Stone","SS_Bronze"=>"Bronze",_=>null};
    if(texture!=null){string prefix="Assets/_Game/Art/RefinedIslands/Shared/RI_"+texture;m.SetColor("_BaseColor",Color.white);m.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(prefix+"_BaseColor.png"));m.SetTexture("_BumpMap",AssetDatabase.LoadAssetAtPath<Texture2D>(prefix+"_Normal.png"));m.SetFloat("_BumpScale",.35f);m.EnableKeyword("_NORMALMAP");}
    if(s.name=="SS_Glass"){color.a=.19f;m.SetColor("_BaseColor",color);m.SetFloat("_Surface",1);m.SetFloat("_ZWrite",0);m.SetFloat("_SrcBlend",(float)BlendMode.SrcAlpha);m.SetFloat("_DstBlend",(float)BlendMode.OneMinusSrcAlpha);m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");m.SetOverrideTag("RenderType","Transparent");m.renderQueue=3000;m.SetFloat("_Cull",0);}
-   if(s.name=="SS_Lamp"){m.EnableKeyword("_EMISSION");m.SetColor("_EmissionColor",color*.65f);}EditorUtility.SetDirty(m);materials[s.name]=m;
+   if(s.name=="SS_Lamp")ConfigureLamp(m);EditorUtility.SetDirty(m);materials[s.name]=m;
   }
   foreach(string file in Directory.GetFiles(Art,"*.fbx")){
    var importer=(ModelImporter)AssetImporter.GetAtPath(file.Replace('\\','/'));importer.globalScale=1;importer.useFileScale=true;importer.importCameras=false;importer.importLights=false;importer.importAnimation=false;importer.materialImportMode=ModelImporterMaterialImportMode.ImportStandard;importer.importNormals=ModelImporterNormals.Import;importer.isReadable=false;importer.SaveAndReimport();

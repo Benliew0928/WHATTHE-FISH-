@@ -7,7 +7,7 @@ namespace WhatTheFish {
   public static readonly Vector2 PaintedCourtLimits=new(7.62f,14.3256f);
   public static readonly Vector2 PlayerCourtLimits=PaintedCourtLimits;
   public bool SetFreeRoam(Athlete actor,bool enabled){
-   if(!Authority||!Playing||!actor||actor.inTransit)return false;
+   if(!Authority||!Playing||!actor||actor.inTransit||BasketballMatch.Instance&&BasketballMatch.Instance.Active)return false;
    actor.BasketballFreeRoam=enabled;
    if(enabled){actor.BasketballMotion?.EndGuard();CancelShotCharge(actor);if(holder==actor)ResetHome();}
    return true;
@@ -15,7 +15,10 @@ namespace WhatTheFish {
   void ResetCourtPlayers(){if(Authority)foreach(var actor in Athlete.Active)actor.BasketballFreeRoam=false;}
   bool TryPlayerCourt(Athlete actor,out Transform arena,out Vector3 point,out Vector2 limits){
    arena=transform.parent;point=Vector3.zero;limits=PlayerCourtLimits;
-   if(!Playing||!actor||actor.inTransit||actor.BasketballFreeRoam||!actor.capsule||!actor.capsule.enabled)return false;
+   var match=BasketballMatch.Instance;
+   if(match&&match.RetrievingInbound(actor))return false;
+   if(!Playing||!actor||actor.inTransit||!actor.capsule||!actor.capsule.enabled||match&&match.BoundaryReleased)return false;
+   if(actor.BasketballFreeRoam&&!(match&&match.Active&&match.Contains(actor)))return false;
    var controller=actor.capsule;
    var center=actor.transform.TransformPoint(controller.center);
    point=arena?arena.InverseTransformPoint(center):center;
@@ -30,6 +33,10 @@ namespace WhatTheFish {
    if(IsInbound(actor))return Vector3.zero;
    if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return direction;
    var local=arena?arena.InverseTransformDirection(direction):direction;
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.RestrictedHalf(actor)){
+    float sign=BasketballMatch.Instance.TeamOf(actor)==FootballTeam.A?-1:1;
+    if(point.z*sign<=actor.capsule.radius+actor.capsule.skinWidth+.002f&&local.z*sign<0)local.z=0;
+   }
    // Stop accelerating into a contacted wall. Projecting velocity alone makes
    // the motor repeatedly accelerate and lose speed, slowing tangential travel.
    if(point.x>=limits.x-.002f&&local.x>0||point.x<=-limits.x+.002f&&local.x<0)local.x=0;
@@ -41,6 +48,10 @@ namespace WhatTheFish {
    if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return displacement;
    var target=point+(arena?arena.InverseTransformVector(displacement):displacement);
    float x=Mathf.Clamp(target.x,-limits.x,limits.x),z=Mathf.Clamp(target.z,-limits.y,limits.y);
+   if(BasketballMatch.Instance&&BasketballMatch.Instance.RestrictedHalf(actor)){
+    float sign=BasketballMatch.Instance.TeamOf(actor)==FootballTeam.A?-1:1;
+    z=sign*Mathf.Max(z*sign,actor.capsule.radius+actor.capsule.skinWidth);
+   }
    if(x!=target.x)actor.Motor.Constrain((arena?arena.right:Vector3.right)*-Mathf.Sign(target.x));
    if(z!=target.z)actor.Motor.Constrain((arena?arena.forward:Vector3.forward)*-Mathf.Sign(target.z));
    target.x=x;target.z=z;

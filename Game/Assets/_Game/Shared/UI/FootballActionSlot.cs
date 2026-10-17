@@ -16,6 +16,7 @@ namespace WhatTheFish {
    // OnDisable cancels the previous pointer before the replacement can accept
    // a new press. A held touch never fires a different action after a turnover.
    bool changed=kick.enabled!=Attacking||pressure.enabled==Attacking;
+   if(changed)GetComponent<FootballActionSwipe>()?.OnCancel(null);
    kick.enabled=Attacking;pressure.enabled=!Attacking;tackle.enabled=!Attacking;
    if(changed){if(Attacking)kick.Refresh();else {pressure.Refresh();tackle.Refresh();}}
    tackleGroup.alpha=Attacking?0:1;tackleGroup.blocksRaycasts=tackleGroup.interactable=!Attacking;

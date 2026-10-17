@@ -1,14 +1,15 @@
-param([int]$Port=7798,[switch]$Video)
+param([int]$Port=7798,[switch]$Video,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $root=Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-$player=Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'
+$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
 $out=Join-Path $root ('Builds/TackleQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss'))
 New-Item -ItemType Directory -Path $out -Force | Out-Null
 $processes=@()
 function Start-TackleProbe([string]$Name,[string]$Options){
     $report=Join-Path $out ($Name+'.txt')
     $log=Join-Path $out ($Name+'.log')
-    Start-Process -FilePath $player -ArgumentList "$Options -probe -report `"$report`" -logFile `"$log`"" -WindowStyle Hidden -PassThru
+    $process=Start-Process -FilePath $player -ArgumentList "$Options -probe -report `"$report`" -logFile `"$log`"" -WindowStyle Hidden -PassThru
+    $null=$process.Handle;return $process
 }
 try {
     $videoOption=if($Video){'-tackleVideo'}else{''}

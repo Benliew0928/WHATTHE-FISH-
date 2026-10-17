@@ -9,9 +9,24 @@ namespace WhatTheFish {
  // Explicit command-line opt-in. These checks do not run in normal play.
  public sealed partial class DevelopmentProbe:MonoBehaviour {
   public static bool Driving;public static float Heading;
+  // Startup briefly exposes the offline athlete while a requested room joins.
+  // Network reviews must wait for the spawned owner and replicated exploration.
+  public static bool ReadyToReviewSport {
+   get {
+    var app=AppRoot.Instance;if(!app||!app.Exploring||!app.LocalAthlete||app.LocalAthlete.inTransit||RoomTeleport.Busy||TeleportSequence.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return false;
+    var args=Environment.GetCommandLineArgs();bool online=args.Contains("-localHost")||args.Contains("-localClient")||args.Contains("-cloudHost")||args.Contains("-cloudCode");
+    if(!online)return true;var player=app.LocalAthlete.GetComponent<NetworkAthlete>();var host=NetworkAthlete.HostPlayer;
+    return app.rooms.Connected&&player&&player.IsSpawned&&player.IsOwner&&player.IsPlayerObject&&host&&host.Exploring.Value&&host.WorldSport.Value==app.SelectedSport;
+   }
+  }
   string[] args;string output;bool ready;float elapsed,next;int expected;bool started,returned,preset;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){if(Environment.GetCommandLineArgs().Contains("-probe"))new GameObject("Development probe").AddComponent<DevelopmentProbe>();}
-  void Start(){args=Environment.GetCommandLineArgs();output=Value("-report",Application.persistentDataPath+"/probe.jsonl");int.TryParse(Value("-expected","1"),out expected);if(args.Contains("-networkBallAudit"))StartCoroutine(NetworkBallAudit());if(args.Contains("-jumpReview"))StartCoroutine(JumpMotionReview());if(args.Contains("-jumpAudit"))StartCoroutine(JumpAudit());if(args.Contains("-networkJumpAudit"))StartCoroutine(NetworkJumpAudit());if(args.Contains("-tackleAudit"))StartCoroutine(TackleAudit());if(args.Contains("-networkTackleAudit"))StartCoroutine(NetworkTackleAudit());if(args.Contains("-turnAudit"))StartCoroutine(TurnAudit());if(args.Contains("-networkTurnAudit"))StartCoroutine(NetworkTurnAudit());if(args.Contains("-smoke"))StartCoroutine(Smoke());if(args.Contains("-rainbowAudit"))StartCoroutine(RainbowAudit());if(args.Contains("-idleAudit"))StartCoroutine(IdleAudit());if(args.Contains("-networkIdleAudit"))StartCoroutine(NetworkIdleAudit());if(args.Contains("-golfAudit"))StartCoroutine(IslandAudit());if(args.Contains("-fishingAudit"))StartCoroutine(FishingAudit());if(args.Contains("-saveLogo")||args.Contains("-expectLogo"))StartCoroutine(Persistence());if(args.Contains("-cloudHost")||args.Contains("-cloudCode"))StartCoroutine(Cloud());}
+  IEnumerator Start(){
+   // Packaged content can take longer than the legacy probes' two-second delay.
+   // Start their timers only after the real scene and local actor exist.
+   while(!AppRoot.Instance||!AppRoot.Instance.Menu||!AppRoot.Instance.LocalAthlete)yield return null;
+   args=Environment.GetCommandLineArgs();output=Value("-report",Application.persistentDataPath+"/probe.jsonl");int.TryParse(Value("-expected","1"),out expected);if(args.Contains("-networkBallAudit"))StartCoroutine(NetworkBallAudit());if(args.Contains("-jumpReview"))StartCoroutine(JumpMotionReview());if(args.Contains("-jumpAudit"))StartCoroutine(JumpAudit());if(args.Contains("-networkJumpAudit"))StartCoroutine(NetworkJumpAudit());if(args.Contains("-tackleAudit"))StartCoroutine(TackleAudit());if(args.Contains("-networkTackleAudit"))StartCoroutine(NetworkTackleAudit());if(args.Contains("-turnAudit"))StartCoroutine(TurnAudit());if(args.Contains("-networkTurnAudit"))StartCoroutine(NetworkTurnAudit());if(args.Contains("-smoke"))StartCoroutine(Smoke());if(args.Contains("-rainbowAudit"))StartCoroutine(RainbowAudit());if(args.Contains("-idleAudit"))StartCoroutine(IdleAudit());if(args.Contains("-networkIdleAudit"))StartCoroutine(NetworkIdleAudit());if(args.Contains("-golfAudit"))StartCoroutine(IslandAudit());if(args.Contains("-fishingAudit"))StartCoroutine(FishingAudit());if(args.Contains("-saveLogo")||args.Contains("-expectLogo"))StartCoroutine(Persistence());if(args.Contains("-cloudHost")||args.Contains("-cloudCode"))StartCoroutine(Cloud());
+  }
   IEnumerator RainbowAudit(){
    yield return new WaitForSeconds(2);var app=AppRoot.Instance;app.Show("character");yield return new WaitForSeconds(1);
    var athlete=app.LocalAthlete;var animator=athlete.GetComponentInChildren<Animator>();

@@ -4645,7 +4645,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkManager
   NetworkManagerExpanded: 0
   NetworkConfig:
-    ProtocolVersion: 49
+    ProtocolVersion: 67
     NetworkTransport: {fileID: 1141826220}
     PlayerPrefab: {fileID: 1345723060313390385, guid: eeb3ae523a1283541878bbda59d263d0, type: 3}
     Prefabs:
@@ -7154,8 +7154,6 @@ MonoBehaviour:
   yaw: 0
   pitch: 16
   active: 0
-  cartReverseTurnTime: 0.45
-  cartReverseTurnSpeed: 180
   golfShoulderOffset: 1.8
   golfViewDistance: 3.5
 --- !u!114 &1760678659

@@ -74,6 +74,7 @@ public static class MobileMaterialBuilder {
 public sealed class MobileMaterialBuildProcessor:IProcessSceneWithReport {
  public int callbackOrder=>-5;
  public void OnProcessScene(Scene scene,BuildReport report){
+  if(PackagedContentBuild.IsPrepared(scene))return;
   if(report!=null&&(report.summary.platform==BuildTarget.Android||Environment.GetEnvironmentVariable("WTF_MOBILE_PREVIEW")=="1"))MobileMaterialBuilder.Apply(scene);
  }
 }

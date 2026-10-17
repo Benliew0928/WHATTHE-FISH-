@@ -34,19 +34,20 @@ namespace WhatTheFish {
   void LateUpdate(){
    var g=FishingGame.Instance;var view=PlayerView.Instance;var p=g&&view?g.Player(view.target):null;bool context=g&&g.Context&&p.HasValue&&view&&view.active;
    if(!context){Close();item.gameObject.SetActive(false);supply.gameObject.SetActive(false);salvage.gameObject.SetActive(false);observed=false;return;}
-   var player=p.Value;bool running=g.State.Running,active=player.activeUntil>g.Now,empty=player.item==FishingAbility.None&&!active;
+   var player=p.Value;bool running=g.State.Running,active=player.activeUntil>g.Now,empty=player.item==FishingAbility.None&&!active,landing=owner.CatchCue&&owner.CatchCue.Visible;
    if(!observed||seenRound!=g.State.Match.round){seenRound=g.State.Match.round;seenItem=player.itemSequence;observed=true;}else if(seenItem!=player.itemSequence){seenItem=player.itemSequence;pulse=1;if(Application.isFocused)FootballAudio.PlayMenu(FootballSound.UIConfirm);}
    pulse=Mathf.MoveTowards(pulse,0,Time.unscaledDeltaTime*2.5f);item.gameObject.SetActive(running&&(!empty||player.phase==FishingPhase.Salvaging));itemText.text=player.phase==FishingPhase.Salvaging?Math.Max(0,Math.Ceiling(player.phaseAt+6-g.Now))+"s":active?Math.Ceiling(player.activeUntil-g.Now)+"s":"USE";itemIcon.sprite=FishingGearArt.Ability(active?player.active:player.item);
    bool fightOnly=player.item==FishingAbility.CoolSpool||player.item==FishingAbility.PowerReel||player.item==FishingAbility.BubbleGuard;bool idleOnly=player.item==FishingAbility.Flippers||player.item==FishingAbility.QuickLure;
    item.interactable=running&&!owner.BlocksGameplay&&player.item!=FishingAbility.None&&!active&&player.phase!=FishingPhase.Salvaging&&(!fightOnly||player.phase==FishingPhase.Reeling)&&(!idleOnly||!player.Busy);
    itemIcon.color=new Color(1,1,1,item.interactable||active?1:.55f);var tint=FishingAbilityRules.Color(active?player.active:player.item);item.GetComponent<FishingStickerGraphic>().Refresh(1,LocalProfile.Hex("FFF3D7"));meter.gameObject.SetActive(active||player.phase==FishingPhase.Salvaging);meter.Refresh(player.phase==FishingPhase.Salvaging?Mathf.Clamp01((float)(g.Now-player.phaseAt)/6):Mathf.Clamp01((float)((player.activeUntil-g.Now)/(player.activeUntil-player.activeAt))),tint);
    int nearest=0;float distance=float.MaxValue;for(int i=0;i<5;i++){float d=(view.target.transform.position-g.SupplyPosition(i)).sqrMagnitude;if(d<distance){nearest=i;distance=d;}}int pier=g.NearestPier(view.target);
-   supply.gameObject.SetActive(running&&empty&&!player.Busy&&distance<=2.6f*2.6f);double supplyWait=Math.Max(0,g.State.SupplyReady(nearest)-g.Now);supplyText.text=supplyWait>0?Math.Ceiling(supplyWait)+"s":"GET";supply.interactable=supplyWait<=0&&!owner.BlocksGameplay;
-   salvage.gameObject.SetActive(running&&empty&&!player.Busy&&pier>=0);double salvageWait=Math.Max(0,g.State.Match.salvageReadyAt-g.Now);salvageText.text=salvageWait>0?Math.Ceiling(salvageWait)+"s":"6s";salvage.interactable=salvageWait<=0&&!owner.BlocksGameplay;
+   supply.gameObject.SetActive(running&&empty&&!player.Busy&&!landing&&distance<=2.6f*2.6f);double supplyWait=Math.Max(0,g.State.SupplyReady(nearest)-g.Now);supplyText.text=supplyWait>0?Math.Ceiling(supplyWait)+"s":"GET";supply.interactable=supplyWait<=0&&!owner.BlocksGameplay;
+   salvage.gameObject.SetActive(running&&empty&&!player.Busy&&!landing&&pier>=0);double salvageWait=Math.Max(0,g.State.Match.salvageReadyAt-g.Now);salvageText.text=salvageWait>0?Math.Ceiling(salvageWait)+"s":"6s";salvage.interactable=salvageWait<=0&&!owner.BlocksGameplay;
    gear.interactable=!player.ready&&!player.Busy&&!owner.BlocksGameplay;
    if(Modal)sheet.localScale=Vector3.one*Mathf.Min(1.25f,(frame.rect.width-40)/sheet.rect.width,(frame.rect.height-40)/sheet.rect.height);
-   float scale=owner.HudScale,y=(player.phase==FishingPhase.Reeling?254:52)*scale+20;
-   Place(item,player.phase==FishingPhase.Reeling?-180:0,y,scale*(MenuPreferences.ReducedMotion?1:1+pulse*.06f));Place(supply,-65,146*scale+20,scale);Place(salvage,65,146*scale+20,scale);
+   bool raised=player.phase==FishingPhase.Reeling||landing;
+   float scale=owner.HudScale,y=(raised?254:52)*scale+20;
+   Place(item,raised?-180:0,y,scale*(MenuPreferences.ReducedMotion?1:1+pulse*.06f));Place(supply,-65,146*scale+20,scale);Place(salvage,65,146*scale+20,scale);
    if(!running&&choosing!=FishingAction.Favourites||player.Busy||player.ready&&choosing==FishingAction.Favourites)Close();
   }
   static void Place(Button button,float x,float y,float scale){var r=(RectTransform)button.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,0);r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x*scale,y);r.localScale=Vector3.one*scale;}
