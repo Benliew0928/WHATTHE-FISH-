@@ -1,0 +1,76 @@
+{
+  "base": "repository root",
+  "method": "Original pixels; transparent-padding crop and proportional premultiplied-alpha Lanczos downsample. No redraw, recolour or caption replacement.",
+  "apk_note": "PNG and raw ASTC lengths are not measured APK growth.",
+  "assets": [
+    {
+      "name": "Drive",
+      "master": "ArtSource/Golf/UI/CartButtons/Drive-master.png",
+      "master_sha256": "e427f5d030ff3463822584c190829cde31c0e413ea1d56548d0bc34bdd51e988",
+      "master_size": [
+        1942,
+        809
+      ],
+      "alpha_crop": [
+        46,
+        80,
+        1885,
+        706
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/CartButtons/Drive.png",
+      "delivery_sha256": "56568e8c0533a038f5515249930e665373f9783dc7119dfda4fea8fde8dc846d",
+      "delivery_size": [
+        512,
+        177
+      ],
+      "delivery_png_bytes": 132783,
+      "android_astc_4x4_raw_bytes": 92160
+    },
+    {
+      "name": "Buggy",
+      "master": "ArtSource/Golf/UI/CartButtons/Buggy-master.png",
+      "master_sha256": "8104ec9259442ba6527c1d2d504b81f5194ee0c99e42163d1a13a832a5ce5d5a",
+      "master_size": [
+        1942,
+        809
+      ],
+      "alpha_crop": [
+        0,
+        94,
+        1862,
+        809
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/CartButtons/Buggy.png",
+      "delivery_sha256": "fcd53215de165f76ff8d784a0c0ec78ea6309820d8766080e88102d13fed47b7",
+      "delivery_size": [
+        512,
+        199
+      ],
+      "delivery_png_bytes": 138902,
+      "android_astc_4x4_raw_bytes": 102400
+    },
+    {
+      "name": "Recall",
+      "master": "ArtSource/Golf/UI/CartButtons/Recall-master.png",
+      "master_sha256": "5059455b46cbacae37052eee85c5666ce7db5d54b164102462a9b47cdc01beb1",
+      "master_size": [
+        1944,
+        809
+      ],
+      "alpha_crop": [
+        47,
+        93,
+        1893,
+        700
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/CartButtons/Recall.png",
+      "delivery_sha256": "f2643a14e6741c21828db0824a26eff7004bdde0408d54a39369c09ee950341d",
+      "delivery_size": [
+        512,
+        171
+      ],
+      "delivery_png_bytes": 128539,
+      "android_astc_4x4_raw_bytes": 88064
+    }
+  ]
+}

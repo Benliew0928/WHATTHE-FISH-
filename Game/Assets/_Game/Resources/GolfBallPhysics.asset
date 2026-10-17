@@ -13,15 +13,15 @@ MonoBehaviour:
   m_Name: GolfBallPhysics
   m_EditorClassIdentifier:
   minimumSwingSpeed: 3
-  maximumSwingSpeed: 17
+  maximumSwingSpeed: 34
   minimumSwingLift: 2.8
-  maximumSwingLift: 8.5
+  maximumSwingLift: 17
   landingSpeedRetention: 0.78
   turfRestitution: 0.46
   minimumBounceSpeed: 0.55
   subsequentLandingRetention: 0.92
   minimumPuttSpeed: 0.35
-  maximumPuttSpeed: 7.5
+  maximumPuttSpeed: 15
   slowRollingThreshold: 2
   stopSpeedThreshold: 0.25
   stopDelay: 0.5

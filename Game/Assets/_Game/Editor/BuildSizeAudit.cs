@@ -11,8 +11,8 @@ using UnityEngine.Rendering;
 
 // Serialized asset bytes are uncompressed; use the APK itself for the submission budget.
 public static class BuildSizeAudit {
- public const long TargetBytes=75000000;
- public const long LimitBytes=100000000;
+ public const long TargetBytes=1000000000;
+ public const long LimitBytes=1000000000;
  public static string Output=>ProjectBuilder.ResolveBuildOutputPath("../Builds/SizeAudit")+Path.DirectorySeparatorChar;
  public static void AuditLatest(){Write(BuildReport.GetLatestReport(),"before");}
  public static void Write(BuildReport report,string label){

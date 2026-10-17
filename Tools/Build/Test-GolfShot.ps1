@@ -1,4 +1,4 @@
-param([string]$PlayerPath,[switch]$Render)
+﻿param([string]$PlayerPath,[switch]$Render,[switch]$FeedbackOnly)
 $ErrorActionPreference='Stop'
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if(!$PlayerPath){$PlayerPath=Join-Path $taskRoot 'Builds/WindowsFinal/WhatTheFish.exe'}
@@ -7,6 +7,7 @@ New-Item -ItemType Directory -Path $taskOutput | Out-Null
 $taskReport=Join-Path $taskOutput 'shot.txt';$taskLog=Join-Path $taskOutput 'shot.log'
 $taskGraphics=if($Render){'-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -golfShotCapture'}else{'-batchmode -nographics'}
 $taskOptions="$taskGraphics -job-worker-count 2 -sport Golf -offline -golfShotAudit -probe -exitAfter 200 -report `"$taskReport`" -logFile `"$taskLog`""
+if($FeedbackOnly){$taskOptions+=" -golfFeedbackOnly"}
 $taskProcess=Start-Process -FilePath $PlayerPath -ArgumentList $taskOptions -WindowStyle Hidden -PassThru
 try {
  $taskDeadline=(Get-Date).AddSeconds(180)

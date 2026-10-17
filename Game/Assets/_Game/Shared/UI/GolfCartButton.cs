@@ -14,11 +14,10 @@ namespace WhatTheFish {
   }
   void Update(){
    var view=PlayerView.Instance;var actor=view?view.target:null;var driving=GolfCartWorld.Driving(actor);
-   bool available=view&&view.active&&!view.GolfAimRequested&&actor&&GolfCartWorld.Allowed&&!actor.inTransit;
+   bool available=view&&view.active&&actor&&GolfCartWorld.Allowed&&!actor.inTransit;
    bool visible=available&&(summon||driving||GolfCartWorld.Nearest(actor));
-   visibility.alpha=visible?1:0;visibility.blocksRaycasts=visible;button.interactable=visible&&Time.unscaledTime>=nextPress;
+   visibility.alpha=visible?1:0;visibility.blocksRaycasts=visible&&!view.GolfAimRequested;button.interactable=visible&&!view.GolfAimRequested&&Time.unscaledTime>=nextPress;
    label.text=summon?(GolfCartWorld.HasCart(actor)?"Recall":"Buggy"):(driving?"Exit":"Drive");
-   if(!Application.isMobilePlatform)label.text+=summon?" [R]":" [E]";
   }
  }
 }

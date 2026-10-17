@@ -56,10 +56,11 @@ namespace WhatTheFish {
    var course=golf?GetComponentInChildren<GolfCourse>(true):null;
    // Pure island-local data; never access scene objects from the worker.
    var greens=course?(GolfGreen[])course.greens.Clone():Array.Empty<GolfGreen>();
+   var sand=course?course.sandPatches.Concat(course.waterPatches.Select(w=>new GolfSandPatch{centre=w.centre,radii=w.radii*w.bankScale})).ToArray():Array.Empty<GolfSandPatch>();
    var coastal=coast?library.coastal.Where(p=>p.sport==sport).ToArray():null;
    var patches=library.patches;cancellation=new CancellationTokenSource();var token=cancellation.Token;
    var clock=System.Diagnostics.Stopwatch.StartNew();
-   var task=Task.Run(()=>coastal!=null?GenerateCoast(coastal,token):Generate(placements,patches,golf,greens,token),token);
+   var task=Task.Run(()=>coastal!=null?GenerateCoast(coastal,token):Generate(placements,patches,golf,greens,sand,token),token);
    while(!task.IsCompleted)yield return null;
    if(task.IsCanceled){Error="Grass preparation cancelled";yield break;}
    if(task.IsFaulted){Error=task.Exception.GetBaseException().Message;yield break;}
@@ -97,7 +98,7 @@ namespace WhatTheFish {
    }
    return cells.Values.ToList();
   }
-  static List<Cell> Generate(IslandPlacement[] placements,MobileGrassLibrary.Patch[] patches,bool golf,GolfGreen[] greens,CancellationToken token){
+  static List<Cell> Generate(IslandPlacement[] placements,MobileGrassLibrary.Patch[] patches,bool golf,GolfGreen[] greens,GolfSandPatch[] sand,CancellationToken token){
    var cells=new Dictionary<(int,int),Cell>();int bladeNumber=0;float extent=golf?220:70;var points=new Vector3[5];
    foreach(var placement in placements){
     token.ThrowIfCancellationRequested();
@@ -112,6 +113,7 @@ namespace WhatTheFish {
       if(golf)foreach(var bunker in Bunkers)if(BunkerDistance(x,z,bunker)<=1.02){allowed=false;break;}
       float ground=(float)Height(x,z,golf);
       foreach(var green in greens){if(green.ClearsGrass(x,z))allowed=false;ground=green.Height(x,z,ground);}
+      foreach(var patch in sand)if(patch.Contains(x,z))allowed=false;
       points[i]=new Vector3(x,ground+p.y*placement.scale-.01f,z);
      }
      if(!allowed)continue;

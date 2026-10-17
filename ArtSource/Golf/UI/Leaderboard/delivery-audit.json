@@ -1,0 +1,138 @@
+{
+  "base": "repository root",
+  "master": "ArtSource/Golf/UI/Leaderboard/Leaderboard-master.png",
+  "master_sha256": "0f2d1da582f26b56dc2283bf9367988fe9fd1926d4370472d788e712bec05575",
+  "master_size": [
+    1122,
+    1402
+  ],
+  "method": "Original artwork crops, traced title silhouette and transparent column corners, blank-strip repetition for data-free nine-slice skins, proportional premultiplied-alpha downsample. Playing/Finished lettering retained. Sample player data replaced by runtime UI.",
+  "assets": [
+    {
+      "name": "Title",
+      "size": [
+        1024,
+        349
+      ],
+      "png_bytes": 445400,
+      "sha256": "3b9765dc679bc86244e873a1146720ec2cbb677c95f2120f6d09b0b75190cf3d"
+    },
+    {
+      "name": "Columns",
+      "size": [
+        1024,
+        101
+      ],
+      "png_bytes": 125200,
+      "sha256": "6ecd3b7a855090db5569e41bf5be435e51339e61ebfb7bd3a3b4216d0a749f71"
+    },
+    {
+      "name": "Frame",
+      "size": [
+        512,
+        183
+      ],
+      "png_bytes": 33122,
+      "sha256": "c8b04c69c39a9cf97a0b5b7ad86a6b9938c3ec2964ed82c526318742ade1a61b"
+    },
+    {
+      "name": "LocalRow",
+      "size": [
+        512,
+        74
+      ],
+      "png_bytes": 10171,
+      "sha256": "8f589de3097a07a313d3a638f226db4253a1fe235b1bb7dd725b139c09d529bc"
+    },
+    {
+      "name": "Row",
+      "size": [
+        512,
+        71
+      ],
+      "png_bytes": 9016,
+      "sha256": "f83f70040ae6f49f558bb5f9a82d837acf86e034224488d58ac513656193a2ff"
+    },
+    {
+      "name": "LocalCell",
+      "size": [
+        128,
+        67
+      ],
+      "png_bytes": 3498,
+      "sha256": "c84360fe708f28fadef45efc74f5a1004438421f313331e57390319319d414c5"
+    },
+    {
+      "name": "Cell",
+      "size": [
+        128,
+        66
+      ],
+      "png_bytes": 3122,
+      "sha256": "8b6499539be06a5f1e21825c5f7730dc381df8a58fc5e5d3e3fec6f30e18d4fe"
+    },
+    {
+      "name": "Playing",
+      "size": [
+        192,
+        94
+      ],
+      "png_bytes": 25188,
+      "sha256": "dcec3ecfe8f6186d37fa9792d3807365679080df207dfc7f3c38729a09fab525"
+    },
+    {
+      "name": "Finished",
+      "size": [
+        192,
+        90
+      ],
+      "png_bytes": 26730,
+      "sha256": "30ca573364e841544fd541711562404e0b7a539fcbc2dc49cfabb1ba8e74bc10"
+    },
+    {
+      "name": "Pending",
+      "size": [
+        192,
+        94
+      ],
+      "png_bytes": 13488,
+      "sha256": "a305b522e19be070316f568ea1137cf4a41a00feaaf9ffb24324a175a718888c"
+    },
+    {
+      "name": "Avatar0",
+      "size": [
+        128,
+        119
+      ],
+      "png_bytes": 31288,
+      "sha256": "e9cd077532973b91de196e4176b06719a3467aa554ebbc548b7baf2bd8fc460c"
+    },
+    {
+      "name": "Avatar1",
+      "size": [
+        128,
+        121
+      ],
+      "png_bytes": 29679,
+      "sha256": "7dcd0d976d3f90496838702f58b03859d517e98821ba3185ebaf8a8abec46aaf"
+    },
+    {
+      "name": "Avatar2",
+      "size": [
+        128,
+        123
+      ],
+      "png_bytes": 30214,
+      "sha256": "30857e4c4924ff3a2b9f11613fdae5479fe04a852ffd6c6c841d70ba23a7d953"
+    },
+    {
+      "name": "Avatar3",
+      "size": [
+        128,
+        120
+      ],
+      "png_bytes": 30151,
+      "sha256": "c89aa7fe15183e56ccdc92b33fcf09e40c04c84628f19f18d3e2227f0593e35c"
+    }
+  ]
+}

@@ -29,4 +29,4 @@ try {
  if($taskCaptures.Count -lt 8){throw "Golf HUD review is missing rendered captures: $taskOutput"}
  Write-Output "PASS golf-hud assertions=$(([regex]::Matches($taskText,'(?m)^PASS ')).Count) captures=$($taskCaptures.Count)"
  Write-Output "GOLF_HUD_SUITE_PASS $taskOutput"
-}finally{if($taskProcess -and !$taskProcess.HasExited){Stop-Process -Id $taskProcess.Id}}
+}finally{if($taskProcess -and !$taskProcess.HasExited){Stop-Process -Id $taskProcess.Id -ErrorAction SilentlyContinue}}

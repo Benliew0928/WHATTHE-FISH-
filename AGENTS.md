@@ -2,11 +2,11 @@
 
 ## APK budget is a product requirement
 
-- The self-contained hackathon APK must be **strictly below 100,000,000 bytes** (100 decimal MB, not 100 MiB). Never call an oversized build submission-ready.
-- Aim for **75,000,000 bytes or less during development**, reserving space for gameplay, animation, effects, props and audio. Being under 100 MB is not a reason to spend the remaining reserve carelessly. The current baseline is in `Docs/BUILD-SIZE.md`; do not assume the working target has already been achieved.
+- The self-contained hackathon APK must be **strictly below 1,000,000,000 bytes** (1 decimal GB, not 1 GiB; updated by the user on 17 October 2026). Never call an oversized build submission-ready.
+- The former 75,000,000-byte development target and 100 MB cap are retired. Do not constrain requested features to those old budgets. The current measured baseline is in `Docs/BUILD-SIZE.md`.
 - Read `Docs/BUILD-SIZE.md` and, when changing assets/rendering/build settings, `Docs/APK-SIZE-AUDIT.md`. Record the existing APK bytes before changes. Measure the resulting APK itself; source-folder sizes and uncompressed Unity reports are different measurements.
 - For changes that can affect the delivered game, run `Tools/Build/Build.ps1 -Target AndroidSubmission` after the appropriate feature checks. It builds and enforces the hard limit. Inspect `Builds/SizeAudit/latest/` for the largest contributors and unexpected growth. Report before/after bytes and remaining headroom, and update the size documentation after a new measured release. If the build cannot run, state that size is unverified; do not present an older APK as validation of new code. Documentation/housekeeping-only changes do not require rebuilding Unity.
-- Optimize continuously. Prefer removing unused shipped dependencies, sharing meshes/materials/textures, instancing, appropriate LODs, mobile import formats, and deliberate audio/animation compression. Investigate and reduce avoidable growth within the task; do not defer all optimization to the end or accept 90–95 MB as a comfortable development target.
+- Preserve sensible mobile performance and asset reuse without imposing the retired size targets.
 - Preserve the intended visual quality: cabin interiors, close props, island silhouettes, animation and travel should remain attractive. Keep editable high-quality masters; derive mobile delivery assets. Check affected close/distant views and gameplay after lossy changes. Never claim phone quality/FPS from a Windows preview alone.
 - Preserve the current world model: four islands, one active game per host room, everyone travels together. Keep cabin, cables, towers and stations modular.
 

@@ -17,35 +17,35 @@ MonoBehaviour:
   compactAspect: 1.45
   lookAnchorMin: {x: 0.475, y: 0.1333333}
   lookAnchorMax: {x: 0.9875, y: 0.9333333}
-  courseSize: {x: 430, y: 110}
-  actionSize: {x: 235, y: 235}
-  aimSize: {x: 215, y: 80}
-  cameraSize: {x: 112, y: 66}
-  jumpSize: {x: 112, y: 72}
-  returnSize: {x: 250, y: 62}
-  cartSize: {x: 150, y: 70}
-  joystickSize: {x: 176, y: 176}
-  hintSize: {x: 370, y: 64}
-  startSize: {x: 280, y: 64}
+  courseSize: {x: 500, y: 144}
+  actionSize: {x: 266, y: 250}
+  aimSize: {x: 280, y: 134}
+  cameraSize: {x: 142, y: 99}
+  jumpSize: {x: 148, y: 117}
+  returnSize: {x: 300, y: 90}
+  cartSize: {x: 272, y: 104}
+  joystickSize: {x: 258, y: 258}
+  hintSize: {x: 430, y: 92}
+  startSize: {x: 320, y: 86}
   courseArtSize: {x: 108, y: 108}
   courseArtPosition: {x: -155, y: 0}
-  courseTitlePosition: {x: 47, y: 19}
-  courseStationPosition: {x: 47, y: -23}
-  shotLabelPosition: {x: 0, y: -65}
+  courseTitlePosition: {x: 59, y: 23}
+  courseStationPosition: {x: 59, y: -22}
+  shotLabelPosition: {x: 0, y: -62}
   shotLabelSize: {x: 188, y: 78}
-  courseTitleFontSize: 29
-  courseStationFontSize: 19
-  shotFontSize: 29
-  hintFontSize: 24
-  controlFontSize: 24
+  courseTitleFontSize: 33
+  courseStationFontSize: 20
+  shotFontSize: 30
+  hintFontSize: 25
+  controlFontSize: 37
   utilityCornerRadius: 36
   boardWidth: 570
-  boardHeaderHeight: 56
-  boardColumnHeight: 32
-  boardRowHeight: 46
+  boardHeaderHeight: 66
+  boardColumnHeight: 40
+  boardRowHeight: 54
   boardCompactRowHeight: 32
-  boardFooterHeight: 46
-  boardPadding: 14
+  boardFooterHeight: 58
+  boardPadding: 20
   boardPosition: {x: -20, y: -20}
   tableFontSize: 20
   tableNameFontSize: 21
@@ -54,9 +54,27 @@ MonoBehaviour:
   countdownSize: {x: 330, y: 94}
   countdownPosition: {x: 0, y: -230}
   countdownFontSize: 36
-  targetPosition: {x: 0, y: -116}
-  targetSize: {x: 300, y: 54}
-  targetArrowPosition: {x: 0, y: -68}
-  targetArrowSize: {x: 28, y: 36}
-  targetFontSize: 22
-  ballFontSize: 18
+  targetPosition: {x: 0, y: -152}
+  targetSize: {x: 330, y: 118}
+  targetArrowPosition: {x: 0, y: -93}
+  targetArrowSize: {x: 74, y: 77}
+  targetTextLeftPadding: 100
+  targetTextRightPadding: 18
+  targetCaptionGap: 12
+  targetFontSize: 26
+  ballFontSize: 24
+  boardCompactHeightFraction: 0.44
+  boardExpandedHeightFraction: 0.78
+  boardExpandedWidth: 720
+  boardCompactTitleWidth: 320
+  boardPreviewRowHeight: 64
+  boardFullRowHeight: 82
+  boardToggleHeight: 36
+  boardAimSummaryHeight: 58
+  boardExpandedTitleFraction: 0.9
+  boardHeaderJoin: 0.8
+  boardHoverScale: 1.018
+  aimFocusFadeSeconds: 0.25
+  aimTargetScale: 0.72
+  aimTargetTopMargin: 12
+  aimEdgeArrowSize: {x: 42, y: 44}

@@ -1,0 +1,19 @@
+{
+  "base": "Paths relative to this manifest",
+  "recordings": [
+    {
+      "master": "go-master.wav",
+      "source_recording": "Screen Recording 2026-10-17 191059.mp4",
+      "source_sha256": "AE6297653A8F8FFCD2479F9EC9A1DAF6F190EE4067A9E21E37E8B06858A80E57",
+      "master_sha256": "C00181F00E02724B88385972B8E0FBB2018C593887B5CA40EA493C6C1D3E0B3E",
+      "permission": "Supplied by the user for these Golf game sounds on 2026-10-17"
+    },
+    {
+      "master": "walkway-master.wav",
+      "source_recording": "Screen Recording 2026-10-17 192235 - Trim.mp4",
+      "source_sha256": "87C1BA078D3FA9E7E1CEE38F9CDACF3A1F0D80034A026E63C8EECB2DBDB04DB2",
+      "master_sha256": "BF7D4FF3F7FD6261A680B80CF129149F389ED6480A60E6E30D535C5FADD271E9",
+      "permission": "Supplied by the user for these Golf game sounds on 2026-10-17"
+    }
+  ]
+}

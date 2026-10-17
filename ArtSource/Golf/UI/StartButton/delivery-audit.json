@@ -1,0 +1,30 @@
+{
+  "base": "repository root",
+  "method": "Original pixels; transparent-padding crop and proportional premultiplied-alpha Lanczos downsample. No redraw, recolour or caption replacement.",
+  "apk_note": "PNG and raw ASTC lengths are not measured APK growth.",
+  "assets": [
+    {
+      "name": "StartGame",
+      "master": "ArtSource/Golf/UI/StartButton/StartGame-master.png",
+      "master_sha256": "1c8ccdac2d4c2bc2d4d2bac10aac290095b80bb5885a8508072bf83af685f610",
+      "master_size": [
+        2164,
+        727
+      ],
+      "alpha_crop": [
+        0,
+        57,
+        2067,
+        661
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/StartButton/StartGame.png",
+      "delivery_sha256": "05e58e99aac26456fe12fb9f6cc9f49e6b20cabd2b43e8ad98282bb18b31ac73",
+      "delivery_size": [
+        512,
+        152
+      ],
+      "delivery_png_bytes": 97478,
+      "android_astc_4x4_raw_bytes": 77824
+    }
+  ]
+}

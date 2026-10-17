@@ -15,8 +15,8 @@ public static class GolfCourseBuilder {
  const string TerrainSource="Assets/_Game/Art/RefinedIslands/Golf/Terrain.fbx";
  const string Config="Assets/_Game/Sports/Golf/FiveHoleCourse.json",Group="Five-hole course";
  const string FlagPrefab="Assets/_Game/Prefabs/Golf/HoleFlag.prefab";
- [Serializable] sealed class Layout {public float cupRadius,cupDepth;public Hole[] holes;}
- [Serializable] sealed class Hole {public int number,par;public string title;public Vector3 cup,tee;public float greenRadius;}
+ [Serializable] sealed class Layout {public float cupRadius,cupDepth;public Hole[] holes;public GolfSandPatch[] sandPatches,roughPatches;public GolfCircuitArtBuilder.Obstacle[] obstacles;public GolfWaterPatch[] waterPatches;}
+ [Serializable] sealed class Hole {public int number,par;public string title;public Vector3 cup,tee;public float greenRadius,fairwayWidth;public Vector3[] route,bypass;}
  struct Vertex {
   public Vector3 p,n;public Vector4 tangent;public Vector2 uv,uv2;public Color color;
   public static Vertex Lerp(Vertex a,Vertex b,float t)=>new Vertex{p=Vector3.LerpUnclamped(a.p,b.p,t),n=Vector3.LerpUnclamped(a.n,b.n,t).normalized,tangent=Vector4.LerpUnclamped(a.tangent,b.tangent,t),uv=Vector2.LerpUnclamped(a.uv,b.uv,t),uv2=Vector2.LerpUnclamped(a.uv2,b.uv2,t),color=Color.LerpUnclamped(a.color,b.color,t)};
@@ -95,8 +95,15 @@ public static class GolfCourseBuilder {
    course.greens=layout.holes.Select(h=>{
     var p=Floor(island,h.cup,terrain);
     var slope=new Vector2((Floor(island,h.cup+Vector3.right,terrain).y-Floor(island,h.cup-Vector3.right,terrain).y)*.5f,(Floor(island,h.cup+Vector3.forward,terrain).y-Floor(island,h.cup-Vector3.forward,terrain).y)*.5f);
-    return new GolfGreen{centre=p,slope=Vector2.ClampMagnitude(slope*.15f,.012f),radius=h.greenRadius,blend=6};
-   }).ToArray();
+    return new GolfGreen{centre=p,slope=Vector2.ClampMagnitude(slope*.15f,.012f),radius=h.greenRadius,blend=10};
+   }).Concat(layout.holes.Select(h=>{
+    var slope=new Vector2((Floor(island,h.tee+Vector3.right,terrain).y-Floor(island,h.tee-Vector3.right,terrain).y)*.5f,(Floor(island,h.tee+Vector3.forward,terrain).y-Floor(island,h.tee-Vector3.forward,terrain).y)*.5f);
+    return new GolfGreen{centre=Floor(island,h.tee,terrain),slope=Vector2.ClampMagnitude(slope*.4f,.02f),radius=3.5f,blend=7};
+   })).ToArray();
+   course.fairways=layout.holes.Select(h=>new GolfFairway{hole=h.number,width=h.fairwayWidth,points=h.route}).Concat(layout.holes.Where(h=>h.bypass!=null&&h.bypass.Length>1).Select(h=>new GolfFairway{hole=h.number,width=h.fairwayWidth,points=h.bypass,alternative=true})).ToArray();
+   course.sandPatches=layout.sandPatches??Array.Empty<GolfSandPatch>();
+   course.roughPatches=layout.roughPatches??Array.Empty<GolfSandPatch>();
+   course.waterPatches=layout.waterPatches??Array.Empty<GolfWaterPatch>();
    foreach(var collider in terrain){
     var filter=collider.GetComponent<MeshFilter>();var shaped=Shape(filter.sharedMesh,island.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix,course.greens,false);
     if(shaped){filter.sharedMesh=shaped;collider.sharedMesh=shaped;}
@@ -125,7 +132,7 @@ public static class GolfCourseBuilder {
     // The green is part of the original terrain, with the same turf material and UVs.
     var flag=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(FlagPrefab));flag.transform.SetParent(hole.transform,false);flag.transform.localRotation=Quaternion.Euler(0,35,0);
     GolfFlagArtBuilder.AddNumbers(flag.transform,h.number);
-    var tee=new GameObject("Tee "+h.number);tee.transform.SetParent(root.transform,false);tee.transform.localPosition=Floor(island,h.tee,terrain);var direction=at-tee.transform.localPosition;direction.y=0;tee.transform.localRotation=Quaternion.LookRotation(direction);
+    var tee=new GameObject("Tee "+h.number);tee.transform.SetParent(root.transform,false);tee.transform.localPosition=Floor(island,h.tee,terrain);var direction=(h.route!=null&&h.route.Length>2?h.route[1]:at)-tee.transform.localPosition;direction.y=0;tee.transform.localRotation=Quaternion.LookRotation(direction);
     var teeMesh=Save(Disc("Tee marker",.20f,16),Art+"Meshes/Shared/TeeMarker.asset");
     foreach(float x in new[]{-1.2f,1.2f}){var marker=Node("Tee marker",tee.transform,teeMesh,aqua);var location=Floor(island,tee.transform.localPosition+tee.transform.localRotation*new Vector3(x,0,0),terrain);marker.transform.position=island.transform.TransformPoint(location+Vector3.up*.012f);}
     holes.Add(new GolfHole{number=h.number,par=h.par,title=h.title,cup=hole.transform,flag=flag.transform,tee=tee.transform,cupRadius=layout.cupRadius,cupDepth=layout.cupDepth,greenRadius=h.greenRadius});
@@ -139,6 +146,8 @@ public static class GolfCourseBuilder {
    }
    TrimGrass(island,layout);
    RemoveDecorativeFlags(island);
+   GolfCircuitArtBuilder.Attach(island,course,layout.obstacles);
+   GolfPondArtBuilder.Attach(island,course);
    AssetDatabase.SaveAssets();Physics.SyncTransforms();
   }finally{island.SetActive(active);}
  }
@@ -185,12 +194,20 @@ public static class GolfCourseBuilder {
   var original=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Game/Art/RefinedIslands/Golf/Grass.fbx").GetComponentsInChildren<MeshFilter>(true).ToDictionary(f=>f.name,f=>f.sharedMesh);
   foreach(var f in island.GetComponentsInChildren<MeshFilter>(true))if(original.TryGetValue(f.name,out var source)){
    var matrix=island.transform.worldToLocalMatrix*f.transform.localToWorldMatrix;var shaped=Shape(source,matrix,greens,true);var working=shaped?shaped:source;
-   var trimmed=Cut(working,matrix,layout.holes,0,true,greens);
+   var trimmed=Cut(working,matrix,layout.holes,0,true,greens,layout.sandPatches);
    f.sharedMesh=trimmed||shaped?Save(trimmed?trimmed:shaped,Art+"Meshes/Grass/"+f.name+".asset"):source;
    if(trimmed&&shaped)Object.DestroyImmediate(shaped);
   }
  }
- static Mesh Cut(Mesh source,Matrix4x4 localToIsland,Hole[] holes,float radius,bool grass,GolfGreen[] greens=null){
+ // Additive obstacle updates trim only blades inside new sand footprints.
+ public static void ClearAddedSandGrass(GameObject island,GolfSandPatch[] added){
+  foreach(var f in island.GetComponentsInChildren<MeshFilter>(true).Where(f=>f.name.StartsWith("LOD")&&f.name.Contains("Cell_"))){
+   var matrix=island.transform.worldToLocalMatrix*f.transform.localToWorldMatrix;
+   var trimmed=Cut(f.sharedMesh,matrix,Array.Empty<Hole>(),0,true,Array.Empty<GolfGreen>(),added);
+   if(trimmed){var path=AssetDatabase.GetAssetPath(f.sharedMesh);if(!path.StartsWith(Art+"Meshes/Grass/"))path=Art+"Meshes/Grass/"+f.name+".asset";f.sharedMesh=Save(trimmed,path);}
+  }
+ }
+ static Mesh Cut(Mesh source,Matrix4x4 localToIsland,Hole[] holes,float radius,bool grass,GolfGreen[] greens=null,GolfSandPatch[] sand=null){
   var pos=source.vertices;var normal=source.normals;var uv=source.uv;var uv2=source.uv2;var tangent=source.tangents;var colors=source.colors;
   var vertices=new List<Vertex>();for(int i=0;i<pos.Length;i++)vertices.Add(new Vertex{p=pos[i],n=normal.Length==pos.Length?normal[i]:Vector3.up,uv=uv.Length==pos.Length?uv[i]:Vector2.zero,uv2=uv2.Length==pos.Length?uv2[i]:Vector2.zero,tangent=tangent.Length==pos.Length?tangent[i]:Vector4.zero,color=colors.Length==pos.Length?colors[i]:Color.white});
   var submeshes=new List<int>[source.subMeshCount];int changed=0;
@@ -199,11 +216,11 @@ public static class GolfCourseBuilder {
    for(int i=0;i<indices.Length;i+=3){
     var a=vertices[indices[i]];var b=vertices[indices[i+1]];var c=vertices[indices[i+2]];var pa=localToIsland.MultiplyPoint3x4(a.p);var pb=localToIsland.MultiplyPoint3x4(b.p);var pc=localToIsland.MultiplyPoint3x4(c.p);
     var nearby=holes.Where(h=>{float r=grass?h.greenRadius:radius;return Mathf.Max(pa.x,Mathf.Max(pb.x,pc.x))>=h.cup.x-r&&Mathf.Min(pa.x,Mathf.Min(pb.x,pc.x))<=h.cup.x+r&&Mathf.Max(pa.z,Mathf.Max(pb.z,pc.z))>=h.cup.z-r&&Mathf.Min(pa.z,Mathf.Min(pb.z,pc.z))<=h.cup.z+r;}).ToArray();
-    if(nearby.Length==0){output.AddRange(new[]{indices[i],indices[i+1],indices[i+2]});continue;}
     if(grass){
-     bool remove=new[]{pa,pb,pc}.Any(p=>greens.Any(g=>g.ClearsGrass(p.x,p.z)));
+     bool remove=new[]{pa,pb,pc}.Any(p=>greens.Any(g=>g.ClearsGrass(p.x,p.z))||(sand!=null&&sand.Any(s=>s.Contains(p.x,p.z))));
      if(remove)changed++;else output.AddRange(new[]{indices[i],indices[i+1],indices[i+2]});continue;
     }
+    if(nearby.Length==0){output.AddRange(new[]{indices[i],indices[i+1],indices[i+2]});continue;}
     var pieces=new List<List<Vertex>>{new List<Vertex>{a,b,c}};
     foreach(var h in nearby){var next=new List<List<Vertex>>();foreach(var piece in pieces)next.AddRange(Outside(piece,h.cup,radius,localToIsland));pieces=next;}
     changed++;

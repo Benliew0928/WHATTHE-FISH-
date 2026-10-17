@@ -17,8 +17,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SOURCE_DIR = PROJECT_ROOT / "ArtSource/Golf/UI"
 DELIVERY_DIR = PROJECT_ROOT / "Game/Assets/_Game/Resources/GolfUI"
 ASSETS = {
-    "GolfShotBadge": 256,
-    "GolfCourseBadge": 128,
     "Countdown_1": 256,
     "Countdown_2": 256,
     "Countdown_3": 256,

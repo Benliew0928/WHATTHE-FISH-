@@ -2,15 +2,77 @@
 
 The Golf island has five cups with aqua flags numbered **1–5**, putting surfaces and paired tee markers. Tee markers reuse the map's `RI_Teal` material; pennants use the approved original flag artwork and a two-sided wind shader. The two old unnumbered scenery flags have been removed; the numbered cup flags and original tee stones remain. The course is included in both the streamed `SkySail_Golf` scene and the reusable `GolfEnvironment` prefab. `GolfCourseBuilder.RemoveDecorativeFlags` filters the old flag geometry from the retained FBX master, and the Blender generator omits it on regeneration.
 
-| Hole | Area | Cup X/Z (m) | Tee X/Z (m) | Straight distance | Proposed par |
-| --- | --- | --- | --- | ---: | ---: |
-| 1 — Welcome Green | Southern entrance fairway | 8 / −106 | −8 / −141 | 38 m | 3 |
-| 2 — Sand Garden | Western grassland beyond the bunkers | −103 / 10 | −22 / −46 | 98 m | 3 |
-| 3 — Winding Fairway | Northeastern grassland | 68 / 100 | −14 / 39 | 102 m | 4 |
-| 4 — Coastal Approach | Southeastern coast | 111 / −70 | 115 / 21 | 91 m | 3 |
-| 5 — High Green | Northern raised green | −10 / 126 | 8 / 55 | 73 m | 4 |
+## V5 obstacle and water additions - 14 October 2026
 
-Coordinates use the island's local metre space. Heights are sampled from the original terrain. Distances and pars describe this compact game layout, not a regulation course. Holes 1, 2 and 3 are **161–215 m apart**; the closest pair anywhere is approximately **82 m apart**. All new greens clear the coastal promenade, bunkers and existing palm gardens.
+The approved [full design](../ArtSource/Golf/Course/ObstacleWaterV5.png) and
+[holes 3/5 detail](../ArtSource/Golf/Course/ObstacleWaterV5-detail.png) add
+**47 obstacle zones / 141 kit props**, **14 rough patches**, and **six ponds**
+to the retained V2 map. Totals: **225 physical props**, **20 rough areas**,
+**20 unchanged sand patches**, six water footprints. All five hole/tee/route/
+bypass/green/par records and old 84 prop entries remain exact.
+
+Ponds use horizontal teal water, the existing LagoonWater ripple shader and
+shared sand banks conforming to the original slope. Banks contain water without
+editing original terrain mesh vertices/colliders, cups, flags, signs or fairways.
+Only blades under new pond/bank footprints are cleared; mobile grass uses the
+same footprint data. No new texture, model, reflection camera or global render
+setting is needed. Water levels are sampled from terrain; the observed lift above
+centre ground is **0.264-0.766 m** across the six retained design positions.
+
+`GolfBall` records supported safe dry terrain/bank/tee contact positions, avoiding
+water and its immediate one-metre margin. Falling or swept/guided water contact
+clears the trajectory, trail, velocity and old landing-rebound state, then rests
+the ball at its latest dry contact. Airborne positions do not update the anchor;
+a new tee/hole seeds it normally. Existing manual/out-of-bounds recovery still
+uses the last shot position. Water does not add a penalty stroke or alter hole
+progress. Only the host performs recovery; existing reset-sequence snapshots snap
+remote presentation without an RPC/protocol change.
+
+`GolfObstacleAdditionBuilder.ApplyAndReview` applies missing V2/V5 entries and
+pond art additively. `GolfCourseBuilder` preserves the additions on normal fresh
+regeneration. Generated water/bank/rough assets and metas belong in Git. Details
+and source/build limits are in [verification](VERIFICATION.md).
+
+## Additional V2 obstacle zones � 14 October 2026
+
+The approved 43-zone plan adds **72 physical kit props**, **19 shallow sand
+patches** and **six rough areas**, retaining all 12 prior props and the prior
+sand patch (84 props / 20 sand patches total). Rocks and palms reuse existing
+prefabs, LODs, materials and collision. Sand/rough overlays share existing
+textures and shader; rough areas use the existing rough resistance value.
+No shot strength, bounce, timing, scoring or multiplayer parameter changes.
+
+All five tee/cup coordinates, route points, bypass, widths, pars, greens,
+terrain heights, numbered flags, signs and UI remain unchanged.
+`GolfObstacleAdditionBuilder.ApplyAndReview` adds only missing V2 objects to
+the saved scene and environment prefab; grass is cleared only under added sand.
+`FiveHoleCourse.json` retains all 43 zone records and individual prop entries
+for normal fresh-clone regeneration. See [validation](VERIFICATION.md).
+
+## Current circular course — 14 October 2026
+
+Five holes follow the island clockwise and return near the entrance. Route
+length follows intended landing waypoints rather than a direct shot line.
+
+| Hole | Area | Cup X/Z (m) | Tee X/Z (m) | Route length | Proposed par |
+| --- | --- | --- | --- | ---: | ---: |
+| 1 — Bunker Bend | Southwest bunker bend | −62 / −90 | −10 / −146 | 89 m | 3 |
+| 2 — West Stone Garden | Western stone and sand garden | −44 / 53 | −73 / −71 | 141 m | 4 |
+| 3 — Plateau Approach | Northern raised plateau | −10 / 126 | −39 / 68 | 72 m | 3 |
+| 4 — Limestone Gate | Eastern stone gate | 119 / 39 | 8 / 116 | 140 m | 4 |
+| 5 — Homeward Links | S-shaped southern return | 14 / −122 | 109 / 15 | 187 m | 5 |
+
+Coordinates use the island's local metre space. Heights are sampled from the original terrain. Adjacent cup-to-tee walks are under 32 m. Pars are design targets; automated route traversal does not establish optimal scoring. Hole 2 moved 5.7 m from the proposal to a smoother nearby location. Existing bunkers, coast, structures and the northern plateau remain.
+
+Twelve collidable kit obstacles add a west stone island, an east stone gate,
+five palms and three low return-route rocks. Hole 4 has a southern bypass;
+hole 5 routes west of the low ridge, with lofting over it as an alternative.
+One new shallow sand patch uses sand rolling resistance. It is a conforming
+surface, not an excavated bunker. Six feathered fairway meshes share existing
+turf textures; sand shares the existing sand texture. Five tee signs share the
+existing UI font and timber material. No new bitmap, font or model is added.
+Greens use radius 6 m and a 10 m blend; tee patches use radius 3.5 m and a 7 m
+blend. Desktop and procedural mobile grass clear the same greens and sand.
 
 The numbered flags now use the approved teal swallowtail design with cream
 trim and rounded cream numerals, a silver ball-top pole and teal bindings.
@@ -18,11 +80,18 @@ Both faces are numbered. `GolfFlagArtBuilder` generates shared editable meshes;
 `GolfFlagWind` bends cloth, trim and numbers together on the GPU while fixing
 the pole-side edge. Maximum tip displacement is now 0.204 m (six times the initial 0.034 m bound). The pole stays still.
 Five small derived flag textures ship; the full [approved references and authoring notes](../ArtSource/Golf/Flags/README.md)
-remain outside Unity. Cup locations and scoring geometry are unchanged.
+remain outside Unity. Cup dimensions and scoring rules are retained at the revised locations.
 
 Cups are **0.285 m in diameter**, exactly **1.5×** the initial 0.19 m opening, and remain **0.18 m deep**. Each terrain opening has a collidable inner lining and recessed floor. Flagpoles are approximately 3 m high, with shared cloth geometry and reference teal/cream artwork visible on both sides.
 
 ## Editing and regeneration
+
+For the current circuit use `GolfCircuitReview.PrepareAndReview` to regenerate,
+audit scene/prefab/repeat generation, and capture views under
+`Builds/GolfCircuitQA/`. `GolfCircuitReview.CaptureSavedViews` renders existing
+saved content without regeneration. `GolfCircuitArtBuilder` handles shared
+fairway/sand meshes, obstacles and signs. Keep all generated delivery assets
+and their `.meta` files alongside the editable JSON.
 
 Edit [FiveHoleCourse.json](../Game/Assets/_Game/Sports/Golf/FiveHoleCourse.json), then run **WHATTHE FISH? → Golf → Place five-hole course** in Unity. **Place, audit and capture five holes** checks the actual scene/prefab colliders and repeated generation; **Audit and capture saved five holes** reviews the serialized scene in a fresh editor without regenerating geometry. Both write Unity renders to ignored `Builds/GolfPlayabilityQA/Map/`. [GolfCourseBuilder](../Game/Assets/_Game/Editor/GolfCourseBuilder.cs) also runs from the ordinary refined-island generator, so rebuilding the world retains the course.
 
@@ -34,7 +103,7 @@ The 8 October playability update also adds surface-dependent rolling resistance 
 
 ## Current playability verification
 
-Current [measured release and evidence](VERIFICATION.md#golf-playability-and-integrated-greens--8-october-2026) records inner slopes of 0.32–0.53 degrees and no new imported art.
+The previous [8 October release](VERIFICATION.md#golf-playability-and-integrated-greens--8-october-2026) records the earlier layout. Current circuit measurements and delivery limits are in the 14 October verification section.
 
 Run [Test-GolfPlayability.ps1](../Tools/Build/Test-GolfPlayability.ps1) against the current player. It measures actual rolling distances on four surface types, putts in four directions around every cup, and three charge levels from each tee. Run the existing physics, match, island and cart checks as regressions. The editor review checks inner cup slopes, surrounding collision continuity, original UVs, unchanged outer terrain and repeat generation. Mobile geometry requires its own preview checks; Windows renders do not qualify phone performance.
 

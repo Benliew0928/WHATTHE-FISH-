@@ -6,9 +6,9 @@ namespace WhatTheFish {
   [Header("Swing launch")]
   [Min(0)] public float minimumSwingSpeed=3f;
   [Tooltip("Full-charge horizontal launch speed, in metres/second.")]
-  [Min(0)] public float maximumSwingSpeed=17f;
+  [Min(0)] public float maximumSwingSpeed=34f;
   [Min(0)] public float minimumSwingLift=2.8f;
-  [Min(0)] public float maximumSwingLift=8.5f;
+  [Min(0)] public float maximumSwingLift=17f;
   [Tooltip("Tangential speed retained when a lofted swing first meets the turf.")]
   [Range(0,1)] public float landingSpeedRetention=.78f;
   [Header("Turf landing")]
@@ -23,7 +23,7 @@ namespace WhatTheFish {
    return tangent+normal*(incoming>minimumBounceSpeed?incoming*turfRestitution:0);
   }
   [Min(0)] public float minimumPuttSpeed=.35f;
-  [Min(0)] public float maximumPuttSpeed=7.5f;
+  [Min(0)] public float maximumPuttSpeed=15f;
   public Vector3 SwingVelocity(Vector3 direction,float charge,GolfShotMode mode=GolfShotMode.Swing){
    charge=Mathf.Clamp01(charge);
    direction=Vector3.ProjectOnPlane(direction,Vector3.up).normalized;

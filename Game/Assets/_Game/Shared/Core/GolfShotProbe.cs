@@ -35,7 +35,7 @@ namespace WhatTheFish {
    }return best;
   }
   IEnumerator Observe(string label,Vector3 target,Vector3[] vertices,int count,GolfShotMode mode,uint contact,int strokes){
-   float until=Time.time+1;while(!ball.FollowingShot&&Time.time<until)yield return new WaitForFixedUpdate();Check(ball.FollowingShot,label+"_CONTACT_STARTS_TRAVEL");
+   int landings=GolfFeedback.Instance.CueCount(GolfFeedbackCue.Turf)+GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand);float until=Time.time+1;while(!ball.FollowingShot&&Time.time<until)yield return new WaitForFixedUpdate();Check(ball.FollowingShot,label+"_CONTACT_STARTS_TRAVEL");
    float error=0,peak=ball.Body.position.y;uint reset=ball.ResetSequence;until=Time.time+20;
    while(ball.FollowingShot&&Time.time<until){error=Mathf.Max(error,DistanceToGuide(ball.Body.position,vertices,count));peak=Mathf.Max(peak,ball.Body.position.y);yield return new WaitForFixedUpdate();}
    float endError=Vector3.Distance(target,ball.LastGuideContact);
@@ -43,14 +43,15 @@ namespace WhatTheFish {
    Check(ball.ResetSequence==reset&&ball.GuideContactSequence==contact+1,label+"_REACHES_REAL_CONTACT_WITHOUT_RESET");
    Check(error<.08f&&endError<.02f,label+"_VISIBLE_PATH_AND_CONTACT_MATCH_LIVE_BALL");
    Check(match.Player(actor).TotalStroke==strokes+1,label+"_ONE_RELEASE_ONE_STROKE");
-   if(mode==GolfShotMode.Putt){yield return new WaitForSeconds(.8f);Check(ball.Motion==GolfBallMotion.Resting&&Vector3.Distance(ball.Body.position,target)<.03f,label+"_PUTT_RESTS_AT_GLOW");}
-   else Check(peak-ball.LastShotPosition.y>.35f,label+"_SWING_HAS_CURVED_FLIGHT");
+   if(mode==GolfShotMode.Putt){yield return new WaitForSeconds(.8f);File.AppendAllText(report,$"REST_MEASURE {label} mode={ball.Motion} ball={ball.Body.position:F5} target={target:F5} distance={Vector3.Distance(ball.Body.position,target):F5} velocity={ball.Velocity:F5} reset={ball.ResetSequence} priorReset={reset}\n");Check(ball.Motion==GolfBallMotion.Resting&&Vector3.Distance(ball.Body.position,target)<.03f,label+"_PUTT_RESTS_AT_GLOW");}
+   else {Check(peak-ball.LastShotPosition.y>.35f,label+"_SWING_HAS_CURVED_FLIGHT");Check(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Turf)+GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand)>landings,label+"_REAL_LANDING_EMITS_SURFACE_FEEDBACK");}
   }
   IEnumerator Start(){
    var args=Environment.GetCommandLineArgs();report=args[Array.IndexOf(args,"-report")+1];DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    float until=Time.time+60;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!GolfMatchManager.Instance)&&Time.time<until)yield return null;
-   app=AppRoot.Instance;match=GolfMatchManager.Instance;actor=app.LocalAthlete;Check(match&&match.StartMatch(),"MATCH_STARTED");ball=match.Ball(actor);ui=FindFirstObjectByType<GolfSwingButton>();
+   app=AppRoot.Instance;match=GolfMatchManager.Instance;actor=app.LocalAthlete;GolfFeedback.Instance.ReviewFocus(true);Check(match&&match.StartMatch(),"MATCH_STARTED");ball=match.Ball(actor);ui=FindFirstObjectByType<GolfSwingButton>();
    Check(!GameObject.Find("Golf shot readout"),"NO_PHYSICS_READOUT_PANEL");
+   if(args.Contains("-golfFeedbackOnly")){Time.timeScale=1;yield return Interactions();File.AppendAllText(report,"GOLF_SHOT_COMPLETE feedback_only checks="+checks+"\n");Application.Quit();yield break;}
    Time.timeScale=3;
    foreach(var hole in match.Course.holes){
     foreach(var mode in new[]{GolfShotMode.Swing,GolfShotMode.Putt})foreach(float power in new[]{.25f,.80f}){
@@ -85,7 +86,7 @@ namespace WhatTheFish {
    File.AppendAllText(report,"GOLF_SHOT_COMPLETE checks="+checks+"\n");
   }
   IEnumerator Interactions(){
-   var cup=match.Course.holes[4].cup.position;
+   var cup=match.Target(actor).cup.position;
    ball.Place(Ground(cup+Vector3.left*11.9f,GolfBall.Radius+.002f),true);Check(match.ShotMode(ball)==GolfShotMode.Putt,"INSIDE_TWELVE_METRES_USES_PUTT");
    ball.Place(Ground(cup+Vector3.left*12.1f,GolfBall.Radius+.002f),true);Check(match.ShotMode(ball)==GolfShotMode.Swing,"OUTSIDE_TWELVE_METRES_USES_SWING");
    var plate=new GameObject("Temporary trajectory interaction support");plate.layer=8;plate.transform.position=cup+Vector3.up*5;plate.AddComponent<BoxCollider>().size=new Vector3(16,.2f,16);Physics.SyncTransforms();
@@ -99,9 +100,20 @@ namespace WhatTheFish {
    ball.Place(start,true);Check(!ball.FollowingShot&&ball.ReadyToAim,"RESET_CLEARS_PLANNED_TRAVEL");Destroy(plate);yield return null;
    match.ClearMatch();Check(match.StartMatch(),"CUP_PUTT_MATCH_STARTED");ball=match.Ball(actor);cup=match.Course.holes[0].cup.position;
    yield return Prepare(Ground(cup+Vector3.right*.65f,GolfBall.Radius+.002f),-90);Check(app.view.GolfMode==GolfShotMode.Putt,"CUP_APPROACH_USES_PUTT");
-   app.view.RequestGolfSwing(.35f);until=Time.time+4;while(match.Player(actor).CompletedHoleCount==0&&Time.time<until)yield return new WaitForFixedUpdate();
+   int cupBefore=GolfFeedback.Instance.CueCount(GolfFeedbackCue.Cup);app.view.RequestGolfSwing(.008f);until=Time.time+4;while(match.Player(actor).CompletedHoleCount==0&&Time.time<until)yield return new WaitForFixedUpdate();
    File.AppendAllText(report,$"CUP_PUTT position={ball.Body.position:F4} completed={match.Player(actor).CompletedHoleCount}\n");
    Check(match.Player(actor).CompletedHoleCount==1&&match.Player(actor).TotalStroke==1,"ACTUAL_GROUND_PUTT_FALLS_INTO_CUP_AND_SCORES");
+   Check(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Cup)==cupBefore+1,"ACTUAL_SUCCESSFUL_CUP_PLAYS_EXACTLY_ONE_CELEBRATION");
+   int invalidBefore=GolfFeedback.Instance.CueCount(GolfFeedbackCue.Cup);match.EnterHole(ball,5);Check(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Cup)==invalidBefore,"WRONG_CUP_DOES_NOT_CELEBRATE");
+   app.view.CancelGolfAim();var sandPatch=match.Course.sandPatches.First(p=>match.Course.RollingResistance(match.Course.transform.TransformPoint(p.centre),ball.PhysicsSettings)>5.7f);
+   var sandWorld=match.Course.transform.TransformPoint(sandPatch.centre);Check(Physics.Raycast(sandWorld+Vector3.up*100,Vector3.down,out var sandFloor,200,1<<8,QueryTriggerInteraction.Ignore),"SAND_LANDING_FIXTURE_HAS_REAL_COURSE_FLOOR");
+   int sandBefore=GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand);ball.Place(sandFloor.point+Vector3.up*1.1f,true);ball.Strike(Vector3.down*2);until=Time.time+3;
+   while(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand)==sandBefore&&Time.time<until)yield return new WaitForFixedUpdate();
+   Check(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand)>sandBefore,"REAL_SAND_DROP_EMITS_DISTINCT_SAND_SOUND");
+   int finishBefore=GolfFeedback.Instance.CueCount(GolfFeedbackCue.Finish);for(int hole=2;hole<=5;hole++)match.EnterHole(ball,hole);yield return Frame();
+   Check(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Finish)==finishBefore+1&&match.Player(actor).IsFinished,"FINAL_VALID_HOLE_HAS_DISTINCT_FINISH_CUE");
+   Check(GolfFeedback.Instance.ParticleCount>0,"VALID_CUP_EVENTS_EMIT_FINITE_GOLD_PARTICLES");Capture("cup-success-feedback");
+
   }
  }
 }

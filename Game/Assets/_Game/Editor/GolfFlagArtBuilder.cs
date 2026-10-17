@@ -13,6 +13,7 @@ using Object=UnityEngine.Object;
 public static class GolfFlagArtBuilder {
  const string Folder=GolfCourseBuilder.Art;
  const string Prefab="Assets/_Game/Prefabs/Golf/HoleFlag.prefab";
+ static readonly Dictionary<int,(DateTime sourceTime,Material material)> referenceCache=new();
  static readonly Color Cream=new Color(.96f,.88f,.71f),Teal=new Color(.015f,.49f,.56f);
  sealed class Shape {
   public readonly List<Vector3> p=new();public readonly List<int> t=new();public readonly List<Color> c=new();
@@ -59,10 +60,12 @@ public static class GolfFlagArtBuilder {
  // Derive delivery pixels from the approved masters, preserving their actual
  // silhouette, colour, numeral and painted fabric highlights. No redrawing.
  static Material ReferenceFabric(int number){
+  string sourcePath=Path.GetFullPath(Path.Combine(Application.dataPath,"../../ArtSource/Golf/Flags/References/hole-"+number+".png"));var sourceTime=File.GetLastWriteTimeUtc(sourcePath);
+  if(referenceCache.TryGetValue(number,out var cached)&&cached.sourceTime==sourceTime&&cached.material&&AssetDatabase.Contains(cached.material))return cached.material;
   string path=Folder+"Textures/HoleFlag"+number+".png";
   Directory.CreateDirectory(Path.GetDirectoryName(path));
   var source=new Texture2D(2,2,TextureFormat.RGBA32,false);
-  source.LoadImage(File.ReadAllBytes(Path.GetFullPath(Path.Combine(Application.dataPath,"../../ArtSource/Golf/Flags/References/hole-"+number+".png"))));
+  source.LoadImage(File.ReadAllBytes(sourcePath));
   const int width=512,height=384;var texture=new Texture2D(width*2,height,TextureFormat.RGBA32,false);
   var pixels=new Color32[width*2*height];
   for(int y=0;y<height;y++)for(int x=0;x<width;x++){
@@ -82,13 +85,13 @@ public static class GolfFlagArtBuilder {
    }
    pixels[y*width*2+x+width]=back;
   }
-  texture.SetPixels32(pixels);texture.Apply();File.WriteAllBytes(path,texture.EncodeToPNG());Object.DestroyImmediate(source);Object.DestroyImmediate(texture);
+  texture.SetPixels32(pixels);texture.Apply();var delivery=texture.EncodeToPNG();if(!File.Exists(path)||!File.ReadAllBytes(path).SequenceEqual(delivery))File.WriteAllBytes(path,delivery);Object.DestroyImmediate(source);Object.DestroyImmediate(texture);
   AssetDatabase.ImportAsset(path);var importer=(TextureImporter)AssetImporter.GetAtPath(path);
   importer.textureType=TextureImporterType.Default;importer.alphaSource=TextureImporterAlphaSource.FromInput;importer.alphaIsTransparency=true;
   importer.mipmapEnabled=true;importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Trilinear;importer.maxTextureSize=1024;
   var android=importer.GetPlatformTextureSettings("Android");android.overridden=true;android.maxTextureSize=1024;android.format=TextureImporterFormat.ASTC_6x6;importer.SetPlatformTextureSettings(android);importer.SaveAndReimport();
   var material=Mat("Reference hole flag "+number,"WhatTheFish/GolfFlagWind",Color.white);
-  material.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(path));EditorUtility.SetDirty(material);return material;
+  material.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(path));EditorUtility.SetDirty(material);referenceCache[number]=(sourceTime,material);return material;
  }
  static Mesh ReferencePanel(){
   const int columns=40,rows=28;var p=new List<Vector3>();var uv=new List<Vector2>();var t=new List<int>();

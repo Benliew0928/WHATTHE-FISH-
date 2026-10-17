@@ -152,8 +152,8 @@ namespace WhatTheFish {
    feedback.OnPointerUp(pointer);yield return new WaitForSeconds(.4f);Check(Mathf.Abs(button.transform.localScale.x-rest)<.005f,"Fishing release returns native control to rest");
   }
   IEnumerator GolfFeedbackChecks(){
-   var button=GolfHUD.Instance.CameraButton;var feedback=button.GetComponent<CoveFeedback>();var visual=button.transform.Find("Golf button visual");var rect=(RectTransform)button.transform;
-   Check(button.interactable&&feedback&&visual,"Golf Camera has native pointer feedback");if(!feedback||!visual)yield break;
+   var button=GolfHUD.Instance.JumpButton;var feedback=button.GetComponent<CoveFeedback>();var visual=button.transform.Find("Golf button visual");var rect=(RectTransform)button.transform;
+   Check(button.interactable&&feedback&&visual,"Golf Jump has native pointer feedback");if(!feedback||!visual)yield break;
    var before=new Vector3[4];rect.GetWorldCorners(before);float rest=visual.localScale.x;var pointer=new PointerEventData(EventSystem.current){pointerId=81,button=PointerEventData.InputButton.Left};feedback.OnPointerDown(pointer);yield return new WaitForSeconds(.16f);
    float held=visual.localScale.x;Check(MenuPreferences.ReducedMotion||held<rest*.99f,"Golf press compresses its illustration");feedback.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=82});yield return new WaitForSeconds(.08f);
    Check(MenuPreferences.ReducedMotion||Mathf.Abs(visual.localScale.x-held)<.008f,"another finger cannot release Golf feedback");var after=new Vector3[4];rect.GetWorldCorners(after);Check(before.Zip(after,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.01f),"Golf press keeps the touch target fixed");

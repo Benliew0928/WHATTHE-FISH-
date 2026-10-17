@@ -309,6 +309,8 @@ namespace WhatTheFish {
     CheckBallVisual(match.Ball(0));
     Check(match.State.Players.All(p=>match.Tee(p.PlayerId))&&FindObjectsByType<GolfTee>(FindObjectsSortMode.None).Length==2,"CLIENT_DISPLAYS_BOTH_PLAYERS_FIXED_OPENING_TEES");
     yield return new WaitForSeconds(.2f);Check(Athlete.Active.Where(a=>match.Player(a)!=null).All(a=>a.GolfClubMotion.Equipped),"CLIENT_SEES_CLUB_ON_EVERY_MATCH_PLAYER");
+    var aimActor=app.LocalAthlete;var aimBall=match.Ball(0);bool stanceReady=match.TryStance(aimActor,aimBall,out var stanceFeet,app.view.yaw);
+    File.AppendAllText(report,$"AIM_FIXTURE actor={aimActor.transform.position} ball={aimBall.Body.position} ready={aimBall.ReadyToAim} swing={match.CanSwing(aimActor)} stance={stanceReady} feet={stanceFeet} candidate={match.AimCandidate(aimActor)} viewActive={app.view.CanAimGolf}\n");
     Check(app.view.BeginGolfAim(),"CLIENT_REQUESTS_AIM_LOCK");yield return new WaitForSeconds(.3f);yield return PoseFrame();var localClub=app.LocalAthlete.GolfClubMotion;Check(app.view.GolfAiming&&localClub.TwoHanded&&localClub.GripError<.025f&&localClub.HeadTargetError<.03f&&localClub.LeftWristReachable&&localClub.RightWristReachable,"CLIENT_ENTERS_TWO_HAND_AIM_ADDRESS_BEFORE_CHARGE");Check(app.view.BeginGolfSwing(42),"CLIENT_STARTS_RELIABLE_GOLF_CHARGE");yield return new WaitForSeconds(.35f);yield return PoseFrame();Check(localClub.TwoHanded&&localClub.GripError<.025f,"CLIENT_LOCAL_TWO_HAND_GRIP");
     if(args.Contains("-golfSideSwing")){
      var actor=app.LocalAthlete;var direction=Vector3.ProjectOnPlane(match.Ball(0).Body.position-actor.transform.position,Vector3.up);

@@ -22,7 +22,7 @@ namespace WhatTheFish {
    return nearest;
   }
   bool AimEligible(Athlete actor,GolfBall ball){var p=ball?State.Player(ball.Owner):null;return ball&&ball.ReadyToAim&&p!=null&&!p.IsFinished&&!p.IsDNF&&Vector3.Distance(actor.transform.position,ball.Body.position)<=AimReach&&VisibleBall(actor,ball);}
-  bool VisibleBall(Athlete actor,GolfBall ball)=>!Physics.Linecast(actor.transform.position+Vector3.up*.5f,ball.Body.position+Vector3.up*.04f,out var hit,1<<8,QueryTriggerInteraction.Ignore)||hit.distance>Vector3.Distance(actor.transform.position+Vector3.up*.5f,ball.Body.position)-.07f;
+  bool VisibleBall(Athlete actor,GolfBall ball)=>!Physics.Linecast(actor.transform.position+Vector3.up*.8f,ball.Body.position+Vector3.up*GolfBall.Radius,out var hit,1<<8,QueryTriggerInteraction.Ignore)||hit.distance>Vector3.Distance(actor.transform.position+Vector3.up*.8f,ball.Body.position)-.07f;
   public bool TryStance(Athlete actor,GolfBall ball,out Vector3 position,float heading=0){
    // Take a golfer's side-on stance once at entry. Later aim rotation never
    // drags the feet around the ball. Fall back toward the approach if blocked.
@@ -30,15 +30,23 @@ namespace WhatTheFish {
    if(StanceAt(actor,ball,side,out position))return true;
    var offset=Vector3.ProjectOnPlane(actor.transform.position-ball.Body.position,Vector3.up);
    if(offset.sqrMagnitude<.001f)offset=-actor.transform.forward;
-   return StanceAt(actor,ball,offset.normalized,out position);
+   if(StanceAt(actor,ball,offset.normalized,out position))return true;
+   // A tree or bunker edge can block the preferred side. Search fixed angular
+   // candidates without moving the ball or disabling obstacle collisions.
+   for(int ring=0;ring<2;ring++)for(int i=1;i<=16;i++){
+    int step=(i+1)/2*(i%2==1?1:-1);
+    var candidate=Quaternion.Euler(0,step*22.5f,0)*side;
+    if(StanceAt(actor,ball,candidate,out position,ring==0?.64f:.86f))return true;
+   }
+   return false;
   }
-  bool StanceAt(Athlete actor,GolfBall ball,Vector3 offset,out Vector3 position){
+  bool StanceAt(Athlete actor,GolfBall ball,Vector3 offset,out Vector3 position,float reach=.64f){
    // Stand close enough for the shoulders to sit over the address grip. The
    // previous .85 m side offset left the short character reaching outward with
    // a folded elbow. Derive this from the sanctioned club reach so the stance
    // remains proportional if that gameplay range is tuned.
-   position=actor.transform.position;var desired=ball.Body.position+offset*(GolfClubMotion.SwingReach*.64f);
-   if(!Physics.Raycast(desired+Vector3.up*1.2f,Vector3.down,out var ground,2.5f,1<<8,QueryTriggerInteraction.Ignore)||ground.normal.y<.8f||Mathf.Abs(ground.point.y-actor.transform.position.y)>.6f)return false;
+   position=actor.transform.position;var desired=ball.Body.position+offset*(GolfClubMotion.SwingReach*reach);
+   if(!Physics.Raycast(desired+Vector3.up*1.2f,Vector3.down,out var ground,2.5f,1<<8,QueryTriggerInteraction.Ignore)||ground.normal.y<Mathf.Max(.65f,Mathf.Cos(actor.capsule.slopeLimit*Mathf.Deg2Rad))||Mathf.Abs(ground.point.y-actor.transform.position.y)>.6f)return false;
    desired=ground.point+Vector3.up*.035f;
    foreach(var other in Athlete.Active)if(other&&other!=actor&&Vector3.Distance(other.transform.position,desired)<.6f)return false;
    var capsule=actor.capsule;float radius=capsule.radius*.9f;float height=capsule.height;
@@ -47,6 +55,8 @@ namespace WhatTheFish {
    var delta=desired-position;var a=position+Vector3.up*(radius+.16f);var b=position+Vector3.up*(height-radius);
    if(delta.magnitude>.01f&&Physics.CapsuleCast(a,b,radius,delta.normalized,delta.magnitude,(1<<8)|(1<<9),QueryTriggerInteraction.Ignore))return false;
    if(Vector3.Distance(desired,ball.Body.position)>GolfClubMotion.SwingReach)return false;
+   // A legal stance must also see the ball; never aim through a tree or wall.
+   if(Physics.Linecast(desired+Vector3.up*.8f,ball.Body.position+Vector3.up*GolfBall.Radius,out var obstruction,1<<8,QueryTriggerInteraction.Ignore)&&obstruction.distance<Vector3.Distance(desired+Vector3.up*.8f,ball.Body.position)-.07f)return false;
    position=desired;return true;
   }
   public bool SetAim(Athlete actor,bool enabled,ulong owner,uint round,float heading=0){

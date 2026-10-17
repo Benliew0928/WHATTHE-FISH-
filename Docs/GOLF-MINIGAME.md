@@ -1,5 +1,25 @@
 # Golf mini game
 
+## V5 controls restored - 14 October 2026
+
+Swing uses the pre-control-redesign V5 implementation: hold to charge, release
+to strike. Aim uses the original third-person framing and existing shot guide.
+No retained power rail, click Swing or direct camera loft mapping is active.
+Automatic Putt, all V5 obstacles/ponds and latest-dry water recovery remain.
+Room protocol is restored to **49**, requiring matching builds.
+
+## Circular course — 14 October 2026
+
+The current five-hole layout follows a clockwise route from the southern
+entrance, through the west sand/stone garden, northern plateau and east stone
+gate, then returns south. See [course coordinates and obstacles](GOLF-COURSE.md).
+Authored fairways retain normal fairway resistance; the new shallow sand patch
+uses existing sand resistance. Stone and palm obstacles use real kit colliders.
+Hole 4 offers a southern gate bypass. Shot strength, charge, rebound formulas,
+scoring, match authority and camera control are retained. A full downhill shot
+on Hole 4 can travel about 66 m including roll; the regression test envelope
+was extended to 90 m without changing the shot model.
+
 Enter Golf offline, or start the host's ready room, then select **Start golf match**. Only the offline player or host can start or restart a match. The existing character movement, three camera modes, golf carts and group island travel remain available. Returning to the lobby or leaving the island clears the round without producing a result.
 
 All five existing numbered aqua flags and cups remain present and open together. Each participant gets one ball at the first existing tee and an independent target starting at Hole 1. Completing a hole places only that owner's ball at the next existing tee; characters continue moving normally. After Hole 5 the player is Finished, their target indicator disappears, and their ball is excluded from further swings.

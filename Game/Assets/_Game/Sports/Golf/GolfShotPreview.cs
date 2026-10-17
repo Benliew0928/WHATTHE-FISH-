@@ -8,12 +8,13 @@ namespace WhatTheFish {
   readonly List<Vector3> vertices=new(2200);readonly List<Vector2> uvs=new(2200),styles=new(2200);readonly List<int> indices=new(6600);
   Mesh mesh;MeshRenderer lane;Material material;
   Vector3 previousOrigin;float previousHeading,previousCharge;GolfShotMode previousMode;bool sampled;
+  int shownCount;Vector3 shownEnd,shownNormal;bool blocked;readonly RaycastHit[] hits=new RaycastHit[64];
   public bool Visible=>lane&&lane.enabled;
-  public Vector3 EndPoint=>plan.EndPoint;
+  public Vector3 EndPoint=>shownEnd;
   public Vector3 LaunchVelocity=>plan.LaunchVelocity;
-  public int PointCount=>plan.Count;
+  public int PointCount=>shownCount;
   public GolfShotMode Mode=>plan.Mode;
-  public bool HasTarget=>plan.HasTarget;
+  public bool HasTarget=>blocked||plan.HasTarget;
   public void Hide(){if(lane)lane.enabled=false;sampled=false;}
   void Create(){
    var source=Resources.Load<Material>("GolfShotGuide");if(!source)return;
@@ -26,23 +27,37 @@ namespace WhatTheFish {
     plan.Build(origin,Quaternion.Euler(0,heading,0)*Vector3.forward,charge,mode,course,ball.PhysicsSettings);
     previousOrigin=origin;previousHeading=heading;previousCharge=charge;previousMode=mode;sampled=true;
    }
-   Render(camera);lane.enabled=true;
+   LimitPutt(ball);Render(camera);lane.enabled=true;
   }
+  void LimitPutt(GolfBall ball){
+   shownCount=plan.Count;shownEnd=plan.EndPoint;shownNormal=plan.Normal;blocked=false;if(plan.Mode!=GolfShotMode.Putt)return;
+   for(int i=1;i<plan.Count;i++){
+    var from=plan.Points[i-1];var delta=plan.Points[i]-from;if(delta.sqrMagnitude<1e-9f)continue;float distance=delta.magnitude,nearest=distance+1;RaycastHit closest=default;
+    int count=Physics.SphereCastNonAlloc(from,GolfBall.Radius,delta/distance,hits,distance,(1<<0)|(1<<8)|(1<<9)|(1<<GolfCartMotor.Layer),QueryTriggerInteraction.Ignore);
+    for(int k=0;k<count;k++){var hit=hits[k];if(!hit.collider||hit.collider.transform.IsChildOf(ball.transform)||hit.collider.GetComponentInParent<Athlete>())continue;
+     // Supporting terrain/pond banks are followed by the existing rolling plan.
+     if(hit.normal.y>.35f&&(GolfCartMotor.Terrain(hit.collider)||hit.collider.name.Contains("bank")))continue;
+     if(hit.distance<nearest){nearest=hit.distance;closest=hit;}
+    }
+    if(nearest<=distance){blocked=true;shownEnd=from+delta.normalized*nearest;shownNormal=closest.normal;shownCount=i+1;return;}
+   }
+  }
+  Vector3 Point(int i)=>blocked&&i==shownCount-1?shownEnd:plan.Points[i];
   void Vertex(Vector3 p,Vector2 uv,Vector2 style){vertices.Add(p);uvs.Add(uv);styles.Add(style);}
   void Quad(int a,int b,int c,int d){indices.Add(a);indices.Add(c);indices.Add(b);indices.Add(b);indices.Add(c);indices.Add(d);}
   void Render(Camera camera){
    vertices.Clear();uvs.Clear();styles.Clear();indices.Clear();float distance=0;
-   for(int i=0;i<plan.Count;i++){
-    var p=plan.Points[i]+Vector3.up*.035f;var before=plan.Points[Mathf.Max(0,i-1)];var after=plan.Points[Mathf.Min(plan.Count-1,i+1)];
+   for(int i=0;i<shownCount;i++){
+    var p=Point(i)+Vector3.up*.035f;var before=Point(Mathf.Max(0,i-1));var after=Point(Mathf.Min(shownCount-1,i+1));
     var side=Vector3.Cross(after-before,camera.transform.position-p).normalized;
     float width=.13f+Mathf.Min(.13f,Vector3.Distance(camera.transform.position,p)*.0025f);
-    if(i>0)distance+=Vector3.Distance(plan.Points[i-1],plan.Points[i]);
+    if(i>0)distance+=Vector3.Distance(Point(i-1),Point(i));
     var style=new Vector2(0,plan.Mode==GolfShotMode.Putt?1:0);
     Vertex(p-side*width,new Vector2(-1,distance),style);Vertex(p+side*width,new Vector2(1,distance),style);
     if(i>0){int n=vertices.Count;Quad(n-4,n-3,n-2,n-1);}
    }
-   if(plan.HasTarget){
-    var normal=plan.Normal;var point=EndPoint-normal*(GolfBall.Radius-.025f);
+   if(HasTarget){
+    var normal=shownNormal;var point=EndPoint-normal*(GolfBall.Radius-.025f);
     var right=Vector3.Cross(normal,Mathf.Abs(normal.z)>.9f?Vector3.right:Vector3.forward).normalized;var forward=Vector3.Cross(right,normal);
     float radius=.85f+Mathf.Min(.5f,Vector3.Distance(camera.transform.position,point)*.01f);int n=vertices.Count;var style=new Vector2(1,0);
     Vertex(point+(-right-forward)*radius,new Vector2(-1,-1),style);Vertex(point+(right-forward)*radius,new Vector2(1,-1),style);

@@ -1,0 +1,41 @@
+{
+  "base": "Repository root",
+  "clips": [
+    {
+      "file": "Game/Assets/_Game/Resources/GolfAudio/go.wav",
+      "master": "ArtSource/Audio/Golf/Recordings/go-master.wav",
+      "start_seconds": 0.53,
+      "end_seconds": 1.46,
+      "sample_rate": 32000,
+      "channels": 1,
+      "sha256": "378812ab6024285c7bdc53d61576004c5054f0a6c495469170ad4221bd95f749"
+    },
+    {
+      "file": "Game/Assets/_Game/Resources/GolfAudio/Walkway/step-01.wav",
+      "master": "ArtSource/Audio/Golf/Recordings/walkway-master.wav",
+      "start_seconds": 0.79,
+      "end_seconds": 1.14,
+      "sample_rate": 32000,
+      "channels": 1,
+      "sha256": "a0728ef68d3198054968f936191fff34aaa8971e60813962aa9e630a800dceec"
+    },
+    {
+      "file": "Game/Assets/_Game/Resources/GolfAudio/Walkway/step-02.wav",
+      "master": "ArtSource/Audio/Golf/Recordings/walkway-master.wav",
+      "start_seconds": 1.48,
+      "end_seconds": 1.8,
+      "sample_rate": 32000,
+      "channels": 1,
+      "sha256": "93b5847f3c1b0a20480462454374ea42326515e85c53c3bb8d6221d0bc22890b"
+    },
+    {
+      "file": "Game/Assets/_Game/Resources/GolfAudio/Walkway/step-03.wav",
+      "master": "ArtSource/Audio/Golf/Recordings/walkway-master.wav",
+      "start_seconds": 2.2,
+      "end_seconds": 2.57,
+      "sample_rate": 32000,
+      "channels": 1,
+      "sha256": "996ad4768ddd00ca1a9c1aefe04cc89195c02194efdd756349bb052fe7d80324"
+    }
+  ]
+}

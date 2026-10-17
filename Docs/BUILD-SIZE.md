@@ -1,5 +1,815 @@
 # Build size — measured release records
 
+## User-recorded Golf GO and walkway audio — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 19:34:26 Malaysia time**:
+**94,935,333 → 95,067,465 bytes (+132,132)**. Remaining headroom under the
+**1,000,000,000-byte** cap: **904,932,535 bytes**. Full build, budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**8468547CD3D98039C15E728F33C71C23AA3599FCB38507ABB808DAD7ED2C5F8B**.
+
+GO uses the user's first recording, cropped .53-1.46 s, once at the real GO
+transition. Walkway Path/Approach/Paving contacts use three individual steps
+from the second recording, not the full multi-step sequence. Each planted
+foot selects one take at original pitch; other surface clips, foot cadence,
+countdown-number beeps, volume controls and gameplay remain unchanged.
+Four mono 32 kHz PCM clips total **126,256 source WAV bytes**. Full decoded
+48 kHz stereo masters and provenance remain outside Unity Resources in
+`ArtSource/Audio/Golf/Recordings/`; the portable deterministic generator is
+`Tools/Audio/prepare_golf_recordings.py`. No video or source masters ship.
+See [GOLF-FEEDBACK.md](GOLF-FEEDBACK.md) and the source README for crop/processing.
+
+Final complete Windows build (**19:31**) passed **216 rendered HUD/feedback
+checks with 34 captures and 17 targeted shot checks**, at
+`Builds/GolfHUDQA/Run-20261017-193200/` and
+`Builds/GolfShotQA/Run-20261017-193200/`. Confirms GO references the recorded
+asset, three short mono steps have clean boundaries and no clipping, actual
+planted walkway contacts play recorded takes, and one locomotion cycle still
+produces two sounds. Existing five-beep/one-GO, other surfaces, previews and
+feedback checks pass. Regeneration from an unrelated working directory produces
+identical WAV hashes. Physical speaker/timbre perception, phone output/FPS and
+live WAN remain unverified. Existing broad-suite Hole 4 putt-rest issue remains
+documented below; this task does not change ball motion or gameplay.
+
+All **322 full Windows player files** matched SHA-256 on promotion to
+`Builds/WindowsFinal/`. Previous player archived in
+`Legacy/20261017-193332-031-golf-recorded-audio-player/`. Evidence, raw extraction
+analysis, hashes, build logs, APK/signature and audit: `Builds/GolfRecordedAudioQA/`.
+Pre-existing saved scene/UI/art work remains included as captured, not separately
+qualified. No stage, commit or push was performed.
+
+Four audio resource entries contribute 126,592 compressed bytes; IL2CPP grows
+3,180 bytes. Other small ZIP/metadata shifts account for the remaining growth.
+Largest art estimates remain timber 2,247,414; character albedo 1,992,754;
+Golf structures 1,965,725; character mesh 1,588,031 bytes. No unexpected art
+increase. WAV/source bytes and ZIP estimates are not measured APK size.
+
+## Golf Putt preview and presentation refinements — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 19:13:49 Malaysia time**:
+**94,934,277 → 94,935,333 bytes (+1,056)**. Remaining headroom below the
+**1,000,000,000-byte** cap: **905,064,667 bytes**. Full build, budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**00C770C9C04DB8C88BBF3AEF1BFAFE131F7BA6CCB0A9087E534AAE5381DF142C**.
+
+GO now plays one clean continuous tone without breath noise or trill. Full
+charge no longer plays a ready cue; pale-red Swing edges reach 30% opacity.
+The character power meter has rounded teal trim and a highlight. Roaming's
+Walk near your ball to aim plate is hidden; charge/driving hints remain.
+Actual path supports select stone footsteps. Wheel marks are darker (.48
+opacity); contacts emit 8 larger, more widely scattered flecks, capped at 256
+particles per used cart. Marks still fade fully in 3 s. Golf ponds reuse the
+Fishing water shader with .28 base opacity, ripple speed 1 and a cooler blue
+tint compensating for the green bed. Material generator defaults match.
+Putt display ends at the first solid obstacle instead of showing later rebound
+or final rest, including default-layer objects; Swing display is unchanged.
+Authoritative ball plans/physics, scoring, terrain geometry and driving are
+unchanged. Details/settings: [GOLF-FEEDBACK.md](GOLF-FEEDBACK.md).
+
+Complete final Windows candidate (full build **19:11**) passed **211 rendered
+HUD/feedback checks with 34 captures and 17 targeted shot checks**, at
+`Builds/GolfHUDQA/Run-20261017-191146/` and
+`Builds/GolfShotQA/Run-20261017-191146/`. Covers actual welcome-path stone sound,
+hidden roaming hint, 30% edge without ready cue, steady 2400 Hz GO signal,
+pond shader/opacity, Putt endpoints immediately before both default/scene-layer
+obstacles at different powers, and unchanged Swing endpoint. Existing foot
+plant, wheel emission/expiry, local camera and contact checks also pass.
+Visual review confirmed rounded meter, red edge, stronger wheel marks/flecks,
+hidden idle hint and transparent blue pond. No physical speaker/phone/WAN
+quality or performance is certified by these desktop checks.
+
+All **322 complete player files** matched SHA-256 on promotion to
+`Builds/WindowsFinal/`. Previous player archived to
+`Legacy/20261017-191305-118-golf-refine-player/`. Evidence, build logs, source
+hashes, player hashes, signed APK and audit: `Builds/GolfRefineQA/`. Failed
+intermediate test-fixture lookups are retained as diagnostic evidence and were
+corrected before final qualification. Earlier green pond capture was refined
+and both final platforms rebuilt; intermediate APK is not final validation.
+
+Compressed IL2CPP grows 839 bytes and metadata 131 bytes; other ZIP entries
+shift slightly. Largest art estimates remain timber 2,247,414; character albedo
+1,992,754; Golf structures 1,965,725; character mesh 1,588,031 bytes. No new
+imported art/audio or unexpected art growth. Estimates are not APK size.
+The pre-existing broad shot-suite Hole 4 putt-rest issue remains documented
+below; ball motion is unchanged. Pre-existing saved scene/UI/art work remains
+included as captured and is not independently qualified by these suites.
+
+## Golf charge meter, planted footsteps and cart effects — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 18:12:36 Malaysia time**:
+**94,926,465 → 94,934,277 bytes (+7,812)**. Remaining headroom below the
+**1,000,000,000-byte** cap: **905,065,723 bytes**. Build gate and independent
+APK v2 signature verification pass. SHA-256:
+**B651B30566E334A12DD26DD6CF51BA369CE026EC0DED373F71BE7C905AA6002C**.
+
+Changes: pale-red near-full Swing screen edges; character-side vertical power
+meter replacing the action-button ring, yellow through 75% then blending to
+pure red at full power. Footsteps use actual ankle lift/plant transitions and
+observed grounded movement; the real locomotion-cycle fixture produces exactly
+two sounds. Opening 5/4/3/2/1 uses one shared beep; GO uses a separate whistle.
+Moving supported wheels emit small soil flecks and shallow marks fading fully
+over 3 s. Parked carts emit nothing. Effects use bounded pools/shared material;
+no map, ball physics, driving, scoring, animation or other-sport changes.
+
+Final Windows candidate passed **203 rendered HUD/feedback checks with 33
+captures plus 17 targeted shot checks** at
+`Builds/GolfHUDQA/Run-20261017-180937/` and
+`Builds/GolfShotQA/Run-20261017-180937/`. Validates real skeletal cadence,
+colour thresholds/button-ring removal, five countdown beeps/one GO whistle,
+wheel contact generation, parked suppression and complete 3 s mark expiry.
+Actual captures show the pale-red edge, relocated meter and cart contact view.
+All **322 complete player files** matched SHA-256 when promoted to
+`Builds/WindowsFinal/`; full build 18:08 and final script refresh 18:09.
+Previous player archived in `Legacy/20261017-181139-736-golf-polish-player/`.
+Evidence, source/player hashes, APK, signature and audit: `Builds/GolfPolishQA/`.
+Settings and behavior: [GOLF-FEEDBACK.md](GOLF-FEEDBACK.md).
+
+Growth is mainly +6,119 compressed IL2CPP bytes and +1,250 metadata bytes.
+Largest art estimates remain timber 2,247,414; character albedo 1,992,754;
+Golf structures 1,965,725; character mesh 1,588,031 bytes. No new imported
+bitmap/audio assets were added. ZIP estimates are distinct from APK size.
+Physical speaker/timing perception, mobile appearance/FPS and live WAN require
+manual/device testing. The pre-existing broad shot-suite Hole 4 putt-rest
+failure remains documented below; this task does not change ball motion.
+Pre-existing saved scene/UI/art work remains included as captured.
+
+## Golf follow camera, footsteps and tree-side aim — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 17:44:37 Malaysia time**:
+**94,912,749 → 94,926,465 bytes (+13,716)**; headroom under the current
+**1,000,000,000-byte** cap: **905,073,535 bytes**. Build budget gate and
+independent APK v2 signature verification pass. SHA-256:
+**D50825359064600D0D24154D9F3908FE5C5DB6B9213FC1F817AF2C37D2870991**.
+
+Adds a silent 512x288 live ball camera below Island Greens, shown on local
+actual contact through flight/rolling, held 3 s after settling and faded over
+0.65 s. Hidden views stop rendering. Adds distance-driven grass, sand, shallow
+water, wood and stone footsteps, with existing master/SFX controls. Swing edge
+glow is wider and reaches 14% opacity; Putt retains no edge overlay. Tree/bunker
+Aim fallback searches safe alternate stances while preserving collision,
+sight, walkable ground and reach checks. No map, ball physics or scoring edits.
+Settings are centralized in `Game/Assets/_Game/Resources/GolfFeedback.asset`.
+
+Final complete Windows candidate passed **196 rendered HUD/feedback checks,
+32 captures and 17 targeted ball interaction checks** in
+`Builds/GolfHUDQA/Run-20261017-174235/` and
+`Builds/GolfShotQA/Run-20261017-174235/`. The camera test reads actual world
+pixels from its render texture, not merely its enabled flag. Edge on/off
+captures differ at 60 of 63 sampled edge pixels. Initial empty-camera output
+was caught during visual review and fixed before promotion. All **322** player
+files matched SHA-256 on promotion to `Builds/WindowsFinal/`. Previous player
+and an incorrect foreground-app capture were archived in
+`Legacy/20261017-174340-729-golf-follow-player/`. Correct running-game capture,
+source/player hashes, build logs, signature and APK audit are in
+`Builds/GolfFollowQA/`.
+
+APK growth is mainly +13,290 compressed IL2CPP bytes and +1,460 metadata bytes,
+partly offset by -1,596 Burst bytes. Largest art estimates remain unchanged:
+timber 2,247,414; character albedo 1,992,754; Golf structures 1,965,725;
+character mesh 1,588,031 bytes. No imported bitmap/audio assets were added;
+five footstep clips are synthesized once. Estimates are not APK measurements.
+Physical speaker quality, mobile appearance/FPS and live WAN remain unverified.
+The known existing `HOLE_4_Putt_0.80_PUTT_RESTS_AT_GLOW` broad-suite failure
+remains documented below; this task does not alter ball motion. Pre-existing
+saved scene/UI/art work is included as captured, not independently qualified.
+
+## Golf charge, impact, landing and cup feedback — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 17:09:17 Malaysia time**:
+**94,305,339 → 94,912,749 bytes (+607,410)**. Remaining headroom below the
+current **1,000,000,000-byte** cap: **905,087,251 bytes**. Full Unity build,
+budget gate and independent APK v2 signature verification pass. SHA-256:
+**85E1E2CCD7492CC8F1BEC020B4B77CCD8090DBAFD4D976F2BFD849615573D84D**.
+
+Adds gold charging ring, rising charge loop, one ready sound per peak, faint
+Swing edge glow, tiny charge camera push, actual-contact Swing/Putt sounds and
+particles, bounded local strong-Swing kick, actual turf/sand impact sounds and
+particles, successful-cup chime/particles/short label, and a distinct final-hole
+cue. Putt remains stable. Reduced Motion/central shake toggle are honored.
+Cancel, focus loss, pause, round reset and leaving Golf clear transients.
+Host-confirmed cosmetic messages reject stale/wrong-round/nonfinite/duplicate
+events; live WAN synchronization remains unverified. Ball-follow camera is
+explicitly deferred. Physics, course, progression and other sports are unchanged.
+
+The +607,410 bytes are predominantly +579,417 compressed bytes in libunity.so
+(Unity particle/audio modules retained), +17,874 in libil2cpp.so, +6,135 metadata
+and +2,783 for the small particle shader entry. There are no imported sound or
+bitmap assets; eight cues and a charge loop are synthesized once at 24 kHz.
+The capped particle pool shares one unlit material. Existing largest art ZIP
+estimates remain timber 2,247,414, character albedo 1,992,754, Golf structures
+1,965,725, character mesh 1,588,031 and stadium 1,556,008 bytes. These estimates
+are distinct from measured APK bytes; no unexpected art growth was observed.
+
+Complete 322-file Windows candidate (full build **16:51:20**, final script
+refresh **17:06**) passed **175 rendered HUD/feedback assertions and 29 captures**
+in `Builds/GolfHUDQA/Run-20261017-170636/`, plus **17 targeted actual ball
+interaction assertions and one cup-success capture** in
+`Builds/GolfShotQA/Run-20261017-170636/`. Every candidate file matched by hash
+when promoted together to `Builds/WindowsFinal/` before updating build metadata.
+Task source hashes match final Windows/Android. Saved pre-existing scene/UI/art
+work is included as captured, not independently qualified by these suites.
+
+Known pre-existing broad shot-suite failure:
+`HOLE_4_Putt_0.80_PUTT_RESTS_AT_GLOW` reproduces in both the former delivered
+player (`Builds/GolfShotQA/Run-20261017-165339/`) and this feedback build
+(`Builds/GolfShotQA/Run-20261017-165211/`). It remains unresolved; no ball
+physics changes hide it. The old near-cup fixture's .35 charge overshoots under
+current speeds; fixture-only .008 charge from .65 m enters the real cup and
+scores once. Final-hole cue uses a valid progress-transition fixture. See
+[GOLF-FEEDBACK.md](GOLF-FEEDBACK.md) for controls, event architecture and limits.
+
+Current exact APK/audit/signature, source hashes, complete player, reports and
+baseline evidence are retained under `Builds/GolfFeedbackQA/` and the run
+folders above. Superseded player archive:
+`Legacy/20261017-170827-172-golf-feedback-player/` (322 files). No staging,
+commit or push performed. Phone appearance/touch/FPS, physical speaker quality
+and live WAN are unverified; desktop signal/screenshot tests do not certify them.
+
+## Golf Aim target indicator and hidden ranking — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 16:31:38 Malaysia time**:
+**94,305,115 → 94,305,339 bytes (+224)**. Headroom below the current
+**1,000,000,000-byte** limit: **905,694,661 bytes**. Full build, budget gate
+and independent APK v2 signature verification pass. SHA-256:
+**5B1D89BA2055689694F17C12F59D07254E8154170A18DC84A896792693AB9A40**.
+
+Aim now uses the existing hole/distance card at 72% uniform scale, 12 units
+below the safe-area top. Its large central arrow is hidden. A 42x44 edge arrow
+appears only for offscreen/behind-camera targets and avoids the top card and
+bottom shot/Cancel/power-hint band. The whole ranking root is inactive during
+Aim; no personal rank, completed-hole count or stroke summary remains visible.
+Normal card/ranking return on Aim exit. Final countdown notices are preserved.
+No map, physics, progression, other sport or audio changes are introduced.
+
+Latest audit leading ZIP estimates remain timber 2,247,414, character albedo
+1,992,754, Golf structures 1,965,725, character mesh 1,588,031 and stadium
+1,556,008 bytes. No new art, material, font, shader or package is shipped;
+there is no unexpected asset growth. Estimates are distinct from APK bytes.
+
+The complete 322-file Windows candidate (full build 16:25:02, followed by a
+script refresh for bottom-edge clearance) passes **143 rendered assertions
+and 27 captures** in `Builds/GolfHUDQA/Run-20261017-162939/`. Screenshot review
+caught a bottom arrow behind the hint in the initial review; final checks
+explicitly cover unobstructed edge placement. Final player files matched by
+hash when promoted together to `Builds/WindowsFinal/`, before metadata update.
+Task source hashes match Windows/Android. Saved pre-existing scene/course/UI
+work is included as captured, not independently qualified by this HUD suite.
+Phone appearance/touch/FPS and WAN remain unverified.
+
+Audio inspection found no dedicated Golf charge/swing/putt/contact/landing/
+cup audio hooks or Golf scene/prefab AudioSource. Missing Golf shot sounds
+are an unimplemented feature, not a Windows-only limitation. This task did
+not add audio or change mute/volume preferences.
+
+Evidence, complete player, APK, signature, source hashes and audit are in
+`Builds/GolfAimIndicatorQA/`. Archive batch:
+`Legacy/20261017-163035-698-golf-aim-indicator-player/` (superseded 322-file
+Windows player). No staging, commit or push was performed.
+
+## Golf aim focus and revised APK limit — 17 October 2026
+
+The user changed the APK limit to **strictly below 1,000,000,000 bytes
+(1 decimal GB)**. The former 100 MB cap and 75 MB working target are retired;
+older entries below describe their historical budgets. `AGENTS.md`, the build
+size gate, readiness check and editor menu now use the current requirement.
+
+Fresh AndroidSubmission **2026-10-17 16:09:49 Malaysia time**:
+**94,303,923 → 94,305,115 bytes (+1,192)**. Current-limit headroom:
+**905,694,885 bytes**. Full Unity build, budget gate and independent APK v2
+signature verification pass. SHA-256:
+**6FD607A76E15FC820DFFABCA01FF6825A74CF14D2C35F1E081F97A25E1B0E28D**.
+
+Aim fades auxiliary HUD over 0.25 seconds and immediately blocks its touch
+targets. Hole/distance, trajectory, shot/Cancel, charge hint and final notices
+remain. Cancel or shot exit restores the HUD. Both Swing and Putt are covered;
+reduced motion is honored. The editable parameter is `aimFocusFadeSeconds` in
+`Game/Assets/_Game/Resources/GolfUILayout.asset`. No new art/audio/package,
+map edits or physics changes are introduced by this task.
+
+The latest packing audit has no unexpected growth: leading estimated ZIP
+contributors remain timber 2,247,414, character albedo 1,992,754, Golf structures
+1,965,725, character mesh 1,588,031 and stadium 1,556,008 bytes. These are
+estimates, separate from measured APK bytes. Serialized assets total
+161,897,902 bytes; that is not APK size. No size optimization was imposed.
+
+Complete 322-file Windows build at **16:00:13 Malaysia time** was promoted to
+`Builds/WindowsFinal/` after **137 rendered assertions and 25 captures** passed
+in `Builds/GolfHUDQA/Run-20261017-160034/`. Promoted files matched the validated
+player before updating `LATEST-BUILD.txt`. Task source hashes match across
+Windows and Android; the editor-only menu label changed after the Windows
+build; a trailing blank line in that editor-only file was removed after Android
+validation. Saved pre-existing scene/course/UI work is included as captured, not
+independently qualified by this HUD suite. Phone appearance/touch/FPS and WAN
+remain unverified.
+
+Evidence, complete validated player, exact APK, signatures, source hashes,
+first-attempt diagnostics and audit are retained in `Builds/GolfFocusQA/`.
+Android initially failed Java loopback initialization. A stale invalid socket
+directory in the generated Gradle cache was removed; the successful build used
+a task-local long-path TEMP/TMP directory. No SDK/system settings or portable
+source defaults were changed for that workaround.
+
+Archives: `Legacy/20261017-160150-210-golf-aim-focus-player/` (superseded player)
+and `Legacy/20261017-160603-010-golf-aim-focus-helpers/` (three finished helpers).
+No staging, commit or push was performed.
+
+## Leaderboard contours, status badge and whole-panel hover — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 15:20:37 Malaysia time**:
+**94,312,363 → 94,303,923 bytes (-8,440)**. Strict-limit headroom
+**5,696,077 bytes**. The 75,000,000-byte development target remains exceeded by
+**19,303,923 bytes**; reserve remains limited. Budget gate and independent
+APK v2 signature pass. SHA-256:
+**404FCFD157884EEBB91CD6DBDAB8E4866A10D29A99830DD833A099A81412A20F**.
+
+Only the existing Title/Columns PNGs change. Their estimated ZIP changes are
+**−12,928 / +4,315 bytes** (net **−8,613**), while the layout asset estimate is
+**+13 bytes**. All other sprite/packed asset contributions are unchanged;
+existing leading estimates remain timber 2.247 MB, character albedo 1.993 MB,
+Golf structures 1.966 MB, character mesh 1.588 MB and stadium 1.556 MB. No new
+texture, master, material, shader, font or package is shipped. Delivery remains
+ASTC 4×4/no mipmaps. Exact APK bytes are separate from contribution estimates.
+
+The column band's opaque outside corners are removed without deleting its
+gold pill or original labels. Title silhouette cleanup removes duplicate body
+walls/cream backing; the expanded title is 90% of panel width, content inset
+20 units and header join 0.8. A single body frame now remains visible beneath
+the integrated badge. Compact/full Playing and Finished use the same complete
+proportional source badges; no status nine-slicing. DNF retains live lettering.
+Hover animates the **entire expanded board by 1.8%**, including title, frame,
+rows, text and scrollbar; child-button scale feedback is disabled. Exit restores
+the whole panel, and reduced motion is honored. The previous taller preview,
+first-three-plus-local selection, scrolling, aim summary, game rules and timers
+remain. Map, terrain, physics and other sports are unchanged.
+
+Complete **322-file Windows player**, built **2026-10-17 15:16:55**, is promoted to
+`Builds/WindowsFinal/` and matches the retained release by file hashes.
+**131 rendered assertions and 24 captures** pass in
+`Builds/GolfHUDQA/Run-20261017-151656/`. This includes compact status source
+sprite/aspect, no independent child feedback, shared title/frame/row growth,
+hover exit, reduced motion, safe bounds, existing scrolling/touch/backdrop,
+start/aim/shot/finish/DNF and multi-roster checks. Screenshot inspection covers
+compact blue corners and expanded header/body joining. Phone appearance,
+touch/FPS and WAN remain unverified; the 25-entry fixture is presentation only.
+
+All 14 sprites reproduce byte-identically from a path with spaces and unrelated
+working directory. Column corners and title lower-wall corners have zero alpha.
+The original master and other 12 sprites remain unchanged. Final source/art
+hashes match across Windows/Android. Exact APK/audit, complete release, logs,
+hashes and checks remain under `Builds/GolfLeaderboardPolishQA/`; pre-existing
+scene/course/UI work is included as captured, not separately qualified here.
+
+Reviewed archives: old player
+`Legacy/20261017-151842-200-golf-leaderboard-polish-player/`
+(322 files, 604.42 MB); redundant candidate, portable fixture and pre-edit
+Title/Columns/audit snapshots
+`Legacy/20261017-151852-851-golf-leaderboard-polish-candidates/`
+(343 files, 607.42 MB). Active asset GUIDs are retained. No staging, commit
+or push was performed.
+
+## Taller proportional leaderboard preview — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 14:37:24 Malaysia time**:
+**94,308,867 → 94,312,363 bytes (+3,496)**. Strict-limit headroom
+**5,687,637 bytes**. The 75,000,000-byte working target remains exceeded by
+**19,312,363 bytes**; reserve is limited. Budget gate and independent
+APK v2 signature pass. SHA-256:
+**3270E7A64F4EBFBFB3034D370E510AA0B893071B64AD4FD3F851AFDFCEA816C3**.
+
+No image, font, shader, material, package or map asset is added or modified.
+All leaderboard sprite contribution estimates remain unchanged; only layout
+asset ZIP estimate changes by 3 bytes, alongside the small compiled-code APK
+delta. Existing largest estimates remain timber 2.247 MB, character albedo
+1.993 MB, Golf structures 1.966 MB, character mesh 1.588 MB and stadium
+1.556 MB. Exact APK bytes remain distinct from contribution estimates.
+
+The compact column band now retains the source sprite aspect ratio instead
+of a fixed 30-unit height. Preview row height **40 → 64**, title width
+**230 → 320**, toggle height **32 → 36**, and preview lettering is larger.
+A crowded card scales uniformly as a whole to its **44% safe-height ceiling**;
+rows and decorative art are no longer squeezed separately. One-player cards
+remain at full scale, about 279 reference units tall. The existing first-three
+plus-local selection, full scrolling ranking, native pointer behavior and aim
+summary remain. Shorter layouts move Jump to the existing left-side utility
+placement when needed to avoid the taller card. Other sports, ranking rules,
+progress, match timers, scene layout and gameplay physics are unchanged.
+
+Complete **322-file Windows player** matches the retained release and is
+promoted to `Builds/WindowsFinal/`. Full asset build **2026-10-17 14:33:18**, final
+script refresh **2026-10-17 14:34:27**. **126 rendered assertions and 23 captures**
+pass in `Builds/GolfHUDQA/Run-20261017-143427/`: one-player row height,
+source-proportional column art, uniform crowded-card scale, bounded rendered
+height, four-player wide layout/control separation, three landscape sizes
+with safe insets, existing expand/scroll/dismiss/aim/start/shot/finish/DNF
+behavior, and the 25-entry presentation roster. Phone UI/touch/FPS and WAN
+remain unverified. The latter fixture is not network-player qualification.
+
+Final source and existing sprite hashes are unchanged across the Windows and
+Android builds. Exact APK, audit, complete release player, hashes and logs
+remain in `Builds/GolfLeaderboardHeightQA/`. Saved pre-existing scene/course/UI
+work is included as captured and is not separately qualified by this HUD
+review. Reviewed archives: prior player
+`Legacy/20261017-143531-325-golf-leaderboard-height-player/`
+(322 files, 604.41 MB), redundant tested candidate
+`Legacy/20261017-143546-186-golf-leaderboard-height-candidate/`
+(322 files, 604.42 MB). No staging, commit or push was performed.
+
+## Supplied leaderboard and bounded ranking — 17 October 2026
+
+Fresh AndroidSubmission **2026-10-17 14:16:41 Malaysia time** measures
+**93,928,409 → 94,308,867 bytes (+380,458)**. Headroom below the strict
+100,000,000-byte limit: **5,691,133 bytes**. The 75,000,000-byte development
+target remains exceeded by **19,308,867 bytes**; reserve remains limited.
+Budget gate and independent APK v2 signature pass. SHA-256:
+**2C0561EF22CB974E91770692601BF82906ACAE7902CD5E10E76294E0944E4FFE**.
+
+The 14 cropped leaderboard sprites contribute **780,672 serialized bytes**,
+estimated ZIP **466,045 bytes**. Five superseded sprites/metas were proven
+unused by GUID and runtime/generator searches, then archived; their previous
+estimated ZIP cost was **90,096 bytes**. Net sprite estimate **375,949 bytes**
+is separate from the measured APK delta. Full-resolution source stays outside
+Unity; ASTC 4×4/no-mipmap delivery, shared UI material and existing fonts are
+used. No new package, shader or material is introduced. Largest contributors
+remain timber 2.247 MB, character albedo 1.993 MB, Golf structures 1.966 MB,
+character mesh 1.588 MB and stadium 1.556 MB; unrelated packed contributions
+remain unchanged in the before/after audit.
+
+The crown/title, border, headings, portraits and status artwork derive from
+the supplied original. Actual scores remain live. Default shows the existing
+first three results plus the local player once; height is bounded to 34% of
+the safe canvas. Title/View all opens a 78%-height maximum scrollable list
+with a backdrop, scrollbar, mouse wheel and touch drag. Closing restores the
+preview; aim closes any open list and shows only the local summary. The row
+pool has no ten-player presentation cutoff. Scoring, ties, DNF ordering,
+countdowns, hole progress, scene/world structure and other sports are unchanged.
+
+Complete **322-file Windows player** is promoted to `Builds/WindowsFinal/`,
+matching `Builds/GolfLeaderboardQA/Release/Windows/` by file hashes. Full asset
+build **2026-10-17 14:11:59**, final script refresh **2026-10-17 14:13:32**; the complete
+player was then validated with **113 rendered assertions and 22 screenshots**
+in `Builds/GolfHUDQA/Run-20261017-141332/`. Tests include a real start/aim/shot,
+three landscape resolutions with safe insets, top-three/local de-duplication,
+fixed heights, actual expand/backdrop raycasts, native wheel/touch scrolling,
+last-player access, green finished badges, unranked DNF and a synthetic
+**25-entry presentation roster**. The latter does not qualify 25 networked
+world players. Phone appearance/touch/FPS and WAN remain unverified.
+
+All 14 final sprites reproduce byte-identically from a path with spaces and
+an unrelated working directory. The retained master matches the supplied file
+exactly. Final UI/asset/rules source hashes are unchanged across the Windows
+and Android builds. Current logs, exact APK/audit, hashes and checks remain
+under `Builds/GolfLeaderboardQA/`; saved pre-existing scene/course/UI changes
+are included as captured and are not separately qualified by this HUD review.
+
+Reviewed archives: superseded art
+`Legacy/20261017-140158-238-golf-leaderboard-old-art/` (10 files, 0.17 MB),
+prior player `Legacy/20261017-141425-628-golf-leaderboard-player/`
+(322 files, 603.19 MB), redundant candidate/portable fixture
+`Legacy/20261017-141511-811-golf-leaderboard-candidates/`
+(340 files, 606.88 MB). No staging, commit or push was performed.
+
+## Golf target spacing and supplied jump image — 17 October 2026
+
+Fresh AndroidSubmission completed **2026-10-17 01:22:19 Malaysia time**:
+**93,826,511 → 93,928,409 bytes (+101,898)**. Strict 100,000,000-byte limit
+headroom **6,071,591 bytes**. The 75,000,000-byte development target remains
+exceeded by **18,928,409 bytes**; available reserve is limited.
+Budget enforcement and independent APK v2 signature pass. SHA-256:
+**8A66A0EAE47CD8449B773DA6FF461818B95D62645CF2C22A04F7E962725DD3DD**.
+
+Only one new delivery texture is introduced: Jump, proportional 512×372,
+ASTC 4×4 without mipmaps, **191,248 serialized bytes**, estimated ZIP
+**98,638 bytes**. Its exact user original is retained outside Unity. No font,
+shader, material, package, map or terrain asset was added for this request.
+Leading contributors remain timber (2.247 MB), character albedo (1.993 MB),
+Golf structures (1.966 MB), character mesh (1.588 MB) and stadium (1.556 MB).
+These contribution estimates are separate from measured APK bytes.
+
+Complete validated Windows player: `Builds/WindowsFinal/`, **322 files**,
+build **2026-10-17 01:19:53**; retained matching release and exact APK/audit in
+`Builds/GolfJumpTargetQA/Release/`. **90 rendered HUD assertions and 18 captures**
+pass in `Builds/GolfHUDQA/Run-20261017-011953/`, including Hole 2 at 5/132/1234 m,
+equal visible gaps, camera removal, original jump image, countdown, three
+landscape sizes with safe insets and existing aim/hold/cancel/release behavior.
+The PNG generator reproduces identical bytes from a path with spaces and an
+unrelated working directory. Phone appearance/touch/FPS and WAN are unverified.
+
+Reviewed archives: superseded player
+`Legacy/20261017-012054-786-golf-jump-target-player/` (322 files, 602.93 MB),
+redundant full candidate and portable fixture
+`Legacy/20261017-012143-549-golf-jump-target-candidates/` (337 files, 609.24 MB).
+Current source hashes, promotion checks, logs and audit remain under
+`Builds/GolfJumpTargetQA/`. Saved current scenes were built; pre-existing
+uncommitted course/flag/UI changes are included as captured and not separately
+qualified by these HUD checks. No Git staging, commit or push was performed.
+
+## Original action images and startup target distance — 17 October 2026
+
+Fresh AndroidSubmission at **00:27:46 Malaysia time** measures
+**90,334,226 → 93,826,511 bytes (+3,492,285)**. The opening package was the
+stale **13 October** APK; this delta includes intervening course, flag and HUD
+work and is not solely this task's growth. Strict headroom **6,173,489 bytes**;
+the **75,000,000-byte development target remains exceeded by 18,826,511 bytes**.
+This reserve is limited. Budget enforcement and independent APK v2 signature
+pass. SHA-256:
+**D4AC9A3B3416AC1ADCE66B3D0C66218A61444EB2F16B8E16ED54FBF03BDBE7DC**.
+
+The three supplied Aim First/Swing/Putt images retain their original artwork
+and wording. Delivery is proportional 512-pixel ASTC 4×4 with no mipmaps;
+high-resolution masters remain outside Unity. Combined serialized contribution
+**779,848 bytes**, estimated ZIP **540,892 bytes**. No font, shader, material or
+package is introduced. [Packing audit](APK-SIZE-AUDIT.md#original-action-images-and-startup-target-distance--17-october-2026).
+
+Complete **322-file** Windows player, built **00:25:13**, is promoted to
+`Builds/WindowsFinal/`; every file hash matches the retained release in
+`Builds/GolfActionImagesQA/Release/Windows/`. **86 rendered HUD assertions** and
+**15 captures** pass, including the large central countdown, upper distance-only
+Hole card, all three action images, touch/hold/cancel/release and three screen
+sizes. [Verification and scope](VERIFICATION.md#original-action-images-and-startup-target-distance--17-october-2026).
+Phone appearance, touch, FPS and WAN remain unverified.
+
+Reviewed archives: prior masters
+`Legacy/20261017-002143-064-golf-action-image-masters/` (3 files, 4.2 MB);
+superseded player `Legacy/20261017-002718-573-golf-action-images-player/`
+(322 files, 601.28 MB); redundant candidate and portable regeneration fixture
+`Legacy/20261017-003008-652-golf-action-images-candidates/`
+(335 files, 607.79 MB). Current exact APK/audit, source hashes and checks remain
+in `Builds/GolfActionImagesQA/`. No Git publishing action is performed.
+
+## Putt smoothing reverted - 17 October 2026
+
+AndroidSubmission attempted after source/build checks; Gradle/JDK failed
+with java.io.IOException: Unable to establish loopback connection. New APK
+size unverified; retained historical APK remains 90,334,226 bytes, hard
+headroom 9,665,774 bytes, 75 MB working-goal excess 15,334,226 bytes.
+Failed build log/report retained in Builds/SizeAudit/latest and task evidence;
+no fresh compressed contributor audit produced.
+
+
+User requested the pre-smoothing Putt behavior while retaining latest Swing.
+Restored GolfAimInput.cs and GolfBallPhysicsSettings.cs exactly from the
+pre-smoothing task backups; SHA-256 matches. Putt uses sqrt(charge) speed
+mapping and 30% idle preview again. Latest maximum speeds remain Swing
+horizontal 34 m/s, vertical 17 m/s and Putt 15 m/s. No resource values,
+UI, map, gravity, resistance or bounce settings changed. Previous smoothing
+record below is superseded. No new assets/packages.
+Opening historical APK 90,334,226 bytes; hard headroom 9,665,774 bytes;
+75 MB goal excess 15,334,226 bytes. Fresh release needs AndroidSubmission.
+Evidence: Builds/GolfPuttRestoreQA.
+
+
+## Smooth putt preview charge - 17 October 2026
+
+AndroidSubmission attempted after source/build checks; Gradle/JDK failed:
+java.io.IOException: Unable to establish loopback connection. Retained
+APK remains historical 90,334,226 bytes; new code APK size/growth unverified.
+Historical hard headroom 9,665,774 bytes; development target excess
+15,334,226 bytes. Failed build report/log retained in Builds/SizeAudit/latest
+and task evidence; no fresh packed-assets contributor audit produced.
+
+
+Putt idle preview now uses 0% instead of 30%, matching pointer-down and
+removing the initial guide contraction. Swing idle preview remains 30%.
+GolfBallPhysicsSettings maps putt charge to SmoothStep energy, then speed:
+sqrt(lerp(minimumPuttSpeed^2, maximumPuttSpeed^2, SmoothStep(0,1,charge))).
+This has finite, zero endpoint speed derivatives and softer low-charge
+response, while preserving 0.35/15 m/s endpoints and the 2.6-second sweep.
+Preview and host travel use this same mapping; no endpoint interpolation
+lag, collision bypass or visual-only trajectory is introduced. Ground
+resistance, gravity, rebound, Swing settings, UI and map are unchanged.
+No new shipped art/package. Opening historical APK 90,334,226 bytes,
+headroom 9,665,774 bytes, 75 MB goal excess 15,334,226 bytes. New APK
+requires AndroidSubmission. Evidence: Builds/GolfPuttSmoothQA.
+
+
+## Golf maximum launch speeds doubled - 16 October 2026
+
+AndroidSubmission attempted: Gradle/JDK initialization failed with
+java.io.IOException: Unable to establish loopback connection. New APK size
+unverified; retained APK still historical 90,334,226 bytes. Historical
+headroom 9,665,774 bytes, 75 MB target excess 15,334,226 bytes. Failed log
+and report retained in Builds/SizeAudit/latest and task evidence; no fresh
+compressed contributor audit produced.
+
+
+User-requested parameter-only adjustment: maximumSwingSpeed 17 -> 34 m/s,
+maximumSwingLift 8.5 -> 17 m/s, maximumPuttSpeed 7.5 -> 15 m/s. Changed
+Resources/GolfBallPhysics.asset and matching fallback fields in
+GolfBallPhysicsSettings.cs. Minimum launch speeds, charge remapping, gravity,
+resistance, bounce, course, UI and network authority are unchanged. Shot
+preview and authoritative shot plan both read the same settings.
+No new assets/packages. Opening APK remains historical 90,334,226 bytes;
+hard-limit headroom 9,665,774 bytes, development-target excess 15,334,226
+bytes. Fresh release size needs AndroidSubmission. Build evidence is under
+ignored Builds/GolfDoublePowerQA. No new automated gameplay tests requested.
+
+
+## Shot plate restore and Start Game - 16 October 2026
+
+AndroidSubmission failed Gradle/JDK initialization: java.io.IOException:
+Unable to establish loopback connection. Retained historical APK remains
+90,334,226 bytes; new source APK size/growth unverified. Failed log/report
+in Builds/SizeAudit/latest and Builds/GolfShotUIRestoreQA/android-build.log.
+No fresh packed-assets contributor report.
+
+UI validation: 82 assertions, 14 captures in
+Builds/GolfHUDQA/Run-20261016-230547. Inspected new StartGame, restored
+Aim First/Putt/Swing without caption rectangles, native power percentage,
+retained Exit/Your Ball and no ball distance. Checked three resolutions,
+safe insets and original hold/cancel/release UI. Retained source hashes match.
+Complete 322-file player copied to WindowsFinal with matching SHA-256 before
+delivery note. Old player: Legacy/20261016-230728-537-golf-shot-ui-player.
+No new device/WAN/map testing.
+
+
+Retain Exit/Your Ball artwork; remove live ball distance. Start Game now uses
+the new original image. Aim First/Putt/Swing restore Reference/Shot, native
+labels and charge percentage, without a ShotCaption overlay. Corrected
+GolfReferenceArtBuilder blends lower disc colours using an ellipse feather
+instead of rectangular caption fills. No gameplay/input changes.
+
+New StartGame PNG: 97,478 bytes; raw ASTC 4x4: 77,824 bytes. Removed three
+unused action sprites: 951,884 PNG bytes / 768,000 raw ASTC bytes. Masters
+retained outside Unity. These asset totals do not measure APK growth.
+Portable generators and .meta files retained; obsolete delivery sprites
+archived with explicit reference/GUID checks to
+Legacy/20261016-230149-840-golf-shot-ui-unused.
+Opening historical APK remains 90,334,226 bytes; headroom 9,665,774 bytes;
+75 MB development-target excess 15,334,226 bytes. Fresh size requires build.
+
+
+## Original action badges - 16 October 2026
+
+AndroidSubmission attempted after UI validation; failed Gradle/JDK
+initialization with java.io.IOException: Unable to establish loopback
+connection. Retained APK remains the historical 90,334,226-byte file.
+New badge APK size/growth and a fresh packed-assets contributor audit are
+unverified. Historical hard-limit headroom 9,665,774 bytes; 75 MB working
+goal exceeded by 15,334,226 bytes. Failed report/log: Builds/SizeAudit/latest
+and Builds/GolfBadgesQA/android-build.log.
+
+
+Aim First, Putt, Swing, cart Exit and Your Ball use original user-supplied
+PNG designs with baked lettering, proportional simple images, no redraw.
+Five unchanged masters remain in ArtSource/Golf/UI/Badges; portable generator
+Tools/Art/prepare_golf_badges.py and delivery audit record hashes/crops.
+Five 512 px PNGs total 1,157,582 bytes; raw Android ASTC 4x4 totals
+940,032 bytes. These are not measured compressed APK growth. No added
+font/material/shader/package; high-resolution originals do not ship.
+Live charge moves to the control hint, live ball distance below original
+art. Existing arrow, near-ball hide thresholds and input rules remain.
+Opening historical APK: 90,334,226 bytes; hard headroom 9,665,774 bytes;
+75 MB development-target excess 15,334,226 bytes. Fresh size requires a
+successful AndroidSubmission, separate from source/texture measurements.
+
+
+## Original cart buttons - 16 October 2026
+
+AndroidSubmission attempted after UI checks; Gradle/JDK failed with
+java.io.IOException: Unable to establish loopback connection. APK after
+attempt is still the historical 90,334,226-byte file: new button APK size
+and growth are unverified. Historical headroom is 9,665,774 bytes; the
+75 MB development target is exceeded by 15,334,226 bytes. Failed build
+log/report retained in Builds/SizeAudit/latest and Builds/GolfCartButtonsQA.
+No current packed-assets contributor report was produced.
+
+
+Opening retained APK: 90,334,226 bytes, hard-limit headroom 9,665,774 bytes,
+75 MB development-target excess 15,334,226 bytes. Three original-design
+button sprites add 400,224 PNG bytes / 282,624 raw ASTC 4x4 bytes. Masters
+remain outside Unity. Downsampled 512 px delivery preserves original pixels
+at current roughly 270 px display width. No new font/material/shader/package.
+These are asset sizes, not APK growth; a fresh build must be measured.
+See [verification](VERIFICATION.md#original-cart-buttons---16-october-2026).
+
+
+## Golf button and ball-indicator refinement - 15 October 2026
+
+AndroidSubmission attempted for this task: Gradle/JDK initialization failed
+with java.io.IOException: Unable to establish loopback connection. Retained
+APK remains 90,334,226 bytes; fresh UI APK size and compressed contributor
+growth are unverified. Builds/SizeAudit/latest contains the failed build log
+and report, not a fresh packed-assets audit. Development budget remains
+15,334,226 bytes above the 75 MB goal on the historical baseline.
+
+
+Opening retained APK **90,334,226 bytes**, historical hard-limit headroom
+**9,665,774 bytes**, 75 MB development target excess **15,334,226 bytes**.
+New UI reuses existing reference plates/fonts and adds one small native
+steering-wheel mesh, with no texture/material/shader/model/audio/package.
+Resulting AndroidSubmission must be measured separately; old APK bytes do
+not validate these UI changes. See
+[verification](VERIFICATION.md#golf-button-and-ball-indicator-refinement---15-october-2026).
+
+
+## V5 charge controls restored - 15 October 2026
+
+Reverted post-V5 Swing controls/camera/launch changes. Existing APK at task
+start is **90,334,226 bytes**; AndroidSubmission must be measured separately.
+No shipped art/resource is added; redesign-only runtime UI/probe is archived.
+Historical APK headroom **9,665,774 bytes** and development-target excess
+**15,334,226 bytes** do not prove freshness of the restored source. Records
+below for click/direct-camera controls describe superseded implementations.
+See [restore verification](VERIFICATION.md#v5-charge-controls-restored---15-october-2026).
+
+Current restored-source AndroidSubmission failed with Gradle/JDK loopback
+initialization. After/delta and fresh contributors are **unverified**. Existing
+historical APK remains **90,334,226 bytes** (headroom **9,665,774**, 75 MB goal
+excess **15,334,226**). Complete validated Windows V5 charge player is delivered.
+
+
+## Direct camera and launch angle - 14 October 2026 build limitation
+
+Opening retained APK **90,334,226 bytes**. AndroidSubmission fails in the
+existing Gradle/JDK loopback initialization, including process-local IPv4
+preference. No fresh after/delta is measured for this source. Historical
+hard-limit headroom **9,665,774 bytes** and 75 MB development-goal excess
+**15,334,226 bytes** do not certify these changes. No texture, mesh asset,
+material, shader, font, audio or package is added. Camera framing, an explicit
+zero-loft flag and existing ground travel are code only. Fresh packing growth
+and largest contributors remain unavailable in the failed latest audit.
+See [verification](VERIFICATION.md#direct-camera-and-launch-angle---14-october-2026).
+
+
+## View aim and click Swing - 14 October 2026 build limitation
+
+Opening retained APK **90,334,226 bytes**. AndroidSubmission attempts, including
+process-local IPv4 preference and two workers, fail in Gradle/JDK loopback
+initialization. No fresh resulting APK or measured after/delta exists for
+these controls. Historical hard-limit headroom **9,665,774 bytes** and excess
+over the 75 MB development goal **15,334,226 bytes** do not validate this source.
+
+The power rail reuses existing Golf plate/ball artwork with a circular UV mesh;
+no texture, model, font, audio, shader or package is added. Loft and power share
+the existing trajectory solver. Windows is validated separately; see
+[verification](VERIFICATION.md#view-aim-retained-power-and-click-swing---14-october-2026).
+The latest size audit contains a failed build, not a fresh contributor ranking.
+
+
+## V5 Golf ponds and obstacles - 14 October 2026 build limitation
+
+Opening APK **90,334,226 bytes**. Current AndroidSubmission failed in Gradle/JDK
+loopback initialization; no fresh after/delta measurement exists. The retained
+historical APK has **9,665,774 bytes** of hard-limit headroom and is **15,334,226
+bytes** above the 75 MB development goal. It cannot validate this new source.
+
+New 141 props reuse packed rock/palm meshes, LODs and materials. Fourteen rough
+patches share existing turf/surface resources. Six water meshes (385 vertices
+each) and banks (256 vertices each) use 16-bit shared indices and existing water
+shader/sand resources; one shared pond material, no texture/reflection camera,
+model/font/audio/package is added. High-quality design references stay outside
+Unity. No unrelated quality reduction or dependency change was made.
+
+`Builds/SizeAudit/latest` contains the failed current log/report, so compressed
+cost and largest contributors remain unverified. Complete validated Windows
+player is delivered; [verification](VERIFICATION.md#v5-golf-obstacles-ponds-and-dry-recovery---14-october-2026).
+
+
+## Golf obstacle V2 — 14 October 2026 build limitation
+
+Opening APK: **90,334,226 bytes**. Current-source AndroidSubmission failed
+with Gradle/JDK `java.io.IOException: Unable to establish loopback connection`,
+including a process-local IPv4 preference. No fresh APK or after/delta measurement
+exists. The retained historical package has **9,665,774 bytes** of hard-limit
+headroom and exceeds the 75 MB development goal by **15,334,226 bytes**;
+it does not validate these obstacle additions.
+
+Added 72 props reuse packed rock/palm meshes, LODs and materials. Nineteen sand
+and six rough overlays use welded vertices and 16-bit indices with existing
+textures/shader; one shared rough material and its mobile derivative are added.
+No new bitmap, model, font, audio, package or unrelated quality reduction ships.
+`Builds/SizeAudit/latest/` contains the failed current build log/report, so no
+fresh largest-contributor ranking or compressed growth can be claimed.
+Complete tested Windows player is delivered; [evidence](VERIFICATION.md#additional-golf-obstacle-v2--14-october-2026).
+
+
+## Original screenshot Golf UI — 14 October 2026 build limitation
+
+Opening APK **90,334,226 bytes**. AndroidSubmission is blocked by Gradle/JDK
+loopback initialization; no fresh resulting APK or measured delta exists.
+Historical headroom is **9,665,774 bytes** and development-target excess
+**15,334,226 bytes**. These figures do not certify the new UI.
+
+Twenty-three original-reference UI sprites share existing Cove fonts and add
+no model/shader/package. Delivery PNGs total **743,690 bytes**; raw ASTC 4x4
+blocks total **537,936 bytes**, separate from APK compression. The full
+1.7 MB reference stays outside Unity. Two old 128/256 illustrations and metas
+were archived after reference/load/generator checks. Inspect a fresh successful
+packing audit before attributing any compressed growth. See [verification](VERIFICATION.md#original-screenshot-golf-ui--14-october-2026).
+
+## Circular Golf course — 14 October 2026 build limitation
+
+Opening APK: **90,334,226 bytes**; both current-source AndroidSubmission attempts failed
+with Gradle/JDK `Unable to establish loopback connection`. No resulting APK
+measurement exists. The retained historical APK has **9,665,774 bytes** of
+strict-limit headroom and exceeds the 75 MB working goal by **15,334,226 bytes**.
+It is not validation of the new course. Twelve obstacles reuse existing kit
+meshes/LODs; fairway/sand reuse already packed turf/sand textures. Signs share
+the existing font. Adjacent mesh cells are welded and use 16-bit indices where
+possible. Unused relocated terrain/grass derivatives were archived. Fresh
+compressed growth and largest contributors cannot be measured until Android
+build succeeds. See [verification](VERIFICATION.md#circular-golf-course--14-october-2026).
+
 ## Reference flags and turf bounces - 13 October 2026 build limitation
 
 The measured opening APK is **90,334,226 bytes**. All three new AndroidSubmission

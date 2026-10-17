@@ -3,10 +3,4931 @@
   "cupRadius": 0.1425,
   "cupDepth": 0.18,
   "holes": [
-    { "number": 1, "par": 3, "title": "Welcome Green", "cup": { "x": 8, "y": 0, "z": -106 }, "tee": { "x": -8, "y": 0, "z": -141 }, "greenRadius": 5.5 },
-    { "number": 2, "par": 3, "title": "Sand Garden", "cup": { "x": -103, "y": 0, "z": 10 }, "tee": { "x": -22, "y": 0, "z": -46 }, "greenRadius": 6 },
-    { "number": 3, "par": 4, "title": "Winding Fairway", "cup": { "x": 68, "y": 0, "z": 100 }, "tee": { "x": -14, "y": 0, "z": 39 }, "greenRadius": 7 },
-    { "number": 4, "par": 3, "title": "Coastal Approach", "cup": { "x": 111, "y": 0, "z": -70 }, "tee": { "x": 115, "y": 0, "z": 21 }, "greenRadius": 6 },
-    { "number": 5, "par": 4, "title": "High Green", "cup": { "x": -10, "y": 0, "z": 126 }, "tee": { "x": 8, "y": 0, "z": 55 }, "greenRadius": 6 }
+    {
+      "number": 1,
+      "par": 3,
+      "title": "Bunker Bend",
+      "tee": {
+        "x": -10,
+        "y": 0,
+        "z": -146
+      },
+      "cup": {
+        "x": -62,
+        "y": 0,
+        "z": -90
+      },
+      "greenRadius": 6,
+      "route": [
+        {
+          "x": -10,
+          "y": 0,
+          "z": -146
+        },
+        {
+          "x": -17,
+          "y": 0,
+          "z": -105
+        },
+        {
+          "x": -62,
+          "y": 0,
+          "z": -90
+        }
+      ],
+      "fairwayWidth": 16
+    },
+    {
+      "number": 2,
+      "par": 4,
+      "title": "West Stone Garden",
+      "tee": {
+        "x": -73,
+        "y": 0,
+        "z": -71
+      },
+      "cup": {
+        "x": -44,
+        "y": 0,
+        "z": 53
+      },
+      "greenRadius": 6,
+      "route": [
+        {
+          "x": -73,
+          "y": 0,
+          "z": -71
+        },
+        {
+          "x": -83,
+          "y": 0,
+          "z": -9
+        },
+        {
+          "x": -75,
+          "y": 0,
+          "z": 30
+        },
+        {
+          "x": -44,
+          "y": 0,
+          "z": 53
+        }
+      ],
+      "fairwayWidth": 18
+    },
+    {
+      "number": 3,
+      "par": 3,
+      "title": "Plateau Approach",
+      "tee": {
+        "x": -39,
+        "y": 0,
+        "z": 68
+      },
+      "cup": {
+        "x": -10,
+        "y": 0,
+        "z": 126
+      },
+      "greenRadius": 6,
+      "route": [
+        {
+          "x": -39,
+          "y": 0,
+          "z": 68
+        },
+        {
+          "x": -8,
+          "y": 0,
+          "z": 96
+        },
+        {
+          "x": -10,
+          "y": 0,
+          "z": 126
+        }
+      ],
+      "fairwayWidth": 16
+    },
+    {
+      "number": 4,
+      "par": 4,
+      "title": "Limestone Gate",
+      "tee": {
+        "x": 8,
+        "y": 0,
+        "z": 116
+      },
+      "cup": {
+        "x": 119,
+        "y": 0,
+        "z": 39
+      },
+      "greenRadius": 6,
+      "route": [
+        {
+          "x": 8,
+          "y": 0,
+          "z": 116
+        },
+        {
+          "x": 74,
+          "y": 0,
+          "z": 93
+        },
+        {
+          "x": 95,
+          "y": 0,
+          "z": 65
+        },
+        {
+          "x": 119,
+          "y": 0,
+          "z": 39
+        }
+      ],
+      "fairwayWidth": 18,
+      "bypass": [
+        {
+          "x": 8,
+          "y": 0,
+          "z": 116
+        },
+        {
+          "x": 74,
+          "y": 0,
+          "z": 93
+        },
+        {
+          "x": 71,
+          "y": 0,
+          "z": 56
+        },
+        {
+          "x": 100,
+          "y": 0,
+          "z": 40
+        },
+        {
+          "x": 119,
+          "y": 0,
+          "z": 39
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "par": 5,
+      "title": "Homeward Links",
+      "tee": {
+        "x": 109,
+        "y": 0,
+        "z": 15
+      },
+      "cup": {
+        "x": 14,
+        "y": 0,
+        "z": -122
+      },
+      "greenRadius": 6,
+      "route": [
+        {
+          "x": 109,
+          "y": 0,
+          "z": 15
+        },
+        {
+          "x": 84,
+          "y": 0,
+          "z": -43
+        },
+        {
+          "x": 29,
+          "y": 0,
+          "z": -79
+        },
+        {
+          "x": 9,
+          "y": 0,
+          "z": -85
+        },
+        {
+          "x": 14,
+          "y": 0,
+          "z": -122
+        }
+      ],
+      "fairwayWidth": 18
+    }
+  ],
+  "sandPatches": [
+    {
+      "name": "West landing sand",
+      "centre": {
+        "x": -61,
+        "y": 0,
+        "z": -7
+      },
+      "radii": {
+        "x": 12,
+        "y": 8
+      },
+      "yaw": -10
+    },
+    {
+      "name": "V2 H1 Z01 S",
+      "centre": {
+        "x": -29,
+        "y": 0,
+        "z": -124
+      },
+      "radii": {
+        "x": 7,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H1 Z02 S",
+      "centre": {
+        "x": -5,
+        "y": 0,
+        "z": -118
+      },
+      "radii": {
+        "x": 6,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H1 Z04 S",
+      "centre": {
+        "x": -70,
+        "y": 0,
+        "z": -83
+      },
+      "radii": {
+        "x": 6,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H2 Z08 S",
+      "centre": {
+        "x": -54,
+        "y": 0,
+        "z": 39
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H2 Z09 S",
+      "centre": {
+        "x": -36,
+        "y": 0,
+        "z": 45
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H3 Z10 S",
+      "centre": {
+        "x": -22,
+        "y": 0,
+        "z": 98
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H3 Z11 S",
+      "centre": {
+        "x": 7,
+        "y": 0,
+        "z": 105
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H3 Z12 S",
+      "centre": {
+        "x": -10,
+        "y": 0,
+        "z": 138
+      },
+      "radii": {
+        "x": 8,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H4 Z15 S",
+      "centre": {
+        "x": 80,
+        "y": 0,
+        "z": 48
+      },
+      "radii": {
+        "x": 5,
+        "y": 6
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H4 Z16 S",
+      "centre": {
+        "x": 108,
+        "y": 0,
+        "z": 34
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H4 Z17 S",
+      "centre": {
+        "x": 126,
+        "y": 0,
+        "z": 49
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H5 Z20 S",
+      "centre": {
+        "x": 20,
+        "y": 0,
+        "z": -65
+      },
+      "radii": {
+        "x": 6,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H5 Z21 S",
+      "centre": {
+        "x": 38,
+        "y": 0,
+        "z": -90
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H5 Z22 S",
+      "centre": {
+        "x": 26,
+        "y": 0,
+        "z": -118
+      },
+      "radii": {
+        "x": 4,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H1 Z26 S",
+      "centre": {
+        "x": -55,
+        "y": 0,
+        "z": -108
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H2 Z28 S",
+      "centre": {
+        "x": -68,
+        "y": 0,
+        "z": -47
+      },
+      "radii": {
+        "x": 4,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H3 Z34 S",
+      "centre": {
+        "x": 6,
+        "y": 0,
+        "z": 135
+      },
+      "radii": {
+        "x": 4,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H5 Z39 S",
+      "centre": {
+        "x": 119,
+        "y": 0,
+        "z": -12
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H5 Z43 S",
+      "centre": {
+        "x": -5,
+        "y": 0,
+        "z": -103
+      },
+      "radii": {
+        "x": 4,
+        "y": 7
+      },
+      "yaw": 0
+    }
+  ],
+  "obstacles": [
+    {
+      "name": "West stone island",
+      "module": "Rock_1",
+      "position": {
+        "x": -59,
+        "y": 0,
+        "z": 24
+      },
+      "size": {
+        "x": 10,
+        "y": 4.6,
+        "z": 8
+      },
+      "yaw": 17
+    },
+    {
+      "name": "Gate left pillar",
+      "module": "Rock_0",
+      "position": {
+        "x": 76,
+        "y": 0,
+        "z": 74
+      },
+      "size": {
+        "x": 4.8,
+        "y": 8.5,
+        "z": 4.8
+      },
+      "yaw": 0
+    },
+    {
+      "name": "Gate right pillar",
+      "module": "Rock_2",
+      "position": {
+        "x": 88,
+        "y": 0,
+        "z": 82
+      },
+      "size": {
+        "x": 4.8,
+        "y": 8.5,
+        "z": 4.8
+      },
+      "yaw": 35
+    },
+    {
+      "name": "Gate crown",
+      "module": "Rock_3",
+      "position": {
+        "x": 82,
+        "y": 8.1,
+        "z": 78
+      },
+      "size": {
+        "x": 18,
+        "y": 3.2,
+        "z": 5.6
+      },
+      "yaw": -34
+    },
+    {
+      "name": "Homeward palm 1",
+      "module": "Palm_0",
+      "position": {
+        "x": 53,
+        "y": 0,
+        "z": -28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 0
+    },
+    {
+      "name": "Homeward palm 2",
+      "module": "Palm_1",
+      "position": {
+        "x": 59,
+        "y": 0,
+        "z": -26
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 61
+    },
+    {
+      "name": "Homeward palm 3",
+      "module": "Palm_2",
+      "position": {
+        "x": 65,
+        "y": 0,
+        "z": -30
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 122
+    },
+    {
+      "name": "Homeward palm 4",
+      "module": "Palm_3",
+      "position": {
+        "x": 57,
+        "y": 0,
+        "z": -37
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 183
+    },
+    {
+      "name": "Homeward palm 5",
+      "module": "Palm_0",
+      "position": {
+        "x": 63,
+        "y": 0,
+        "z": -36
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 244
+    },
+    {
+      "name": "Homeward ridge 1",
+      "module": "Rock_0",
+      "position": {
+        "x": 21,
+        "y": 0,
+        "z": -94
+      },
+      "size": {
+        "x": 5.2,
+        "y": 2.1,
+        "z": 4.2
+      },
+      "yaw": 0
+    },
+    {
+      "name": "Homeward ridge 2",
+      "module": "Rock_1",
+      "position": {
+        "x": 26,
+        "y": 0,
+        "z": -92
+      },
+      "size": {
+        "x": 5.2,
+        "y": 2.1,
+        "z": 4.2
+      },
+      "yaw": 47
+    },
+    {
+      "name": "Homeward ridge 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 31,
+        "y": 0,
+        "z": -90
+      },
+      "size": {
+        "x": 5.2,
+        "y": 2.1,
+        "z": 4.2
+      },
+      "yaw": 94
+    },
+    {
+      "name": "V2 H1 Z03 R member 1",
+      "module": "Rock_2",
+      "position": {
+        "x": -42.7,
+        "y": 0,
+        "z": -120.0
+      },
+      "size": {
+        "x": 3.9,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 74
+    },
+    {
+      "name": "V2 H1 Z03 R member 2",
+      "module": "Rock_3",
+      "position": {
+        "x": -40,
+        "y": 0,
+        "z": -117.25
+      },
+      "size": {
+        "x": 3.9,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 135
+    },
+    {
+      "name": "V2 H1 Z03 R member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": -37.3,
+        "y": 0,
+        "z": -120.0
+      },
+      "size": {
+        "x": 3.9,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 196
+    },
+    {
+      "name": "V2 H2 Z05 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -96.25,
+        "y": 0,
+        "z": -39.6
+      },
+      "size": {
+        "x": 3.25,
+        "y": 2.6,
+        "z": 5.2
+      },
+      "yaw": 148
+    },
+    {
+      "name": "V2 H2 Z05 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -94,
+        "y": 0,
+        "z": -35.2
+      },
+      "size": {
+        "x": 3.25,
+        "y": 2.6,
+        "z": 5.2
+      },
+      "yaw": 209
+    },
+    {
+      "name": "V2 H2 Z05 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -91.75,
+        "y": 0,
+        "z": -39.6
+      },
+      "size": {
+        "x": 3.25,
+        "y": 2.6,
+        "z": 5.2
+      },
+      "yaw": 270
+    },
+    {
+      "name": "V2 H2 Z06 P member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -73.25,
+        "y": 0,
+        "z": -19.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 185
+    },
+    {
+      "name": "V2 H2 Z06 P member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -71,
+        "y": 0,
+        "z": -15.9
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 246
+    },
+    {
+      "name": "V2 H2 Z06 P member 3",
+      "module": "Palm_3",
+      "position": {
+        "x": -68.75,
+        "y": 0,
+        "z": -19.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 307
+    },
+    {
+      "name": "V2 H2 Z07 G member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -60.05,
+        "y": 0,
+        "z": 2.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 222
+    },
+    {
+      "name": "V2 H2 Z07 G member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -56,
+        "y": 0,
+        "z": 9.9
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 283
+    },
+    {
+      "name": "V2 H2 Z07 G member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": -51.95,
+        "y": 0,
+        "z": 2.2
+      },
+      "size": {
+        "x": 5.85,
+        "y": 1.4,
+        "z": 9.1
+      },
+      "yaw": 344
+    },
+    {
+      "name": "V2 H3 Z13 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -29.8,
+        "y": 0,
+        "z": 122.6
+      },
+      "size": {
+        "x": 2.6,
+        "y": 2.6,
+        "z": 4.55
+      },
+      "yaw": 84
+    },
+    {
+      "name": "V2 H3 Z13 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -28,
+        "y": 0,
+        "z": 126.45
+      },
+      "size": {
+        "x": 2.6,
+        "y": 2.6,
+        "z": 4.55
+      },
+      "yaw": 145
+    },
+    {
+      "name": "V2 H3 Z13 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -26.2,
+        "y": 0,
+        "z": 122.6
+      },
+      "size": {
+        "x": 2.6,
+        "y": 2.6,
+        "z": 4.55
+      },
+      "yaw": 206
+    },
+    {
+      "name": "V2 H4 Z14 P member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 87.3,
+        "y": 0,
+        "z": 97.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 121
+    },
+    {
+      "name": "V2 H4 Z14 P member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 90,
+        "y": 0,
+        "z": 101.1
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 182
+    },
+    {
+      "name": "V2 H4 Z14 P member 3",
+      "module": "Palm_3",
+      "position": {
+        "x": 92.7,
+        "y": 0,
+        "z": 97.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 243
+    },
+    {
+      "name": "V2 H5 Z18 P member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 93.75,
+        "y": 0,
+        "z": -58.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 269
+    },
+    {
+      "name": "V2 H5 Z18 P member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 96,
+        "y": 0,
+        "z": -54.9
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 330
+    },
+    {
+      "name": "V2 H5 Z18 P member 3",
+      "module": "Palm_3",
+      "position": {
+        "x": 98.25,
+        "y": 0,
+        "z": -58.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 31
+    },
+    {
+      "name": "V2 H5 Z19 R member 1",
+      "module": "Rock_2",
+      "position": {
+        "x": 50.3,
+        "y": 0,
+        "z": -91.8
+      },
+      "size": {
+        "x": 3.9,
+        "y": 2.6,
+        "z": 2.6
+      },
+      "yaw": 306
+    },
+    {
+      "name": "V2 H5 Z19 R member 2",
+      "module": "Rock_3",
+      "position": {
+        "x": 53,
+        "y": 0,
+        "z": -89.6
+      },
+      "size": {
+        "x": 3.9,
+        "y": 2.6,
+        "z": 2.6
+      },
+      "yaw": 7
+    },
+    {
+      "name": "V2 H5 Z19 R member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": 55.7,
+        "y": 0,
+        "z": -91.8
+      },
+      "size": {
+        "x": 3.9,
+        "y": 2.6,
+        "z": 2.6
+      },
+      "yaw": 68
+    },
+    {
+      "name": "V2 H1 Z23 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -29.8,
+        "y": 0,
+        "z": -140.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 94
+    },
+    {
+      "name": "V2 H1 Z23 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -28,
+        "y": 0,
+        "z": -138.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 155
+    },
+    {
+      "name": "V2 H1 Z23 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": -26.2,
+        "y": 0,
+        "z": -140.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 216
+    },
+    {
+      "name": "V2 H1 Z24 G member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": 4.75,
+        "y": 0,
+        "z": -138.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 131
+    },
+    {
+      "name": "V2 H1 Z24 G member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": 7,
+        "y": 0,
+        "z": -134.55
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 192
+    },
+    {
+      "name": "V2 H1 Z24 G member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 9.25,
+        "y": 0,
+        "z": -138.4
+      },
+      "size": {
+        "x": 3.25,
+        "y": 1.4,
+        "z": 4.55
+      },
+      "yaw": 253
+    },
+    {
+      "name": "V2 H1 Z25 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -39.35,
+        "y": 0,
+        "z": -84.8
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 2.6
+      },
+      "yaw": 168
+    },
+    {
+      "name": "V2 H1 Z25 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -38,
+        "y": 0,
+        "z": -82.6
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 2.6
+      },
+      "yaw": 229
+    },
+    {
+      "name": "V2 H1 Z25 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -36.65,
+        "y": 0,
+        "z": -84.8
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 2.6
+      },
+      "yaw": 290
+    },
+    {
+      "name": "V2 H2 Z27 R member 1",
+      "module": "Rock_2",
+      "position": {
+        "x": -95.35,
+        "y": 0,
+        "z": 8.8
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.9
+      },
+      "yaw": 242
+    },
+    {
+      "name": "V2 H2 Z27 R member 2",
+      "module": "Rock_3",
+      "position": {
+        "x": -94,
+        "y": 0,
+        "z": 12.1
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.9
+      },
+      "yaw": 303
+    },
+    {
+      "name": "V2 H2 Z27 R member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": -92.65,
+        "y": 0,
+        "z": 8.8
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.9
+      },
+      "yaw": 4
+    },
+    {
+      "name": "V2 H2 Z29 P member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": -91.8,
+        "y": 0,
+        "z": 41.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 316
+    },
+    {
+      "name": "V2 H2 Z29 P member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": -90,
+        "y": 0,
+        "z": 43.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 17
+    },
+    {
+      "name": "V2 H2 Z29 P member 3",
+      "module": "Palm_2",
+      "position": {
+        "x": -88.2,
+        "y": 0,
+        "z": 41.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 78
+    },
+    {
+      "name": "V2 H2 Z30 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -39.7,
+        "y": 0,
+        "z": -9.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 353
+    },
+    {
+      "name": "V2 H2 Z30 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -37,
+        "y": 0,
+        "z": -4.85
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 54
+    },
+    {
+      "name": "V2 H2 Z30 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -34.3,
+        "y": 0,
+        "z": -9.8
+      },
+      "size": {
+        "x": 3.9,
+        "y": 1.4,
+        "z": 5.85
+      },
+      "yaw": 115
+    },
+    {
+      "name": "V2 H3 Z31 G member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -50.7,
+        "y": 0,
+        "z": 93.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 30
+    },
+    {
+      "name": "V2 H3 Z31 G member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -48,
+        "y": 0,
+        "z": 97.45
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 91
+    },
+    {
+      "name": "V2 H3 Z31 G member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": -45.3,
+        "y": 0,
+        "z": 93.6
+      },
+      "size": {
+        "x": 3.9,
+        "y": 1.4,
+        "z": 4.55
+      },
+      "yaw": 152
+    },
+    {
+      "name": "V2 H3 Z32 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": -35.8,
+        "y": 0,
+        "z": 110.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 67
+    },
+    {
+      "name": "V2 H3 Z32 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": -34,
+        "y": 0,
+        "z": 112.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 128
+    },
+    {
+      "name": "V2 H3 Z32 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": -32.2,
+        "y": 0,
+        "z": 110.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 189
+    },
+    {
+      "name": "V2 H3 Z33 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": 4.65,
+        "y": 0,
+        "z": 87.0
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 104
+    },
+    {
+      "name": "V2 H3 Z33 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": 6,
+        "y": 0,
+        "z": 89.75
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 165
+    },
+    {
+      "name": "V2 H3 Z33 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 7.35,
+        "y": 0,
+        "z": 87.0
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 226
+    },
+    {
+      "name": "V2 H4 Z35 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": 33.2,
+        "y": 0,
+        "z": 119.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 178
+    },
+    {
+      "name": "V2 H4 Z35 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": 35,
+        "y": 0,
+        "z": 121.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 239
+    },
+    {
+      "name": "V2 H4 Z35 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": 36.8,
+        "y": 0,
+        "z": 119.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 300
+    },
+    {
+      "name": "V2 H4 Z36 R member 1",
+      "module": "Rock_3",
+      "position": {
+        "x": 43.65,
+        "y": 0,
+        "z": 90.0
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 215
+    },
+    {
+      "name": "V2 H4 Z36 R member 2",
+      "module": "Rock_0",
+      "position": {
+        "x": 45,
+        "y": 0,
+        "z": 92.75
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 276
+    },
+    {
+      "name": "V2 H4 Z36 R member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 46.35,
+        "y": 0,
+        "z": 90.0
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 337
+    },
+    {
+      "name": "V2 H4 Z37 G member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": 103.75,
+        "y": 0,
+        "z": 81.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 252
+    },
+    {
+      "name": "V2 H4 Z37 G member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": 106,
+        "y": 0,
+        "z": 85.45
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 313
+    },
+    {
+      "name": "V2 H4 Z37 G member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 108.25,
+        "y": 0,
+        "z": 81.6
+      },
+      "size": {
+        "x": 3.25,
+        "y": 1.4,
+        "z": 4.55
+      },
+      "yaw": 14
+    },
+    {
+      "name": "V2 H4 Z38 R member 1",
+      "module": "Rock_1",
+      "position": {
+        "x": 56.65,
+        "y": 0,
+        "z": 59.0
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 289
+    },
+    {
+      "name": "V2 H4 Z38 R member 2",
+      "module": "Rock_2",
+      "position": {
+        "x": 58,
+        "y": 0,
+        "z": 61.75
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 350
+    },
+    {
+      "name": "V2 H4 Z38 R member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": 59.35,
+        "y": 0,
+        "z": 59.0
+      },
+      "size": {
+        "x": 1.95,
+        "y": 2.6,
+        "z": 3.25
+      },
+      "yaw": 51
+    },
+    {
+      "name": "V2 H5 Z40 R member 1",
+      "module": "Rock_3",
+      "position": {
+        "x": 77.2,
+        "y": 0,
+        "z": -13.2
+      },
+      "size": {
+        "x": 2.6,
+        "y": 2.6,
+        "z": 3.9
+      },
+      "yaw": 3
+    },
+    {
+      "name": "V2 H5 Z40 R member 2",
+      "module": "Rock_0",
+      "position": {
+        "x": 79,
+        "y": 0,
+        "z": -9.9
+      },
+      "size": {
+        "x": 2.6,
+        "y": 2.6,
+        "z": 3.9
+      },
+      "yaw": 64
+    },
+    {
+      "name": "V2 H5 Z40 R member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 80.8,
+        "y": 0,
+        "z": -13.2
+      },
+      "size": {
+        "x": 2.6,
+        "y": 2.6,
+        "z": 3.9
+      },
+      "yaw": 125
+    },
+    {
+      "name": "V2 H5 Z41 G member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": 67.75,
+        "y": 0,
+        "z": -41.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 40
+    },
+    {
+      "name": "V2 H5 Z41 G member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": 70,
+        "y": 0,
+        "z": -37.55
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 101
+    },
+    {
+      "name": "V2 H5 Z41 G member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 72.25,
+        "y": 0,
+        "z": -41.4
+      },
+      "size": {
+        "x": 3.25,
+        "y": 1.4,
+        "z": 4.55
+      },
+      "yaw": 162
+    },
+    {
+      "name": "V2 H5 Z42 P member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 3.65,
+        "y": 0,
+        "z": -69.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 77
+    },
+    {
+      "name": "V2 H5 Z42 P member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 5,
+        "y": 0,
+        "z": -67.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 138
+    },
+    {
+      "name": "V2 H5 Z42 P member 3",
+      "module": "Palm_3",
+      "position": {
+        "x": 6.35,
+        "y": 0,
+        "z": -69.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 199
+    },
+    {
+      "name": "V5 H1 Z01 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -4.2,
+        "y": 0,
+        "z": -95.8
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H1 Z01 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -3,
+        "y": 0,
+        "z": -93.72
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 67
+    },
+    {
+      "name": "V5 H1 Z01 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -1.8,
+        "y": 0,
+        "z": -95.8
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 134
+    },
+    {
+      "name": "V5 H1 Z02 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -63.0,
+        "y": 0,
+        "z": -129.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 43
+    },
+    {
+      "name": "V5 H1 Z02 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -61,
+        "y": 0,
+        "z": -126.08
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 110
+    },
+    {
+      "name": "V5 H1 Z02 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -59.0,
+        "y": 0,
+        "z": -129.2
+      },
+      "size": {
+        "x": 2.75,
+        "y": 1.1,
+        "z": 3.3
+      },
+      "yaw": 177
+    },
+    {
+      "name": "V5 H1 Z03 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -84.6,
+        "y": 0,
+        "z": -98.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 86
+    },
+    {
+      "name": "V5 H1 Z03 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -83,
+        "y": 0,
+        "z": -96.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 153
+    },
+    {
+      "name": "V5 H1 Z03 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": -81.4,
+        "y": 0,
+        "z": -98.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 220
+    },
+    {
+      "name": "V5 H2 Z04 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": -101.6,
+        "y": 0,
+        "z": -60.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 129
+    },
+    {
+      "name": "V5 H2 Z04 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": -100,
+        "y": 0,
+        "z": -58.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 196
+    },
+    {
+      "name": "V5 H2 Z04 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": -98.4,
+        "y": 0,
+        "z": -60.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 263
+    },
+    {
+      "name": "V5 H2 Z05 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -101.6,
+        "y": 0,
+        "z": 27.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 3.3
+      },
+      "yaw": 172
+    },
+    {
+      "name": "V5 H2 Z05 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -100,
+        "y": 0,
+        "z": 30.92
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 3.3
+      },
+      "yaw": 239
+    },
+    {
+      "name": "V5 H2 Z05 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -98.4,
+        "y": 0,
+        "z": 27.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 3.3
+      },
+      "yaw": 306
+    },
+    {
+      "name": "V5 H2 Z06 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -67.0,
+        "y": 0,
+        "z": 61.0
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 215
+    },
+    {
+      "name": "V5 H2 Z06 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -65,
+        "y": 0,
+        "z": 63.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 282
+    },
+    {
+      "name": "V5 H2 Z06 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -63.0,
+        "y": 0,
+        "z": 61.0
+      },
+      "size": {
+        "x": 2.75,
+        "y": 1.1,
+        "z": 2.75
+      },
+      "yaw": 349
+    },
+    {
+      "name": "V5 H3 Z07 R member 1",
+      "module": "Rock_2",
+      "position": {
+        "x": -38.2,
+        "y": 0,
+        "z": 86.4
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 258
+    },
+    {
+      "name": "V5 H3 Z07 R member 2",
+      "module": "Rock_3",
+      "position": {
+        "x": -37,
+        "y": 0,
+        "z": 87.96
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 325
+    },
+    {
+      "name": "V5 H3 Z07 R member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": -35.8,
+        "y": 0,
+        "z": 86.4
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 32
+    },
+    {
+      "name": "V5 H3 Z08 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": -31.2,
+        "y": 0,
+        "z": 144.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 301
+    },
+    {
+      "name": "V5 H3 Z08 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": -30,
+        "y": 0,
+        "z": 146.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 8
+    },
+    {
+      "name": "V5 H3 Z08 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": -28.8,
+        "y": 0,
+        "z": 144.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 75
+    },
+    {
+      "name": "V5 H3 Z09 G member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": 23.4,
+        "y": 0,
+        "z": 97.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 344
+    },
+    {
+      "name": "V5 H3 Z09 G member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": 25,
+        "y": 0,
+        "z": 100.92
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 51
+    },
+    {
+      "name": "V5 H3 Z09 G member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 26.6,
+        "y": 0,
+        "z": 97.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 1.1,
+        "z": 3.3
+      },
+      "yaw": 118
+    },
+    {
+      "name": "V5 H4 Z10 R member 1",
+      "module": "Rock_1",
+      "position": {
+        "x": 65.8,
+        "y": 0,
+        "z": 115.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 27
+    },
+    {
+      "name": "V5 H4 Z10 R member 2",
+      "module": "Rock_2",
+      "position": {
+        "x": 67,
+        "y": 0,
+        "z": 117.28
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 94
+    },
+    {
+      "name": "V5 H4 Z10 R member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": 68.2,
+        "y": 0,
+        "z": 115.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 161
+    },
+    {
+      "name": "V5 H4 Z11 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": 110.4,
+        "y": 0,
+        "z": 64.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 70
+    },
+    {
+      "name": "V5 H4 Z11 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": 112,
+        "y": 0,
+        "z": 66.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 137
+    },
+    {
+      "name": "V5 H4 Z11 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": 113.6,
+        "y": 0,
+        "z": 64.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 204
+    },
+    {
+      "name": "V5 H4 Z12 G member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": 40.0,
+        "y": 0,
+        "z": 41.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 113
+    },
+    {
+      "name": "V5 H4 Z12 G member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": 42,
+        "y": 0,
+        "z": 44.92
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 180
+    },
+    {
+      "name": "V5 H4 Z12 G member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 44.0,
+        "y": 0,
+        "z": 41.8
+      },
+      "size": {
+        "x": 2.75,
+        "y": 1.1,
+        "z": 3.3
+      },
+      "yaw": 247
+    },
+    {
+      "name": "V5 H5 Z13 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": 89.4,
+        "y": 0,
+        "z": -83.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 156
+    },
+    {
+      "name": "V5 H5 Z13 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": 91,
+        "y": 0,
+        "z": -81.72
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 223
+    },
+    {
+      "name": "V5 H5 Z13 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 92.6,
+        "y": 0,
+        "z": -83.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 290
+    },
+    {
+      "name": "V5 H5 Z14 P member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 40.4,
+        "y": 0,
+        "z": -57.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 199
+    },
+    {
+      "name": "V5 H5 Z14 P member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 42,
+        "y": 0,
+        "z": -55.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 266
+    },
+    {
+      "name": "V5 H5 Z14 P member 3",
+      "module": "Palm_3",
+      "position": {
+        "x": 43.6,
+        "y": 0,
+        "z": -57.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 333
+    },
+    {
+      "name": "V5 H5 Z15 G member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": 35.0,
+        "y": 0,
+        "z": -134.0
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 242
+    },
+    {
+      "name": "V5 H5 Z15 G member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": 37,
+        "y": 0,
+        "z": -131.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 309
+    },
+    {
+      "name": "V5 H5 Z15 G member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": 39.0,
+        "y": 0,
+        "z": -134.0
+      },
+      "size": {
+        "x": 2.75,
+        "y": 1.1,
+        "z": 2.75
+      },
+      "yaw": 16
+    },
+    {
+      "name": "V5 H1 Z16 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": -47.6,
+        "y": 0,
+        "z": -137.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 285
+    },
+    {
+      "name": "V5 H1 Z16 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": -46,
+        "y": 0,
+        "z": -135.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 352
+    },
+    {
+      "name": "V5 H1 Z16 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": -44.4,
+        "y": 0,
+        "z": -137.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 59
+    },
+    {
+      "name": "V5 H1 Z17 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -98.6,
+        "y": 0,
+        "z": -103.0
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.75
+      },
+      "yaw": 328
+    },
+    {
+      "name": "V5 H1 Z17 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -97,
+        "y": 0,
+        "z": -100.4
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.75
+      },
+      "yaw": 35
+    },
+    {
+      "name": "V5 H1 Z17 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -95.4,
+        "y": 0,
+        "z": -103.0
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.75
+      },
+      "yaw": 102
+    },
+    {
+      "name": "V5 H1 Z18 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -16.6,
+        "y": 0,
+        "z": -83.0
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 11
+    },
+    {
+      "name": "V5 H1 Z18 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -15,
+        "y": 0,
+        "z": -80.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 78
+    },
+    {
+      "name": "V5 H1 Z18 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -13.4,
+        "y": 0,
+        "z": -83.0
+      },
+      "size": {
+        "x": 2.2,
+        "y": 1.1,
+        "z": 2.75
+      },
+      "yaw": 145
+    },
+    {
+      "name": "V5 H1 Z19 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -26.2,
+        "y": 0,
+        "z": -66.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 54
+    },
+    {
+      "name": "V5 H1 Z19 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -25,
+        "y": 0,
+        "z": -64.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 121
+    },
+    {
+      "name": "V5 H1 Z19 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": -23.8,
+        "y": 0,
+        "z": -66.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 188
+    },
+    {
+      "name": "V5 H2 Z20 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": -109.2,
+        "y": 0,
+        "z": -31.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 97
+    },
+    {
+      "name": "V5 H2 Z20 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": -108,
+        "y": 0,
+        "z": -29.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 164
+    },
+    {
+      "name": "V5 H2 Z20 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": -106.8,
+        "y": 0,
+        "z": -31.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 231
+    },
+    {
+      "name": "V5 H2 Z21 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": -64.2,
+        "y": 0,
+        "z": -30.8
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 140
+    },
+    {
+      "name": "V5 H2 Z21 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": -63,
+        "y": 0,
+        "z": -28.72
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 207
+    },
+    {
+      "name": "V5 H2 Z21 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": -61.8,
+        "y": 0,
+        "z": -30.8
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 274
+    },
+    {
+      "name": "V5 H2 Z22 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -111.0,
+        "y": 0,
+        "z": 58.0
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 183
+    },
+    {
+      "name": "V5 H2 Z22 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -109,
+        "y": 0,
+        "z": 60.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 250
+    },
+    {
+      "name": "V5 H2 Z22 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -107.0,
+        "y": 0,
+        "z": 58.0
+      },
+      "size": {
+        "x": 2.75,
+        "y": 1.1,
+        "z": 2.75
+      },
+      "yaw": 317
+    },
+    {
+      "name": "V5 H2 Z23 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -41.6,
+        "y": 0,
+        "z": -36.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 226
+    },
+    {
+      "name": "V5 H2 Z23 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -40,
+        "y": 0,
+        "z": -34.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 293
+    },
+    {
+      "name": "V5 H2 Z23 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": -38.4,
+        "y": 0,
+        "z": -36.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H3 Z24 R member 1",
+      "module": "Rock_3",
+      "position": {
+        "x": 10.8,
+        "y": 0,
+        "z": 145.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 269
+    },
+    {
+      "name": "V5 H3 Z24 R member 2",
+      "module": "Rock_0",
+      "position": {
+        "x": 12,
+        "y": 0,
+        "z": 147.28
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 336
+    },
+    {
+      "name": "V5 H3 Z24 R member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 13.2,
+        "y": 0,
+        "z": 145.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 43
+    },
+    {
+      "name": "V5 H3 Z25 P member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": -53.2,
+        "y": 0,
+        "z": 121.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 312
+    },
+    {
+      "name": "V5 H3 Z25 P member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": -52,
+        "y": 0,
+        "z": 123.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 19
+    },
+    {
+      "name": "V5 H3 Z25 P member 3",
+      "module": "Palm_2",
+      "position": {
+        "x": -50.8,
+        "y": 0,
+        "z": 121.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 86
+    },
+    {
+      "name": "V5 H3 Z26 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -59.6,
+        "y": 0,
+        "z": 78.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 355
+    },
+    {
+      "name": "V5 H3 Z26 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -58,
+        "y": 0,
+        "z": 80.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 62
+    },
+    {
+      "name": "V5 H3 Z26 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -56.4,
+        "y": 0,
+        "z": 78.2
+      },
+      "size": {
+        "x": 2.2,
+        "y": 1.1,
+        "z": 2.2
+      },
+      "yaw": 129
+    },
+    {
+      "name": "V5 H3 Z27 R member 1",
+      "module": "Rock_2",
+      "position": {
+        "x": -18.2,
+        "y": 0,
+        "z": 56.4
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 38
+    },
+    {
+      "name": "V5 H3 Z27 R member 2",
+      "module": "Rock_3",
+      "position": {
+        "x": -17,
+        "y": 0,
+        "z": 57.96
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 105
+    },
+    {
+      "name": "V5 H3 Z27 R member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": -15.8,
+        "y": 0,
+        "z": 56.4
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 172
+    },
+    {
+      "name": "V5 H4 Z28 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": 76.8,
+        "y": 0,
+        "z": 115.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 81
+    },
+    {
+      "name": "V5 H4 Z28 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": 78,
+        "y": 0,
+        "z": 117.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 148
+    },
+    {
+      "name": "V5 H4 Z28 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": 79.2,
+        "y": 0,
+        "z": 115.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 215
+    },
+    {
+      "name": "V5 H4 Z29 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": 98.8,
+        "y": 0,
+        "z": 113.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 124
+    },
+    {
+      "name": "V5 H4 Z29 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": 100,
+        "y": 0,
+        "z": 115.28
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 191
+    },
+    {
+      "name": "V5 H4 Z29 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 101.2,
+        "y": 0,
+        "z": 113.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 258
+    },
+    {
+      "name": "V5 H4 Z30 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 108.4,
+        "y": 0,
+        "z": 25.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 167
+    },
+    {
+      "name": "V5 H4 Z30 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 110,
+        "y": 0,
+        "z": 26.96
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 234
+    },
+    {
+      "name": "V5 H4 Z30 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": 111.6,
+        "y": 0,
+        "z": 25.4
+      },
+      "size": {
+        "x": 2.2,
+        "y": 1.1,
+        "z": 1.65
+      },
+      "yaw": 301
+    },
+    {
+      "name": "V5 H4 Z31 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": 63.8,
+        "y": 0,
+        "z": 34.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 210
+    },
+    {
+      "name": "V5 H4 Z31 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": 65,
+        "y": 0,
+        "z": 36.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 277
+    },
+    {
+      "name": "V5 H4 Z31 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": 66.2,
+        "y": 0,
+        "z": 34.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 344
+    },
+    {
+      "name": "V5 H5 Z32 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": 108.4,
+        "y": 0,
+        "z": -70.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 253
+    },
+    {
+      "name": "V5 H5 Z32 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": 110,
+        "y": 0,
+        "z": -68.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 320
+    },
+    {
+      "name": "V5 H5 Z32 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": 111.6,
+        "y": 0,
+        "z": -70.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 27
+    },
+    {
+      "name": "V5 H5 Z33 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": 50.4,
+        "y": 0,
+        "z": -115.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 296
+    },
+    {
+      "name": "V5 H5 Z33 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": 52,
+        "y": 0,
+        "z": -113.72
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 3
+    },
+    {
+      "name": "V5 H5 Z33 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 53.6,
+        "y": 0,
+        "z": -115.8
+      },
+      "size": {
+        "x": 2.2,
+        "y": 2.1,
+        "z": 2.2
+      },
+      "yaw": 70
+    },
+    {
+      "name": "V5 H5 Z34 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 69.0,
+        "y": 0,
+        "z": -76.0
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 339
+    },
+    {
+      "name": "V5 H5 Z34 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 71,
+        "y": 0,
+        "z": -73.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 46
+    },
+    {
+      "name": "V5 H5 Z34 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": 73.0,
+        "y": 0,
+        "z": -76.0
+      },
+      "size": {
+        "x": 2.75,
+        "y": 1.1,
+        "z": 2.75
+      },
+      "yaw": 113
+    },
+    {
+      "name": "V5 H5 Z35 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -4.2,
+        "y": 0,
+        "z": -129.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 22
+    },
+    {
+      "name": "V5 H5 Z35 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -3,
+        "y": 0,
+        "z": -128.04
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 89
+    },
+    {
+      "name": "V5 H5 Z35 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": -1.8,
+        "y": 0,
+        "z": -129.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 156
+    },
+    {
+      "name": "V5 H3 Z36 P member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": -24.2,
+        "y": 0,
+        "z": 63.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 65
+    },
+    {
+      "name": "V5 H3 Z36 P member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": -23,
+        "y": 0,
+        "z": 64.96
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 132
+    },
+    {
+      "name": "V5 H3 Z36 P member 3",
+      "module": "Palm_1",
+      "position": {
+        "x": -21.8,
+        "y": 0,
+        "z": 63.4
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 199
+    },
+    {
+      "name": "V5 H3 Z37 R member 1",
+      "module": "Rock_0",
+      "position": {
+        "x": 2.2,
+        "y": 0,
+        "z": 95.6
+      },
+      "size": {
+        "x": 1.1,
+        "y": 2.1,
+        "z": 1.1
+      },
+      "yaw": 108
+    },
+    {
+      "name": "V5 H3 Z37 R member 2",
+      "module": "Rock_1",
+      "position": {
+        "x": 3,
+        "y": 0,
+        "z": 96.64
+      },
+      "size": {
+        "x": 1.1,
+        "y": 2.1,
+        "z": 1.1
+      },
+      "yaw": 175
+    },
+    {
+      "name": "V5 H3 Z37 R member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 3.8,
+        "y": 0,
+        "z": 95.6
+      },
+      "size": {
+        "x": 1.1,
+        "y": 2.1,
+        "z": 1.1
+      },
+      "yaw": 242
+    },
+    {
+      "name": "V5 H3 Z38 G member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": -21.2,
+        "y": 0,
+        "z": 112.2
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 151
+    },
+    {
+      "name": "V5 H3 Z38 G member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": -20,
+        "y": 0,
+        "z": 114.28
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 218
+    },
+    {
+      "name": "V5 H3 Z38 G member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": -18.8,
+        "y": 0,
+        "z": 112.2
+      },
+      "size": {
+        "x": 1.65,
+        "y": 1.1,
+        "z": 2.2
+      },
+      "yaw": 285
+    },
+    {
+      "name": "V5 H3 Z39 P member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": -21.8,
+        "y": 0,
+        "z": 135.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 194
+    },
+    {
+      "name": "V5 H3 Z39 P member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": -21,
+        "y": 0,
+        "z": 136.64
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 261
+    },
+    {
+      "name": "V5 H3 Z39 P member 3",
+      "module": "Palm_0",
+      "position": {
+        "x": -20.2,
+        "y": 0,
+        "z": 135.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 328
+    },
+    {
+      "name": "V5 H5 Z40 R member 1",
+      "module": "Rock_3",
+      "position": {
+        "x": 109.8,
+        "y": 0,
+        "z": -24.6
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 237
+    },
+    {
+      "name": "V5 H5 Z40 R member 2",
+      "module": "Rock_0",
+      "position": {
+        "x": 111,
+        "y": 0,
+        "z": -23.04
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 304
+    },
+    {
+      "name": "V5 H5 Z40 R member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 112.2,
+        "y": 0,
+        "z": -24.6
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 11
+    },
+    {
+      "name": "V5 H5 Z41 G member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": 81.4,
+        "y": 0,
+        "z": 2.0
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 280
+    },
+    {
+      "name": "V5 H5 Z41 G member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": 83,
+        "y": 0,
+        "z": 4.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 347
+    },
+    {
+      "name": "V5 H5 Z41 G member 3",
+      "module": "Rock_2",
+      "position": {
+        "x": 84.6,
+        "y": 0,
+        "z": 2.0
+      },
+      "size": {
+        "x": 2.2,
+        "y": 1.1,
+        "z": 2.75
+      },
+      "yaw": 54
+    },
+    {
+      "name": "V5 H5 Z42 P member 1",
+      "module": "Palm_1",
+      "position": {
+        "x": 74.8,
+        "y": 0,
+        "z": -29.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 323
+    },
+    {
+      "name": "V5 H5 Z42 P member 2",
+      "module": "Palm_2",
+      "position": {
+        "x": 76,
+        "y": 0,
+        "z": -28.04
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 30
+    },
+    {
+      "name": "V5 H5 Z42 P member 3",
+      "module": "Palm_3",
+      "position": {
+        "x": 77.2,
+        "y": 0,
+        "z": -29.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 97
+    },
+    {
+      "name": "V5 H5 Z43 R member 1",
+      "module": "Rock_2",
+      "position": {
+        "x": 57.8,
+        "y": 0,
+        "z": -49.6
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 6
+    },
+    {
+      "name": "V5 H5 Z43 R member 2",
+      "module": "Rock_3",
+      "position": {
+        "x": 59,
+        "y": 0,
+        "z": -48.04
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 73
+    },
+    {
+      "name": "V5 H5 Z43 R member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": 60.2,
+        "y": 0,
+        "z": -49.6
+      },
+      "size": {
+        "x": 1.65,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 140
+    },
+    {
+      "name": "V5 H5 Z44 G member 1",
+      "module": "Palm_3",
+      "position": {
+        "x": 46.8,
+        "y": 0,
+        "z": -80.8
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 49
+    },
+    {
+      "name": "V5 H5 Z44 G member 2",
+      "module": "Palm_0",
+      "position": {
+        "x": 48,
+        "y": 0,
+        "z": -78.72
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 116
+    },
+    {
+      "name": "V5 H5 Z44 G member 3",
+      "module": "Rock_1",
+      "position": {
+        "x": 49.2,
+        "y": 0,
+        "z": -80.8
+      },
+      "size": {
+        "x": 1.65,
+        "y": 1.1,
+        "z": 2.2
+      },
+      "yaw": 183
+    },
+    {
+      "name": "V5 H5 Z45 P member 1",
+      "module": "Palm_0",
+      "position": {
+        "x": 29.8,
+        "y": 0,
+        "z": -57.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 92
+    },
+    {
+      "name": "V5 H5 Z45 P member 2",
+      "module": "Palm_1",
+      "position": {
+        "x": 31,
+        "y": 0,
+        "z": -56.04
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 159
+    },
+    {
+      "name": "V5 H5 Z45 P member 3",
+      "module": "Palm_2",
+      "position": {
+        "x": 32.2,
+        "y": 0,
+        "z": -57.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 226
+    },
+    {
+      "name": "V5 H5 Z46 R member 1",
+      "module": "Rock_1",
+      "position": {
+        "x": 1.2,
+        "y": 0,
+        "z": -110.6
+      },
+      "size": {
+        "x": 1.1,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 135
+    },
+    {
+      "name": "V5 H5 Z46 R member 2",
+      "module": "Rock_2",
+      "position": {
+        "x": 2,
+        "y": 0,
+        "z": -109.04
+      },
+      "size": {
+        "x": 1.1,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 202
+    },
+    {
+      "name": "V5 H5 Z46 R member 3",
+      "module": "Rock_3",
+      "position": {
+        "x": 2.8,
+        "y": 0,
+        "z": -110.6
+      },
+      "size": {
+        "x": 1.1,
+        "y": 2.1,
+        "z": 1.65
+      },
+      "yaw": 269
+    },
+    {
+      "name": "V5 H5 Z47 G member 1",
+      "module": "Palm_2",
+      "position": {
+        "x": 27.8,
+        "y": 0,
+        "z": -106.6
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 178
+    },
+    {
+      "name": "V5 H5 Z47 G member 2",
+      "module": "Palm_3",
+      "position": {
+        "x": 29,
+        "y": 0,
+        "z": -105.04
+      },
+      "size": {
+        "x": 1,
+        "y": 1,
+        "z": 1
+      },
+      "yaw": 245
+    },
+    {
+      "name": "V5 H5 Z47 G member 3",
+      "module": "Rock_0",
+      "position": {
+        "x": 30.2,
+        "y": 0,
+        "z": -106.6
+      },
+      "size": {
+        "x": 1.65,
+        "y": 1.1,
+        "z": 1.65
+      },
+      "yaw": 312
+    }
+  ],
+  "roughPatches": [
+    {
+      "name": "V2 H2 Z07 G",
+      "centre": {
+        "x": -56,
+        "y": 0,
+        "z": 5
+      },
+      "radii": {
+        "x": 9,
+        "y": 14
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H1 Z24 G",
+      "centre": {
+        "x": 7,
+        "y": 0,
+        "z": -137
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H2 Z30 G",
+      "centre": {
+        "x": -37,
+        "y": 0,
+        "z": -8
+      },
+      "radii": {
+        "x": 6,
+        "y": 9
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H3 Z31 G",
+      "centre": {
+        "x": -48,
+        "y": 0,
+        "z": 95
+      },
+      "radii": {
+        "x": 6,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H4 Z37 G",
+      "centre": {
+        "x": 106,
+        "y": 0,
+        "z": 83
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V2 H5 Z41 G",
+      "centre": {
+        "x": 70,
+        "y": 0,
+        "z": -40
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H1 Z02 G",
+      "centre": {
+        "x": -61,
+        "y": 0,
+        "z": -128
+      },
+      "radii": {
+        "x": 5,
+        "y": 6
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H2 Z06 G",
+      "centre": {
+        "x": -65,
+        "y": 0,
+        "z": 62
+      },
+      "radii": {
+        "x": 5,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H3 Z09 G",
+      "centre": {
+        "x": 25,
+        "y": 0,
+        "z": 99
+      },
+      "radii": {
+        "x": 4,
+        "y": 6
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H4 Z12 G",
+      "centre": {
+        "x": 42,
+        "y": 0,
+        "z": 43
+      },
+      "radii": {
+        "x": 5,
+        "y": 6
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H5 Z15 G",
+      "centre": {
+        "x": 37,
+        "y": 0,
+        "z": -133
+      },
+      "radii": {
+        "x": 5,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H1 Z18 G",
+      "centre": {
+        "x": -15,
+        "y": 0,
+        "z": -82
+      },
+      "radii": {
+        "x": 4,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H2 Z22 G",
+      "centre": {
+        "x": -109,
+        "y": 0,
+        "z": 59
+      },
+      "radii": {
+        "x": 5,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H3 Z26 G",
+      "centre": {
+        "x": -58,
+        "y": 0,
+        "z": 79
+      },
+      "radii": {
+        "x": 4,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H4 Z30 G",
+      "centre": {
+        "x": 110,
+        "y": 0,
+        "z": 26
+      },
+      "radii": {
+        "x": 4,
+        "y": 3
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H5 Z34 G",
+      "centre": {
+        "x": 71,
+        "y": 0,
+        "z": -75
+      },
+      "radii": {
+        "x": 5,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H3 Z38 G",
+      "centre": {
+        "x": -20,
+        "y": 0,
+        "z": 113
+      },
+      "radii": {
+        "x": 3,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H5 Z41 G",
+      "centre": {
+        "x": 83,
+        "y": 0,
+        "z": 3
+      },
+      "radii": {
+        "x": 4,
+        "y": 5
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H5 Z44 G",
+      "centre": {
+        "x": 48,
+        "y": 0,
+        "z": -80
+      },
+      "radii": {
+        "x": 3,
+        "y": 4
+      },
+      "yaw": 0
+    },
+    {
+      "name": "V5 H5 Z47 G",
+      "centre": {
+        "x": 29,
+        "y": 0,
+        "z": -106
+      },
+      "radii": {
+        "x": 3,
+        "y": 3
+      },
+      "yaw": 0
+    }
+  ],
+  "obstacleZones": [
+    {
+      "hole": 1,
+      "kind": "S",
+      "x": -29,
+      "z": -124,
+      "rx": 7,
+      "rz": 5
+    },
+    {
+      "hole": 1,
+      "kind": "S",
+      "x": -5,
+      "z": -118,
+      "rx": 6,
+      "rz": 5
+    },
+    {
+      "hole": 1,
+      "kind": "R",
+      "x": -40,
+      "z": -119,
+      "rx": 6,
+      "rz": 5
+    },
+    {
+      "hole": 1,
+      "kind": "S",
+      "x": -70,
+      "z": -83,
+      "rx": 6,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "R",
+      "x": -94,
+      "z": -38,
+      "rx": 5,
+      "rz": 8
+    },
+    {
+      "hole": 2,
+      "kind": "P",
+      "x": -71,
+      "z": -18,
+      "rx": 5,
+      "rz": 6
+    },
+    {
+      "hole": 2,
+      "kind": "G",
+      "x": -56,
+      "z": 5,
+      "rx": 9,
+      "rz": 14
+    },
+    {
+      "hole": 2,
+      "kind": "S",
+      "x": -54,
+      "z": 39,
+      "rx": 5,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "S",
+      "x": -36,
+      "z": 45,
+      "rx": 5,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "S",
+      "x": -22,
+      "z": 98,
+      "rx": 5,
+      "rz": 7
+    },
+    {
+      "hole": 3,
+      "kind": "S",
+      "x": 7,
+      "z": 105,
+      "rx": 5,
+      "rz": 7
+    },
+    {
+      "hole": 3,
+      "kind": "S",
+      "x": -10,
+      "z": 138,
+      "rx": 8,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "R",
+      "x": -28,
+      "z": 124,
+      "rx": 4,
+      "rz": 7
+    },
+    {
+      "hole": 4,
+      "kind": "P",
+      "x": 90,
+      "z": 99,
+      "rx": 6,
+      "rz": 6
+    },
+    {
+      "hole": 4,
+      "kind": "S",
+      "x": 80,
+      "z": 48,
+      "rx": 5,
+      "rz": 6
+    },
+    {
+      "hole": 4,
+      "kind": "S",
+      "x": 108,
+      "z": 34,
+      "rx": 5,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "S",
+      "x": 126,
+      "z": 49,
+      "rx": 5,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": 96,
+      "z": -57,
+      "rx": 5,
+      "rz": 6
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 53,
+      "z": -91,
+      "rx": 6,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "S",
+      "x": 20,
+      "z": -65,
+      "rx": 6,
+      "rz": 5
+    },
+    {
+      "hole": 5,
+      "kind": "S",
+      "x": 38,
+      "z": -90,
+      "rx": 5,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "S",
+      "x": 26,
+      "z": -118,
+      "rx": 4,
+      "rz": 7
+    },
+    {
+      "hole": 1,
+      "kind": "P",
+      "x": -28,
+      "z": -140,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 1,
+      "kind": "G",
+      "x": 7,
+      "z": -137,
+      "rx": 5,
+      "rz": 7
+    },
+    {
+      "hole": 1,
+      "kind": "R",
+      "x": -38,
+      "z": -84,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 1,
+      "kind": "S",
+      "x": -55,
+      "z": -108,
+      "rx": 5,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "R",
+      "x": -94,
+      "z": 10,
+      "rx": 3,
+      "rz": 6
+    },
+    {
+      "hole": 2,
+      "kind": "S",
+      "x": -68,
+      "z": -47,
+      "rx": 4,
+      "rz": 7
+    },
+    {
+      "hole": 2,
+      "kind": "P",
+      "x": -90,
+      "z": 42,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "G",
+      "x": -37,
+      "z": -8,
+      "rx": 6,
+      "rz": 9
+    },
+    {
+      "hole": 3,
+      "kind": "G",
+      "x": -48,
+      "z": 95,
+      "rx": 6,
+      "rz": 7
+    },
+    {
+      "hole": 3,
+      "kind": "P",
+      "x": -34,
+      "z": 111,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "R",
+      "x": 6,
+      "z": 88,
+      "rx": 3,
+      "rz": 5
+    },
+    {
+      "hole": 3,
+      "kind": "S",
+      "x": 6,
+      "z": 135,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "P",
+      "x": 35,
+      "z": 120,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "R",
+      "x": 45,
+      "z": 91,
+      "rx": 3,
+      "rz": 5
+    },
+    {
+      "hole": 4,
+      "kind": "G",
+      "x": 106,
+      "z": 83,
+      "rx": 5,
+      "rz": 7
+    },
+    {
+      "hole": 4,
+      "kind": "R",
+      "x": 58,
+      "z": 60,
+      "rx": 3,
+      "rz": 5
+    },
+    {
+      "hole": 5,
+      "kind": "S",
+      "x": 119,
+      "z": -12,
+      "rx": 5,
+      "rz": 7
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 79,
+      "z": -12,
+      "rx": 4,
+      "rz": 6
+    },
+    {
+      "hole": 5,
+      "kind": "G",
+      "x": 70,
+      "z": -40,
+      "rx": 5,
+      "rz": 7
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": 5,
+      "z": -69,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "S",
+      "x": -5,
+      "z": -103,
+      "rx": 4,
+      "rz": 7
+    },
+    {
+      "hole": 1,
+      "kind": "R",
+      "x": -3,
+      "z": -95,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 1,
+      "kind": "G",
+      "x": -61,
+      "z": -128,
+      "rx": 5,
+      "rz": 6
+    },
+    {
+      "hole": 1,
+      "kind": "P",
+      "x": -83,
+      "z": -98,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "P",
+      "x": -100,
+      "z": -60,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "R",
+      "x": -100,
+      "z": 29,
+      "rx": 4,
+      "rz": 6
+    },
+    {
+      "hole": 2,
+      "kind": "G",
+      "x": -65,
+      "z": 62,
+      "rx": 5,
+      "rz": 5
+    },
+    {
+      "hole": 3,
+      "kind": "R",
+      "x": -37,
+      "z": 87,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 3,
+      "kind": "P",
+      "x": -30,
+      "z": 145,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "G",
+      "x": 25,
+      "z": 99,
+      "rx": 4,
+      "rz": 6
+    },
+    {
+      "hole": 4,
+      "kind": "R",
+      "x": 67,
+      "z": 116,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "P",
+      "x": 112,
+      "z": 65,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "G",
+      "x": 42,
+      "z": 43,
+      "rx": 5,
+      "rz": 6
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 91,
+      "z": -83,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": 42,
+      "z": -57,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "G",
+      "x": 37,
+      "z": -133,
+      "rx": 5,
+      "rz": 5
+    },
+    {
+      "hole": 1,
+      "kind": "P",
+      "x": -46,
+      "z": -137,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 1,
+      "kind": "R",
+      "x": -97,
+      "z": -102,
+      "rx": 4,
+      "rz": 5
+    },
+    {
+      "hole": 1,
+      "kind": "G",
+      "x": -15,
+      "z": -82,
+      "rx": 4,
+      "rz": 5
+    },
+    {
+      "hole": 1,
+      "kind": "P",
+      "x": -25,
+      "z": -66,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "P",
+      "x": -108,
+      "z": -31,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "R",
+      "x": -63,
+      "z": -30,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 2,
+      "kind": "G",
+      "x": -109,
+      "z": 59,
+      "rx": 5,
+      "rz": 5
+    },
+    {
+      "hole": 2,
+      "kind": "P",
+      "x": -40,
+      "z": -36,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "R",
+      "x": 12,
+      "z": 146,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "P",
+      "x": -52,
+      "z": 122,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "G",
+      "x": -58,
+      "z": 79,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "R",
+      "x": -17,
+      "z": 57,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 4,
+      "kind": "P",
+      "x": 78,
+      "z": 116,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "R",
+      "x": 100,
+      "z": 114,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 4,
+      "kind": "G",
+      "x": 110,
+      "z": 26,
+      "rx": 4,
+      "rz": 3
+    },
+    {
+      "hole": 4,
+      "kind": "P",
+      "x": 65,
+      "z": 35,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": 110,
+      "z": -70,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 52,
+      "z": -115,
+      "rx": 4,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "G",
+      "x": 71,
+      "z": -75,
+      "rx": 5,
+      "rz": 5
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": -3,
+      "z": -129,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 3,
+      "kind": "P",
+      "x": -23,
+      "z": 64,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 3,
+      "kind": "R",
+      "x": 3,
+      "z": 96,
+      "rx": 2,
+      "rz": 2
+    },
+    {
+      "hole": 3,
+      "kind": "G",
+      "x": -20,
+      "z": 113,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 3,
+      "kind": "P",
+      "x": -21,
+      "z": 136,
+      "rx": 2,
+      "rz": 2
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 111,
+      "z": -24,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 5,
+      "kind": "G",
+      "x": 83,
+      "z": 3,
+      "rx": 4,
+      "rz": 5
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": 76,
+      "z": -29,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 59,
+      "z": -49,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 5,
+      "kind": "G",
+      "x": 48,
+      "z": -80,
+      "rx": 3,
+      "rz": 4
+    },
+    {
+      "hole": 5,
+      "kind": "P",
+      "x": 31,
+      "z": -57,
+      "rx": 3,
+      "rz": 3
+    },
+    {
+      "hole": 5,
+      "kind": "R",
+      "x": 2,
+      "z": -110,
+      "rx": 2,
+      "rz": 3
+    },
+    {
+      "hole": 5,
+      "kind": "G",
+      "x": 29,
+      "z": -106,
+      "rx": 3,
+      "rz": 3
+    }
+  ],
+  "waterPatches": [
+    {
+      "name": "Pond W1",
+      "hole": 1,
+      "centre": {
+        "x": -50,
+        "y": 0,
+        "z": -75
+      },
+      "radii": {
+        "x": 6,
+        "y": 4
+      },
+      "bankScale": 1.45
+    },
+    {
+      "name": "Pond W2",
+      "hole": 2,
+      "centre": {
+        "x": -98,
+        "y": 0,
+        "z": -12
+      },
+      "radii": {
+        "x": 6,
+        "y": 8
+      },
+      "bankScale": 1.45
+    },
+    {
+      "name": "Pond W3",
+      "hole": 3,
+      "centre": {
+        "x": -12,
+        "y": 0,
+        "z": 76
+      },
+      "radii": {
+        "x": 5,
+        "y": 4
+      },
+      "bankScale": 1.45
+    },
+    {
+      "name": "Pond W4",
+      "hole": 4,
+      "centre": {
+        "x": 52,
+        "y": 0,
+        "z": 116
+      },
+      "radii": {
+        "x": 7,
+        "y": 4
+      },
+      "bankScale": 1.45
+    },
+    {
+      "name": "Pond W5",
+      "hole": 5,
+      "centre": {
+        "x": 105,
+        "y": 0,
+        "z": -40
+      },
+      "radii": {
+        "x": 5,
+        "y": 7
+      },
+      "bankScale": 1.45
+    },
+    {
+      "name": "Pond W6",
+      "hole": 5,
+      "centre": {
+        "x": 1,
+        "y": 0,
+        "z": -91
+      },
+      "radii": {
+        "x": 4,
+        "y": 4
+      },
+      "bankScale": 1.45
+    }
   ]
 }

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d4c9c66bd125443ca759ec00c2802801, type: 3}
+  m_Name: GolfFeedback
+  m_EditorClassIdentifier:
+  chargeVolume: 0.18
+  puttChargeVolume: 0.09
+  readyVolume: 0.38
+  readyThreshold: 0.98
+  edgeOpacity: 0.3
+  chargeCameraPush: 0.06
+  hitVolume: 0.7
+  landingVolume: 0.48
+  cupVolume: 0.7
+  minimumLandingSpeed: 0.5
+  landingCooldown: 0.12
+  cameraShake: 1
+  shakeSeconds: 0.1
+  shakeDistance: 0.012
+  swingSparks: 12
+  puttSparks: 3
+  landingParticles: 7
+  cupParticles: 24
+  footstepVolume: 0.48
+  walkingStepDistance: 1.8
+  runningStepDistance: 2.6
+  footContactPhase: 0.05
+  footLiftHeight: 0.028
+  footPlantHeight: 0.02
+  minimumFootstepInterval: 0.24
+  countdownVolume: 0.6
+  whistleVolume: 0.65
+  wheelTrackLifetime: 3
+  wheelTrackOpacity: 0.48
+  wheelParticles: 8
+  followWindowSize: {x: 360, y: 203}
+  followRestHold: 3
+  followFadeSeconds: 0.65

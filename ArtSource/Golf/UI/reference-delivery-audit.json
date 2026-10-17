@@ -1,0 +1,155 @@
+{
+  "basePath": "repository root",
+  "source": "ArtSource/Golf/UI/ApprovedHUD-reference.png",
+  "sourceSha256": "2217F674C2AC7920F04C3403CB871CDE09665A9FF7DFE50F0B6160EE461E1C8B",
+  "method": "Original pixel crops with traced alpha contours, clean live-caption interiors and small original default-caption overlays. No screenshot background ships.",
+  "sizeNote": "PNG and raw ASTC bytes are not measured APK growth.",
+  "assets": [
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Course.png",
+      "sha256": "9B0A845C555138E651B966150671A3AEF06F490383A6B88AC6475EA259B49699",
+      "width": 452,
+      "height": 130,
+      "pngBytes": 101512,
+      "androidAstc4x4Bytes": 59664
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Hole.png",
+      "sha256": "BBD5DA70E3807FD959C80FD208DB7FE00C6489B7547CE655DBB7441C5F17B1F8",
+      "width": 295,
+      "height": 106,
+      "pngBytes": 47978,
+      "androidAstc4x4Bytes": 31968
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Arrow.png",
+      "sha256": "53B29056CB1C10AB995BEDE3DC2BBB099AD83C9295427A15BDCAB6C3D0C5DFBD",
+      "width": 67,
+      "height": 70,
+      "pngBytes": 10002,
+      "androidAstc4x4Bytes": 4896
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Ball.png",
+      "sha256": "BBEFD8DD916DF7FF5A93BC0555811E4D8C17BB28271980C1A61588E190285B5E",
+      "width": 263,
+      "height": 67,
+      "pngBytes": 24942,
+      "androidAstc4x4Bytes": 17952
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/BallArrow.png",
+      "sha256": "88F6CC97E1FAB319E47BE020D3B0AF67474C1BCC62EA941DD3E0FEDCF8D59536",
+      "width": 47,
+      "height": 41,
+      "pngBytes": 5176,
+      "androidAstc4x4Bytes": 2112
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Aim.png",
+      "sha256": "103774A23A05518C64A05DFDBFB7C442F487E7FACA4BED87C916D8F1C57EFBAC",
+      "width": 257,
+      "height": 123,
+      "pngBytes": 50534,
+      "androidAstc4x4Bytes": 32240
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Buggy.png",
+      "sha256": "910ABA2FB565DD5D08BC6AE948813A6FD0BD5C8B088D9D45AA74AFABD893F37E",
+      "width": 246,
+      "height": 94,
+      "pngBytes": 36906,
+      "androidAstc4x4Bytes": 23808
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Jump.png",
+      "sha256": "21C7BA6B2891DFA37EA5BA8F0110AA706A0E6D8E8D5FE7EFB3647961287BCA20",
+      "width": 134,
+      "height": 106,
+      "pngBytes": 27707,
+      "androidAstc4x4Bytes": 14688
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Camera.png",
+      "sha256": "9A06F21E9C032DFB772AFB2222E782CEAE7668D64482C6CB2F86A2C21FD1F6EE",
+      "width": 132,
+      "height": 92,
+      "pngBytes": 22611,
+      "androidAstc4x4Bytes": 12144
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Leave.png",
+      "sha256": "99B1887DF7A43A1DEAE4DA9C4F346F4853A6BD4C043E4D8A85BA09EFF784D62C",
+      "width": 274,
+      "height": 81,
+      "pngBytes": 28083,
+      "androidAstc4x4Bytes": 23184
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Hint.png",
+      "sha256": "2F6DDCEE11FEDBFC6B4FDC8FCA1B02E383CEFE929F03FED3DBF8A0BF281D9910",
+      "width": 390,
+      "height": 84,
+      "pngBytes": 37631,
+      "androidAstc4x4Bytes": 32928
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Utility.png",
+      "sha256": "45814AAF1B3536A8042A16692F7C4490CD6923E0DA9ECD3A2C207E2048BCEF0C",
+      "width": 132,
+      "height": 92,
+      "pngBytes": 19705,
+      "androidAstc4x4Bytes": 12144
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/Shot.png",
+      "sha256": "B6599915F74AF6E6CEEEE4DE71037641EBAC7A2D40BCD33DFDE23FAA11408F7D",
+      "width": 242,
+      "height": 227,
+      "pngBytes": 97634,
+      "androidAstc4x4Bytes": 55632
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/AimCaption.png",
+      "sha256": "262B18AB4C5E58429385843C9B15B40A2987575DA39ACE5E57743BB7E42365CF",
+      "width": 104,
+      "height": 83,
+      "pngBytes": 14831,
+      "androidAstc4x4Bytes": 8736
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/BuggyCaption.png",
+      "sha256": "806637BD6A311E0990D7138B34818124F19E3A218CF114BD4E8FFD63E333DC2E",
+      "width": 130,
+      "height": 39,
+      "pngBytes": 11234,
+      "androidAstc4x4Bytes": 5280
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/ShotCaption.png",
+      "sha256": "04980F0E9752911D2F5EDD08177C0B09BF5A2C6279B8818D4F5DACD550535892",
+      "width": 144,
+      "height": 46,
+      "pngBytes": 14623,
+      "androidAstc4x4Bytes": 6912
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/HintCaption.png",
+      "sha256": "962A80B881FFAE1FABB795B5FD4D85B7D9233943561CD99D49AA514A7D64E2F0",
+      "width": 282,
+      "height": 35,
+      "pngBytes": 19738,
+      "androidAstc4x4Bytes": 10224
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/GolfUI/Reference/LeaveCaption.png",
+      "sha256": "ACE40EFE0AFDB62766AB1A30C7F51AF428470FD8204401852FDBDDB5872E6AAD",
+      "width": 168,
+      "height": 37,
+      "pngBytes": 12307,
+      "androidAstc4x4Bytes": 6720
+    }
+  ],
+  "totalPngBytes": 583154,
+  "totalAndroidAstc4x4Bytes": 361232
+}

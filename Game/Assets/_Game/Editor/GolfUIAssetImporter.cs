@@ -6,11 +6,21 @@ public sealed class GolfUIAssetImporter : AssetPostprocessor {
  void OnPreprocessTexture() {
   if (!assetPath.StartsWith("Assets/_Game/Resources/GolfUI/") || !assetPath.EndsWith(".png")) return;
   var importer = (TextureImporter)assetImporter;
-  int size = assetPath.EndsWith("GolfCourseBadge.png") ? 128 : 256;
+  bool reference=assetPath.Contains("/Reference/");
+  bool leaderboard=assetPath.Contains("/Leaderboard/");
+  bool cartButton=(assetPath.Contains("/CartButtons/")||assetPath.Contains("/Badges/")||assetPath.Contains("/StartButton/"));
+  int size = cartButton?512:reference||leaderboard?1024:256;
   importer.textureType = TextureImporterType.Sprite;
   importer.spriteImportMode = SpriteImportMode.Single;
   importer.spritePixelsPerUnit = 100;
-  importer.spriteBorder = Vector4.zero;
+  if(!reference)importer.spriteBorder = Vector4.zero;
+  if(leaderboard)importer.spriteBorder=System.IO.Path.GetFileNameWithoutExtension(assetPath) switch {
+   "Frame"=>new Vector4(52,52,52,52),
+   "Row" or "LocalRow"=>new Vector4(28,28,28,28),
+   "Cell" or "LocalCell"=>new Vector4(20,20,20,20),
+   "Pending"=>new Vector4(40,40,40,40),
+   _=>Vector4.zero
+  };
   var settings = new TextureImporterSettings();
   importer.ReadTextureSettings(settings);
   settings.spriteMeshType = SpriteMeshType.FullRect;
@@ -29,7 +39,7 @@ public sealed class GolfUIAssetImporter : AssetPostprocessor {
   });
   importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings {
    name = "Android", overridden = true, maxTextureSize = size,
-   format = TextureImporterFormat.ASTC_6x6, compressionQuality = 100
+   format = reference||cartButton||leaderboard?TextureImporterFormat.ASTC_4x4:TextureImporterFormat.ASTC_6x6, compressionQuality = 100
   });
  }
 }

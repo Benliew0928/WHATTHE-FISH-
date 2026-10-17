@@ -1,0 +1,145 @@
+{
+  "base": "repository root",
+  "method": "Original pixels; transparent-padding crop and proportional premultiplied-alpha Lanczos downsample. No redraw, recolour or caption replacement.",
+  "apk_note": "PNG and raw ASTC lengths are not measured APK growth.",
+  "assets": [
+    {
+      "name": "Exit",
+      "master": "ArtSource/Golf/UI/Badges/Exit-master.png",
+      "master_sha256": "6661f7cbce8be511b109e9007a88b47e5520f0123ccef218025e12ca0d30fba2",
+      "master_size": [
+        1942,
+        809
+      ],
+      "alpha_crop": [
+        49,
+        98,
+        1884,
+        698
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/Badges/Exit.png",
+      "delivery_sha256": "48d7dcfd186e931525bd556ab928f68129d4d4129c254ac807a6ee466158e349",
+      "delivery_size": [
+        512,
+        170
+      ],
+      "delivery_png_bytes": 131091,
+      "android_astc_4x4_raw_bytes": 88064
+    },
+    {
+      "name": "YourBall",
+      "master": "ArtSource/Golf/UI/Badges/YourBall-master.png",
+      "master_sha256": "fad0205344bd30af3998cfb38e6d45c686ca63c8ad29b238438f4bf2f4c4be43",
+      "master_size": [
+        2172,
+        724
+      ],
+      "alpha_crop": [
+        0,
+        33,
+        2076,
+        677
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/Badges/YourBall.png",
+      "delivery_sha256": "0885ce5c9151143be5a873f72a8bade759e4241b0adfe73c754413bb92e2a475",
+      "delivery_size": [
+        512,
+        162
+      ],
+      "delivery_png_bytes": 74607,
+      "android_astc_4x4_raw_bytes": 83968
+    },
+    {
+      "name": "AimFirst",
+      "master": "ArtSource/Golf/UI/Badges/AimFirst-master.png",
+      "master_sha256": "7bae39a3f68ac6dc0c477293ca812856e965435b726bcfb3381a2464f88f6209",
+      "master_size": [
+        682,
+        682
+      ],
+      "alpha_crop": [
+        16,
+        7,
+        668,
+        654
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/Badges/AimFirst.png",
+      "delivery_sha256": "20d794e508a1247326f0e495a848ed65b034ebd6d66c7b667f02b429e6e99383",
+      "delivery_size": [
+        512,
+        508
+      ],
+      "delivery_png_bytes": 334500,
+      "android_astc_4x4_raw_bytes": 260096
+    },
+    {
+      "name": "Swing",
+      "master": "ArtSource/Golf/UI/Badges/Swing-master.png",
+      "master_sha256": "597d705137ac76194354cb172e1eac02b63e2e4b12150938cf06e830afbc7edf",
+      "master_size": [
+        682,
+        682
+      ],
+      "alpha_crop": [
+        8,
+        5,
+        665,
+        652
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/Badges/Swing.png",
+      "delivery_sha256": "faa174694c48b66d76bfb995671a762d1f7217b7853cf265e041dc99c8092856",
+      "delivery_size": [
+        512,
+        504
+      ],
+      "delivery_png_bytes": 329132,
+      "android_astc_4x4_raw_bytes": 258048
+    },
+    {
+      "name": "Putt",
+      "master": "ArtSource/Golf/UI/Badges/Putt-master.png",
+      "master_sha256": "3807b35b75bc07ff82cf27e3e3600f2e64e56413f65c61f5e0e5fdb80faaa294",
+      "master_size": [
+        682,
+        682
+      ],
+      "alpha_crop": [
+        18,
+        7,
+        674,
+        653
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/Badges/Putt.png",
+      "delivery_sha256": "e0d811ffe35570a8f38dbdb68ed0cf33a767bdc4eb21d2629fb3760e51ce630d",
+      "delivery_size": [
+        512,
+        504
+      ],
+      "delivery_png_bytes": 329489,
+      "android_astc_4x4_raw_bytes": 258048
+    },
+    {
+      "name": "Jump",
+      "master": "ArtSource/Golf/UI/Badges/Jump-master.png",
+      "master_sha256": "1c67833cc114826128a4667bb006a012c4c43845772911cf6cb93e83a2eb6871",
+      "master_size": [
+        1402,
+        1122
+      ],
+      "alpha_crop": [
+        0,
+        63,
+        1340,
+        1034
+      ],
+      "delivery": "Game/Assets/_Game/Resources/GolfUI/Badges/Jump.png",
+      "delivery_sha256": "a28ddf4799979ddd59f4a0e3de53c5938c30b501d610e238d4f6c1077a75dde7",
+      "delivery_size": [
+        512,
+        372
+      ],
+      "delivery_png_bytes": 166271,
+      "android_astc_4x4_raw_bytes": 190464
+    }
+  ]
+}

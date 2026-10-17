@@ -60,7 +60,7 @@ namespace WhatTheFish {
    for(int i=0;i<4;i++)if(wheelPivots[i])wheelPivots[i].localRotation=Quaternion.Euler(0,i<2?wheelSteering:0,0)*Quaternion.AngleAxis(wheelRoll[i],Vector3.right);
    previousWheelPosition=transform.position;previousWheelRotation=transform.rotation;
   }
-  void OnEnable(){wheelsReady=false;}
+  void OnEnable(){wheelsReady=false;if(!GetComponent<GolfCartGroundFX>())gameObject.AddComponent<GolfCartGroundFX>();}
   public void Camera(Camera camera,float yaw,float pitch,int mode){
    Vector3 focus=mode==0?seat.position+transform.up*.65f+transform.forward*.12f:transform.position+Vector3.up*1.30f;
    var rotation=Quaternion.Euler(mode==2?58:pitch,yaw,0);float distance=mode==0?0:mode==1?6.2f:10;

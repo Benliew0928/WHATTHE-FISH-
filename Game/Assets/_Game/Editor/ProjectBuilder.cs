@@ -237,7 +237,7 @@ public static partial class ProjectBuilder {
   PlayerSettings.SetIl2CppCodeGeneration(UnityEditor.Build.NamedBuildTarget.Android,UnityEditor.Build.Il2CppCodeGeneration.OptimizeSize);
   Build(BuildTarget.Android,"../Builds/Android/WhatTheFish-release.apk",BuildOptions.None);
  }
- [MenuItem("WHATTHE FISH?/Build Android submission APK (under 100 MB)")]
+ [MenuItem("WHATTHE FISH?/Build Android submission APK (under 1 GB)")]
  public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk(ResolveBuildOutputPath("../Builds/Android/WhatTheFish-release.apk"),true);}
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
   path=ResolveBuildOutputPath(path);

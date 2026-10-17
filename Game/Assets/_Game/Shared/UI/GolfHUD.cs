@@ -20,19 +20,39 @@ namespace WhatTheFish {
 
   sealed class Skin {
 
-   public Button button;public RectTransform visual;public FishingStickerGraphic panel;public CanvasGroup opacity;
+   public Button button;public RectTransform visual;public FishingStickerGraphic panel;public CanvasGroup opacity;public Image art,caption;
 
   }
 
   RectTransform page,course,hint,moveControl,lookControl,cameraControl,jumpControl,returnControl;
 
-  GolfHUDLayout layout;GolfSwingButton swing;GolfCartButton[] carts;Font fallbackFont;
+  GolfHUDLayout layout;GolfSwingButton swing;GolfCartButton[] carts;Font fallbackFont;GolfLeaderboardUI scorecard;
 
-  Text station,hintText,countdownBanner;FishingStickerGraphic aimIcon;Skin aimSkin;
+  Text station,hintText,countdownBanner;FishingStickerGraphic aimIcon;Skin aimSkin,actionSkin;Image aimCaption,hintCaption;readonly List<(GolfCartButton cart,Skin skin)> cartSkins=new();Sprite cartDrive,cartBuggy,cartRecall,cartFallback,cartExit;
   Image countdownImage;RectTransform countdownAnchor;Sprite[] countdownSprites;Sprite goSprite;
+  Sprite actionAimFirst,actionSwing,actionPutt;
   int lastCountdownSec=-1;float countdownAnimTimer,goDisplayTimer;bool wasStarting;
 
   readonly List<Skin> skins=new();readonly Dictionary<RectTransform,RectTransform> frames=new();
+  readonly Dictionary<RectTransform,CanvasGroup> focusGroups=new();
+  public float AuxiliaryOpacity {get;private set;}=1;
+  public bool AimFocused {get;private set;}
+
+  // Separate parent groups preserve each control's own availability and tint.
+  void FocusGroup(RectTransform root){
+   if(!root)return;
+   if(!focusGroups.TryGetValue(root,out var group))focusGroups[root]=group=root.gameObject.AddComponent<CanvasGroup>();
+   group.alpha=AuxiliaryOpacity;group.interactable=group.blocksRaycasts=!AimFocused;
+  }
+  void FocusWidget(RectTransform widget){if(frames.TryGetValue(widget,out var frame))FocusGroup(frame);}
+  void UpdateFocus(bool aiming){
+   AimFocused=aiming;
+   float duration=layout.aimFocusFadeSeconds;
+   AuxiliaryOpacity=Mathf.MoveTowards(AuxiliaryOpacity,aiming?0:1,duration<=0||MenuPreferences.ReducedMotion?1:Time.unscaledDeltaTime/duration);
+   FocusWidget(course);FocusWidget(moveControl);FocusWidget(jumpControl);FocusWidget(returnControl);FocusWidget((RectTransform)swing.startButton.transform);
+   foreach(var cart in carts)if(frames.TryGetValue((RectTransform)cart.transform,out var frame))FocusGroup(frame);
+   if(scorecard)FocusGroup(scorecard.BoardRect);
+  }
 
   public RectTransform ActionRect=>swing?(RectTransform)swing.button.transform:null;
 
@@ -45,6 +65,11 @@ namespace WhatTheFish {
   public Button CameraButton=>cameraControl?cameraControl.GetComponent<Button>():null;
 
   public Button JumpButton=>jumpControl?jumpControl.GetComponent<Button>():null;
+  readonly Vector3[] captionCorners=new Vector3[4],controlCorners=new Vector3[4];
+  public bool CaptionObscured(RectTransform caption){
+   caption.GetWorldCorners(captionCorners);var bounds=new UnityEngine.Rect(captionCorners[0].x,captionCorners[0].y,captionCorners[2].x-captionCorners[0].x,captionCorners[2].y-captionCorners[0].y);
+   foreach(var pair in frames){if(!Visible(pair.Key))continue;pair.Value.GetWorldCorners(controlCorners);if(bounds.Overlaps(new UnityEngine.Rect(controlCorners[0].x,controlCorners[0].y,controlCorners[2].x-controlCorners[0].x,controlCorners[2].y-controlCorners[0].y)))return true;}return false;
+  }
 
   public static void Create(RectTransform parent,Font font,RectTransform movement,RectTransform look,RectTransform camera,RectTransform jump,RectTransform back,GolfSwingButton swing,GolfCartButton[] cartControls){
 
@@ -60,7 +85,7 @@ namespace WhatTheFish {
 
    look.SetAsFirstSibling();
 
-   camera.name="Golf camera button";jump.name="Golf jump button";hud.Build();hud.Layout();
+   camera.gameObject.SetActive(false);camera.GetComponent<Button>().onClick.RemoveAllListeners();camera.name="Golf camera button";jump.name="Golf jump button";hud.Build();hud.Layout();
 
   }
 
@@ -68,7 +93,7 @@ namespace WhatTheFish {
 
   static void Stretch(RectTransform rect){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;}
 
-  Skin SkinButton(Button button,Color color,bool solid=false){
+  Skin SkinButton(Button button,Color color,bool solid=false,string reference="Utility"){
 
    var control=(RectTransform)button.transform;var image=button.GetComponent<Image>();if(image){image.enabled=true;image.color=Color.clear;image.raycastTarget=true;}
 
@@ -88,11 +113,12 @@ namespace WhatTheFish {
 
    }
 
-   button.targetGraphic=panel;button.transition=Selectable.Transition.None;
+   panel.enabled=false;var art=GolfReferenceUI.Plate(plateRect,reference,reference=="Utility");
+   button.targetGraphic=art;button.transition=Selectable.Transition.None;
 
    var feedback=button.GetComponent<CoveFeedback>()??button.gameObject.AddComponent<CoveFeedback>();feedback.pressScale=.91f;feedback.releaseBounce=.045f;feedback.UseVisual(visual);
 
-   var skin=new Skin{button=button,visual=visual,panel=panel,opacity=visual.gameObject.AddComponent<CanvasGroup>()};skin.opacity.interactable=false;skin.opacity.blocksRaycasts=false;skins.Add(skin);return skin;
+   var skin=new Skin{button=button,visual=visual,panel=panel,art=art,opacity=visual.gameObject.AddComponent<CanvasGroup>()};skin.opacity.interactable=false;skin.opacity.blocksRaycasts=false;skins.Add(skin);return skin;
 
   }
 
@@ -102,43 +128,52 @@ namespace WhatTheFish {
 
   void IconButton(RectTransform control,FishingStickerGraphic.Kind kind,string name,Vector2 iconSize){
 
-   var skin=SkinButton(control.GetComponent<Button>(),GolfHUDStyle.Cream);foreach(var label in control.GetComponentsInChildren<Text>(true))label.enabled=false;Icon(skin.visual,name,kind,Vector2.zero,iconSize,GolfHUDStyle.Ink);
+   var skin=SkinButton(control.GetComponent<Button>(),GolfHUDStyle.Cream);skin.art.sprite=Resources.Load<Sprite>("GolfUI/Badges/Jump");skin.art.preserveAspect=true;foreach(var label in control.GetComponentsInChildren<Text>(true))label.enabled=false;
 
   }
 
   void Build(){
 
-   course=GolfHUDStyle.Rect("Golf course sticker",page,new Vector2(0,1),Vector2.zero,layout.courseSize);GolfHUDStyle.Panel(course,GolfHUDStyle.Cream);GolfHUDStyle.Art(course,"Golf course illustration","GolfUI/GolfCourseBadge",layout.courseArtSize,layout.courseArtPosition);
+   course=GolfHUDStyle.Rect("Golf course sticker",page,new Vector2(0,1),Vector2.zero,layout.courseSize);GolfReferenceUI.Plate(course,"Course",false);
 
-   var title=Label("Golf course title",course,"ISLAND GREENS",new Vector2(290,48),layout.courseTitleFontSize);title.rectTransform.anchoredPosition=layout.courseTitlePosition;title.horizontalOverflow=HorizontalWrapMode.Overflow;
+   var title=Label("Golf course title",course,"ISLAND GREENS",new Vector2(290,48),layout.courseTitleFontSize);title.enabled=false;title.rectTransform.anchoredPosition=layout.courseTitlePosition;title.horizontalOverflow=HorizontalWrapMode.Overflow;
 
-   station=Label("Golf station distance",course,"SKY-SAIL STATION",new Vector2(290,35),layout.courseStationFontSize);station.rectTransform.anchoredPosition=layout.courseStationPosition;station.horizontalOverflow=HorizontalWrapMode.Overflow;
+   station=Label("Golf station distance",course,"SKY-SAIL STATION",new Vector2(290,35),layout.courseStationFontSize,LocalProfile.Hex("879491"));station.rectTransform.anchoredPosition=layout.courseStationPosition;station.horizontalOverflow=HorizontalWrapMode.Overflow;
 
-   var action=SkinButton(swing.button,GolfHUDStyle.Gold,true);action.panel.cornerRadius=layout.actionSize.x*.5f;var shotArt=GolfHUDStyle.Art(action.visual,"Golf swing illustration","GolfUI/GolfShotBadge",layout.actionSize,Vector2.zero);if(shotArt.sprite)action.panel.enabled=false;
+   var action=SkinButton(swing.button,GolfHUDStyle.Gold,true,"Shot");actionSkin=action;
+   actionAimFirst=Resources.Load<Sprite>("GolfUI/Badges/AimFirst");actionSwing=Resources.Load<Sprite>("GolfUI/Badges/Swing");actionPutt=Resources.Load<Sprite>("GolfUI/Badges/Putt");
+   cartExit=Resources.Load<Sprite>("GolfUI/Badges/Exit");
 
    swing.label.transform.SetAsLastSibling();PlaceLabel(swing.label,layout.shotLabelPosition,layout.shotLabelSize,layout.shotFontSize);swing.label.color=Color.white;
 
    var outline=swing.label.GetComponent<Outline>()??swing.label.gameObject.AddComponent<Outline>();outline.enabled=true;outline.effectColor=GolfHUDStyle.Ink;outline.effectDistance=new Vector2(1.2f,-1.2f);
 
-   aimSkin=SkinButton(swing.aimButton,GolfHUDStyle.Teal,true);aimIcon=Icon(aimSkin.visual,"Golf aim or cancel icon",FishingStickerGraphic.Kind.Aim,new Vector2(-layout.aimSize.x*.34f,0),new Vector2(34,34),GolfHUDStyle.Ink);
+   aimSkin=SkinButton(swing.aimButton,GolfHUDStyle.Red,true,"Aim");aimIcon=Icon(aimSkin.visual,"Golf aim or cancel icon",FishingStickerGraphic.Kind.Aim,new Vector2(-layout.aimSize.x*.34f,0),new Vector2(34,34),GolfHUDStyle.Ink);aimIcon.enabled=false;
 
-   PlaceLabel(swing.aimLabel,new Vector2(19,0),new Vector2(layout.aimSize.x-68,layout.aimSize.y-14),layout.controlFontSize);
+   PlaceLabel(swing.aimLabel,new Vector2(31,0),new Vector2(layout.aimSize.x-108,layout.aimSize.y-28),32);swing.aimLabel.color=Color.white;swing.aimLabel.supportRichText=true;var aimOutline=swing.aimLabel.gameObject.AddComponent<Outline>();aimOutline.effectColor=LocalProfile.Hex("B34B50");aimOutline.effectDistance=new Vector2(1,-1);
+   aimCaption=GolfReferenceUI.Caption(aimSkin.art.rectTransform,"Aim",new Vector2(257,123),new Vector2(104,83),new Vector2(35.5f,-1));aimSkin.caption=aimCaption;
 
-   var start=SkinButton(swing.startButton,GolfHUDStyle.Gold);PlaceLabel(swing.startLabel,Vector2.zero,layout.startSize-new Vector2(24,10),layout.controlFontSize);
+   var start=SkinButton(swing.startButton,GolfHUDStyle.Gold);start.art.sprite=Resources.Load<Sprite>("GolfUI/StartButton/StartGame");start.art.preserveAspect=true;PlaceLabel(swing.startLabel,Vector2.zero,layout.startSize-new Vector2(32,20),30);
 
-   IconButton(cameraControl,FishingStickerGraphic.Kind.Camera,"Golf Camera icon",new Vector2(55,44));IconButton(jumpControl,FishingStickerGraphic.Kind.Jump,"Golf Jump icon",new Vector2(48,49));
+   IconButton(jumpControl,FishingStickerGraphic.Kind.Jump,"Golf Jump icon",new Vector2(48,49));
 
-   var back=SkinButton(returnControl.GetComponent<Button>(),GolfHUDStyle.Cream);var backLabel=returnControl.GetComponentInChildren<Text>(true);PlaceLabel(backLabel,new Vector2(16,0),new Vector2(layout.returnSize.x-57,layout.returnSize.y-10),23);
+   var back=SkinButton(returnControl.GetComponent<Button>(),GolfHUDStyle.Cream,false,"Leave");var backLabel=returnControl.GetComponentInChildren<Text>(true);PlaceLabel(backLabel,new Vector2(28,0),new Vector2(layout.returnSize.x-92,layout.returnSize.y-20),26);
+   backLabel.enabled=false;back.caption=GolfReferenceUI.Caption(back.art.rectTransform,"Leave",new Vector2(274,81),new Vector2(168,37),new Vector2(35,-1));
 
-   var exit=GolfHUDStyle.Rect("Golf leave icon",back.visual,new Vector2(.5f,.5f),new Vector2(-layout.returnSize.x*.36f,0),new Vector2(30,30)).gameObject.AddComponent<CoveIcon>();exit.symbol=CoveSymbol.Join;exit.color=GolfHUDStyle.Ink;exit.raycastTarget=false;
+   // Door artwork is already part of the reference plate.
 
-   foreach(var cart in carts){var cartFont=cart.label.font;SkinButton(cart.button,cart.summon?GolfHUDStyle.Teal:GolfHUDStyle.Gold);cart.label.font=cartFont;PlaceLabel(cart.label,Vector2.zero,layout.cartSize-new Vector2(16,10),25);}
+   cartDrive=Resources.Load<Sprite>("GolfUI/CartButtons/Drive");cartBuggy=Resources.Load<Sprite>("GolfUI/CartButtons/Buggy");cartRecall=Resources.Load<Sprite>("GolfUI/CartButtons/Recall");cartFallback=Resources.Load<Sprite>("GolfUI/Reference/Buggy");
+   foreach(var cart in carts){
+    var skin=SkinButton(cart.button,GolfHUDStyle.Gold,false,"Buggy");
+    PlaceLabel(cart.label,new Vector2(35,0),layout.cartSize-new Vector2(105,20),27);
+    cartSkins.Add((cart,skin));
+   }
 
-   hint=GolfHUDStyle.Rect("Golf framed control hint",page,new Vector2(.5f,0),Vector2.zero,layout.hintSize);GolfHUDStyle.Panel(hint,GolfHUDStyle.Cream);
+   hint=GolfHUDStyle.Rect("Golf framed control hint",page,new Vector2(.5f,0),Vector2.zero,layout.hintSize);GolfReferenceUI.Plate(hint,"Hint",false);hintCaption=GolfReferenceUI.Caption(hint,"Hint",new Vector2(390,84),new Vector2(282,35),new Vector2(36,-1.5f));
 
-   var dot=GolfHUDStyle.Rect("Golf hint attention circle",hint,new Vector2(.5f,.5f),new Vector2(-layout.hintSize.x*.36f,0),new Vector2(34,34));var circle=dot.gameObject.AddComponent<CovePlate>();circle.color=GolfHUDStyle.Ink;circle.border=0;circle.radius=17;circle.raycastTarget=false;Label("Golf hint !",dot,"!",new Vector2(30,40),22,Color.white);
+   // The exact attention badge is retained in the reference art.
 
-   hintText=Label("Golf hold and release hint",hint,"Hold, then release",new Vector2(layout.hintSize.x-92,layout.hintSize.y-12),layout.hintFontSize);hintText.rectTransform.anchoredPosition=new Vector2(22,0);
+   hintText=Label("Golf hold and release hint",hint,"Hold, then release",new Vector2(layout.hintSize.x-105,layout.hintSize.y-24),layout.hintFontSize);hintText.rectTransform.anchoredPosition=new Vector2(32,0);
    countdownAnchor=GolfHUDStyle.Rect("Golf countdown root",page,new Vector2(.5f,.5f),new Vector2(0,40),Vector2.zero);
    countdownImage=GolfHUDStyle.Rect("Golf countdown badge",countdownAnchor,new Vector2(.5f,.5f),Vector2.zero,new Vector2(200,200)).gameObject.AddComponent<Image>();
    countdownImage.preserveAspect=true;countdownImage.raycastTarget=false;countdownImage.gameObject.SetActive(false);
@@ -181,55 +216,73 @@ namespace WhatTheFish {
 
    var aim=(RectTransform)swing.aimButton.transform;var start=(RectTransform)swing.startButton.transform;aim.sizeDelta=layout.aimSize;start.sizeDelta=layout.startSize;
 
-   PlaceFrame(ActionRect,new Vector2(1,0),new Vector2(1,0),new Vector2(-m,m),scale);
+   PlaceFrame(ActionRect,new Vector2(1,0),new Vector2(1,0),new Vector2(-m,m+28*scale),scale);
 
-   float side=m+(layout.actionSize.x+gap)*scale;
+   float side=m+(layout.actionSize.x+2)*scale;
 
-   PlaceFrame(aim,new Vector2(1,0),new Vector2(1,0),new Vector2(-side,m+(layout.returnSize.y+gap+24)*scale),scale);
+   PlaceFrame(aim,new Vector2(1,0),new Vector2(1,0),new Vector2(-side,m+(layout.returnSize.y+gap)*scale),scale);
 
    PlaceFrame(returnControl,new Vector2(1,0),new Vector2(1,0),new Vector2(-side,m),scale);
 
    bool crowded=GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Players.Count>6;
 
-   float utilities=m+(layout.actionSize.y+gap)*scale;
+   float utilities=m+(layout.actionSize.y+gap+56)*scale;
+   if(!scorecard)scorecard=page.parent.GetComponentInChildren<GolfLeaderboardUI>();
+   if(scorecard&&scorecard.BoardRect&&!scorecard.Expanded){scorecard.BoardRect.GetWorldCorners(controlCorners);float boardBottom=page.InverseTransformPoint(controlCorners[0]).y-page.rect.yMin;crowded|=boardBottom<utilities+(layout.jumpSize.y+gap)*scale;}
+
 
    if(crowded){
 
-    PlaceFrame(cameraControl,new Vector2(1,0),new Vector2(1,0),new Vector2(-m,utilities),scale);
 
-    PlaceFrame(jumpControl,new Vector2(1,0),new Vector2(1,0),new Vector2(-m-(layout.cameraSize.x+gap)*scale,utilities),scale);
+    PlaceFrame(jumpControl,Vector2.zero,Vector2.zero,new Vector2(m,m+(layout.joystickSize.y+gap)*scale),scale);
 
    }else{
 
-    PlaceFrame(cameraControl,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-layout.actionSize.x*scale*.5f,utilities),scale);
 
-    PlaceFrame(jumpControl,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-layout.actionSize.x*scale*.5f,utilities+(layout.cameraSize.y+gap)*scale),scale);
+    PlaceFrame(jumpControl,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-layout.actionSize.x*scale*.5f,utilities),scale);
 
    }
 
    PlaceFrame(moveControl,Vector2.zero,new Vector2(0,0),new Vector2(m,m),scale);
 
-   hint.sizeDelta=layout.hintSize;PlaceFrame(hint,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(0,m),scale);
+   float hintX=Mathf.Min(-16*scale,width*.5f-side-(layout.returnSize.x+gap+layout.hintSize.x*.5f)*scale);
+   hint.sizeDelta=layout.hintSize;PlaceFrame(hint,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(hintX,m),scale);
 
    PlaceFrame(start,new Vector2(.5f,1),new Vector2(.5f,1),new Vector2(0,-m),scale);
 
-   for(int i=0;i<carts.Length;i++){var cart=(RectTransform)carts[i].transform;cart.sizeDelta=layout.cartSize;PlaceFrame(cart,new Vector2(1,0),new Vector2(1,0),new Vector2(-side,m+(layout.returnSize.y+gap+layout.aimSize.y+gap+24+i*(layout.cartSize.y+gap))*scale),scale);}
+   for(int i=0;i<carts.Length;i++){var cart=(RectTransform)carts[i].transform;cart.sizeDelta=layout.cartSize;PlaceFrame(cart,new Vector2(1,0),new Vector2(1,0),new Vector2(-side,m+(layout.returnSize.y+gap+layout.aimSize.y+gap+i*(layout.cartSize.y+gap))*scale),scale);}
 
   }
 
   void LateUpdate(){
 
-   if(!page)return;Layout();var view=PlayerView.Instance;bool aiming=view&&view.GolfAimRequested;aimSkin.panel.Refresh(1,aiming?GolfHUDStyle.Red:GolfHUDStyle.Teal);aimIcon.kind=aiming?FishingStickerGraphic.Kind.Close:FishingStickerGraphic.Kind.Aim;aimIcon.SetVerticesDirty();if(aiming)swing.aimLabel.text="Cancel";
+   if(!page)return;Layout();var view=PlayerView.Instance;bool aiming=view&&view.GolfAimRequested;UpdateFocus(aiming);
+   swing.aimLabel.text=aiming?"Cancel":"Aim";
+   aimCaption.enabled=false;swing.aimLabel.enabled=true;
+   swing.startLabel.enabled=false;
+   actionSkin.art.sprite=!aiming?actionAimFirst:view.GolfMode==GolfShotMode.Putt?actionPutt:actionSwing;
+   actionSkin.art.preserveAspect=true;swing.label.enabled=false;
+   foreach(var item in cartSkins){
+    // These approved images already contain their exact icon and lettering.
+    var sprite=item.cart.label.text switch {"Drive"=>cartDrive,"Buggy"=>cartBuggy,"Recall"=>cartRecall,"Exit"=>cartExit,_=>null};
+    item.skin.art.sprite=sprite?sprite:cartFallback;item.skin.art.preserveAspect=true;
+    item.cart.label.enabled=!sprite;
+   }
 
-   foreach(var skin in skins)skin.opacity.alpha=skin.button.IsInteractable()?1:.52f;
+   // Keep layered plates opaque: per-graphic alpha would composite caption
+   // patches twice and expose their rectangles on disabled controls.
+   foreach(var skin in skins){skin.opacity.alpha=1;var tint=skin.button.IsInteractable()||skin.button==swing.button?Color.white:new Color(.78f,.82f,.84f,1);skin.art.color=tint;if(skin.caption)skin.caption.color=tint;}
 
    var app=AppRoot.Instance;var world=SkySailWorld.Instance;
 
    station.text=app&&app.LocalAthlete?"SKY-SAIL STATION  •  "+Mathf.RoundToInt(Vector3.Distance(app.LocalAthlete.transform.position,SkySailMap.Port(SportId.Golf)))+" m":"SKY-SAIL STATION";
 
    var match=GolfMatchManager.Instance;hintText.text=world&&world.Travelling?"Look around during the journey":match&&match.Starting?$"MATCH STARTS IN {Mathf.CeilToInt((float)match.StartRemaining)}s":aiming?"Hold, then release":view&&GolfCartWorld.Driving(view.target)?"Left stick: drive & steer":"Walk near your ball to aim";
+   if(aiming&&view.GolfCharging)hintText.text=$"Power {Mathf.RoundToInt(view.GolfDisplayedCharge*100)}%  •  Release";
 
    hintText.fontSize=aiming?layout.hintFontSize:20;
+   hintCaption.enabled=hintText.text=="Walk near your ball to aim";hintText.enabled=!hintCaption.enabled;
+   hint.gameObject.SetActive(!hintCaption.enabled);
    if(countdownAnchor){
     if(match&&match.Starting){
      wasStarting=true;
