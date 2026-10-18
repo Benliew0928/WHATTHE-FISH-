@@ -14,7 +14,7 @@ namespace WhatTheFish {
   void Bots(bool enabled){foreach(var a in FootballBots.Roster){var bot=a.GetComponent<FootballBot>();if(bot)bot.enabled=enabled;}}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   yield return Until(()=>AppRoot.Instance&&AppRoot.Instance.Exploring&&FootballMatch.Instance&&AppRoot.Instance.LocalAthlete,"football ready",80);
+   yield return Until(()=>DevelopmentProbe.ReadyToReviewSport&&FootballMatch.Instance,"football ready",80);
    app=AppRoot.Instance;match=FootballMatch.Instance;ball=FootballBall.Instance;if(!app||!match||!ball){Finish();yield break;}
    DevelopmentProbe.Driving=false;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;network=app.rooms.Connected;originalTrail=FootballTrailStyle.Selected;FootballTrailStyle.Select(network&&!match.Authority?4:2);
    if(network&&!match.Authority){yield return Guest();Finish();yield break;}
@@ -49,9 +49,9 @@ namespace WhatTheFish {
     match.ClearMatch();if(network&&size==1)yield return new WaitForSeconds(1);
    }
    if(!network){
-    Check(match.StartMatch(),"golden goal fixture");Bots(false);yield return Until(()=>match.KickoffReady,"golden fixture ready");match.TryKickoff(match.KickoffActor,90,.2f,match.Snapshot.revision);
+    Check(match.StartMatch(),"golden goal fixture");match.RequestTeam(FootballTeam.A);Check(match.ConfirmSoloTeam(),"confirm golden fixture");Bots(false);yield return Until(()=>match.KickoffReady,"golden fixture ready");match.TryKickoff(match.KickoffActor,90,.2f,match.Snapshot.revision);
     match.State.Advance(match.State.Deadline);Check(match.Snapshot.phase==FootballMatchPhase.Overtime,"overtime fixture active");yield return Goal(1,"golden");Check(match.Snapshot.phase==FootballMatchPhase.Finished&&!FootballReplay.Presenting,"winning replay returns to result");
-    match.ClearMatch();Check(match.StartMatch(),"cancellation fixture");yield return Until(()=>match.KickoffReady,"cancellation ready");match.TryKickoff(match.KickoffActor,90,.2f,match.Snapshot.revision);yield return new WaitForSeconds(4.3f);yield return Shot(1);yield return Until(()=>FootballReplay.Presenting,"replay before cancellation");match.ClearMatch();yield return null;yield return null;Check(!FootballReplay.Presenting&&!FindObjectsByType<Renderer>(FindObjectsSortMode.None).Any(r=>r.forceRenderingOff),"cancel restores all live renderers");
+    match.ClearMatch();Check(match.StartMatch(),"cancellation fixture");match.RequestTeam(FootballTeam.A);Check(match.ConfirmSoloTeam(),"confirm cancellation fixture");yield return Until(()=>match.KickoffReady,"cancellation ready");match.TryKickoff(match.KickoffActor,90,.2f,match.Snapshot.revision);yield return new WaitForSeconds(4.3f);yield return Shot(1);yield return Until(()=>FootballReplay.Presenting,"replay before cancellation");match.ClearMatch();yield return null;yield return null;Check(!FootballReplay.Presenting&&!FindObjectsByType<Renderer>(FindObjectsSortMode.None).Any(r=>r.forceRenderingOff),"cancel restores all live renderers");
    }
    match.rules=original;match.ClearMatch();if(network)yield return new WaitForSeconds(2);Finish();
   }

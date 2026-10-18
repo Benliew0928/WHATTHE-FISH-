@@ -218,7 +218,7 @@ namespace WhatTheFish {
    guard=FindObjectsByType<BasketballDefenseButton>(FindObjectsSortMode.None).Single(p=>p.guard);block=guard;block.Refresh();touch.position=RectTransformUtility.WorldToScreenPoint(null,block.transform.position);
    block.OnPointerDown(touch);var drag=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=41,position=RectTransformUtility.WorldToScreenPoint(null,block.transform.TransformPoint(new Vector2(0,130)))};block.OnDrag(drag);
    block.OnPointerUp(new PointerEventData(EventSystem.current){pointerId=42});yield return new WaitForSeconds(.08f);Check(!actor.BasketballMotion.JumpBlocking,"other finger cannot commit block gesture");
-   block.OnPointerUp(drag);yield return new WaitForSeconds(.22f);Check(actor.BasketballMotion.Action==BasketballAction.Block,"upward guard gesture commits standing block");yield return WaitCapture(1.25f);
+   block.OnPointerUp(drag);yield return new WaitForSeconds(.22f);Check(!actor.BasketballMotion.Blocking&&!app.view.GuardHeld,"guard release ends readiness without a timed block");yield return WaitCapture(1.25f);
    yield return Possess(guest,actor,new Vector3(0,.07f,0),new Vector3(.83f,.07f,.32f));
    Check(ball.TryBlock(actor,270,false),"standing block accepted");int accepted=0;for(int i=0;i<100;i++)if(ball.TryBlock(actor,270,true))accepted++;Check(accepted==0&&!actor.CanRequestJump,"spam and jump cannot cancel committed block");
    ball.ResetHome();before=ball.Defense.blocks;yield return new WaitForSeconds(.8f);Check(ball.Defense.blocks==before,"reset cancels pending contact");

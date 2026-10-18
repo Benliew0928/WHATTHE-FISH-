@@ -94,6 +94,7 @@ namespace WhatTheFish {
   static void Stretch(RectTransform rect){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;}
 
   Skin SkinButton(Button button,Color color,bool solid=false,string reference="Utility"){
+   if(!button.GetComponent<GolfFishingButtonSound>())button.gameObject.AddComponent<GolfFishingButtonSound>();
 
    var control=(RectTransform)button.transform;var image=button.GetComponent<Image>();if(image){image.enabled=true;image.color=Color.clear;image.raycastTarget=true;}
 

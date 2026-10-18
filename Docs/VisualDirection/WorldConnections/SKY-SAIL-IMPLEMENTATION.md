@@ -1,5 +1,9 @@
 # Sky-Sail Circuit
 
+The [18 October 2026 repair](../../SKY-RAIL-REPAIR.md) updates station and tower
+clearance, cabin interiors, boarding collision and the route's departure/arrival
+alignment. It records the current verification and delivery evidence.
+
 Implemented 29 September 2026 in Unity 6000.3.20f1. The four existing islands form one visible coastal world: **Football ↔ Golf ↔ Basketball ↔ Fishing ↔ Football**. The existing games retain their original local coordinates and art.
 
 ## Play
@@ -8,7 +12,7 @@ Run `Builds/WindowsFinal/Explore-SkySail.cmd` to start beside the football stati
 
 Look around with right mouse drag or the existing touch look control. C / Camera switches between cabin, chase and elevated panorama views. Walking resumes on the destination's boarding deck. Each stop disembarks the party; select the next leg to continue.
 
-In a room, only the host selects the destination. Every player must be at the station. Everyone boards the same cabin, waits for every connected client to prepare the destination, and disembarks on the same island. There is no simultaneous independent game occupation. Existing destination capacities still apply: a party larger than five cannot enter Fishing and stays together at its departure station.
+In a room, only the host selects the destination. Every player and spectator must be at the station. Everyone boards the same cabin, waits for every connected client to prepare the destination, and disembarks on the same island. There is no simultaneous independent game occupation. Existing destination capacities still apply: a group with more than five playing participants cannot enter Fishing and stays together at its departure station. Up to ten spectators share the cabin without using player capacity. Departure is blocked during every active game, including Golf and Fishing countdowns. The station card disables unavailable routes and shows the reason or attendance count with the missing person.
 
 ## Art modules
 
@@ -19,9 +23,10 @@ Editable sources: `ArtSource/SkySail/`. Runtime prefabs: `Game/Assets/_Game/Pref
 | CabinShell | Rounded frame, paneled teal body, individual timber floorboards, curved roof and skylight |
 | CabinInterior | Ten upholstered seats, armrests, grab poles and hanging grips |
 | SlidingDoor | Independent framed glass door; two animated instances |
-| CabinHanger | Bogie, cable grip, wheel hubs, spokes and roof supports |
-| CableTower | Braced frame, stone foundation, ladder, service platform and sheave wheels |
-| SailStation | Supported timber boardwalk, fabric canopy, benches, lanterns and local sign |
+| CabinHanger | Roof supports, upright neck and swivel bearing |
+| CabinTrolley | Independent pitching bogie, cable grip, wheel hubs and spokes |
+| CableTower | Offset mast, stone foundation, ladder, cantilever and overhead sheaves |
+| SailStation | U-shaped boarding deck, clear berth, fabric canopy, benches, lanterns and local sign |
 | Gangway | Reusable walkway sections with matching collision and guardrails |
 | Cable spans | Four separate route prefabs generated from the same paths used by the cabin |
 
@@ -45,7 +50,7 @@ The server owns the journey sequence, route, phase and start time. Clients evalu
 
 - `Tools/Build/Build.ps1 -Target Windows` rebuilds the saved Sky-Sail world and Windows player.
 - `Tools/Build/Build.ps1 -Target Scene` rebuilds the world scenes without a player.
-- `Tools/Build/Build.ps1 -Target AndroidRelease` builds the Android release APK.
+- `Tools/Build/Build.ps1 -Target AndroidSubmission` builds the Android release APK and enforces the decimal 1 GB limit.
 - Blender: run `Tools/Blender/build_sky_sail.py` to regenerate the editable kit and FBX files.
 - Unity: `SkySailBuilder.BuildWindows` regenerates modules, island proxies and scene assembly. `-skyReuseProxies` keeps previously baked island proxy meshes for layout/material iterations.
 - Unity: `SkySailBuilder.RebuildPlayer` recompiles the saved scene arrangement after code-only changes.

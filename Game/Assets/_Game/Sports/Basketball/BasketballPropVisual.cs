@@ -9,6 +9,7 @@ namespace WhatTheFish {
   GameObject[] models;Mesh quad;Mesh[] digits;Material effect;MeshRenderer[] portals=new MeshRenderer[2];MeshRenderer shadow,aim,hologram;MeshFilter digitFilter;int countdownNumber;
   MaterialPropertyBlock block;Transform[] visualBalls;Vector3[] ballScales;uint sequence;TrailRenderer trail;Material trailMaterial;
   readonly Dictionary<Athlete,TrailRenderer> turboTrails=new();readonly List<Athlete> removedActors=new();
+  readonly Dictionary<Athlete,MeshRenderer> guardLights=new();
   void Start(){
    ball=GetComponent<BasketballBall>();block=new MaterialPropertyBlock();models=new[]{Resources.Load<GameObject>("BasketballProps/LockOn"),Resources.Load<GameObject>("BasketballProps/Turbo"),Resources.Load<GameObject>("BasketballProps/Portal")};
    effect=Resources.Load<Material>("BasketballProps/PropEffect");
@@ -55,20 +56,25 @@ namespace WhatTheFish {
    float scale=1;if(state.transferring)scale=phase<.5f?1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(.15f,.48f,phase)):Mathf.SmoothStep(0,1,Mathf.InverseLerp(.52f,.88f,phase));ScaleBall(Mathf.Max(.001f,scale));
    trail.emitting=ball.Playing&&state.guided&&ball.Score.result==BasketballResult.Flying&&!state.transferring&&!ball.Held;
    foreach(var a in Athlete.Active){
+    bool ready=ball.GuardBlockReady(a);
+    if(ready&&!guardLights.ContainsKey(a)){var light=Plane("Guard block ready light",2);guardLights[a]=light;Style(light,new Color(.24f,1,.72f),2);}
+    if(guardLights.TryGetValue(a,out var glow)){glow.enabled=ready;glow.transform.position=a.transform.position+Vector3.up*.025f;glow.transform.rotation=Quaternion.Euler(90,0,0);glow.transform.localScale=Vector3.one*1.65f;}
     bool boosted=ball.TurboRemaining(a)>0;
     if(boosted&&!turboTrails.ContainsKey(a)){var go=new GameObject("Team turbo foot trail");go.transform.SetParent(a.transform,false);go.transform.localPosition=new Vector3(0,.12f,-.12f);var t=go.AddComponent<TrailRenderer>();t.sharedMaterial=trailMaterial;t.time=.28f;t.startWidth=.22f;t.endWidth=0;t.startColor=new Color(.15f,1,.62f,.8f);t.endColor=new Color(.15f,1,.62f,0);t.shadowCastingMode=ShadowCastingMode.Off;turboTrails[a]=t;}
     if(turboTrails.TryGetValue(a,out var renderer))renderer.emitting=boosted&&a.speed>.5f;
    }
    removedActors.Clear();foreach(var pair in turboTrails)if(!pair.Key||!Athlete.Active.Contains(pair.Key))removedActors.Add(pair.Key);foreach(var a in removedActors){if(turboTrails[a])Destroy(turboTrails[a].gameObject);turboTrails.Remove(a);}
+   removedActors.Clear();foreach(var pair in guardLights)if(!pair.Key||!Athlete.Active.Contains(pair.Key))removedActors.Add(pair.Key);foreach(var a in removedActors){if(guardLights[a])Destroy(guardLights[a].gameObject);guardLights.Remove(a);}
   }
   void ScaleBall(float scale){if(visualBalls==null)return;for(int i=0;i<visualBalls.Length;i++)if(visualBalls[i]&&visualBalls[i]!=transform)visualBalls[i].localScale=ballScales[i]*scale;}
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public Transform ReviewPickup()=>pickup;
   public int ReviewCountdownNumber=>countdownNumber;
   public MeshRenderer ReviewHologram=>hologram;
+  public bool ReviewGuardLight(Athlete actor)=>guardLights.TryGetValue(actor,out var light)&&light&&light.enabled;
 #endif
-  void OnDisable(){ScaleBall(1);if(shadow)shadow.enabled=false;if(hologram)hologram.enabled=false;countdownNumber=0;foreach(var r in portals)if(r)r.enabled=false;if(aim)aim.enabled=false;if(trail)trail.Clear();if(pickup)pickup.gameObject.SetActive(false);foreach(var t in turboTrails.Values)if(t){t.emitting=false;t.Clear();}}
-  void OnDestroy(){if(shadow)Destroy(shadow.gameObject);if(hologram)Destroy(hologram.gameObject);foreach(var r in portals)if(r)Destroy(r.gameObject);if(aim)Destroy(aim.gameObject);if(pickup)Destroy(pickup.gameObject);if(quad)Destroy(quad);if(digits!=null)foreach(var m in digits)Destroy(m);foreach(var t in turboTrails.Values)if(t)Destroy(t.gameObject);}
+  void OnDisable(){ScaleBall(1);if(shadow)shadow.enabled=false;if(hologram)hologram.enabled=false;countdownNumber=0;foreach(var r in portals)if(r)r.enabled=false;if(aim)aim.enabled=false;if(trail)trail.Clear();if(pickup)pickup.gameObject.SetActive(false);foreach(var t in turboTrails.Values)if(t){t.emitting=false;t.Clear();}foreach(var light in guardLights.Values)if(light)light.enabled=false;}
+  void OnDestroy(){if(shadow)Destroy(shadow.gameObject);if(hologram)Destroy(hologram.gameObject);foreach(var r in portals)if(r)Destroy(r.gameObject);if(aim)Destroy(aim.gameObject);if(pickup)Destroy(pickup.gameObject);if(quad)Destroy(quad);if(digits!=null)foreach(var m in digits)Destroy(m);foreach(var t in turboTrails.Values)if(t)Destroy(t.gameObject);foreach(var light in guardLights.Values)if(light)Destroy(light.gameObject);}
   // Five tiny extruded seven-segment meshes. No textures, fonts or per-tick allocations.
   public static Mesh Digit(int value){
    int[] masks={0,6,91,79,102,109};int mask=masks[value];var vertices=new List<Vector3>();var uv=new List<Vector2>();var triangles=new List<int>();

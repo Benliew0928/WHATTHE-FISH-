@@ -19,13 +19,14 @@ namespace WhatTheFish {
   public bool Resting {get;private set;}
   public bool HasTarget {get;private set;}
   public Vector3 Normal {get;private set;}
+  public Collider ContactCollider {get;private set;}
   public Vector3 EndPoint=>Points[Count-1];
   public Vector3 LaunchVelocity {get;private set;}
   public float Duration=>Times[Count-1];
   void Add(Vector3 position,Vector3 velocity,float time){Points[Count]=position;Velocities[Count]=velocity;Times[Count++]=time;}
   static bool Ground(Vector3 p,out RaycastHit hit)=>Physics.Raycast(p+Vector3.up*.18f,Vector3.down,out hit,GolfBall.Radius+.36f,GroundMask,QueryTriggerInteraction.Ignore)&&hit.normal.y>.35f&&Mathf.Abs(Vector3.Dot(p-hit.point,hit.normal)-GolfBall.Radius)<.13f;
   public void Build(Vector3 origin,Vector3 direction,float charge,GolfShotMode mode,GolfCourse course,GolfBallPhysicsSettings settings){
-   Mode=mode;Count=0;Resting=HasTarget=false;Normal=Vector3.up;
+   Mode=mode;Count=0;Resting=HasTarget=false;Normal=Vector3.up;ContactCollider=null;
    Vector3 p=origin,v=settings.SwingVelocity(direction,charge,mode);LaunchVelocity=v;Add(p,v,0);
    bool slow=false;float time=0;
    for(int i=1;i<Capacity;i++){
@@ -51,7 +52,7 @@ namespace WhatTheFish {
      if(!supported||collision.normal.y<.35f){
       next=p+delta.normalized*collision.distance;Normal=collision.normal;
       if(mode==GolfShotMode.Swing||collision.normal.y<.35f){
-       HasTarget=true;v=mode==GolfShotMode.Swing&&Normal.y>.35f?settings.LandingVelocity(v,Normal,true):Vector3.ProjectOnPlane(v,Normal);
+       HasTarget=true;ContactCollider=collision.collider;v=mode==GolfShotMode.Swing&&Normal.y>.35f?settings.LandingVelocity(v,Normal,true):Vector3.ProjectOnPlane(v,Normal);
        Add(next,v,time+Step*Mathf.Clamp01(collision.distance/delta.magnitude));break;
       }
       v=Vector3.ProjectOnPlane(v,collision.normal);

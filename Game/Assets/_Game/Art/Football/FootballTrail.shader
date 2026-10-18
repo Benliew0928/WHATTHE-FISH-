@@ -1,5 +1,5 @@
 Shader "WhatTheFish/FootballTrail" {
- Properties { _Style("Design",Float)=0 _Motion("Motion",Float)=1 }
+ Properties { _Style("Design",Float)=0 _Motion("Motion",Float)=1 _Sport("Basketball accents",Float)=0 }
  SubShader {
   Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="Transparent" "Queue"="Transparent+12" }
   Pass {
@@ -12,7 +12,7 @@ Shader "WhatTheFish/FootballTrail" {
    #pragma fragment frag
    #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
    CBUFFER_START(UnityPerMaterial)
-   float _Style, _Motion;
+   float _Style, _Motion, _Sport;
    CBUFFER_END
    struct Attributes {float4 positionOS:POSITION;float2 uv:TEXCOORD0;half4 color:COLOR;};
    struct Varyings {float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;half4 color:COLOR;};
@@ -40,11 +40,23 @@ Shader "WhatTheFish/FootballTrail" {
      float flame=sin(x*22+t*4)*(.12+.23*x);
      core=strand(y,flame,.10)+strand(y,-flame*.7,.055)*.5;
      glow=strand(y,0,.7)*(.55+.15*sin(x*28+t*3));tint=lerp(half3(1,.72,.08),half3(1,.16,.035),x);
-    }else{
+    }else if(_Style<4.5){
      float wave=sin(x*12-t*2)*.38;
      core=strand(y,wave,.085)*.65+strand(y,-wave,.065)*.65;
      glow=strand(y,wave,.4)*.55+strand(y,-wave,.32)*.3;
      tint=lerp(half3(.12,1,.64),half3(.67,.22,1),saturate(y*.6+.5));
+    }else{
+     float wave=sin(x*25-t*3)*.2;
+     core=strand(y,wave,.075)+strand(y,-wave,.05)*.55;
+     glow=strand(y,0,.65)*.7;tint=lerp(half3(1,.45,.04),half3(1,.92,.3),x);
+    }
+    // Continuous bright spine keeps the wake joined to the ball in every style.
+    core+=strand(y,0,.09)*.8;glow+=strand(y,0,.43)*.22;
+    if(_Sport>.5){
+     float rails=.45+.09*sin(x*13-t*3);
+     core+=(strand(y,rails,.04)+strand(y,-rails,.04))*(.4+.3*sin(x*18-t*5));
+     float sparkX=frac(x*7-t*.7),sparkY=sin(floor(x*7-t*.7)*12.7)*.65;
+     core+=pow(saturate(1-abs(sparkX-.5)*14),3)*strand(y,sparkY,.11)*.8*_Motion;
     }
     float edge=1-smoothstep(.8,1,abs(y));
     half3 color=lerp(tint,half3(1,.98,1),saturate(core)*.85);

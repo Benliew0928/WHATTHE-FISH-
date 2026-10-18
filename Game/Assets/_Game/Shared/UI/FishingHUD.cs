@@ -70,7 +70,7 @@ namespace WhatTheFish {
   Button Button(RectTransform node,string value,Color tint,out Text label){
    var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.UseSolidPanel();g.raycastTarget=true;var b=node.gameObject.AddComponent<Button>();b.targetGraphic=g;
    b.transition=Selectable.Transition.None;label=Text(node,value,Vector2.zero,node.sizeDelta-new Vector2(16,6),25);
-   node.gameObject.AddComponent<BasketballButtonFeedback>();return b;
+   node.gameObject.AddComponent<BasketballButtonFeedback>();node.gameObject.AddComponent<GolfFishingButtonSound>();return b;
   }
   void Build(){
    aim=Graphic(Rect("Fishing aim reticle",page,Vector2.zero,layout.aimSize,layout.aimAnchor),FishingStickerGraphic.Kind.Aim,Cream);aim.raycastTarget=false;

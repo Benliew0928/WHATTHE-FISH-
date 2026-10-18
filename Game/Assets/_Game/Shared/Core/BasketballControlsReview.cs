@@ -20,6 +20,12 @@ namespace WhatTheFish {
   Vector3 Local(Athlete a)=>ball.transform.parent.InverseTransformPoint(a.transform.position);
   float Heading(Athlete from,Athlete to)=>Quaternion.LookRotation(Vector3.ProjectOnPlane(to.transform.position-from.transform.position,Vector3.up)).eulerAngles.y;
   void Park(){app.view.ClearMatchInput();DevelopmentProbe.TurnCommand=default;ball.ResetHome();for(int i=0;i<roster.Length;i++)Place(roster[i],new Vector3(i%2==0?-5:5,.07f,-10+i*3));ball.autoPickup=false;}
+  bool HoldGuard(bool block,int pointer=73){
+   var button=BasketballHUD.Instance.GetComponentsInChildren<BasketballDefenseButton>(true).Single();button.Refresh();
+   var touch=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=pointer,position=RectTransformUtility.WorldToScreenPoint(null,button.transform.position)};
+   button.OnPointerDown(touch);if(block){touch.position=RectTransformUtility.WorldToScreenPoint(null,button.transform.TransformPoint(new Vector2(0,130)));button.OnDrag(touch);}
+   return app.view.GuardHeld&&(!block||app.view.AutoBlockHeld);
+  }
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    yield return Until(()=>DevelopmentProbe.ReadyToReviewSport&&BasketballBall.Active,"court ready",85);
@@ -31,7 +37,7 @@ namespace WhatTheFish {
    roster=roster.OrderBy(a=>a==actor?0:1).ThenBy(BasketballMatch.PlayerId).ToArray();
    uint revision=match.Snapshot.revision;for(int i=0;i<roster.Length;i++)Check(match.ChooseTeam(roster[i],i<3?FootballTeam.A:FootballTeam.B,revision),"fixture team "+i);
    yield return Until(()=>match.Running,"regulation starts",16);
-   yield return Passing();yield return Guard();yield return Inbounds();
+   yield return Passing();yield return Guard();yield return AutomaticBlocks();yield return RemoteGuard();yield return Inbounds();
    File.WriteAllText(Path.Combine(Directory.GetParent(folder).FullName,"host-done"),"done");yield return new WaitForSeconds(1);Finish();
   }
   IEnumerator Passing(){
@@ -54,6 +60,7 @@ namespace WhatTheFish {
    var touch=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left,pointerId=71,position=Point(Vector2.zero)};
    button.OnPointerDown(touch);yield return new WaitForSeconds(.65f);
    Check(app.view.GuardHeld&&actor.BasketballMotion.GuardActive&&Vector3.Dot(actor.transform.forward,(carrier.transform.position-actor.transform.position).normalized)>.98f,"guard turns from facing away to carrier");
+   Check(!app.view.AutoBlockHeld&&!ball.GuardBlockReady(actor)&&!ball.GetComponent<BasketballPropVisual>().ReviewGuardLight(actor),"plain guard does not arm auto block");
    Check(Mathf.Abs(ball.GuardMovementMultiplier(actor)-.7f)<.0001f&&Mathf.Abs(ball.GuardMovementMultiplier(carrier)-.7f)<.0001f,"both players slowed exactly thirty percent");
    Check(ball.BeginShotCharge(carrier,0),"guarded shot begins");yield return new WaitForSeconds(.2f);
    float normal=BasketballBall.ChargePeriod(ball.ChargeDistance(carrier,0));Check(Mathf.Abs(normal/ball.Charge.period-1.3f)<.001f,"guarded meter spins thirty percent faster");
@@ -64,11 +71,45 @@ namespace WhatTheFish {
    yield return Until(()=>!ball.Held,"close guarded swipe definitely strips the ball",1);Check(ball.StealCount>0,"host recorded successful steal");button.OnPointerUp(touch);
    Park();Place(carrier,new Vector3(0,.07f,0));Place(actor,new Vector3(0,.07f,3));ball.GiveMatchPossession(carrier);yield return new WaitForSeconds(.3f);button.Refresh();touch.position=Point(Vector2.zero);button.OnPointerDown(touch);yield return new WaitForSeconds(.2f);
    for(int i=0;i<2;i++){uint before=actor.BasketballMotion.State.sequence;touch.position=Point(new Vector2(-109,-30));button.OnDrag(touch);yield return new WaitForSeconds(.2f);Check(actor.BasketballMotion.Action==BasketballAction.Steal&&actor.BasketballMotion.State.sequence>before&&app.view.GuardHeld,"repeat swipe spends steal and retains guard "+i);yield return new WaitForSeconds(.6f);touch.position=Point(Vector2.zero);button.OnDrag(touch);yield return null;}
-   Check(ball.Holder==carrier,"out-of-range swipes miss");touch.position=Point(new Vector2(0,130));button.OnDrag(touch);yield return Capture("guard-block-swipe");button.OnPointerUp(touch);yield return new WaitForSeconds(.1f);Check(actor.BasketballMotion.Action==BasketballAction.Block&&!app.view.GuardHeld,"upward swipe release commits block");yield return new WaitForSeconds(.8f);
+   Check(ball.Holder==carrier,"out-of-range swipes miss");touch.position=Point(new Vector2(0,130));button.OnDrag(touch);yield return new WaitForSeconds(.15f);
+   Check(app.view.AutoBlockHeld&&ball.GuardBlockReady(actor),"upward held swipe arms auto block");
+   Check(!app.view.BeginSteal(72)&&!app.view.RequestGuardSteal(71)&&!ball.TrySteal(actor,0)&&!ball.CanSteal(actor),"second finger and host steal rejected while block armed");
+   Check(!app.view.SetGuardBlock(false,72)&&app.view.AutoBlockHeld,"other finger cannot disarm block mode");
+   yield return Capture("guard-block-ready");touch.position=Point(Vector2.zero);button.OnDrag(touch);yield return new WaitForSeconds(.15f);
+   Check(!app.view.AutoBlockHeld&&!ball.GuardBlockReady(actor)&&ball.CanSteal(actor),"return to centre disarms block and restores steal");
+   touch.position=Point(new Vector2(-109,-30));button.OnDrag(touch);yield return new WaitForSeconds(.06f);touch.position=Point(new Vector2(0,130));button.OnDrag(touch);yield return new WaitForSeconds(.06f);
+   Check(actor.BasketballMotion.Action==BasketballAction.Steal&&!ball.GuardBlockReady(actor),"up swipe cannot interrupt steal recovery or block during steal");
+   yield return new WaitForSeconds(.75f);Check(ball.GuardBlockReady(actor),"held block mode arms only after steal recovery ends");
+   button.OnPointerUp(touch);yield return new WaitForSeconds(.1f);Check(!actor.BasketballMotion.Blocking&&!app.view.GuardHeld&&!app.view.AutoBlockHeld,"release clears selected mode without a timed block");yield return new WaitForSeconds(.8f);
    touch.position=Point(Vector2.zero);button.Refresh();button.OnPointerDown(touch);BasketballHUD.Instance.ShowSettings();yield return null;Check(!app.view.GuardHeld&&!button.Tracking,"menu cancels captured guard");BasketballHUD.Instance.CloseMenu();
-   Park();Place(carrier,new Vector3(0,.07f,0));Place(actor,new Vector3(0,.07f,1.1f));ball.GiveMatchPossession(carrier);match.Control(carrier);ball.SetGuard(actor,true,180);
-   float distance=Vector3.ProjectOnPlane(match.AttackingHoop(carrier).position-carrier.transform.position,Vector3.up).magnitude;uint shots=ball.ShotCount;
-   Check(ball.TryShoot(carrier,0,.65f),"guarded physical shot commits");yield return Until(()=>ball.ShotCount>shots,"guarded shot physically releases");Check(Mathf.Abs(ball.LastShotChance-BasketballShotOdds.Chance(distance,.65f,pressure:1))<.001f,"released host shot uses full twenty point penalty");
+  }
+  IEnumerator AutomaticBlocks(){
+   var carrier=roster[3];var visual=ball.GetComponent<BasketballPropVisual>();
+   foreach(var offset in new[]{new Vector3(0,0,2f),new Vector3(2.49f,0,0),new Vector3(0,0,-2f)}){
+    Park();Place(carrier,new Vector3(0,.07f,0));Place(actor,new Vector3(0,.07f,0)+offset);ball.GiveMatchPossession(carrier);match.Control(carrier);yield return new WaitForSeconds(.2f);
+    Check(HoldGuard(true),"upward swipe selects auto block "+offset);yield return new WaitForSeconds(.3f);
+    Check(ball.GuardBlockReady(actor)&&visual.ReviewGuardLight(actor),"ready stance and visible light agree "+offset);
+    uint blocks=ball.Defense.blocks,shots=ball.ShotCount;var score=ball.Score;Check(ball.BeginShotCharge(carrier,0),"opponent can charge near ready guard");yield return new WaitForSeconds(.7f);
+    Check(ball.Defense.blocks==blocks&&ball.Holder==carrier,"charging fake does not auto block");
+    if(offset.z>0)yield return Capture("auto-block-ready");
+    Check(ball.ReleaseShotCharge(carrier,0),"opponent commits guarded shot");yield return Until(()=>ball.Defense.blocks==blocks+1,"close shot automatically blocked while holding",1);
+    Check(ball.Defense.blocker==BasketballMatch.PlayerId(actor)&&!ball.Held&&!ball.Body.isKinematic&&ball.Body.linearVelocity.magnitude>1,"correct defender produces physical loose ball");
+    Check(ball.ShotCount==shots&&ball.Score.attempts==score.attempts&&ball.Score.points==score.points&&!ball.ActionQueued,"blocked attempt cannot launch or score");
+    if(offset.z>0)yield return Capture("auto-block-contact");
+    yield return new WaitForSeconds(.85f);Check(ball.Defense.blocks==blocks+1&&!ball.GuardBlockReady(actor)&&!visual.ReviewGuardLight(actor),"one block only and readiness clears with possession");
+   }
+   foreach(string scenario in new[]{"plain guard","outside range","released hold","wall","teammate","pass"}){
+    Park();Place(carrier,new Vector3(0,.07f,0));Place(actor,new Vector3(scenario=="outside range"?2.6f:1.1f,.07f,0));ball.GiveMatchPossession(carrier);match.Control(actor);match.Control(carrier);yield return new WaitForSeconds(.2f);
+    Check(HoldGuard(scenario!="plain guard"),"negative fixture hold "+scenario);yield return new WaitForSeconds(.25f);
+    GameObject wall=null;
+    if(scenario=="released hold"){app.view.EndGuard(73);yield return new WaitForSeconds(.3f);Check(!ball.GuardBlockReady(actor)&&!visual.ReviewGuardLight(actor),"release extinguishes readiness");}
+    if(scenario=="wall"){wall=GameObject.CreatePrimitive(PrimitiveType.Cube);wall.layer=8;wall.transform.SetParent(ball.transform.parent,false);wall.transform.localPosition=new Vector3(.55f,.8f,0);wall.transform.localScale=new Vector3(.06f,1.6f,1.6f);Physics.SyncTransforms();}
+    if(scenario=="teammate"){app.view.EndGuard(73);Place(actor,new Vector3(4,.07f,0));Place(roster[4],new Vector3(1.1f,.07f,0));roster[4].BasketballMotion.Guard(270,true);Check(!ball.GuardBlockReady(roster[4]),"teammate cannot arm an opposing block");}
+    uint blocks=ball.Defense.blocks,shots=ball.ShotCount,passes=ball.PassCount;
+    Check(scenario=="pass"?ball.TryPass(carrier,0):ball.TryShoot(carrier,0),"negative fixture commits "+scenario);
+    yield return Until(()=>scenario=="pass"?ball.PassCount>passes:ball.ShotCount>shots,"unblocked release "+scenario,3);
+    Check(ball.Defense.blocks==blocks,"no auto block for "+scenario);if(wall)Destroy(wall);
+   }
   }
   IEnumerator Inbounds(){
    Park();match.Control(actor);var limits=BasketballBall.PaintedCourtLimits;
@@ -91,9 +132,23 @@ namespace WhatTheFish {
    Park();var hoop=match.AttackingHoop(actor);var start=hoop.TransformPoint(new Vector3(0,3.65f,0));ball.Place(ball.transform.parent.InverseTransformPoint(start),Quaternion.identity,Vector3.down*3,Vector3.zero);match.Control(actor);Check(match.Release(actor),"score fixture records legal shot");typeof(BasketballBall).GetMethod("BeginAttempt",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(ball,new object[]{hoop,actor,start});yield return Until(()=>match.Snapshot.phase==BasketballMatchPhase.Restart,"physical basket opens conceding baseline restart");
    yield return Until(()=>match.RestartReady,"scored inbounder collects ball");var spot=Local(ball.Holder);float baselineSign=match.Snapshot.possession==FootballTeam.A?-1:1;Check(Mathf.Abs(spot.x-baselineSign*2)<.15f&&spot.z*baselineSign>limits.y&&Mathf.Abs(spot.x)<limits.x*.5f,"score restart right of hoop closer to stand than midpoint");yield return Capture("scored-inbound");
   }
+  IEnumerator RemoteGuard(){
+   if(!app.rooms.Connected)yield break;
+   var remote=roster.First(a=>{var n=a.GetComponent<NetworkAthlete>();return n&&n.IsSpawned&&!n.IsOwner&&n.BotSlot.Value==0;});var carrier=roster[3];
+   Park();Place(carrier,new Vector3(0,.07f,0));Place(remote,new Vector3(2.25f,.07f,0));ball.GiveMatchPossession(carrier);match.Control(actor);match.Control(carrier);
+   File.WriteAllText(Path.Combine(Directory.GetParent(folder).FullName,"remote-guard"),ball.Defense.play.ToString());
+   yield return Until(()=>ball.GuardBlockReady(remote),"guest held input arms server readiness",8);
+   Check(!ball.TrySteal(remote,0),"host rejects steal from guest with armed block mode");
+   uint blocks=ball.Defense.blocks,shots=ball.ShotCount;Check(ball.TryShoot(carrier,0),"shoot against guest guard");
+   yield return Until(()=>ball.Defense.blocks==blocks+1,"server automatically blocks for guest hold",2);
+   Check(ball.Defense.blocker==BasketballMatch.PlayerId(remote)&&ball.ShotCount==shots&&!ball.Held,"guest receives sole block credit and shot is cancelled");yield return new WaitForSeconds(.7f);
+  }
   IEnumerator Guest(){
-   bool guard=false,stealGuard=false,locked=false,inbound=false;float end=Time.realtimeSinceStartup+150;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");
-   while(!File.Exists(done)&&Time.realtimeSinceStartup<end){foreach(var a in Athlete.Active){guard|=a.BasketballMotion.Guarding;stealGuard|=a.BasketballMotion.GuardActive&&a.BasketballMotion.Action==BasketballAction.Steal;}locked|=ball.PassAim.locked&&ball.PassReceiver;inbound|=ball.InboundPending&&match.Snapshot.phase==BasketballMatchPhase.Restart;yield return null;}
+   bool guard=false,stealGuard=false,locked=false,inbound=false,readyLight=false,blocked=false;float end=Time.realtimeSinceStartup+175;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");
+   bool remoteHeld=false;string remoteSignal=Path.Combine(Directory.GetParent(folder).FullName,"remote-guard");
+   while(!File.Exists(done)&&Time.realtimeSinceStartup<end){if(!remoteHeld&&File.Exists(remoteSignal)&&uint.TryParse(File.ReadAllText(remoteSignal),out uint play)&&ball.Defense.play==play)remoteHeld=HoldGuard(true,74);foreach(var a in Athlete.Active){guard|=a.BasketballMotion.Guarding;stealGuard|=a.BasketballMotion.GuardActive&&a.BasketballMotion.Action==BasketballAction.Steal;readyLight|=ball.GetComponent<BasketballPropVisual>().ReviewGuardLight(a);if(a.BasketballMotion.Action==BasketballAction.Steal&&a.BasketballMotion.State.guardBlock)Check(false,"steal and block modes never overlap on peer");}blocked|=ball.Defense.blocks>0&&ball.Defense.blocker!=ulong.MaxValue;locked|=ball.PassAim.locked&&ball.PassReceiver;inbound|=ball.InboundPending&&match.Snapshot.phase==BasketballMatchPhase.Restart;yield return null;}
+   Check(remoteHeld,"guest sends its own held guard input");
+   Check(readyLight&&blocked,"peer receives ready light and authoritative automatic blocks");
    Check(File.Exists(done),"host completed shared fixture");Check(guard&&stealGuard,"peer receives guard and simultaneous steal");Check(locked,"peer resolves selected teammate snapshot");Check(inbound,"peer receives protected inbound state");Check(!ball.TrySteal(actor,0)&&!ball.BeginInbound(actor,Vector3.zero),"guest cannot author possession");
   }
   IEnumerator Capture(string name){

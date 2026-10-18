@@ -9,7 +9,7 @@ Teammates cannot steal, block or apply guard pressure to one another. See
 
 | Touch slot | Attack | Defense |
 | --- | --- | --- |
-| Main | Hold Shoot; finish/cancel paths | Hold Guard; swipe up and release for Block |
+| Main | Hold Shoot; finish/cancel paths | Hold Guard, swipe up and keep holding for automatic blocks within 2.5 m |
 | Lower-left secondary | Hold Pass | Steal; swipe here from Guard to steal immediately |
 | Jump | Jump | Jump Block |
 
@@ -18,7 +18,9 @@ A missed steal retains guard during its animation and recovery; another swipe
 can be made when the action is ready. Leaving the button does not release the
 captured finger. Lifting, cancellation, menus, focus loss, travel or a possession
 change clears it. Another finger cannot release it or fire its actions.
-Desktop retains Q for Guard, E for Block, F for Steal and Space for Jump Block.
+Desktop uses Q for Guard; hold Q + Up Arrow to select automatic blocking.
+E remains manual Block, F is Steal and Space is Jump Block.
+Releasing Guard only ends the hold; it does not fire a block.
 
 ## Guarding and pressure
 
@@ -40,6 +42,33 @@ Unblocked layups and dunks retain their existing finish rules. Unavailable
 finishes that fall back to a timed shot receive the normal guarded-shot penalty.
 
 ## Blocking and recovery
+
+Holding Guard alone applies pressure. Swipe upward and keep the captured finger
+on the upper path to select automatic blocking. A mint light around the defender's
+feet and the mint **Block ready** control use the replicated selected mode and
+guard stance. Returning to the button centre disarms auto-block and re-arms the
+left steal path. Leaving the upper path, lifting, cancellation, menus, focus loss,
+travel or a possession change ends block readiness. It has no release timing window.
+
+Auto-block and stealing are mutually exclusive. The separate Steal button and
+keyboard/host steal requests are rejected while block mode is armed. Selecting
+block during a steal does not interrupt its animation or recovery; readiness can
+begin only after recovery ends. Bots select the same block mode against a charging
+shooter and cannot issue a steal in that mode. The input command and replicated
+pose include the selected mode; multiplayer protocol **67** requires matching builds.
+
+When an opponent commits a shot, layup or dunk within **2.5 m**, with matching
+elevation (less than 0.8 m difference) and clear sight, a ready defender always
+blocks it. The host checks throughout the committed gather before release;
+charging or cancelling a fake alone does not trigger a block. The nearest ready
+defender wins, with player ID breaking ties. This uses no hand-contact or random
+success check. Passes, teammates, distant shots and shots through walls do not
+trigger it. The ball is knocked loose, the shooter recoils, and the cancelled
+attempt cannot launch or score. One attempt awards one block, with the existing
+pickup and recovery rules. Bots use the same held-guard rule at close range.
+
+Manual E and Jump Block retain the physical contact rules below for other
+defensive challenges.
 
 Standing Block loads and reaches through a committed point. Its active window
 is 0.05–0.46 s, with 0.70 s total recovery. The current dribble or incoming
@@ -96,7 +125,7 @@ local poses into the basketball running/crouching pose. Moving takeoff and
 interrupted finishes retain the starting feet; those foot poses are replicated
 so guests do not snap to a generic jump stance.
 
-A defender must put the outside hand into the shot's path. A ball behind the
+For a manual block, a defender must put the outside hand into the shot's path. A ball behind the
 defender's head is not within that hand's reach simply because it is close to
 the player's centre. The active windows and contact radii remain unchanged.
 
@@ -105,6 +134,15 @@ the player's centre. The active windows and contact radii remain unchanged.
 - [Input ownership](../Game/Assets/_Game/Shared/Player/BasketballDefenseInput.cs)
 - [Context buttons](../Game/Assets/_Game/Shared/UI/BasketballDefenseButton.cs)
 - [Repeatable defense review](../Tools/Build/Test-BasketballDefense.ps1)
+- [Held-guard and multiplayer regression](../Tools/Build/Test-BasketballControls.ps1)
+
+Build a complete candidate with `BasketballControlsBuild.BuildSwipeGuardReview`, then
+run `Test-BasketballControls.ps1 -PlayerPath Builds/BasketballBlockSwipeQA/Player/WhatTheFish.exe`
+and repeat with `-Local`. The fixtures cover held readiness and its visible light,
+front/side/rear shots beyond the old range, charge fakes, single resolution,
+unselected/released holds, mode switches, steal exclusion and recovery, the 2.5 m
+boundary, walls, teammates, passing and actual guest-swipe replication. Capture and result paths
+are printed by the test runner under ignored `Builds/`.
 
 Run the defense review offline at 20/30/60/120 FPS and with `-Mode Local` for two
 processes. `-PlayerPath` selects a task candidate; omitting it uses the complete

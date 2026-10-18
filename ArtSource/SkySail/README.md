@@ -9,9 +9,10 @@ Each module opens directly with its meshes linked into a metric scene. The full-
 | CabinShell | Rounded metal frame, paneled body, timber floor, curved roof and skylight |
 | CabinInterior | Ten seat positions, cushions, piping, grab poles and hanging grips |
 | SlidingDoor | Independent framed glass panel and handle; used twice |
-| CabinHanger | Roof supports, neck, bogie, wheel hubs, spokes and cable grip |
-| CableTower | Foundation, tapered braced legs, ladder, service deck and sheave wheels |
-| SailStation | Supported boardwalk, timber portals, fabric canopy, benches and lanterns |
+| CabinHanger | Roof supports, upright neck and trolley swivel bearing |
+| CabinTrolley | Independently pitching bogie, wheel hubs, spokes and cable grip; origin at cable contact |
+| CableTower | Offset mast, foundation, ladder, service deck, cantilever and overhead sheave wheels |
+| SailStation | U-shaped boarding deck around a clear cabin berth, timber portals, fabric canopy, benches and lanterns |
 | Gangway | Reusable walkway plank section and handrails |
 
 Unity generates individual prefabs, a composed GroupCabin prefab, and a separate cable-span prefab for each route under `Game/Assets/_Game/Prefabs/SkySail`. Wire geometry and cabin wheel paths share `SkySailMap`, preventing separate visual and travel routes from drifting apart.
@@ -21,3 +22,9 @@ The editor merges each module by material and generates a simplified distant lev
 Regenerate the asset kit with Blender 5.1, then run Unity's `SkySailBuilder.BuildWindows`. For a scene/layout iteration, `-skyReuseProxies` retains the existing island proxy meshes. `SkySailBuilder.RebuildPlayer` recompiles the saved scenes without regenerating assets.
 
 The world uses a common geographic layout and rebases it around the current island, preserving existing sport-local collision, spawn and recovery coordinates. Four additive island scenes own detailed content. Multiplayer supports a single active destination and one travelling party per host room.
+
+The [18 October repair](../../Docs/SKY-RAIL-REPAIR.md) documents track clearance,
+doorway collision, attached interior fittings and the separate trolley. Run
+`Tools/Blender/audit_sky_sail.py` with Blender to inspect native/FBX dependencies.
+Use `SkySailBuilder.RefreshRailGeometry` to regenerate the rail assembly and
+Fishing's shore approach while preserving other island content and distant proxies.

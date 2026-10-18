@@ -9,7 +9,7 @@ namespace WhatTheFish {
   public static float SFXVolume {get; private set;}=.8f;
   public static float AmbienceVolume {get; private set;}=.45f;
   public static void Load() {
-   FootballTrailStyle.Load();
+   FootballTrailStyle.Load();BasketballTrailStyle.Load();
    ReducedMotion = PlayerPrefs.GetInt("cove.motion", 0) == 1;
    MasterVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("cove.master", .8f));
    UIVolume = Mathf.Clamp01(PlayerPrefs.GetFloat("cove.ui", .65f));

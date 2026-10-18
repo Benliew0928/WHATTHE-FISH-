@@ -30,7 +30,7 @@ namespace WhatTheFish {
   public bool ArtworkLoaded {get;private set;}
   public Rect SafeArea {get;private set;}
   public const float Width=1672,Height=941;
-  RectTransform cover,actions,modal;CanvasGroup actionGroup;
+  RectTransform cover,actions,modal;CanvasGroup actionGroup;GameObject blankSign;
   Text heading,subtitle,status,percentage;WelcomePlate fill;
   GameObject modalRoot;Button returnFocus;Action retry;
   bool driven,leaving;float hideProgressAt=-1;
@@ -54,6 +54,7 @@ namespace WhatTheFish {
    HasError=false;IsReady=false;Progress=0;hideProgressAt=-1;CloseModal();
    actionGroup.alpha=0;actionGroup.interactable=actionGroup.blocksRaycasts=false;
    GuestButton.interactable=HuaweiButton.interactable=false;RetryButton.gameObject.SetActive(false);
+   blankSign.SetActive(true);heading.gameObject.SetActive(true);
    heading.text="Welcome aboard!";subtitle.text="Your island adventure is getting ready.";subtitle.gameObject.SetActive(true);
    LoadingPanel.gameObject.SetActive(true);percentage.gameObject.SetActive(true);SetProgress(0,"Preparing your islands...");
   }
@@ -66,12 +67,13 @@ namespace WhatTheFish {
    HasError=true;IsReady=false;hideProgressAt=-1;
    actionGroup.alpha=0;actionGroup.interactable=actionGroup.blocksRaycasts=false;
    GuestButton.interactable=HuaweiButton.interactable=false;
+   blankSign.SetActive(true);heading.gameObject.SetActive(true);
    heading.text="Let’s try again";subtitle.text="Your adventure will be here when you’re ready.";subtitle.gameObject.SetActive(true);
    status.text="Check storage, then retry.";percentage.gameObject.SetActive(false);RetryButton.gameObject.SetActive(true);LoadingPanel.gameObject.SetActive(true);
   }
   public void SetReady(){
    if(IsReady)return;IsReady=true;HasError=false;Progress=1;
-   heading.text="Ready to play";subtitle.gameObject.SetActive(false);
+   blankSign.SetActive(false);heading.gameObject.SetActive(false);subtitle.gameObject.SetActive(false);
    actionGroup.alpha=1;actionGroup.interactable=actionGroup.blocksRaycasts=true;
    GuestButton.interactable=HuaweiButton.interactable=true;RetryButton.gameObject.SetActive(false);
    status.text="Ready to play";percentage.text="100%";fill.rectTransform.sizeDelta=new Vector2(258,22);fill.SetVerticesDirty();hideProgressAt=Time.unscaledTime+.8f;
@@ -121,18 +123,23 @@ namespace WhatTheFish {
    Canvas.transform.SetParent(transform,false);Canvas.renderMode=RenderMode.ScreenSpaceOverlay;Canvas.sortingOrder=30000;
    // Pixel-space layout keeps every overlay locked to the approved 16:9 artwork.
    Canvas.GetComponent<CanvasScaler>().uiScaleMode=CanvasScaler.ScaleMode.ConstantPixelSize;
-   var texture=Resources.Load<Texture2D>("StartupWelcome/Background");ArtworkLoaded=texture;
+   var texture=Resources.Load<Texture2D>("StartupWelcome/Background");
+   var signTexture=Resources.Load<Texture2D>("StartupWelcome/BlankSign");ArtworkLoaded=texture&&signTexture;
    cover=Rect(Canvas.transform,"Safe frame backdrop",0,0,Width,Height);var backdrop=cover.gameObject.AddComponent<WelcomePlate>();backdrop.top=LocalProfile.Hex("236C86");backdrop.bottom=LocalProfile.Hex("103F50");backdrop.edge=backdrop.bottom;backdrop.radius=0;backdrop.sheen=false;backdrop.raycastTarget=true;
    Design=Rect(Canvas.transform,"Approved artwork frame",0,0,Width,Height);
    var art=Rect(Design,"Cable-car welcome artwork",0,0,Width,Height).gameObject.AddComponent<RawImage>();art.texture=texture;art.raycastTarget=true;
-   heading=Label(Design,"Welcome aboard!",1162,329,427,72,38,true,Ink,TextAnchor.MiddleCenter);
+   // Keep the approved scene byte-for-byte. Only this small sign interior uses
+   // the blank companion plate; generated changes elsewhere are never shown.
+   var sign=Rect(Design,"Blank sign during preparation",1138,340,484,320).gameObject.AddComponent<WelcomeSignPatch>();
+   sign.texture=signTexture;sign.source=new UnityEngine.Rect(1138/Width,1-660/Height,484/Width,320/Height);sign.raycastTarget=false;blankSign=sign.gameObject;
+   heading=Label(Design,"Welcome aboard!",1162,337,436,72,38,true,Ink,TextAnchor.MiddleCenter);
    subtitle=Label(Design,"Your island adventure is getting ready.",1170,455,416,104,26,false,Ink,TextAnchor.MiddleCenter);
-   actions=Rect(Design,"Sign-in choices",1153,432,446,206);actionGroup=actions.gameObject.AddComponent<CanvasGroup>();
-   HuaweiButton=ActionButton(actions,"Huawei sign-in","Sign in with HUAWEI",0,0,446,88,"FFE585","FFC537","DDA22C",()=>ShowPlaceholder("Huawei sign-in","Huawei sign-in is coming soon.\nYou can continue as a guest for now.",HuaweiButton),WelcomeSymbol.Huawei);
-   GuestButton=ActionButton(actions,"Continue as guest","Continue as guest",0,108,446,88,"C9FFF0","82DDC4","57A996",ContinueAsGuest,WelcomeSymbol.Person);
-   LanguageButton=Utility("English",WelcomeSymbol.Globe,1273,()=>ShowPlaceholder("Language","English is selected.\nMore languages are coming soon.",LanguageButton));
-   SettingsButton=Utility("Settings",WelcomeSymbol.Gear,1412,()=>ShowPlaceholder("Settings","Startup settings are coming soon.\nGame settings are available from the main menu.",SettingsButton));
-   InfoButton=Utility("Info",WelcomeSymbol.Info,1547,()=>ShowPlaceholder("WHATTHE FISH?","Four islands. One shared adventure.\nPlay football, basketball, golf and fishing with your crew.",InfoButton));
+   actions=Rect(Design,"Sign-in choices",1153,444,457,212);actionGroup=actions.gameObject.AddComponent<CanvasGroup>();
+   HuaweiButton=ArtworkButton(actions,"Huawei sign-in",0,0,457,100,new UnityEngine.Rect(2,1,453,90),45,()=>ShowPlaceholder("Huawei sign-in","Huawei sign-in is coming soon.\nYou can continue as a guest for now.",HuaweiButton));
+   GuestButton=ArtworkButton(actions,"Continue as guest",0,112,457,100,new UnityEngine.Rect(2,1,453,90),45,ContinueAsGuest);
+   LanguageButton=Utility("English",1258,()=>ShowPlaceholder("Language","English is selected.\nMore languages are coming soon.",LanguageButton));
+   SettingsButton=Utility("Settings",1398,()=>ShowPlaceholder("Settings","Startup settings are coming soon.\nGame settings are available from the main menu.",SettingsButton));
+   InfoButton=Utility("Info",1533,()=>ShowPlaceholder("WHATTHE FISH?","Four islands. One shared adventure.\nPlay football, basketball, golf and fishing with your crew.",InfoButton));
    // Immediately right of the character's shins, above the boardwalk edge.
    LoadingPanel=Rect(Design,"Loading beside character",750,708,350,118);
    var plate=LoadingPanel.gameObject.AddComponent<WelcomePlate>();plate.top=Cream;plate.bottom=LocalProfile.Hex("F9ECCE");plate.edge=LocalProfile.Hex("8AAEA0");plate.radius=23;plate.raycastTarget=false;
@@ -155,11 +162,12 @@ namespace WhatTheFish {
    float coverScale=Mathf.Max(Screen.width/Width,Screen.height/Height);
    cover.localScale=Vector3.one*coverScale;cover.anchoredPosition=new Vector2((Screen.width-Width*coverScale)/2,-(Screen.height-Height*coverScale)/2);
   }
-  Button Utility(string label,WelcomeSymbol symbol,float x,Action click){
-   var root=Rect(Design,label+" control",x-20,34,110,110);
-   var b=ActionButton(root,label,"",20,6,70,70,"71B4D0","216A8A","C0E6ED",click,WelcomeSymbol.None);
-   var icon=Rect(b.transform,label+" icon",15,13,40,40).gameObject.AddComponent<WelcomeIcon>();icon.symbol=symbol;icon.color=Color.white;icon.raycastTarget=false;
-   Label(root,label,0,78,110,48,23,true,Ink,TextAnchor.MiddleCenter);return b;
+  // Both the circle and its illustrated label belong to the touch target.
+  Button Utility(string label,float x,Action click)=>ArtworkButton(Design,label,x,34,114,124,new UnityEngine.Rect(20,6,74,74),37,click);
+  static Button ArtworkButton(Transform parent,string name,float x,float y,float w,float h,UnityEngine.Rect visual,float radius,Action click){
+   var feedback=Rect(parent,name,x,y,w,h).gameObject.AddComponent<WelcomeArtworkFeedback>();feedback.visual=visual;feedback.radius=radius;
+   var button=feedback.gameObject.AddComponent<WelcomeButton>();button.targetGraphic=feedback;button.transition=Selectable.Transition.None;
+   button.onClick.AddListener(()=>{CoveSound.Play();click?.Invoke();});return button;
   }
   public void ShowPlaceholder(string title,string message,Button source){
    if(ModalOpen)return;returnFocus=source;CreateModal();
@@ -199,6 +207,33 @@ namespace WhatTheFish {
  public sealed class WelcomeButton:Button {
   protected override void DoStateTransition(SelectionState state,bool instant){
    if(targetGraphic is WelcomePlate p){p.pressed=state==SelectionState.Pressed;p.focused=state==SelectionState.Selected;p.dimmed=state==SelectionState.Disabled;p.SetVerticesDirty();}
+   if(targetGraphic is WelcomeArtworkFeedback art){art.pressed=state==SelectionState.Pressed;art.focused=state==SelectionState.Selected;art.highlighted=state==SelectionState.Highlighted;art.SetVerticesDirty();}
+  }
+ }
+ // The normal state uses the exact approved raster design. Native feedback
+ // supplies pointer press, hover and keyboard focus without redrawing the art.
+ public sealed class WelcomeArtworkFeedback:MaskableGraphic {
+  public Rect visual;public float radius;public bool pressed,focused,highlighted;
+  protected override void OnPopulateMesh(VertexHelper v){
+   v.Clear();if(!pressed&&!focused&&!highlighted)return;
+   var r=new Rect(rectTransform.rect.xMin+visual.x,rectTransform.rect.yMax-visual.y-visual.height,visual.width,visual.height);
+   if(pressed)CovePlate.Round(v,r,radius,new Color(.015f,.12f,.15f,.17f));
+   var tint=focused?LocalProfile.Hex("FFF2AE"):new Color(1,1,1,.8f);float thickness=focused?3:2;
+   int start=v.currentVertCount;float rad=Mathf.Min(radius,Mathf.Min(r.width,r.height)/2);
+   for(int corner=0;corner<4;corner++){
+    var c=new Vector2(corner==0||corner==3?r.xMax-rad:r.xMin+rad,corner<2?r.yMax-rad:r.yMin+rad);
+    for(int i=0;i<=16;i++){float a=(corner*90+i*90f/16)*Mathf.Deg2Rad;var direction=new Vector2(Mathf.Cos(a),Mathf.Sin(a));v.AddVert(c+direction*(rad+thickness),tint,Vector2.zero);v.AddVert(c+direction*(rad-1),tint,Vector2.zero);}
+   }
+   for(int i=0;i<68;i++){int a=start+i*2,b=start+((i+1)%68)*2;v.AddTriangle(a,b,a+1);v.AddTriangle(a+1,b,b+1);}
+  }
+ }
+ // A six-pixel blend removes a hard rectangular seam on the cream sign.
+ public sealed class WelcomeSignPatch:MaskableGraphic {
+  public Texture texture;public Rect source;public override Texture mainTexture=>texture?texture:base.mainTexture;
+  protected override void OnPopulateMesh(VertexHelper v){
+   v.Clear();var r=rectTransform.rect;float[] xs={0,6/r.width,1-6/r.width,1},ys={0,6/r.height,1-6/r.height,1};
+   for(int y=0;y<4;y++)for(int x=0;x<4;x++)v.AddVert(new Vector2(r.xMin+xs[x]*r.width,r.yMin+ys[y]*r.height),new Color(1,1,1,x==0||x==3||y==0||y==3?0:1),new Vector2(source.x+xs[x]*source.width,source.y+ys[y]*source.height));
+   for(int y=0;y<3;y++)for(int x=0;x<3;x++){int i=y*4+x;v.AddTriangle(i,i+4,i+1);v.AddTriangle(i+1,i+4,i+5);}
   }
  }
  public sealed class WelcomePlate:MaskableGraphic {

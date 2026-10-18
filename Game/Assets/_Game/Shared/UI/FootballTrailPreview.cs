@@ -3,9 +3,9 @@ using UnityEngine.UI;
 namespace WhatTheFish {
  // Lightweight animated swatch using the same shader as the in-world trail.
  public sealed class FootballTrailPreview:MaskableGraphic {
-  public int Style;
+  public int Style;public bool Basketball;
   protected override void OnEnable(){base.OnEnable();raycastTarget=false;}
-  void Update(){var next=FootballTrailStyle.Material(Style);if(material!=next)material=next;}
+  void Update(){var next=Basketball?BasketballTrailStyle.Material(Style):FootballTrailStyle.Material(Style);if(material!=next)material=next;}
   protected override void OnPopulateMesh(VertexHelper vh){
    vh.Clear();var r=rectTransform.rect;
    for(int i=0;i<=32;i++){

@@ -41,8 +41,9 @@ namespace WhatTheFish {
    Check(!AppRoot.Instance.Menu.Content.GetComponentsInChildren<Button>().Any(b=>b.IsInteractable()),"underlying menu cannot receive keyboard or pointer input");
    yield return new WaitForSecondsRealtime(1);Check(!welcome.LoadingPanel.gameObject.activeSelf,"completed progress clears without changing page");
    LayoutChecks();yield return Capture("ready");
+   Check(!welcome.Design.Find("Blank sign during preparation").gameObject.activeSelf,"ready state restores the exact approved sign artwork");
    foreach(var button in new[]{welcome.HuaweiButton,welcome.LanguageButton,welcome.SettingsButton,welcome.InfoButton}){
-    Click(button);yield return null;Check(welcome.ModalOpen,button.name+" opens its real UI placeholder");
+    Click(button,button!=welcome.HuaweiButton);yield return null;Check(welcome.ModalOpen,button.name+" opens its real UI placeholder");
     Check(!welcome.GuestButton.interactable&&!welcome.LanguageButton.interactable,"dialog blocks underlying controls");
     welcome.ContinueAsGuest();Check(StartupWelcome.Blocking,"guest cannot bypass an open modal");
     if(button==welcome.HuaweiButton)yield return Capture("huawei-placeholder");
@@ -89,10 +90,11 @@ namespace WhatTheFish {
   static float HeightFraction(float fraction)=>StartupWelcome.Height*fraction;
   static Rect Bounds(RectTransform r){var corners=new Vector3[4];r.GetWorldCorners(corners);return Rect.MinMaxRect(corners.Min(p=>p.x),corners.Min(p=>p.y),corners.Max(p=>p.x),corners.Max(p=>p.y));}
   static bool Contains(Rect outer,Rect inner)=>inner.xMin>=outer.xMin-1&&inner.xMax<=outer.xMax+1&&inner.yMin>=outer.yMin-1&&inner.yMax<=outer.yMax+1;
-  void Click(Button button){
-   Canvas.ForceUpdateCanvases();var pointer=new PointerEventData(EventSystem.current){position=Bounds((RectTransform)button.transform).center,button=PointerEventData.InputButton.Left};
+  void Click(Button button,bool labelArea=false){
+   Canvas.ForceUpdateCanvases();var bounds=Bounds((RectTransform)button.transform);var point=labelArea?new Vector2(bounds.center.x,bounds.yMin+10):bounds.center;
+   var pointer=new PointerEventData(EventSystem.current){position=point,button=PointerEventData.InputButton.Left};
    var hits=new List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);GameObject target=hits.Count>0?ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject):null;
-   Check(button.IsInteractable()&&target==button.gameObject,"pointer reaches "+button.name);if(target!=button.gameObject)return;
+   Check(button.IsInteractable()&&target==button.gameObject,"pointer reaches "+button.name+(labelArea?" label":""));if(target!=button.gameObject)return;
    ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerDownHandler);ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerUpHandler);ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerClickHandler);
   }
   IEnumerator Capture(string name){

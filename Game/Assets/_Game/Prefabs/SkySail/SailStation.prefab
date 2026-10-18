@@ -572,8 +572,8 @@ Transform:
   m_Children:
   - {fileID: 5285028142614995985}
   - {fileID: 4993297989392029690}
-  - {fileID: 520010805145974379}
   - {fileID: 578434184190300349}
+  - {fileID: 520010805145974379}
   - {fileID: 4129340212830478000}
   - {fileID: 749617341408330066}
   m_Father: {fileID: 0}
@@ -597,8 +597,8 @@ LODGroup:
     renderers:
     - renderer: {fileID: 7527055403191384817}
     - renderer: {fileID: 5175604171408089621}
-    - renderer: {fileID: 3762538689969976707}
     - renderer: {fileID: 3722280550804017728}
+    - renderer: {fileID: 3762538689969976707}
     - renderer: {fileID: 8533274458142559499}
   - screenRelativeHeight: 0.002
     fadeTransitionWidth: 0

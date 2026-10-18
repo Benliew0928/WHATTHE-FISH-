@@ -43,7 +43,7 @@ namespace WhatTheFish {
   void Awake(){Instance=this;}
   IEnumerator Prepare(int ticket){
    yield return streaming.Prepare(destination);
-   if(ticket!=version){if(!Busy)streaming.ReleaseOtherIslands(app.SelectedSport);yield break;}
+   if(ticket!=version){if(!Busy&&SceneLifetime.CanPresent(gameObject)&&app&&SceneLifetime.CanPresent(app.gameObject))streaming.ReleaseOtherIslands(app.SelectedSport);yield break;}
    if(passengers.Any(p=>!p.actor)||streaming.Error!=null||!streaming.Loaded(destination)){Cancel("The destination could not load. Everyone stays at the start.");yield break;}
    var root=app.environments.roots[(int)destination];root.transform.position=SkySailMap.Center(destination)-world.Origin;root.SetActive(true);
    foreach(var c in world.stations[(int)destination].GetComponentsInChildren<Collider>(true))c.enabled=true;
@@ -123,11 +123,13 @@ namespace WhatTheFish {
    else {rotation=Quaternion.LookRotation((focus-position).normalized);if(Phase==TeleportPhase.Charging)rotation=Quaternion.Slerp(cameraRotation,rotation,Mathf.SmoothStep(0,1,Mathf.Min(1,t/.7f)));if(Phase==TeleportPhase.Travelling)rotation=Quaternion.Slerp(Quaternion.LookRotation(sourceFocus-depart),rotation,Mathf.SmoothStep(0,1,Mathf.Min(1,t/.25f)));camera.fieldOfView=Mathf.Lerp(oldFov,58,Phase==TeleportPhase.Charging?smooth:1);camera.nearClipPlane=.12f;}
    LargestCameraStep=Mathf.Max(LargestCameraStep,Vector3.Distance(lastCamera,position));lastCamera=position;camera.transform.SetPositionAndRotation(position-world.Origin,rotation);
   }
-  public void Cancel(string reason=""){Error=reason;if(room&&RoomTeleport.Busy)RoomTeleport.Instance.Report(1,true);Restore(true);}
+  public void Cancel(string reason=""){Error=reason;if(SceneLifetime.CanPresent(gameObject)&&room&&RoomTeleport.Busy)RoomTeleport.Instance.Report(1,true);Restore(true);}
   internal void FinishRoom(){if(room&&Busy)Restore(false);}
   void ClearArrivalCabin(){if(arrivalCabin){arrivalCabin.SetActive(false);Destroy(arrivalCabin);arrivalCabin=null;}}
-  void Restore(bool rollback){
+  void Restore(bool rollback,bool resumePresentation=true){
    if(!Busy)return;version++;ClearArrivalCabin();
+   resumePresentation&=SceneLifetime.CanPresent(gameObject)&&app&&SceneLifetime.CanPresent(app.gameObject);
+   if(!resumePresentation){foreach(var p in passengers)if(p.effect!=null){p.effect.Dispose(false);p.effect=null;}passengers.Clear();canvases.Clear();SetPhase(TeleportPhase.Idle);return;}
    foreach(var p in passengers)if(p.effect!=null){p.effect.Dispose();p.effect=null;}
    if(app){
     if(rollback&&committed)app.SelectSport(source,true);
@@ -149,7 +151,7 @@ namespace WhatTheFish {
    if(app&&streaming){var selected=app.SelectedSport;for(int i=0;i<app.environments.roots.Length;i++)if(app.environments.roots[i]){app.environments.roots[i].SetActive(i==(int)selected);app.environments.roots[i].transform.position=Vector3.zero;}streaming.ReleaseOtherIslands(selected);if(world)world.SetIsland(selected);}
    passengers.Clear();SetPhase(TeleportPhase.Idle);if(app&&app.Exploring)app.Show("stadium");
   }
-  void OnDisable(){if(Busy&&Instance==this)Cancel();}
+  void OnDisable(){if(Busy&&Instance==this){if(SceneLifetime.CanPresent(gameObject)&&app&&SceneLifetime.CanPresent(app.gameObject))Cancel();else Restore(true,false);}}
   void OnDestroy(){if(Instance==this)Instance=null;}
  }
 }

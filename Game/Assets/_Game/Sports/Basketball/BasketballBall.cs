@@ -29,7 +29,7 @@ namespace WhatTheFish {
   Vector3 home;Quaternion homeRotation;float sendAt,receivedAt;bool initialized,wasConnected,wasAuthority,wasPlaying;
   uint reset;BasketballSnapshot previous,target;bool haveTarget;
   void Awake(){Body=GetComponent<Rigidbody>();home=transform.localPosition;home.y=Mathf.Max(home.y,Radius+.002f);homeRotation=transform.localRotation;Body.maxAngularVelocity=100;Body.centerOfMass=Vector3.zero;Body.inertiaTensor=Vector3.one*(2f/3*Body.mass*Radius*Radius);restDamping=Body.linearDamping;PrepareHoops();BasketballBoundaryVisual.Attach(this);gameObject.AddComponent<BasketballPassVisual>();gameObject.AddComponent<BasketballPropVisual>();PrepareAudioSurfaces();gameObject.AddComponent<BasketballAudio>();initialized=true;gameObject.AddComponent<BasketballMatch>();}
-  void OnEnable(){Active=this;if(initialized)ResetHome();}
+  void OnEnable(){Active=this;if(!GetComponent<BasketballTrail>())gameObject.AddComponent<BasketballTrail>();if(initialized)ResetHome();}
   void OnDisable(){ClearPossession();ResetProps(false);if(Active==this)Active=null;if(Body){Body.isKinematic=true;Simulating=false;}haveTarget=false;wasPlaying=false;}
   void SetPose(Vector3 position,Quaternion rotation){
    Body.position=transform.parent?transform.parent.TransformPoint(position):position;

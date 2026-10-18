@@ -1,5 +1,79 @@
 # Build size — measured release records
 
+## Shared travel and match-start arrivals — 18 October 2026
+
+Fresh `AndroidSubmission` at **14:44:53 Malaysia time**:
+**87,561,004 → 87,569,184 bytes (+8,180)**. Headroom below the strict
+**1,000,000,000-byte** cap: **912,430,816 bytes**. Build, budget gate and
+independent APK v2 signature verification passed. SHA-256:
+**F7EAE76B30E61CDA42EAAE3E8BF9DC185965A2BDAD25D12FFC362E4BBFCE9E02**.
+
+Network protocol 68 blocks cable-car departures throughout all four games,
+places spectators in viewing areas on match start, and puts Fishing players on
+their piers before publishing the countdown. Blocked arrivals reject the start
+without moving the room. The station shows attendance and departure restrictions.
+See [teammate testing and release sharing](TEAMMATE-TESTING.md).
+
+The largest increase is IL2CPP code (+9,474 compressed bytes); metadata grows
+1,237 bytes and the islands bundle shrinks 2,811 bytes. There are no intentional
+visual asset reductions or unexpected large asset increases. This build includes
+the existing shared-workspace changes.
+
+The complete validated player is in `Builds/WindowsFinal/`; the same release ZIP
+is under `Builds/TravelMatchQA/`. Windows checks passed: 245 travel/match-start,
+519 teleport/rematch, 370 spectator, and 22 network rail assertions. Two additional
+old/new protocol connection cases correctly rejected the incompatible client.
+Current audit: `Builds/SizeAudit/latest/`; logs, before/after entry comparison,
+source hashes, screenshots and signature output: `Builds/TravelMatchQA/`.
+Physical Android and two-computer/WAN behavior remain unverified. The previously
+recorded unrelated cart-suite failures remain documented in
+[the audio release baseline](GOLF-FISHING-AUDIO.md).
+
+## Golf and Fishing approved audio — 18 October 2026
+
+Fresh `AndroidSubmission` at **13:20:42 Malaysia time**:
+**83,309,709 → 87,561,004 bytes (+4,251,295)**. Headroom below the strict
+**1,000,000,000-byte** cap: **912,438,996 bytes**. Build, budget gate and
+independent APK v2 signature verification passed. SHA-256:
+**A6A60BED27CB01E5AB1A3DF2E34ACCB0D3B182DA083854E2FC7ADF75D02B256F**.
+
+All 115 approved clips are integrated: 81 new short PCM assets and 34 reused
+clips. New audio contributes 4,202,996 uncompressed serialized bytes; that is
+not a separate APK measurement. New audio resource entries dominate growth.
+The islands bundle is **43,155,476 compressed bytes**, down 4,734; no visual
+asset reduction was made. Shared-workspace changes are included, so this is
+not an isolated audio-only source comparison.
+
+The complete tested player is in `Builds/WindowsFinal/`. Task-relevant Windows
+checks passed **970 assertions**; the broader cart suite retains the same 33
+distinct failures as the previous player. See [audio integration](GOLF-FISHING-AUDIO.md).
+No physical Android device was connected; phone audio, FPS and memory remain
+unverified. Current audit: `Builds/SizeAudit/latest/`; before/after, signature,
+source and copy-integrity evidence: `Builds/GolfFishingAudioQA/`.
+
+## Sky Rail station and cabin repair — 18 October 2026
+
+Fresh `AndroidSubmission` at **01:40:39 Malaysia time**:
+**80,052,983 → 83,309,709 bytes (+3,256,726)**. Remaining headroom below the
+strict **1,000,000,000-byte** limit: **916,690,291 bytes**. Full build, automated
+budget gate and independent APK v2 signature verification passed. SHA-256:
+**FEBF34C89F804123D49EF1576B79751615EAE86B5DAE6B6162109DE973D4D790**.
+
+This compares the actual opening local APK with the new shared-working-tree
+build. It also incorporates previously unbuilt Golf/integration changes, so
+the increase cannot be attributed solely to Sky Rail. Older 95 MB records
+below describe different snapshots. The new build retains station/cabin
+quality, with repaired track clearance, modular trolley, interior mounts,
+doors and boarding collisions. See [SKY-RAIL-REPAIR.md](SKY-RAIL-REPAIR.md).
+
+Largest compressed entries: islands bundle **43,160,210 bytes**, IL2CPP
+**12,287,550**, Unity runtime **9,773,533**, and metadata **2,750,141**.
+The bundle increased **756,879 bytes**; newly included Golf assets and UI also
+appear in the audit. Current reports are in `Builds/SizeAudit/latest/`, with
+before/after copies, signature output and source hashes in `Builds/SkyRailQA/`.
+Windows rail checks passed **237 assertions**. No Android device was connected;
+phone rendering, sustained performance and memory remain unverified.
+
 ## Manual cart camera with retained feet - 17 October 2026
 
 AndroidSubmission attempted; Gradle/JDK failed with java.io.IOException:

@@ -92,7 +92,7 @@ namespace WhatTheFish {
    if(player.phase!=FishingPhase.Caught&&player.phase!=FishingPhase.Reeling)p.y=game.WaterHeight(p)+.03f;return p;
   }
   public LineRenderer Line(string name,Transform parent,float width){var go=new GameObject(name);go.layer=2;go.transform.SetParent(parent,false);var line=go.AddComponent<LineRenderer>();line.sharedMaterial=lineMaterial;line.startWidth=line.endWidth=width;line.startColor=line.endColor=new Color(.94f,.88f,.52f);line.shadowCastingMode=ShadowCastingMode.Off;line.receiveShadows=false;line.positionCount=12;return line;}
-  public void Clear(){Splash?.Clear();foreach(var f in fish)if(f)f.SetActive(false);foreach(var h in halos)if(h)h.enabled=false;foreach(var r in rods.Values)if(r)r.Stow();if(comparison)comparison.gameObject.SetActive(true);}
-  void OnDisable(){Clear();}
+  public void Clear(bool restoreComparison=true){Splash?.Clear();foreach(var f in fish)if(f)f.SetActive(false);foreach(var h in halos)if(h)h.enabled=false;foreach(var r in rods.Values)if(r)r.Stow();if(restoreComparison&&comparison&&SceneLifetime.CanPresent(comparison.gameObject))comparison.gameObject.SetActive(true);}
+  void OnDisable(){Clear(false);}
  }
 }

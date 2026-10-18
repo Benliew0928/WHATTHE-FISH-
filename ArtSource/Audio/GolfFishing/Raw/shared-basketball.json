@@ -1,0 +1,532 @@
+{
+  "base": "Repository root",
+  "approval": "User approved preview, with softer/lower two-second Lock-on aim",
+  "lock_aim": "220-360 Hz fundamental; peak 0.064, 7.96 dB below first preview; duration unchanged",
+  "reused": "Soft/hard bounces use gain on the same four takes. Dunk uses contact-timed rim and net.",
+  "files": [
+    {
+      "cue": "ball-bounce",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ball-bounce-01.wav",
+      "sha256": "d84c000d21dcb928153088323d2d6facf17ff13253a6094f1db9abcc77575f58",
+      "sources": [
+        "dribble"
+      ],
+      "processing": "Trims in seconds: [(33.29, 33.81), (34.84, 35.37), (36.35, 36.95), (38.02, 38.65)]; mono 32 kHz; 65 Hz high-pass, 10 kHz low-pass; tail damping, fades, peak normalization",
+      "duration": 0.52
+    },
+    {
+      "cue": "ball-bounce",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ball-bounce-02.wav",
+      "sha256": "5c69bd46303c674e96229bb6edfc7934caab9f1a89b0f244a099b1a07e50ff46",
+      "sources": [
+        "dribble"
+      ],
+      "processing": "Trims in seconds: [(33.29, 33.81), (34.84, 35.37), (36.35, 36.95), (38.02, 38.65)]; mono 32 kHz; 65 Hz high-pass, 10 kHz low-pass; tail damping, fades, peak normalization",
+      "duration": 0.53
+    },
+    {
+      "cue": "ball-bounce",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ball-bounce-03.wav",
+      "sha256": "c1047fdb10625e1af84229b6b71fdfb536f7d29142fe953e83d665206b2f660a",
+      "sources": [
+        "dribble"
+      ],
+      "processing": "Trims in seconds: [(33.29, 33.81), (34.84, 35.37), (36.35, 36.95), (38.02, 38.65)]; mono 32 kHz; 65 Hz high-pass, 10 kHz low-pass; tail damping, fades, peak normalization",
+      "duration": 0.6
+    },
+    {
+      "cue": "ball-bounce",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ball-bounce-04.wav",
+      "sha256": "12fc09ee4d47461d3a346bd10dc98854f2e039b11f900fec590801de59aea269",
+      "sources": [
+        "dribble"
+      ],
+      "processing": "Trims in seconds: [(33.29, 33.81), (34.84, 35.37), (36.35, 36.95), (38.02, 38.65)]; mono 32 kHz; 65 Hz high-pass, 10 kHz low-pass; tail damping, fades, peak normalization",
+      "duration": 0.63
+    },
+    {
+      "cue": "board",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/board-01.wav",
+      "sha256": "1527dda6c59d08aa47fc31bf66cc3bb734ffbf068eb4fbfce7bf2479180bfac3",
+      "sources": [
+        "backboard"
+      ],
+      "processing": "Trim 0.012-0.530 s; mono 32 kHz, 65 Hz high-pass, fades, peak normalization",
+      "duration": 0.518
+    },
+    {
+      "cue": "rim",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/rim-01.wav",
+      "sha256": "14d5dbd6ba6de937cb6dada38340b397241dbf327900b802b2d3d47b576cbf29",
+      "sources": [
+        "rim"
+      ],
+      "processing": "Trims: [(0.13, 0.89), (1.6, 2.41), (3.12, 3.95)]; mono 32 kHz, 65 Hz high-pass, shortened tail, fades, peak normalization",
+      "duration": 0.76
+    },
+    {
+      "cue": "rim",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/rim-02.wav",
+      "sha256": "4eaf4d1b85e394386cce27f3fb570d46b81b107a88fc60f88f777bf11e87f31c",
+      "sources": [
+        "rim"
+      ],
+      "processing": "Trims: [(0.13, 0.89), (1.6, 2.41), (3.12, 3.95)]; mono 32 kHz, 65 Hz high-pass, shortened tail, fades, peak normalization",
+      "duration": 0.81
+    },
+    {
+      "cue": "rim",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/rim-03.wav",
+      "sha256": "584aa17eb19059dc5679cc8a0fdf70af93699958b9b5352d3ff2b4f39ca8c0f1",
+      "sources": [
+        "rim"
+      ],
+      "processing": "Trims: [(0.13, 0.89), (1.6, 2.41), (3.12, 3.95)]; mono 32 kHz, 65 Hz high-pass, shortened tail, fades, peak normalization",
+      "duration": 0.83
+    },
+    {
+      "cue": "net",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/net-01.wav",
+      "sha256": "5f0e570553b06c4d471e064470901db846bf6abd833e726059214c778b000022",
+      "sources": [
+        "swish"
+      ],
+      "processing": "Trim 0.100-0.440 s; mono 32 kHz, 180 Hz high-pass, fades, peak normalization",
+      "duration": 0.34
+    },
+    {
+      "cue": "net-brush",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/net-brush-01.wav",
+      "sha256": "6c4c38d66ec01c7e8a3b948d9b94ba49a6459e4df347c6eb6d777c3c9f47e088",
+      "sources": [
+        "swish"
+      ],
+      "processing": "Derived from selected swish; filtered and quieter",
+      "duration": 0.34
+    },
+    {
+      "cue": "catch",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/catch-01.wav",
+      "sha256": "ba42b1905e542c8c5831e5d022280ac089e8090c350599e60932788039eb93e9",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.21
+    },
+    {
+      "cue": "catch",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/catch-02.wav",
+      "sha256": "c61996c99dda3d47c948b95d4933c9840fd759936a780b920a58be6abad1f218",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.18
+    },
+    {
+      "cue": "hand",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/hand-01.wav",
+      "sha256": "459afa95f3c06e5dd9a895cdae2d1115a489b359b7a99a08c64149bbff9a3e3f",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.12
+    },
+    {
+      "cue": "release",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/release-01.wav",
+      "sha256": "d1ecbea9271666d12195847500f8bffab24f5bf5d45a54f9a5813124624be468",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.18
+    },
+    {
+      "cue": "block",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/block-01.wav",
+      "sha256": "ba7abcc120ac54272fe20e26bf8c4172c1f939ea9273286b5ee1ed91f7a5572d",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.16
+    },
+    {
+      "cue": "score",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/score-01.wav",
+      "sha256": "22f0115b95a2c53c511c46f871ea486d50662be66730090fc45bb5b69d7ca158",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.4
+    },
+    {
+      "cue": "roll",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/roll-01.wav",
+      "sha256": "b7973de3c7c7600070a410bfadd959a31d23b69180584deec0d3344996ad2a2f",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 1.5
+    },
+    {
+      "cue": "walk",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/walk-01.wav",
+      "sha256": "21b89f79467216f6f2cb8d57a677f544eb9837f6cb8e83b786c3034cb455e14f",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Trims: [(1.64, 2.04), (2.7, 3.14), (3.68, 4.13), (4.68, 5.09)]; mono 32 kHz, high-pass 90 Hz, low-pass 8 kHz, fades, peak normalization",
+      "duration": 0.4
+    },
+    {
+      "cue": "walk",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/walk-02.wav",
+      "sha256": "6547f43cad502ce4234607f6f69b1d0cd2af610593a9b0bffb1d04c66b4647a3",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Trims: [(1.64, 2.04), (2.7, 3.14), (3.68, 4.13), (4.68, 5.09)]; mono 32 kHz, high-pass 90 Hz, low-pass 8 kHz, fades, peak normalization",
+      "duration": 0.44
+    },
+    {
+      "cue": "walk",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/walk-03.wav",
+      "sha256": "3fb3bfd1b8579c46be22a25cbc80152e3d5ffb2dc727226d58d2acd2e7d45963",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Trims: [(1.64, 2.04), (2.7, 3.14), (3.68, 4.13), (4.68, 5.09)]; mono 32 kHz, high-pass 90 Hz, low-pass 8 kHz, fades, peak normalization",
+      "duration": 0.45
+    },
+    {
+      "cue": "walk",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/walk-04.wav",
+      "sha256": "3bcb4d38fc6fec85f49ef966d27584b64d03efb55282cf9fda1a81cbe40c1e1b",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Trims: [(1.64, 2.04), (2.7, 3.14), (3.68, 4.13), (4.68, 5.09)]; mono 32 kHz, high-pass 90 Hz, low-pass 8 kHz, fades, peak normalization",
+      "duration": 0.41
+    },
+    {
+      "cue": "run",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/run-01.wav",
+      "sha256": "52b16ea8cafa445920924b4f4749ea1f1943cf039f8b61b83d525b4f813d738b",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Selected walk takes at 1.10x playback rate plus low original palm transient",
+      "duration": 0.3637
+    },
+    {
+      "cue": "run",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/run-02.wav",
+      "sha256": "4340db4326ec83c037f1e2c2a6cffdd91a696d730c42912a376966a91b761934",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Selected walk takes at 1.10x playback rate plus low original palm transient",
+      "duration": 0.4
+    },
+    {
+      "cue": "run",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/run-03.wav",
+      "sha256": "d63ee02060489ebaf5e64a6824972281f1cffe3a69cdaeb6a6409ff9d4dead3c",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Selected walk takes at 1.10x playback rate plus low original palm transient",
+      "duration": 0.4091
+    },
+    {
+      "cue": "run",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/run-04.wav",
+      "sha256": "162e9f69bd5db6a140e4dc59b525959077ba1c79ee2e02b126cb130206079630",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Selected walk takes at 1.10x playback rate plus low original palm transient",
+      "duration": 0.3728
+    },
+    {
+      "cue": "squeak-real",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/squeak-real-01.wav",
+      "sha256": "3272f666b63810831419444ff5c12c51cfa2d4f3d01d5d7916e8b915917c9f27",
+      "sources": [
+        "squeak"
+      ],
+      "processing": "Trims: [(2.17, 2.56), (3.21, 3.6), (4.26, 4.63)]; mono 32 kHz, high-pass 400 Hz, fades, normalization",
+      "duration": 0.39
+    },
+    {
+      "cue": "squeak-real",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/squeak-real-02.wav",
+      "sha256": "f6ac3a2b20704970fe71caaae452b56647596ca18364e8aab7a5d1b677020e8c",
+      "sources": [
+        "squeak"
+      ],
+      "processing": "Trims: [(2.17, 2.56), (3.21, 3.6), (4.26, 4.63)]; mono 32 kHz, high-pass 400 Hz, fades, normalization",
+      "duration": 0.39
+    },
+    {
+      "cue": "squeak-real",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/squeak-real-03.wav",
+      "sha256": "d0696246bd7bb036ffbc9e1a5533997f3370366e51d6ed7b0ea87ebc4604c471",
+      "sources": [
+        "squeak"
+      ],
+      "processing": "Trims: [(2.17, 2.56), (3.21, 3.6), (4.26, 4.63)]; mono 32 kHz, high-pass 400 Hz, fades, normalization",
+      "duration": 0.37
+    },
+    {
+      "cue": "scuff",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/scuff-01.wav",
+      "sha256": "5aab11b829c9ef6e19fc6ce06f1a66dfaf87799768d66b300079da85d35b9199",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.28
+    },
+    {
+      "cue": "scuff",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/scuff-02.wav",
+      "sha256": "21a64c37e2ed0ed97743bca8a8df9768a1d431c3e4738e58e0931a63cd2ad8ae",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.28
+    },
+    {
+      "cue": "land",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/land-01.wav",
+      "sha256": "aaf56dfe972a3330fe640f2a90434d94872389c845aed839636db3c58dfd384b",
+      "sources": [
+        "sneakers"
+      ],
+      "processing": "Two walk contacts offset by 28 ms with original low transient; normalization",
+      "duration": 0.65
+    },
+    {
+      "cue": "cloth",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/cloth-01.wav",
+      "sha256": "b57f1d90e1bd8d6d229543152a16cdb2822855ea98e969d11fbe64bea00c87e2",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.25
+    },
+    {
+      "cue": "swipe",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/swipe-01.wav",
+      "sha256": "75a5f838a36d4438f37734c75f71030c47d323e74262a8bdd4665ba14d8d7879",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.2
+    },
+    {
+      "cue": "body",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/body-01.wav",
+      "sha256": "eb68a7ecba21244642c657fb3a9fb5f578e44c0e4af6208fe5a07c3aba903bf0",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.23
+    },
+    {
+      "cue": "countdown",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/countdown-01.wav",
+      "sha256": "bfc299cf5c1ba9ea4db89d3526914bd0c186396d35044d8d6fea25bcc75d050e",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.13
+    },
+    {
+      "cue": "spawn",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/spawn-01.wav",
+      "sha256": "882863054187f0e776dfc7c792aeccc3917acb73ff4f9e9e3068d04e1e4acd87",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.55
+    },
+    {
+      "cue": "pickup",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/pickup-01.wav",
+      "sha256": "fa2134a155a8a299ae17d3da7a590800e8d42f3c0309f1f7bcecc607c0fc7ea8",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.4
+    },
+    {
+      "cue": "lock-aim",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/lock-aim-01.wav",
+      "sha256": "8da051801ce57334b066324920abd09a0efd9e3aac83adbf67e5405842349822",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 2.0
+    },
+    {
+      "cue": "lock-fire",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/lock-fire-01.wav",
+      "sha256": "654d67ec72e3eebd315f2f519af7d5ae171f76286b65181eb2a460e61540acc7",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.25
+    },
+    {
+      "cue": "interrupt",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/interrupt-01.wav",
+      "sha256": "2fd0088152728942d67906bcb0e6ae2f99e3eb35d5d4426aadc594b2b5654163",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.32
+    },
+    {
+      "cue": "turbo-start",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/turbo-start-01.wav",
+      "sha256": "e3e91c13b9c89e048bd6755239d7acdca24b2076fc27b3b61c0eaa8dd6062974",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.48
+    },
+    {
+      "cue": "turbo-loop",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/turbo-loop-01.wav",
+      "sha256": "395dac26d735761e04f9b42ee31c5b04e11fff1029f2d4225314bd48ab503920",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 2.0
+    },
+    {
+      "cue": "turbo-end",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/turbo-end-01.wav",
+      "sha256": "33a59ab42be6292970221a3a05170efa621b6c164e5b4d66faf23beb94f1aff4",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.3
+    },
+    {
+      "cue": "portal-open",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-open-01.wav",
+      "sha256": "e838164e5f2e89805a7a22ba6ae368349056145a7182e5d8f253696f95e98ff9",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.42
+    },
+    {
+      "cue": "portal-in",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-in-01.wav",
+      "sha256": "334031caf09b1d696b0747309f67ff8ca911d32eb5aef4715e3306846af16c51",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.25
+    },
+    {
+      "cue": "portal-out",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-out-01.wav",
+      "sha256": "0a6f3265c2ef9323a14125633cea498fa53604cbb0e29a5acfa5e806ed321753",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.28
+    },
+    {
+      "cue": "portal-close",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/portal-close-01.wav",
+      "sha256": "6c993c30775bb3c5eeb20790f562ed60678d3e0535581b2de9528939f032559a",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.22
+    },
+    {
+      "cue": "boundary",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/boundary-01.wav",
+      "sha256": "ddfea09fcb9aa2af701aad272bde03a6234ef98e419440497e90e19509740dfc",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.3
+    },
+    {
+      "cue": "inbound",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/inbound-01.wav",
+      "sha256": "a1356addc70a394ea7008236efa0e568f7f232865aaecd3bb9ad8883365774a2",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 0.34
+    },
+    {
+      "cue": "air",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/air-01.wav",
+      "sha256": "8135ebbc92269a50f6d58b739a29af6a8361f2f6865eea082fffe2316a77f60d",
+      "sources": [],
+      "processing": "Original deterministic procedural synthesis; no AI service",
+      "duration": 12.0
+    },
+    {
+      "cue": "ui-click",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-click-01.wav",
+      "sha256": "ca80934658fa01380c9a3cc8f171af1b2b8a807fde63d4f8b76e5809f74d9891",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/click_003.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.0071
+    },
+    {
+      "cue": "ui-confirm",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-confirm-01.wav",
+      "sha256": "f9beddd5a96ebba4548fa3749e3ad1c10dae1c37d7a310be7182f684d0625182",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/confirmation_001.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.2898
+    },
+    {
+      "cue": "ui-back",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-back-01.wav",
+      "sha256": "6bc92ce1cfbe0387a8435b55756792b9c2fb79dd90475f420d157479780b03cd",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/back_001.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.061
+    },
+    {
+      "cue": "ui-toggle",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-toggle-01.wav",
+      "sha256": "576087496fc141ec75337574e2d8f1383781d0952169a3ab36cf5dbc84e9bd9b",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/switch_002.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.6081
+    },
+    {
+      "cue": "ui-select",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-select-01.wav",
+      "sha256": "7df5961ab58dd6b005ccfb1e38352f744b2e76625067ad5619132ae9b3d690fa",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/select_001.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.0404
+    },
+    {
+      "cue": "ui-error",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-error-01.wav",
+      "sha256": "af96108fa61cdf54097f3fa4209d60a9c1e3491d9ed740c1f5daf233b5617d80",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/error_002.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.1655
+    },
+    {
+      "cue": "ui-open",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-open-01.wav",
+      "sha256": "17399b94c947460c73ccb8f31ada49814cf42cd2d6cea359c6a67c15771a4f10",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/open_001.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.1478
+    },
+    {
+      "cue": "ui-close",
+      "file": "Game/Assets/_Game/Resources/BasketballAudio/ui-close-01.wav",
+      "sha256": "434ca94329aceb2f6e98ae9ed0a79aa82327352ca8364251018c3864aba75528",
+      "sources": [
+        "interface-sounds"
+      ],
+      "processing": "Raw/kenney-interface-sounds/Audio/close_001.ogg; mono 32 kHz, fades and preview gain",
+      "duration": 0.1478
+    }
+  ]
+}

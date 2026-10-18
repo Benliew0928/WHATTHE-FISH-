@@ -35,6 +35,12 @@ namespace WhatTheFish {
    for(int i=0;i<roster.Length;i++)Check(match.ChooseTeam(roster[i],i<3?FootballTeam.A:FootballTeam.B,match.Snapshot.revision),"team slot "+i);
    if(!app.rooms.Connected)Check(match.ConfirmSoloTeam(),"solo confirmation");yield return Until(()=>match.Running,"regulation begins",20);
    ball.autoPickup=false;
+   yield return BlockedInbounds();
+   if(failed){Finish();yield break;}
+   // Keep the scoring rotation checks independent of the boundary fixtures.
+   match.Clear();Check(app.rooms.Connected?match.StartMatch():match.ReviewStart(roster,600,.1),"scoring fixture restarts");
+   for(int i=0;i<roster.Length;i++)Check(match.ChooseTeam(roster[i],i<3?FootballTeam.A:FootballTeam.B,match.Snapshot.revision),"scoring team slot "+i);
+   if(!app.rooms.Connected)Check(match.ConfirmSoloTeam(),"scoring solo confirmation");yield return Until(()=>match.Running,"scoring regulation begins",20);
    var next=new Dictionary<FootballTeam,int>();
    for(int trial=0;trial<6;trial++){
     var scoring=trial<3?FootballTeam.A:FootballTeam.B;var receiving=BasketballMatchState.Other(scoring);float attack=scoring==FootballTeam.A?1:-1;
@@ -87,10 +93,60 @@ namespace WhatTheFish {
    // Departure while returning must release every control lock.
    ball.ResetHome();match.Control(roster[0]);match.Basket(match.Hoop(FootballTeam.A),2);match.AfterBallStep();Check(match.Snapshot.automaticPlayers.Length>0,"cancellation fixture has a running collector");
    match.Cancel();Check(roster.All(a=>!match.AutomaticMovement(a))&&match.Snapshot.automaticPlayers.Length==0,"cancellation clears all automatic control");
+   Check(PlayerCollisionsRestored(),"cancellation leaves player collisions restored");
    File.WriteAllText(Path.Combine(Directory.GetParent(folder).FullName,"host-done"),"done");yield return new WaitForSeconds(2);Finish();
   }
+  bool PlayerCollisionsRestored()=>roster.All(a=>roster.All(b=>a==b||!Physics.GetIgnoreCollision(a.capsule,b.capsule)));
+  IEnumerator BlockedInbounds(){
+   var limits=BasketballBall.PaintedCourtLimits;
+   var exits=new[]{new Vector3(limits.x,.07f,2),new Vector3(-limits.x,.07f,-2),new Vector3(3,.07f,limits.y),new Vector3(-limits.x,.07f,-limits.y+.6f)};
+   for(int trial=0;trial<exits.Length;trial++){
+    sampling=false;ball.ResetHome();DevelopmentProbe.TurnCommand=default;
+    for(int i=0;i<roster.Length;i++)Place(roster[i],new Vector3(-3+i%3*3,.07f,i<3?-4:4));
+    match.Control(roster[0]);Check(match.Boundary(exits[trial]),"blocked boundary accepted "+trial);match.AfterBallStep();
+    var inbound=roster.Single(a=>BasketballMatch.PlayerId(a)==match.Snapshot.inbounder);
+    Check(ball.TryInboundSpot(inbound,exits[trial],out var spot,out var inward),"blocked boundary has legal spot "+trial);
+    var approach=ball.transform.parent.InverseTransformPoint(spot);approach.x=Mathf.Clamp(approach.x,-limits.x+1.2f,limits.x-1.2f);approach.z=Mathf.Clamp(approach.z,-limits.y+1.2f,limits.y-1.2f);
+    var localInward=ball.transform.parent.InverseTransformDirection(inward);var side=Vector3.Cross(Vector3.up,localInward);
+    Place(inbound,approach+localInward*3);
+    // Occupy the required waypoint: going around cannot reach its arrival
+    // radius. Exercise both teams, a crowded baseline and a boundary corner.
+    var blocker=roster.First(a=>a!=inbound&&(trial==0?match.TeamOf(a)==match.TeamOf(inbound):match.TeamOf(a)!=match.TeamOf(inbound)));
+    Place(blocker,approach);
+    if(trial>=2){var crowd=roster.Where(a=>a!=inbound&&a!=blocker).Take(2).ToArray();Place(crowd[0],approach+side*.8f);Place(crowd[1],approach-side*.8f);}
+    double clock=match.Remaining;var possession=match.State.Possession;var blockerStart=blocker.transform.position;
+    var preserved=roster.First(a=>a!=inbound&&a!=blocker&&Vector3.Distance(a.transform.position,blockerStart)>2);
+    Physics.IgnoreCollision(inbound.capsule,preserved.capsule,true);
+    largestStep=0;previous.Clear();sampling=true;
+    yield return Until(()=>Physics.GetIgnoreCollision(inbound.capsule,blocker.capsule),"stalled collector gets body-only clearance "+trial,8);
+    Check(!ball.Held&&match.RetrievingInbound(inbound),"clearance still requires physical collection "+trial);
+    var floor=ball.transform.parent.GetComponentsInChildren<Collider>().FirstOrDefault(c=>c.gameObject.layer==8&&!c.isTrigger);
+    Check(floor&&!Physics.GetIgnoreCollision(inbound.capsule,floor)&&inbound.capsule.enabled,"collector retains scenery collisions "+trial);
+    if(app.rooms.Connected&&trial==2){
+     match.RestoreRoom();Check(!Physics.GetIgnoreCollision(inbound.capsule,blocker.capsule),"room restore cleans previous clearance");
+     Check(match.Snapshot.inbounder==BasketballMatch.PlayerId(inbound)&&match.RetrievingInbound(inbound),"room restore retains blocked collector duty");
+    }
+    if(trial==3){
+     match.Cancel();Check(!Physics.GetIgnoreCollision(inbound.capsule,blocker.capsule)&&roster.All(a=>!match.AutomaticMovement(a)),"cancel during clearance restores collisions and controls");
+    }else{
+     yield return Until(()=>match.RestartReady,"blocked collector reaches ball "+trial,8);
+     Check(ball.IsInbound(inbound)&&!match.AutomaticMovement(inbound),"blocked collector becomes inbound passer "+trial);
+     Check(match.State.Possession==possession&&Math.Abs(match.Remaining-clock)<.01,"blocked retrieval preserves possession and clock "+trial);
+     Check(!Physics.GetIgnoreCollision(inbound.capsule,blocker.capsule),"pickup restores opponent and teammate collisions "+trial);
+     Check(Vector3.ProjectOnPlane(blocker.transform.position-blockerStart,Vector3.up).magnitude<.1f&&!match.AutomaticMovement(blocker),"blocker retains position and control "+trial);
+     if(trial==0)yield return Capture("blocked-inbound-recovered");
+     // The full scoring suite below covers the physical pass itself.
+     Check(match.OpenInbound(inbound),"recovered inbound can resume play "+trial);
+    }
+    Check(Physics.GetIgnoreCollision(inbound.capsule,preserved.capsule),"pre-existing collision exception preserved "+trial);
+    Physics.IgnoreCollision(inbound.capsule,preserved.capsule,false);
+    Check(PlayerCollisionsRestored(),"no retrieval collision exceptions leak "+trial);
+    Check(largestStep<2.1f,"blocked retrieval uses continuous motor movement "+trial+" maxStep="+largestStep.ToString("F3"));sampling=false;
+    if(failed)yield break;
+   }
+  }
   IEnumerator Guest(){
-   bool returnSeen=false,inboundSeen=false,unlocked=false;var own=app.LocalAthlete;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");float end=Time.realtimeSinceStartup+130;
+   bool returnSeen=false,inboundSeen=false,unlocked=false;var own=app.LocalAthlete;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");float end=Time.realtimeSinceStartup+160;
    while(!File.Exists(done)&&Time.realtimeSinceStartup<end){
     if(match.AutomaticMovement(own)){
      DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.one,sprint=true,jump=true,block=true};

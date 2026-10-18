@@ -13,7 +13,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed partial class RoomService:MonoBehaviour,IRoomService {
-  public const ushort ProtocolVersion=67;
+  public const ushort ProtocolVersion=68;
   public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&(Recovering||NetworkManager.Singleton&&NetworkManager.Singleton.IsListening);
   public bool Host=>Connected&&!Recovering&&NetworkManager.Singleton.IsHost;
@@ -89,7 +89,7 @@ namespace WhatTheFish {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
     Debug.Log("ROOM_DISCONNECT client="+id+" local="+n.LocalClientId+" server="+n.IsServer+" event="+n.DisconnectEvent+" reason="+n.DisconnectReason);
 #endif
-    if(!leaving&&(!n.IsServer||id==n.LocalClientId)){if(checkpoint!=null){BeginRecovery();}else if(!Recovering){string reason=n.DisconnectReason;if(string.IsNullOrEmpty(reason)||reason.StartsWith("[Disconnect"))reason="Could not connect to this room. Please try again.";_=ExitWithMessage(reason);}}
+    if(!leaving&&(!n.IsServer||id==n.LocalClientId)){if(checkpoint!=null){BeginRecovery();}else if(!Recovering){string reason=n.DisconnectReason;if(string.IsNullOrEmpty(reason)||reason.StartsWith("[Disconnect")||reason.StartsWith("Client-")&&reason.Contains("disconnected by server"))reason="Could not connect. Check the room code and connection, and use the same game build as your host (network "+ProtocolVersion+").";_=ExitWithMessage(reason);}}
    };
   }
   public void StartLocal(bool host,ushort port=7777){

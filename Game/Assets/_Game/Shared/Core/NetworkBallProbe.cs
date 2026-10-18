@@ -7,12 +7,14 @@ namespace WhatTheFish {
  public sealed partial class DevelopmentProbe {
   IEnumerator NetworkBallAudit(){
    TurnCommandActive=true;TurnCommand=default;
-   while(!AppRoot.Instance||!AppRoot.Instance.Exploring||!FootballBall.Instance)yield return null;
+   // Exploration is replicated before the shared island arrival finishes.
+   // Start the kick timeline only once production input is actually available.
+   while(!ReadyToReviewSport||!FootballBall.Instance)yield return null;
    var app=AppRoot.Instance;var ball=FootballBall.Instance;int originalTrail=FootballTrailStyle.Selected,expectedTrail=app.rooms.Host?0:2;FootballTrailStyle.Select(expectedTrail);var personalTrail=ball.GetComponent<FootballTrail>();bool sawPersonalTrail=false,localTrailStable=true;float start=elapsed;bool arranged=false,hostKick=false,clientKick=false,clientCharging=false,hostCharging=false,hostReleased=false;bool serverChargeSeen=false,clientControlSeen=false;float chargeMovePeak=0;float clientChargeStart=0,clientPeak=0;Vector3 centre=ball.Body.position;float clientTravel=0,hostTravel=0;
    var animatedKicks=new System.Collections.Generic.HashSet<ulong>();var animatedCharges=new System.Collections.Generic.HashSet<ulong>();
    yield return null;
    while(elapsed<start+13){
-    sawPersonalTrail|=personalTrail.Ribbon.emitting&&personalTrail.Ribbon.positionCount>2;localTrailStable&=personalTrail.Style==expectedTrail||personalTrail.Style<0;
+    sawPersonalTrail|=personalTrail.Wake.Emitting&&personalTrail.Ribbon.positionCount>2;localTrailStable&=personalTrail.Style==expectedTrail||personalTrail.Style<0;
     var players=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None);var snapshot=NetworkAthlete.HostPlayer.Ball.Value;
     foreach(var p in players){var m=p.GetComponent<Athlete>().FootballMotion;if(m&&m.State.charging)animatedCharges.Add(p.OwnerClientId);if(m&&m.State.gesture==FootballGesture.Kick)animatedKicks.Add(p.OwnerClientId);}
     if(app.rooms.Host&&!arranged&&elapsed>start+1){

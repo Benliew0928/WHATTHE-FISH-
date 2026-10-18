@@ -1,0 +1,13 @@
+Historical review prompt, approved 17 October 2026 and now used as the runtime master. Built-in image_gen edit.
+
+Use case: precise-object-edit.
+Produce a corrected review image of this existing 3D cartoon game menu.
+IMAGE 1: edit target. It has the improved cable car, station, rail and park, which MUST BE PRESERVED. Its character has become too dark, too orange and too saturated; the user explicitly rejected that change.
+IMAGE 2: ORIGINAL CHARACTER COMPLEXION AND IDENTITY REFERENCE ONLY. Restore the original character's lighter, delicate peach complexion, friendly face and lightness. Do not use image 2 to revert the environment.
+
+EDIT ONLY THE CHARACTER'S SKIN MATERIAL AND ITS SHADING in image 1:
+Restore light, bright, softly warm peach skin on face, ears, neck, arms, hands and legs, matching the lightness of the original face in image 2. Use a pale peach base rather than orange/tan; gently lit surfaces can be creamy peach approximately #FFD3AE, with restrained peach shadows. The face should be visibly lighter and less orange than image 1. Keep saturation modest, no tan, no brown/orange wash, no increase in red cheeks.
+Remove uneven blotchy patches through smooth deliberate lighting and material rendering, NOT by darkening the whole face. The forehead, eye-surround skin, cheeks and chin should share a coherent light peach base with gentle continuous form shading. Preserve small soft contact shadows under the fringe and chin, broad subtle upper-left highlights and softly reflected sky light, with no hard pale mask or abrupt tonal bands across the eyes. Blush only barely visible, natural for a cute stylized character. Keep a matte-satin skin surface, not glossy plastic. Preserve rich rounded 3D volume and the original expression. Do not flatten into a vector illustration.
+Preserve exact face/head geometry, eye shape and turquoise irises, white eyeballs and catchlights, mouth, smile, eyebrows, hair and its teal/coral/yellow colors, pose, proportions, clothes, shoes, placement and size.
+Everything outside exposed skin remains as close to image 1 as possible: the improved clean teal and ivory cable car, its glass and highlights, station structure, overhead rail, park foliage, boardwalk, sea, islands, sky, sign, logo and all UI. Preserve all text verbatim and unchanged in position: "Ready to play", "Sign in with HUAWEI", "Continue as guest", "English", "Settings", "Info". Same landscape composition and framing. One image only, no comparison collage, no additional captions.
+This is a restoration of the approved original light complexion plus cleaner shading, not a character redesign or skin-tone darkening.

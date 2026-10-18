@@ -2,13 +2,13 @@
   "modules": [
     {
       "name": "CabinShell",
-      "triangles": 13548,
-      "meshes": 20
+      "triangles": 21336,
+      "meshes": 23
     },
     {
       "name": "CabinInterior",
-      "triangles": 5384,
-      "meshes": 8
+      "triangles": 5800,
+      "meshes": 10
     },
     {
       "name": "SlidingDoor",
@@ -17,13 +17,18 @@
     },
     {
       "name": "CabinHanger",
-      "triangles": 1316,
-      "meshes": 7
+      "triangles": 556,
+      "meshes": 3
+    },
+    {
+      "name": "CabinTrolley",
+      "triangles": 1080,
+      "meshes": 5
     },
     {
       "name": "CableTower",
-      "triangles": 8156,
-      "meshes": 15
+      "triangles": 8684,
+      "meshes": 19
     },
     {
       "name": "SailStation",

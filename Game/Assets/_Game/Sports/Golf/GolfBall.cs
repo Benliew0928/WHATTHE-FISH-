@@ -79,7 +79,7 @@ namespace WhatTheFish {
    var rotation=Quaternion.AngleAxis(delta.magnitude/Radius*Mathf.Rad2Deg,Vector3.Cross(Vector3.up,delta).normalized)*Body.rotation;
    if(shotTime<shot.Duration){Body.MovePosition(next);Body.MoveRotation(rotation);return;}
    bool rest=shot.Resting;var normal=shot.Normal;bool contact=shot.HasTarget;
-   if(contact&&shot.Mode==GolfShotMode.Swing)FeedbackLanding(next-normal*Radius,normal,Mathf.Abs(Vector3.Dot(shot.Velocities[Mathf.Max(0,shot.Count-2)],normal)));
+   if(contact&&!rest)FeedbackLanding(next-normal*Radius,normal,Mathf.Abs(Vector3.Dot(shot.Velocities[Mathf.Max(0,shot.Count-2)],normal)),shot.ContactCollider);
    // Resolve the contact at the exact swept point, then let the normal turf
    // rolling code handle a swing's run-out. The target is touchdown, not run-out.
    ResetMotion();Body.position=next;Body.rotation=rotation;Body.linearVelocity=velocity;Body.angularVelocity=Vector3.Cross(normal,velocity)/Radius;
@@ -91,6 +91,7 @@ namespace WhatTheFish {
   public void ApplyGameplayImpulse(Vector3 impulse){if(!bound||!match.Authority||!Live||!float.IsFinite(impulse.sqrMagnitude))return;ResetMotion();Body.WakeUp();Body.AddForce(impulse,ForceMode.Impulse);}
   void OnCollisionEnter(Collision collision){
    RecordDryContact(collision);
+   AudioCollision(collision);
    if(bound&&match.Authority&&Live&&!collision.rigidbody&&((1<<collision.gameObject.layer)&((1<<8)|(1<<GolfTee.Layer)))!=0){for(int i=0;i<collision.contactCount;i++){var c=collision.GetContact(i);if(c.normal.y>.35f){FeedbackLanding(c.point,c.normal,Mathf.Max(0,-Vector3.Dot(preStepVelocity,c.normal)));break;}}}
    if(bound&&match.Authority&&Live&&shot==null&&Motion==GolfBallMotion.Flying&&!collision.rigidbody){
     for(int i=0;i<collision.contactCount;i++){
@@ -107,11 +108,28 @@ namespace WhatTheFish {
    }
    NewContactForce(collision,true);
   }
-  void FeedbackLanding(Vector3 point,Vector3 normal,float speed){
-   var feedback=GolfFeedback.Instance;if(!feedback||!bound||!match.Authority||!Live||StrikeSequence==0||normal.y<=.35f||speed<feedback.Settings.minimumLandingSpeed||Time.time-feedbackLandingAt<feedback.Settings.landingCooldown)return;
+  void AudioCollision(Collision collision){
+   if(!bound||!match.Authority||!Live||collision.contactCount==0)return;
+   var other=collision.rigidbody?collision.rigidbody.GetComponent<GolfBall>():null;
+   if(other&&Owner>other.Owner)return; // One resolved ball pair, not two sounds.
+   var c=collision.GetContact(0);string name=collision.collider.name.ToLowerInvariant();
+   bool wood=name.Contains("wood")||name.Contains("timber")||name.Contains("trunk")||name.Contains("tree")||name.Contains("palm")||name.Contains("bridge")||name.Contains("plank");
+   bool stone=name.Contains("stone")||name.Contains("rock")||name.Contains("path")||name.Contains("paving")||name.Contains("wall")||c.normal.y<=.35f;
+   if(!other&&!wood&&!stone)return;
+   float speed=collision.relativeVelocity.magnitude;if(speed<.45f||Time.time-feedbackLandingAt<.12f)return;feedbackLandingAt=Time.time;
+   GolfFeedback.Emit(other?GolfFeedbackCue.Ball:wood?GolfFeedbackCue.Wood:GolfFeedbackCue.Stone,c.point,c.normal,Mathf.InverseLerp(.45f,10,speed),Owner,Owner);
+  }
+  void FeedbackLanding(Vector3 point,Vector3 normal,float speed,Collider support=null){
+   string surface=support?support.name.ToLowerInvariant():"";
+   bool wood=surface.Contains("wood")||surface.Contains("timber")||surface.Contains("trunk")||surface.Contains("tree")||surface.Contains("palm")||surface.Contains("bridge")||surface.Contains("plank");
+   bool hard=surface.Contains("stone")||surface.Contains("rock")||surface.Contains("path")||surface.Contains("paving")||surface.Contains("wall")||support&&normal.y<=.35f;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(System.Array.IndexOf(System.Environment.GetCommandLineArgs(),"-golfShotAudit")>=0)Debug.Log($"GOLF_AUDIO_CONTACT surface={surface} normal={normal} speed={speed:F3} cooldown={Time.time-feedbackLandingAt:F3} wood={wood} hard={hard}");
+#endif
+   var feedback=GolfFeedback.Instance;if(!feedback||!bound||!match.Authority||!Live||StrikeSequence==0||normal.y<=.35f&&!wood&&!hard||speed<feedback.Settings.minimumLandingSpeed||Time.time-feedbackLandingAt<feedback.Settings.landingCooldown)return;
    feedbackLandingAt=Time.time;
    bool sand=match.Course.RollingResistance(point,PhysicsSettings)>Mathf.Lerp(PhysicsSettings.fairwayResistance,PhysicsSettings.sandResistance,.5f);
-   GolfFeedback.Emit(sand?GolfFeedbackCue.Sand:GolfFeedbackCue.Turf,point,normal,Mathf.InverseLerp(feedback.Settings.minimumLandingSpeed,10,speed),Owner,Owner);
+   GolfFeedback.Emit(wood?GolfFeedbackCue.Wood:hard?GolfFeedbackCue.Stone:sand?GolfFeedbackCue.Sand:GolfFeedbackCue.Turf,point,normal,Mathf.InverseLerp(feedback.Settings.minimumLandingSpeed,10,speed),Owner,Owner);
   }
   void OnCollisionStay(Collision collision){RecordDryContact(collision);NewContactForce(collision,false);}
   void RecordDryContact(Collision collision){
@@ -133,6 +151,7 @@ namespace WhatTheFish {
   }
   bool CheckWater(Vector3 from,Vector3 to){
    if(!match.Course.TouchesWater(from,to,Radius))return false;
+   GolfFeedback.Emit(GolfFeedbackCue.Water,to,Vector3.up,.7f,Owner,Owner);
    var anchor=hasDryPosition?LastDryPosition:LastShotPosition;
    Place(anchor,false);
    // A water reset finishes at a supported dry point. Discard the old flight
@@ -141,7 +160,7 @@ namespace WhatTheFish {
    Motion=GolfBallMotion.Resting;IsGrounded=true;StopTimer=PhysicsSettings.stopDelay;Body.useGravity=false;Body.Sleep();
    WaterRecoverySequence++;return true;
   }
-  public void Recover(){if(match&&match.Authority&&Live)Place(LastShotPosition,false);}
+  public void Recover(){if(match&&match.Authority&&Live){GolfFeedback.Emit(GolfFeedbackCue.Recovery,Body.position,Vector3.up,.6f,Owner,Owner);Place(LastShotPosition,false);}}
   void FixedUpdate(){
    if(!bound||!match.Authority||!Live||!match.Context||!match.State.Running)return;
    // Reapply for late arrivals and controllers re-enabled after a cart ride.

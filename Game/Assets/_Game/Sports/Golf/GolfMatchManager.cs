@@ -21,7 +21,7 @@ namespace WhatTheFish {
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
   public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.FixedTime:Time.fixedTimeAsDouble;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Golf&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Golf);
-  public bool CanStart=>Authority&&Context&&!State.Running&&Course.holes!=null&&Course.holes.Length==GolfPlayerState.HoleCount&&Eligible().Any();
+  public bool CanStart=>Authority&&Context&&!RoomMatchStart.Travelling&&!State.Running&&Course.holes!=null&&Course.holes.Length==GolfPlayerState.HoleCount&&Eligible().Any();
   public double Remaining=>State.Remaining(Now);
   public bool Starting=>Context&&State.Running&&Now<State.StartedAt;
   public double StartRemaining=>Starting?Math.Max(0,State.StartedAt-Now):0;
@@ -63,12 +63,13 @@ namespace WhatTheFish {
   bool Begin((ulong id,Athlete actor,string name)[] roster,double countdown=5.0){
    if(!Authority||!Context||State.Running||Course.holes.Length!=5||Course.holes.Select(h=>h.number).OrderBy(n=>n).SequenceEqual(new[]{1,2,3,4,5})==false||Course.holes.Any(h=>!h.cup||!h.tee))return false;
    var template=AppRoot.Instance.stadium.transform.Find("Golf Equipment/Ball");if(!template)return false;ballTemplate=template.gameObject;
+   if(!RoomMatchStart.Prepare(SportId.Golf,out var arrivals))return false;
    GolfCartWorld.ParkDrivers(false);
    if(!State.Start(roster.Select(p=>new GolfEntrant(p.id,p.name)),Now,countdown))return false;
    ClearViews();Round=++nextRound;
    var tee=Course.holes.First(h=>h.number==1).tee;
    foreach(var p in roster){actors[p.id]=p.actor;p.actor.Setup();p.actor.GolfClubMotion.Equip(Round);var ball=CreateBall(p.id);ball.SetLive(true);ball.Place(TeePosition(1,p.id),true);TeleportToTee(p.actor,p.id,tee);}
-   ClearInputs();wasContext=true;Publish();return true;
+   arrivals.Apply();ClearInputs();wasContext=true;Publish();return true;
   }
   void TeleportToTee(Athlete actor,ulong id,Transform tee){
    if(!actor||!tee)return;

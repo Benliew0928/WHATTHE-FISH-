@@ -60,7 +60,8 @@ namespace WhatTheFish {
    var coastal=coast?library.coastal.Where(p=>p.sport==sport).ToArray():null;
    var patches=library.patches;cancellation=new CancellationTokenSource();var token=cancellation.Token;
    var clock=System.Diagnostics.Stopwatch.StartNew();
-   var task=Task.Run(()=>coastal!=null?GenerateCoast(coastal,token):Generate(placements,patches,golf,greens,sand,token),token);
+   var sportId=(SportId)Enum.Parse(typeof(SportId),sport);
+   var task=Task.Run(()=>coastal!=null?GenerateCoast(coastal,sportId,token):Generate(placements,patches,golf,greens,sand,token),token);
    while(!task.IsCompleted)yield return null;
    if(task.IsCanceled){Error="Grass preparation cancelled";yield break;}
    if(task.IsFaulted){Error=task.Exception.GetBaseException().Message;yield break;}
@@ -86,9 +87,10 @@ namespace WhatTheFish {
    Debug.Log($"MOBILE_GRASS_READY {sport} cells={count} meshes={owned.Count} preparationMs={clock.ElapsedMilliseconds}");
   }
   void OnDestroy(){cancellation?.Cancel();cancellation?.Dispose();foreach(var mesh in owned)if(mesh)Destroy(mesh);}
-  static List<Cell> GenerateCoast(MobileGrassLibrary.CoastalPatch[] patches,CancellationToken token){
+  static List<Cell> GenerateCoast(MobileGrassLibrary.CoastalPatch[] patches,SportId sport,CancellationToken token){
    var cells=new Dictionary<string,Cell>();var points=new Vector3[5];int blade=0;
    foreach(var patch in patches){
+    if(SkySailMap.OnStationDeck(sport,patch.position))continue;
     token.ThrowIfCancellationRequested();if(!cells.TryGetValue(patch.cell,out var cell)){cell=new Cell{name=patch.cell};cells.Add(patch.cell,cell);}
     for(int k=0;k<7;k++){
      float angle=k*2.4f,h=patch.heights[k];var d=new Vector3((float)Math.Cos(angle),0,(float)Math.Sin(angle));var side=new Vector3(-d.z,0,d.x);var p=patch.position;
@@ -110,6 +112,7 @@ namespace WhatTheFish {
      points[0]=blade.a;points[1]=blade.b;points[2]=blade.c;points[3]=blade.d;points[4]=blade.e;bool allowed=true;
      for(int i=0;i<points.Length;i++){
       var p=points[i];float x=placement.position.x+placement.scale*(p.x*cos-p.z*sin),z=placement.position.z+placement.scale*(p.x*sin+p.z*cos);
+      if(SkySailMap.OnStationDeck(golf?SportId.Golf:SportId.Fishing,new Vector3(x,0,z)))allowed=false;
       if(golf)foreach(var bunker in Bunkers)if(BunkerDistance(x,z,bunker)<=1.02){allowed=false;break;}
       float ground=(float)Height(x,z,golf);
       foreach(var green in greens){if(green.ClearsGrass(x,z))allowed=false;ground=green.Height(x,z,ground);}

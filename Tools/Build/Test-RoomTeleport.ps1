@@ -9,6 +9,9 @@ try {
   $folder=Join-Path $run $role
   New-Item -ItemType Directory -Force -Path $folder | Out-Null
   $arguments=@('-batchmode','-force-d3d11','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2',('-local'+$(if($role -eq 'Host'){'Host'}else{'Client'})),'-port',"$Port",'-roomTeleportReview',('"'+$folder+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'))
+  # Parallel reviews of different player versions must not prune each other's
+  # packaged-content cache while scenes are still streaming from those files.
+  $arguments+=@('-contentCache',('"'+(Join-Path $run 'ContentCache')+'"'))
   $processes+=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru
   if($role -eq 'Host'){Start-Sleep -Seconds 2}
  }
@@ -18,7 +21,7 @@ try {
   $folder=Join-Path $run $role
   $result=Get-Content -LiteralPath (Join-Path $folder 'results.txt') -Raw
   if($result -match '(?m)^FAIL ' -or !$result.Contains('ROOM_TELEPORT_REVIEW_COMPLETE success=True')){throw "Room teleport review failed: $folder"}
-  if(Select-String -LiteralPath (Join-Path $folder 'player.log') -Pattern 'Exception:|Assertion failed|Shader error|called on inactive controller' -Quiet){throw "Runtime error: $folder"}
+  if(Select-String -LiteralPath (Join-Path $folder 'player.log') -Pattern 'GameObjects can not be made active|being destroyed|Exception:|Assertion failed|Shader error|called on inactive controller' -Quiet){throw "Runtime error: $folder"}
   Write-Output "ROOM_TELEPORT_PASS $role assertions=$(([regex]::Matches($result,'(?m)^PASS ')).Count) $folder"
  }
  if($processes | Where-Object {$_.HasExited -and $_.ExitCode -ne 0}){throw 'A review player exited with an error.'}

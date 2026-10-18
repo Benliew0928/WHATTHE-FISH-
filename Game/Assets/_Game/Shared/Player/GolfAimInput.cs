@@ -14,7 +14,7 @@ namespace WhatTheFish {
   public bool CanAimGolf=>active&&target&&GolfMatchManager.Instance&&GolfMatchManager.Instance.AimCandidate(target);
   public void ToggleGolfAim(){if(aimWanted)CancelGolfAim();else BeginGolfAim();}
   public bool BeginGolfAim(){
-   if(aimWanted)return GolfAiming;var match=GolfMatchManager.Instance;var ball=active&&match?match.AimCandidate(target):null;if(!ball)return false;
+   if(aimWanted)return GolfAiming;var match=GolfMatchManager.Instance;var ball=active&&match?match.AimCandidate(target):null;if(!ball){GolfFishingAudio.PlayMenu("ui-error");return false;}
    aimWanted=true;aimAccepted=false;golfReleased=false;aimOwner=ball.Owner;aimRound=match.Round;aimRequestedAt=Time.unscaledTime;
    ReturnFromGolfShot();
    pendingJump=false;pendingCart=GolfCartAction.None;
@@ -33,7 +33,7 @@ namespace WhatTheFish {
    if(!aimWanted){if(golfPreview)golfPreview.Hide();return;}
    var match=GolfMatchManager.Instance;
    if(!active||!target||!match||!match.Context||!match.State.Running||match.Round!=aimRound||target.inTransit||GolfCartWorld.Driving(target)){CancelGolfAim();return;}
-   if(GolfAiming)aimAccepted=true;else if(aimAccepted||Time.unscaledTime-aimRequestedAt>1.5f)CancelGolfAim();
+   if(GolfAiming){if(!aimAccepted)GolfFishingAudio.PlayMenu("ui-select");aimAccepted=true;}else if(aimAccepted||Time.unscaledTime-aimRequestedAt>1.5f)CancelGolfAim();
   }
   void UpdateGolfPreview(){
    var match=GolfMatchManager.Instance;var ball=GolfAiming&&match?match.Ball(aimOwner):null;

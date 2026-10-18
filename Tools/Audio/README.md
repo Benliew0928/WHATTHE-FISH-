@@ -1,5 +1,51 @@
 # Sports audio preview tools
 
+## Golf and Fishing approved bank and preview
+
+See the [analysis](../../Docs/GOLF-FISHING-AUDIO-PLAN.md) and
+[listening guide](../../Docs/GOLF-FISHING-AUDIO-PREVIEW.md). All candidates were
+approved on 18 October 2026. See the [integration record](../../Docs/GOLF-FISHING-AUDIO.md).
+Your current Golf GO and walkway recordings remain unchanged.
+
+Restore exact approved WAVs offline with `python Tools/Audio/publish_golf_fishing_audio.py`.
+This publishes 81 new files and references 34 shared clips in place, retaining
+Unity metadata. Masters, source evidence and approval hashes live under
+`ArtSource/Audio/GolfFishing/`. `--capture-preview` is a one-time approval capture
+and refuses to replace an existing approval. The preview commands below rebuild
+an audition independently; they do not silently replace the approved masters.
+
+```powershell
+python Tools/Audio/download_golf_fishing_candidates.py
+python Tools/Audio/build_golf_fishing_preview.py
+python Tools/Audio/check_golf_fishing_preview.py
+python -m http.server 8768 --bind 127.0.0.1 --directory Builds/GolfFishingAudioPreview
+```
+
+Open `http://127.0.0.1:8768/`. The soundboard has two scene montages, seven
+category reels, search, variants, Keep/Change and JSON feedback export.
+115 clips cover 81 families: 30 unchanged sports-bank clips, four unchanged
+Golf recordings and 81 newly edited/generated candidates. Loops have separate
+sample-contiguous three-cycle auditions. New effects use local deterministic
+synthesis, not an AI service. Nothing writes into Unity or publishes a build.
+
+The downloader verifies 11 individual Freesound CC0 pages and retrieves public
+HQ MP3 copies, retaining source HTML and SHA-256 evidence. Verified inputs are
+cached; `--refresh` explicitly downloads again. These are audition copies, not
+lossless original masters. No login, purchase or API key is needed.
+
+Requirements: Python 3.10+, NumPy, requests and imageio-ffmpeg. Keep the shared
+basketball utility scripts beside these tools, the three delivery manifests
+under `ArtSource/Audio/`, and their referenced LFS-resolved WAVs in the clone.
+All three scripts derive the repository root from their own location and accept
+`--output`; use the same override for each. An explicit relative output override
+is relative to the caller. The generated page can also open directly from disk.
+
+`check_golf_fishing_preview.py --relocate` additionally creates an ignored
+`Relocated source with spaces` fixture beneath the audition folder and compares
+every generated audio hash after an offline run from an unrelated working
+directory. Archive the reviewed fixture with `Archive-LocalArtifacts.ps1` before
+repeating that option. Keep current evidence, inputs and the active preview.
+
 ## Football approved bank and preview
 
 Football's complete preview was approved. See the

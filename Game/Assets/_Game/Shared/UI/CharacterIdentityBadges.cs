@@ -41,7 +41,7 @@ namespace WhatTheFish {
   void LateUpdate(){
    var app=AppRoot.Instance;var camera=Camera.main;int count=0;occupied.Clear();locations.Clear();labels.Clear();hudBounds.Clear();
    for(int i=hud.Count-1;i>=0;i--){var bounds=hud[i];if(!bounds){hud.RemoveAt(i);continue;}if(!bounds.gameObject.activeInHierarchy)continue;bounds.GetWorldCorners(corners);hudBounds.Add(new Rect(corners[0].x,Screen.height-corners[2].y,corners[2].x-corners[0].x,corners[2].y-corners[0].y));}
-   bool show=app&&app.Exploring&&camera&&!FootballReplay.Presenting&&!BasketballMVP.Presenting;canvas.enabled=show;
+   bool show=app&&app.Exploring&&camera&&!FootballReplay.Presenting&&!FootballMVP.Presenting&&!BasketballMVP.Presenting;canvas.enabled=show;
    if(show){
     float scale=Mathf.Clamp(Screen.height/720f,.8f,2);
     foreach(var actor in Athlete.Active){

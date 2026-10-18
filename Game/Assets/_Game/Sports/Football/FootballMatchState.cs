@@ -28,7 +28,7 @@ namespace WhatTheFish {
    if(!Running||crossedAt>=Deadline||scoring==FootballTeam.None)return false;
    if(scoring==FootballTeam.A)ScoreA++;else ScoreB++;
    remaining=Math.Max(0,Deadline-crossedAt);
-   if(Phase==FootballMatchPhase.Overtime)Finish(scoring==FootballTeam.A?FootballMatchResult.TeamA:FootballMatchResult.TeamB);
+   if(Phase==FootballMatchPhase.Overtime)Finish(scoring==FootballTeam.A?FootballMatchResult.TeamA:FootballMatchResult.TeamB,crossedAt);
    else Set(FootballMatchPhase.GoalReset,0);
    return true;
   }
@@ -39,12 +39,14 @@ namespace WhatTheFish {
     case FootballMatchPhase.Kickoff:Set(FootballMatchPhase.Regulation,now+remaining);break;
     case FootballMatchPhase.Regulation:
      remaining=0;
-     if(ScoreA!=ScoreB)Finish(ScoreA>ScoreB?FootballMatchResult.TeamA:FootballMatchResult.TeamB);
-     else {remaining=overtime;Set(FootballMatchPhase.Overtime,Deadline+overtime);if(now>=Deadline){remaining=0;Finish(FootballMatchResult.Draw);}}
+     if(ScoreA!=ScoreB)Finish(ScoreA>ScoreB?FootballMatchResult.TeamA:FootballMatchResult.TeamB,Deadline);
+     else {remaining=overtime;Set(FootballMatchPhase.Overtime,Deadline+overtime);if(now>=Deadline){remaining=0;Finish(FootballMatchResult.Draw,Deadline);}}
      break;
-    case FootballMatchPhase.Overtime:remaining=0;Finish(FootballMatchResult.Draw);break;
+    case FootballMatchPhase.Overtime:remaining=0;Finish(FootballMatchResult.Draw,Deadline);break;
    }
   }
-  void Finish(FootballMatchResult result){Result=result;Set(FootballMatchPhase.Finished,0);}
+  // The existing replicated deadline becomes the exact finish timestamp.
+  // Every player and spectator can derive the same stadium-show clock.
+  void Finish(FootballMatchResult result,double at){Result=result;Set(FootballMatchPhase.Finished,at);}
  }
 }

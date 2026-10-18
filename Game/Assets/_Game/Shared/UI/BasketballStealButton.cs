@@ -11,7 +11,7 @@ namespace WhatTheFish {
   public void Refresh(){
    var view=PlayerView.Instance;var ball=BasketballBall.Active;
    bool visible=view&&view.BasketballRole!=BasketballRole.Inactive&&!SportsPossession.Attacking(view.target,SportId.Basketball);group.alpha=visible?1:0;group.blocksRaycasts=visible;
-   button.interactable=visible&&view.active&&!view.InputBlocked&&ball&&ball.CanSteal(view.target);if((!visible||!button.interactable)&&pressed)Release(true);
+   button.interactable=visible&&view.active&&!view.InputBlocked&&!view.AutoBlockHeld&&ball&&ball.CanSteal(view.target);if((!visible||!button.interactable)&&pressed)Release(true);
    if(illustrated){label.text="Steal";return;}
    var motion=view&&view.target?view.target.BasketballMotion:null;
    label.text=view&&view.target&&view.target.BasketballFreeRoam?"Free roam":motion&&motion.Action==BasketballAction.Stripped?"Recovering":motion&&motion.Action==BasketballAction.Steal?"Swiping…":GameButtonStyle.Caption("Steal","F");

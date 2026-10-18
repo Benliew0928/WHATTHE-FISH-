@@ -157,7 +157,7 @@ namespace WhatTheFish {
   void OnDisable(){DisableFootballWalls();ResetFootballProps();ReleaseControl();mustApproach.Clear();if(Instance==this)Instance=null;}
   void OnDestroy(){DestroyFootballWalls();}
   void SnapPose(Vector3 position,Quaternion rotation){
-   if((transform.position-position).sqrMagnitude>4)GetComponent<FootballTrail>()?.Clear();
+   GetComponent<FootballTrail>()?.Clear();
    // A sleeping interpolated body otherwise keeps its old rendered pose until contact wakes it.
    var interpolation=Body.interpolation;Body.interpolation=RigidbodyInterpolation.None;
    Body.position=position;Body.rotation=rotation;transform.SetPositionAndRotation(position,rotation);

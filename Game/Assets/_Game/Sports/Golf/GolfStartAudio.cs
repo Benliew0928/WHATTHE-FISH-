@@ -17,6 +17,6 @@ namespace WhatTheFish {
   public void ReviewFocus(bool value){focused=value;}
 #endif
   void OnDisable(){if(voice)voice.Stop();starting=false;}
-  void OnDestroy(){if(beep)Destroy(beep);if(ownsWhistle&&whistle)Destroy(whistle);if(voice)Destroy(voice);}
+  void OnDestroy(){if(voice)Destroy(voice);}
  }
 }

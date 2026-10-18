@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- public enum GolfFeedbackCue:byte {Whoosh,Swing,Putt,Turf,Sand,Cup,Finish,Ready}
+ public enum GolfFeedbackCue:byte {Whoosh,Swing,Putt,Turf,Sand,Cup,Finish,Ready,Stone,Wood,Ball,Water,Recovery,CartBump}
  public struct GolfFeedbackEvent:INetworkSerializable {
   public uint sequence,round;public double time;public ulong actor,owner;
   public GolfFeedbackCue cue;public Vector3 point,normal;public float strength;
@@ -28,7 +28,7 @@ namespace WhatTheFish {
   GolfChargeGraphic ring,edge;RectTransform uiRoot,powerMeter;Text success;CanvasGroup successOpacity;
   float chargeGain,shakeUntil,shakeStrength,successAt=-100;
   bool focused=true,paused,isQuiet=true;uint serial,received,receivedRound,observedRound;
-  readonly int[] counts=new int[8];
+  readonly int[] counts=new int[14];
   public float Charge {get;private set;}
   public float EdgeOpacity {get;private set;}
   public float LastCameraKick {get;private set;}
@@ -43,7 +43,7 @@ namespace WhatTheFish {
   void Awake(){
    match=GetComponent<GolfMatchManager>();Settings=Resources.Load<GolfFeedbackSettings>("GolfFeedback");
    if(!Settings)Settings=ScriptableObject.CreateInstance<GolfFeedbackSettings>();
-   sounds=new GolfFeedbackSounds();charging=Source("Golf charge",true);charging.clip=sounds.charge;
+   GolfFishingAudio.Ensure(this);sounds=new GolfFeedbackSounds();charging=Source("Golf charge",true);charging.clip=sounds.charge;
    for(int i=0;i<voices.Length;i++)voices[i]=Source("Golf contact voice "+i,false);
    var material=Resources.Load<Material>("GolfFeedback");
    for(int i=0;i<bursts.Length;i++){
@@ -106,7 +106,7 @@ namespace WhatTheFish {
   }
   void Receive(ulong sender,FastBufferReader reader){var network=NetworkManager.Singleton;if(!network||network.IsServer||sender!=NetworkManager.ServerClientId||!reader.TryBeginRead(61))return;reader.ReadNetworkSerializable(out GolfFeedbackEvent e);Accept(e);}
   internal bool Accept(GolfFeedbackEvent e){
-   if(!Context||e.round!=match.Round||!double.IsFinite(e.time)||!float.IsFinite(e.point.sqrMagnitude)||!float.IsFinite(e.normal.sqrMagnitude)||!float.IsFinite(e.strength)||e.strength<0||e.strength>1||(int)e.cue>=(int)GolfFeedbackCue.Ready)return false;
+   if(!Context||e.round!=match.Round||!double.IsFinite(e.time)||!float.IsFinite(e.point.sqrMagnitude)||!float.IsFinite(e.normal.sqrMagnitude)||!float.IsFinite(e.strength)||e.strength<0||e.strength>1||((int)e.cue>=14||e.cue==GolfFeedbackCue.Ready))return false;
    double age=match.Now-e.time;if(age<-.25||age>1.2)return false;
    if(receivedRound!=e.round){receivedRound=e.round;received=0;}if(e.sequence<=received)return false;received=e.sequence;Present(e);return true;
   }
@@ -120,16 +120,18 @@ namespace WhatTheFish {
    switch(e.cue){
     case GolfFeedbackCue.Whoosh:gain=.35f*e.strength;break;
     case GolfFeedbackCue.Swing:case GolfFeedbackCue.Putt:gain=Settings.hitVolume*Mathf.Lerp(.35f,1,e.strength)*(e.cue==GolfFeedbackCue.Putt?.65f:1);break;
-    case GolfFeedbackCue.Turf:case GolfFeedbackCue.Sand:gain=Settings.landingVolume*Mathf.Lerp(.15f,1,e.strength);break;
+    case GolfFeedbackCue.Turf:case GolfFeedbackCue.Sand:case GolfFeedbackCue.Stone:case GolfFeedbackCue.Wood:case GolfFeedbackCue.Ball:gain=Settings.landingVolume*Mathf.Lerp(.15f,1,e.strength);break;
     default:gain=Settings.cupVolume;break;
    }
    Play(e.cue,e.point,gain,(e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)&&e.owner==LocalOwner);
    if(e.cue==GolfFeedbackCue.Swing&&local&&e.strength>=.65f){shakeUntil=Time.unscaledTime+Settings.shakeSeconds;shakeStrength=e.strength;}
-   if(e.cue!=GolfFeedbackCue.Whoosh)Burst(e);
+   if(e.cue!=GolfFeedbackCue.Whoosh&&e.cue< GolfFeedbackCue.Ready)Burst(e);
+   if(e.cue==GolfFeedbackCue.Finish)GolfFishingAudio.Golf?.Play("golf-cup",e.point,Settings.cupVolume);
+   if(e.cue==GolfFeedbackCue.Cup&&e.owner==LocalOwner)GolfFishingAudio.Golf?.Play("golf-hole",e.point,.7f,true);
    if((e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)&&e.owner==LocalOwner){EnsureUI();successAt=Time.unscaledTime;if(success)success.text=e.cue==GolfFeedbackCue.Finish?"ALL 5 HOLES COMPLETE!":"HOLE COMPLETE!";}
   }
   void Play(GolfFeedbackCue cue,Vector3 point,float gain,bool flat=false){
-   int index=voiceIndex++%voices.Length;voiceGains[index]=gain;var source=voices[index];source.Stop();source.transform.position=point;source.spatialBlend=flat?0:.65f;source.clip=sounds.cues[(int)cue];source.volume=gain*MenuPreferences.SFXVolume;source.pitch=1;source.Play();
+   int index=voiceIndex++%voices.Length;voiceGains[index]=gain;var source=voices[index];source.Stop();source.transform.position=point;source.spatialBlend=flat?0:.65f;source.clip=sounds.Choose(cue);source.volume=gain*MenuPreferences.SFXVolume;source.pitch=1;source.Play();
   }
   float Range(float low,float high)=>Mathf.Lerp(low,high,(float)random.NextDouble());
   void Burst(GolfFeedbackEvent e){

@@ -30,6 +30,7 @@ namespace WhatTheFish {
    }
    var local=Quaternion.Euler(0,-heading,0)*Vector3.ClampMagnitude(move,1);
    var command=new PlayerCommand{move=new Vector2(local.x,local.z),heading=heading,sprint=distance>3&&!guard,guard=guard,defensePlay=ball.Defense.play,passPlay=ball.Defense.play};
+   command.guardBlock=guard&&ball.Holder&&ball.IsCharging(ball.Holder)&&Vector3.ProjectOnPlane(ball.Holder.transform.position-position,Vector3.up).sqrMagnitude<=BasketballDefenseRules.AutoBlockRange*BasketballDefenseRules.AutoBlockRange;
    if(ball.Holder==actor){
     if(ball.IsCharging(actor)){command.move=Vector2.zero;if(ball.PresentedChargePhase>=shotPower){command.shoot=true;command.shotReleasedAt=BasketballMotion.Clock;}}
     else if(ball.IsPassAiming(actor)){
@@ -39,10 +40,10 @@ namespace WhatTheFish {
     }
     else if(!ball.ActionQueued){command.shotBegin=shoot&&ball.CanShoot(actor);command.passBegin=pass&&receiver&&ball.CanPass(actor);}
    }
-   if(guard&&ball.Holder&&Time.time>=nextChallenge&&Time.time-heldSince>.65f){
+   if(guard&&!command.guardBlock&&ball.Holder&&Time.time>=nextChallenge&&Time.time-heldSince>.65f){
     float gap=Vector3.ProjectOnPlane(ball.Holder.transform.position-position,Vector3.up).magnitude;
     if(gap<2.1f&&Vector3.Angle(actor.transform.forward,ball.Holder.transform.position-position)<35){
-     if(ball.IsCharging(ball.Holder)&&ball.CanBlock(actor)){command.jumpBlock=true;nextChallenge=Time.time+3.5f;}
+     if(ball.IsCharging(ball.Holder)&&ball.CanBlock(actor)&&!ball.CloseGuard(actor,ball.Holder)){command.jumpBlock=true;nextChallenge=Time.time+3.5f;}
      else if(gap<1.55f&&ball.CanSteal(actor)){command.steal=true;nextChallenge=Time.time+3.5f;}
     }
    }

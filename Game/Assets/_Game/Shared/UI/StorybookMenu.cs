@@ -192,10 +192,11 @@ namespace WhatTheFish {
    Text(p.transform,"Click an empty place to move. Then ready up.",440,543,460,42,20,false,Muted);
    var side=Plate(content,"Room invitation",1020,182,521,604,Cream,32,2,true);
    Text(side.transform,"ROOM CODE",30,25,457,36,20,true,Muted,TextAnchor.MiddleCenter);
+   Text(side.transform,"Network build "+RoomService.ProtocolVersion+" · Use the same release",30,217,457,23,16,false,Muted,TextAnchor.MiddleCenter);
    Text(side.transform,app.rooms.Code,26,71,467,69,48,true,null,TextAnchor.MiddleCenter);
    Button(side.transform,"Copy invitation","Copy code",91,157,340,59,Sky,()=>StartCoroutine(CoveClipboard.Copy(app.rooms.Code,ok=>Notice(ok?"Room code copied. Share it with your crew.":"Copy isn't available. Share the code shown above."))),CoveSymbol.Copy,23);
    Button(side.transform,"Room conditions","Conditions",27,245,224,59,Color.white,()=>{returnFromRules="room";draftMinutes=MenuMatchRules.CurrentMinutes;Go("rules");},CoveSymbol.Flag,23);
-   var venue=Button(side.transform,"Room venue",app.SelectedSport==SportId.Football?"Customize":"Venue",270,245,224,59,Color.white,()=>Go(app.SelectedSport==SportId.Football?"customize":"custom"),CoveSymbol.Paint,23);venue.interactable=CanCustomize&&(CanEdit||app.SelectedSport==SportId.Football);
+   var venue=Button(side.transform,"Room venue","Customize",270,245,224,59,Color.white,()=>Go("customize"),CoveSymbol.Paint,23);venue.interactable=CanCustomize;
    readyButton=Button(side.transform,"Ready toggle","I'm ready",27,327,467,74,Mint,ToggleReady,CoveSymbol.Check,28);readyLabel=readyButton.GetComponentInChildren<Text>();
    startHint=Text(side.transform,"",27,415,467,54,21,false,Muted,TextAnchor.MiddleCenter);
    startButton=Button(side.transform,"Travel together",app.rooms.Host?"Travel together":"Waiting for host",27,493,467,76,Coral,()=>{_=app.rooms.SetExploring(true);},CoveSymbol.Boat,28);
@@ -238,11 +239,12 @@ namespace WhatTheFish {
   }
   void Detail(Transform parent,string title,string value,float x,float y,float w) {Text(parent,title,x,y,w,35,25,true);Text(parent,value,x,y+35,w,49,23,false,Muted);}
   void CustomizeFootball() {
-   Heading("Make the ball your own","Your trail, all game. Only you see your choice, whoever kicks the ball.");
-   var panel=Plate(content,"Personal football style",63,178,1476,609,Cream,32,2,true);
+   bool basketball=app.SelectedSport==SportId.Basketball;
+   Heading("Make the ball your own","Your trail, all game. Only you see your choice, whoever has the ball.");
+   var panel=Plate(content,basketball?"Personal basketball style":"Personal football style",63,178,1476,609,Cream,32,2,true);
    Text(panel.transform,"Choose a trail",30,16,1000,46,32,true);
    Text(panel.transform,"Saved automatically on this device",30,62,1000,35,23,false,Muted);
-   var cards=Rect(panel.transform,"Trail choices",30,112,1416,467);FootballTrailPicker.Create(cards,1416,467,false);
+   var cards=Rect(panel.transform,"Trail choices",30,112,1416,467);if(basketball)BasketballTrailPicker.Create(cards,1416,467,false);else FootballTrailPicker.Create(cards,1416,467,false);
    if(CanEdit)ActionButton("Customize shared venue","Venue design",63,809,310,65,Cream,()=>Go("custom"),CoveSymbol.Paint,26);
    ActionButton("Done customization","Done",1260,809,279,65,Mint,Back,CoveSymbol.Check,27);
   }
@@ -298,7 +300,7 @@ namespace WhatTheFish {
    var save=Button(p.transform,"Save player name","Save name",650,501,376,70,Mint,()=>{if(PlayerIdentity.SaveName(field.text,out var error)){field.SetTextWithoutNotify(PlayerIdentity.SavedName);feedback.text="Name saved.";}else feedback.text=error;},CoveSymbol.Check,27);
    void Validate(string value){save.interactable=PlayerIdentity.ValidateName(value,out _,out var error);feedback.text=error.Length>0?error:"Up to 16 characters: letters, numbers, spaces, - or _.";}
    field.onValueChanged.AddListener(Validate);Validate(field.text);
-   if(app.SelectedSport==SportId.Football)ActionButton("Football ball style","Football ball style",265,810,380,65,Cream,()=>Go("customize"),CoveSymbol.Paint,25);
+   if(CanCustomize)ActionButton("Ball effects","Ball effects",265,810,380,65,Cream,()=>Go("customize"),CoveSymbol.Paint,25);
    ActionButton("Done profile","Done",1104,810,230,65,Mint,Back,CoveSymbol.Check);
   }
   void Settings() {

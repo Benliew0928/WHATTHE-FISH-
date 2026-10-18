@@ -296,6 +296,12 @@ namespace WhatTheFish {
    MaximumReachError=Mathf.Max(MaximumReachError,Mathf.Max(0,reach-length));
   }
   public void ResetPose(){Restore();State=new(){sequence=State.sequence+1};effortBlend=weight=phase=previousSpeed=brake=startAccent=turn=bank=0;receiveAt=settleAt=-10;wallFreedom=1;heldBefore=haveLast=feetInitialized=false;gait.Reset();lastMode=-1;actionAge=10;lastAction=previousAction=FootballAction.None;smoothBody=smoothPelvis=bodyVelocity=pelvisVelocity=Vector3.zero;yawVelocity=0;previousPosition=transform.position;smoothedYaw=previousYaw=transform.eulerAngles.y;lastMatchPhase=FootballMatchPhase.Idle;}
+  // Supply the calibrated neutral rig to render-only honours copies. Never
+  // sample a live kick/fall (or a first-person hidden head) as their rest pose.
+  internal void CopyReferencePose(System.Collections.Generic.Dictionary<Transform,Transform> copies){
+   if(!RigReady)return;
+   for(int i=0;i<bones.Length;i++)if(copies.TryGetValue(bones[i],out var copy)){copy.localPosition=referencePosition[i];copy.localRotation=referenceRotation[i];copy.localScale=Vector3.one;}
+  }
   public void Receive(FootballMotionState value){if(received&&unchecked((int)(value.sequence-receivedSequence))<0)return;received=true;receivedSequence=value.sequence;State=value;}
   public void Charging(bool active){
    if(active==State.charging)return;var s=State;s.sequence++;s.charging=active;

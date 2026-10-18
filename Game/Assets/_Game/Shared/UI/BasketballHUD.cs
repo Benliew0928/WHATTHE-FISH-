@@ -50,7 +50,8 @@ namespace WhatTheFish {
    bool room=AppRoot.Instance.rooms.Connected||BasketballMatch.Instance&&BasketballMatch.Instance.Competitive;practiceScore.SetActive(!room);
    bool defense=!SportsPossession.Attacking(view.target,SportId.Basketball)&&view.BasketballRole!=BasketballRole.Inactive;bool charging=view.ShotCharging||view.PassCharging;
    shootArt.sprite=BasketballUIStyle.Icon(defense?BasketballIcon.Guard:BasketballIcon.Shoot);passArt.sprite=BasketballUIStyle.Icon(defense?BasketballIcon.Steal:BasketballIcon.Pass);
-   shootPlate.color=shoot.button.interactable?(defense?CoveUI.Sky:BasketballUIStyle.Shoot):CoveUI.Hex("D5DBCE");passPlate.color=pass.button.interactable?(defense?CoveUI.Mint:CoveUI.Sky):CoveUI.Hex("D5DBCE");
+   bool blockReady=defense&&ball.GuardBlockReady(view.target);
+   shootPlate.color=shoot.button.interactable?(defense?(blockReady?CoveUI.Mint:CoveUI.Sky):BasketballUIStyle.Shoot):CoveUI.Hex("D5DBCE");passPlate.color=pass.button.interactable?(defense?CoveUI.Mint:CoveUI.Sky):CoveUI.Hex("D5DBCE");
    shootArt.color=shoot.button.interactable?Color.white:new Color(1,1,1,.76f);passArt.color=pass.button.interactable?Color.white:new Color(1,1,1,.76f);hold.gameObject.SetActive(!defense&&shoot.button.interactable);
    TintSupport(jump.button,CoveUI.Cream);
    bool slots=view.BasketballRole!=BasketballRole.Inactive;SetShown(shoot.gameObject,slots&&!view.PassCharging);SetShown(pass.gameObject,slots&&!view.ShotCharging);SetShown(jump.gameObject,!charging);props.GestureHidden=charging;

@@ -1,5 +1,105 @@
 # APK size audit — measured release records
 
+## Shared travel and match-start arrivals — 18 October 2026
+
+`AndroidSubmission` succeeded at **14:44:53 Malaysia time**. Actual APK:
+**87,569,184 bytes**, up **8,180** from **87,561,004**. Headroom below the
+strict 1,000,000,000-byte cap: **912,430,816 bytes**. Independent APK v2
+verification passed with the configured Android Debug certificate. SHA-256:
+**F7EAE76B30E61CDA42EAAE3E8BF9DC185965A2BDAD25D12FFC362E4BBFCE9E02**.
+
+| Largest APK entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,152,665 | -2,811 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,308,374 | +9,474 |
+| `lib/arm64-v8a/libunity.so` | 9,773,267 | 0 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,753,937 | +1,237 |
+
+Code and metadata account for the small increase. Runtime-created status UI
+reuses existing assets; no new art or lossy visual changes were introduced.
+The player-side report contains 25,688,056 uncompressed serialized bytes and
+excludes the separate scene bundle; it is not the APK measurement.
+
+The fresh audit is in `Builds/SizeAudit/latest/`, with a preserved copy and entry
+deltas in `Builds/TravelMatchQA/`. Windows validation passed 1,156 assertions across
+travel/match-start, teleport/rematch, spectator and network rail suites, plus
+both protocol-67/68 mismatch directions. The full player and shareable ZIP are
+described in [teammate testing](TEAMMATE-TESTING.md). This includes pre-existing
+shared-workspace changes. Physical Android performance and WAN play are unverified;
+the unrelated prior cart-suite baseline is recorded in
+[the audio integration report](GOLF-FISHING-AUDIO.md).
+
+## Golf and Fishing approved audio — 18 October 2026
+
+`AndroidSubmission` succeeded at **13:20:42 Malaysia time**. Actual APK:
+**87,561,004 bytes**, up **4,251,295** from **83,309,709**. Headroom below the
+strict 1,000,000,000-byte cap: **912,438,996 bytes**. Independent APK v2
+verification passed with the configured Android Debug certificate. SHA-256:
+**A6A60BED27CB01E5AB1A3DF2E34ACCB0D3B182DA083854E2FC7ADF75D02B256F**.
+
+| Largest APK entry | Compressed bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,155,476 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,298,900 |
+| `lib/arm64-v8a/libunity.so` | 9,773,267 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,752,700 |
+
+All **81 new GolfFishingAudio WAVs** appear in the player-side packed report,
+totaling **4,202,996 uncompressed serialized bytes**. The new PCM resource
+entries account for most growth; shore wash is the largest new resource
+entry at **1,363,968 actual compressed-entry bytes**. Per-asset DEFLATE estimates
+in the task evidence are estimates and are not substituted for actual ZIP
+entry or APK byte counts. The islands bundle shrank 4,734 bytes; IL2CPP grew
+11,350 bytes. No unexpected large visual asset growth or lossy visual changes
+were introduced. Thirty-four approved shared audio clips are reused in place.
+
+Before/after reports, entry deltas, asset estimates, signature output and
+source hashes are in `Builds/GolfFishingAudioQA/`; the fresh audit remains in
+`Builds/SizeAudit/latest/`. **970 task-relevant Windows assertions** passed.
+The broader cart suite has the same 33 distinct failed assertions on the
+previous player and the audio candidate; [details](GOLF-FISHING-AUDIO.md).
+No Android device was connected, so physical phone audio, FPS and memory
+are unverified. The build includes pre-existing shared-workspace changes.
+
+## Sky Rail station and cabin repair — 18 October 2026
+
+`AndroidSubmission` succeeded at **01:40:39 Malaysia time**. Actual APK:
+**83,309,709 bytes**, compared with **80,052,983** at task start
+(**+3,256,726**). Headroom below **1,000,000,000 bytes**: **916,690,291**.
+Independent APK v2 verification passed; the configured Android Debug
+certificate signs this local hackathon build. SHA-256:
+**FEBF34C89F804123D49EF1576B79751615EAE86B5DAE6B6162109DE973D4D790**.
+
+| Largest APK entry | Compressed bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,160,210 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,287,550 |
+| `lib/arm64-v8a/libunity.so` | 9,773,533 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,750,141 |
+
+The bundle grew **756,879 bytes**, Unity runtime **578,252**, and IL2CPP
+**60,843**. The baseline predates existing Golf/integration work in this
+shared checkout: the asset inventories show newly included Golf course meshes,
+sand and Golf UI. This is not an isolated measurement of the rail repair.
+No lossy texture reduction was introduced for this task.
+
+The separate bundle inventory's largest **uncompressed serialized** assets
+remain Fishing/Golf terrain control maps (**22,369,760 / 22,369,756 bytes**) and
+water depth maps (**5,592,564 / 5,592,560**). These are not APK byte counts.
+SkySail-path assets total **4,676,580 uncompressed serialized bytes**, including
+the retained distant-island meshes; the largest revised station mesh is
+`SailStation_SS_Timber.asset` at **179,380 serialized bytes**. Native Blender
+masters remain outside the Unity delivery assets.
+
+Fresh reports are in `Builds/SizeAudit/latest/`; task copies and entry deltas
+are in `Builds/SkyRailQA/SizeAuditFinal/` and `apk-entry-delta.csv`. All 341
+Windows runtime source documents match current source, and the recorded
+gameplay/source snapshot remained unchanged during Android packaging.
+[Repair and validation details](SKY-RAIL-REPAIR.md) include 237 passing checks,
+eight full route journeys, local host/guest travel and native/FBX portability.
+No phone was connected; APK build/size/signature success does not validate
+physical Android rendering, FPS, thermal behavior or peak memory.
+
 ## Golf and upstream integration - 17 October 2026
 
 Merged-source AndroidSubmission attempted; Gradle/JDK initialization failed:

@@ -4,7 +4,7 @@ import bpy
 
 root=Path(__file__).resolve().parents[2]/'ArtSource'/'SkySail'
 bpy.ops.wm.open_mainfile(filepath=str(root/'SkySailAssetKit.blend'))
-layout={'CabinShell':(0,0,0),'CabinInterior':(10,0,0),'SlidingDoor':(19,0,0),'CabinHanger':(24,0,0),'CableTower':(34,8,0),'SailStation':(0,22,0),'Gangway':(17,22,0)}
+layout={'CabinShell':(0,0,0),'CabinInterior':(10,0,0),'SlidingDoor':(19,0,0),'CabinHanger':(24,0,0),'CabinTrolley':(24,7,1),'CableTower':(34,8,0),'SailStation':(0,22,0),'Gangway':(17,22,0)}
 for name,position in layout.items():
     collection=bpy.data.collections[name]
     scene=bpy.data.scenes.new(name)

@@ -207,7 +207,7 @@ namespace WhatTheFish {
 
  public sealed class CoveSound : MonoBehaviour {
   static CoveSound instance;AudioSource source;AudioClip tap;
-  public static void Play(){if(BasketballAudio.PlayMenu())return;if(MenuPreferences.UIVolume<.001f)return;if(!instance)instance=new GameObject("Menu sound").AddComponent<CoveSound>();instance.source.PlayOneShot(instance.tap,MenuPreferences.UIVolume*.26f);}
+  public static void Play(){if(GolfFishingAudio.PlayMenu())return;if(BasketballAudio.PlayMenu())return;if(MenuPreferences.UIVolume<.001f)return;if(!instance)instance=new GameObject("Menu sound").AddComponent<CoveSound>();instance.source.PlayOneShot(instance.tap,MenuPreferences.UIVolume*.26f);}
   void Awake(){instance=this;source=gameObject.AddComponent<AudioSource>();source.playOnAwake=false;source.spatialBlend=0;source.ignoreListenerPause=true;
    const int rate=22050;var samples=new float[1323];for(int i=0;i<samples.Length;i++){float t=(float)i/rate;float envelope=Mathf.Sin(Mathf.PI*i/samples.Length)*Mathf.Exp(-t*50);samples[i]=Mathf.Sin(2*Mathf.PI*(620*t-900*t*t))*envelope;}
    tap=AudioClip.Create("Soft UI tap",samples.Length,1,rate,false);tap.SetData(samples,0);

@@ -17,6 +17,10 @@ public sealed class FootballMotionBuilder:IPreprocessBuildWithReport {
   const string path="Assets/_Game/Resources/FootballMotionLibrary.asset";
   var library=AssetDatabase.LoadAssetAtPath<FootballMotionLibrary>(path);
   if(!library){library=ScriptableObject.CreateInstance<FootballMotionLibrary>();library.takes=FootballMotionLibrary.Defaults();AssetDatabase.CreateAsset(library,path);AssetDatabase.SaveAssets();}
+  // Add new performances without replacing existing artist-authored takes.
+  var merged=new System.Collections.Generic.List<FootballTake>(library.takes);bool added=false;
+  foreach(var take in FootballCelebrationPoses.Defaults())if(!merged.Exists(t=>t.name==take.name)){merged.Add(take);added=true;}
+  if(added){library.takes=merged.ToArray();EditorUtility.SetDirty(library);AssetDatabase.SaveAssets();}
   var names=new System.Collections.Generic.HashSet<string>();
   foreach(var take in library.takes){if(!names.Add(take.name)||take.duration<=0||take.keys.Length<2)throw new Exception("Invalid football take "+take.name);float previous=-1;foreach(var k in take.keys){if(k.time<previous||k.time<0||k.time>1)throw new Exception("Invalid timeline "+take.name);previous=k.time;if(!float.IsFinite(k.pose.pelvis.sqrMagnitude+k.pose.body.sqrMagnitude+k.pose.leftFoot.sqrMagnitude+k.pose.rightFoot.sqrMagnitude+k.pose.leftHand.sqrMagnitude+k.pose.rightHand.sqrMagnitude))throw new Exception("Non-finite pose "+take.name);}}
   foreach(var required in FootballMotionLibrary.Defaults())if(!names.Contains(required.name))throw new Exception("Missing football take "+required.name);

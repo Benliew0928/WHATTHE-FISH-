@@ -1,0 +1,524 @@
+{
+  "cues": [
+    {
+      "cue": "golf-go",
+      "paths": [
+        "GolfAudio/go"
+      ]
+    },
+    {
+      "cue": "golf-walkway",
+      "paths": [
+        "GolfAudio/Walkway/step-01",
+        "GolfAudio/Walkway/step-02",
+        "GolfAudio/Walkway/step-03"
+      ]
+    },
+    {
+      "cue": "golf-swing",
+      "paths": [
+        "GolfFishingAudio/golf-swing-01"
+      ]
+    },
+    {
+      "cue": "golf-putt",
+      "paths": [
+        "GolfFishingAudio/golf-putt-01",
+        "GolfFishingAudio/golf-putt-02",
+        "GolfFishingAudio/golf-putt-03"
+      ]
+    },
+    {
+      "cue": "golf-swish",
+      "paths": [
+        "GolfFishingAudio/golf-swish-01",
+        "GolfFishingAudio/golf-swish-02"
+      ]
+    },
+    {
+      "cue": "golf-charge",
+      "paths": [
+        "GolfFishingAudio/golf-charge-01"
+      ]
+    },
+    {
+      "cue": "golf-turf",
+      "paths": [
+        "GolfFishingAudio/golf-turf-01",
+        "GolfFishingAudio/golf-turf-02"
+      ]
+    },
+    {
+      "cue": "golf-sand",
+      "paths": [
+        "GolfFishingAudio/golf-sand-01",
+        "GolfFishingAudio/golf-sand-02"
+      ]
+    },
+    {
+      "cue": "golf-stone",
+      "paths": [
+        "GolfFishingAudio/golf-stone-01",
+        "GolfFishingAudio/golf-stone-02"
+      ]
+    },
+    {
+      "cue": "golf-wood",
+      "paths": [
+        "GolfFishingAudio/golf-wood-01",
+        "GolfFishingAudio/golf-wood-02"
+      ]
+    },
+    {
+      "cue": "golf-ball-hit",
+      "paths": [
+        "GolfFishingAudio/golf-ball-hit-01",
+        "GolfFishingAudio/golf-ball-hit-02"
+      ]
+    },
+    {
+      "cue": "golf-roll",
+      "paths": [
+        "GolfFishingAudio/golf-roll-01"
+      ]
+    },
+    {
+      "cue": "water-entry",
+      "paths": [
+        "GolfFishingAudio/water-entry-01",
+        "GolfFishingAudio/water-entry-02"
+      ]
+    },
+    {
+      "cue": "golf-cup",
+      "paths": [
+        "GolfFishingAudio/golf-cup-01"
+      ]
+    },
+    {
+      "cue": "golf-hole",
+      "paths": [
+        "GolfFishingAudio/golf-hole-01"
+      ]
+    },
+    {
+      "cue": "golf-finish",
+      "paths": [
+        "GolfFishingAudio/golf-finish-01"
+      ]
+    },
+    {
+      "cue": "recovery",
+      "paths": [
+        "BasketballAudio/interrupt-01"
+      ]
+    },
+    {
+      "cue": "cart-summon",
+      "paths": [
+        "BasketballAudio/spawn-01"
+      ]
+    },
+    {
+      "cue": "cart-recall",
+      "paths": [
+        "GolfFishingAudio/cart-recall-01"
+      ]
+    },
+    {
+      "cue": "cart-seat",
+      "paths": [
+        "GolfFishingAudio/cart-seat-01"
+      ]
+    },
+    {
+      "cue": "cart-motor",
+      "paths": [
+        "GolfFishingAudio/cart-motor-01"
+      ]
+    },
+    {
+      "cue": "cart-tyres",
+      "paths": [
+        "GolfFishingAudio/cart-tyres-01",
+        "GolfFishingAudio/cart-tyres-02"
+      ]
+    },
+    {
+      "cue": "cart-brake",
+      "paths": [
+        "GolfFishingAudio/cart-brake-01"
+      ]
+    },
+    {
+      "cue": "cart-bump",
+      "paths": [
+        "GolfFishingAudio/cart-bump-01"
+      ]
+    },
+    {
+      "cue": "cart-reverse",
+      "paths": [
+        "GolfFishingAudio/cart-reverse-01"
+      ]
+    },
+    {
+      "cue": "fish-cast",
+      "paths": [
+        "GolfFishingAudio/fish-cast-01",
+        "GolfFishingAudio/fish-cast-02"
+      ]
+    },
+    {
+      "cue": "float-splash",
+      "paths": [
+        "GolfFishingAudio/float-splash-01",
+        "GolfFishingAudio/float-splash-02"
+      ]
+    },
+    {
+      "cue": "fish-bite",
+      "paths": [
+        "GolfFishingAudio/fish-bite-01",
+        "GolfFishingAudio/fish-bite-02"
+      ]
+    },
+    {
+      "cue": "fish-hook",
+      "paths": [
+        "GolfFishingAudio/fish-hook-01"
+      ]
+    },
+    {
+      "cue": "fish-reel",
+      "paths": [
+        "GolfFishingAudio/fish-reel-01"
+      ]
+    },
+    {
+      "cue": "fish-drag",
+      "paths": [
+        "GolfFishingAudio/fish-drag-01"
+      ]
+    },
+    {
+      "cue": "fish-line",
+      "paths": [
+        "GolfFishingAudio/fish-line-01",
+        "GolfFishingAudio/fish-line-02"
+      ]
+    },
+    {
+      "cue": "fish-switch",
+      "paths": [
+        "GolfFishingAudio/fish-switch-01",
+        "GolfFishingAudio/fish-switch-02"
+      ]
+    },
+    {
+      "cue": "fish-warning",
+      "paths": [
+        "GolfFishingAudio/fish-warning-01"
+      ]
+    },
+    {
+      "cue": "fish-cooled",
+      "paths": [
+        "GolfFishingAudio/fish-cooled-01"
+      ]
+    },
+    {
+      "cue": "fish-surge",
+      "paths": [
+        "GolfFishingAudio/fish-surge-01",
+        "GolfFishingAudio/fish-surge-02",
+        "GolfFishingAudio/fish-surge-03"
+      ]
+    },
+    {
+      "cue": "fish-land",
+      "paths": [
+        "GolfFishingAudio/fish-land-01"
+      ]
+    },
+    {
+      "cue": "fish-missed",
+      "paths": [
+        "GolfFishingAudio/fish-missed-01"
+      ]
+    },
+    {
+      "cue": "fish-snap",
+      "paths": [
+        "GolfFishingAudio/fish-snap-01"
+      ]
+    },
+    {
+      "cue": "fish-bubbles",
+      "paths": [
+        "GolfFishingAudio/fish-bubbles-01"
+      ]
+    },
+    {
+      "cue": "gear-pickup",
+      "paths": [
+        "BasketballAudio/pickup-01"
+      ]
+    },
+    {
+      "cue": "treasure-start",
+      "paths": [
+        "GolfFishingAudio/treasure-start-01"
+      ]
+    },
+    {
+      "cue": "treasure-rise",
+      "paths": [
+        "GolfFishingAudio/treasure-rise-01"
+      ]
+    },
+    {
+      "cue": "sonar",
+      "paths": [
+        "GolfFishingAudio/sonar-01"
+      ]
+    },
+    {
+      "cue": "cool-spool",
+      "paths": [
+        "GolfFishingAudio/cool-spool-01"
+      ]
+    },
+    {
+      "cue": "flippers",
+      "paths": [
+        "BasketballAudio/turbo-start-01"
+      ]
+    },
+    {
+      "cue": "power-reel",
+      "paths": [
+        "GolfFishingAudio/power-reel-01"
+      ]
+    },
+    {
+      "cue": "bubble-guard",
+      "paths": [
+        "GolfFishingAudio/bubble-guard-01"
+      ]
+    },
+    {
+      "cue": "bubble-block",
+      "paths": [
+        "GolfFishingAudio/bubble-block-01"
+      ]
+    },
+    {
+      "cue": "quick-lure",
+      "paths": [
+        "GolfFishingAudio/quick-lure-01"
+      ]
+    },
+    {
+      "cue": "gear-expire",
+      "paths": [
+        "BasketballAudio/turbo-end-01"
+      ]
+    },
+    {
+      "cue": "grass-walk",
+      "paths": [
+        "FootballAudio/grass-walk-01",
+        "FootballAudio/grass-walk-02",
+        "FootballAudio/grass-walk-03",
+        "FootballAudio/grass-walk-04"
+      ]
+    },
+    {
+      "cue": "grass-run",
+      "paths": [
+        "FootballAudio/grass-run-01",
+        "FootballAudio/grass-run-02",
+        "FootballAudio/grass-run-03",
+        "FootballAudio/grass-run-04"
+      ]
+    },
+    {
+      "cue": "wood-steps",
+      "paths": [
+        "GolfFishingAudio/wood-steps-01",
+        "GolfFishingAudio/wood-steps-02",
+        "GolfFishingAudio/wood-steps-03",
+        "GolfFishingAudio/wood-steps-04"
+      ]
+    },
+    {
+      "cue": "sand-steps",
+      "paths": [
+        "GolfFishingAudio/sand-steps-01",
+        "GolfFishingAudio/sand-steps-02",
+        "GolfFishingAudio/sand-steps-03"
+      ]
+    },
+    {
+      "cue": "stone-steps",
+      "paths": [
+        "GolfFishingAudio/stone-steps-01",
+        "GolfFishingAudio/stone-steps-02",
+        "GolfFishingAudio/stone-steps-03"
+      ]
+    },
+    {
+      "cue": "water-steps",
+      "paths": [
+        "GolfFishingAudio/water-steps-01",
+        "GolfFishingAudio/water-steps-02"
+      ]
+    },
+    {
+      "cue": "cloth",
+      "paths": [
+        "BasketballAudio/cloth-01"
+      ]
+    },
+    {
+      "cue": "grass-land",
+      "paths": [
+        "FootballAudio/turf-land-01",
+        "FootballAudio/turf-land-02"
+      ]
+    },
+    {
+      "cue": "countdown",
+      "paths": [
+        "BasketballAudio/countdown-01"
+      ]
+    },
+    {
+      "cue": "golf-countdown",
+      "paths": [
+        "GolfFishingAudio/golf-countdown-01"
+      ]
+    },
+    {
+      "cue": "round-start",
+      "paths": [
+        "GolfFishingAudio/round-start-01"
+      ]
+    },
+    {
+      "cue": "round-end",
+      "paths": [
+        "GolfFishingAudio/round-end-01"
+      ]
+    },
+    {
+      "cue": "first-finisher",
+      "paths": [
+        "GolfFishingAudio/first-finisher-01"
+      ]
+    },
+    {
+      "cue": "catch-score",
+      "paths": [
+        "BasketballAudio/score-01"
+      ]
+    },
+    {
+      "cue": "wanted-bonus",
+      "paths": [
+        "GolfFishingAudio/wanted-bonus-01"
+      ]
+    },
+    {
+      "cue": "wanted-change",
+      "paths": [
+        "GolfFishingAudio/wanted-change-01"
+      ]
+    },
+    {
+      "cue": "result-win",
+      "paths": [
+        "FootballAudio/result-win-01"
+      ]
+    },
+    {
+      "cue": "result-loss",
+      "paths": [
+        "FootballAudio/result-loss-01"
+      ]
+    },
+    {
+      "cue": "result-draw",
+      "paths": [
+        "FootballAudio/result-draw-01"
+      ]
+    },
+    {
+      "cue": "cup-champion",
+      "paths": [
+        "GolfFishingAudio/cup-champion-01"
+      ]
+    },
+    {
+      "cue": "ui-click",
+      "paths": [
+        "BasketballAudio/ui-click-01"
+      ]
+    },
+    {
+      "cue": "ui-confirm",
+      "paths": [
+        "BasketballAudio/ui-confirm-01"
+      ]
+    },
+    {
+      "cue": "ui-back",
+      "paths": [
+        "BasketballAudio/ui-back-01"
+      ]
+    },
+    {
+      "cue": "ui-toggle",
+      "paths": [
+        "BasketballAudio/ui-toggle-01"
+      ]
+    },
+    {
+      "cue": "ui-select",
+      "paths": [
+        "BasketballAudio/ui-select-01"
+      ]
+    },
+    {
+      "cue": "ui-error",
+      "paths": [
+        "BasketballAudio/ui-error-01"
+      ]
+    },
+    {
+      "cue": "ui-open",
+      "paths": [
+        "BasketballAudio/ui-open-01"
+      ]
+    },
+    {
+      "cue": "ui-close",
+      "paths": [
+        "BasketballAudio/ui-close-01"
+      ]
+    },
+    {
+      "cue": "air",
+      "paths": [
+        "BasketballAudio/air-01"
+      ]
+    },
+    {
+      "cue": "shore-waves",
+      "paths": [
+        "GolfFishingAudio/shore-waves-01"
+      ]
+    }
+  ]
+}

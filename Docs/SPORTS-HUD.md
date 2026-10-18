@@ -14,7 +14,7 @@ press, and updates its label and availability in the same frame.
 | Sport | Attack | Defense | Always available when gameplay permits |
 | --- | --- | --- | --- |
 | Football | Shoot: hold, slide, release; Pass: aim and tap | Hold Pressure; swipe to Dash or Tackle and back | Main Dash; Pass in former Jump slot; held ability; camera inside Settings |
-| Basketball | Shoot / Pass: hold, slide, release | Main Guard: hold, swipe left to Steal, swipe up and release to Block | Jump / Jump Block; camera inside Settings |
+| Basketball | Shoot / Pass: hold, slide, release | Main Guard: hold, swipe up and keep holding for auto-block within 2.5 m; centre disarms; swipe left to Steal | Jump / Jump Block; camera inside Settings |
 
 Attack teammates see offensive controls, but only the carrier can shoot or
 pass the ball. Defense controls stay visible for a loose ball, with actions
@@ -32,8 +32,9 @@ pressure to one another. Use matching **protocol 61** players, including the
 
 Competitive basketball now shows [per-player points, assists, completed passes
 and pass interceptions](BASKETBALL-HONOURS.md). The final-buzzer MVP presentation
-uses a court-level arena view, team colours and the selected character illustration;
-the match-stats table includes both teams and bots.
+uses a [winning-team ceremony and animated 3D MVP](BASKETBALL-CELEBRATION.md)
+with courtside camera transitions and an orange/navy scorecard; the box-score
+table includes both teams and bots.
 
 Basketball Steal occupies the lower-left Pass slot during defense. Sliding there
 from Guard performs a steal immediately and keeps Guard held; returning to the

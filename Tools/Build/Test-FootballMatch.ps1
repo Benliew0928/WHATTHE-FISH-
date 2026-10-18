@@ -1,4 +1,4 @@
-param([switch]$IncludeRegression,[switch]$Render,[int]$Port=7814,[string]$PlayerPath)
+param([switch]$IncludeRegression,[switch]$Render,[switch]$RoomOnly,[int]$Port=7814,[string]$PlayerPath)
 $ErrorActionPreference='Stop'
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 if(!$PlayerPath){$PlayerPath=Join-Path $taskRoot 'Builds/FootballMatchQA/Player/WhatTheFish.exe'}
@@ -11,7 +11,9 @@ function Invoke-Probes($Specs){
    $taskReport=Join-Path $taskOutput ($taskSpec.name+'.txt');$taskLog=Join-Path $taskOutput ($taskSpec.name+'.log')
    # Aim-material assertions need a graphics device. Keep the physics probe in
    # batch mode so review captures cannot resize its pointer-coordinate fixture.
-   $taskGraphics=if($taskSpec.name -eq 'physics'){'-batchmode -screen-width 960 -screen-height 540 -screen-fullscreen 0'}elseif($Render){'-screen-width 960 -screen-height 540 -screen-fullscreen 0'}else{'-batchmode -nographics'}
+   # Shared room entry now includes teleport materials; headless graphics
+   # report them unsupported and cancel entry before the match can begin.
+   $taskGraphics=if($taskSpec.name -eq 'physics'){'-batchmode -screen-width 960 -screen-height 540 -screen-fullscreen 0'}elseif($Render){'-screen-width 960 -screen-height 540 -screen-fullscreen 0'}elseif($taskSpec.name -match 'host|client'){'-batchmode -force-d3d11 -screen-width 960 -screen-height 540 -screen-fullscreen 0'}else{'-batchmode -nographics'}
    $taskOptions="$taskGraphics -job-worker-count 2 $($taskSpec.args) -probe -exitAfter 120 -report `"$taskReport`" -logFile `"$taskLog`""
    $taskProcesses+=Start-Process -FilePath $PlayerPath -WindowStyle Hidden -ArgumentList $taskOptions -PassThru
    if($taskSpec.name -match 'host'){Start-Sleep -Seconds 2}
@@ -31,7 +33,7 @@ function Invoke-Probes($Specs){
   }
  }finally{foreach($taskProcess in $taskProcesses){if(!$taskProcess.HasExited){Stop-Process -Id $taskProcess.Id}}}
 }
-Invoke-Probes @(@{name='offline';args='-offline -footballMatchAudit';marker='MATCH_COMPLETE'})
+if(!$RoomOnly){Invoke-Probes @(@{name='offline';args='-offline -footballMatchAudit';marker='MATCH_COMPLETE'})}
 Invoke-Probes @(@{name='host';args="-localHost -port $Port -networkFootballMatchAudit -expected 2 -startAt 5 -returnAt 100";marker='NETWORK_MATCH_COMPLETE'},@{name='client';args="-localClient -port $Port -networkFootballMatchAudit -expected 2 -startAt 5 -returnAt 100";marker='NETWORK_MATCH_COMPLETE'})
 if($IncludeRegression){
  Invoke-Probes @(@{name='physics';args='-offline -footballBallAudit';marker='FOOTBALL_PHYSICS_COMPLETE'})

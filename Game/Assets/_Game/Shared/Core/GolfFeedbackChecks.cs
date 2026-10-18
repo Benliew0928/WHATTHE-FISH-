@@ -27,7 +27,7 @@ namespace WhatTheFish {
    foreach(GolfFeedbackCue cue in Enum.GetValues(typeof(GolfFeedbackCue))){
     var clip=feedback.CueClip(cue);var samples=new float[clip.samples];clip.GetData(samples,0);float peak=0,energy=0;
     foreach(float sample in samples){peak=Mathf.Max(peak,Mathf.Abs(sample));energy+=sample*sample;}
-    check(clip.channels==1&&clip.frequency==24000&&peak>.05f&&peak<.9f&&energy/samples.Length>.00005f&&Mathf.Abs(samples[0])<.01f&&Mathf.Abs(samples[^1])<.02f,"AUDIBLE_UNCLIPPED_MONO_CUE_WITH_CLEAN_EDGES_"+cue);
+    check(clip.channels==1&&clip.frequency==32000&&peak>.05f&&peak<.9f&&energy/samples.Length>.00005f&&Mathf.Abs(samples[0])<.01f&&Mathf.Abs(samples[^1])<.02f,"AUDIBLE_UNCLIPPED_MONO_CUE_WITH_CLEAN_EDGES_"+cue);
    }
    var e=new GolfFeedbackEvent{sequence=100,round=match.Round,time=match.Now,actor=GolfCartWorld.OfflineOwner,owner=GolfCartWorld.OfflineOwner,cue=GolfFeedbackCue.Turf,point=match.transform.position,normal=Vector3.up,strength=.5f};
    using(var writer=new FastBufferWriter(96,Allocator.Temp)){

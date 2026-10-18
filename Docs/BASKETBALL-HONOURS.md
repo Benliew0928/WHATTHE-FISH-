@@ -25,18 +25,19 @@ protocol 61 is required on all players.
   participants are eligible, including the losing team.
 
 The award appears after the match is finished, including the last legal
-buzzer shot or golden basket. It uses the real basketball court and seating
-from an eye-level camera, an orange basketball illustration, blue/red team
-accents, a large illustrated character and oversized point/assist totals.
-Completed passes and pass interceptions appear beneath them. **Match stats**
-shows all players; **Back to court** restores controls and the previous camera.
+buzzer shot or golden basket. The [final-buzzer ceremony](BASKETBALL-CELEBRATION.md)
+celebrates the winning squad, moves the camera to the MVP's shooting celebration,
+and settles beside an orange/navy scorecard. Points and assists lead the card;
+completed passes and pass interceptions appear beneath them. **Box score** shows
+all players. **Show results** skips the ceremony; **Next adventure** restores the
+previous camera and opens the shared post-match choices.
 The completed/cancelled match releases the court's player boundary for everyone.
 Each player can leave the court after closing their own MVP screen; other players
 may continue reading their results. The energy boundary fades out too. Starting
 a new match restores containment, including for players who previously enabled
 free roam. Practice retains its existing explicit free-roam toggle.
-The composition fits landscape safe areas and uses the existing ten character
-portraits and basketball icon atlas without adding texture or environment copies.
+The composition fits landscape safe areas and keeps the same animated 3D MVP
+beside the card, using the existing character meshes and court environment.
 
 Implementation: `BasketballStatistics.cs`, `BasketballMatch.cs`, the physical
 release/catch/scoring hooks and `BasketballMVP.cs`. Rule checks run through

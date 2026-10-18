@@ -93,6 +93,7 @@ namespace WhatTheFish {
      else if(!motion.Busy&&(DribblePhase>.90f||DribblePhase<.10f||holder.Airborne||holder.LoadingJump)){var start=CarryPosition(holder);motion.Begin(BasketballAction.Charge,heading,Quaternion.Inverse(Quaternion.Euler(0,heading,0))*(start-holder.transform.position));}
     }
     if(pendingAction!=BasketballAction.None){
+     if((pendingAction==BasketballAction.Shoot||BasketballFinishRules.IsFinish(pendingAction))&&TryGuardShotBlock(holder))return;
      var motion=holder.BasketballMotion;
      if(!motion)pendingAction=BasketballAction.None;
      else if(!motion.Busy){

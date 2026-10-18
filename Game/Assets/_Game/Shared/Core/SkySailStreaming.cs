@@ -38,7 +38,9 @@ namespace WhatTheFish {
   }
   public IEnumerator Release(SportId id){
    while(Busy)yield return null;var scene=SceneManager.GetSceneByName(SceneName(id));if(!scene.isLoaded)yield break;
-   Busy=true;environment.roots[(int)id]=null;yield return SceneManager.UnloadSceneAsync(scene);yield return Resources.UnloadUnusedAssets();Busy=false;
+   Busy=true;SceneLifetime.BeginUnload(scene);
+   try{environment.roots[(int)id]=null;yield return SceneManager.UnloadSceneAsync(scene);yield return Resources.UnloadUnusedAssets();}
+   finally{SceneLifetime.EndUnload(scene);Busy=false;}
   }
   public void ReleaseOtherIslands(SportId keep){if(!enabledForWorld)return;StartCoroutine(ReleaseOthers(keep));}
   IEnumerator ReleaseOthers(SportId keep){foreach(SportId id in Enum.GetValues(typeof(SportId)))if(id!=keep&&Loaded(id))yield return Release(id);}

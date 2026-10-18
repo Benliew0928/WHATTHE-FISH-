@@ -33,8 +33,12 @@ namespace WhatTheFish {
    hud.CloseMenu();app.view.enabled=false;
    for(int style=0;style<5;style++){
     FootballTrailStyle.Select(style);ball.ResetBall();Place(ball.KickoffPosition+new Vector3(0,-ball.WorldRadius,-.9f));yield return new WaitForSeconds(.4f);
-    Check(ball.TryKick(app.LocalAthlete,1),"real kick "+style);yield return new WaitForSeconds(.28f);
-    Check(trail.Style==style&&trail.Ribbon.emitting&&trail.Ribbon.positionCount>3,"moving ball emits chosen trail "+style);
+    Check(ball.TryKick(app.LocalAthlete,1),"real kick "+style);
+    float flightEnd=Time.time+.28f,headError=0;int visibleFrames=0;
+    while(Time.time<flightEnd){yield return new WaitForEndOfFrame();if(trail.Ribbon.enabled){visibleFrames++;headError=Mathf.Max(headError,Vector3.Distance(trail.Wake.Head,ball.transform.position));}}
+    Check(visibleFrames>2&&headError<.0001f,"trail head stays pinned throughout kick "+style+" frames="+visibleFrames+" error="+headError);
+    Check(trail.Wake.Length<=3.201f,"football wake length capped "+style);
+    Check(trail.Style==style&&trail.Wake.Emitting&&trail.Ribbon.positionCount>3,"moving ball emits chosen trail "+style);
     Check(trail.Ribbon.sharedMaterial==FootballTrailStyle.Material(style),"shared material "+style);
     var camera=Camera.main;camera.transform.position=ball.transform.position+new Vector3(2.2f,1.5f,1);camera.transform.LookAt(ball.transform.position+Vector3.back*1.25f);camera.fieldOfView=55;
     yield return Capture("style-"+style+"-close");
@@ -42,11 +46,11 @@ namespace WhatTheFish {
     ball.ResetBall();Place(ball.KickoffPosition+new Vector3(4,-ball.WorldRadius,-4));yield return null;yield return null;
     var points=new Vector3[trail.Ribbon.positionCount];trail.Ribbon.GetPositions(points);
     Check(points.All(p=>Vector3.Distance(p,ball.transform.position)<.1f),"reset clears teleport streak "+style);
-    yield return new WaitForSeconds(.8f);Check(!trail.Ribbon.emitting&&!trail.Ribbon.enabled,"stationary effect fades "+style);
+    yield return new WaitForSeconds(.8f);Check(!trail.Wake.Emitting&&!trail.Ribbon.enabled,"stationary effect fades "+style);
    }
    FootballTrailStyle.Select(2);FootballTrailStyle.Load();Check(FootballTrailStyle.Selected==2,"saved selection reloads");
    FootballTrailStyle.Select(99);Check(FootballTrailStyle.Selected==0,"invalid preference falls back safely");
-   trail.enabled=false;Check(trail.Ribbon.positionCount==0&&!trail.Ribbon.emitting,"disable releases trail history");trail.enabled=true;
+   trail.enabled=false;Check(trail.Ribbon.positionCount==0&&!trail.Wake.Emitting,"disable releases trail history");trail.enabled=true;
    app.view.enabled=true;app.LeaveCourt();yield return new WaitForSeconds(.3f);
    app.Show("customize");yield return new WaitForSeconds(.4f);Check(app.Menu.Page=="customize","main customization page reachable");yield return Capture("customize-main");
    FootballTrailStyle.Select(original);Finish();

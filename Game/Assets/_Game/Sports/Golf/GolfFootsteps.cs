@@ -54,12 +54,12 @@ namespace WhatTheFish {
    dead.Clear();foreach(var pair in steps)if(!pair.Key||!Athlete.Active.Contains(pair.Key))dead.Add(pair.Key);foreach(var actor in dead)steps.Remove(actor);
   }
   public static bool FootContact(float height,float rest,ref float previous,ref bool lifted,float lift,float plant){if(height>rest+lift)lifted=true;bool hit=lifted&&height<=rest+plant&&height<=previous;if(hit)lifted=false;previous=height;return hit;}
-  void Emit(GolfFootSurface surface,Vector3 point,float speed,bool path){counts[(int)surface]++;int i=cursor++%voices.Length;var source=voices[i];source.Stop();source.transform.position=point;bool recorded=path&&walkway.Length>0;source.clip=recorded?walkway[walkwayTake++%walkway.Length]:clips[(int)surface];if(recorded)RecordedContacts++;source.pitch=recorded?1:Random.Range(.94f,1.06f);gains[i]=settings.footstepVolume*Mathf.Lerp(.65f,1,Mathf.InverseLerp(1,6,speed));source.volume=gains[i]*MenuPreferences.SFXVolume;source.Play();}
+  void Emit(GolfFootSurface surface,Vector3 point,float speed,bool path){counts[(int)surface]++;int i=cursor++%voices.Length;var source=voices[i];source.Stop();source.transform.position=point;bool recorded=path&&walkway.Length>0;source.clip=recorded?walkway[walkwayTake++%walkway.Length]:GolfFeedbackSounds.Footstep(surface,speed>4);if(recorded)RecordedContacts++;source.pitch=1;gains[i]=settings.footstepVolume*Mathf.Lerp(.65f,1,Mathf.InverseLerp(1,6,speed));source.volume=gains[i]*MenuPreferences.SFXVolume;source.Play();}
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public void ReviewFocus(bool value){focused=value;}
 #endif
   void OnApplicationFocus(bool value){focused=value;}
   void OnDisable(){steps.Clear();foreach(var voice in voices)if(voice)voice.Stop();}
-  void OnDestroy(){if(clips!=null)foreach(var clip in clips)if(clip)Destroy(clip);}
+  void OnDestroy(){}
  }
 }

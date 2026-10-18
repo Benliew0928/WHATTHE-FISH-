@@ -71,7 +71,7 @@ namespace WhatTheFish {
     if(Mathf.Abs(state.speed)>.08f)yaw+=input.x*Steering*Mathf.Clamp01(Mathf.Abs(state.speed)/2)*Mathf.Sign(state.speed)*step;
     var facing=Quaternion.Euler(0,yaw,0);var delta=facing*Vector3.forward*(state.speed*step);
     float travel=Distance(cart,state.position,facing,delta);
-    if(travel+.0001f<delta.magnitude)state.speed=0;
+     if(travel+.0001f<delta.magnitude){if(cart)cart.AudioBump(Mathf.Abs(state.speed));state.speed=0;}
     var candidate=state.position+(delta.sqrMagnitude>.000001f?delta.normalized*travel:Vector3.zero);
     if(Surface(candidate,yaw,out var supported,out var rotation)&&Mathf.Abs(supported.y-state.position.y)<.38f&&Clear(supported,rotation,cart)){
      state.position=supported;state.rotation=rotation;

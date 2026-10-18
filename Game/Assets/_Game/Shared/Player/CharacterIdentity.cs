@@ -60,6 +60,19 @@ namespace WhatTheFish {
   }
   public static Color TeamColor(FootballTeam team)=>team==FootballTeam.A?Blue:team==FootballTeam.B?Red:Color.white;
   public static string TeamName(FootballTeam team)=>team==FootballTeam.A?"Blue":team==FootballTeam.B?"Red":"Unassigned";
+  // Retained result records may outlive their network actor. A render-only
+  // copy can still use the recorded identity without changing a live player.
+  internal static void ApplyHonoursIdentity(Transform copy,byte number,FootballTeam uniform){
+   if(!library)return;int preset=Mathf.Clamp(number-1,0,9),team=(int)uniform;
+   if(!bodies[preset,team]){var material=new Material(library.bodyMaterial){name="Identity "+number+" "+uniform};material.SetColor("_JerseyColor",team==0?LocalProfile.Hex(Personal[preset]):TeamColor(uniform));material.SetColor("_SkinTint",LocalProfile.Hex(Skin[preset]));material.SetColor("_AccentColor",LocalProfile.Hex(Personal[preset]));material.SetColor("_HairColor",LocalProfile.Hex(Hair[preset]));material.SetFloat("_IdentityNumber",number);material.SetFloat("_ShowOriginalHair",preset==0?1:0);material.SetFloat("_Team",team);bodies[preset,team]=material;}
+   foreach(var skin in copy.GetComponentsInChildren<SkinnedMeshRenderer>(true))skin.sharedMaterial=bodies[preset,team];
+   if(!hairs[preset]){hairs[preset]=new Material(library.hairMaterial){name="Identity hair "+number};hairs[preset].SetColor("_BaseColor",LocalProfile.Hex(Hair[preset]));}
+   if(!scalps[preset]){scalps[preset]=new Material(library.hairMaterial){name="Identity scalp "+number};scalps[preset].SetColor("_BaseColor",LocalProfile.Hex(Skin[preset]));scalps[preset].SetFloat("_Smoothness",.2f);}
+   foreach(var mesh in copy.GetComponentsInChildren<MeshFilter>(true)){
+    bool scalp=mesh.name.StartsWith("Identity scalp"),hair=mesh.name.StartsWith("Identity hair");if(!scalp&&!hair)continue;
+    mesh.sharedMesh=preset==0?null:scalp?library.nearScalp:mesh.name.EndsWith("near")?library.nearHair[preset]:library.farHair[preset];mesh.GetComponent<Renderer>().sharedMaterial=scalp?scalps[preset]:hairs[preset];
+   }
+  }
   public void Refresh(){
    if(!bound||number==0)return;int preset=Preset,team=(int)UniformTeam;
    if(applied==preset&&appliedTeam==team)return;applied=preset;appliedTeam=team;

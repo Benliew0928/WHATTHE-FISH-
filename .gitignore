@@ -7,6 +7,8 @@ Game/.vs/
 Game/.utmp/
 Builds/
 Legacy/
+# Local character development and review package; excluded at the user's request.
+/ArtSource/Shared/Characters/AthleteV2/
 # Local build packages, logs, editor backups and operating-system clutter.
 # Active source art and curated documentation galleries remain versioned.
 *.apk
@@ -15,6 +17,8 @@ Legacy/
 *.tmp
 *.bak
 *.blend[0-9]*
+# Blender's interrupted/intermediate save files are not authoring masters.
+*.blend@
 *.pyc
 *.pyo
 .DS_Store

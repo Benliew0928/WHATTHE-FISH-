@@ -51,7 +51,7 @@ namespace WhatTheFish {
   Collider ignoredStealer;uint steals;double stealTime=-100;
   public uint StealCount=>Authority?steals:haveTarget?target.steals:0;
   public double StealTime=>Authority?stealTime:haveTarget?target.stealTime:-100;
-  public bool CanSteal(Athlete actor)=>!PropLocked(actor)&&!PortalBusy&&Held&&Role(actor)==BasketballRole.Defense&&Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump;
+  public bool CanSteal(Athlete actor)=>!PropLocked(actor)&&!PortalBusy&&Held&&Role(actor)==BasketballRole.Defense&&Playing&&actor&&!actor.inTransit&&!actor.BasketballFreeRoam&&Holder!=actor&&!actor.Airborne&&!actor.LoadingJump&&(!actor.BasketballMotion||!actor.BasketballMotion.State.guardBlock);
   public bool TrySteal(Athlete actor,float heading){
    if(!Authority||!CanSteal(actor)||!Eligible(actor)||!float.IsFinite(heading)||!actor.Grounded||Outside(actor.transform.position)||!actor.BasketballMotion||actor.BasketballMotion.Busy)return false;
    if(actor.BasketballMotion.GuardActive&&holder)heading=Quaternion.LookRotation(Vector3.ProjectOnPlane(holder.transform.position-actor.transform.position,Vector3.up)).eulerAngles.y;

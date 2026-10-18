@@ -34,8 +34,9 @@ namespace WhatTheFish {
     var d=b-a;float t=d.sqrMagnitude>1e-10f?Mathf.Clamp01(Vector3.Dot(p-a,d)/d.sqrMagnitude):0;best=Mathf.Min(best,Vector3.Distance(p,a+d*t));
    }return best;
   }
-  IEnumerator Observe(string label,Vector3 target,Vector3[] vertices,int count,GolfShotMode mode,uint contact,int strokes){
-   int landings=GolfFeedback.Instance.CueCount(GolfFeedbackCue.Turf)+GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand);float until=Time.time+1;while(!ball.FollowingShot&&Time.time<until)yield return new WaitForFixedUpdate();Check(ball.FollowingShot,label+"_CONTACT_STARTS_TRAVEL");
+  static int SurfaceContacts()=>new[]{GolfFeedbackCue.Turf,GolfFeedbackCue.Sand,GolfFeedbackCue.Stone,GolfFeedbackCue.Wood}.Sum(c=>GolfFeedback.Instance.CueCount(c));
+  IEnumerator Observe(string label,Vector3 target,Vector3[] vertices,int count,GolfShotMode mode,uint contact,int strokes,bool restingTarget=false){
+   int landings=SurfaceContacts();float until=Time.time+1;while(!ball.FollowingShot&&Time.time<until)yield return new WaitForFixedUpdate();Check(ball.FollowingShot,label+"_CONTACT_STARTS_TRAVEL");
    float error=0,peak=ball.Body.position.y;uint reset=ball.ResetSequence;until=Time.time+20;
    while(ball.FollowingShot&&Time.time<until){error=Mathf.Max(error,DistanceToGuide(ball.Body.position,vertices,count));peak=Mathf.Max(peak,ball.Body.position.y);yield return new WaitForFixedUpdate();}
    float endError=Vector3.Distance(target,ball.LastGuideContact);
@@ -44,8 +45,11 @@ namespace WhatTheFish {
    Check(error<.08f&&endError<.02f,label+"_VISIBLE_PATH_AND_CONTACT_MATCH_LIVE_BALL");
    Check(match.Player(actor).TotalStroke==strokes+1,label+"_ONE_RELEASE_ONE_STROKE");
    Check(app.view.GolfShotCameraActive,label+"_SHOT_CAMERA_FOLLOWS_SWINGS_AND_PUTTS");
-   if(mode==GolfShotMode.Putt){yield return new WaitForSeconds(.8f);File.AppendAllText(report,$"REST_MEASURE {label} mode={ball.Motion} ball={ball.Body.position:F5} target={target:F5} distance={Vector3.Distance(ball.Body.position,target):F5} velocity={ball.Velocity:F5} reset={ball.ResetSequence} priorReset={reset}\n");Check(ball.Motion==GolfBallMotion.Resting&&Vector3.Distance(ball.Body.position,target)<.03f,label+"_PUTT_RESTS_AT_GLOW");}
-   else {Check(peak-ball.LastShotPosition.y>.35f,label+"_SWING_HAS_CURVED_FLIGHT");Check(GolfFeedback.Instance.CueCount(GolfFeedbackCue.Turf)+GolfFeedback.Instance.CueCount(GolfFeedbackCue.Sand)>landings,label+"_REAL_LANDING_EMITS_SURFACE_FEEDBACK");}
+   if(mode==GolfShotMode.Putt){
+    if(restingTarget){yield return new WaitForSeconds(.8f);File.AppendAllText(report,$"REST_MEASURE {label} mode={ball.Motion} ball={ball.Body.position:F5} target={target:F5} distance={Vector3.Distance(ball.Body.position,target):F5} velocity={ball.Velocity:F5} reset={ball.ResetSequence} priorReset={reset}\n");Check(ball.Motion==GolfBallMotion.Resting&&Vector3.Distance(ball.Body.position,target)<.03f,label+"_PUTT_RESTS_AT_GLOW");}
+    else Check(!ball.FollowingShot&&!ball.Body.isKinematic&&SurfaceContacts()>landings,label+"_OBSTRUCTED_PUTT_HANDS_OFF_WITH_CONTACT_SOUND");
+   }
+   else {Check(peak-ball.LastShotPosition.y>.35f,label+"_SWING_HAS_CURVED_FLIGHT");Check(SurfaceContacts()>landings,label+"_REAL_LANDING_EMITS_SURFACE_FEEDBACK");}
   }
   IEnumerator Start(){
    var args=Environment.GetCommandLineArgs();report=args[Array.IndexOf(args,"-report")+1];DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
@@ -63,7 +67,8 @@ namespace WhatTheFish {
      var aim=match.Aim(actor);app.view.GolfPreview.Show(ball,match.Course,aim.ballPosition,heading,power,aim.mode,Camera.main);
      Check(app.view.GolfPreview.HasTarget,"TARGET_ON_REAL_COURSE_SURFACE");
      var target=app.view.GolfPreview.EndPoint;var vertices=app.view.GolfPreview.GetComponent<MeshFilter>().sharedMesh.vertices;int count=app.view.GolfPreview.PointCount;uint contact=ball.GuideContactSequence;int strokes=match.Player(actor).TotalStroke;
-     app.view.RequestGolfSwing(power);yield return Observe($"HOLE_{hole.number}_{mode}_{power:F2}",target,vertices,count,mode,contact,strokes);
+     bool restingTarget=app.view.GolfPreview.ReviewTargetResting;
+     app.view.RequestGolfSwing(power);yield return Observe($"HOLE_{hole.number}_{mode}_{power:F2}",target,vertices,count,mode,contact,strokes,restingTarget);
     }
     app.view.CancelGolfAim();if(hole.number<5)Check(match.EnterHole(ball,hole.number)==GolfHoleResult.Completed,"ADVANCE_TO_NEXT_TARGET_"+hole.number);
    }

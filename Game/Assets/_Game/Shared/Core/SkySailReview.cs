@@ -9,7 +9,7 @@ using UnityEngine;
 using Unity.Profiling;
 
 namespace WhatTheFish {
- public sealed class SkySailReview:MonoBehaviour {
+ public sealed partial class SkySailReview:MonoBehaviour {
   string folder;bool failed,network,captureOnly,walkOnly;AppRoot app;SkySailWorld world;Camera camera;
   ProfilerRecorder drawCalls;
   void Awake(){drawCalls=ProfilerRecorder.StartNew(ProfilerCategory.Render,"Draw Calls Count",1);}
@@ -29,14 +29,15 @@ namespace WhatTheFish {
    }
    var streaming=app.environments.GetComponent<SkySailStreaming>();
    world.reviewCamera=true;app.view.enabled=false;
+   if(Environment.GetCommandLineArgs().Contains("-skyGeometryReview")){yield return GeometryReview(streaming);Finish();yield break;}
    if(Environment.GetCommandLineArgs().Contains("-skyDetailsReview")){
     foreach(var sport in SkySailMap.Circuit){yield return streaming.Prepare(sport);Check(streaming.Error==null,sport+" details prepared");app.SelectSport(sport);yield return null;yield return IslandDetails(sport);}
     Finish();yield break;
    }
    if(walkOnly){foreach(var sport in SkySailMap.Circuit){yield return streaming.Prepare(sport);app.SelectSport(sport);yield return null;yield return WalkApproach(sport);}Finish();yield break;}
    camera.transform.position=new Vector3(0,810,-1100)-world.Origin;camera.transform.LookAt(new Vector3(0,0,70)-world.Origin);camera.fieldOfView=62;yield return null;Capture("01_World_Overview");
-   for(int leg=0;leg<(captureOnly?1:4);leg++){
-    var source=app.SelectedSport;var target=SkySailMap.Neighbor(source,1);
+   for(int leg=0;leg<(captureOnly?1:Environment.GetCommandLineArgs().Contains("-skyBothDirections")?8:4);leg++){
+    var source=app.SelectedSport;var target=SkySailMap.Neighbor(source,leg<4?1:-1);
     if(!captureOnly)yield return IslandDetails(source);
     Place(SkySailMap.Exit(source,0));Physics.SyncTransforms();
     Check(Physics.Raycast(app.LocalAthlete.transform.position+Vector3.up*.3f,Vector3.down,1,1<<8),source+" station arrival is supported");
@@ -101,9 +102,16 @@ namespace WhatTheFish {
    var local=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);if(!local){Check(false,"Network player ready");yield break;}local.ReadyRpc(true);
    if(app.rooms.Host){while(FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Any(p=>!p.Ready.Value)&&Time.realtimeSinceStartup<limit)yield return null;var task=app.rooms.SetExploring(true);while(!task.IsCompleted)yield return null;}
    while(!app.Exploring&&Time.realtimeSinceStartup<limit)yield return null;
+   // Entering a room now includes the shared teleport sequence. Moving the
+   // fixture before it finishes is overwritten by the authoritative spawn.
+   limit=Time.realtimeSinceStartup+90;
+   while((!DevelopmentProbe.ReadyToReviewSport||app.environments.GetComponent<SkySailStreaming>().Busy)&&Time.realtimeSinceStartup<limit)yield return null;
+   Check(DevelopmentProbe.ReadyToReviewSport,"Room entry teleport completed before boarding setup");
+   if(!DevelopmentProbe.ReadyToReviewSport)yield break;
+   DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    if(app.rooms.Host){int i=0;foreach(var p in FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None)){var a=p.GetComponent<Athlete>();a.capsule.enabled=false;var pos=SkySailMap.Exit(app.SelectedSport,i++);p.GetComponent<NetworkTransform>().Teleport(pos,Quaternion.identity,Vector3.one);a.capsule.enabled=true;}}
    foreach(var target in new[]{SportId.Golf,SportId.Football}){
-    yield return new WaitForSeconds(2);if(app.rooms.Host)world.RequestTravel(target);else Check(!world.CanTravel(target,out _),"Guest cannot choose the room destination");
+    yield return new WaitForSeconds(2);if(app.rooms.Host){bool canBoard=world.CanTravel(target,out var reason);Check(canBoard,"Host can board for "+target+" "+reason);if(!canBoard)yield break;world.RequestTravel(target);}else Check(!world.CanTravel(target,out _),"Guest cannot choose the room destination");
     bool ride=false;limit=Time.realtimeSinceStartup+110;
     while(Time.realtimeSinceStartup<limit){if(world.Journey.phase==SkySailPhase.Riding)ride=true;if(ride&&!world.Travelling)break;yield return null;}
     Check(ride&&!world.Travelling,"Replicated group ride completed to "+target);Check(NetworkAthlete.HostPlayer&&app.SelectedSport==target&&NetworkAthlete.HostPlayer.WorldSport.Value==target,"Shared destination agrees with host");

@@ -13,6 +13,10 @@ namespace WhatTheFish {
   public double PlaybackTime {get;private set;}
   public int RecordedFrames=>count;
   public int ReplayCount {get;private set;}
+  public bool TryGetBroadcastView(out Pose pose,out float fov){
+   pose=default;fov=54;if(!presenting||!HasFootage||!camera)return false;
+   pose=new Pose(camera.transform.position,camera.transform.rotation);fov=camera.fieldOfView;return true;
+  }
   readonly double[] times=new double[Capacity],clipTimes=new double[Capacity];readonly List<FootballReplayTrack> tracks=new();
   readonly List<FootballAudioEvent> sounds=new(),clipSounds=new();
   FootballMatch match;FootballBall ball;FootballReplayTrack ballTrack;FootballReplayHUD hud;

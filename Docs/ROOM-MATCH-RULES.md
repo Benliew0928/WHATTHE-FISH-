@@ -18,9 +18,18 @@ three-second opening countdown. Both sports default to three playing minutes;
 the host may choose three, five or ten minutes before everyone readies up.
 
 Only the host simulates scoring, possession, restarts and results. Guests receive
-snapshots and send owner-authorized inputs. Protocol 67 requires matching builds.
+snapshots and send owner-authorized inputs. Protocol 68 requires matching builds.
 There is one active match in the room. Travel is blocked until that match finishes
-or is voided; the four-island shared-travel model is retained.
+or is voided; the four-island shared-travel model is retained. The same departure
+guard covers Golf and Fishing, including their opening countdowns. Station
+buttons show attendance or the reason departure is unavailable.
+
+Starting any sport validates and places connected spectators at the island's
+viewing positions. Fishing also places playing participants on distinct piers
+before publishing its countdown. An obstructed arrival rejects the start without
+moving anyone or beginning a new round. A journey and a match cannot start in
+the same frame. See [teammate testing](TEAMMATE-TESTING.md) for release sharing,
+version compatibility and a manual multiplayer checklist.
 
 ## Basketball
 
@@ -51,6 +60,13 @@ or is voided; the four-island shared-travel model is retained.
   on reaching it. Players already in their half keep control. The receiving
   teammates remain free to move and jump throughout. A small top HUD notice
   explains either automatic run to the affected player.
+- The collector first tries to go around player bodies. If it makes no meaningful
+  progress toward its current retrieval waypoint for 1.5 seconds, it may pass
+  through teammates and opponents until collection finishes. This also breaks
+  detour loops around a player standing on the waypoint. Scenery collisions stay
+  active, other players retain control, and possession and clocks stay unchanged.
+  Normal body collisions return on pickup, cancellation, room recovery or leaving
+  the match. Existing collision exceptions owned by other systems are preserved.
 - Scoring players stay in their half until the inbound pass. The inbounder stays
   planted outside the line, cannot jump/shoot/use abilities and must pass to a
   teammate. Free-direction or outward inbounds are rejected. Both clocks stay
@@ -134,4 +150,17 @@ training has been retired and its source and artifacts archived locally.
 basket flow; `-Local` repeats it with a host and guest. The fixture uses physical
 rim crossings, tests a full rotation on both teams, detects reset teleports,
 checks individual control return and captures both automatic-movement notices.
+It also parks teammates and opponents on the retrieval approach, crowds a
+baseline, and checks a corner cancellation. The checks require bounded physical
+collection, preserved clocks/possession, restored body collisions and host
+checkpoint recovery during clearance.
 Evidence belongs under `Builds/BasketballRestartQA/`.
+
+The 17 October 2026 blocked-retrieval fix passed 306 offline restart checks and
+307 host / 6 guest checks in `Run-20261017-164939-640/` and
+`Run-20261017-165049-295/`. The same freshly built Windows player passed the
+practice inbound suite under
+`Builds/BasketballInboundQA/Offline-20261017-165049-328-3daa40/`. Build logs,
+source hashes and delivery verification are in `Builds/BasketballBlockedInboundQA/`.
+These are Windows and local-transport checks; Android device behavior and WAN
+performance are not established by these runs.

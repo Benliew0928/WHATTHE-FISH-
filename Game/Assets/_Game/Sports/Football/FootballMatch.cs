@@ -33,12 +33,12 @@ namespace WhatTheFish {
   public bool MatchMode=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening||FootballBots.Instance&&FootballBots.Instance.Solo;
   public bool SoloTeamSelection=>FootballBots.Instance&&FootballBots.Instance.Solo&&!(NetworkManager.Singleton&&NetworkManager.Singleton.IsListening);
   public bool CanConfirmSoloTeam=>Authority&&Context&&SoloTeamSelection&&State.Phase==FootballMatchPhase.TeamSelection&&TeamOf(AppRoot.Instance.LocalAthlete)!=FootballTeam.None;
-  public bool CanStart=>Authority&&Context&&MatchMode&&!Active&&EligiblePlayers>=2&&EligiblePlayers<=10&&EligiblePlayers%2==0;
+  public bool CanStart=>Authority&&Context&&!RoomMatchStart.Travelling&&MatchMode&&!Active&&EligiblePlayers>=2&&EligiblePlayers<=10&&EligiblePlayers%2==0;
   static ulong PlayerId(Athlete actor)=>FootballBots.Id(actor);
   static IEnumerable<Athlete> Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
   bool RosterValid()=>participants.Count>0&&participants.All(p=>p.Value&&p.Value.isActiveAndEnabled&&!p.Value.inTransit)&&Eligible().Select(PlayerId).OrderBy(id=>id).SequenceEqual(participants.Keys.OrderBy(id=>id));
   public void CancelMatch(){if(!Authority||!State.Active)return;goalFollowThroughUntil=0;State.Cancel();ClearGoalSequence();goals=null;ClearInputs();ball.ResetBall();Publish();}
-  void Awake(){ball=GetComponent<FootballBall>();if(!rules)rules=Resources.Load<FootballMatchRules>("FootballMatchRules");if(!rules)throw new InvalidOperationException("Missing FootballMatchRules resource.");gameObject.AddComponent<FootballReplay>();mvp=FootballMVP.Create();}
+  void Awake(){ball=GetComponent<FootballBall>();if(!rules)rules=Resources.Load<FootballMatchRules>("FootballMatchRules");if(!rules)throw new InvalidOperationException("Missing FootballMatchRules resource.");gameObject.AddComponent<FootballReplay>();mvp=FootballMVP.Create();gameObject.AddComponent<FootballStadiumCelebration>();}
   void OnEnable(){Instance=this;}
   void OnDestroy(){if(mvp)Destroy(mvp.gameObject);}
   void OnDisable(){if(Authority)ClearMatch();participants.Clear();Selection.Clear();goals=null;if(Instance==this)Instance=null;}
@@ -59,12 +59,13 @@ namespace WhatTheFish {
   public bool StartTestMatch()=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening?BeginMatch(true):false;
 #endif
   bool BeginMatch(bool singlePlayerTest,float? episodeSeconds=null){
-   if(!Authority||!Context||Active||!singlePlayerTest&&!MatchMode||!ball.Pitch||ball.GoalCount!=2)return false;
+   if(!Authority||!Context||RoomMatchStart.Travelling||Active||!singlePlayerTest&&!MatchMode||!ball.Pitch||ball.GoalCount!=2)return false;
+   if(!RoomMatchStart.Prepare(SportId.Football,out var arrivals))return false;
    var roster=Eligible().OrderBy(PlayerId).ToArray();if(!Selection.Begin(roster.Select(PlayerId),singlePlayerTest))return false;
    Statistics.Clear();participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);SyncTeams();
    goals=new FootballGoalDetector[ball.GoalCount];
    for(int i=0;i<goals.Length;i++){int sign=ball.GoalSign(i);float paintedEdge=(sign>0?ball.PitchBounds.max.z:ball.PitchBounds.min.z)+sign*rules.goalLineWidth*.5f;float line=sign*Mathf.Max(sign*paintedEdge,sign*ball.GoalFront(i));goals[i]=new FootballGoalDetector(ball.GoalBounds(i),line,sign);}
-   ClearGoalSequence();ball.ResetFootballProps();goalFollowThroughUntil=0;State.SelectTeams(Now,rules.teamSelectionSeconds,episodeSeconds??MenuMatchRules.RegulationSeconds(rules.regulationSeconds),rules.overtimeSeconds,SoloTeamSelection?0:rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();
+   ClearGoalSequence();ball.ResetFootballProps();goalFollowThroughUntil=0;arrivals.Apply();State.SelectTeams(Now,rules.teamSelectionSeconds,episodeSeconds??MenuMatchRules.RegulationSeconds(rules.regulationSeconds),rules.overtimeSeconds,SoloTeamSelection?0:rules.kickoffSeconds);ClearInputs();wasContext=true;Publish();
    return true;
   }
   public bool ChooseTeam(Athlete actor,FootballTeam team,uint selectionRevision){

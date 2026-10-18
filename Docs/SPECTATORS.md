@@ -43,7 +43,11 @@ kick, acquire a ball, shoot, use sports props, summon a buggy, swing or fish.
 Their capsules collide with scenery but do not obstruct players or balls.
 Only playing participants enter teams, bot-fill counts, fishing piers and
 golf rounds. Fishing spectators arrive around the lagoon; golf spectators
-arrive near the existing southern arrival area.
+arrive near the existing southern arrival area. Starting a match now returns
+connected spectators to these viewing positions even if they were at the
+Skyrail station. All destinations are checked before the new round commits;
+a blocked position rejects the start. The spectator host's Start match button
+shows eligibility guidance and disables during an active match or journey.
 
 ## Entry and shared travel
 
@@ -65,7 +69,7 @@ host are unchanged.
 
 Blocked landings, cancellation, loading timeout or a changed roster restore
 the group. A cancelled initial entry returns to the waiting room. Protocol
-**65** is required on every peer; see [disconnect recovery](DISCONNECTS.md) and
+**68** is required on every peer; see [disconnect recovery](DISCONNECTS.md) and
 [automatic host succession](HOST-MIGRATION.md).
 
 ## Source and checks

@@ -5,7 +5,12 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public sealed partial class BasketballMatch {
-  sealed class RestartMove {public Athlete actor;public Vector3 destination,approach,detour;public bool inbound,approaching,avoiding;public double avoidUntil;}
+  sealed class RestartMove {
+   public Athlete actor;public Vector3 destination,approach,detour;public bool inbound,approaching,avoiding,passingPlayers;
+   public double avoidUntil,progressAt;public float bestDistance;
+   public readonly List<Collider> ignoredPlayers=new();
+  }
+  const double InboundStallSeconds=1.5;
   readonly Dictionary<ulong,RestartMove> automaticMoves=new();
   readonly Dictionary<FootballTeam,int> inboundTurns=new();
   ulong inbounder=ulong.MaxValue;Vector3 inboundExit;bool localAutomatic;
@@ -15,26 +20,31 @@ namespace WhatTheFish {
   public bool RetrievingInbound(Athlete actor)=>AutomaticMovement(actor)&&PlayerId(actor)==Snapshot.inbounder;
   public string MovementHint(Athlete actor)=>!AutomaticMovement(actor)?"":RetrievingInbound(actor)?"AUTO-MOVING TO INBOUND\nPicking up the ball outside the court":"AUTO-MOVING TO YOUR HALF\nControls return when you reach your half";
   void UpdateAutomaticInput(){
+   if(!Authority&&automaticMoves.Count>0)ResetRestartMovement();
    bool current=AppRoot.Instance&&AutomaticMovement(AppRoot.Instance.LocalAthlete);
    if(current!=localAutomatic){PlayerView.Instance?.ClearMatchInput();localAutomatic=current;}
   }
-  void ResetRestartMovement(){foreach(var move in automaticMoves.Values)if(move.actor)move.actor.ResetLocomotion();automaticMoves.Clear();inbounder=ulong.MaxValue;}
+  void RestoreRestartCollisions(RestartMove move){
+   if(move.actor&&move.actor.capsule)foreach(var other in move.ignoredPlayers)if(other)Physics.IgnoreCollision(move.actor.capsule,other,false);
+   move.ignoredPlayers.Clear();
+  }
+  void ResetRestartMovement(){foreach(var move in automaticMoves.Values){RestoreRestartCollisions(move);if(move.actor)move.actor.ResetLocomotion();}automaticMoves.Clear();inbounder=ulong.MaxValue;}
   void StartAutomaticMove(Athlete actor,Vector3 destination,bool inbound){
    actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();
    if(PlayerView.Instance&&PlayerView.Instance.target==actor)PlayerView.Instance.ClearMatchInput();
    var approach=destination;
    if(inbound){var local=ball.transform.parent.InverseTransformPoint(destination);var limit=BasketballBall.PaintedCourtLimits;local.x=Mathf.Clamp(local.x,-limit.x+1.2f,limit.x-1.2f);local.z=Mathf.Clamp(local.z,-limit.y+1.2f,limit.y-1.2f);approach=ball.transform.parent.TransformPoint(local);}
-   automaticMoves.Add(PlayerId(actor),new RestartMove{actor=actor,destination=destination,approach=approach,inbound=inbound,approaching=inbound});
+   automaticMoves.Add(PlayerId(actor),new RestartMove{actor=actor,destination=destination,approach=approach,inbound=inbound,approaching=inbound,progressAt=Now,bestDistance=Vector3.ProjectOnPlane(approach-actor.transform.position,Vector3.up).magnitude});
   }
   void StepRestartMovement(){
    foreach(var pair in automaticMoves.ToArray()){
-    var move=pair.Value;var actor=move.actor;if(!actor){automaticMoves.Remove(pair.Key);continue;}
-    if(move.approaching&&Vector3.ProjectOnPlane(move.approach-actor.transform.position,Vector3.up).magnitude<.22f)move.approaching=false;
+    var move=pair.Value;var actor=move.actor;if(!actor){RestoreRestartCollisions(move);automaticMoves.Remove(pair.Key);continue;}
+    if(move.approaching&&Vector3.ProjectOnPlane(move.approach-actor.transform.position,Vector3.up).magnitude<.22f){move.approaching=false;move.bestDistance=float.PositiveInfinity;move.progressAt=Now;}
     bool arrived=Vector3.ProjectOnPlane(move.destination-actor.transform.position,Vector3.up).magnitude<.12f;
     if(!move.inbound){float home=TeamOf(actor)==FootballTeam.A?-1:1;arrived=ball.transform.parent.InverseTransformPoint(actor.transform.position).z*home>=actor.capsule.radius+actor.capsule.skinWidth+.15f;}
     if(!arrived)continue;
     if(move.inbound&&!ball.BeginInbound(actor,inboundExit,false))continue;
-    actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();automaticMoves.Remove(pair.Key);
+    RestoreRestartCollisions(move);actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();automaticMoves.Remove(pair.Key);
    }
    Publish();
   }
@@ -61,8 +71,26 @@ namespace WhatTheFish {
   public bool AutomaticCommand(Athlete actor,out PlayerCommand command){
    command=default;if(!Authority||!AutomaticMovement(actor)||!automaticMoves.TryGetValue(PlayerId(actor),out var move))return false;
    var delta=Vector3.ProjectOnPlane((move.approaching?move.approach:move.destination)-actor.transform.position,Vector3.up);
+   if(move.inbound){
+    // Measure progress toward the actual waypoint, not distance travelled:
+    // a detour can keep circling a player standing on the approach itself.
+    if(delta.magnitude<move.bestDistance-.2f){move.bestDistance=delta.magnitude;move.progressAt=Now;}
+    if(Now-move.progressAt>=InboundStallSeconds)move.passingPlayers=true;
+    if(move.passingPlayers){
+     move.avoiding=false;
+     // Only this automatic collector may pass through athlete bodies. Keep
+     // ground, stands, hoop supports and every other collision unchanged.
+     // Refresh for newly spawned/re-enabled bodies; preserve existing ignores.
+     foreach(var other in Athlete.Active){
+      if(!other||other==actor||!other.capsule||!other.capsule.enabled)continue;
+      if(Physics.GetIgnoreCollision(actor.capsule,other.capsule))continue;
+      if(!move.ignoredPlayers.Contains(other.capsule))move.ignoredPlayers.Add(other.capsule);
+      Physics.IgnoreCollision(actor.capsule,other.capsule,true);
+     }
+    }
+   }
    if(move.avoiding&&(Now>=move.avoidUntil||Vector3.ProjectOnPlane(move.detour-actor.transform.position,Vector3.up).magnitude<.25f))move.avoiding=false;
-   if(!move.avoiding&&delta.magnitude>.3f){
+   if(!move.passingPlayers&&!move.avoiding&&delta.magnitude>.3f){
     var forward=delta.normalized;var side=Vector3.Cross(Vector3.up,forward);Athlete obstacle=null;float closest=float.PositiveInfinity;
     foreach(var other in participants.Values){
      if(other==actor||!other||!other.capsule||Mathf.Abs(other.transform.position.y-actor.transform.position.y)>1.2f)continue;

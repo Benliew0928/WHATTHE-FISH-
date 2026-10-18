@@ -51,7 +51,7 @@ namespace WhatTheFish {
   public bool SelectFishingFish(int fish){
    var g=FishingGame.Instance;var p=g?g.Player(target):null;
    if(!active||!g||!g.Context||!p.HasValue||p.Value.phase!=FishingPhase.Ready||!g.Available(target,fish))return false;
-   if(SelectedFishingFish!=fish){SelectedFishingFish=fish;SelectionRevision++;}return true;
+   if(SelectedFishingFish!=fish){SelectedFishingFish=fish;SelectionRevision++;GolfFishingAudio.PlayMenu("ui-select");}return true;
   }
   public bool SelectFishingAt(Vector2 point,bool touch=false){var g=FishingGame.Instance;return g&&SelectFishingFish(g.PickFish(target,cam,point,touch));}
   void UpdateFishingTargetInput(){
@@ -76,7 +76,7 @@ namespace WhatTheFish {
   public void ReadyFishing(){var g=FishingGame.Instance;var p=g?g.Player(target):null;if(active&&g&&p.HasValue&&!p.Value.Busy)QueueFishing(p.Value.ready?FishingAction.Unready:FishingAction.Ready);}
   public bool BeginFishing(int source=int.MinValue){
    var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!active||!g||!g.Context||!p.HasValue||fishingHeld||pendingFishing!=FishingAction.None)return false;
-   if(p.Value.phase==FishingPhase.Ready){if(FishingCastPending||!g.CanCast(target,SelectedFishingFish)||!g.VisibleTarget(target,cam,SelectedFishingFish))return false;QueueFishing(FishingAction.Cast);fishingAimFrozenUntil=Time.unscaledTime+1.5f;}
+   if(p.Value.phase==FishingPhase.Ready){if(FishingCastPending||!g.CanCast(target,SelectedFishingFish)||!g.VisibleTarget(target,cam,SelectedFishingFish)){GolfFishingAudio.PlayMenu("ui-error");return false;}QueueFishing(FishingAction.Cast);fishingAimFrozenUntil=Time.unscaledTime+1.5f;}
    else if(p.Value.phase==FishingPhase.Bite){if(FishingHookPending||g.Now>=p.Value.hookUntil)return false;QueueFishing(FishingAction.Hook);fishingHookPending=true;fishingHookRound=pendingFishingRound;fishingHookSequence=pendingFishingSequence;fishingHookQueuedAt=Time.unscaledTime;}
    else if(p.Value.phase==FishingPhase.Reeling)return BeginCountersteer(1,source);
    else return false;

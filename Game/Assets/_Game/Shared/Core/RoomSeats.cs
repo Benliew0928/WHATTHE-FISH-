@@ -50,7 +50,7 @@ namespace WhatTheFish {
    }
    return SpectatorLanding(sport,slot);
   }
-  public static TeleportLanding StationLanding(SportId sport,int index)=>new(SkySailMap.Port(sport)+SkySailMap.Facing(sport)*new Vector3((index%5-2)*1.8f,.76f,-2.6f-index/5*1.4f),SkySailMap.Facing(sport)*Quaternion.Euler(0,180,0));
+  public static TeleportLanding StationLanding(SportId sport,int index)=>new(SkySailMap.Port(sport)+SkySailMap.Facing(sport)*new Vector3((index%5-2)*1.8f,.76f,-3.2f-index/5*1.25f),SkySailMap.Facing(sport)*Quaternion.Euler(0,180,0));
   public static TeleportLanding SpectatorLanding(SportId sport,int slot){
    if(slot<0||slot>=10)throw new ArgumentOutOfRangeException(nameof(slot));
    Vector3 p;

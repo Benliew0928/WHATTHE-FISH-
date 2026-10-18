@@ -37,7 +37,13 @@ def rounded_rect(w,d,r,z,n=12):
 def cabin_shell(m):
     # Rounded perimeter structural rings; open glazing areas preserve views.
     for z,r,mat in ((-.18,.16,'Steel'),(.04,.11,'Bronze'),(.95,.11,'Teal'),(2.85,.10,'Bronze'),(3.12,.16,'Teal')):
-        m.curve('Perimeter',rounded_rect(5.8,7.4,.65,z),r,mat,12)
+        points=rounded_rect(5.8,7.4,.65,z)
+        if z in (.95,2.85):
+            # Do not run the perimeter rail through the rear doorway.
+            split=next(i for i in range(len(points)-1) if points[i][1]<-3.69 and points[i+1][1]<-3.69 and points[i][0]<0<points[i+1][0])
+            m.curve('Perimeter',points[:split+1]+[(-1.36,-3.7,z)],r,mat,12)
+            m.curve('Perimeter',[(1.36,-3.7,z)]+points[split+1:],r,mat,12)
+        else:m.curve('Perimeter',points,r,mat,12)
     m.box('Undertray',(0,0,-.23),(5.2,6.7,.35),'Steel',.15)
     for y in [i*.17-3.4 for i in range(41)]:m.box('Deck',(0,y,0),(5.32,.16,.11),'Timber',.018)
     for x in (-2.72,2.72):
@@ -46,26 +52,35 @@ def cabin_shell(m):
             m.box('LowerPanels',(x,y*.79,.51),(.12,2.15,.79),'Teal',.05)
             m.box('PanelInlay',(x*1.025,y*.79,.64),(.02,1.80,.025),'Bronze',.005)
             rail(m,'Handrail',(x*.87,y-.9,1.22),(x*.87,y+.9,1.22))
+            for yy in (y-.72,y+.72):rail(m,'HandrailBracket',(x*.87,yy,1.22),(x,yy,.88),.028)
     # Rear entrance is left clear for independent sliding door modules.
     for x in (-2.02,2.02):
         m.box('EntryPanel',(x,-3.42,.55),(1.24,.15,.88),'Teal',.06)
         m.box('EntryPillar',(x*.68,-3.47,1.61),(.14,.17,3.0),'Cream',.04)
     for x in (-1.7,0,1.7):m.box('FrontPanel',(x,3.4,.5),(1.55,.16,.85),'Teal',.05)
     for x in (-2.2,2.2):
-        m.box('Bumper',(x,-3.57,.0),(.65,.18,.21),'Steel',.07)
+        m.box('Bumper',(x,-3.57,-.16),(.65,.18,.21),'Steel',.07)
         m.rock('Lamp',(x,-3.52,2.61),(.13,.1,.13),1,'Lamp',3)
     # Arched metal roof, thick fascia and warm interior soffit.
-    v=[];f=[];n=36
-    for y in (-3.75,3.75):
+    v=[];f=[];n=36;ny=30
+    for j in range(ny+1):
+        y=-3.75+j*.25
         for i in range(n+1):
             x=-3.05+6.1*i/n;v.append((x,y,3.08+.48*(1-(x/3.05)**2)))
-    for i in range(n):f.append((i,i+1,i+1+n+1,i+n+1))
+    glass=[]
+    for j in range(ny):
+        for i in range(n):
+            a=j*(n+1)+i;face=(a,a+1,a+1+n+1,a+n+1)
+            (glass if 14<=i<22 and 9<=j<21 else f).append(face)
     m.add('Roof',v,f,'Teal',True)
     m.add('Soffit',[(x,y,z-.12) for x,y,z in v],[tuple(reversed(a)) for a in f],'Timber',True)
     for y in (-3.75,3.75):m.curve('RoofFascia',[(x,y,3.08+.48*(1-(x/3.05)**2)) for x in [-3.05+i*6.1/n for i in range(n+1)]],.085,'Cream',12)
-    for y in (-2.8,0,2.8):rail(m,'RoofRib',(-2.8,y,3.12),(2.8,y,3.12),.06,'Bronze')
-    m.box('SkylightTrim',(0,0,3.52),(1.4,3.4,.07),'Bronze',.15)
-    m.box('Skylight',(0,0,3.565),(1.24,3.2,.035),'Glass',.12)
+    for y in (-2.8,0,2.8):m.curve('RoofRib',[(x,y,3.08+.48*(1-(x/3.05)**2)-.13) for x in [-2.8+i*5.6/32 for i in range(33)]],.06,'Bronze',12)
+    m.add('Skylight',v,glass,'Glass',True)
+    for y in (-1.5,1.5):m.curve('SkylightTrim',[(x,y,3.08+.48*(1-(x/3.05)**2)) for x in [-6.1/9+i*(12.2/9)/16 for i in range(17)]],.045,'Bronze',12)
+    for x in (-6.1/9,6.1/9):rail(m,'SkylightTrim',(x,-1.5,3.08+.48*(1-(x/3.05)**2)),(x,1.5,3.08+.48*(1-(x/3.05)**2)),.045)
+    for z in (.025,2.97):m.box('DoorTrack',(0,-3.64,z),(5.45,.16,.07),'Steel',.02)
+    m.box('BoardingSill',(0,-3.75,.025),(2.64,.5,.09),'Bronze',.025)
 
 def interior(m):
     for x in (-2.14,2.14):
@@ -75,12 +90,14 @@ def interior(m):
             m.box('SeatBack',(x*1.14,y,1.12),(.13,1.0,.85),'Cushion',.07)
             for yy in (y-.44,y+.44):rail(m,'SeatPiping',(x-.33,yy,.74),(x+.33,yy,.74),.018,'Bronze')
     for y in (-1.8,1.8):
-        rail(m,'GrabPole',(.90,y,.08),(.90,y,2.94),.048)
+        rail(m,'GrabPole',(.90,y,.08),(.90,y,3.39),.048)
         m.beam('PoleFoot',(.90,y,.06),(.90,y,.1),.13,'Bronze',20)
+        m.beam('PoleCeilingMount',(.90,y,3.36),(.90,y,3.40),.11,'Bronze',20)
     for x in (-1.5,1.5):
         rail(m,'OverheadRail',(x,-2.8,2.65),(x,2.8,2.65),.04)
+        for y in (-2.8,0,2.8):rail(m,'RailCeilingMount',(x,y,2.65),(x,y,3.33),.025)
         for y in (-1.9,0,1.9):
-            m.curve('LeatherGrip',[(x+.15*math.cos(a),y,2.42+.16*math.sin(a)) for a in [i*2*math.pi/24 for i in range(25)]],.022,'Rope',8)
+            m.curve('LeatherGrip',[(x+.15*math.cos(a),y,2.46+.16*math.sin(a)) for a in [i*2*math.pi/24 for i in range(25)]],.022,'Rope',8)
 
 def door(m):
     for x in (-.61,.61):m.box('Frame',(x,0,1.46),(.095,.1,2.9),'Cream',.025)
@@ -100,9 +117,14 @@ def hanger(m):
     for y in (-1.0,1.0):
         rail(m,'RoofSupport',(-1.5,y,3.45),(0,y,4.6),.09,'Steel');rail(m,'RoofSupport',(1.5,y,3.45),(0,y,4.6),.09,'Steel')
     m.box('Neck',(0,0,4.98),(.19,1.15,2.2),'Cream',.04)
-    m.box('Bogie',(0,0,6.07),(.26,2.6,.16),'Teal',.04)
-    for y in (-.95,.95):wheel(m,(0,y,6.17),.32)
-    m.box('Grip',(0,0,6.5),(.24,.58,.10),'Bronze',.04)
+    m.rock('SwivelBearing',(0,0,6.04),(.24,.24,.16),0,'Bronze',3)
+
+def trolley(m):
+    # Origin is the cable contact. This module pitches with the route while
+    # the suspension and passenger compartment remain upright.
+    m.box('Bogie',(0,0,-.43),(.26,2.6,.16),'Teal',.04)
+    for y in (-.95,.95):wheel(m,(0,y,-.33),.32)
+    m.box('Grip',(0,0,0),(.24,.58,.10),'Bronze',.04)
 
 def tower(m):
     # 29.5m sheave elevation; braced tapering legs and an inspectable service head.
@@ -120,17 +142,31 @@ def tower(m):
     for x in (-1.6,1.6):
         rail(m,'ServiceRail',(x,-2,28.7),(x,2,28.7),.045)
         for y in (-2,0,2):rail(m,'Upright',(x,y,27.7),(x,y,28.7),.045)
-    m.box('Head',(0,0,28.72),(.25,5.2,.35),'Teal',.06)
-    for y in (-2.1,-.7,.7,2.1):wheel(m,(0,y,29.12),.38)
     for z in [i*.34+1 for i in range(78)]:rail(m,'Ladder',(.87,-.9,z),(1.4,-.9,z),.028,'Steel')
     for x in (.87,1.4):rail(m,'LadderRail',(x,-.9,1),(x,-.9,27.5),.028,'Steel')
+    # Put the mast beside the vehicle's swept envelope. The cable remains at
+    # the module origin; sheaves touch it from above, leaving the hanger below.
+    for vertices,_,_,_ in m.data.values():
+        vertices[:]=[(x-6,y,z) for x,y,z in vertices]
+    for y in (-1.6,1.6):
+        rail(m,'Cantilever',(-6,y,27.8),(-6,y,31),.19,'Cream')
+        rail(m,'Cantilever',(-6,y,31),(0,y,31),.19,'Cream')
+        rail(m,'ArmBrace',(-6,y,28.8),(-3.4,y,31),.10,'Bronze')
+        rail(m,'SheaveBracket',(.48,y,31),(.48,y,29.93),.08,'Steel')
+    m.box('SheaveBeam',(.48,0,29.93),(.16,5.2,.16),'Teal',.04)
+    for y in (-2.1,-.7,.7,2.1):
+        wheel(m,(0,y,29.93),.38)
+        rail(m,'SheaveAxle',(0,y,29.93),(.48,y,29.93),.06,'Bronze')
 
 def station(m):
     for x in (-5.3,5.3):
         for y in (-6,0,6):
             m.box('StonePier',(x,y,-1.5),(1.0,1.0,5),'Cream',.12)
             m.box('PierCap',(x,y,.43),(1.25,1.25,.3),'Cream',.05)
-    for x in [-5.85+i*.18 for i in range(66)]:m.box('Boardwalk',(x,0,.65),(.17,15,.17),'Timber',.02)
+    # U-shaped boarding platform: a full slab intersected the cabin undertray.
+    for x in [-5.85+i*.18 for i in range(66)]:
+        center=abs(x)<3.26
+        m.box('Boardwalk',(x,-5.075 if center else 0,.65),(.17,4.85 if center else 15,.17),'Timber',.02)
     # Boarding aisle and two tall timber portals frame the sea.
     for x in (-5.35,5.35):
         for y in (-5.8,4.8):
@@ -140,6 +176,10 @@ def station(m):
         rail(m,'PerimeterRail',(x,-6.8,1.82),(x,6.8,1.82),.055)
         for y in (-6.8,-3.4,0,3.4,6.8):rail(m,'RailPost',(x,y,.73),(x,y,1.85),.055)
     for y in (-5.8,4.8):rail(m,'RoofBeam',(-5.35,y,8),(5.35,y,8),.22,'Timber')
+    for side in (-1,1):
+        rail(m,'BerthGuard',(side*3.35,-2.5,1.82),(side*3.35,6.8,1.82),.055)
+        rail(m,'PlatformEndGuard',(side*3.35,6.8,1.82),(side*5.35,6.8,1.82),.055)
+        for y in (-2.5,0,3.4,6.8):rail(m,'BerthGuardPost',(side*3.35,y,.73),(side*3.35,y,1.85),.055)
     # Tensioned double-curved fabric roof with a real underside.
     v=[];f=[];nx=24;ny=28
     for j in range(ny+1):
@@ -167,12 +207,12 @@ def gangway(m):
         for y in (-3,0,3):rail(m,'Post',(x,y,0),(x,y,1.1),.055,'Cream')
 
 specs=[]
-for name,fn in [('CabinShell',cabin_shell),('CabinInterior',interior),('SlidingDoor',door),('CabinHanger',hanger),('CableTower',tower),('SailStation',station),('Gangway',gangway)]:
+for name,fn in [('CabinShell',cabin_shell),('CabinInterior',interior),('SlidingDoor',door),('CabinHanger',hanger),('CabinTrolley',trolley),('CableTower',tower),('SailStation',station),('Gangway',gangway)]:
     c=bpy.data.collections.new(name);bpy.context.scene.collection.children.link(c);m=Meshes();fn(m);obs=m.finish(name,mats,c)
     bpy.ops.object.select_all(action='DESELECT')
     for o in obs:o.select_set(True)
     bpy.context.view_layer.objects.active=obs[0]
-    bpy.ops.export_scene.fbx(filepath=str(OUT/(name+'.fbx')),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',apply_unit_scale=True,bake_anim=False,add_leaf_bones=False)
+    bpy.ops.export_scene.fbx(filepath=str(OUT/(name+'.fbx')),use_selection=True,object_types={'MESH'},axis_forward='-Z',axis_up='Y',apply_unit_scale=True,bake_anim=False,add_leaf_bones=False,path_mode='RELATIVE')
     triangles=sum(len(p.vertices)-2 for o in obs for p in o.data.polygons)
     specs.append(dict(name=name,triangles=triangles,meshes=len(obs)))
     # Each source is standalone and editable as well as included in the kit master.
@@ -183,7 +223,7 @@ for name,fn in [('CabinShell',cabin_shell),('CabinInterior',interior),('SlidingD
     bpy.data.scenes.remove(module_scene)
 # Keep the master easy to inspect: source modules retain their export origin,
 # while collection instances arrange them across an assembly workspace.
-layout={'CabinShell':(0,0,0),'CabinInterior':(10,0,0),'SlidingDoor':(19,0,0),'CabinHanger':(24,0,0),'CableTower':(34,8,0),'SailStation':(0,22,0),'Gangway':(17,22,0)}
+layout={'CabinShell':(0,0,0),'CabinInterior':(10,0,0),'SlidingDoor':(19,0,0),'CabinHanger':(24,0,0),'CabinTrolley':(24,7,1),'CableTower':(34,8,0),'SailStation':(0,22,0),'Gangway':(17,22,0)}
 for name,position in layout.items():
     collection=bpy.data.collections[name]
     bpy.context.scene.collection.children.unlink(collection)

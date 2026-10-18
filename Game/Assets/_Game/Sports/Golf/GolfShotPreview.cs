@@ -15,6 +15,9 @@ namespace WhatTheFish {
   public int PointCount=>shownCount;
   public GolfShotMode Mode=>plan.Mode;
   public bool HasTarget=>blocked||plan.HasTarget;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+  public bool ReviewTargetResting=>!blocked&&plan.Resting;
+#endif
   public void Hide(){if(lane)lane.enabled=false;sampled=false;}
   void Create(){
    var source=Resources.Load<Material>("GolfShotGuide");if(!source)return;

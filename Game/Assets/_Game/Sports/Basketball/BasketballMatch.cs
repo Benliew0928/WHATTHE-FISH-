@@ -34,7 +34,7 @@ namespace WhatTheFish {
   public bool MatchMode=>Room||BasketballBots.Instance&&BasketballBots.Instance.Solo;
   public bool SoloTeamSelection=>!Room&&BasketballBots.Instance&&BasketballBots.Instance.Solo;
   public bool CanConfirmSoloTeam=>Authority&&Context&&SoloTeamSelection&&State.Phase==BasketballMatchPhase.TeamSelection&&TeamOf(AppRoot.Instance.LocalAthlete)!=FootballTeam.None;
-  public bool CanStart=>Authority&&MatchMode&&Context&&Roster().Count()>=4&&Roster().Count()<=10&&Roster().Count()%2==0&&!Active;
+  public bool CanStart=>Authority&&MatchMode&&Context&&!RoomMatchStart.Travelling&&Roster().Count()>=4&&Roster().Count()<=10&&Roster().Count()%2==0&&!Active;
   public static ulong PlayerId(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;if(n&&n.IsSpawned)return n.BotSlot.Value>0?(1UL<<63)+n.BotSlot.Value:n.StableId;var bot=actor?actor.GetComponent<BasketballBot>():null;return bot?(1UL<<63)+(ulong)bot.Slot:actor?(ulong)(uint)actor.GetInstanceID():ulong.MaxValue;}
   IEnumerable<Athlete> Roster()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(!Room||a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
   public bool Contains(Athlete actor)=>actor&&participants.TryGetValue(PlayerId(actor),out var entry)&&entry==actor;
@@ -43,14 +43,15 @@ namespace WhatTheFish {
   void Awake(){ball=GetComponent<BasketballBall>();BasketballMVP.Create();}
   void OnDestroy(){if(BasketballMVP.Instance)Destroy(BasketballMVP.Instance.gameObject);}
   void OnEnable(){Instance=this;}
-  void OnDisable(){if(Authority)Clear();if(Instance==this)Instance=null;}
+  void OnDisable(){ResetRestartMovement();if(Authority)Clear();if(Instance==this)Instance=null;}
   BasketballMatchSnapshot Capture()=>new BasketballMatchSnapshot{phase=State.Phase,result=State.Result,possession=State.Possession,restart=State.RestartReason,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,remaining=State.Remaining(Now),shotDeadline=State.ShotDeadline,revision=published,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),capacity=Selection.Capacity,inbounder=inbounder,automaticPlayers=AutomaticPlayers(),inboundExit=inboundExit,inboundTurnA=InboundTurn(FootballTeam.A),inboundTurnB=InboundTurn(FootballTeam.B)};
   void Publish(){PublishStatistics();if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.BasketballMatch.Value=Capture();}
   public bool StartMatch(){if(!CanStart)return false;return Begin(Roster().OrderBy(PlayerId).ToArray(),MenuMatchRules.BasketballSeconds,10);}
   bool Begin(Athlete[] roster,double seconds,double selection){
-   if(!Authority||!Context||Active||roster.Length<4||!Selection.Begin(roster.Select(PlayerId)))return false;
+   if(!Authority||!Context||RoomMatchStart.Travelling||Active||roster.Length<4)return false;
+   if(!RoomMatchStart.Prepare(SportId.Basketball,out var arrivals)||!Selection.Begin(roster.Select(PlayerId)))return false;
    ResetRestartMovement();inboundTurns.Clear();Statistics.Clear();participants.Clear();foreach(var actor in roster)participants.Add(PlayerId(actor),actor);
-   SyncTeams();lastTouch=FootballTeam.None;State.Start(Now,seconds,selection);ball.ResetMatchBall(true);Synchronize();wasContext=true;return true;
+   SyncTeams();lastTouch=FootballTeam.None;arrivals.Apply();State.Start(Now,seconds,selection);ball.ResetMatchBall(true);Synchronize();wasContext=true;return true;
   }
   public bool ChooseTeam(Athlete actor,FootballTeam team,uint revision){
    if(!Authority||!Context||State.Phase!=BasketballMatchPhase.TeamSelection||!SoloTeamSelection&&Now>=State.Deadline||revision!=published||!Contains(actor)||!Selection.Choose(PlayerId(actor),team))return false;

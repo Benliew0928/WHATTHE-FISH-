@@ -12,7 +12,8 @@ namespace WhatTheFish {
    for(int i=0;i<3;i++){int mode=i;var b=BasketballUIStyle.Button(settingsPanel,cameras[i],"",20+i*207,98,196,86,()=>SelectCamera(mode),BasketballUIStyle.Paper);cameraChoices[i]=b;BasketballUIStyle.Art(b.transform,art[i],70,5,56,42);BasketballUIStyle.Text(b.transform,cameras[i],4,51,188,28,16,true,TextAnchor.MiddleCenter);CoveUI.Image(b.transform,"Selected camera",SportsUIStyle.Check,166,2,23,22).color=CoveUI.Ink;}
    cameraNote=BasketballUIStyle.Text(settingsPanel,"",20,191,610,26,12);
    BuildAudioSliders();
-   var guide=BasketballUIStyle.Button(settingsPanel,"Court guide","",20,304,610,48,OpenGuide);BasketballUIStyle.Art(guide.transform,BasketballIcon.Book,12,9,30,30);BasketballUIStyle.Text(guide.transform,"Court guide",54,4,500,23,16,true);BasketballUIStyle.Text(guide.transform,"Rules, touch controls & props",54,26,500,16,11);BasketballUIStyle.Text(guide.transform,"›",566,0,30,48,24,true,TextAnchor.MiddleCenter);
+   var guide=BasketballUIStyle.Button(settingsPanel,"Court guide","",20,304,298,48,OpenGuide);BasketballUIStyle.Art(guide.transform,BasketballIcon.Book,12,9,30,30);BasketballUIStyle.Text(guide.transform,"Court guide",54,4,235,23,16,true);BasketballUIStyle.Text(guide.transform,"Rules, touch controls & props",54,26,235,16,11);
+   BasketballUIStyle.Button(settingsPanel,"Customize basketball","Ball effects",330,304,300,48,ShowCustomization,CoveUI.Mint,16);BuildCustomization();
    Footer(settingsPanel,366,650,58);
    roamButton=BasketballUIStyle.Button(settingsPanel,"Free roam","Free roam",18,377,120,35,ToggleCourt,null,13);roamText=roamButton.GetComponentInChildren<Text>();
    BasketballUIStyle.Text(settingsPanel,"Room play continues while this menu is open.",160,375,300,40,11,false,TextAnchor.MiddleCenter);
@@ -35,7 +36,7 @@ namespace WhatTheFish {
   void BuildRules(Transform p){
    GuideCard(p,0,BasketballIcon.Move,"Pick up & play","Move close to a reachable ball to collect it. Dribbling happens automatically.");
    GuideCard(p,207,BasketballIcon.Points,"Make a basket","Shots inside the arc score 2. Shots beyond it score 3. Chase the rebound after a miss.");
-   GuideCard(p,414,BasketballIcon.Guard,"Defend together","Guard the carrier, reach for a steal, or block a shot. Jump Block gives extra reach.");
+   GuideCard(p,414,BasketballIcon.Guard,"Defend together","Hold Guard, swipe up and keep holding to block shots within 2.5 m. Return to centre, then slide left to steal. Blocking and stealing are separate choices.");
    BasketballUIStyle.Text(p,AppRoot.Instance.rooms.Connected?"20-second shot clock. Fixed hoops. Quick restarts. No free throws.":"Solo restart: 2 seconds out → stand at the line and pass to re-enter.",0,163,610,23,12,false,TextAnchor.MiddleCenter);
   }
   void GuideCard(Transform p,float x,BasketballIcon icon,string title,string body){BasketballUIStyle.Art(p,icon,x+69,0,54,54);BasketballUIStyle.Text(p,title,x,61,196,24,17,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(p,body,x+3,91,190,68,12,false,TextAnchor.UpperCenter);}
@@ -52,11 +53,11 @@ namespace WhatTheFish {
    for(int i=0;i<3;i++){float x=i*207;CoveUI.Image(p,names[i],SportsUIStyle.PropIcon((SportsProp)(i+1)),x+67,0,62,53).color=Color.white;BasketballUIStyle.Text(p,names[i],x,58,196,23,16,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(p,body[i],x+3,88,190,70,12,false,TextAnchor.UpperCenter);}
    BasketballUIStyle.Text(p,"One slot · one use · new pickups replace the old prop · use on the painted court",0,163,610,24,11,false,TextAnchor.MiddleCenter);
   }
-  void LayoutMenus(){foreach(var panel in new[]{settingsPanel,guidePanel,leavePanel})if(panel)panel.localScale=Vector3.one*Mathf.Min(1,(root.rect.width-28)/panel.rect.width,(root.rect.height-28)/panel.rect.height);}
+  void LayoutMenus(){foreach(var panel in new[]{settingsPanel,guidePanel,leavePanel,customizePanel})if(panel)panel.localScale=Vector3.one*Mathf.Min(1,(root.rect.width-28)/panel.rect.width,(root.rect.height-28)/panel.rect.height);}
   public void ToggleSettings(){if(MenuOpen)CloseMenu();else ShowSettings();}
   void OpenMenu(RectTransform panel){
    var view=PlayerView.Instance;shoot.CancelGesture();pass.CancelGesture();if(view){view.ClearMatchInput();view.InputBlocked=true;PlayerView.LookDelta=Vector2.zero;foreach(var pad in controls.GetComponentsInChildren<TouchPad>())pad.ResetInput();}
-   controls.blocksRaycasts=false;settingsPanel.gameObject.SetActive(panel==settingsPanel);guidePanel.gameObject.SetActive(panel==guidePanel);leavePanel.gameObject.SetActive(panel==leavePanel);overlay.gameObject.SetActive(true);RefreshMenu();
+   controls.blocksRaycasts=false;settingsPanel.gameObject.SetActive(panel==settingsPanel);guidePanel.gameObject.SetActive(panel==guidePanel);leavePanel.gameObject.SetActive(panel==leavePanel);customizePanel.gameObject.SetActive(panel==customizePanel);overlay.gameObject.SetActive(true);RefreshMenu();
   }
   public void ShowSettings(){roamButton.interactable=!(BasketballMatch.Instance&&BasketballMatch.Instance.Active);OpenMenu(settingsPanel);}
   public void OpenGuide(){SelectGuide(guideTab);OpenMenu(guidePanel);}

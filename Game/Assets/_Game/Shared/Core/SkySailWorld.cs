@@ -21,12 +21,12 @@ namespace WhatTheFish {
   public bool reviewCamera;
   AppRoot app;SkySailStreaming streaming;SkySailJourney offlineJourney;uint seenSequence;SkySailPhase seenPhase;
   float[] lengths;bool released,approach,prepared,onlineJourney;uint acknowledged;
-  Athlete[] passengers=Array.Empty<Athlete>();Vector3 doorLeft,doorRight;
-  Text heading,caption,wayfinding;Button previous,next;Image progressFill;Canvas ui;float uiTimer;
+  Athlete[] passengers=Array.Empty<Athlete>();Vector3 doorLeft,doorRight;Transform hanger,trolley;
+  Text heading,caption,wayfinding;Button previous,next;Image progressFill;Canvas ui;float uiTimer,noticeUntil;
   AudioSource motor;
   bool Authority=>!app.rooms.Connected||app.rooms.Host;
   double Clock=>app.rooms.Connected?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
-  void Awake(){Instance=this;doorLeft=leftDoor.localPosition;doorRight=rightDoor.localPosition;foreach(var lod in cabin.GetComponentsInChildren<LODGroup>())lod.ForceLOD(0);if(!cabin.GetComponent<SkySailCabinLighting>())cabin.gameObject.AddComponent<SkySailCabinLighting>();}
+  void Awake(){Instance=this;hanger=cabin.Find("CabinHanger");trolley=cabin.Find("CabinTrolley");doorLeft=leftDoor.localPosition;doorRight=rightDoor.localPosition;foreach(var lod in cabin.GetComponentsInChildren<LODGroup>())lod.ForceLOD(0);if(!cabin.GetComponent<SkySailCabinLighting>())cabin.gameObject.AddComponent<SkySailCabinLighting>();}
   IEnumerator Start(){while(!AppRoot.Instance||!AppRoot.Instance.environments.View)yield return null;app=AppRoot.Instance;streaming=app.environments.GetComponent<SkySailStreaming>();SetIsland(app.SelectedSport);BuildUI();BuildAudio();if(Environment.GetCommandLineArgs().Contains("-skyStation")&&!app.rooms.Connected){app.EnterOffline();app.LocalAthlete.capsule.enabled=false;app.LocalAthlete.transform.position=SkySailMap.Exit(app.SelectedSport,0);app.LocalAthlete.capsule.enabled=true;app.view.yaw=SkySailMap.Facing(app.SelectedSport).eulerAngles.y;}}
   void OnDestroy(){if(Instance==this)Instance=null;}
   public void SetIsland(SportId id){
@@ -43,19 +43,20 @@ namespace WhatTheFish {
    reason="";if(!app||!app.Exploring){reason="Enter an island first.";return false;}
    if(!Authority){reason="Your host chooses the destination.";return false;}
    if(Travelling||streaming.Busy){reason="Preparing the journey…";return false;}
-   if(FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active){reason="Finish the match before travelling.";return false;}
+   if(PostMatchFlow.MatchActive){reason="Finish the match before travelling.";return false;}
    if(!SkySailMap.Adjacent(app.SelectedSport,target)){reason="Choose a neighboring station.";return false;}
    var group=Group();if(group.Count(a=>!a.IsSpectator)>app.environments.Definition(target).maxPlayers){reason=target+" supports "+app.environments.Definition(target).maxPlayers+" players. Your group stays together.";return false;}
-   var port=SkySailMap.Port(app.SelectedSport);if(group.Any(p=>Vector3.Distance(p.transform.position,port)>18)){reason="Bring everyone to the Sky-Sail station.";return false;}
+   var port=SkySailMap.Port(app.SelectedSport);if(group.Any(p=>Vector3.Distance(p.transform.position,port)>18)){reason=StationAttendance;return false;}
    return true;
   }
   public void RequestTravel(SportId target){
    if(!CanTravel(target,out var why)){Message=why;return;}
    FootballBots.Instance?.Clear();BasketballBots.Instance?.Clear();Message="";
-   var s=new SkySailJourney{sequence=Journey.sequence+1,from=app.SelectedSport,to=target,phase=SkySailPhase.Preparing,started=Clock,duration=44};SetState(s);
+   var s=new SkySailJourney{sequence=Journey.sequence+1,from=app.SelectedSport,to=target,phase=SkySailPhase.Preparing,started=Clock,duration=44};SetState(s);Journey=s;
   }
-  void SetState(SkySailJourney s){if(app.rooms.Connected){if(app.rooms.Host&&NetworkAthlete.HostPlayer)NetworkAthlete.HostPlayer.WorldTravel.Value=s;}else offlineJourney=s;}
+  void SetState(SkySailJourney s){if(app.rooms.Connected){if(!app.rooms.Host||!NetworkAthlete.HostPlayer)return;NetworkAthlete.HostPlayer.WorldTravel.Value=s;}else offlineJourney=s;}
   Athlete[] Group()=>app.rooms.Connected?FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(a=>a.IsPlayerObject).OrderBy(a=>a.OwnerClientId).Select(a=>a.GetComponent<Athlete>()).ToArray():new[]{app.LocalAthlete};
+  public string StationAttendance {get{var group=Group();var missing=group.Where(a=>Vector3.Distance(a.transform.position,SkySailMap.Port(app.SelectedSport))>18).ToArray();var count=(group.Length-missing.Length)+"/"+group.Length+" at station";if(missing.Length==0)return count;var n=missing[0].GetComponent<NetworkAthlete>();string name=n?n.Nickname.Value.ToString():"player";if(name.Length>16)name=name.Substring(0,16);return count+" · Waiting for "+name+(missing.Length>1?" +"+(missing.Length-1):"");}}
   void Update(){if(RoomService.Paused)return;
    if(!app)return;
    Shader.SetGlobalVector("_SkySailOrigin",Origin);
@@ -77,23 +78,21 @@ namespace WhatTheFish {
     double elapsed=Clock-Journey.started;
     Progress=Journey.phase==SkySailPhase.Riding?Mathf.Clamp01((float)(elapsed/Journey.duration)):Journey.phase==SkySailPhase.Docking?1:0;
     float t=SkySailMap.Parameter(lengths,Progress);cabin.localPosition=SkySailMap.Path(Journey.from,Journey.to,t);
-    var tangent=SkySailMap.Tangent(Journey.from,Journey.to,t);tangent.y=0;
-    var rotation=Quaternion.LookRotation(tangent.sqrMagnitude>.01f?tangent:Vector3.forward);
-    if(Progress<.025f)rotation=Quaternion.Slerp(SkySailMap.Facing(Journey.from),rotation,Progress/.025f);
-    if(Progress>.975f)rotation=Quaternion.Slerp(rotation,SkySailMap.Facing(Journey.to),Mathf.InverseLerp(.975f,1,Progress));
-    cabin.localRotation=rotation*Quaternion.Euler(0,0,Journey.phase==SkySailPhase.Riding?Mathf.Sin((float)Clock*1.5f)*.35f:0);
+    cabin.localRotation=SkySailMap.CabinRotation(Journey.from,Journey.to,t);
+    if(hanger)hanger.localRotation=Quaternion.Inverse(cabin.localRotation)*SkySailMap.HangerRotation(Journey.from,Journey.to,t);
+    if(trolley)trolley.localRotation=Quaternion.Inverse(cabin.localRotation)*Quaternion.LookRotation(SkySailMap.Tangent(Journey.from,Journey.to,t));
     if(Journey.phase==SkySailPhase.Riding&&Progress>.27f&&!released){released=true;proxies[(int)Journey.from].SetActive(true);if(app.environments.roots[(int)Journey.from])app.environments.roots[(int)Journey.from].SetActive(false);StartCoroutine(streaming.Release(Journey.from));}
     if(Journey.phase==SkySailPhase.Riding&&Progress>.83f&&!approach&&prepared){approach=true;var root=app.environments.roots[(int)Journey.to];root.transform.position=SkySailMap.Center(Journey.to)-Origin;root.SetActive(true);proxies[(int)Journey.to].SetActive(false);}
     PinPassengers();
     if(Authority){
      bool ready=prepared&&(!app.rooms.Connected||FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(p=>p.IsPlayerObject).All(p=>p.TravelReady.Value==Journey.sequence));
      if(Journey.phase==SkySailPhase.Preparing&&ready)Advance(SkySailPhase.Boarding);
-     else if(Journey.phase==SkySailPhase.Preparing&&elapsed>60){Message="A player could not prepare the island. Please try again.";var s=Journey;s.phase=SkySailPhase.Idle;SetState(s);}
+     else if(Journey.phase==SkySailPhase.Preparing&&elapsed>60){Message="A player could not prepare the island. Please try again.";noticeUntil=Time.unscaledTime+8;var s=Journey;s.phase=SkySailPhase.Idle;SetState(s);}
      else if(Journey.phase==SkySailPhase.Boarding&&elapsed>3.5)Advance(SkySailPhase.Riding);
      else if(Journey.phase==SkySailPhase.Riding&&elapsed>=Journey.duration)Advance(SkySailPhase.Docking);
      else if(Journey.phase==SkySailPhase.Docking&&elapsed>3.5)Advance(SkySailPhase.Idle);
     }
-   }else if(app.Exploring){cabin.localPosition=SkySailMap.Berth(app.SelectedSport);cabin.localRotation=SkySailMap.Facing(app.SelectedSport);if(Input.GetKeyDown(KeyCode.F)&&app.SelectedSport!=SportId.Fishing&&!(app.SelectedSport==SportId.Golf&&GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running))RequestTravel(SkySailMap.Neighbor(app.SelectedSport,1));}
+   }else if(app.Exploring){cabin.localPosition=SkySailMap.Berth(app.SelectedSport);cabin.localRotation=SkySailMap.Facing(app.SelectedSport);if(hanger)hanger.localRotation=Quaternion.identity;if(trolley)trolley.localRotation=Quaternion.identity;if(Input.GetKeyDown(KeyCode.F)&&app.SelectedSport!=SportId.Fishing&&!(app.SelectedSport==SportId.Golf&&GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running))RequestTravel(SkySailMap.Neighbor(app.SelectedSport,1));}
    float open=Journey.phase==SkySailPhase.Idle||Journey.phase==SkySailPhase.Preparing?1:Journey.phase==SkySailPhase.Docking?Mathf.Clamp01((float)(Clock-Journey.started)/2):Journey.phase==SkySailPhase.Boarding?1-Mathf.Clamp01((float)(Clock-Journey.started)/2):0;
    leftDoor.localPosition=doorLeft+Vector3.left*(open*1.34f);rightDoor.localPosition=doorRight+Vector3.right*(open*1.34f);
    if(motor){motor.volume=Mathf.Lerp(motor.volume,Journey.phase==SkySailPhase.Riding?.10f:.016f,Time.deltaTime*2);motor.pitch=Mathf.Lerp(.55f,1,Mathf.Sin(Progress*Mathf.PI));}
@@ -105,7 +104,8 @@ namespace WhatTheFish {
    if(app.rooms.Connected){var local=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsPlayerObject&&p.IsOwner);if(local&&acknowledged!=sequence){acknowledged=sequence;local.TravelReadyRpc(sequence);}}
   }
   void Advance(SkySailPhase phase){var s=Journey;s.phase=phase;s.started=Clock;SetState(s);}
-  void PinPassengers(){for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;int row=i/5;var offset=new Vector3(passengers.Length<=10?(row==0?-1.45f:1.45f):(row-1.5f)*.92f,.06f,(i%5-2)*1.08f);a.transform.SetPositionAndRotation(cabin.TransformPoint(offset),cabin.rotation*Quaternion.Euler(0,row==0?90:-90,0));}}
+  internal static Vector3 PassengerAnchor(int index,int count)=>new Vector3(count<=10?(index/5==0?-1.22f:1.22f):(index/5-1.5f)*.84f,.06f,(index%5-2)*1.2f);
+  void PinPassengers(){for(int i=0;i<passengers.Length;i++){var a=passengers[i];if(!a)continue;var offset=PassengerAnchor(i,passengers.Length);a.transform.SetPositionAndRotation(cabin.TransformPoint(offset),cabin.rotation*Quaternion.Euler(0,offset.x<0?90:-90,0));}}
   void Arrive(){
    float yaw=app.view.yaw,pitch=app.view.pitch;int mode=app.view.mode;
    app.SelectSport(Journey.to,true);SetIsland(Journey.to);app.view.yaw=yaw;app.view.pitch=pitch;app.view.mode=mode;
@@ -157,16 +157,16 @@ namespace WhatTheFish {
   }
   Button TravelButton(Transform parent,float x,float y,int direction){var g=new GameObject("Travel",typeof(RectTransform),typeof(Image),typeof(Button));g.transform.SetParent(parent,false);var r=g.GetComponent<RectTransform>();r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(302,54);g.GetComponent<Image>().color=new Color(.12f,.40f,.42f,1);var b=g.GetComponent<Button>();b.onClick.AddListener(()=>RequestTravel(SkySailMap.Neighbor(app.SelectedSport,direction)));Text(g.transform,"",21,Vector2.zero,new Vector2(290,50));return b;}
   void UpdateUI(){
-   if(!ui)return;ui.enabled=app.Exploring&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen);if(!ui.enabled)return;
+   if(!ui)return;ui.enabled=app.Exploring&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen);if(!ui.enabled)return;
    float distance=Vector3.Distance(app.LocalAthlete.transform.position,SkySailMap.Port(app.SelectedSport));heading.transform.parent.gameObject.SetActive(Travelling||distance<28);
    bool court=app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
-   ((RectTransform)heading.transform.parent).anchoredPosition=new Vector2(0,!Travelling&&court?570:175);
+   ((RectTransform)heading.transform.parent).anchoredPosition=new Vector2(0,!Travelling&&court?420:175);
    wayfinding.text=Travelling?"Look around • Camera: cabin / chase / panorama":"SKY-SAIL STATION  ·  "+Mathf.RoundToInt(distance)+" m";
    // Golf displays this same distance inside its course badge.
    wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing&&app.SelectedSport!=SportId.Golf&&app.SelectedSport!=SportId.Basketball&&app.SelectedSport!=SportId.Football);
    previous.gameObject.SetActive(!Travelling);next.gameObject.SetActive(!Travelling);
    if(Travelling){heading.text=Journey.from.ToString().ToUpperInvariant()+"  →  "+Journey.to.ToString().ToUpperInvariant();caption.text=Journey.phase switch{SkySailPhase.Preparing=>"Preparing your island • Everyone travels together",SkySailPhase.Boarding=>"Doors closing • Enjoy the journey",SkySailPhase.Docking=>"Welcome to "+Journey.to+" • Doors opening",_=>"Over the sea • "+Mathf.CeilToInt((1-Progress)*Journey.duration)+" seconds to arrival"};}
-   else{heading.text="SKY-SAIL CIRCUIT";caption.text=Message.Length>0?Message:Authority?"Choose your next island • Everyone boards together":"Your host chooses the next island";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+(Application.isMobilePlatform||app.SelectedSport==SportId.Fishing||app.SelectedSport==SportId.Basketball||app.SelectedSport==SportId.Football?" →":" → [F]");previous.interactable=Authority&&!streaming.Busy;next.interactable=Authority&&!streaming.Busy;}
+   else{heading.text="SKY-SAIL CIRCUIT";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+(Application.isMobilePlatform||app.SelectedSport==SportId.Fishing||app.SelectedSport==SportId.Basketball||app.SelectedSport==SportId.Football?" →":" → [F]");previous.interactable=CanTravel(a,out var leftReason);next.interactable=CanTravel(b,out var rightReason);caption.text=!Authority?"Your host chooses the next island":!previous.interactable?leftReason:!next.interactable?rightReason:Time.unscaledTime<noticeUntil?Message:StationAttendance+" · Everyone boards together";}
    progressFill.rectTransform.localScale=new Vector3(Travelling?Mathf.Max(.015f,Progress):1,1,1);
   }
  }

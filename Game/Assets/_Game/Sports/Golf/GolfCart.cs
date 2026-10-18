@@ -8,6 +8,8 @@ namespace WhatTheFish {
   public Transform[] wheelPivots;public float[] wheelRadii;
   [Range(.5f,1.5f)] public float wheelRollScale=.85f;
   public GolfCartState State {get;private set;}
+  float bumpAt=-10;
+  public void AudioBump(float speed){if(speed<1||Time.unscaledTime-bumpAt<.6f)return;bumpAt=Time.unscaledTime;GolfFeedback.Emit(GolfFeedbackCue.CartBump,transform.position,Vector3.up,Mathf.Clamp01(speed/8),Owner,Owner);}
   bool initialized;Vector3 smoothing,previousWheelPosition;Quaternion previousWheelRotation;
   readonly float[] wheelRoll=new float[4];float wheelSteering;bool wheelsReady;
   public void Apply(GolfCartState state,bool snap){

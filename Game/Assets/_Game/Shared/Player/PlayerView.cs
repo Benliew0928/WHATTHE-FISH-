@@ -91,7 +91,7 @@ namespace WhatTheFish {
   bool pendingSteal;int stealSource;float repeatStealAt;
   public bool StealHeld {get;private set;}
   public bool BeginSteal(int source=int.MinValue){
-   if(StealHeld||!active||!target||!BasketballBall.Active||!BasketballBall.Active.CanSteal(target))return false;
+   if(StealHeld||AutoBlockHeld||InputBlocked||!active||!target||!BasketballBall.Active||!BasketballBall.Active.CanSteal(target))return false;
    StealHeld=true;stealSource=source;pendingSteal=true;repeatStealAt=Time.unscaledTime+BasketballStealRules.Repeat;return true;
   }
   public void EndSteal(int source=int.MinValue,bool cancel=false){if(!StealHeld||source!=stealSource)return;StealHeld=false;if(cancel)pendingSteal=false;}
@@ -127,9 +127,10 @@ namespace WhatTheFish {
    if(Input.GetKeyUp(KeyCode.E))EndShot();
    if(PassCharging){if(Input.GetKeyDown(KeyCode.UpArrow))SelectPass(1);if(Input.GetKeyDown(KeyCode.DownArrow))SelectPass(-1);if(Input.GetKeyDown(KeyCode.LeftArrow)||Input.GetKeyDown(KeyCode.RightArrow))SelectPass(0);}
    if(Input.GetKeyDown(KeyCode.Q)){if(BasketballRole==WhatTheFish.BasketballRole.Defense)BeginGuard();else BeginPass();}if(Input.GetKeyUp(KeyCode.Q)){EndGuard();EndPass();}
+   if(GuardHeld&&guardSource==int.MinValue&&Input.GetKey(KeyCode.Q))SetGuardBlock(Input.GetKey(KeyCode.UpArrow));
    if(Input.GetKeyDown(KeyCode.F)){if(AppRoot.Instance.SelectedSport==SportId.Basketball)BeginSteal();else if(AppRoot.Instance.SelectedSport==SportId.Golf)BeginGolfSwing();else if(AppRoot.Instance.SelectedSport==SportId.Fishing)BeginFishing();else BeginKick();}if(Input.GetKeyUp(KeyCode.F)){EndSteal();EndGolfSwing();EndKick();EndFishing();}
   }
-  public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;FootballAudio.PlayMenu(FootballSound.UISelect);mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
+  public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;if(!GolfFishingAudio.PlayMenu("ui-select"))FootballAudio.PlayMenu(FootballSound.UISelect);mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
   public PlayerCommand ReadCommand(){
    if(target&&target.IsSpectator){
     if(!active||InputBlocked||target.inTransit)return default;

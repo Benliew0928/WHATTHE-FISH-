@@ -13,6 +13,7 @@ namespace WhatTheFish {
  public static class BasketballDefenseRules {
   public const float GuardSpeed=3,GuardRange=1.25f,GuardMultiplier=.70f,GuardMeterMultiplier=1.30f,GuardShotPenalty=.20f,HandRadius=.30f,BlockStart=.05f,BlockEnd=.46f,BlockDuration=.70f;
   public const float JumpLoad=.16f,JumpHeight=2.20f,JumpStart=.16f,JumpEnd=.98f,JumpDuration=1.30f,Recovery=.58f;
+  public const float AutoBlockRange=GuardRange*2;
   public static bool IsBlock(BasketballAction action)=>action==BasketballAction.Block||action==BasketballAction.JumpBlock;
   public static bool Active(BasketballAction action,float time)=>IsBlock(action)&&time>=(action==BasketballAction.JumpBlock?JumpStart:BlockStart)&&time<=(action==BasketballAction.JumpBlock?JumpEnd:BlockEnd);
   public static float Window(float pressure)=>BasketballBall.SweetWindow;
@@ -61,19 +62,39 @@ namespace WhatTheFish {
    return flight&&!own?BasketballRole.Defense:BasketballRole.Loose;
   }
   public bool CanBlock(Athlete actor)=>!PropLocked(actor)&&!PortalBusy&&Role(actor)==BasketballRole.Defense&&actor.BasketballMotion&&!actor.BasketballMotion.Busy&&!actor.Airborne&&!actor.LoadingJump;
-  public void SetGuard(Athlete actor,bool held,float heading){
+  // The same replicated held stance drives the ready light and host decision.
+  public bool GuardBlockReady(Athlete actor)=>actor&&actor.isActiveAndEnabled&&!actor.IsSpectator&&(!Authority||Eligible(actor))&&!PropLocked(actor)&&!PortalBusy&&Role(actor)==BasketballRole.Defense&&actor.BasketballMotion&&actor.BasketballMotion.Guarding&&actor.BasketballMotion.State.guardHeld&&actor.BasketballMotion.State.guardBlock&&actor.Grounded&&!actor.Airborne&&!actor.LoadingJump;
+  bool TryGuardShotBlock(Athlete shooter){
+   if(!Authority||holder!=shooter)return false;
+   Athlete winner=null;float nearest=float.PositiveInfinity;
+   foreach(var defender in Athlete.Active){
+    if(!GuardBlockReady(defender)||!GuardRangeClear(defender,shooter,BasketballDefenseRules.AutoBlockRange))continue;
+    float distance=Vector3.ProjectOnPlane(shooter.transform.position-defender.transform.position,Vector3.up).sqrMagnitude;
+    if(distance<nearest-.0001f||Mathf.Abs(distance-nearest)<=.0001f&&winner&&PlayerId(defender)<PlayerId(winner)){winner=defender;nearest=distance;}
+   }
+   if(!winner)return false;
+   // Stop the committed attempt before it can launch or score. Charging alone
+   // never triggers this; no release gesture, hand sweep or random roll is needed.
+   var point=CarryPosition(shooter);var toward=Vector3.ProjectOnPlane(shooter.transform.position-winner.transform.position,Vector3.up);
+   float heading=toward.sqrMagnitude>.001f?Quaternion.LookRotation(toward).eulerAngles.y:winner.transform.eulerAngles.y;
+   winner.BasketballMotion.BeginDefense(BasketballAction.Block,heading,point);
+   var normal=(Quaternion.Euler(0,heading,0)*Vector3.forward+Vector3.up*.25f).normalized;
+   ApplyBlock(winner,point,point-normal*Radius,Vector3.zero);NewDefensePlay();return true;
+  }
+  public void SetGuard(Athlete actor,bool held,float heading,bool autoBlock=false){
    if(!Authority||!actor||!actor.BasketballMotion)return;var motion=actor.BasketballMotion;
    bool allowed=held&&!PropLocked(actor)&&!PortalBusy&&Role(actor)==BasketballRole.Defense&&Eligible(actor)&&actor.Grounded&&!actor.Airborne&&!actor.LoadingJump&&float.IsFinite(heading);
    if(!allowed){motion.EndGuard();return;}
    var point=Holder?Holder.transform.position:Body.position;var delta=Vector3.ProjectOnPlane(point-actor.transform.position,Vector3.up);
    if(delta.sqrMagnitude>.01f)heading=Quaternion.LookRotation(delta).eulerAngles.y;
    if(motion.Busy&&motion.Action!=BasketballAction.Steal)return;
-   motion.Guard(heading);
+   motion.Guard(heading,autoBlock);
   }
-  public bool CloseGuard(Athlete defender,Athlete carrier){
+  public bool CloseGuard(Athlete defender,Athlete carrier)=>GuardRangeClear(defender,carrier,BasketballDefenseRules.GuardRange);
+  bool GuardRangeClear(Athlete defender,Athlete carrier,float range){
    if(!Playing||!defender||!carrier||defender==carrier||!defender.BasketballMotion||!defender.BasketballMotion.GuardActive||defender.inTransit||defender.BasketballFreeRoam||defender.Airborne||!defender.isActiveAndEnabled||SportsPossession.SameTeam(defender,carrier,SportId.Basketball))return false;
    var delta=carrier.transform.position-defender.transform.position;
-   return Mathf.Abs(delta.y)<.8f&&Vector3.ProjectOnPlane(delta,Vector3.up).sqrMagnitude<=BasketballDefenseRules.GuardRange*BasketballDefenseRules.GuardRange&&!Physics.Linecast(defender.transform.position+Vector3.up,carrier.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore);
+   return Mathf.Abs(delta.y)<.8f&&Vector3.ProjectOnPlane(delta,Vector3.up).sqrMagnitude<=range*range&&!Physics.Linecast(defender.transform.position+Vector3.up,carrier.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore);
   }
   public float GuardMovementMultiplier(Athlete actor){
    if(!Held)return 1;
@@ -105,6 +126,7 @@ namespace WhatTheFish {
   void NewDefensePlay(){defensePlay++;blockAttempts.Clear();}
   void ClearDefense(){NewDefensePlay();foreach(var actor in Athlete.Active)if(actor.BasketballMotion)actor.BasketballMotion.EndGuard();}
   void StepBlocks(){
+   if(Held&&(pendingAction==BasketballAction.Shoot||BasketballFinishRules.IsFinish(pendingAction))&&TryGuardShotBlock(holder))return;
    if(blockAttempts.Count==0)return;
    Vector3 current=Held?CarryPosition(holder):Body.position;
    BlockAttempt winner=null;float earliest=float.PositiveInfinity;Vector3 hit=default,handHit=default,handVelocity=default;

@@ -16,11 +16,11 @@ namespace WhatTheFish {
    leftReach=Vector3.Distance(left.upper.position,left.lower.position)+Vector3.Distance(left.lower.position,left.end.position)-.018f;
    rightReach=Vector3.Distance(right.upper.position,right.lower.position)+Vector3.Distance(right.lower.position,right.end.position)-.018f;
   }
-  public void Guard(float heading){
+  public void Guard(float heading,bool autoBlock=false){
    if(!Guarding&&Action!=BasketballAction.Steal)BeginDefense(BasketballAction.Guard,heading,transform.position+transform.forward);
-   var value=State;value.guardHeld=true;value.heading=heading%360;State=value;
+   var value=State;value.guardHeld=true;value.guardBlock=autoBlock&&Guarding;value.heading=heading%360;State=value;
   }
-  public void EndGuard(){if(Guarding)BeginDefense(BasketballAction.GuardRecover,State.heading,State.contact);var value=State;value.guardHeld=false;State=value;}
+  public void EndGuard(){if(Guarding)BeginDefense(BasketballAction.GuardRecover,State.heading,State.contact);var value=State;value.guardHeld=value.guardBlock=false;State=value;}
   public void BeginDefense(BasketballAction action,float heading,Vector3 point){
    Begin(action,heading,Vector3.zero);var value=State;value.contact=point;value.finishOrigin=transform.position;
    value.leftHand=Vector3.Dot(point-transform.position,Quaternion.Euler(0,heading,0)*Vector3.right)<0;
