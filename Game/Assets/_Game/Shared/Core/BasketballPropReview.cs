@@ -52,12 +52,12 @@ namespace WhatTheFish {
    Check(ball.Props.aiming&&ball.PropSlot(actor).kind==SportsProp.None,"one click starts forced aim and spends immediately");
    Check(ball.transform.parent.InverseTransformPoint(ball.ChargeHoop(actor,0).position).z>0,"team A lock-on targets the opposing positive-Z hoop");
    Check(!ball.BeginShotCharge(actor)&&!ball.TryPass(actor,0)&&!actor.CanRequestJump,"aim prevents normal shot, pass and jump");
-   Check(Math.Abs(ball.Props.aimUntil-started-2)<.01,"authoritative aim deadline is two seconds");
-   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,jump=true,sprint=true};yield return new WaitForSeconds(1.4f);DevelopmentProbe.TurnCommand=default;
-   Check(ball.Holder==actor&&ball.ShotCount==shots&&Vector3.Distance(position,actor.transform.position)<.025f,"player stays planted before two seconds");
+   Check(Math.Abs(ball.Props.aimUntil-started-1)<.01,"authoritative aim deadline is one second");
+   DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,jump=true,sprint=true};yield return new WaitForSeconds(.55f);DevelopmentProbe.TurnCommand=default;
+   Check(ball.Holder==actor&&ball.ShotCount==shots&&Vector3.Distance(position,actor.transform.position)<.025f,"player stays planted before one second");
    Capture("lock-on-aim",new Vector3(2,2.4f,-4),new Vector3(0,1,-8));
    end=Time.time+2;while(ball.ShotCount==shots&&Time.time<end)yield return null;
-   Check(ball.ShotCount==shots+1&&BasketballMotion.Clock-started>=1.98&&BasketballMotion.Clock-started<2.5,"automatic release after two seconds: "+(BasketballMotion.Clock-started));
+   Check(ball.ShotCount==shots+1&&BasketballMotion.Clock-started>=.98&&BasketballMotion.Clock-started<1.3,"automatic release after one second: "+(BasketballMotion.Clock-started));
    Check(ball.LastShotChance==1&&ball.ShotRolls==rolls,"powered shot bypasses random miss algorithm");
    end=Time.time+6;while(ball.Score.result==BasketballResult.Flying&&Time.time<end)yield return null;Check(ball.Score.result==BasketballResult.Scored,"full-range ability physically scores");
    // Cover corners, near backboard and both extreme long-range approaches.

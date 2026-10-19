@@ -30,6 +30,7 @@ namespace WhatTheFish {
   public static Action<FootballSound,Vector3,float,string,uint> Trace;public static int NetworkReceived,NetworkDropped;
   public AudioClip ReviewClip(FootballSound cue)=>bank[cue][0];
   public float ReviewTurboVolume=>turbo.source.volume;public bool ReviewLoopsPlaying=>air.source.isPlaying||turbo.source.isPlaying||roll.source.isPlaying;
+  public float ReviewVolume(FootballSound cue){float level=0;foreach(var v in voices)if(v.cue==cue&&v.source.isPlaying)level=Mathf.Max(level,v.source.volume);return level;}
 #endif
   void Awake(){
    Instance=this;ball=GetComponent<FootballBall>();voiceRoot=new GameObject("Football sound voices").transform;voiceRoot.SetParent(transform.parent,false);
@@ -54,10 +55,19 @@ namespace WhatTheFish {
   static bool UI(FootballSound c)=>c>=FootballSound.UIClick;
   static bool Flat(FootballSound c)=>UI(c)||c==FootballSound.Air||c>=FootballSound.Kickoff&&c<=FootballSound.Draw;
   static int Priority(FootballSound c)=>Flat(c)&&c!=FootballSound.Air?3:c==FootballSound.Walk||c==FootballSound.Run||c==FootballSound.Cut||c==FootballSound.Cloth||c==FootballSound.Dribble?0:c==FootballSound.Bounce?1:2;
+  // Apply once at playback, including replay, without changing event gains.
+  static float MixLevel(FootballSound cue)=>cue switch {
+   FootballSound.Walk or FootballSound.Run=>.28f,
+   FootballSound.Cut or FootballSound.Cloth=>.22f,
+   FootballSound.Land or FootballSound.Fall or FootballSound.Body or FootballSound.Swipe or FootballSound.Dash or FootballSound.Slide=>.35f,
+   FootballSound.Bounce or FootballSound.Post or FootballSound.Deflection or FootballSound.Boundary or FootballSound.WallHit=>.4f,
+   FootballSound.Dribble or FootballSound.Receive or FootballSound.KickLight or FootballSound.KickShot or FootballSound.Roll=>.45f,
+   _=>1
+  };
   float Gain(Voice v){
    float level=UI(v.cue)?MenuPreferences.UIVolume:v.cue==FootballSound.Air?MenuPreferences.AmbienceVolume:MenuPreferences.SFXVolume;
    var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;float distance=actor&&!Flat(v.cue)?Vector3.ProjectOnPlane(v.source.transform.position-actor.transform.position,Vector3.up).magnitude:0;
-   return v.gain*level*Mathf.Lerp(1,.10f,Mathf.InverseLerp(5,50,distance));
+   return v.gain*MixLevel(v.cue)*level*Mathf.Lerp(1,.10f,Mathf.InverseLerp(5,50,distance));
   }
   AudioClip Choose(FootballSound cue){if(!bank.TryGetValue(cue,out var clips)||clips.Length==0)return null;takes.TryGetValue(cue,out int take);takes[cue]=(take+1)%clips.Length;return clips[take];}
   void Begin(Voice v,FootballSound cue,AudioClip clip,Vector3 point,float gain,bool loop){var s=v.source;s.Stop();v.cue=cue;v.gain=Mathf.Clamp(gain,0,1.4f);v.priority=Priority(cue);v.began=Time.unscaledTimeAsDouble;s.transform.position=point;s.clip=clip;s.pitch=1;s.loop=loop;s.spatialBlend=Flat(cue)?0:.5f;s.priority=128-v.priority*24;s.volume=Gain(v);s.Play();}
@@ -149,21 +159,22 @@ namespace WhatTheFish {
    removed.Clear();foreach(var pair in feet)if(!pair.Key||!Athlete.Active.Contains(pair.Key))removed.Add(pair.Key);foreach(var a in removed)feet.Remove(a);
    foreach(var a in Athlete.Active){
     if(!a||!a.gameObject.activeInHierarchy||a.inTransit)continue;var m=a.GetComponent<FootballMotion>();if(!m||!m.Active)continue;
+    bool local=AppRoot.Instance&&a==AppRoot.Instance.LocalAthlete;
     bool airborne=a.Airborne;var effort=a.FootballEffort;
     if(!feet.TryGetValue(a,out var f)){f=new Feet{position=a.transform.position,phase=m.GaitPhase,touch=m.ContactWeight,yaw=a.transform.eulerAngles.y,airborne=airborne,action=a.Action,dash=effort.Dashing,empty=effort.Exhausted,charging=a.Charging};feet[a]=f;continue;}
     bool jump=Vector3.Distance(f.position,a.transform.position)>2||Time.deltaTime>.25f;bool moving=a.speed>.35f&&!airborne&&!a.LoadingJump&&a.Action==FootballAction.None&&!jump;
     if(!jump){
-     if(f.airborne&&!airborne)Play(FootballSound.Land,a.transform.position,.8f,"landing");
-     if(!f.airborne&&airborne)Play(FootballSound.Cloth,a.transform.position,.7f,"jump");
+     if(local&&f.airborne&&!airborne)Play(FootballSound.Land,a.transform.position,.8f,"landing");
+     if(local&&!f.airborne&&airborne)Play(FootballSound.Cloth,a.transform.position,.7f,"jump");
      // Gait wraps at the support contact, even when sprint stance is shorter
      // than one rendered frame. Both feet share this presentation clock.
-     if(a==AppRoot.Instance.LocalAthlete&&moving&&Time.timeAsDouble-f.step>.09){if(BasketballAudio.Crossed(f.phase,m.GaitPhase,0)||m.GaitPhase<f.phase){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.LeftFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}else if(BasketballAudio.Crossed(f.phase,m.GaitPhase,.5f)){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.RightFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}}
+     if(local&&moving&&Time.timeAsDouble-f.step>.09){if(BasketballAudio.Crossed(f.phase,m.GaitPhase,0)||m.GaitPhase<f.phase){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.LeftFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}else if(BasketballAudio.Crossed(f.phase,m.GaitPhase,.5f)){Play(a.speed>4.8f?FootballSound.Run:FootballSound.Walk,m.RightFoot,.72f,"foot-plant");f.step=Time.timeAsDouble;}}
      if(moving&&a.ControlsFootball&&!a.Charging&&m.ContactWeight>.9f&&f.touch<=.9f)Play(FootballSound.Dribble,ball.transform.position,.8f,"foot-ball");
-     if(a==AppRoot.Instance.LocalAthlete&&moving&&(Mathf.Abs(Mathf.DeltaAngle(f.yaw,a.transform.eulerAngles.y))>4||f.speed-a.speed>1.2f||effort.Pressuring)&&Time.timeAsDouble-f.cut>.55){Play(FootballSound.Cut,a.transform.position,.7f,"grass-cut");f.cut=Time.timeAsDouble;}
+     if(local&&moving&&(Mathf.Abs(Mathf.DeltaAngle(f.yaw,a.transform.eulerAngles.y))>4||f.speed-a.speed>1.2f||effort.Pressuring)&&Time.timeAsDouble-f.cut>.55){Play(FootballSound.Cut,a.transform.position,.7f,"grass-cut");f.cut=Time.timeAsDouble;}
      if(a.Action!=f.action){if(a.Action==FootballAction.Slide){Play(FootballSound.Slide,a.transform.position,1,"slide");Play(FootballSound.Swipe,a.transform.position,.35f,"slide-accent");}else if(a.Action==FootballAction.Hit){Play(FootballSound.Body,a.transform.position,.8f,"body-contact");f.fallAt=Time.timeAsDouble+.18;}}
      if(f.fallAt>=0&&Time.timeAsDouble>=f.fallAt){if(a.Action==FootballAction.Hit)Play(FootballSound.Fall,a.transform.position,.8f,"grounded-fall");f.fallAt=-1;}
-     if(a.Charging&&!f.charging)Play(FootballSound.Cloth,a.transform.position,.6f,"gather");
-     if(effort.Dashing&&!f.dash)Play(FootballSound.Dash,a.transform.position,.7f,"dash");
+     if(local&&a.Charging&&!f.charging)Play(FootballSound.Cloth,a.transform.position,.6f,"gather");
+     if(local&&effort.Dashing&&!f.dash)Play(FootballSound.Dash,a.transform.position,.7f,"dash");
      if(a==AppRoot.Instance.LocalAthlete){if(effort.Exhausted&&!f.empty)Play(FootballSound.Empty,a.transform.position,.8f,"exhausted");if(!effort.Exhausted&&f.empty)Play(FootballSound.Ready,a.transform.position,.6f,"recovered");}
     }
     f.phase=m.GaitPhase;f.touch=m.ContactWeight;f.airborne=airborne;f.action=a.Action;f.position=a.transform.position;f.yaw=a.transform.eulerAngles.y;f.speed=a.speed;f.dash=effort.Dashing;f.empty=effort.Exhausted;f.charging=a.Charging;

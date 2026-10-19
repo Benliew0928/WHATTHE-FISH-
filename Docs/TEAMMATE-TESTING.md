@@ -21,8 +21,8 @@ the project's Unity online services. The `Explore-*.cmd` launchers are offline
 practice shortcuts. Local automated-test flags use loopback and cannot connect
 two separate computers.
 
-The waiting room shows **Network build 70**. The current Fishing update increments
-the protocol from 69 to 70, so the previous player is rejected during connection
+The waiting room shows **Network build 71**. This combined Fishing, responsiveness, audio and QR/menu integration uses
+protocol 71, so earlier protocol-69 and protocol-70 players are rejected during connection
 before entering gameplay. The generic join-failure message also asks clients to
 check their code, connection and matching build; a missing network response
 cannot uniquely identify a version mismatch. The protocol is a compatibility
@@ -49,7 +49,7 @@ Do not assume an independently rebuilt player is the already-tested ZIP.
 
 ## Manual checks with your teammate
 
-1. In the waiting room, confirm both see network build 70. Enter as players,
+1. In the waiting room, confirm both see network build 71. Enter as players,
    ready up, and travel together. For Basketball, fill to 2v2 with bots.
 2. Finish a round, then use Next adventure to teleport everyone to a Skyrail
    station. Start another match while a participant remains near the cabin.
@@ -72,6 +72,15 @@ Do not assume an independently rebuilt player is the already-tested ZIP.
 8. After a round, teleport to another island's Game area. Spectators should
    arrive in that island's viewing area. No new room or spectator role change
    should occur.
+9. In Football, blue defends the blue goal and red defends the red goal. Check
+   the frames, apron, BLUE GOAL/RED GOAL boards and matching minimap ends from
+   both playing directions. Shoot at the other team's colour.
+10. Compare guest start/stop/turn response with the previous release, then
+    test charged shots, passes and tackles. The local player's movement uses
+    the newest host pose, but actions still need host approval. Record the
+    host/client devices and connection when reporting remaining delay. See
+    [the latency investigation](FOOTBALL-DIRECTION-AND-LATENCY.md) for controlled
+    measurements and the separate loss-during-admission limitation.
 
 Automated regression entry point:
 `Tools/Build/Test-TravelMatches.ps1 -PlayerPath Builds/WindowsFinal/WhatTheFish.exe`.
@@ -82,7 +91,7 @@ physical Android device.
 
 This release preserves the existing source snapshot's unrelated gameplay work.
 The previously recorded cart-suite camera/pose/steering failures are outside this
-travel-arrival change; see [the existing baseline](GOLF-FISHING-AUDIO.md).
+direction/response change; see [the existing baseline](GOLF-FISHING-AUDIO.md).
 
 ## Publish source after reviewing the changes
 

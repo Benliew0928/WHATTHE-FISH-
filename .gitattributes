@@ -23,3 +23,6 @@ ArtSource/Shared/Characters/AthleteV2/Integration/Game/Assets/_Game/Art/AthleteP
 # Preserve upstream Unity package formatting; project sources keep normal checks.
 Game/Packages/com.unity.services.multiplayer/** whitespace=-blank-at-eol,-blank-at-eof
 Game/Packages/com.unity.transport/** whitespace=-blank-at-eol,-blank-at-eof
+
+# Retain the imported MIT QR encoder's upstream source and license formatting.
+Game/Assets/ThirdParty/CodecreteQr/** whitespace=-blank-at-eol,-blank-at-eof

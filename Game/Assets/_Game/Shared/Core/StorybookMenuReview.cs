@@ -60,7 +60,7 @@ namespace WhatTheFish {
    clipboard=GUIUtility.systemCopyBuffer;football=LocalProfile.Stadium;basketball=LocalProfile.Basketball;master=MenuPreferences.MasterVolume;ui=MenuPreferences.UIVolume;motion=MenuPreferences.ReducedMotion;cameraMode=app.view.mode;
    MenuPreferences.SetMotion(false);app.Show("home");yield return Settled();Layout();yield return Capture("01-home");
    Check(app.Menu.Content.GetComponentsInChildren<Image>().Any(i=>i.name=="Official logo"&&i.sprite==Resources.Load<Sprite>("Menu/WhatTheFishLogo")),"home uses the official brand logo");
-   Check(!Button("Create room")&&Button("Customize venue")&&Button("How to play"),"home separates sport selection from global utilities");
+   Check(Button("Create room")&&Button("Join room")&&Button("Customize venue")&&Button("How to play"),"home exposes shared rooms and global utilities");
    Check(Button("Customize venue").GetComponent<CovePlate>().canvasRenderer.GetColor()==Color.white,"first home buttons restore full colour after the welcome gate");
    var create=Button("Island - Football");var p=Pointer(create.gameObject);Down(create,p);yield return new WaitForSecondsRealtime(.7f);
    Check(create.Activations==0&&app.Menu.Page=="home","holding never activates or auto-repeats");Check(create.transform.localScale.x<.99f,"held button visibly compresses");
@@ -71,7 +71,7 @@ namespace WhatTheFish {
    p=Pointer(create.gameObject);Down(create,p);Up(create,p);Check(create.Activations==1,"release inside activates exactly once");
    Check(app.Menu.IsTransitioning&&!Button("Back").IsInteractable(),"transition blocks incoming input");yield return Settled();Check(app.Menu.Page=="sport"&&app.SelectedSport==SportId.Football,"card enters its dedicated sport menu");Layout();yield return Capture("01-football-menu");
    Check(!Button("Island - Basketball"),"sport menu requires returning home to change sports");
-   Click("Create room");yield return Settled();Check(app.Menu.Page=="create","create screen reached");Layout();yield return Capture("02-create-room");
+   Check(!Button("Create room")&&!Button("Join room"),"sport keeps only offline and versus choices");Click("Back");yield return Settled();Click("Create room");yield return Settled();Check(app.Menu.Page=="create","create screen reached");Layout();yield return Capture("02-create-room");
    Click("Edit conditions");yield return Settled();Click("Duration 5");yield return Settled();Click("Save conditions");yield return Settled();
    Check(MenuMatchRules.CurrentMinutes==5&&MenuMatchRules.RegulationSeconds(180)==300,"saved five-minute condition drives actual match clock");
    app.Show("rules");yield return Settled();Layout();yield return Capture("05-conditions");MenuMatchRules.SetMinutes(3);
@@ -99,10 +99,10 @@ namespace WhatTheFish {
     Check(app.Menu.Page=="sport"&&app.SelectedSport==sport,"home card opens "+sport);Layout();yield return Capture("sport-"+sport);
     Check(Button("Play vs AI").IsInteractable()==(sport==SportId.Football||sport==SportId.Basketball),"bot availability matches supported sports: "+sport);
     Click("Back");yield return Settled();Check(app.Menu.Page=="home","sport returns to main menu: "+sport);
-    Click("How to play");yield return Settled();Click("Guide - "+sport);yield return Settled();Layout();yield return Capture("09-help-"+sport);
+    Click("How to play");yield return Settled();Click("Guide - "+sport);yield return Settled();Check(app.Menu.Content.GetComponentsInChildren<MenuSportIcon>().Count(i=>i.selected)==1&&app.Menu.Content.GetComponentsInChildren<MenuSportIcon>().First(i=>i.selected).sport==sport,"only the selected sport icon is colourful: "+sport);Layout();yield return Capture("09-help-"+sport);
     if(sport==SportId.Football||sport==SportId.Basketball){
      app.Show("home");yield return Settled();Click("Customize venue");yield return Settled();Layout();yield return Capture("venue-hub-"+sport);
-     Click("Venue - "+sport);yield return Settled();Layout();Click("Reset venue");yield return Settled();Click("Palette Rose");yield return Settled();Check(app.Menu.Content.GetComponentsInChildren<RawImage>().Any(v=>v.texture),"real venue preview renders for "+sport);
+     Click("Venue - "+sport);yield return Settled();Layout();Click("Edit selected venue");yield return Settled();Click("Reset venue");yield return Settled();Click("Palette Rose");yield return Settled();Check(app.Menu.Content.GetComponentsInChildren<RawImage>().Any(v=>v.texture),"real venue preview renders for "+sport);
      yield return Capture("06-venue-"+sport);Click("Preview detail");yield return Settled();
      if(sport==SportId.Football){Click("Board design");yield return Settled();Check(app.stadium.subtitle.text.Contains("GOOD ENERGY"),"screen message selector changes the actual venue sign");}
      else{Click("Logo Star");yield return Settled();var arena=app.stadium as BasketballArenaView;Check(arena&&arena.logoCatalog[1].activeSelf&&!arena.logoCatalog[0].activeSelf,"logo selector changes the actual court");}
@@ -111,10 +111,10 @@ namespace WhatTheFish {
      Check(LocalProfile.ForSport(sport).palette==(sport==SportId.Football?football.palette:basketball.palette),"discard preserves stored "+sport+" venue");
      app.Show("custom");yield return Settled();var title=Field("Venue name");title.text="COVE REVIEW";title.onEndEdit.Invoke(title.text);Click("Save venue");yield return Settled();Check(LocalProfile.ForSport(sport).title=="COVE REVIEW","venue save persists "+sport);
      LocalProfile.SaveSport(sport,sport==SportId.Football?football:basketball);app.stadium?.Apply(app.CurrentAppearance);
-    }else{app.Show("home");yield return Settled();Click("Customize venue");yield return Settled();Check(Button("Venue - Football").IsInteractable()&&Button("Venue - Basketball").IsInteractable()&&!Button("Venue - "+sport).IsInteractable(),"global venue hub keeps supported editors available while marking "+sport+" unavailable");}
+    }else{app.Show("home");yield return Settled();Click("Customize venue");yield return Settled();Click("Venue - "+sport);yield return Settled();Check(Button("Venue - "+sport).IsInteractable()&&!Button("Edit selected venue").IsInteractable(),"future venues have browseable tabs and an honest unavailable editor: "+sport);Layout();yield return Capture("venue-hub-"+sport);}
    }
    app.SelectSport(SportId.Football);yield return Settled();app.Show("home");yield return Settled();
-   Click("How to play");yield return Settled();Click("Guide - Golf");yield return Settled();Check(app.SelectedSport==SportId.Football,"browsing another guide does not switch the active sport");Click("Back");yield return Settled();Check(app.Menu.Page=="guides","guide returns to guide hub");Click("Back");yield return Settled();
+   Click("How to play");yield return Settled();Click("Guide - Golf");yield return Settled();Check(app.SelectedSport==SportId.Football,"browsing another guide does not switch the active sport");Check(app.Menu.Page=="guides","guide switches content in the same hub");Click("Back");yield return Settled();Check(app.Menu.Page=="home","one back exits the guide hub");
    Click("Island - Football");yield return Settled();Click("Play vs AI");yield return Settled();Layout();Click("AI team size 3");yield return Settled();Check(app.BotTeamSize==3,"bot team size control updates setup");Click("Back");yield return Settled();Click("Back");yield return Settled();
    foreach(var resolution in new[]{new Vector2Int(1280,800),new Vector2Int(1920,1080),new Vector2Int(2340,1080)}){
     Screen.SetResolution(resolution.x,resolution.y,false);yield return new WaitForSecondsRealtime(.6f);Canvas.ForceUpdateCanvases();Layout();yield return Capture("10-home-"+Screen.width+"x"+Screen.height+"-requested-"+resolution.x);
@@ -128,6 +128,21 @@ namespace WhatTheFish {
    if(!app.rooms.Connected)yield break;
    Check(Unity.Netcode.NetworkManager.Singleton.NetworkConfig.ProtocolVersion==RoomService.ProtocolVersion,"room uses the current combined protocol");
    var own=FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).FirstOrDefault(p=>p.IsOwner);
+   var stablePage=app.Menu.Content;var stableReady=Button("Ready toggle");var stableCopy=Button("Copy invitation");
+   var stableQr=app.Menu.Content.Find("Room invitation/Show room QR");
+   Check(stableQr&&!Button("Show room QR").IsInteractable(),"dedicated QR slot does not turn a local test room into a false online invitation");
+   Click(role=="host"?"Player seat 03":"Player seat 04");
+   yield return Wait(()=>own.RoomSeat.Value==(role=="host"?2:3),"seat click reaches authoritative room state");
+   yield return Wait(()=>RoomTeleport.Players().All(n=>n.RoomSeat.Value>=2&&n.RoomSeat.Value<10),"both peer seat changes replicated");
+   yield return new WaitForSecondsRealtime(.5f);
+   Check(app.Menu.Content==stablePage&&Button("Ready toggle")==stableReady&&Button("Copy invitation")==stableCopy&&!app.Menu.IsTransitioning,"seat movement preserves page and invitation controls on both peers");
+   Click("Leave room");yield return null;var dialog=app.Menu.Content.Find("Confirmation");
+   own.ChooseRoomSeatRpc((byte)(role=="host"?10:11));
+   yield return Wait(()=>RoomTeleport.Players().All(n=>n.IsSpectator),"spectator moves replicate while dialog is open");yield return new WaitForSecondsRealtime(.4f);
+   Check(dialog&&app.Menu.Content==stablePage&&app.Menu.Content.Find("Room invitation/Show room QR")==stableQr,"seat updates preserve open confirmation and QR slot");
+   Click("Keep playing");yield return null;Click(role=="host"?"Player seat 03":"Player seat 04");
+   yield return Wait(()=>RoomTeleport.Players().All(n=>!n.IsSpectator),"players return from spectator places");yield return new WaitForSecondsRealtime(.4f);
+   Check(app.Menu.Content==stablePage,"repeated position switches never rebuild room page");
    if(role=="host"){
     Check(MenuMatchRules.SetMinutes(5),"host can set conditions");
     yield return new WaitForSecondsRealtime(2);Layout();yield return Capture("04-lobby-host");

@@ -11,7 +11,7 @@ namespace WhatTheFish {
  }
 
  // One bounded bank/pool per active court. Physical outcomes come from the host;
- // held dribbles and footsteps follow the locally presented pose on every peer.
+ // held dribbles follow the presented pose; only the local player's feet sound.
  [DefaultExecutionOrder(110)]
  public sealed class BasketballAudio:MonoBehaviour {
   public static BasketballAudio Instance {get;private set;}
@@ -31,6 +31,8 @@ namespace WhatTheFish {
   public static int NetworkReceived,NetworkDropped;
   public AudioClip ReviewClip(BasketballSound cue)=>bank.TryGetValue(cue,out var clips)&&clips.Length>0?clips[0]:null;
   public float ReviewAimVolume=>aim?.source.volume??0;
+  public float ReviewAimRemaining=>aim?.source.clip?Mathf.Max(0,aim.source.clip.length-aim.source.time):0;
+  public float ReviewVolume(BasketballSound cue){float level=0;foreach(var v in voices)if(v.cue==cue&&v.source.isPlaying)level=Mathf.Max(level,v.source.volume);return level;}
 #endif
   void Awake(){
    ball=GetComponent<BasketballBall>();Instance=this;voiceRoot=new GameObject("Basketball sound voices").transform;voiceRoot.SetParent(transform.parent,false);
@@ -82,11 +84,21 @@ namespace WhatTheFish {
   }
   static bool UI(BasketballSound cue)=>cue>=BasketballSound.UIClick;
   static int Priority(BasketballSound cue)=>UI(cue)?3:cue==BasketballSound.Walk||cue==BasketballSound.Run||cue==BasketballSound.Scuff||cue==BasketballSound.Cloth||cue==BasketballSound.Hand?0:cue==BasketballSound.Squeak||cue==BasketballSound.Bounce?1:2;
+  // Mix at playback so host events and guest presentation receive the same
+  // reduction once, while existing user volume controls still apply.
+  static float MixLevel(BasketballSound cue)=>cue switch {
+   BasketballSound.Walk or BasketballSound.Run=>.28f,
+   BasketballSound.Squeak or BasketballSound.Scuff or BasketballSound.Cloth=>.22f,
+   BasketballSound.Land or BasketballSound.Swipe or BasketballSound.Body=>.35f,
+   BasketballSound.Bounce or BasketballSound.Board or BasketballSound.Rim=>.4f,
+   BasketballSound.Hand or BasketballSound.Catch or BasketballSound.Release or BasketballSound.Block or BasketballSound.Roll=>.45f,
+   _=>1
+  };
   float Gain(Voice v){
    if(UI(v.cue))return v.gain*MenuPreferences.UIVolume;
    float distance=0;var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;if(actor)distance=Vector3.ProjectOnPlane(v.source.transform.position-actor.transform.position,Vector3.up).magnitude;
    float attenuation=Mathf.Lerp(1,.16f,Mathf.InverseLerp(4,32,distance));
-   return v.gain*(v.cue==BasketballSound.Air?MenuPreferences.AmbienceVolume:MenuPreferences.SFXVolume)*attenuation;
+   return v.gain*MixLevel(v.cue)*(v.cue==BasketballSound.Air?MenuPreferences.AmbienceVolume:MenuPreferences.SFXVolume)*attenuation;
   }
   AudioClip Choose(BasketballSound cue,out int take){take=0;if(!bank.TryGetValue(cue,out var clips)||clips.Length==0)return null;lastTake.TryGetValue(cue,out int last);take=(last+1)%clips.Length;lastTake[cue]=take;return clips[take];}
   public void Play(BasketballSound cue,Vector3 position,float gain=1,string reason="pose",uint eventId=0){
@@ -124,7 +136,9 @@ namespace WhatTheFish {
   void PresentLoops(bool first){
    var state=ball.Props;var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;double now=BasketballMotion.Clock;
    if(state.aiming&&now<state.aimUntil){var aimer=ball.PropActor(state.aimer);if(aimer){
-    if(aimDeadline!=state.aimUntil||first){aimDeadline=state.aimUntil;var clip=Choose(BasketballSound.LockAim,out _);if(clip)Begin(aim,BasketballSound.LockAim,clip,aimer.transform.position,1,false,(float)Math.Max(0,now-(state.aimUntil-2)));}
+    // Keep the approved clip's natural pitch and quiet finish. Play its final
+    // aim-duration seconds, seeking ahead for a delayed guest presentation.
+    if(aimDeadline!=state.aimUntil||first){aimDeadline=state.aimUntil;var clip=Choose(BasketballSound.LockAim,out _);if(clip)Begin(aim,BasketballSound.LockAim,clip,aimer.transform.position,1,false,Mathf.Max(0,clip.length-BasketballPropRules.AimSeconds)+(float)Math.Max(0,now-(state.aimUntil-BasketballPropRules.AimSeconds)));}
     aim.source.transform.position=aimer.transform.position;aim.source.volume=Gain(aim);
    }}else {aim.source.Stop();aimDeadline=0;}
    float remaining=actor?ball.TurboRemaining(actor):0;
@@ -146,11 +160,12 @@ namespace WhatTheFish {
      var placement=actor.GetComponent<TurnFootPlacement>();if(!placement||!placement.left.ankle||!placement.right.ankle)continue;
      f=new FootState{left=placement.left.ankle,right=placement.right.ankle,leftBase=placement.left.initialPosition.y,rightBase=placement.right.initialPosition.y,position=actor.transform.position,yaw=actor.transform.eulerAngles.y,airborne=actor.Airborne,action=actor.BasketballMotion?actor.BasketballMotion.State.sequence:0};feet[actor]=f;continue;
     }
+    bool local=AppRoot.Instance&&actor==AppRoot.Instance.LocalAthlete;
     var motion=actor.BasketballMotion;bool airborne=actor.Airborne||(motion&&motion.Finishing&&BasketballMotion.FinishHeight(motion.State,motion.FinishMotorTime)>.025f);
     bool teleported=Vector3.Distance(f.position,actor.transform.position)>2||Time.deltaTime>.25f;
-    if(f.airborne&&!airborne&&!teleported)Play(BasketballSound.Land,actor.transform.position,.8f,"landing");
+    if(local&&f.airborne&&!airborne&&!teleported)Play(BasketballSound.Land,actor.transform.position,.8f,"landing");
     float left=actor.transform.InverseTransformPoint(f.left.position).y,right=actor.transform.InverseTransformPoint(f.right.position).y;
-    bool moving=actor.speed>.35f&&!airborne&&!actor.LoadingJump&&!teleported;
+    bool moving=local&&actor.speed>.35f&&!airborne&&!actor.LoadingJump&&!teleported;
     void Foot(float height,float rest,ref float previous,ref bool lifted,Vector3 point){
      if(!moving){lifted=false;previous=height;return;}
      if(height>rest+.028f)lifted=true;
@@ -165,7 +180,7 @@ namespace WhatTheFish {
      f.action=motion.State.sequence;var action=motion.Action;
      if(!teleported&&BasketballMotion.Clock-motion.State.started<.3){
       if(action==BasketballAction.Steal||action==BasketballAction.Block||action==BasketballAction.JumpBlock)Play(BasketballSound.Swipe,actor.transform.position,.8f,"reach");
-      else if(action==BasketballAction.Charge||action==BasketballAction.PassCharge||action==BasketballAction.Cancel||action==BasketballAction.PassCancel)Play(BasketballSound.Cloth,actor.transform.position,.7f,"gather");
+      else if(local&&(action==BasketballAction.Charge||action==BasketballAction.PassCharge||action==BasketballAction.Cancel||action==BasketballAction.PassCancel))Play(BasketballSound.Cloth,actor.transform.position,.7f,"gather");
      }f.lastAction=action;
     }
     f.airborne=airborne;f.speed=actor.speed;f.yaw=yaw;f.position=actor.transform.position;

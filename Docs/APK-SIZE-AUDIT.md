@@ -1,5 +1,35 @@
 # APK size audit — measured release records
 
+## Combined latest-main integration — 20 October 2026
+
+`AndroidSubmission` succeeded at **00:10:48 Malaysia time**. Actual APK:
+**90,579,220 bytes**, up **35,724** from the opening local **90,543,496**.
+Headroom below the strict 1,000,000,000-byte cap: **909,420,780 bytes**.
+The budget gate, ZIP integrity and independent APK v2 signature passed.
+SHA-256: **506492C679C637F90CB17B974B64F3F407BA255E2A9BD5379DEEB1C14D7AEE75**.
+
+| Largest APK entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,153,964 | +2,486 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,351,726 | +30,357 |
+| `lib/arm64-v8a/libunity.so` | 9,807,995 | 0 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,761,478 | +2,581 |
+
+The merge retains Fishing updates and local audio, responsiveness, menu and
+Huawei scanner features. There was no unexpected large growth or lossy art
+change. Player assets serialize to **25,690,212 bytes** and the separate bundle
+to **150,702,143**; these are different measurements from the APK length.
+The Huawei SDK/registration remains configured from local environment settings.
+
+The complete Windows player passed **4,568 integration assertions**, plus both
+protocol-69/71 rejection directions. All 327 files matched the tested candidate
+before its build note was updated. Physical Android and live WAN remain
+unverified. See [the integration report](LATEST-MAIN-INTEGRATION.md).
+
+Current audit: `Builds/SizeAudit/latest/`; preserved audits, entry delta and
+verification: `Builds/GitSyncQA/`. Previous delivery/audit archive:
+`Legacy/20261020-000738-460-git-sync-delivery/`.
+
 ## Fishing eye-level camera and natural swimming — 19 October 2026
 
 Fresh `AndroidSubmission` succeeded at **14:01:07 Malaysia time**. Actual APK:
@@ -38,6 +68,114 @@ hashes, entry deltas, logs, signature and delivery records:
 `Builds/FishingNatural/Task-20261019-052154Z/`. This includes prior uncommitted
 shared-lagoon work above `9bb55646`. Physical Android and WAN remain unverified;
 store release signing is separate from this debug-certificate verification.
+
+## Huawei Scan Kit and shared room menus — 18 October 2026
+
+`AndroidSubmission` succeeded at **19:49:58 Malaysia time**. Actual APK:
+**90,543,496 bytes**, up **2,960,308** from **87,583,188**. Headroom below the
+strict 1,000,000,000-byte cap: **909,456,504 bytes**. ZIP integrity, the size gate
+and independent APK v2 signature verification passed. SHA-256:
+**36A3FBC0B2DB1CC7440CAAEE0CF53B57AFF13276C08856D99EBEE5B74AF74CF6**.
+
+| APK entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,151,478 | −5,476 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,321,369 | +6,185 |
+| `lib/arm64-v8a/libunity.so` | 9,807,995 | +33,922 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,758,897 | +3,255 |
+| `classes.dex` | 1,062,654 | +710,914 |
+| `lib/arm64-v8a/libscannative.so` | 936,122 | +936,122 |
+| `assets/detect.ms` | 587,404 | +587,404 |
+| `assets/corner.ms` | 333,930 | +333,930 |
+| `assets/angle.ms` | 105,482 | +105,482 |
+
+The new scanner library, three models, Java dependencies and SDK resources
+explain the growth. The combined snapshot also includes the parallel menu task,
+so the total delta is not a pure SDK measurement. No lossy asset changes or
+unexpected large contributors were found. Player serialized assets are
+**25,689,908 bytes**, with the separate bundle **150,702,143 bytes**; these are
+not the APK length.
+
+The first attempt failed R8 validation on optional networking-provider classes.
+The final build retains Huawei's packaged consumer rules, keeps the Unity bridge
+and applies an explicit optional-class warning list; release minification stays
+enabled. Full rebuilding and APK inspection passed after this repair.
+
+Manifest checks confirm the camera is optional, the scanner activity is private,
+and app ID `119406947` is present. DEX checks confirm the bridge, activity,
+ScanUtil and RemoteView survived shrinking. The APK is signed with the registered
+development certificate. Device scanning and final store signing remain separate.
+
+Current audit: `Builds/SizeAudit/latest/`. Preserved final audit, earlier APK,
+entry deltas, signature, manifest and class checks: `Builds/ScanKitQA/`.
+Windows: 38 QR checks plus 1,442 menu assertions passed; complete player promoted
+to `Builds/WindowsFinal/`. Previous player archive:
+`Legacy/20261018-194458-193-scan-kit-windows-delivery/`.
+See [the integration report](HUAWEI-SCAN-KIT.md).
+
+## Quieter sports audio and one-second Lock-on — 18 October 2026
+
+`AndroidSubmission` succeeded at **17:41:05 Malaysia time**. Actual APK:
+**87,583,188 bytes**, down **8,988** from **87,592,176**. Headroom below the
+strict 1,000,000,000-byte cap: **912,416,812 bytes**. ZIP integrity and independent
+APK v2 signature verification passed. SHA-256:
+**845E5EA5021A247E848D757B90E9A24EDE571470CB14835A6F0AB95E690AA1A6**.
+
+| Largest APK entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,156,954 | −9,977 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,315,184 | +887 |
+| `lib/arm64-v8a/libunity.so` | 9,774,073 | 0 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,755,642 | +99 |
+
+Only playback locality/gain and the Basketball Lock-on duration changed in
+production code. There were no new audio/visual assets, lossy changes or
+unexpected large contributors. Player assets remain **25,688,616 uncompressed
+serialized bytes** and the separate bundle **150,702,143**; neither is the APK
+length. Rebuild serialization/compression can change bundle bytes without a
+change in those totals.
+
+The complete validated Windows player is in `Builds/WindowsFinal/`; all **737
+audio/prop assertions passed**, including three-peer one-second release and
+opposing-block interruption. No phone was connected. See
+[the task report](QUIETER-SPORTS-AND-LOCK-ON.md) for source snapshot and limits.
+Current audit: `Builds/SizeAudit/latest/`; preserved audit, entry comparison,
+signature and verification: `Builds/QuietSportsAudioQA/`. Previous delivery/audit
+archive: `Legacy/20261018-173822-247-quiet-audio-delivery/`.
+
+## Football direction and guest response — 18 October 2026
+
+`AndroidSubmission` succeeded at **16:55:46 Malaysia time**. Actual APK:
+**87,592,176 bytes**, up **22,992** from **87,569,184**. Headroom below the
+strict 1,000,000,000-byte cap: **912,407,824 bytes**. Independent APK v2
+verification passed with the configured Android Debug certificate. SHA-256:
+**9DE4A00B43E5A9B7A8AD6868F58EAD2C13FD371E8476D3D63A1E8A115A7BB988**.
+
+| Largest APK entry | Compressed bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,166,931 | +14,266 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,314,297 | +5,923 |
+| `lib/arm64-v8a/libunity.so` | 9,774,073 | +806 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,755,543 | +1,606 |
+
+The new markers reuse primitive meshes, the existing stadium-frame material
+and built-in font. There are no added textures, lossy asset reductions or
+unexpected large contributors. The player report's **25,688,616 uncompressed
+serialized bytes** excludes the separate scene bundle and is not the APK size.
+Both ends were inspected close/wide on Windows D3D12 and D3D11.
+
+The current audit is in `Builds/SizeAudit/latest/`; its preserved copy and actual
+ZIP-entry deltas are in `Builds/ResponsivenessQA/SizeAuditFinal/` and
+`Builds/ResponsivenessQA/apk-entry-delta.csv`. The same evidence folder holds
+signature verification, screenshots and source/copy hashes. Superseded output
+is inventoried under `Legacy/20261018-165242-181-football-direction-response/`.
+
+Windows gameplay/capacity/visual suites passed 1,284 assertions plus both
+old/new protocol mismatch directions. Protocol 69 is required on every peer.
+The [latency report](FOOTBALL-DIRECTION-AND-LATENCY.md) records the measured
+movement improvement, unchanged shot-latency limit, loss-during-admission
+failure and rendering diagnostic that did not reproduce. Physical Android
+rendering, performance and live WAN behavior remain unverified.
 
 ## Shared travel and match-start arrivals — 18 October 2026
 

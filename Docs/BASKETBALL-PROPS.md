@@ -23,7 +23,7 @@ Restarts still cancel active boosts, aiming and transfers.
 
 | Prop | Activation | Effect and counterplay |
 | --- | --- | --- |
-| Lock-on Shot | One click while holding the ball, grounded inside the painted court | Immediately spends the item and plants the player for two seconds. Automatically shoots at the opposing basket. No hold or timing meter is required. A nearby opponent's normal Block interrupts the aim; losing possession also cancels it. An interrupted item is never refunded. |
+| Lock-on Shot | One click while holding the ball, grounded inside the painted court | Immediately spends the item and plants the player for one second. Automatically shoots at the opposing basket. No hold or timing meter is required. A nearby opponent's normal Block interrupts the aim; losing possession also cancels it. An interrupted item is never refunded. |
 | Team Turbo | One click inside the court | The collector and their active teammates move at 150% of normal walking/sprinting speed (1.5×) for five seconds. Jump height and action restrictions are unchanged. An existing boost prevents another activation without spending that second item. |
 | Portal Steal | One click in the collector's home half | Both blue-rimmed, black-centred portals open together. The current ball shrinks into its source portal and emerges beside the receiver's hand over 0.7 seconds. Works on opponents, teammates, loose balls and shots/passes in flight. |
 
@@ -109,7 +109,9 @@ architecture clearance, multiplayer agreement and disabling/re-entering the aren
 It measures controller speed and distance travelled for walking and sprinting:
 6 / 10.5 m/s during Turbo, versus 4 / 7 m/s normally. Local multiplayer also
 checks the boosted teammate and unaffected opponent. The Lock-on deadline,
-stationary aim and actual release are checked against two seconds.
+stationary aim and actual release are checked against one second (updated
+18 October 2026). The countdown halo and HUD share the same duration; aim audio
+plays the final second of its approved source at the original pitch.
 
 Release measurements and qualification limits belong in
 [build size](BUILD-SIZE.md), [packing audit](APK-SIZE-AUDIT.md) and

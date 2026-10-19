@@ -139,6 +139,7 @@ namespace WhatTheFish {
     float front=Pitch.InverseTransformPoint(goal.position).z;int sign=front>PitchBounds.center.z?1:-1;
     var bounds=new Bounds();bounds.SetMinMax(new Vector3(a.max.x,PitchBounds.max.y,sign>0?PitchBounds.max.z:back.min.z+.01f),new Vector3(b.min.x,top.min.y,sign>0?back.max.z-.01f:PitchBounds.min.z));
     FootballGoalNet.Attach(goal,Pitch,bounds,front,sign);
+    FootballGoalIdentity.Attach(goal,Pitch,bounds,PitchBounds,front,sign);
     goals[GoalCount++]=new GoalArea{bounds=bounds,front=front,sign=sign,net=goal.GetComponentInChildren<FootballGoalNet>()};
    }
    if(!GetComponent<FootballMatch>())gameObject.AddComponent<FootballMatch>();
@@ -188,12 +189,18 @@ namespace WhatTheFish {
      if(controller)FollowController(controller);
      else {KeepInsidePitch();ApplyRollingResistance(Time.fixedDeltaTime);SweepPlayers(Time.fixedDeltaTime);}
     }
-    if(Online&&NetworkAthlete.HostPlayer&&(publishTimer-=Time.fixedDeltaTime)<=0){publishTimer=.05f;NetworkAthlete.HostPlayer.Ball.Value=new FootballBallSnapshot{valid=true,position=Body.position,rotation=Body.rotation,sequence=sequence,controllerId=ControllerId(),props=footballProps};}
+    if(Online&&NetworkAthlete.HostPlayer){
+     publishTimer-=Time.fixedDeltaTime;
+     if(publishTimer<=0||!NetworkResponsiveness.Baseline&&NetworkAthlete.HostPlayer.Ball.Value.sequence!=sequence){
+      publishTimer=NetworkResponsiveness.Baseline?.05f:Mathf.Clamp(publishTimer+NetworkResponsiveness.Interval,0,NetworkResponsiveness.Interval);
+      NetworkAthlete.HostPlayer.Ball.Value=new FootballBallSnapshot{valid=true,position=Body.position,rotation=Body.rotation,sequence=sequence,controllerId=ControllerId(),props=footballProps};
+     }
+    }
    }else if(NetworkAthlete.HostPlayer){
     var value=NetworkAthlete.HostPlayer.Ball.Value;if(!value.valid)return;
     if(!received.valid||receivedSequence!=value.sequence){SnapPose(value.position,value.rotation);from=value.position;fromRotation=value.rotation;blend=1;}
     else if(!value.Equals(received)){from=Body.position;fromRotation=Body.rotation;blend=0;}
-    received=value;receivedSequence=value.sequence;blend=Mathf.Min(1,blend+Time.fixedDeltaTime/.05f);
+    received=value;receivedSequence=value.sequence;blend=Mathf.Min(1,blend+Time.fixedDeltaTime/(NetworkResponsiveness.Baseline?.05f:NetworkResponsiveness.Interval));
     Body.MovePosition(Vector3.Lerp(from,value.position,blend));Body.MoveRotation(Quaternion.Slerp(fromRotation,value.rotation,blend));
    }
   }

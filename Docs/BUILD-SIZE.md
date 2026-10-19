@@ -1,5 +1,31 @@
 # Build size — measured release records
 
+## Combined latest-main integration — 20 October 2026
+
+Fresh `AndroidSubmission` at **00:10:48 Malaysia time**:
+**90,543,496 → 90,579,220 bytes (+35,724)**. Headroom below the strict
+**1,000,000,000-byte** cap: **909,420,780 bytes**. Build, automatic budget gate,
+ZIP integrity and independent APK v2 signature verification passed. SHA-256:
+**506492C679C637F90CB17B974B64F3F407BA255E2A9BD5379DEEB1C14D7AEE75**.
+
+This combines upstream Fishing commit `43eb9d2` with the local audio, movement,
+goal identity, shared-menu and Huawei Scan Kit work. Protocol **71** rejects
+older peers. All **4,568 Windows integration assertions** and both tested
+protocol-69/71 mismatch directions passed. The complete tested player is in
+`Builds/WindowsFinal/`; all 327 candidate files matched during promotion.
+
+Growth is mainly IL2CPP (+30,357 compressed bytes), metadata (+2,581) and the
+islands bundle (+2,486). Unity runtime is unchanged, with no unexpected large
+asset increase or intentional visual reduction. Serialized player assets are
+25,690,212 bytes; the separate bundle remains 150,702,143. These are not APK
+measurements. See [integration and limits](LATEST-MAIN-INTEGRATION.md).
+
+Current audit: `Builds/SizeAudit/latest/`; preserved opening/final audit,
+entry comparison, signature, source hashes and copy integrity:
+`Builds/GitSyncQA/`. Superseded delivery and audit:
+`Legacy/20261020-000738-460-git-sync-delivery/`. Physical Android camera,
+audio, appearance/FPS and live WAN remain unverified.
+
 ## Fishing eye-level camera and natural swimming — 19 October 2026
 
 Fresh `AndroidSubmission` at **14:01:07 Malaysia time**:
@@ -32,6 +58,91 @@ and preserved audits are under `Builds/FishingNatural/Task-20261019-052154Z/`;
 the current audit is also in `Builds/SizeAudit/latest/`.
 The release includes existing uncommitted Fishing work above pulled `main`
 `9bb55646`. Physical Android touch/appearance/FPS and WAN remain unverified.
+
+## Huawei Scan Kit and shared room menus — 18 October 2026
+
+Fresh `AndroidSubmission` at **19:49:58 Malaysia time**:
+**87,583,188 → 90,543,496 bytes (+2,960,308)**. Headroom below the strict
+**1,000,000,000-byte** cap: **909,456,504 bytes**. The full build, budget gate,
+APK ZIP integrity and independent v2 signature verification passed. SHA-256:
+**36A3FBC0B2DB1CC7440CAAEE0CF53B57AFF13276C08856D99EBEE5B74AF74CF6**.
+
+This combined workspace build includes Huawei Scan Kit 2.15.0.301 and the
+parallel shared-room menu refinement. Growth is mainly Huawei's ARM64 scanner,
+Java dependencies and three model assets. No visual assets were reduced.
+The APK contains the registered app ID, camera permission, non-exported scanner
+activity and retained bridge/SDK classes. It uses the current Android Debug
+certificate; store release signing remains a separate step.
+
+The complete tested Windows player is in `Builds/WindowsFinal/`: **38 QR checks
+and 1,442 menu assertions passed**. A live UGS room's lobby and enlarged QR
+decoded correctly with an independent reader. Physical Android camera behavior
+and phone performance remain unverified at the user's request.
+
+See [Scan Kit integration and registration](HUAWEI-SCAN-KIT.md) and
+[menu validation](MENU-REFINEMENT.md). Current contributor audit:
+`Builds/SizeAudit/latest/`; before/after evidence, signatures, screenshots and
+copy hashes: `Builds/ScanKitQA/`. The previous complete Windows player is in
+`Legacy/20261018-194458-193-scan-kit-windows-delivery/`.
+
+## Quieter sports audio and one-second Lock-on — 18 October 2026
+
+Fresh `AndroidSubmission` at **17:41:05 Malaysia time**:
+**87,592,176 → 87,583,188 bytes (−8,988)**. Headroom below the strict
+**1,000,000,000-byte** cap: **912,416,812 bytes**. Build, budget gate, ZIP
+integrity and independent APK v2 signature verification passed. SHA-256:
+**845E5EA5021A247E848D757B90E9A24EDE571470CB14835A6F0AB95E690AA1A6**.
+
+Basketball/Football use softer local-only footsteps and lower impact gain.
+Basketball Lock-on now aims for one second, with matching audio and countdown.
+No audio or visual assets were reduced or removed. The islands bundle shrinks
+9,977 compressed bytes; IL2CPP grows 887 and metadata 99. Unity runtime is
+unchanged. Serialized player/bundle totals remain 25,688,616 / 150,702,143
+bytes; these are not APK measurements. No unexpected large growth was found.
+
+The complete tested player is in `Builds/WindowsFinal/`; **737 Windows
+assertions passed** across offline and multiplayer audio/prop checks. See
+[implementation, measurements and limits](QUIETER-SPORTS-AND-LOCK-ON.md).
+Current audit: `Builds/SizeAudit/latest/`; preserved before/after audit, ZIP
+deltas, signatures, build logs, source and full-player copy hashes:
+`Builds/QuietSportsAudioQA/`. Reviewed previous delivery/audit:
+`Legacy/20261018-173822-247-quiet-audio-delivery/`. Physical Android audio,
+rendering, performance and live WAN remain unverified.
+
+## Football direction and guest response — 18 October 2026
+
+Fresh `AndroidSubmission` at **16:55:46 Malaysia time**:
+**87,569,184 → 87,592,176 bytes (+22,992)**. Headroom below the strict
+**1,000,000,000-byte** cap: **912,407,824 bytes**. Build, budget gate, ZIP
+integrity and independent APK v2 signature verification passed. SHA-256:
+**9DE4A00B43E5A9B7A8AD6868F58EAD2C13FD371E8476D3D63A1E8A115A7BB988**.
+
+Protocol 69 adds blue/red defending-end frames, aprons, boards and minimap cues.
+Guest input edges send promptly, old input packets are rejected, and owned
+Football/Basketball poses are presented with less buffering. Football ball
+state publishes at 30 Hz. Authority, scoring and travel remain on the host.
+See [the implementation and measured limits](FOOTBALL-DIRECTION-AND-LATENCY.md).
+
+The islands bundle grows 14,266 compressed bytes, IL2CPP 5,923, Unity runtime
+806 and metadata 1,606. No new texture set or lossy visual changes were made;
+the contributor audit found no unexpected large growth. Serialized player
+assets are 25,688,616 bytes; that is not the compressed APK measurement.
+
+The complete validated player is in `Builds/WindowsFinal/`; the shareable ZIP
+and SHA-256 sidecar are in `Builds/ResponsivenessQA/`. Windows checks passed
+56 movement, 292 ball, 513 net, 245 travel/match-start, 22 goal identity and
+156 capacity assertions, plus both protocol-68/69 mismatch directions.
+Three-peer A/B tests with 120 ms added RTT reduced median visible movement
+onset from 315.88 to 232.74 ms; shot samples did not establish an improvement.
+The 12-peer test applies 2% packet loss after joining. A separate loss-during-
+admission failure and the un-reproduced screenshot rendering diagnostic remain
+documented limitations. Physical Android, live Relay/WAN and phone-host FPS
+are unverified.
+
+Current audit: `Builds/SizeAudit/latest/`; preserved audit, comparisons, logs,
+captures, source hashes and copy/signature evidence: `Builds/ResponsivenessQA/`.
+Reviewed superseded delivery and audit:
+`Legacy/20261018-165242-181-football-direction-response/`.
 
 ## Shared travel and match-start arrivals — 18 October 2026
 

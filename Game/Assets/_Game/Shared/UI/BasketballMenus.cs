@@ -49,7 +49,7 @@ namespace WhatTheFish {
   }
   void ControlCard(Transform p,float x,float y,BasketballIcon icon,string title,string body){BasketballUIStyle.Art(p,icon,x,y,35,35);BasketballUIStyle.Text(p,title,x+43,y,244,22,14,true);BasketballUIStyle.Text(p,body,x+43,y+24,244,51,12,false,TextAnchor.UpperLeft);}
   void BuildPropsGuide(Transform p){
-   string[] names={"Lock-on","Team Turbo","Portal"},body={"Stand still and aim for 2 seconds, then fire an assisted shot. A block can interrupt it.","Your team moves 1.5× faster for 5 seconds. An active boost cannot stack.","Use from your home half to bring the ball to you. The centre line is outside your half."};
+   string[] names={"Lock-on","Team Turbo","Portal"},body={"Stand still and aim for 1 second, then fire an assisted shot. A block can interrupt it.","Your team moves 1.5× faster for 5 seconds. An active boost cannot stack.","Use from your home half to bring the ball to you. The centre line is outside your half."};
    for(int i=0;i<3;i++){float x=i*207;CoveUI.Image(p,names[i],SportsUIStyle.PropIcon((SportsProp)(i+1)),x+67,0,62,53).color=Color.white;BasketballUIStyle.Text(p,names[i],x,58,196,23,16,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(p,body[i],x+3,88,190,70,12,false,TextAnchor.UpperCenter);}
    BasketballUIStyle.Text(p,"One slot · one use · new pickups replace the old prop · use on the painted court",0,163,610,24,11,false,TextAnchor.MiddleCenter);
   }

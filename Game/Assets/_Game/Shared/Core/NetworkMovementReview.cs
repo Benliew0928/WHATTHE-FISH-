@@ -17,8 +17,11 @@ namespace WhatTheFish {
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");float end=Time.realtimeSinceStartup+75;
-   while((!(app=AppRoot.Instance)||!app.Exploring||!app.LocalAthlete)&&Time.realtimeSinceStartup<end)yield return null;
-   if(!app||!app.Exploring||!(actor=app.LocalAthlete)){Check(false,"entered sport");Finish();yield break;}
+   // Exploration becomes true before the shared arrival finishes. Measuring
+   // then records the intentional travel input lock as a movement failure.
+   while(!DevelopmentProbe.ReadyToReviewSport&&Time.realtimeSinceStartup<end)yield return null;
+   app=AppRoot.Instance;
+   if(!DevelopmentProbe.ReadyToReviewSport||!app||!(actor=app.LocalAthlete)){Check(false,"entered sport after arrival");Finish();yield break;}
    oldMode=app.view.mode;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.3f);
    var net=actor.GetComponent<NetworkAthlete>();bool host=net&&net.IsSpawned&&net.IsServer;
    Check(!net||!net.IsSpawned||host,"audit owns authoritative player");

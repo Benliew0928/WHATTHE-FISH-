@@ -1,7 +1,16 @@
 # Basketball gameplay audio
 
+Updated 18 October 2026: only the local player's footsteps, shoe cuts, shuffles,
+landing and clothing cues play. Walking/running use 28% of their previous
+playback gain, shoe/fabric cues 22%, body/landing/swipe cues 35%, ball floor/
+board/rim impacts 40%, and hand/catch/release/block/rolling cues 45%. Saved
+volume controls still multiply this mix. Match, prop and UI cues keep their
+levels. Lock-on now aims for **one second**; playback uses the final second of
+the retained two-second clip at original pitch and seeks for delayed observers.
+See [quieter sports and Lock-on verification](QUIETER-SPORTS-AND-LOCK-ON.md).
+
 Implemented on **11 October 2026** after the user approved the listening set.
-The two-second Lock-on aim uses a lower **220–360 Hz** fundamental, reduced
+The retained two-second Lock-on source uses a lower **220–360 Hz** fundamental, reduced
 upper harmonics and peak **0.064 instead of 0.16 (7.96 dB quieter)**. Duration
 stays exactly 64,000 samples at 32 kHz. Unity normalization is disabled;
 decoded runtime peak measured **0.06448364** after Vorbis import.
@@ -35,11 +44,11 @@ in the [preview report](BASKETBALL-AUDIO-PREVIEW.md).
 | Dunk | Contact-timed rim and net cues, reusing the approved bank |
 | Catch, pickup, pass and shot | Confirmed possession or actual ball release, rather than a button press |
 | Steal and block | Light swipe at the reach; ball slap only at successful contact |
-| Walking and running | Descending planted ankle in the displayed animation; no airborne footsteps |
+| Walking and running | Local player's descending planted ankle; no remote or airborne footsteps |
 | Shoe cuts, defensive shuffles and landing | Turning/deceleration, defensive foot plants and actual air-to-ground transition, with teleport suppression |
 | Gather and cancel | Quiet clothing cue on the new shot/pass action |
 | Prop countdown / spawn / pickup | Actual countdown digit, materialization and accepted collection |
-| Lock-on | Deadline-synchronized two-second aim; actual release accent; immediate stop and interruption cue on cancellation |
+| Lock-on | Deadline-synchronized one-second aim; actual release accent; immediate stop and interruption cue on cancellation |
 | Turbo | Accepted activation, quiet active texture and local player's actual expiry |
 | Portal Steal | Open at both ends, intake at transfer phase 0.15, arrival at 0.52, catch and closure on completed transfer |
 | Out of bounds and inbound | Initial boundary crossing and completed standing inbound placement |
@@ -56,13 +65,13 @@ cue, including a server rejection sent to the requesting owner.
 owns one bank and a bounded pool per active court: 16 world voices, four UI
 voices and dedicated aim, Turbo, ambience and rolling sources. Physical
 outcomes outrank feet and fabric; UI has separate slots. Variations rotate with
-small pitch offsets on short physical cues. The aim retains its exact duration.
+small pitch offsets on short physical cues. Aim playback follows the one-second deadline.
 
 Host-authoritative live events use reliable server-only RPCs, unique sequence
 IDs and timestamps. Guests reject stale events and wait for the existing
 50 ms presentation offset. A host never plays its own event twice. These cues
 are not retained in snapshots, so a joining client cannot replay an old score.
-Held dribbles and foot plants follow each peer's presented animation rather
+Held dribbles and local foot plants follow each peer's presented animation rather
 than adding network traffic for every contact. A late observer of an active
 aim seeks to its remaining timeline. Leaving play, disabling the court or
 suspending the application stops voices and clears queued events.
@@ -76,7 +85,7 @@ direction, without Doppler. Ambient air and interface sounds are non-positional.
 
 [BasketballAudioBuild.cs](../Game/Assets/_Game/Editor/BasketballAudioBuild.cs)
 enforces 58 files, mono 32 kHz Vorbis at quality 0.65, preserved authored volume
-and a two-second aim. Short cues decompress on load; the three longer textures
+and the retained two-second aim source. Short cues decompress on load; the three longer textures
 stay compressed in memory. Soft/hard bounces reuse the same four recordings
 with impact gain; the precomposed dunk and audition alternatives are excluded.
 

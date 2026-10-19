@@ -139,7 +139,7 @@ public static partial class ProjectBuilder {
   placement.hipOffset=athlete.transform.InverseTransformPoint(placement.hips.position)-(placement.left.initialPosition+placement.right.initialPosition)*.5f;placement.hipOffset.y=0;
   ((AnimationClip)idle.motion).SampleAnimation(model,0);
   var offlinePrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Prefabs/Characters/OfflineAthlete.prefab");
-  athlete.AddComponent<NetworkObject>();var nt=athlete.AddComponent<NetworkTransform>();nt.Interpolate=true;nt.SyncScaleX=nt.SyncScaleY=nt.SyncScaleZ=false;athlete.AddComponent<NetworkAthlete>();
+  athlete.AddComponent<NetworkObject>();var nt=athlete.AddComponent<ResponsiveNetworkTransform>();NetworkResponsiveness.Configure(nt);nt.SyncScaleX=nt.SyncScaleY=nt.SyncScaleZ=false;athlete.AddComponent<NetworkAthlete>();
   var playerPrefab=PrefabUtility.SaveAsPrefabAsset(athlete,Root+"Prefabs/Characters/NetworkAthlete.prefab");UnityEngine.Object.DestroyImmediate(athlete);
   var networkGO=new GameObject("Room network");var transport=networkGO.AddComponent<UnityTransport>();var manager=networkGO.AddComponent<NetworkManager>();manager.NetworkConfig=new NetworkConfig{ProtocolVersion=RoomService.ProtocolVersion,NetworkTransport=transport,PlayerPrefab=playerPrefab,TickRate=30,EnableSceneManagement=false,ConnectionApproval=true};manager.NetworkConfig.Prefabs.Add(new NetworkPrefab{Prefab=playerPrefab});
   var appGO=new GameObject("WHATTHE FISH? Application");var rooms=appGO.AddComponent<RoomService>();var app=appGO.AddComponent<AppRoot>();app.rooms=rooms;app.athletePrefab=offlinePrefab;
