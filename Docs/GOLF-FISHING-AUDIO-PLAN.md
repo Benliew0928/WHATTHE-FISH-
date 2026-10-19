@@ -58,7 +58,7 @@ edits and whether it is reused, recorded or generated.
 | Ball collides with another ball | One hard-ball tick per resolved pair, not one from each collider |
 | Ball rolls | Quiet close loop tied to observed grounded speed; rough/sand can filter the same texture; stop on sleep/flight/teleport |
 | Pond or sea entry | Water splash at water-plane crossing, followed by recovery; do not repeat on each submerged frame |
-| Correct cup | Actual cup rattle, then quiet owner-only hole acknowledgement, including a helper completing another owner's ball |
+| Correct cup | Actual cup rattle, then quiet owner-only hole acknowledgement; direct swings are now restricted to the ball owner |
 | Wrong cup / out-of-course recovery | Shared soft interruption/reset cue; no invented penalty-stroke sound |
 | All five holes completed | Personal completion flourish; separate from final standings |
 | First finisher / last seconds / standings | Neutral first-finisher notice; restrained final countdown; settled win/loss/tie; DNF is not a successful finish |

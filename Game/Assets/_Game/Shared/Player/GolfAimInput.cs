@@ -4,7 +4,7 @@ namespace WhatTheFish {
  public sealed partial class PlayerView {
   bool aimWanted,aimAccepted;ulong aimOwner;uint aimRound;float aimRequestedAt,pendingGolfHeading;
   GolfShotPreview golfPreview;
-  bool chargePresented,golfReleased;float presentedCharge,presentedHeading;
+  bool chargePresented,golfReleased,golfPowerDragged;float presentedCharge,presentedHeading;
   public bool GolfAimRequested=>aimWanted;
   public ulong AimedGolfOwner=>aimOwner;
   public GolfShotPreview GolfPreview=>golfPreview;
@@ -39,9 +39,9 @@ namespace WhatTheFish {
    var match=GolfMatchManager.Instance;var ball=GolfAiming&&match?match.Ball(aimOwner):null;
    if(!ball||golfReleased){if(golfPreview)golfPreview.Hide();return;}
    if(!golfPreview){var go=new GameObject("Golf shot guide");golfPreview=go.AddComponent<GolfShotPreview>();}
-   var aim=match.Aim(target);float charge=GolfCharging?GolfCharge:.3f;
+   var aim=match.Aim(target);float charge=GolfCharging&&golfPowerDragged?GolfCharge:.3f;
    golfPreview.Show(ball,match.Course,aim.ballPosition,yaw,charge,aim.mode,cam);
-   if(GolfCharging){presentedCharge=charge;presentedHeading=yaw;chargePresented=true;}
+   if(GolfCharging){presentedCharge=GolfCharge;presentedHeading=yaw;chargePresented=true;}
   }
  }
 }

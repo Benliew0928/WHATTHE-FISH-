@@ -1,5 +1,266 @@
 # APK size audit — measured release records
 
+## Golf 30% idle preview restoration - 20 October 2026
+
+Fresh AndroidSubmission at **06:48:37 Malaysia time**: actual APK
+**90,856,642 -> 90,850,906 bytes (-5,736)**.
+Strict decimal-GB headroom: **909,149,094 bytes**. Official build/budget
+gate and independent APK v2 signature passed. SHA-256:
+**DBDB87FC93219B0626C21F5D6DEA15F35220EC9FF2C4FB00A73BA8563B112D13**.
+
+Restored the default 30% Swing/Putt preview before dragging, including a touch
+without movement. Actual drag power and release-to-hit remain unchanged. Existing
+artwork, force limits, camera and map are reused. Largest compressed entries:
+islands **45,044,192**, IL2CPP **12,340,309**,
+Unity **9,773,269**, metadata **2,758,580** bytes.
+The small size variation is compiled code/packaging, with no new bitmap assets.
+
+Complete WindowsFinal updated; **326 files** SHA-256 matched before its note
+was amended. **36 focused runtime assertions** passed, including default Swing,
+default Putt, touch without drag and zero-power tap preview checks. Actual idle
+30% screenshot reviewed. No fresh WAN or physical-phone input/FPS verification.
+Evidence: ignored `Builds/GolfIdlePreviewQA/`, including `FinalAndroidAudit/`.
+Previous complete player/APK archive: `Legacy/20261020-064558-702-golf-idle-preview/`.
+See [drag power and idle preview notes](GOLF-DRAG-POWER.md).
+
+## Golf drag-to-release power control - 20 October 2026
+
+Fresh AndroidSubmission at **01:03:37 Malaysia time**: actual APK
+**90,502,486 -> 90,856,642 bytes (+354,156)**.
+Strict decimal-GB headroom: **909,143,358 bytes**. Official build/budget
+gate and independent APK v2 signature passed. SHA-256:
+**B93CF6D04E7686DB60FEDDB357964134C8625590D95F6DEA99586A86B3D10075**.
+
+Largest compressed entries: islands **45,052,418**, IL2CPP **12,337,899**, Unity
+**9,773,269**, metadata **2,758,497** bytes. Growth is concentrated in the two new
+slider textures. Player-only serialized assets **28,024,568 bytes** are a separate
+measurement; Rail and Knob account for **756,264 serialized bytes**, not APK bytes.
+Editable image masters and references remain outside Unity. Android sprites use
+ASTC 4x4; no unrelated asset quality reduction or map generation was performed.
+
+Complete WindowsFinal player rebuilt and promoted; **326 files** SHA-256 matched
+before its note was amended. **32 focused runtime assertions** passed; actual
+Swing zero/60% and Putt 8% screenshots reviewed. Existing aim/trajectory/landing
+marker and shot physics retained. No fresh WAN or physical-phone input/FPS test.
+Evidence: ignored `Builds/GolfDragPowerQA/`, including `FinalAndroidAudit/`.
+See [drag power implementation and delivery](GOLF-DRAG-POWER.md).
+
+## Golf T1 bunker restoration and seam repair - 20 October 2026
+
+Fresh AndroidSubmission at **00:32:45 Malaysia time**: actual APK
+**90,795,846 -> 90,502,486 bytes (-293,360)**.
+Strict decimal-GB headroom: **909,497,514 bytes**. Official build/budget
+gate and independent APK v2 signature passed. SHA-256:
+**48BC2EE82B658B0BB957F4EAB814457E49CE7739F0F0B5BD713765DA3CB68481**.
+
+Largest compressed entries: islands **45,055,476**, IL2CPP **12,338,210**, Unity
+**9,773,269**, metadata **2,758,497** bytes. Removed floating T1 floor/path meshes;
+joined native terrain and exact surface intersections reuse existing texture maps.
+No unrelated visual quality reduction. Source-only annotated PNG references are
+outside Unity. Player-only serialized assets remain **27,268,200 bytes**, a
+separate measurement from APK bytes.
+
+Complete WindowsFinal player rebuilt, tested and promoted; **326 files** matched
+by SHA-256 before its note was amended. **457 editor assertions** and **28 four-player
+runtime assertions** passed. Actual top, near and two low entry views reviewed;
+visible dressing clearance measured **0.0248-0.0250 m**. Original tee-site records
+are unchanged. No new WAN or physical-phone quality/FPS test. Evidence: ignored
+`Builds/GolfT1SeamQA/`, including `FinalAndroidAudit/`.
+See [localized bunker/seam repair](GOLF-T1-BUNKER-SEAMS.md).
+
+## Golf T1 terrain integration repair - 19 October 2026
+
+Fresh AndroidSubmission at **22:57:57 Malaysia time**: actual APK
+**90,295,414 -> 90,795,846 bytes (+500,432)**.
+Strict decimal-GB headroom: **909,204,154 bytes**. Official build,
+budget gate and independent APK v2 signature passed. SHA-256:
+**66FAFBA8DC3D85CF3F326CEF99A3AB1BE754E7F03D229DBCF126295F4BFD9017**.
+
+Largest compressed entries: islands **45,345,669**, IL2CPP **12,341,397**, Unity
+**9,773,269**, metadata **2,758,482** bytes. The ~0.50 MB increase is concentrated
+in localized ground/dressing meshes and a terrain shader using existing textures.
+No new bitmap textures or unrelated quality reductions. Player-only serialized
+assets remain **27,268,200 bytes**, a different measurement from the actual APK.
+
+Complete WindowsFinal player rebuilt, tested and promoted; **326 files** matched
+by SHA-256 before its delivery note was amended. **399 editor assertions** and
+**28 four-player runtime assertions** passed. Original pad records are unchanged
+and scene/prefab records agree. Actual desktop top/near views reviewed. No new WAN
+or physical-phone quality/FPS test. Evidence: ignored `Builds/GolfT1BlendQA/`,
+including `FinalAndroidAudit/`. See [T1 terrain repair](GOLF-T1-TERRAIN-REPAIR.md).
+
+## Golf centre-first multiplayer tees - 19 October 2026
+
+Fresh AndroidSubmission at **20:42:18 Malaysia time**: actual APK
+**88,552,098 -> 90,295,414 bytes (+1,743,316)**. Strict decimal-GB headroom:
+**909,704,586 bytes**. Official build/budget gate and independent v2 signature passed.
+SHA-256: **87BBBEB84D4D3FEDD8C9A57432801A29481020FA21D307336121940535C9DA7D**.
+
+Largest compressed entries: islands **44,845,228**, IL2CPP **12,341,397**, Unity
+**9,773,269**, metadata **2,758,482** bytes. Expected growth is concentrated in the
+new derived tee ground/scenery meshes and small allocation/snapshot code. Existing
+island textures and authoring masters are reused; no quality reduction. Player-only
+serialized assets **27,268,200 bytes** are a separate measurement from APK bytes.
+
+Complete Windows player rebuilt and promoted after **399 editor assertions**,
+**28 four-player runtime assertions**, and **7 host + 7 client assertions**.
+Evidence: ignored `Builds/GolfMultiplayerTeeQA/`, including `AndroidAudit/`.
+No physical-phone quality/FPS or WAN test. Protocol **69** requires matching peers.
+See [tee layout, allocation and delivery record](GOLF-MULTIPLAYER-TEES.md).
+
+## Golf hidden-before-start and self-only preview - 19 October 2026
+
+Fresh AndroidSubmission at **00:51:28 Malaysia time**: actual APK
+**88,550,674 -> 88,552,098 bytes (+1,424)**. Strict decimal-GB headroom:
+**911,447,902 bytes**. Build/budget gate and independent v2 signature passed.
+SHA-256: **3F5030017C954E89FCC603559CCDC319AF3550024D5484F0BD0A6D378AE5C222**.
+
+Largest compressed entries: islands **43,125,660**, IL2CPP **12,319,897**, Unity
+**9,773,269**, metadata **2,756,280** bytes. Tiny code/serialization compression
+variation; no new assets or quality reduction. Player-only serialized assets stay
+**27,268,112 bytes**, a separate measurement from the actual APK size.
+
+Complete Windows player updated with a code-only script refresh on the prior
+validated full player; 326 files hashed before updating its note. **21 focused
+presentation checks** and screenshot review passed. Evidence and copied audit:
+ignored `Builds/GolfPersonalRankingQA/` and `AndroidAudit/`. No phone FPS/WAN test.
+See [personal preview record](GOLF-PERSONAL-RANKING.md).
+
+## Original Golf ranking restored - 19 October 2026
+
+Fresh AndroidSubmission at **00:39:12 Malaysia time**: actual APK
+**88,542,330 -> 88,550,674 bytes (+8,344)**. Strict decimal-GB headroom:
+**911,449,326 bytes**. Build/budget gate and independent APK v2 signature passed.
+SHA-256: **01D4B74BAA73CC9DBB323A0721E50C314D4B34892297549AD9DEE05FBB65E878**.
+
+Reverted the simplified leaderboard designs, including unused portrait delivery
+assets. Separate 50-unit countdown, close Aim arrow and tapered trail remain.
+Largest compressed entries: islands **43,122,483**, IL2CPP **12,321,500**, Unity
+**9,773,269**, metadata **2,756,434** bytes. Small bundle/code serialization and
+compression variation; no new textures/models or unrelated quality reduction.
+Player-only serialized assets **27,268,112 bytes** are not the compressed APK size.
+
+Full tested Windows player promoted to WindowsFinal; 326 candidate files compared
+before amending its note. **39 focused graphical checks** and screenshot review
+passed, including synthetic eight-player preview/full scrolling list and retained
+visual settings. No remote session or physical-phone FPS tests were performed.
+Evidence and audit: ignored `Builds/GolfRankingRollbackQA/` and `AndroidAudit/`.
+See [rollback and archives](GOLF-RANKING-ROLLBACK.md).
+
+## Golf compact ranking and trail taper - 18 October 2026
+
+Fresh AndroidSubmission at **23:33:48 Malaysia time**: actual APK
+**88,550,326 -> 88,542,330 bytes (-7,996)**. Strict decimal-GB headroom:
+**911,457,670 bytes**. Build gate and independent v2 signature verification passed.
+SHA-256: **358B883D2286330AA147193AEF336E9619F2FEE9D15E4A51F26B51263BCFAAD8**.
+
+Largest compressed entries: islands bundle **43,115,368**, IL2CPP **12,320,248**,
+Unity **9,773,269**, metadata **2,756,450** bytes. No new textures/models or quality
+reductions; small bundle/code variation, no unexpected asset growth. Serialized
+player assets remain **27,268,112 bytes**, a different measurement from APK bytes.
+Complete Windows player delivered after 38 focused presentation checks and
+screenshot inspection. Evidence: ignored `Builds/GolfCompactQA/`, audit copied to
+`AndroidAudit/`. No phone FPS/WAN testing. See [change record](GOLF-COMPACT-RANKING.md).
+
+## Golf continuous countdown, circular address and water support - 18 October 2026
+
+Final AndroidSubmission succeeded at **22:54:32 Malaysia time, 18 October 2026**.
+Actual APK: **88,550,326 bytes**, opening APK **88,540,314**; delta **+10,012**.
+Headroom below the strict 1,000,000,000-byte limit: **911,449,674 bytes**.
+Independent v2 signature verification passed. SHA-256:
+**BDDB599E91780DC6DA2440DAD15B041FEC0DA0D2DB93714EA8813206999F242A**.
+
+| Largest compressed entry | Bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,121,521 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,322,109 |
+| `lib/arm64-v8a/libunity.so` | 9,773,269 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,756,428 |
+
+Player-only serialized bytes remain **27,268,112**. The islands bundle increases
+5,108 bytes; IL2CPP increases 4,549 and metadata 349. This is expected small
+shader/code/bounds growth, with no new bitmap/model assets or unrelated quality
+changes. Full current audit is in ignored `Builds/SizeAudit/latest/`, preserved
+in `Builds/GolfRefineQA/AndroidAudit/`. Exact measurements and signature output:
+`Builds/GolfRefineQA/final-apk.json` and `apk-signature.txt`.
+
+The exact opening APK is archived in batch
+`20261018-225557-224-golf-refine-previous-apk`. Complete superseded Windows player:
+`20261018-225239-597-golf-aim-countdown-water-player`. Device visual/FPS and WAN
+checks are not inferred from the Windows preview. See
+[targeted implementation](GOLF-ADDRESS-AND-COUNTDOWN-20261018.md).
+
+## Golf rollback, pond crossing, rim capture and countdown - 18 October 2026
+
+Final `AndroidSubmission` succeeded at **19:11:03 Malaysia time, 18 October 2026**.
+Actual APK **88,540,314 bytes**, versus opening **87,606,216** (**+934,098**).
+Strict decimal-GB headroom: **911,459,686 bytes**. APK v2 signature passed.
+SHA-256: **E2FC748B5AA0F780A37BCA070899C5C6307B7EE8D62DE23C6FA7CF17FACAB254**.
+
+| Largest compressed entry | Bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,116,413 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,317,560 |
+| `lib/arm64-v8a/libunity.so` | 9,773,269 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,756,079 |
+
+The islands bundle shrank **69,331 bytes**, consistent with removal of all
+21 authored mechanisms. New Resources countdown sprites account for the main
+new asset contribution: two 1024-wide ASTC 4x4 plates and eleven small glyphs.
+These are intentional quality improvements over an intermediate 256-pixel
+preview that was rejected as blurry. No unrelated art reduction was used.
+Player-only serialized bytes: **27,268,112**; consult the separate bundle report
+for scene assets. Neither this figure nor raw source PNG sizes is APK size.
+
+Current audit: ignored `Builds/SizeAudit/latest/`; preserved task copy:
+`Builds/GolfPolishQA/AndroidAudit/`. Independent signature output and entry/hash
+measurement: `Builds/GolfPolishQA/apk-signature.txt`, `final-apk.json`.
+
+The superseded exact opening APK and unused generated mechanism sand variant
+were archived in `20261018-191208-845-golf-polish-superseded`. Variant references
+were checked in scenes, prefabs, materials, metadata, runtime and generators;
+the original high-quality sand material remains. Device visual/FPS and WAN
+validation are not claimed. See [Golf change record](GOLF-POLISH.md).
+
+## Golf physical moving mechanisms - 18 October 2026
+
+`AndroidSubmission` succeeded at **18 October 2026, 18:10:08 Malaysia time**. Actual APK:
+**87,606,216 bytes**; strict 1 GB headroom **912,393,784 bytes**. The actual
+opening local APK was **95,067,465 bytes** (-7,461,249), an older snapshot;
+packaging/audio/travel changes already in the checkout are included. No claim
+is made that this difference is caused solely by the moving mechanisms.
+Independent APK v2 signature verification passed. SHA-256:
+**F06D7A236E6DC101AE6E1F2F5D6CF831AF69F5342D2C11DBE80C5F04F0C66AD6**.
+
+| Largest entry | Compressed bytes |
+| --- | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,185,744 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,312,472 |
+| `lib/arm64-v8a/libunity.so` | 9,773,772 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,755,161 |
+
+The player-only report lists 25,688,264 uncompressed serialized asset bytes;
+this is not the APK size and excludes the separate scene bundle. The 21 A-U
+mechanisms add scene objects and code, with shared primitive meshes/materials.
+No large new texture/model contributors or intentional visual reductions were
+introduced. Compared with the previously documented 87,569,184-byte release,
+the recorded total is 37,032 bytes larger; the retained byte/entry comparison
+is against the actual opening 95,067,465-byte APK.
+
+Current audit: `Builds/SizeAudit/latest/`. Preserved audit, ZIP entry deltas,
+actual before/after bytes, signature output, source-retention and Windows copy
+hashes: `Builds/GolfMovingQA/`. Windows validation passed 7,464 assertions across
+the focused offline/local-host/client runs, including six pond returns.
+No physical Android or WAN validation was performed.
+
+An ignored task-local TEMP/TMP directory was used for the build process; no
+SDK, system environment or portable source defaults were changed. A preceding
+Windows bundle attempt ran out of disk space; the complete final build passed
+after space recovered. NTFS lossless compression was requested for local Legacy
+output only; see task evidence. The task issued no deletion of other archives.
+Archives: `Legacy/20261018-180723-332-golf-moving-player/` and
+`Legacy/20261018-181348-956-golf-moving-previous-apk/`.
+
 ## Shared travel and match-start arrivals — 18 October 2026
 
 `AndroidSubmission` succeeded at **14:44:53 Malaysia time**. Actual APK:

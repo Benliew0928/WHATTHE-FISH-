@@ -12,6 +12,7 @@ namespace WhatTheFish {
  public sealed partial class GolfMatchManager {
   public const float AimReach=3f;
   readonly Dictionary<Athlete,GolfAimState> aims=new();
+  readonly Dictionary<Athlete,float> orbitRadii=new();
   readonly List<Athlete> invalidAims=new();
   readonly List<(Athlete actor,GolfAimState aim)> aimUpdates=new();
   public GolfAimState Aim(Athlete actor){if(!actor)return default;var net=actor.GetComponent<NetworkAthlete>();return !Authority&&net?net.GolfAim.Value:aims.TryGetValue(actor,out var value)?value:default;}
@@ -21,11 +22,11 @@ namespace WhatTheFish {
    foreach(var ball in balls.Values){if(!AimEligible(actor,ball))continue;float d=(ball.Body.position-actor.transform.position).sqrMagnitude;if(d<distance&&TryStance(actor,ball,out _,PlayerView.Instance&&PlayerView.Instance.target==actor?PlayerView.Instance.yaw:actor.transform.eulerAngles.y)){nearest=ball;distance=d;}}
    return nearest;
   }
-  bool AimEligible(Athlete actor,GolfBall ball){var p=ball?State.Player(ball.Owner):null;return ball&&ball.ReadyToAim&&p!=null&&!p.IsFinished&&!p.IsDNF&&Vector3.Distance(actor.transform.position,ball.Body.position)<=AimReach&&VisibleBall(actor,ball);}
+  bool AimEligible(Athlete actor,GolfBall ball){var p=ball?State.Player(ball.Owner):null;return ball&&Player(actor)?.PlayerId==ball.Owner&&ball.ReadyToAim&&p!=null&&!p.IsFinished&&!p.IsDNF&&Vector3.Distance(actor.transform.position,ball.Body.position)<=AimReach&&VisibleBall(actor,ball);}
   bool VisibleBall(Athlete actor,GolfBall ball)=>!Physics.Linecast(actor.transform.position+Vector3.up*.8f,ball.Body.position+Vector3.up*GolfBall.Radius,out var hit,1<<8,QueryTriggerInteraction.Ignore)||hit.distance>Vector3.Distance(actor.transform.position+Vector3.up*.8f,ball.Body.position)-.07f;
   public bool TryStance(Athlete actor,GolfBall ball,out Vector3 position,float heading=0){
-   // Take a golfer's side-on stance once at entry. Later aim rotation never
-   // drags the feet around the ball. Fall back toward the approach if blocked.
+   // Start on the left of the shot direction. The authority subsequently
+   // follows a collision-checked circular arc around the stationary ball.
    var side=Quaternion.Euler(0,heading,0)*Vector3.left;
    if(StanceAt(actor,ball,side,out position))return true;
    var offset=Vector3.ProjectOnPlane(actor.transform.position-ball.Body.position,Vector3.up);
@@ -59,6 +60,31 @@ namespace WhatTheFish {
    if(Physics.Linecast(desired+Vector3.up*.8f,ball.Body.position+Vector3.up*GolfBall.Radius,out var obstruction,1<<8,QueryTriggerInteraction.Ignore)&&obstruction.distance<Vector3.Distance(desired+Vector3.up*.8f,ball.Body.position)-.07f)return false;
    position=desired;return true;
   }
+  // Authority-only displacement, consumed by the normal CharacterController
+  // move and replicated by the existing NetworkTransform. Never reposition the ball.
+  public Vector3 AimOrbitDisplacement(Athlete actor,float heading,float dt){
+   if(!Authority||!float.IsFinite(heading)||dt<=0)return Vector3.zero;
+   var aim=Aim(actor);var ball=aim.active?Ball(aim.owner):null;
+   if(!ball||Player(actor)?.PlayerId!=ball.Owner||!ball.ReadyToAim||actor.GolfClubMotion.Busy||ball.ResetSequence!=aim.reset)return Vector3.zero;
+   var offset=Vector3.ProjectOnPlane(actor.transform.position-aim.ballPosition,Vector3.up);
+   float radius=orbitRadii.TryGetValue(actor,out var saved)?saved:offset.magnitude;if(radius<.1f)return Vector3.zero;
+   float current=Mathf.Atan2(offset.z,-offset.x)*Mathf.Rad2Deg;
+   float next=Mathf.MoveTowardsAngle(current,heading,120*Mathf.Min(dt,.05f));
+   if(Mathf.Abs(Mathf.DeltaAngle(current,next))<.005f&&Mathf.Abs(offset.magnitude-radius)<.005f)return Vector3.zero;
+   var side=Quaternion.Euler(0,next,0)*Vector3.left;
+   // A blocked arc stops at its current side instead of jumping to another ring.
+   if(!StanceAt(actor,ball,side,out var feet,radius/GolfClubMotion.SwingReach))return Vector3.zero;
+   // The entry search uses a compact capsule. Orbiting needs the full controller
+   // plus its skin, otherwise CharacterController.Move slides off the circle.
+   var c=actor.capsule;var scale=actor.transform.lossyScale;
+   float clearance=c.radius*Mathf.Max(scale.x,scale.z)+c.skinWidth+.025f;
+   var centre=actor.transform.TransformVector(c.center);float half=c.height*scale.y*.5f;
+   var lower=centre+Vector3.up*(-half+clearance+.025f);var upper=centre+Vector3.up*(half-clearance);
+   int mask=(1<<8)|(1<<9);var delta=feet-actor.transform.position;
+   if(Physics.CheckCapsule(feet+lower,feet+upper,clearance,mask,QueryTriggerInteraction.Ignore))return Vector3.zero;
+   if(delta.sqrMagnitude>.000001f&&Physics.CapsuleCast(actor.transform.position+lower,actor.transform.position+upper,clearance,delta.normalized,delta.magnitude,mask,QueryTriggerInteraction.Ignore))return Vector3.zero;
+   return delta;
+  }
   public bool SetAim(Athlete actor,bool enabled,ulong owner,uint round,float heading=0){
    if(!Authority||!actor||round!=Round||!float.IsFinite(heading))return false;
    if(!enabled){ReleaseAim(actor);return true;}
@@ -70,18 +96,18 @@ namespace WhatTheFish {
    if(GolfCartWorld.HasCart(actor))GolfCartWorld.Execute(actor,GolfCartAction.Recall,GolfCartWorld.Key(actor));
    bool controller=actor.capsule.enabled;actor.capsule.enabled=false;actor.transform.position=feet;actor.ResetLocomotion();actor.capsule.enabled=controller;
    actor.GolfClubMotion.Equip(Round);actor.GolfClubMotion.Address(ball.Body.position);Physics.SyncTransforms();
-   var state=new GolfAimState{active=true,owner=owner,round=Round,reset=ball.ResetSequence,ballPosition=ball.Body.position,mode=ShotMode(ball)};aims[actor]=state;
+   var state=new GolfAimState{active=true,owner=owner,round=Round,reset=ball.ResetSequence,ballPosition=ball.Body.position,mode=ShotMode(ball)};aims[actor]=state;orbitRadii[actor]=Vector3.ProjectOnPlane(feet-ball.Body.position,Vector3.up).magnitude;
    var net=actor.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned){net.GolfAim.Value=state;net.GetComponent<Unity.Netcode.Components.NetworkTransform>().Teleport(feet,actor.transform.rotation,actor.transform.localScale);}
    return true;
   }
   public void ReleaseAim(Athlete actor){
-   if(ReferenceEquals(actor,null))return;aims.Remove(actor);if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();if(Authority&&net&&net.IsSpawned)net.GolfAim.Value=default;
+   if(ReferenceEquals(actor,null))return;aims.Remove(actor);orbitRadii.Remove(actor);if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();if(Authority&&net&&net.IsSpawned)net.GolfAim.Value=default;
    if(actor.GolfClubMotion)actor.GolfClubMotion.Charge(false,0,Vector3.zero,Round);
   }
   void ClearAims(){invalidAims.Clear();invalidAims.AddRange(aims.Keys);foreach(var actor in invalidAims)ReleaseAim(actor);aims.Clear();}
   void ValidateAims(){
    invalidAims.Clear();aimUpdates.Clear();foreach(var item in aims){var actor=item.Key;var aim=item.Value;var ball=Ball(aim.owner);
-    if(!actor||!ball||!ball.Live||ball.ResetSequence!=aim.reset||!State.Running||aim.round!=Round||actor.inTransit||GolfCartWorld.Driving(actor)){invalidAims.Add(actor);continue;}
+    if(!actor||!ball||Player(actor)?.PlayerId!=ball.Owner||!ball.Live||ball.ResetSequence!=aim.reset||!State.Running||aim.round!=Round||actor.inTransit||GolfCartWorld.Driving(actor)){invalidAims.Add(actor);continue;}
     if(actor.GolfClubMotion.Busy||!ball.ReadyToAim){
      if(!InRange(actor,ball)){invalidAims.Add(actor);continue;}
      aim.ballPosition=ball.Body.position;aimUpdates.Add((actor,aim));continue;

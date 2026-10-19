@@ -19,13 +19,14 @@ namespace WhatTheFish {
    var node=new GameObject("Golden shot wake");node.transform.SetParent(transform,false);
    Ribbon=node.AddComponent<TrailRenderer>();Ribbon.sharedMaterial=Resources.Load<Material>("GolfBallTrail");
    Ribbon.time=lifetime;Ribbon.minVertexDistance=.025f;Ribbon.widthMultiplier=width;
-   Ribbon.widthCurve=new AnimationCurve(new Keyframe(0,1),new Keyframe(.65f,.7f),new Keyframe(1,0));
+   // Newest point is the ball centre; taper continuously toward the oldest point.
+   Ribbon.widthCurve=AnimationCurve.Linear(0,1,1,0);
    Ribbon.colorGradient=new Gradient {
     colorKeys=new[]{new GradientColorKey(new Color(1,.83f,.22f),0),new GradientColorKey(new Color(1,.94f,.68f),1)},
     alphaKeys=new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(.6f,.45f),new GradientAlphaKey(0,1)}
    };
    Ribbon.alignment=LineAlignment.View;Ribbon.textureMode=LineTextureMode.Stretch;
-   Ribbon.numCornerVertices=4;Ribbon.numCapVertices=4;Ribbon.shadowCastingMode=ShadowCastingMode.Off;Ribbon.receiveShadows=false;
+   Ribbon.numCornerVertices=4;Ribbon.numCapVertices=0;Ribbon.shadowCastingMode=ShadowCastingMode.Off;Ribbon.receiveShadows=false;
    Ribbon.generateLightingData=false;Ribbon.autodestruct=false;Ribbon.emitting=false;
    properties=new MaterialPropertyBlock();Ribbon.enabled=false;SetFade(0);
   }

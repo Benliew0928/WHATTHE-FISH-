@@ -11,8 +11,12 @@ namespace WhatTheFish {
   public static readonly Vector3 HalfBody=new(.72f,.37f,1.20f);
   static readonly Collider[] overlaps=new Collider[64];
   static readonly RaycastHit[] casts=new RaycastHit[64];
+  static readonly Vector3[] supportPoints=new Vector3[4];
   static readonly Vector3[] wheels={new(-.54f,0,-.94f),new(.54f,0,-.94f),new(-.54f,0,.94f),new(.54f,0,.94f)};
   public static bool Terrain(Collider collider)=>collider&&collider.name.StartsWith("Terrain__");
+  // The body sweep delegates authored pond rims to wheel support below.
+  // Rocks, other carts and the sea retain their existing collision rules.
+  public static bool PondBank(Collider collider)=>collider&&collider.name=="Pond bank"&&collider.GetComponentInParent<GolfCourse>();
   public static float Heading(Quaternion rotation)=>
    (Quaternion.Inverse(Quaternion.FromToRotation(Vector3.up,rotation*Vector3.up))*rotation).eulerAngles.y;
   public static bool Floor(Vector3 at,out RaycastHit floor) {
@@ -22,21 +26,51 @@ namespace WhatTheFish {
    var island=RefinedIslandEnvironment.Active;
    return best<float.MaxValue&&floor.normal.y>.80f&&(!island||floor.point.y>island.layout.sea_level+.12f);
   }
+  static bool WheelFloor(Vector3 at,out Vector3 point,out Vector3 normal,out bool pond){
+   point=normal=default;pond=false;float terrainDistance=float.MaxValue,bankHeight=float.NegativeInfinity;RaycastHit ground=default,bank=default;
+   int count=Physics.RaycastNonAlloc(at+Vector3.up*12,Vector3.down,casts,30,1<<8,QueryTriggerInteraction.Ignore);
+   for(int i=0;i<count;i++){
+    var hit=casts[i];if(Terrain(hit.collider)&&hit.distance<terrainDistance){ground=hit;terrainDistance=hit.distance;}
+    if(PondBank(hit.collider)&&hit.point.y>bankHeight){bank=hit;bankHeight=hit.point.y;}
+   }
+   var island=RefinedIslandEnvironment.Active;
+   if(terrainDistance==float.MaxValue||ground.normal.y<=.80f||island&&ground.point.y<=island.layout.sea_level+.12f)return false;
+   point=ground.point;normal=ground.normal;
+   if(bankHeight>point.y){point=bank.point;normal=bank.normal;pond=true;}
+   var match=GolfMatchManager.Instance;var course=match?match.Course:null;
+   if(course){var local=course.transform.InverseTransformPoint(at);
+    foreach(var water in course.waterPatches){
+     float u=(local.x-water.centre.x)/water.radii.x,v=(local.z-water.centre.z)/water.radii.y,r=Mathf.Sqrt(u*u+v*v);
+     if(r>1.08f)continue;
+     // Match the actual bank crest at 1.08, easing down to the water plane.
+     // This is cart-only support; ball hazards and walking colliders stay intact.
+     float crest=.10f*Mathf.SmoothStep(0,1,Mathf.InverseLerp(.9f,1.08f,r));
+     float y=course.transform.TransformPoint(new Vector3(local.x,water.centre.y+crest,local.z)).y;
+     if(y>point.y){point.y=y;normal=Vector3.up;pond=true;}
+    }
+   }
+   return true;
+  }
   public static bool Surface(Vector3 position,float yaw,out Vector3 supported,out Quaternion rotation) {
-   supported=position;rotation=Quaternion.Euler(0,yaw,0);var normal=Vector3.zero;float height=0;int contacts=0;
-   foreach(var wheel in wheels){
-    if(!Floor(position+rotation*wheel,out var hit))continue;
-    normal+=hit.normal;height+=hit.point.y;contacts++;
+   supported=position;rotation=Quaternion.Euler(0,yaw,0);var normal=Vector3.zero;float height=0;int contacts=0;bool onPond=false;
+   for(int i=0;i<wheels.Length;i++){
+    if(!WheelFloor(position+rotation*wheels[i],out var point,out var up,out var pond))continue;
+    supportPoints[i]=point;normal+=up;height+=point.y;contacts++;onPond|=pond;
    }
    if(contacts<3)return false;
-   normal.Normalize();if(normal.y<.82f)return false;
+   if(contacts==4){
+    var forward=rotation*new Vector3(0,(supportPoints[2].y+supportPoints[3].y-supportPoints[0].y-supportPoints[1].y)*.5f,1.88f);
+    var right=rotation*new Vector3(1.08f,(supportPoints[1].y+supportPoints[3].y-supportPoints[0].y-supportPoints[2].y)*.5f,0);
+    normal=Vector3.Cross(forward,right);
+   }
+   normal.Normalize();if(normal.y<(onPond?.65f:.82f))return false;
    supported.y=height/contacts;rotation=Quaternion.FromToRotation(Vector3.up,normal)*rotation;return true;
   }
   public static bool Clear(Vector3 position,Quaternion rotation,GolfCart self,Athlete ignored=null) {
    var center=position+rotation*new Vector3(0,.66f,0);
    int count=Physics.OverlapBoxNonAlloc(center,HalfBody,overlaps,rotation,Obstacles,QueryTriggerInteraction.Ignore);
    for(int i=0;i<count;i++){
-    var collider=overlaps[i];if(Terrain(collider)||self&&collider.transform.IsChildOf(self.transform)||ignored&&collider.transform.IsChildOf(ignored.transform))continue;
+    var collider=overlaps[i];if(Terrain(collider)||PondBank(collider)||self&&collider.transform.IsChildOf(self.transform)||ignored&&collider.transform.IsChildOf(ignored.transform))continue;
     return false;
    }
    return count<overlaps.Length;
@@ -49,7 +83,7 @@ namespace WhatTheFish {
     // Wheel support below validates terrain height, slope and shore clearance.
     // A level body sweep can start inside an uphill terrain triangle; PhysX
     // reports that overlap with a horizontal normal, falsely making it a wall.
-    var hit=casts[i];if(Terrain(hit.collider)||self&&hit.collider.transform.IsChildOf(self.transform)||hit.normal.y>.55f)continue;
+    var hit=casts[i];if(Terrain(hit.collider)||PondBank(hit.collider)||self&&hit.collider.transform.IsChildOf(self.transform)||hit.normal.y>.55f)continue;
     allowed=Mathf.Min(allowed,Mathf.Max(0,hit.distance-.04f));
    }
    return count==casts.Length?0:allowed;

@@ -131,6 +131,8 @@ namespace WhatTheFish {
    if(GolfClubMotion&&(GolfClubMotion.Busy||GolfClubMotion.State.action==GolfClubAction.Charge))Motor.FaceGolf(GolfClubMotion.AddressHeading);
    if(fishing){Motor.FaceGolf(FishingGame.Instance.Heading(this));displacement.x=displacement.z=0;}
    if(golfContact||BasketballBall.Active&&BasketballBall.Active.PropLocked(this)||FootballBall.Instance&&FootballBall.Instance.PropLocked(this)){displacement.x=displacement.z=0;}
+   var golfOrbit=GolfMatchManager.Instance?GolfMatchManager.Instance.AimOrbitDisplacement(this,command.heading,dt):Vector3.zero;
+   displacement+=golfOrbit;
    capsule.stepOffset=Jump.Airborne?0:.3f;
    var before=transform.position;
    transform.rotation=Quaternion.Euler(0,Motor.Yaw,0);
@@ -138,6 +140,7 @@ namespace WhatTheFish {
    if(FootballBall.Instance){displacement=FootballPressure.Constrain(this,displacement);displacement=FootballBall.Instance.ConstrainPlayerMotion(this,displacement,dt);}
    if(BasketballBall.Active)displacement=BasketballBall.Active.ConstrainPlayerMotion(this,displacement);
    var flags=capsule.Move(displacement+Vector3.up*vertical);
+   if(golfOrbit.sqrMagnitude>.000001f){var aim=GolfMatchManager.Instance.Aim(this);GolfClubMotion.Address(aim.ballPosition);}
    Jump.Collide(flags);
    if(slideContact)football.ResolveContacts(before,transform.position);
    var actual=transform.position-before;actual.y=0;speed=dt>0?actual.magnitude/dt:0;

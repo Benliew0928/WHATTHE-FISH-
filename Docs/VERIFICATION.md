@@ -1,5 +1,291 @@
 ## Golf charge/contact/landing/cup feedback — 17 October 2026
 
+## Golf 30% idle preview restoration - 20 October 2026
+
+Fresh AndroidSubmission at **06:48:37 Malaysia time**: actual APK
+**90,856,642 -> 90,850,906 bytes (-5,736)**.
+Strict decimal-GB headroom: **909,149,094 bytes**. Official build/budget
+gate and independent APK v2 signature passed. SHA-256:
+**DBDB87FC93219B0626C21F5D6DEA15F35220EC9FF2C4FB00A73BA8563B112D13**.
+
+Restored the default 30% Swing/Putt preview before dragging, including a touch
+without movement. Actual drag power and release-to-hit remain unchanged. Existing
+artwork, force limits, camera and map are reused. Largest compressed entries:
+islands **45,044,192**, IL2CPP **12,340,309**,
+Unity **9,773,269**, metadata **2,758,580** bytes.
+The small size variation is compiled code/packaging, with no new bitmap assets.
+
+Complete WindowsFinal updated; **326 files** SHA-256 matched before its note
+was amended. **36 focused runtime assertions** passed, including default Swing,
+default Putt, touch without drag and zero-power tap preview checks. Actual idle
+30% screenshot reviewed. No fresh WAN or physical-phone input/FPS verification.
+Evidence: ignored `Builds/GolfIdlePreviewQA/`, including `FinalAndroidAudit/`.
+Previous complete player/APK archive: `Legacy/20261020-064558-702-golf-idle-preview/`.
+See [drag power and idle preview notes](GOLF-DRAG-POWER.md).
+
+## Golf drag-to-release power control - 20 October 2026
+
+Fresh AndroidSubmission at **01:03:37 Malaysia time**: actual APK
+**90,502,486 -> 90,856,642 bytes (+354,156)**.
+Strict decimal-GB headroom: **909,143,358 bytes**. Official build/budget
+gate and independent APK v2 signature passed. SHA-256:
+**B93CF6D04E7686DB60FEDDB357964134C8625590D95F6DEA99586A86B3D10075**.
+
+Largest compressed entries: islands **45,052,418**, IL2CPP **12,337,899**, Unity
+**9,773,269**, metadata **2,758,497** bytes. Growth is concentrated in the two new
+slider textures. Player-only serialized assets **28,024,568 bytes** are a separate
+measurement; Rail and Knob account for **756,264 serialized bytes**, not APK bytes.
+Editable image masters and references remain outside Unity. Android sprites use
+ASTC 4x4; no unrelated asset quality reduction or map generation was performed.
+
+Complete WindowsFinal player rebuilt and promoted; **326 files** SHA-256 matched
+before its note was amended. **32 focused runtime assertions** passed; actual
+Swing zero/60% and Putt 8% screenshots reviewed. Existing aim/trajectory/landing
+marker and shot physics retained. No fresh WAN or physical-phone input/FPS test.
+Evidence: ignored `Builds/GolfDragPowerQA/`, including `FinalAndroidAudit/`.
+See [drag power implementation and delivery](GOLF-DRAG-POWER.md).
+
+## Golf T1 bunker restoration and seam repair - 20 October 2026
+
+Fresh AndroidSubmission at **00:32:45 Malaysia time**: actual APK
+**90,795,846 -> 90,502,486 bytes (-293,360)**.
+Strict decimal-GB headroom: **909,497,514 bytes**. Official build/budget
+gate and independent APK v2 signature passed. SHA-256:
+**48BC2EE82B658B0BB957F4EAB814457E49CE7739F0F0B5BD713765DA3CB68481**.
+
+Largest compressed entries: islands **45,055,476**, IL2CPP **12,338,210**, Unity
+**9,773,269**, metadata **2,758,497** bytes. Removed floating T1 floor/path meshes;
+joined native terrain and exact surface intersections reuse existing texture maps.
+No unrelated visual quality reduction. Source-only annotated PNG references are
+outside Unity. Player-only serialized assets remain **27,268,200 bytes**, a
+separate measurement from APK bytes.
+
+Complete WindowsFinal player rebuilt, tested and promoted; **326 files** matched
+by SHA-256 before its note was amended. **457 editor assertions** and **28 four-player
+runtime assertions** passed. Actual top, near and two low entry views reviewed;
+visible dressing clearance measured **0.0248-0.0250 m**. Original tee-site records
+are unchanged. No new WAN or physical-phone quality/FPS test. Evidence: ignored
+`Builds/GolfT1SeamQA/`, including `FinalAndroidAudit/`.
+See [localized bunker/seam repair](GOLF-T1-BUNKER-SEAMS.md).
+
+## Golf T1 terrain integration repair - 19 October 2026
+
+Fresh AndroidSubmission at **22:57:57 Malaysia time**: actual APK
+**90,295,414 -> 90,795,846 bytes (+500,432)**.
+Strict decimal-GB headroom: **909,204,154 bytes**. Official build,
+budget gate and independent APK v2 signature passed. SHA-256:
+**66FAFBA8DC3D85CF3F326CEF99A3AB1BE754E7F03D229DBCF126295F4BFD9017**.
+
+Largest compressed entries: islands **45,345,669**, IL2CPP **12,341,397**, Unity
+**9,773,269**, metadata **2,758,482** bytes. The ~0.50 MB increase is concentrated
+in localized ground/dressing meshes and a terrain shader using existing textures.
+No new bitmap textures or unrelated quality reductions. Player-only serialized
+assets remain **27,268,200 bytes**, a different measurement from the actual APK.
+
+Complete WindowsFinal player rebuilt, tested and promoted; **326 files** matched
+by SHA-256 before its delivery note was amended. **399 editor assertions** and
+**28 four-player runtime assertions** passed. Original pad records are unchanged
+and scene/prefab records agree. Actual desktop top/near views reviewed. No new WAN
+or physical-phone quality/FPS test. Evidence: ignored `Builds/GolfT1BlendQA/`,
+including `FinalAndroidAudit/`. See [T1 terrain repair](GOLF-T1-TERRAIN-REPAIR.md).
+
+## Golf centre-first multiplayer tee delivery - 19 October 2026
+
+- T1 inward ten-pad grass tee, T2-T5 three pads each; centre first, random player
+  batches and equal-distance side ties, authority reservations and full-tee queue.
+- 399 editor assertions: pad support/equal distances, unique reservations,
+  centre-out ordering, 100 seeds of queue/release, rear-path support/capsule checks.
+- 28 runtime assertions with four local fixture actors: initial placement, Aim,
+  three simultaneous H1 completions, distinct T2-T5 slots, fourth-player queue,
+  centre reuse, recovery-anchor hold, actual water return and own-ball restriction.
+- Real local host/client: 7 assertions each, including replicated tee hole/slot,
+  centre preference and both authoritative ball positions. The test waits for the
+  reservation/ball snapshot after the progress snapshot; waiting is legitimate.
+- Reviewed actual top/near views for all five sites. No phone FPS/quality, WAN or
+  actual host-migration session test. Recovery records are implemented, not a claim
+  that a host-migration session was executed in this task.
+- Fresh official AndroidSubmission and independent v2 signature: **90,295,414 B**,
+  headroom **909,704,586 B**. Complete final Windows player promoted.
+- Restored three reviewed build-only source changes that were clean at opening:
+  character source-hash cache, equivalent Ball prefab IDs/order, quality setting.
+  Feature sources and unrelated pre-existing changes retained. Git remains unstaged.
+- See [implementation and archives](GOLF-MULTIPLAYER-TEES.md). Current raw evidence
+  is under ignored `Builds/GolfMultiplayerTeeQA/`.
+
+## Golf personal ranking preview - 19 October 2026
+
+Focused graphical checks: **21 PASS**, no captured runtime exceptions. Confirmed
+hidden board/backdrop before Start game, self-only row even when local is eighth,
+no View all footer or blank footer space, live rank/score, original full eight-row
+scrolling list, title open, footer/backdrop close, Aim hide/restore and match clear.
+Actual idle/personal/eighth-place/full-list screenshots reviewed. Only related UI
+was checked; no map/gameplay regression suite or remote session was run.
+
+Complete WindowsFinal updated from the tested complete player; 326 candidate files
+SHA-256 compared before its delivery note was updated. This was a code-only script
+refresh with no authored asset/serialized layout change. Fresh AndroidSubmission
+at 00:51:28 Malaysia time, **88,552,098 bytes**, independent v2 signature passed.
+Old player/opening APK archive: `20261019-004926-308-golf-personal-ranking`.
+Evidence: ignored `Builds/GolfPersonalRankingQA/`. No physical-phone FPS claim.
+See [implementation and limits](GOLF-PERSONAL-RANKING.md).
+
+## Original Golf leaderboard rollback - 19 October 2026
+
+Restored the upper-right five-column preview and original expand/scroll/close
+controls. Focused final graphical player run: **39 PASS**; actual preview,
+eight-player preview/full-list and retained-countdown screenshots inspected.
+Retained 50 x 50 countdown digits, proportional s, close Aim arrow and monotonic
+ball-centred trail checked. Unrelated game/map and remote/WAN checks were not run.
+
+Complete WindowsFinal updated from the tested player, 326 candidate files hashed
+before delivery-note update. Fresh AndroidSubmission at 00:39:12 Malaysia time,
+**88,550,674 bytes**, independent v2 signature passed. Archive batches:
+`20261019-002430-539-golf-ranking-design-reverted` (unused design assets),
+`20261019-003722-859-golf-original-ranking-player` (superseded player/opening APK).
+See [rollback record](GOLF-RANKING-ROLLBACK.md); evidence in ignored
+`Builds/GolfRankingRollbackQA/`. No physical-phone quality/FPS claim.
+
+## Golf compact ranking - 18 October 2026
+
+Full candidate Windows player built at 23:29 Malaysia time. Focused graphical
+runtime checks: **38 PASS**, no captured runtime exceptions. Reviewed actual
+compact/expanded leaderboard, Aim arrow join, 50 x 50 numeral card and tapering
+trail screenshots. Checked open, backdrop close, footer close, Aim hide/restore,
+local rank/stroke data, retained five-column art, bounds/readability and monotonic
+trail widths. No map/gameplay regression suite or remote session was rerun for
+these presentation-only changes; no physical phone FPS claims.
+
+Promoted complete player to `Builds/WindowsFinal/`; 326 candidate files hashed
+before updating the delivery note. AndroidSubmission succeeded, 88,542,330 bytes;
+v2 signature passed. Evidence in ignored `Builds/GolfCompactQA/`. Superseded player
+and opening APK archive batch: `20261018-233137-841-golf-compact-ranking`.
+See [implementation and limits](GOLF-COMPACT-RANKING.md).
+
+## Golf render-clock countdown, address orbit and owner-only swings - 18 October 2026
+
+Final focused local run: **141 offline / 49 host / 53 client assertions passed**.
+Command: `Tools/Build/Test-GolfRefine.ps1`; evidence:
+`Builds/GolfRefineQA/Run-20261018-224954/` (ignored).
+
+- Countdown advances every render frame while the supplied server timestamp is
+  frozen. Integer digits do not refresh unnecessarily, dedicated Canvas isolates
+  the animated card, and final numeral containers are 65 x 65 design units; s
+  scales proportionally. Single-run steady `Show` CPU check: 1,000 calls in
+  **0.545 ms**, **0 managed bytes**. This excludes rendering and is not game FPS.
+- The same hole bearing arrow is visible in Aim at **53.28 x 55.44** design units
+  (0.72 of its normal size), above the card. `aim-orbit-arrow.png` inspected.
+- Real local input/controller movement reached -90/0/90/180/270/360 degrees while
+  retaining stance radius and ball position. An obstruction stopped the arc
+  without cancellation, penetration or teleporting. Charging orbit retained the
+  fixed ball. Full controller/skin clearance corrected a discovered sideways
+  slide that could otherwise leave the legal stance radius.
+- Trail has a zero-width newest point, no rounded forward cap, and emitter
+  exactly at displayed ball center from eight camera directions. `trail-from-ball-centre.png`
+  retained. All six cart pond centers support the chassis at water level, and
+  each pond crossed in both directions; original sea support remains rejected.
+  `cart-on-pond.png` inspected. Wind shader free-edge bound is +/-0.30 m, with
+  unchanged pinning/periods and flag texture/vertex payloads; bounds are +/-0.36 m.
+- Guest-owned ball orbit replicated through actual guest input and authority
+  simulation in both directions. Another player's ball was in valid swing range,
+  while its owner-only candidate/aim/strike guards rejected the guest. Actual
+  forged guest aim/charge/swing RPCs did not move that ball or add strokes.
+- Existing six ponds, 20 sand and 20 rough patches, rim scoring, celebration,
+  first-finisher deadline, countdown and other player's progress checks passed.
+
+Full player build: `Builds/GolfRefineQA/windows-build.log`. Final script refresh:
+`scripts-final-checks.log` (no changed serialized scene/prefab layouts). Complete
+candidate promoted to WindowsFinal; 325 binary/support files verified by SHA-256.
+Updated note is separate. Superseded player archive:
+`20261018-225239-597-golf-aim-countdown-water-player`; opening APK archive:
+`20261018-225557-224-golf-refine-previous-apk`.
+
+Final AndroidSubmission passed size enforcement and v2 signature verification:
+**88,550,326 bytes**, headroom **911,449,674 bytes**. No physical Android visual/
+FPS or WAN play claim. Existing uncommitted Golf work retained; only build-only
+CharacterIdentity/Ball serialization noise was restored. No staging or Git
+publishing performed. See [implementation](GOLF-ADDRESS-AND-COUNTDOWN-20261018.md).
+
+## Golf rollback, pond crossing, rim scoring and countdown - 18 October 2026
+
+Final focused Windows run: **85 offline / 42 host / 44 client assertions passed**,
+using `Tools/Build/Test-GolfPolish.ps1`; evidence in ignored
+`Builds/GolfPolishQA/Run-20261018-190816/`.
+
+- Saved scene/prefab, course generator, ball simulation and shot preview restored
+  to the pre-mechanism HEAD baseline; retention comparison in `rollback-retention.json`.
+- All six ponds crossed in both directions through real cart motor sweeps and
+  support queries, with collision-free pond chords. Original sea support remains
+  rejected. Pond ball-return behavior and original static course data unchanged.
+- All five holes tested for rim touch, just-outside rejection, vertical drop,
+  fast horizontal sweep and airborne flyover rejection. Real ball placements
+  at each rim advanced the existing authoritative progression exactly once.
+- Cup/Finish effects spawned and expired through a bounded pool. Host/client
+  event presentation and the first-finisher replicated deadline passed.
+- Removed course/Leave UI and absent shot inset checked. Countdown screenshots
+  checked at 0.0, 0.4, 0.9, 1.3, 2, 20, 29 and 30 seconds, including 30/29/28/10/1/0
+  digits, center hold, travel, safe-frame bounds, clock tick wiggle and settling.
+- `cup-effect.png` inspected for gold/aqua spirals, stars, bubbles/rays, and
+  retained original flag/background. Countdown plates corrected from 256 to
+  1024 pixels after detecting blurry initial preview. Initial 30s is the supplied
+  original image; changing digits are matching generated artwork, not a claim
+  of pixel identity with unseen original numeral designs.
+
+Full Windows build: `Builds/GolfPolishQA/windows-crisp.log`. Complete tested
+player promoted to `Builds/WindowsFinal/`, with per-file SHA-256 comparison of
+325 binary/support files; delivery note updated separately. Prior player archive:
+`20261018-191046-974-golf-rim-countdown-player`. Removed mechanism code/config/
+physics material/probe archive: `20261018-184142-359-golf-mechanisms-reverted`.
+Approved old design remains as an explicitly inactive reference.
+
+Final AndroidSubmission build and signature passed; APK **88,540,314 bytes**,
+strict headroom **911,459,686 bytes**. See [size audit](APK-SIZE-AUDIT.md).
+No physical Android visual/FPS or WAN-play claim. Source snapshot is HEAD
+`9bb5564` plus uncommitted task changes. No Git staging or publishing performed.
+
+## Golf moving mechanisms, without boundaries/checkpoints - 18 October 2026
+
+- Implemented the approved 21 A-U units: hole counts 1/1/1/8/10, including the
+  six user-marked side positions. No added course walls, checkpoint triggers,
+  forced route stages or locked cups. All five cups still complete normally.
+- Editor checks passed for scene and prefab, including repeat application,
+  preserved original components/transforms, full-cycle pose samples and tee/cup
+  pivot clearance. Logical YAML comparison proves every original record is
+  unchanged except the one course Transform's added child reference. Reordering
+  original records back to baseline order leaves logical block bytes identical.
+- Complete Windows scene build: `Builds/GolfMovingQA/windows-final-3.log`;
+  dev-only fixture refresh: `scripts-water-check.log`. Rendered offline run
+  `Run-20261018-180535`: **2,511 PASS**; rendered local host/client run
+  `Run-20261018-180210`: **2,475 / 2,478 PASS**. A prior clean two-peer run
+  `Run-20261018-174408` is retained as additional evidence. Total: **7,464**.
+- Checks cover six real physical contact types, closed/open central door seam,
+  guided Swing/Putt handoff, continuously refreshed obstruction previews, a
+  carriage pushing a stationary ball, no score/hole rule changes, all six pond
+  recoveries and five unlocked cups. Both peers sample server-clock poses;
+  host resolves guest-owned ball impacts, client presents ball snapshots only.
+- Close/open screenshots for each type and an actual map top view are retained
+  in the offline run. Visual inspection corrected detached suspension ropes
+  with a central bearing; closed door panels were widened to stop the ball
+  slipping through the centre seam. Physics geometry matches the visible panel.
+- The original water probe failed before entering a match because it did not
+  wait for the current shared-arrival service. Production start safeguards were
+  retained; the new focused probe waits for arrival and covers all six dry returns.
+  Earlier fixture timing/entry-race failures and the disk-space build failure
+  remain in task evidence; final runs above passed.
+- Fresh AndroidSubmission: **87,606,216 bytes**, below 1,000,000,000; independent
+  v2 signature passed. Actual opening APK **95,067,465 bytes** was an older build.
+  See [measured size and audit scope](BUILD-SIZE.md). Physical phone appearance,
+  touch, sustained FPS and WAN play remain unverified.
+- Full **326-file** player copied to `Builds/WindowsFinal/` with identical
+  SHA-256 before updating its delivery note. Build-only character library/hash,
+  line-ending and regenerated ball-prefab ID noise was restored to the initially
+  clean source state; game art/behavior was not intentionally changed.
+  Superseded player: `Legacy/20261018-180723-332-golf-moving-player/`; opening APK:
+  `Legacy/20261018-181348-956-golf-moving-previous-apk/`.
+
+Implementation: [Golf moving obstacles](GOLF-MOVING-OBSTACLES.md). All raw logs,
+source preservation checks, signatures and audit data are under ignored
+`Builds/GolfMovingQA/`. No staging, commit or push.
+
 ## Manual cart camera with retained feet - 17 October 2026
 
 AndroidSubmission attempted; Gradle/JDK failed with java.io.IOException:

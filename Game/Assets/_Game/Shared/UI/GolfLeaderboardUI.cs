@@ -11,8 +11,9 @@ namespace WhatTheFish {
   sealed class ScoreRow {
    public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];
   }
+  GolfFinalCountdown finalCountdown;
   Text footer,timer,notice;Image titleArt,frameArt,columnArt;RectTransform page,board,frame,columnBand,viewport,content,countdownCard,noticeCard;
-  Button toggle,backdrop;ScrollRect scroll;Scrollbar scrollbar;RectTransform scrollTrack;GolfHUDLayout layout;Font fallbackFont;
+  Button toggle,titleToggle,backdrop;ScrollRect scroll;Scrollbar scrollbar;RectTransform scrollTrack;GolfHUDLayout layout;Font fallbackFont;
   readonly List<ScoreRow> rows=new();readonly List<int> selected=new();readonly List<ulong> displayedIds=new();
   readonly Dictionary<string,Sprite> sprites=new();
   readonly float[] columnShares={.29f,.175f,.143f,.19f,.202f};
@@ -20,10 +21,10 @@ namespace WhatTheFish {
   bool expanded,aimSummary,pointerInside;double lastRound=double.NaN;int visibleRows;float renderedRowHeight,hoverScale=1;
   public RectTransform BoardRect=>board;
   public float RenderedHeight=>board?board.rect.height*board.localScale.y:0;
-  public RectTransform CountdownRect=>countdownCard;
+  public RectTransform CountdownRect=>finalCountdown?finalCountdown.Card:countdownCard;
   public RectTransform NoticeRect=>noticeCard;
   public RectTransform RowViewport=>viewport;
-  public Button ToggleButton=>toggle;
+  public Button ToggleButton=>expanded?toggle:titleToggle;
   public Button BackdropButton=>backdrop;
   public ScrollRect RankingScroll=>scroll;
   public bool Expanded=>expanded;
@@ -32,8 +33,8 @@ namespace WhatTheFish {
   internal void SetHovered(bool value){pointerInside=value;}
   public int VisiblePlayerCount=>visibleRows;
   public IReadOnlyList<ulong> DisplayedPlayerIds=>displayedIds;
-  public bool CountdownVisible=>timer&&timer.gameObject.activeInHierarchy;
-  public string CountdownText=>timer?timer.text:"";
+  public bool CountdownVisible=>finalCountdown&&finalCountdown.Visible;
+  public string CountdownText=>finalCountdown?FinishTime(finalCountdown.Seconds):"";
   public static void Create(RectTransform page,Font font){var ui=Rect("Golf HUD",page,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero).gameObject.AddComponent<GolfLeaderboardUI>();ui.Build(page,font);page.gameObject.AddComponent<GolfTargetIndicator>().Build(page,font);}
   public static RectTransform Rect(string name,Transform parent,Vector2 anchor,Vector2 position,Vector2 size){var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=anchor;r.anchoredPosition=position;r.sizeDelta=size;return r;}
   public static Text Text(string name,Transform parent,Font font,Vector2 anchor,Vector2 position,Vector2 size,int points){var r=Rect(name,parent,anchor,position,size);var t=r.gameObject.AddComponent<Text>();t.font=font;t.fontSize=points;t.color=Color.white;t.alignment=TextAnchor.MiddleLeft;t.raycastTarget=false;t.supportRichText=false;var shadow=t.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.65f);shadow.effectDistance=new Vector2(1,-1);return t;}
@@ -64,13 +65,13 @@ namespace WhatTheFish {
    var toggleRect=Rect("Golf ranking toggle",board,new Vector2(0,1),Vector2.zero,Vector2.zero);toggle=Touch(toggleRect);toggle.onClick.AddListener(()=>SetExpanded(!expanded));
    footer=Label("Your progress",toggleRect,18);Stretch(footer.rectTransform);
    // A large title hit target also opens the full list without tiny touch controls.
-   var titleTouch=Touch((RectTransform)titleArt.transform.parent);titleTouch.onClick.AddListener(()=>SetExpanded(!expanded));
+   titleToggle=Touch((RectTransform)titleArt.transform.parent);titleToggle.onClick.AddListener(()=>SetExpanded(!expanded));
    countdownCard=Rect("Golf final countdown card",page,new Vector2(.5f,1),layout.countdownPosition,layout.countdownSize);GolfHUDStyle.Panel(countdownCard,GolfHUDStyle.Ink).raycastTarget=false;
    GolfHUDStyle.Art(countdownCard,"Golf countdown clock","FishingUI/ClockBadge",new Vector2(66,72),new Vector2(-layout.countdownSize.x*.31f,0));
    timer=Label("Final 30 seconds",countdownCard,layout.countdownFontSize,TextAnchor.MiddleCenter,Color.white);Place(timer.rectTransform,new Vector2(.5f,.5f),new Vector2(32,0),new Vector2(layout.countdownSize.x-110,layout.countdownSize.y-12));timer.GetComponent<Outline>().enabled=false;
    noticeCard=Rect("Golf final countdown notice",page,new Vector2(.5f,1),layout.countdownPosition-new Vector2(0,layout.countdownSize.y*.5f+24),new Vector2(330,44));GolfHUDStyle.Panel(noticeCard,GolfHUDStyle.Cream).raycastTarget=false;
    notice=Label("First finisher notice",noticeCard,20);Place(notice.rectTransform,new Vector2(.5f,.5f),Vector2.zero,new Vector2(302,34));
-   timer.gameObject.SetActive(false);notice.gameObject.SetActive(false);countdownCard.gameObject.SetActive(false);noticeCard.gameObject.SetActive(false);EnsureRows(10);Layout(0);
+   timer.gameObject.SetActive(false);notice.gameObject.SetActive(false);countdownCard.gameObject.SetActive(false);noticeCard.gameObject.SetActive(false);finalCountdown=GolfFinalCountdown.Create(page);EnsureRows(10);Layout(0);board.gameObject.SetActive(false);
   }
   void EnsureRows(int count){
    while(rows.Count<count){int i=rows.Count;var row=new ScoreRow();row.rect=Rect("Golf score row "+i,content,new Vector2(0,1),Vector2.zero,Vector2.zero);row.art=Art(row.rect,"Row",true);
@@ -83,7 +84,8 @@ namespace WhatTheFish {
    }
   }
   void SetExpanded(bool value){
-   if(value&&aimSummary)return;expanded=value;if(!value)hoverScale=1;scroll.StopMovement();content.anchoredPosition=Vector2.zero;
+   var match=GolfMatchManager.Instance;
+   if(value&&(aimSummary||!match||!match.Context||match.State.Phase==GolfMatchPhase.Idle))return;expanded=value;if(!value)hoverScale=1;scroll.StopMovement();content.anchoredPosition=Vector2.zero;
    if(value){backdrop.transform.SetAsLastSibling();board.SetAsLastSibling();countdownCard.SetAsLastSibling();noticeCard.SetAsLastSibling();}
    backdrop.gameObject.SetActive(value);
   }
@@ -94,7 +96,7 @@ namespace WhatTheFish {
    float titleWidth=expanded?width*layout.boardExpandedTitleFraction:Mathf.Min(layout.boardCompactTitleWidth,width);
    float header=titleWidth*Sprite("Title").rect.height/Sprite("Title").rect.width;
    float columns=inner*Sprite("Columns").rect.height/Sprite("Columns").rect.width;
-   float toggleHeight=layout.boardToggleHeight;
+   float toggleHeight=expanded?layout.boardToggleHeight:0;toggle.gameObject.SetActive(expanded);
    float maxHeight=page.rect.height*(expanded?layout.boardExpandedHeightFraction:layout.boardCompactHeightFraction);
    renderedRowHeight=expanded?layout.boardFullRowHeight:layout.boardPreviewRowHeight;
    float available=maxHeight-header-columns-toggleHeight-padding*2;
@@ -138,18 +140,21 @@ namespace WhatTheFish {
   }
   public static string FinishTime(double seconds){var total=(long)Math.Max(0,Math.Floor(seconds));return $"{total/60:00}:{total%60:00}";}
   void Update(){
-   var match=GolfMatchManager.Instance;if(!match||!match.Context)return;
+   var match=GolfMatchManager.Instance;if(!match||!match.Context){board.gameObject.SetActive(false);if(expanded)SetExpanded(false);return;}
    var state=match.State;var ranked=state.Results();var local=match.Player(AppRoot.Instance.LocalAthlete);
    // The shared look pad is created later than this card; interactive ranking
    // controls must remain above that pad in both compact and expanded modes.
    board.SetAsLastSibling();if(countdownCard.gameObject.activeSelf)countdownCard.SetAsLastSibling();if(noticeCard.gameObject.activeSelf)noticeCard.SetAsLastSibling();
    bool aiming=PlayerView.Instance&&PlayerView.Instance.GolfAimRequested;
-   board.gameObject.SetActive(!aiming);
+   bool started=state.Phase!=GolfMatchPhase.Idle;
+   board.gameObject.SetActive(started&&!aiming);
    if(lastRound!=state.StartedAt){lastRound=state.StartedAt;SetExpanded(false);}
    aimSummary=aiming;if(aiming&&expanded)SetExpanded(false);
    EnsureRows(ranked.Length);selected.Clear();displayedIds.Clear();
    int localIndex=Array.FindIndex(ranked,r=>r.player.PlayerId==local?.PlayerId);
-   if(!aimSummary){for(int i=0;i<(expanded?ranked.Length:Math.Min(3,ranked.Length));i++)selected.Add(i);if(!expanded&&localIndex>=3)selected.Add(localIndex);}
+   if(!started&&expanded)SetExpanded(false);
+   if(!expanded&&localIndex<0)board.gameObject.SetActive(false);
+   if(started&&!aimSummary){if(expanded){for(int i=0;i<ranked.Length;i++)selected.Add(i);}else if(localIndex>=0)selected.Add(localIndex);}
    visibleRows=selected.Count;Layout(visibleRows);
    for(int i=0;i<rows.Count;i++){
     bool visible=i<visibleRows;var row=rows[i];row.rect.gameObject.SetActive(visible);if(!visible)continue;
@@ -165,13 +170,11 @@ namespace WhatTheFish {
     bool baked=!p.IsDNF;row.status.sprite=Sprite(baked?p.IsFinished?"Finished":"Playing":"Pending");row.status.type=Image.Type.Simple;row.status.preserveAspect=true;row.text[3].enabled=!baked;
     row.text[3].color=Color.white;row.text[3].GetComponent<Outline>().effectColor=new Color(.55f,.29f,.03f);FitLine(row.text[3],row.text[3].text,row.text[3].fontSize,16);
    }
-   if(aimSummary)footer.text="";
-   else if(ranked.Length==0)footer.text=match.Authority?"Start a match to play all five holes.":"Waiting for the host to start.";
-   else footer.text=expanded?$"Close ranking   ×   {ranked.Length} players":$"View all   +   {ranked.Length} players";
+   footer.text=expanded&&!aimSummary?$"Close ranking   ×   {ranked.Length} players":"";
    bool countdown=state.CountdownStarted&&state.Phase==GolfMatchPhase.FinalCountdown;
    bool expired=state.Phase==GolfMatchPhase.Ended&&state.Players.Any(p=>p.IsDNF);
-   timer.gameObject.SetActive(countdown||expired);notice.gameObject.SetActive(countdown||expired);countdownCard.gameObject.SetActive(countdown||expired);noticeCard.gameObject.SetActive(countdown||expired);
-   timer.text=expired?"00:00":FinishTime(Math.Ceiling(match.Remaining));notice.text=expired?"Match finished":"A player has finished!";
+   finalCountdown.Show(countdown||expired,match.Remaining,state.CountdownDeadline,match.Now);
+
   }
   public bool FitsSafeFrame(){
    if(!board||!page)return false;var corners=new Vector3[4];board.GetWorldCorners(corners);var area=page.rect;

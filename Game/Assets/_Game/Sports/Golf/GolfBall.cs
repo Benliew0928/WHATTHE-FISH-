@@ -11,7 +11,7 @@ namespace WhatTheFish {
   public Vector3 LastShotPosition {get;private set;}
   public Vector3 LastDryPosition {get;private set;}
   public uint WaterRecoverySequence {get;private set;}
-  bool hasDryPosition;
+  bool hasDryPosition,teeHidden;
   public uint ResetSequence {get;private set;}
   public uint StrikeSequence {get;private set;}
   public GolfBallTrail Trail {get;private set;}
@@ -224,15 +224,16 @@ namespace WhatTheFish {
    // replace every part of settling, with no residual force in the solver.
    else Body.linearVelocity-=Vector3.ProjectOnPlane(Physics.gravity,normal)*dt;
   }
-  internal GolfBallSnapshot Snapshot(uint round,double now)=>new GolfBallSnapshot{valid=true,active=Live,round=round,reset=ResetSequence,strike=StrikeSequence,position=match.transform.InverseTransformPoint(Body.position),rotation=Quaternion.Inverse(match.transform.rotation)*Body.rotation,time=now};
-  internal void RestoreRoom(GolfBallSnapshot s){ResetMotion();ResetSequence=s.reset;StrikeSequence=s.strike;Body.position=match.transform.TransformPoint(s.position);Body.rotation=match.transform.rotation*s.rotation;transform.SetPositionAndRotation(Body.position,Body.rotation);}
+  internal void SetTeeWaiting(bool waiting){if(teeHidden==waiting)return;teeHidden=waiting;foreach(var renderer in GetComponentsInChildren<MeshRenderer>(true))renderer.enabled=!waiting;}
+  internal GolfBallSnapshot Snapshot(uint round,double now){match.TeeSnapshot(Owner,out int hole,out int slot,out int queue);return new GolfBallSnapshot{valid=true,active=Live,waiting=queue>=0,teeHole=hole,teeSlot=slot,teeQueue=queue,round=round,reset=ResetSequence,strike=StrikeSequence,position=match.transform.InverseTransformPoint(Body.position),rotation=Quaternion.Inverse(match.transform.rotation)*Body.rotation,lastShot=match.transform.InverseTransformPoint(LastShotPosition),lastDry=match.transform.InverseTransformPoint(LastDryPosition),time=now};}
+  internal void RestoreRoom(GolfBallSnapshot s){ResetMotion();ResetSequence=s.reset;StrikeSequence=s.strike;Body.position=match.transform.TransformPoint(s.position);Body.rotation=match.transform.rotation*s.rotation;LastShotPosition=match.transform.TransformPoint(s.lastShot);LastDryPosition=match.transform.TransformPoint(s.lastDry);hasDryPosition=true;SetTeeWaiting(s.waiting);transform.SetPositionAndRotation(Body.position,Body.rotation);}
   internal void Receive(GolfBallSnapshot snapshot){
    if(match.Authority||!snapshot.valid||snapshot.round!=match.Round)return;
    bool snap=!received||snapshot.reset!=target.reset||snapshot.round!=target.round;
    bool hit=received&&!snap&&snapshot.strike!=target.strike;
    if(!received||snapshot.time!=target.time){before=received?target:snapshot;target=snapshot;receivedAt=Time.unscaledTime;received=true;}
    ResetSequence=snapshot.reset;StrikeSequence=snapshot.strike;
-   SetLive(snapshot.active);if(snap){before=target;Present(1);}
+   SetLive(snapshot.active);SetTeeWaiting(snapshot.waiting);if(snap){before=target;Present(1);}
    if(snap||!snapshot.active)Trail.Clear();else if(hit)Trail.Begin(snapshot.strike);
   }
   void Update(){if(!received||!match||match.Authority)return;Present(Mathf.Clamp01((Time.unscaledTime-receivedAt)/Mathf.Clamp((float)(target.time-before.time),.02f,.2f)));}

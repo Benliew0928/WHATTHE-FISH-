@@ -97,7 +97,7 @@ public static class GolfFlagArtBuilder {
   const int columns=40,rows=28;var p=new List<Vector3>();var uv=new List<Vector2>();var t=new List<int>();
   for(int y=0;y<=rows;y++)for(int x=0;x<=columns;x++){float u=x/(float)columns,v=y/(float)rows;p.Add(new Vector3(.055f+1.065f*u,2.18f+.775f*v,0));uv.Add(new Vector2(u,v));}
   for(int y=0;y<rows;y++)for(int x=0;x<columns;x++){int a=y*(columns+1)+x,b=a+columns+1;t.AddRange(new[]{a,b,a+1,a+1,b,b+1});}
-  var m=new Mesh{name="Reference silhouette wind cloth"};m.SetVertices(p);m.SetUVs(0,uv);m.SetTriangles(t,0);m.RecalculateNormals();m.RecalculateBounds();var bounds=m.bounds;bounds.Expand(new Vector3(0,0,.48f));m.bounds=bounds;return m;
+  var m=new Mesh{name="Reference silhouette wind cloth"};m.SetVertices(p);m.SetUVs(0,uv);m.SetTriangles(t,0);m.RecalculateNormals();m.RecalculateBounds();var bounds=m.bounds;bounds.Expand(new Vector3(0,0,.72f));m.bounds=bounds;return m;
  }
  public static void AddNumbers(Transform flag,int number){
   foreach(var child in flag.Cast<Transform>().Where(t=>t.name.StartsWith("Flag number ")||t.name=="Aqua pennant").ToArray())Object.DestroyImmediate(child.gameObject);

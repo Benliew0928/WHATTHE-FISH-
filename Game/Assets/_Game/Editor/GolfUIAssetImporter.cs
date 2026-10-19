@@ -8,8 +8,10 @@ public sealed class GolfUIAssetImporter : AssetPostprocessor {
   var importer = (TextureImporter)assetImporter;
   bool reference=assetPath.Contains("/Reference/");
   bool leaderboard=assetPath.Contains("/Leaderboard/");
-  bool cartButton=(assetPath.Contains("/CartButtons/")||assetPath.Contains("/Badges/")||assetPath.Contains("/StartButton/"));
-  int size = cartButton?512:reference||leaderboard?1024:256;
+  bool finalCountdown=assetPath.Contains("/FinalCountdown/");
+  bool countdownPlate=finalCountdown&&!System.IO.Path.GetFileName(assetPath).StartsWith("Glyph");
+  bool cartButton=(assetPath.Contains("/CartButtons/")||assetPath.Contains("/Badges/")||assetPath.Contains("/StartButton/")||assetPath.Contains("/PowerSlider/"));
+  int size = assetPath.Contains("/PowerSlider/Rail")?1024:countdownPlate?1024:cartButton?512:reference||leaderboard?1024:256;
   importer.textureType = TextureImporterType.Sprite;
   importer.spriteImportMode = SpriteImportMode.Single;
   importer.spritePixelsPerUnit = 100;
@@ -39,7 +41,7 @@ public sealed class GolfUIAssetImporter : AssetPostprocessor {
   });
   importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings {
    name = "Android", overridden = true, maxTextureSize = size,
-   format = reference||cartButton||leaderboard?TextureImporterFormat.ASTC_4x4:TextureImporterFormat.ASTC_6x6, compressionQuality = 100
+   format = reference||cartButton||leaderboard||finalCountdown?TextureImporterFormat.ASTC_4x4:TextureImporterFormat.ASTC_6x6, compressionQuality = 100
   });
  }
 }

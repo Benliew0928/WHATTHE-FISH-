@@ -1,5 +1,7 @@
 # Golf mini game
 
+Current owner-only aim/swing policy and circular address refinements: [18 October change record](GOLF-ADDRESS-AND-COUNTDOWN-20261018.md). Historical helper test descriptions below predate this policy.
+
 ## V5 controls restored - 14 October 2026
 
 Swing uses the pre-control-redesign V5 implementation: hold to charge, release
@@ -37,9 +39,9 @@ material and tiny texture; no new ball, scoring rule or network field is added.
 ## Rules and authority
 
 - Complete holes strictly in order, 1 through 5. Cup detection checks the ball's permanent owner and that owner's current target.
-- Every accepted swing adds one to the hitter's current-hole strokes and total strokes. Hitting another player's ball never transfers ownership or directly adds a stroke to its owner.
-- A helper can complete the ball owner's target. Progress, finish state and finish time belong to that owner; the swing belongs to the helper.
-- Entering another cup or crossing the shoreline restores the struck ball to its last shot position, stops its motion and preserves all scores. Recovery adds no penalty stroke. The recovery anchor updates whenever anybody hits that ball, and starts at the tee for a new hole.
+- Every accepted swing adds one to the hitter's current-hole strokes and total strokes. Only the ball owner may aim at or strike it; foreign requests are rejected before a stroke is recorded.
+- Progress, finish state, finish time and accepted swings belong to the ball owner. Striking another player's ball is not permitted.
+- Entering another cup or crossing the shoreline restores the struck ball to its last shot position, stops its motion and preserves all scores. Recovery adds no penalty stroke. The recovery anchor updates whenever its owner hits that ball, and starts at the tee for a new hole.
 - The first Hole 5 completion stores elapsed time from match start and starts one shared **30-second** countdown. Later finishers never change its deadline.
 - End immediately when all participants have finished, or when that deadline is reached. The latter marks all remaining participants DNF, preserving their completed holes and total strokes.
 - There is no global, single-hole, AFK or maximum-duration timer before the first finisher.
@@ -116,7 +118,7 @@ The shot button automatically reads **Putt** within **12 horizontal metres** of
 that ball owner's current cup and **Swing** farther away. The host fixes this mode
 when taking aim. Holding longer changes power, never shot type. Putts use
 **0.35–7.5 m/s** along the ground; swings use **3–17 m/s** horizontal speed with
-**2.8–8.5 m/s** vertical lift. A helper uses the struck ball owner's cup distance.
+**2.8–8.5 m/s** vertical lift. The authority uses the striking player's own ball-to-cup distance.
 
 A continuous mint/ivory path ends at one pulsing gold target. For Swing this is
 **first touchdown**, followed by normal physical run-out. For Putt it is the

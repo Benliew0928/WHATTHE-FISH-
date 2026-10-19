@@ -83,7 +83,8 @@ namespace WhatTheFish {
    charging.volume=chargeGain;charging.pitch=.8f+Charge*.65f;
    if(chargeGain>.001f&&!charging.isPlaying)charging.Play();else if(chargeGain<=.001f&&charging.isPlaying)charging.Stop();
    // Full power is communicated by the red meter and screen edge only.
-   if(ring){bool visible=held;var actor=AppRoot.Instance.LocalAthlete;var camera=Camera.main;if(actor&&camera){var screen=camera.WorldToScreenPoint(actor.transform.position+Vector3.up*1.05f);visible&=screen.z>0;RectTransformUtility.ScreenPointToLocalPointInRectangle(uiRoot,screen,null,out var point);var aimed=view?match.Ball(view.AimedGolfOwner):null;float ballX=aimed?camera.WorldToScreenPoint(aimed.transform.position).x:screen.x+1;point.x+=screen.x>ballX?70:-70;var area=uiRoot.rect;powerMeter.anchoredPosition=new Vector2(Mathf.Clamp(point.x,area.xMin+30,area.xMax-30),Mathf.Clamp(point.y,area.yMin+80,area.yMax-80));}else visible=false;powerMeter.gameObject.SetActive(visible);ring.enabled=visible;ring.Show(Charge,1);}
+   // The draggable power rail replaces the old second meter beside the character.
+   if(ring){powerMeter.gameObject.SetActive(false);ring.enabled=false;}
    EdgeOpacity=held&&!putt?Settings.edgeOpacity*Mathf.InverseLerp(.8f,1,Charge):0;
    if(edge){edge.enabled=EdgeOpacity>0;edge.Show(1,EdgeOpacity);}
    if(successOpacity){float age=Time.unscaledTime-successAt;successOpacity.alpha=age<1.1f?Mathf.Clamp01((1.1f-age)/.3f):0;}
@@ -112,9 +113,6 @@ namespace WhatTheFish {
   }
   void Present(GolfFeedbackEvent e){
    if(observedRound!=match.Round){Quiet();observedRound=match.Round;}
-   var follow=GetComponent<GolfFollowCamera>();
-   if(e.cue==GolfFeedbackCue.Swing||e.cue==GolfFeedbackCue.Putt)follow?.Contact(e.actor,e.owner);
-   if(e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)follow?.Cup(e.owner);
    if(!Audible)return;isQuiet=false;counts[(int)e.cue]++;
    bool local=e.actor==LocalOwner;float gain;
    switch(e.cue){
@@ -127,6 +125,7 @@ namespace WhatTheFish {
    if(e.cue==GolfFeedbackCue.Swing&&local&&e.strength>=.65f){shakeUntil=Time.unscaledTime+Settings.shakeSeconds;shakeStrength=e.strength;}
    if(e.cue!=GolfFeedbackCue.Whoosh&&e.cue< GolfFeedbackCue.Ready)Burst(e);
    if(e.cue==GolfFeedbackCue.Finish)GolfFishingAudio.Golf?.Play("golf-cup",e.point,Settings.cupVolume);
+   if(e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)GolfCupCelebration.Play(transform,e.point);
    if(e.cue==GolfFeedbackCue.Cup&&e.owner==LocalOwner)GolfFishingAudio.Golf?.Play("golf-hole",e.point,.7f,true);
    if((e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)&&e.owner==LocalOwner){EnsureUI();successAt=Time.unscaledTime;if(success)success.text=e.cue==GolfFeedbackCue.Finish?"ALL 5 HOLES COMPLETE!":"HOLE COMPLETE!";}
   }

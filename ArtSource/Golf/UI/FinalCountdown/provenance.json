@@ -1,0 +1,27 @@
+{
+  "base": "repository root",
+  "assets": [
+    {
+      "path": "ArtSource/Golf/UI/FinalCountdown/Reference-master.png",
+      "bytes": 1313820,
+      "sha256": "bd65428df32a9a761e84ed1e4dcb582d3b067ad6c5ad4a0a541ad0a0729b6efd"
+    },
+    {
+      "path": "ArtSource/Golf/UI/FinalCountdown/Plate-master.png",
+      "bytes": 1329440,
+      "sha256": "373ee16a987b481b427bc682b384a8f8eaf48f5572927d9dae208190c5c89101"
+    },
+    {
+      "path": "ArtSource/Golf/UI/FinalCountdown/Digits-master.png",
+      "bytes": 1229982,
+      "sha256": "5e37e7112bd4a27b7e384de16f33d8f18e40a0ddc40e06058f8bd763196d080a"
+    }
+  ],
+  "source": "Reference-master.png is the user-supplied original. Plate-master.png is a built-in imagegen edit removing only 30s. Digits-master.png is the built-in generated matched glossy numeric atlas.",
+  "prompts": {
+    "plate": "Use case: precise-object-edit. Edit target is the supplied transparent game countdown badge. Keep exact same canvas, composition, silhouette, cream plate, yellow stopwatch with red hand, green leaves, glints, orange alert marks and the entire 'Finish in' heading unchanged. ONLY remove the large blue '30s' lettering in the lower right cream area, including its white outlines and shadows; cleanly reconstruct the original smooth cream background behind it. Do not remove the Finish in heading. This is a blank countdown UI plate for runtime changing digits. Preserve real transparent background, do not add anything, no redesign. Output a clean faithful edit.",
+    "digits": "Use case: precise-object-edit. Create a game numeric font sprite atlas matching ONLY the exact glossy dark navy blue numbers and thick white border of the reference countdown '30s'. Transparent background. A strictly aligned 4 column by 3 row grid of 12 equal square cells. Row1: 0 1 2 3. Row2: 4 5 6 7. Row3: 8 9 s [empty]. One glyph centered per cell, generous transparent spacing all around. Every digit identical height and baseline. Rounded chunky playful lettering, blue gradient highlights glossy bevel bright cyan upper-left glints, dark navy lower-right shading, thick clean white outline. The lowercase s is smaller. No stopwatch, no plate, no leaves, no headings, no boxes or visible grid, no extra text. The 0 and 3 must closely match the supplied 30s artwork. Output 1536x1152 PNG with real alpha transparency."
+  },
+  "delivery": "GolfPolishBuild.Prepare derives PNGs using repository-relative masters. Runtime now uses the clean plate and matched dynamic glyphs for all seconds, including 30, so digit size stays consistent throughout the intro and corner transition. Original clock dial pixels are retained. Final numeral containers are 50 x 50 design units; s scales proportionally. No mipmaps; Android ASTC 4x4.",
+  "limitations": "Generated changing glyphs match the design; pixel identity is only applicable to the supplied original 30s artwork. No physical Android FPS claim."
+}

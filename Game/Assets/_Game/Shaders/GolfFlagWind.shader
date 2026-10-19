@@ -16,7 +16,7 @@ Shader "WhatTheFish/GolfFlagWind" {
    float time=_FlagTime<0?_Time.y:_FlagTime;
    float phase=dot(float2(unity_ObjectToWorld._m03,unity_ObjectToWorld._m23),float2(.071,.043));
    float weight=saturate((p.x-.055)/1.065);weight*=weight;
-   p.z+=weight*(.144*sin(p.x*3.5-time*1.65+phase)+.060*sin(p.y*4+p.x*2.5-time*2.1+phase));
+   p.z+=weight*(.211764706*sin(p.x*3.5-time*1.65+phase)+.088235294*sin(p.y*4+p.x*2.5-time*2.1+phase));
    return p;
   }
   Varyings Vert(Attributes input) {

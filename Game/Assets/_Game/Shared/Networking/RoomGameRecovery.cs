@@ -51,7 +51,7 @@ namespace WhatTheFish {
   }
  }
  public sealed partial class GolfMatchManager {
-  internal void RestoreRoom(){Receive();foreach(var n in RoomTeleport.Players())GolfCartWorld.Receive(n.GetComponent<Athlete>(),n.Cart.Value);nextRound=Math.Max(nextRound,Round);wasContext=true;foreach(var net in RoomTeleport.Players())if(balls.TryGetValue(net.StableId,out var ball)&&net.GolfBall.Value.valid)ball.RestoreRoom(net.GolfBall.Value);ApplyLive();}
+  internal void RestoreRoom(){Receive();foreach(var n in RoomTeleport.Players())GolfCartWorld.Receive(n.GetComponent<Athlete>(),n.Cart.Value);nextRound=Math.Max(nextRound,Round);wasContext=true;foreach(var net in RoomTeleport.Players())if(balls.TryGetValue(net.StableId,out var ball)&&net.GolfBall.Value.valid)ball.RestoreRoom(net.GolfBall.Value);RestoreTeeAssignments();ApplyLive();}
  }
  public sealed partial class FishingGame {
   internal void RestoreRoom(){var host=NetworkAthlete.HostPlayer;State.Receive(host.FishingMatch.Value,host.FishingPlayers,host.FishingFish);nextRound=Math.Max(nextRound,State.Match.round);wasContext=true;}

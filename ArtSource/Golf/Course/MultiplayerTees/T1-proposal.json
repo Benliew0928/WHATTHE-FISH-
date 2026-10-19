@@ -1,0 +1,91 @@
+{
+  "radius": 64,
+  "roughRadialRange": [
+    23,
+    27
+  ],
+  "teeGrassRadialRange": [
+    60,
+    68
+  ],
+  "sandRadialRange": [
+    39,
+    44
+  ],
+  "status": "design only",
+  "slots": [
+    {
+      "distanceToH1": 64,
+      "z": -144.9773937425931,
+      "slot": 1,
+      "x": -29.235901091714986
+    },
+    {
+      "distanceToH1": 64,
+      "z": -143.3817500675563,
+      "slot": 2,
+      "x": -26.6957685294673
+    },
+    {
+      "distanceToH1": 64,
+      "z": -141.66883398367244,
+      "slot": 3,
+      "x": -24.23319453848797
+    },
+    {
+      "distanceToH1": 64,
+      "z": -139.84240853346176,
+      "slot": 4,
+      "x": -21.853589057258226
+    },
+    {
+      "distanceToH1": 64,
+      "z": -137.90648612400827,
+      "slot": 5,
+      "x": -19.562179753783255
+    },
+    {
+      "distanceToH1": 64,
+      "z": -135.86531971224963,
+      "slot": 6,
+      "x": -17.36400054112012
+    },
+    {
+      "distanceToH1": 64,
+      "z": -133.72339346181226,
+      "slot": 7,
+      "x": -15.263880518558743
+    },
+    {
+      "distanceToH1": 64,
+      "z": -131.48541289191652,
+      "slot": 8,
+      "x": -13.266433362750831
+    },
+    {
+      "distanceToH1": 64,
+      "z": -129.1562945399943,
+      "slot": 9,
+      "x": -11.376047192092834
+    },
+    {
+      "distanceToH1": 64,
+      "z": -126.74115516072811,
+      "slot": 10,
+      "x": -9.596874926629589
+    }
+  ],
+  "source": "V5-base-top.png",
+  "retained": "All cups, T2-T5 and ponds",
+  "teeCentre": {
+    "z": -136.89878346408315,
+    "x": -18.451129640494223
+  },
+  "pathHalfAngle": 0.33,
+  "halfAngle": 0.275,
+  "limits": "Ground and trajectory validation pending; old path spur reclaimed only in proposal",
+  "rearPathRadialRange": [
+    74,
+    77
+  ]
+}

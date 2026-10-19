@@ -10,6 +10,7 @@ namespace WhatTheFish {
   public GolfSandPatch[] sandPatches=Array.Empty<GolfSandPatch>();
   public GolfSandPatch[] roughPatches=Array.Empty<GolfSandPatch>();
   public GolfWaterPatch[] waterPatches=Array.Empty<GolfWaterPatch>();
+  public GolfTeeSite[] teeSites=Array.Empty<GolfTeeSite>();
   public bool TouchesWater(Vector3 from,Vector3 to,float radius){
    var a=transform.InverseTransformPoint(from);var b=transform.InverseTransformPoint(to);
    float localRadius=radius/Mathf.Min(transform.lossyScale.x,transform.lossyScale.z);
@@ -33,6 +34,7 @@ namespace WhatTheFish {
     float fringe=Mathf.SmoothStep(0,1,Mathf.InverseLerp(green.radius,green.radius+2,distance));
     resistance=Mathf.Lerp(settings.greenResistance,resistance,fringe);
    }
+   foreach(var site in teeSites){int surface=site.Surface(p.x,p.z);if(surface>0)resistance=surface==2?settings.sandResistance:surface==3?settings.roughResistance:settings.fairwayResistance;if(site.GroundWeight(p.x,p.z)>.95f)resistance=settings.fairwayResistance;}
    return resistance;
   }
   void OnEnable(){if(Application.isPlaying&&!GetComponent<GolfMatchManager>())gameObject.AddComponent<GolfMatchManager>();}

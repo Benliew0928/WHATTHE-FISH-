@@ -16,11 +16,11 @@ namespace WhatTheFish {
   public static GolfPlayerSnapshot Capture(GolfPlayerState p,uint round)=>p==null?default:new GolfPlayerSnapshot{valid=true,round=round,name=p.PlayerName,completed=p.CompletedHoleCount,holeStroke=p.CurrentHoleStroke,totalStroke=p.TotalStroke,finishTime=p.FinishTime,finished=p.IsFinished,dnf=p.IsDNF};
  }
  public struct GolfBallSnapshot:INetworkSerializable,IEquatable<GolfBallSnapshot> {
-  public bool valid,active;public uint round,reset,strike;public Vector3 position;public Quaternion rotation;public double time;
-  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref valid);s.SerializeValue(ref active);s.SerializeValue(ref round);s.SerializeValue(ref reset);s.SerializeValue(ref strike);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref time);}
+  public bool valid,active,waiting;public uint round,reset,strike;public int teeHole,teeSlot,teeQueue;public Vector3 position,lastShot,lastDry;public Quaternion rotation;public double time;
+  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref valid);s.SerializeValue(ref active);s.SerializeValue(ref round);s.SerializeValue(ref reset);s.SerializeValue(ref strike);s.SerializeValue(ref position);s.SerializeValue(ref rotation);s.SerializeValue(ref time);s.SerializeValue(ref waiting);s.SerializeValue(ref teeHole);s.SerializeValue(ref teeSlot);s.SerializeValue(ref teeQueue);s.SerializeValue(ref lastShot);s.SerializeValue(ref lastDry);}
   // Default snapshots contain a zero quaternion, for which Unity's rotation ==
   // operator is not reflexive. Field equality keeps unused balls off the wire.
-  public bool Equals(GolfBallSnapshot v)=>valid==v.valid&&active==v.active&&round==v.round&&reset==v.reset&&strike==v.strike&&position==v.position&&rotation.Equals(v.rotation)&&time==v.time;
+  public bool Equals(GolfBallSnapshot v)=>valid==v.valid&&active==v.active&&round==v.round&&reset==v.reset&&strike==v.strike&&position==v.position&&rotation.Equals(v.rotation)&&time==v.time&&waiting==v.waiting&&teeHole==v.teeHole&&teeSlot==v.teeSlot&&teeQueue==v.teeQueue&&lastShot==v.lastShot&&lastDry==v.lastDry;
  }
  public struct GolfPlayerRecord:INetworkSerializable,IEquatable<GolfPlayerRecord> {
   public ulong owner;public GolfPlayerSnapshot progress;

@@ -1,0 +1,152 @@
+{
+  "status": "design only",
+  "allocation": "Server-side reservation without replacement, stable per round/hole/player; assign before ball placement; FIFO waiting when all 3 pads occupied; preserve assignments on reconnect; release only after safe clearance; handle water reset before reuse",
+  "designs": [
+    {
+      "hole": 2,
+      "slots": [
+        {
+          "x": -76.8799557222111,
+          "slot": "A",
+          "distanceToCup": 127.3459854098275,
+          "z": -70.02808017564705
+        },
+        {
+          "x": -73.0,
+          "slot": "B",
+          "distanceToCup": 127.3459854098275,
+          "z": -71.0
+        },
+        {
+          "x": -69.0914346797136,
+          "slot": "C",
+          "distanceToCup": 127.3459854098275,
+          "z": -71.84958912913436
+        }
+      ],
+      "cup": {
+        "z": 53.0,
+        "x": -44.0
+      },
+      "waiting": {
+        "z": -81.7109776221869,
+        "x": -75.50498670196308
+      },
+      "originalTee": {
+        "z": -71.0,
+        "x": -73.0
+      },
+      "radius": 127.3459854098275
+    },
+    {
+      "hole": 3,
+      "slots": [
+        {
+          "x": -42.52028541372819,
+          "slot": "A",
+          "distanceToCup": 64.8459713474939,
+          "z": 69.89803001132975
+        },
+        {
+          "x": -39.0,
+          "slot": "B",
+          "distanceToCup": 64.8459713474939,
+          "z": 68.0
+        },
+        {
+          "x": -35.369404742699295,
+          "slot": "C",
+          "distanceToCup": 64.8459713474939,
+          "z": 66.3225896758153
+        }
+      ],
+      "cup": {
+        "z": 126.0,
+        "x": -10.0
+      },
+      "waiting": {
+        "z": 58.16130089900092,
+        "x": -43.91934955049954
+      },
+      "originalTee": {
+        "z": 68.0,
+        "x": -39.0
+      },
+      "radius": 64.8459713474939
+    },
+    {
+      "hole": 4,
+      "slots": [
+        {
+          "x": 10.328239142728563,
+          "slot": "A",
+          "distanceToCup": 135.09256086106296,
+          "z": 119.25240427663219
+        },
+        {
+          "x": 7.999999999999986,
+          "slot": "B",
+          "distanceToCup": 135.09256086106296,
+          "z": 115.99999999999999
+        },
+        {
+          "x": 5.769068816195642,
+          "slot": "C",
+          "distanceToCup": 135.09256086106296,
+          "z": 112.68009380591586
+        }
+      ],
+      "cup": {
+        "z": 39.0,
+        "x": 119.0
+      },
+      "waiting": {
+        "z": 122.2697752903737,
+        "x": -1.038247496512767
+      },
+      "originalTee": {
+        "z": 116.0,
+        "x": 8.0
+      },
+      "radius": 135.09256086106296
+    },
+    {
+      "hole": 5,
+      "slots": [
+        {
+          "x": 112.25938224233713,
+          "slot": "A",
+          "distanceToCup": 166.715326230074,
+          "z": 12.681453071142215
+        },
+        {
+          "x": 109.0,
+          "slot": "B",
+          "distanceToCup": 166.715326230074,
+          "z": 15.0
+        },
+        {
+          "x": 105.68593231893571,
+          "slot": "C",
+          "distanceToCup": 166.715326230074,
+          "z": 17.239684769851237
+        }
+      ],
+      "cup": {
+        "z": -122.0,
+        "x": 14.0
+      },
+      "waiting": {
+        "z": 24.039360891873116,
+        "x": 115.26816996151786
+      },
+      "originalTee": {
+        "z": 15.0,
+        "x": 109.0
+      },
+      "radius": 166.715326230074
+    }
+  ],
+  "limits": "Actual terrain, props and reachability not yet validated; tee/cup centres unchanged, independent stance clearance required",
+  "baseMap": "V5-base-top.png"
+}

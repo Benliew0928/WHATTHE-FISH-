@@ -148,6 +148,7 @@ public static class GolfCourseBuilder {
    RemoveDecorativeFlags(island);
    GolfCircuitArtBuilder.Attach(island,course,layout.obstacles);
    GolfPondArtBuilder.Attach(island,course);
+   GolfMultiplayerTeeBuild.Attach(island);
    AssetDatabase.SaveAssets();Physics.SyncTransforms();
   }finally{island.SetActive(active);}
  }

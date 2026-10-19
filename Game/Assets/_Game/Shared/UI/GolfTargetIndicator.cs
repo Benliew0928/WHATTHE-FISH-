@@ -118,7 +118,7 @@ namespace WhatTheFish {
    bool aiming=app&&app.view&&app.view.GolfAimRequested;
    ballVisibility.alpha=hud?hud.AuxiliaryOpacity:1;
 
-   if(!aiming&&hud&&hud.CourseRect&&scorecard&&scorecard.BoardRect){
+   if(!aiming&&hud&&hud.CourseRect&&hud.CourseRect.gameObject.activeInHierarchy&&scorecard&&scorecard.BoardRect){
 
     hud.CourseRect.GetWorldCorners(corners);float left=page.InverseTransformPoint(corners[2]).x+layout.gap+layout.targetSize.x*.5f;
 
@@ -128,13 +128,13 @@ namespace WhatTheFish {
 
    }
 
-   if(aiming)position=new Vector2(0,-layout.aimTargetTopMargin-layout.targetSize.y*layout.aimTargetScale*.5f);
+   if(aiming)position=new Vector2(0,-layout.aimTargetTopMargin-layout.targetArrowSize.y*layout.aimTargetScale+4-layout.targetSize.y*layout.aimTargetScale*.5f);
    targetCard.localScale=Vector3.one*(aiming?layout.aimTargetScale:1);
-   targetCard.anchoredPosition=position;targetCard.sizeDelta=layout.targetSize;targetArrow.anchoredPosition=layout.targetArrowPosition+Vector2.right*(position.x-layout.targetPosition.x);targetArrow.sizeDelta=layout.targetArrowSize;
+   targetCard.anchoredPosition=position;targetCard.sizeDelta=layout.targetSize;targetArrow.anchoredPosition=(aiming?new Vector2(0,-layout.aimTargetTopMargin-layout.targetArrowSize.y*layout.aimTargetScale*.5f):layout.targetArrowPosition+Vector2.right*(position.x-layout.targetPosition.x));targetArrow.sizeDelta=layout.targetArrowSize*(aiming?layout.aimTargetScale:1);
 
    bool running=hole!=null&&match.State.Running;
-   TargetHole=hole?.number??0;targetArrow.gameObject.SetActive(running&&!aiming);targetCard.gameObject.SetActive(running);
-   if(running&&aiming)AimDirection(app.view.GetComponent<Camera>(),hole.cup.position+Vector3.up*.8f);else targetEdgeArrow.gameObject.SetActive(false);
+   TargetHole=hole?.number??0;targetArrow.gameObject.SetActive(running);targetCard.gameObject.SetActive(running);
+   targetEdgeArrow.gameObject.SetActive(false);
 
    // Read the presented camera, including the cart's third-person reverse turn.
 

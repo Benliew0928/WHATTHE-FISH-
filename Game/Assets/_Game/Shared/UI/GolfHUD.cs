@@ -12,7 +12,7 @@ namespace WhatTheFish {
 
  // Presentation only. Existing Golf buttons retain their listeners, visibility,
 
- // charge timing, keyboard bindings and authority-checked input handlers.
+ // authority-checked input handlers and existing aim/preview rules.
 
  public sealed class GolfHUD:MonoBehaviour {
 
@@ -28,9 +28,9 @@ namespace WhatTheFish {
 
   GolfHUDLayout layout;GolfSwingButton swing;GolfCartButton[] carts;Font fallbackFont;GolfLeaderboardUI scorecard;
 
-  Text station,hintText,countdownBanner;FishingStickerGraphic aimIcon;Skin aimSkin,actionSkin;Image aimCaption,hintCaption;readonly List<(GolfCartButton cart,Skin skin)> cartSkins=new();Sprite cartDrive,cartBuggy,cartRecall,cartFallback,cartExit;
+  Text station,hintText,countdownBanner;FishingStickerGraphic aimIcon;Skin aimSkin;Image aimCaption,hintCaption;readonly List<(GolfCartButton cart,Skin skin)> cartSkins=new();Sprite cartDrive,cartBuggy,cartRecall,cartFallback,cartExit;
   Image countdownImage;RectTransform countdownAnchor;Sprite[] countdownSprites;Sprite goSprite;
-  Sprite actionAimFirst,actionSwing,actionPutt;
+  static readonly Vector2 PowerSize=new(210,350);
   int lastCountdownSec=-1;float countdownAnimTimer,goDisplayTimer;bool wasStarting;
 
   readonly List<Skin> skins=new();readonly Dictionary<RectTransform,RectTransform> frames=new();
@@ -85,7 +85,7 @@ namespace WhatTheFish {
 
    look.SetAsFirstSibling();
 
-   camera.gameObject.SetActive(false);camera.GetComponent<Button>().onClick.RemoveAllListeners();camera.name="Golf camera button";jump.name="Golf jump button";hud.Build();hud.Layout();
+   back.gameObject.SetActive(false);camera.gameObject.SetActive(false);camera.GetComponent<Button>().onClick.RemoveAllListeners();camera.name="Golf camera button";jump.name="Golf jump button";hud.Build();hud.Layout();
 
   }
 
@@ -141,13 +141,10 @@ namespace WhatTheFish {
 
    station=Label("Golf station distance",course,"SKY-SAIL STATION",new Vector2(290,35),layout.courseStationFontSize,LocalProfile.Hex("879491"));station.rectTransform.anchoredPosition=layout.courseStationPosition;station.horizontalOverflow=HorizontalWrapMode.Overflow;
 
-   var action=SkinButton(swing.button,GolfHUDStyle.Gold,true,"Shot");actionSkin=action;
-   actionAimFirst=Resources.Load<Sprite>("GolfUI/Badges/AimFirst");actionSwing=Resources.Load<Sprite>("GolfUI/Badges/Swing");actionPutt=Resources.Load<Sprite>("GolfUI/Badges/Putt");
+   course.gameObject.SetActive(false);
+
+   swing.BuildSlider();
    cartExit=Resources.Load<Sprite>("GolfUI/Badges/Exit");
-
-   swing.label.transform.SetAsLastSibling();PlaceLabel(swing.label,layout.shotLabelPosition,layout.shotLabelSize,layout.shotFontSize);swing.label.color=Color.white;
-
-   var outline=swing.label.GetComponent<Outline>()??swing.label.gameObject.AddComponent<Outline>();outline.enabled=true;outline.effectColor=GolfHUDStyle.Ink;outline.effectDistance=new Vector2(1.2f,-1.2f);
 
    aimSkin=SkinButton(swing.aimButton,GolfHUDStyle.Red,true,"Aim");aimIcon=Icon(aimSkin.visual,"Golf aim or cancel icon",FishingStickerGraphic.Kind.Aim,new Vector2(-layout.aimSize.x*.34f,0),new Vector2(34,34),GolfHUDStyle.Ink);aimIcon.enabled=false;
 
@@ -174,7 +171,7 @@ namespace WhatTheFish {
 
    // The exact attention badge is retained in the reference art.
 
-   hintText=Label("Golf hold and release hint",hint,"Hold, then release",new Vector2(layout.hintSize.x-105,layout.hintSize.y-24),layout.hintFontSize);hintText.rectTransform.anchoredPosition=new Vector2(32,0);
+   hintText=Label("Golf drag and release hint",hint,"Drag down, release to hit",new Vector2(layout.hintSize.x-105,layout.hintSize.y-24),layout.hintFontSize);hintText.rectTransform.anchoredPosition=new Vector2(32,0);
    countdownAnchor=GolfHUDStyle.Rect("Golf countdown root",page,new Vector2(.5f,.5f),new Vector2(0,40),Vector2.zero);
    countdownImage=GolfHUDStyle.Rect("Golf countdown badge",countdownAnchor,new Vector2(.5f,.5f),Vector2.zero,new Vector2(200,200)).gameObject.AddComponent<Image>();
    countdownImage.preserveAspect=true;countdownImage.raycastTarget=false;countdownImage.gameObject.SetActive(false);
@@ -213,11 +210,11 @@ namespace WhatTheFish {
 
    PlaceFrame(course,new Vector2(0,1),new Vector2(0,1),new Vector2(m,-m),courseScale);
 
-   ActionRect.sizeDelta=layout.actionSize;cameraControl.sizeDelta=layout.cameraSize;jumpControl.sizeDelta=layout.jumpSize;returnControl.sizeDelta=layout.returnSize;moveControl.sizeDelta=layout.joystickSize;
+   ActionRect.sizeDelta=PowerSize;cameraControl.sizeDelta=layout.cameraSize;jumpControl.sizeDelta=layout.jumpSize;returnControl.sizeDelta=layout.returnSize;moveControl.sizeDelta=layout.joystickSize;
 
    var aim=(RectTransform)swing.aimButton.transform;var start=(RectTransform)swing.startButton.transform;aim.sizeDelta=layout.aimSize;start.sizeDelta=layout.startSize;
 
-   PlaceFrame(ActionRect,new Vector2(1,0),new Vector2(1,0),new Vector2(-m,m+28*scale),scale);
+   PlaceFrame(ActionRect,new Vector2(1,0),new Vector2(1,0),new Vector2(-m,m+8*scale),scale);
 
    float side=m+(layout.actionSize.x+2)*scale;
 
@@ -227,7 +224,7 @@ namespace WhatTheFish {
 
    bool crowded=GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Players.Count>6;
 
-   float utilities=m+(layout.actionSize.y+gap+56)*scale;
+   float utilities=m+(PowerSize.y+gap+20)*scale;
    if(!scorecard)scorecard=page.parent.GetComponentInChildren<GolfLeaderboardUI>();
    if(scorecard&&scorecard.BoardRect&&!scorecard.Expanded){scorecard.BoardRect.GetWorldCorners(controlCorners);float boardBottom=page.InverseTransformPoint(controlCorners[0]).y-page.rect.yMin;crowded|=boardBottom<utilities+(layout.jumpSize.y+gap)*scale;}
 
@@ -240,7 +237,7 @@ namespace WhatTheFish {
    }else{
 
 
-    PlaceFrame(jumpControl,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-layout.actionSize.x*scale*.5f,utilities),scale);
+    PlaceFrame(jumpControl,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-PowerSize.x*scale*.5f,utilities),scale);
 
    }
 
@@ -261,8 +258,7 @@ namespace WhatTheFish {
    swing.aimLabel.text=aiming?"Cancel":"Aim";
    aimCaption.enabled=false;swing.aimLabel.enabled=true;
    swing.startLabel.enabled=false;
-   actionSkin.art.sprite=!aiming?actionAimFirst:view.GolfMode==GolfShotMode.Putt?actionPutt:actionSwing;
-   actionSkin.art.preserveAspect=true;swing.label.enabled=false;
+   swing.label.enabled=false;
    foreach(var item in cartSkins){
     // These approved images already contain their exact icon and lettering.
     var sprite=item.cart.label.text switch {"Drive"=>cartDrive,"Buggy"=>cartBuggy,"Recall"=>cartRecall,"Exit"=>cartExit,_=>null};
@@ -278,8 +274,9 @@ namespace WhatTheFish {
 
    station.text=app&&app.LocalAthlete?"SKY-SAIL STATION  •  "+Mathf.RoundToInt(Vector3.Distance(app.LocalAthlete.transform.position,SkySailMap.Port(SportId.Golf)))+" m":"SKY-SAIL STATION";
 
-   var match=GolfMatchManager.Instance;hintText.text=world&&world.Travelling?"Look around during the journey":match&&match.Starting?$"MATCH STARTS IN {Mathf.CeilToInt((float)match.StartRemaining)}s":aiming?"Hold, then release":view&&GolfCartWorld.Driving(view.target)?"Left stick: drive & steer":"Walk near your ball to aim";
+   var match=GolfMatchManager.Instance;hintText.text=world&&world.Travelling?"Look around during the journey":match&&match.Starting?$"MATCH STARTS IN {Mathf.CeilToInt((float)match.StartRemaining)}s":aiming?"Drag down, release to hit":view&&GolfCartWorld.Driving(view.target)?"Left stick: drive & steer":"Walk near your ball to aim";
    if(aiming&&view.GolfCharging)hintText.text=$"Power {Mathf.RoundToInt(view.GolfDisplayedCharge*100)}%  •  Release";
+   if(match&&app&&match.WaitingForTee(app.LocalAthlete))hintText.text="Waiting for a free tee";
 
    hintText.fontSize=aiming?layout.hintFontSize:20;
    hintCaption.enabled=hintText.text=="Walk near your ball to aim";hintText.enabled=!hintCaption.enabled;
