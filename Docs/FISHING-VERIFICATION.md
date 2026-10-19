@@ -1,4 +1,43 @@
-# Current G2 / L2 environment
+# Fishing verification records
+
+## Eye-level camera, natural swimming and rope cue — 19 October 2026
+
+The current delivery is described in [Fishing camera and swimming](FISHING-NATURAL-SWIM.md).
+The complete `Builds/WindowsFinal/` player contains 325 runtime/support files
+plus `LATEST-BUILD.txt`. The code-only refresh retained identical native scene,
+catalog and islands-bundle hashes from the prior complete validated player.
+
+**4,930 checks pass** across the current feature reviews:
+
+| Review | Passes | Local evidence |
+| --- | ---: | --- |
+| Fishing rules and guarded Windows build | 1,891 | `Builds/FishingNatural/Task-20261019-052154Z/windows-final-build.log` |
+| Rendered gameplay and all 30 natural fish paths | 2,752 | `Builds/FishingGameplayQA/Run-20261019-134457/offline.txt` |
+| Camera, rope cue, feedback and results | 192 | `Builds/FishingPolishQA/Run-20261019-134933/polish.txt` |
+| Fishing host | 46 | `Builds/FishingGameplayQA/Run-20261019-135002/host.txt` |
+| Fishing guest | 49 | `Builds/FishingGameplayQA/Run-20261019-135002/client.txt` |
+
+Eye-level checks press both directions and inject manual look input; the camera
+stays at eye position. Screenshots at 20%, 60% and 90% tension confirm the rod,
+line, curved-to-taut cue and warning are visible. Captures wait until after the
+rod's LateUpdate pose; an earlier capture rendered before the head was hidden.
+Follow/Island fighting views, cancel return and reduced motion also pass.
+
+Swimming checks sample three minutes of each fish's route, verify finite bounded
+speed and acceleration, broad pool coverage and changes of angular direction,
+and confirm that sampling order cannot change the shared path. Real rendered
+casts/catches, held-label layout, local host/guest claims, abilities, results and
+rematches pass. The rendered gameplay report precedes only a development capture
+timing correction; the final Windows scripts passed the complete polish and
+network suites afterward.
+
+Evidence index and source hashes are in
+`Builds/FishingNatural/Task-20261019-052154Z/`. The release includes existing
+uncommitted shared-lagoon work above pulled `main` at `9bb55646`; protocol is 70.
+For measured Android output, see [Build size](BUILD-SIZE.md) and
+[APK audit](APK-SIZE-AUDIT.md). Physical Android and WAN behavior remain unverified.
+
+Older release records follow.
 
 ## Stronger Fishing motion and upstream Golf integration — 13 October 2026
 

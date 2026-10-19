@@ -37,7 +37,7 @@ namespace WhatTheFish {
    float limit=Time.time+2;
    while(Time.time<limit){
     var point=game.Presentation.TargetPosition(fish);
-    if(mode==2){var delta=Vector3.ProjectOnPlane(point-app.LocalAthlete.transform.position,Vector3.up);view.yaw=Mathf.Atan2(delta.x,delta.z)*Mathf.Rad2Deg;view.pitch=20+(6.5f-delta.magnitude)/.08f;}
+    if(mode==2){var delta=Vector3.ProjectOnPlane(point-app.LocalAthlete.transform.position,Vector3.up);view.yaw=Mathf.Atan2(delta.x,delta.z)*Mathf.Rad2Deg;view.pitch=20+(6.5f-delta.magnitude)/.8f;}
     else{var ray=view.FishingCamera.ScreenPointToRay(view.FishingAimScreenPoint);var local=view.FishingCamera.transform.InverseTransformDirection((point-ray.origin).normalized);var aim=view.FishingCamera.transform.InverseTransformDirection(ray.direction);view.yaw+=(Mathf.Atan2(local.x,local.z)-Mathf.Atan2(aim.x,aim.z))*Mathf.Rad2Deg*.8f;view.pitch-=(Mathf.Atan2(local.y,local.z)-Mathf.Atan2(aim.y,aim.z))*Mathf.Rad2Deg*.8f;}
     yield return null;
     if(view.SelectedFishingFish==fish&&game.VisibleTarget(app.LocalAthlete,view.FishingCamera,fish))yield break;
@@ -187,22 +187,52 @@ namespace WhatTheFish {
     }
     var setup=frame.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="Fishing match setup");var setupButtons=setup.GetComponentsInChildren<UnityEngine.UI.Button>(true);var modePanels=setupButtons.Where(b=>b.name.StartsWith("Mode ")).Select(b=>b.targetGraphic as FishingStickerGraphic).ToArray();
     Check(setupButtons.Length==7&&setupButtons.Count(b=>b.name=="Fishing favourites")==1&&setupButtons.All(b=>{var skin=b.targetGraphic as FishingStickerGraphic;var caption=b.GetComponentsInChildren<UnityEngine.UI.Text>(true).FirstOrDefault();return b.enabled&&skin&&skin.SolidPanel&&skin.raycastTarget&&caption&&caption.enabled&&!caption.raycastTarget&&caption.fontStyle==FontStyle.Normal&&!string.IsNullOrWhiteSpace(caption.text)&&(!b.gameObject.activeInHierarchy||RenderedTextInside(caption,caption.rectTransform));})&&modePanels.Length==3&&modePanels.Count(g=>g&&g.tint==LocalProfile.Hex("4CDED6"))==1&&modePanels.Count(g=>g&&g.tint==LocalProfile.Hex("FFF3D7"))==2,"SETUP_NATIVE_CAPTIONS_AND_SELECTED_MODE_USE_SOLID_TINTED_BUTTONS_"+view);
-   var glyphs=frame.GetComponentsInChildren<FishingStickerGraphic>(true);var camera=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Camera);var jump=glyphs.FirstOrDefault(g=>g.kind==FishingStickerGraphic.Kind.Jump);var close=glyphs.FirstOrDefault(g=>g.name=="Fishing cancel X");
-   bool lineBusy=game.Player(app.LocalAthlete).HasValue&&game.Player(app.LocalAthlete).Value.Busy;
-   Check(camera&&jump&&close&&Mathf.Abs(camera.rectTransform.rect.width/camera.rectTransform.rect.height-1.1f/.95f)<.01f&&new[]{camera,jump,close}.All(g=>g.enabled&&!g.raycastTarget&&g.rectTransform.rect.width>10&&g.rectTransform.rect.height>10)&&camera.gameObject.activeInHierarchy==!lineBusy&&jump.gameObject.activeInHierarchy==(!lineBusy&&game.NearestPier(app.LocalAthlete)<0)&&close.gameObject.activeInHierarchy==lineBusy,"CONTEXTUAL_SLIM_CAMERA_JUMP_CANCEL_GLYPHS_IGNORE_RAYS_"+view);
-   var cameraButton=camera.GetComponentInParent<UnityEngine.UI.Button>(true);var jumpHandler=jump.GetComponentInParent<JumpButton>(true);var cancelButton=close.GetComponentInParent<UnityEngine.UI.Button>(true);var cancelPanel=cancelButton?cancelButton.GetComponent<FishingStickerGraphic>():null;
-   Check(cameraButton&&cameraButton.enabled&&cameraButton.targetGraphic&&cameraButton.GetComponentsInChildren<UnityEngine.UI.Text>(true).All(t=>!t.enabled)&&jumpHandler&&jumpHandler.enabled&&jumpHandler.button&&jumpHandler.button.enabled&&jumpHandler.label&&!jumpHandler.label.enabled&&jumpHandler.button.targetGraphic,"NATIVE_ICON_CONTROLS_PRESERVE_BUTTONS_AND_JUMP_HANDLER_"+view);
-   Check(cancelButton&&cancelButton.enabled&&cancelPanel&&cancelPanel.SolidPanel&&cancelPanel.tint==LocalProfile.Hex("F7656A")&&cancelButton.targetGraphic==cancelPanel,"SOLID_RED_CANCEL_BUTTON_HAS_NATIVE_X_"+view);
-    foreach(var button in new[]{cameraButton,jumpHandler.button}){
-     var rect=(RectTransform)button.transform;var skin=button.targetGraphic as FishingStickerGraphic;var outer=new Vector3[4];var inner=new Vector3[4];rect.GetWorldCorners(outer);if(skin)skin.rectTransform.GetWorldCorners(inner);
-     float expectedWidth=button==cameraButton?104:120;Check(Mathf.Abs(rect.rect.width-expectedWidth)<.1f&&skin&&skin.SolidPanel&&Mathf.Abs(skin.cornerRadius-36)<.1f&&skin.rectTransform.anchorMin==Vector2.zero&&skin.rectTransform.anchorMax==Vector2.one&&skin.rectTransform.offsetMin==Vector2.zero&&skin.rectTransform.offsetMax==Vector2.zero&&outer.Zip(inner,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.1f),"NARROW_ROUNDED_UTILITY_SKIN_MATCHES_NATIVE_HIT_RECT_"+button.name+"_"+view);
-    }
-   foreach(var button in new[]{cameraButton,jumpHandler.button,cancelButton}){
+   var close=frame.GetComponentsInChildren<FishingStickerGraphic>(true).First(g=>g.name=="Fishing cancel X");
+   var cancelButton=close.GetComponentInParent<UnityEngine.UI.Button>(true);var cancelPanel=cancelButton.GetComponent<FishingStickerGraphic>();
+   var nativeJump=frame.GetComponentsInChildren<JumpButton>(true).FirstOrDefault(j=>j.enabled&&j.illustrated);
+   var cameraButton=frame.GetComponentsInChildren<UnityEngine.UI.Button>(true).FirstOrDefault(b=>b.name=="Camera");
+   Check(!cameraButton||!cameraButton.gameObject.activeInHierarchy,"CAMERA_MOVED_INTO_SETTINGS_"+view);
+   Check(ui.IslandMenu&&ui.IslandMenu.GearRect.GetComponent<BasketballPlate>()&&nativeJump&&nativeJump.button&&nativeJump.button.GetComponent<BasketballPlate>()&&nativeJump.label.enabled,"COURTS_SETTINGS_AND_JUMP_USE_SHARED_ART_AND_CONTROLS_"+view);
+   Check(cancelButton.enabled&&cancelPanel.SolidPanel&&cancelPanel.tint==LocalProfile.Hex("F7656A")&&cancelButton.targetGraphic==cancelPanel,"SOLID_RED_CANCEL_BUTTON_HAS_NATIVE_X_"+view);
+   foreach(var button in new[]{nativeJump.button,cancelButton}){
     var rect=(RectTransform)button.transform;var pointer=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center))};var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);
-    var unavailable=button.GetComponentInParent<UnityEngine.CanvasGroup>();bool busy=game.Player(app.LocalAthlete).HasValue&&game.Player(app.LocalAthlete).Value.Busy;
     if(!button.gameObject.activeInHierarchy)Check(!hits.Any(h=>h.gameObject.GetComponentInParent<UnityEngine.UI.Button>()==button),"IRRELEVANT_HIDDEN_UTILITY_HAS_NO_POINTER_TARGET_"+button.name+"_"+view);
     else Check(hits.Count>0&&hits[0].gameObject.GetComponentInParent<UnityEngine.UI.Button>()==button,"DECORATIVE_ICON_RETAINS_NATIVE_POINTER_TARGET_"+button.name+"_"+view);
    }
+  }
+  IEnumerator SharedLagoonInterface(FishingHUD hud){
+   var view=app.view;int mode=view.mode;bool blocked=view.InputBlocked;
+   hud.IslandMenu.Open();yield return PoseFrame();Check(hud.IslandMenu.Visible&&hud.BlocksGameplay&&view.InputBlocked,"SETTINGS_BLOCK_TOUCH_WITHOUT_PAUSING_MATCH");
+   for(int i=0;i<3;i++){hud.IslandMenu.SelectCamera(i);Check(view.mode==i&&PlayerPrefs.GetInt("camera")==i,"SETTINGS_SAVED_CAMERA_"+i);}
+   Capture("sports-settings");hud.CloseOverlay();yield return PoseFrame();Check(!hud.IslandMenu.Visible&&view.InputBlocked==blocked&&!hud.BlocksGameplay,"SETTINGS_CLOSE_RESTORES_GAMEPLAY");hud.IslandMenu.SelectCamera(mode);
+   bool travel=false;for(int i=0;i<FishingState.FishCount;i++){var first=game.FishPosition(i,100);var later=game.FishPosition(i,140);var distance=Vector3.ProjectOnPlane(first-game.transform.position,Vector3.up).magnitude;Check(distance<=17&&Vector3.Distance(first,game.FishPosition(i,100.01))<.1f,"SHARED_POOL_CONTINUOUS_INTERIOR_SWIM_"+i);travel|=Vector3.Distance(first,later)>10;}
+   Check(travel,"SCHOOL_MOVES_BETWEEN_PIERS");
+   int reversals=0;
+   for(int i=0;i<FishingState.FishCount;i++){
+    var first=game.FishPosition(i,123.456);game.FishPosition((i+1)%FishingState.FishCount,9000);
+    Check(game.FishPosition(i,123.456)==first,"SHARED_SWIM_HAS_NO_LOCAL_RANDOM_STATE_"+i);
+    bool clockwise=false,anticlockwise=false,smooth=true;float maxSpan=0;var start=game.FishPosition(i,0);
+    for(int sample=1;sample<=360;sample++){
+     double time=sample*.5;var a=game.FishPosition(i,time-.05);var b=game.FishPosition(i,time);var c=game.FishPosition(i,time+.05);
+     var radial=Vector3.ProjectOnPlane(b-game.transform.position,Vector3.up);float turn=Vector3.Cross(radial,c-a).y;
+     if(radial.sqrMagnitude>9){clockwise|=turn>.005f;anticlockwise|=turn<-.005f;}
+     smooth&=Vector3.Distance(a,c)/.1f<4.5f&&((c-b)-(b-a)).magnitude/.0025f<5;
+     maxSpan=Mathf.Max(maxSpan,Vector3.Distance(start,b));
+    }
+    if(clockwise&&anticlockwise)reversals++;
+    Check(smooth&&maxSpan>5,"NATURAL_SWIM_SPEED_TURNS_AND_POOL_COVERAGE_"+i);
+   }
+   Check(reversals>=FishingState.FishCount*2/3,"SCHOOL_WANDERS_BOTH_WAYS_INSTEAD_OF_ORBITING");
+   var savedMatch=game.State.Match;var players=game.State.Players.ToArray();var fish=game.State.Fish.ToArray();bool review=game.ReviewSnapshot;game.ReviewSnapshot=true;
+   var ended=savedMatch;ended.phase=FishingRoundPhase.Ended;ended.outcome=FishingOutcome.Finished;ended.round+=5000;game.State.Receive(ended,players,fish);
+   hud.Results.ClearContext();var ceremony=hud.Results.GetComponent<FishingCeremony>()??hud.Results.gameObject.AddComponent<FishingCeremony>();
+   var camera=view.FishingCamera;var position=camera.transform.position;var rotation=camera.transform.rotation;float fov=camera.fieldOfView;int actors=Athlete.Active.Count;
+   bool completed=false;Check(ceremony.Begin(game,players,()=>completed=true),"AWARDS_BEGIN_FROM_COMPLETED_AUTHORITATIVE_ROUND");yield return new WaitForSeconds(.8f);
+   Check(FishingCeremony.Presenting&&ceremony.CastCount==players.Length&&Athlete.Active.Count==actors&&game.State.Players.SequenceEqual(players),"AWARDS_CLONE_VISUALS_WITHOUT_GAMEPLAY_ACTORS_OR_SCORE_CHANGES");
+   Check(hud.HudFrame.GetComponent<CanvasGroup>().alpha==0&&!hud.HudFrame.GetComponent<CanvasGroup>().blocksRaycasts&&!app.LocalAthlete.GetComponent<FishingRodMotion>().Equipped,"AWARDS_HIDE_COMPLETE_HUD_AND_HELD_ROD");Capture("fishing-awards");ceremony.Skip();yield return new WaitForSeconds(.6f);
+   Check(completed&&!FishingCeremony.Presenting&&view.InputBlocked==blocked&&Mathf.Abs(camera.fieldOfView-fov)<.1f,"SKIP_AWARDS_RESTORES_CAMERA_INPUT_AND_OPENS_RESULTS");
+   Check(ceremony.Begin(game,players,()=>completed=false),"AWARDS_CAN_START_ANOTHER_ROUND");game.State.Receive(savedMatch,players,fish);yield return PoseFrame();Check(!FishingCeremony.Presenting&&completed,"CONTEXT_CHANGE_CANCELS_AWARDS_WITHOUT_STALE_RESULTS");
+   hud.Results.ClearContext();game.ReviewSnapshot=review;view.mode=mode;
   }
   void CaptureGrip(){
    if(!args.Contains("-fishingCapture"))return;var socket=app.LocalAthlete.visual.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Golf grip socket");
@@ -224,9 +254,9 @@ namespace WhatTheFish {
    Place(actor,0);yield return new WaitForSeconds(.2f);Check(game.Presentation.LiveFishCount==FishingState.FishCount,"THIRTY_SWIMMING_FISH_USE_EXISTING_LODS");
    bool safe=true,moving=false;for(int i=0;i<FishingState.FishCount;i++)for(int t=0;t<20;t++){var p=game.FishPosition(i,t);safe&=Vector3.ProjectOnPlane(p-game.transform.position,Vector3.up).magnitude<22&&p.y<game.WaterY-.25f;moving|=Vector3.Distance(p,game.FishPosition(i,t+1))>.1f;}
    Check(safe&&moving,"SWIMMING_STAYS_INSIDE_LAGOON_BELOW_SURFACE");
-   for(int i=0;i<FishingState.FishCount;i++){float maxDistance=0,minDistance=100,span=0;var start=game.FishPosition(i,0);for(int sample=0;sample<120;sample++){var p=game.FishPosition(i,sample*.1);float distance=Vector3.Distance(p,game.Pier(FishingState.PierForFish(i)));maxDistance=Mathf.Max(maxDistance,distance);minDistance=Mathf.Min(minDistance,distance);span=Mathf.Max(span,Vector3.Distance(p,start));}Check(maxDistance<12&&minDistance>3.5f&&span>3,"WIDE_SWIMMING_SCHOOL_STAYS_CASTABLE_"+i);}
+   for(int i=0;i<FishingState.FishCount;i++){float maxDistance=0,minDistance=100,span=0;var start=game.FishPosition(i,0);for(int sample=0;sample<120;sample++){var p=game.FishPosition(i,sample*.1);float distance=Vector3.Distance(p,game.Pier(FishingState.PierForFish(i)));maxDistance=Mathf.Max(maxDistance,distance);minDistance=Mathf.Min(minDistance,distance);span=Mathf.Max(span,Vector3.Distance(p,start));}Check(maxDistance<FishingState.MaxCastDistance&&minDistance>3.5f&&span>3,"PUBLIC_POOL_MIGRATION_STAYS_CASTABLE_"+i);}
    Check(Mathf.Abs(game.WaterHeight(game.Pier(0))-game.WaterY)<.037f,"FLOAT_FOLLOWS_BOUNDED_SURFACE_RIPPLES");
-   var hud=FindFirstObjectByType<FishingHUD>();Check(hud.TypographyClean(),"HUD_NATIVE_FONT_NO_SYNTHETIC_BOLD_OR_STACKED_SHADOWS");yield return PoseFrame();HudRefinement(hud,"practice");Capture("crisp-practice");yield return TutorialInterface(hud);hud=FishingHUD.Instance;yield return GearInterface(hud);
+   var hud=FindFirstObjectByType<FishingHUD>();Check(hud.TypographyClean(),"HUD_NATIVE_FONT_NO_SYNTHETIC_BOLD_OR_STACKED_SHADOWS");yield return PoseFrame();HudRefinement(hud,"practice");Capture("crisp-practice");yield return TutorialInterface(hud);hud=FishingHUD.Instance;yield return SharedLagoonInterface(hud);yield return GearInterface(hud);
    for(int pier=0;pier<FishingState.PierCount;pier++){
     Place(actor,pier);yield return new WaitForSeconds(.12f);
     for(int mode=0;mode<3;mode++)for(int slot=0;slot<FishingState.FishPerPier;slot++){int fish=pier*FishingState.FishPerPier+slot;yield return AimFish(fish,mode);Check(app.view.SelectedFishingFish==fish,"AIM_SIX_TARGETS_PIER_"+pier+"_CAMERA_"+mode+"_SLOT_"+slot);}
@@ -428,7 +458,7 @@ namespace WhatTheFish {
     Check(game.State.Fish.All(f=>!f.claimed),"GUEST_LANDING_RELEASES_RESERVATION");
     yield return CatchWithInput(false,2);Check(game.Player(actor).Value.score==10&&game.State.Rank(0)==1&&game.State.Rank(FishingGame.Key(guest))==2,"HOST_LARGE_CATCH_OVERTAKES_GUEST");
     yield return new WaitForSeconds(1);uint old=game.State.Match.round;game.State.Advance(game.State.Match.deadline,0);yield return new WaitForSeconds(.6f);Check(game.State.Match.phase==FishingRoundPhase.Ended,"HOST_SHARED_RESULTS_DEADLINE");
-    var ui=FindFirstObjectByType<FishingHUD>();Check(ui.Results.Visible,"HOST_RECEIVES_RECAP_BEFORE_REMATCH");ui.Results.Close();yield return PoseFrame();
+    var ui=FindFirstObjectByType<FishingHUD>();if(FishingCeremony.Presenting){FishingCeremony.Instance.Skip();yield return new WaitForSeconds(.6f);}Check(ui.Results.Visible,"HOST_RECEIVES_RECAP_BEFORE_REMATCH");ui.Results.Close();yield return PoseFrame();
     if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){PostMatchFlow.Instance.GetComponentsInChildren<UnityEngine.UI.Button>().First(b=>b.name=="Keep exploring").onClick.Invoke();yield return PoseFrame();}
     Check(!app.view.InputBlocked,"HOST_NEXT_ADVENTURE_CLOSE_RESTORES_INPUT");
     app.view.ReadyFishing();end=Time.time+10;while(!game.State.AllReady&&Time.time<end)yield return null;Check(game.StartMatch()&&game.State.Match.round!=old&&game.State.Players.All(p=>p.score==0),"READY_REMATCH_RESETS_BOTH_PEERS");
@@ -437,13 +467,13 @@ namespace WhatTheFish {
     end=Time.time+15;while((game.State.Match.phase!=FishingRoundPhase.Playing||game.NearestPier(actor)<0)&&Time.time<end)yield return null;
     Check(game.State.Match.phase==FishingRoundPhase.Playing,"GUEST_RECEIVES_COUNTDOWN_AND_PLAYING");Check(!game.StartMatch(),"GUEST_CANNOT_START");
     var p=game.Player(actor).Value;actor.GetComponent<NetworkAthlete>().FishingRpc(FishingAction.Cast,game.State.Match.round-1,p.sequence,FishingState.FishPerPier);yield return new WaitForSeconds(.2f);Check(game.Player(actor).Value.phase==FishingPhase.Ready,"STALE_GUEST_ROUND_REJECTED");
-    actor.GetComponent<NetworkAthlete>().FishingRpc(FishingAction.Cast,game.State.Match.round,p.sequence,0);yield return new WaitForSeconds(.2f);Check(game.Player(actor).Value.phase==FishingPhase.Ready,"GUEST_CANNOT_SELECT_OTHER_PIER_FISH");
+    actor.GetComponent<NetworkAthlete>().FishingRpc(FishingAction.Cast,game.State.Match.round,p.sequence,0);yield return new WaitForSeconds(.2f);Check(game.Player(actor).Value.phase==FishingPhase.Casting&&game.Player(actor).Value.fish==0,"GUEST_CAN_CLAIM_PUBLIC_FISH_FROM_ANOTHER_PIER");app.view.CancelFishing();yield return new WaitForSeconds(2.3f);
     yield return CatchWithInput(true);Check(game.Player(actor).Value.score==5&&game.State.Player(0).Value.score==0,"GUEST_OBSERVES_AUTHORITATIVE_BONUS");
     var guestCatch=game.Player(actor).Value;Check(guestCatch.smallCatches==1&&guestCatch.mediumCatches==0&&guestCatch.largeCatches==0&&guestCatch.bonusTotal==3,"GUEST_RECEIVES_SIZE_AND_BONUS_RECAP_SNAPSHOT");
     end=Time.time+40;while(game.State.Player(0).Value.catches==0&&Time.time<end)yield return null;yield return new WaitForSeconds(.15f);
     Check(game.State.Player(0).Value.score==10&&game.State.Rank(FishingGame.Key(actor))==2,"GUEST_OBSERVES_OTHER_PLAYER_OVERTAKE");
     end=Time.time+8;while(game.State.Match.phase!=FishingRoundPhase.Ended&&Time.time<end)yield return null;Check(game.State.Match.phase==FishingRoundPhase.Ended,"GUEST_RECEIVES_FINAL_RESULTS");
-    var ui=FindFirstObjectByType<FishingHUD>();yield return PoseFrame();Check(ui.Results.Visible,"GUEST_RECEIVES_RECAP_BEFORE_REMATCH");ui.Results.Close();yield return PoseFrame();
+    var ui=FindFirstObjectByType<FishingHUD>();yield return PoseFrame();if(FishingCeremony.Presenting){FishingCeremony.Instance.Skip();yield return new WaitForSeconds(.6f);}Check(ui.Results.Visible,"GUEST_RECEIVES_RECAP_BEFORE_REMATCH");ui.Results.Close();yield return PoseFrame();
     if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){PostMatchFlow.Instance.GetComponentsInChildren<UnityEngine.UI.Button>().First(b=>b.name=="Keep exploring").onClick.Invoke();yield return PoseFrame();}
     Check(!app.view.InputBlocked,"GUEST_NEXT_ADVENTURE_CLOSE_RESTORES_INPUT");
     uint old=game.State.Match.round;app.view.ReadyFishing();end=Time.time+8;while(game.State.Match.round==old&&Time.time<end)yield return null;Check(game.State.Match.round!=old&&game.Player(actor).Value.score==0,"GUEST_RECEIVES_CLEAN_REMATCH");

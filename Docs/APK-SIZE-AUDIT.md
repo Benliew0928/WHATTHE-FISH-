@@ -1,5 +1,44 @@
 # APK size audit — measured release records
 
+## Fishing eye-level camera and natural swimming — 19 October 2026
+
+Fresh `AndroidSubmission` succeeded at **14:01:07 Malaysia time**. Actual APK:
+**87,580,516 bytes**, down **704** from the directly measured opening APK
+**87,581,220 bytes**. Headroom below the strict 1,000,000,000-byte cap:
+**912,419,484 bytes**. The automatic gate, ZIP CRC validation and independent
+APK v2 verification passed. Signing uses the configured Android Debug
+certificate. SHA-256:
+**8C8D4BEC11FF5F8C10AE7918A713D7F9C86D5E667117D28ED22A90AC5B850A24**.
+
+| Largest APK entry | Compressed bytes | Change from opening APK |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 43,134,410 | -4,684 |
+| `lib/arm64-v8a/libil2cpp.so` | 12,336,737 | +3,626 |
+| `lib/arm64-v8a/libunity.so` | 9,773,270 | 0 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,757,223 | +350 |
+
+Both serialized asset inventories match their opening measurements: player
+assets **25,688,452 bytes**, scene bundle assets **150,702,139 bytes**. These
+uncompressed inventories are not the actual APK size. The largest unchanged
+scene entries are Fishing/Golf terrain controls (22,369,760 / 22,369,756 bytes),
+their water-depth textures (5,592,564 / 5,592,560), Football's stadium mesh
+(3,569,800) and the character mesh (2,940,648). The largest player entries are
+the built-in Unity splash logo (2,796,376) and menu mascot (1,607,464).
+No new art or lossy reduction was introduced. The small APK difference reflects
+code/metadata and bundle compression, with no unexpected large entry growth.
+
+The release retains eye-level fishing, adds smooth independent wandering to
+the shared fish pool and replaces the extra rope-side filled gauge with a
+loose-to-taut line cue. See [the release note](FISHING-NATURAL-SWIM.md) and
+[4,930 passing checks](FISHING-VERIFICATION.md). All 467 C# files matched the
+validated source snapshot before and after the Android build. Protocol is 70.
+
+Current audit: `Builds/SizeAudit/latest/`. Before/after audit copies, source
+hashes, entry deltas, logs, signature and delivery records:
+`Builds/FishingNatural/Task-20261019-052154Z/`. This includes prior uncommitted
+shared-lagoon work above `9bb55646`. Physical Android and WAN remain unverified;
+store release signing is separate from this debug-certificate verification.
+
 ## Shared travel and match-start arrivals — 18 October 2026
 
 `AndroidSubmission` succeeded at **14:44:53 Malaysia time**. Actual APK:

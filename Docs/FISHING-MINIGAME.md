@@ -3,11 +3,14 @@
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **67** players. The room shares one activity and travels together.
+protocol **70** players. The room shares one activity and travels together.
 Fishing supports **two to five friends**, with solo free practice and a solo
-timed practice option. Walk to the end of any of the five coloured piers.
-Each pier has **six fish: two small, two medium and two large**, for **30 fish**
-across the lagoon. The schools reuse the existing three fish models and materials.
+timed practice option. Arrival assigns each active player a distinct coloured
+pier; spectators land on shore. Match start waits for the whole travelling group.
+The lagoon has **30 shared fish**, ten of each size. They swim across pier sectors
+in a public pool; every player can aim at any reachable, unclaimed fish. The
+school reuses the existing three fish models and materials. Independent seeded
+wandering paths let fish turn, slow and cross the pool without orbiting its centre.
 
 Choose **two favourites from six skills before Ready**. Collect one at
 a shared shore bag, or spend six seconds recovering treasure from a pier.
@@ -18,7 +21,7 @@ See [abilities and acquisition rules](FISHING-ABILITIES.md).
 ## Catching
 
 1. **Aim:** move the camera so the centre reticle is near a visible fish in
-   your pier's school. The reticle turns teal when a target is available;
+   the shared pool. The reticle turns teal when a target is available;
    tracking brackets and a cyan water ring identify it, and the Cast button
    shows its size and base points. A forgiving aim cone and stable selection
    reduce flicker as fish swim. You do not need to tap the fish itself.
@@ -42,7 +45,7 @@ Cancel with the Cancel button. Moving away, jumping out of casting
 position, travelling or leaving the game releases the line. Misses, cancellation,
 snaps and the **30-second reel timeout** award no points. Pointer release/exit does not erase a queued tap. Focus loss, pause and round
 changes clear local input; the host expires each accepted short stroke without
-requiring a release message. Use Camera to switch among all three views before casting. Irrelevant utility controls hide while the line is active.
+requiring a release message. Open the sports-style gear button for three saved camera views, four sound sliders, the shared tutorial and Leave island confirmation. Jump uses the same illustrated control as Basketball and hides while fishing. The old Camera and Leave HUD buttons are removed. The rope and central meter share teal/gold/orange/red tension feedback. A small line icon beside the rope hangs loose at low strain, pulls straight as tension rises and shows a warning near snapping; it has no progress fill. Eye-level view stays first person while holding either direction and allows manual looking. Long casts use a normalized spring/drag retrieval range so public-pool distance does not multiply fight duration.
 
 The reaction window remains **1.8 seconds**. A remote Hook carries its press
 time on the synchronized room clock. The host can receive that already-timely
@@ -59,6 +62,8 @@ Target explanations stay inside the action button: **FIND A PIER**, **FRIEND'S
 FISH**, **FISH RETURNING**, **MOVE CLOSER** and **CAST PATH BLOCKED**. Missed
 bites, snaps, cancellations and reel timeouts have distinct labels. These
 diagnostics do not reserve fish or change the selected target.
+
+A short sports-style awards scene precedes the completed-round card. It reuses the existing render-only characters and celebration takes; players, scores and network actors stay unchanged. Tied winners share the honours, Crew success celebrates everyone, and abandoned rounds go straight to results. Tap Show results to skip. Spectators watch the same ceremony.
 
 ## Playing together
 

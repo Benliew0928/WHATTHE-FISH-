@@ -43,7 +43,13 @@ namespace WhatTheFish {
     app.SelectSport(sport);yield return null;while(streaming.Busy)yield return null;
     var root=app.environments.roots[(int)sport];
     var renderers=root.GetComponentsInChildren<Renderer>(true);var filters=root.GetComponentsInChildren<MeshFilter>(true);
-    Check(renderers.Length>0&&renderers.All(r=>r.sharedMaterials.All(m=>m&&m.shader&&m.shader.isSupported)),sport+" materials and shaders supported");
+    // Pooled effects can reserve a disabled renderer before assigning its first
+    // material. Validate every assigned shader, and require materials when visible.
+    var materialIssues=renderers.Where(r=>{
+     bool visible=r.enabled&&r.gameObject.activeInHierarchy;var materials=r.sharedMaterials;
+     return visible&&materials.Length==0||materials.Any(m=>m?(!m.shader||!m.shader.isSupported):visible);
+    }).ToArray();
+    Check(renderers.Length>0&&materialIssues.Length==0,sport+" materials and shaders supported"+(materialIssues.Length>0?": "+string.Join(", ",materialIssues.Select(r=>r.name)):""));
     Check(filters.Any(f=>f.sharedMesh&&f.sharedMesh.vertexCount>0),sport+" detailed geometry present");
     Check(app.environments.roots.Count(r=>r&&r.activeSelf)==1,sport+" only active detailed island");
     Check(root.GetComponentsInChildren<Collider>(true).Length>0,sport+" collision retained");

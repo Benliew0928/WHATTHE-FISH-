@@ -16,7 +16,7 @@ namespace WhatTheFish {
   Text title,subtitle,scoreHeading,cupHeading,cupCatchHeading,summaryTitle,notesLine,detailLine,readyLabel,crewScore,crewNeed;
   Text[] statLabels,crewSizeLabels;CoveIcon[] crewChecks;FishingStickerGraphic[] crewFish;
   Button closeButton,readyButton,walkingButton,reopenButton;Standing[] standings;
-  FishingGame boundGame;Athlete actor;uint observedRound;bool observed,hasResult;
+  FishingGame boundGame;Athlete actor;uint observedRound;bool observed,hasResult;FishingCeremony ceremony;
   FishingMatchSnapshot frozenMatch;FishingPlayerRecord[] frozenPlayers=Array.Empty<FishingPlayerRecord>();string[] frozenNames=Array.Empty<string>();ulong frozenLocal;
   public bool Visible=>modal&&modal.gameObject.activeSelf;
   public bool CrewVisible=>crewStrip&&crewStrip.gameObject.activeSelf;
@@ -126,16 +126,24 @@ namespace WhatTheFish {
    if(!game||!game.Context||!local){ClearContext();return;}
    if(boundGame!=game||actor!=local){ClearContext();boundGame=game;actor=local;}
    TickCrew(game);var match=game.State.Match;
-   if(match.phase!=FishingRoundPhase.Ended){ClearCardFocus();modal.gameObject.SetActive(false);reopen.gameObject.SetActive(false);hasResult=false;return;}
+   if(match.phase!=FishingRoundPhase.Ended){ceremony?.Cancel();ClearCardFocus();modal.gameObject.SetActive(false);reopen.gameObject.SetActive(false);hasResult=false;return;}
    if(!eligible){ClearCardFocus();modal.gameObject.SetActive(false);reopen.gameObject.SetActive(false);return;}
    if(!observed||observedRound!=match.round){
     var current=game.Player(local);if(!current.HasValue)return;observed=true;observedRound=match.round;
     // A delayed local result can arrive after the shared next-adventure card.
     // The completed-round card must own pointer and controller input first.
     PostMatchFlow.Instance?.Close();
-    Capture(game,current.Value.owner);hasResult=true;ShownRounds++;modal.gameObject.SetActive(true);RefreshReady(game);FocusCard();
+    FishingHUD.Instance?.CloseRoundOverlays();
+    Capture(game,current.Value.owner);hasResult=true;ShownRounds++;
+    if(!ceremony)ceremony=gameObject.AddComponent<FishingCeremony>();
+    bool animate=true;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+    // Deterministic frozen-card fixtures exercise layout without a real round.
+    animate=!game.ReviewSnapshot;
+#endif
+    if(!animate||!ceremony.Begin(game,frozenPlayers,Open))Open();
    }
-   if(!hasResult)return;RefreshReady(game);reopen.gameObject.SetActive(!Visible);Layout();
+   if(!hasResult)return;RefreshReady(game);reopen.gameObject.SetActive(!Visible&&!FishingCeremony.Presenting);Layout();
   }
   void Capture(FishingGame game,ulong local){
    frozenMatch=game.State.Match;frozenLocal=local;
@@ -179,7 +187,7 @@ namespace WhatTheFish {
   public void Close()=>HideCard(true);
   void HideCard(bool allowReopen){ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(allowReopen&&hasResult&&CanPresent(boundGame)&&SceneLifetime.CanPresent(reopen.gameObject));}
   public void Open(){if(!hasResult||!CanPresent(boundGame)||!boundGame.Context||boundGame.State.Match.phase!=FishingRoundPhase.Ended||boundGame.State.Match.round!=frozenMatch.round)return;PostMatchFlow.Instance?.Close();modal.gameObject.SetActive(true);reopen.gameObject.SetActive(false);RefreshReady(boundGame);FocusCard();Layout();}
-  public void ClearContext(){ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(false);if(crewStrip)crewStrip.gameObject.SetActive(false);boundGame=null;actor=null;hasResult=observed=false;frozenPlayers=Array.Empty<FishingPlayerRecord>();frozenNames=Array.Empty<string>();}
+  public void ClearContext(){ceremony?.Cancel();ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(false);if(crewStrip)crewStrip.gameObject.SetActive(false);boundGame=null;actor=null;hasResult=observed=false;frozenPlayers=Array.Empty<FishingPlayerRecord>();frozenNames=Array.Empty<string>();}
   void Layout(){
    if(!page||!card)return;float width=Mathf.Max(400,layout.cardWidth),pad=layout.padding,gap=layout.gap,inner=width-pad*2;
    float titleHeight=LineHeight(title,layout.titleFontSize),subtitleHeight=subtitle.gameObject.activeSelf?LineHeight(subtitle,layout.labelFontSize):0,headerHeight=subtitleHeight>0?Mathf.Max(layout.headerHeight,titleHeight+subtitleHeight):Mathf.Max(66,titleHeight);

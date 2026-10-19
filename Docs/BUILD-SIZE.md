@@ -1,5 +1,38 @@
 # Build size — measured release records
 
+## Fishing eye-level camera and natural swimming — 19 October 2026
+
+Fresh `AndroidSubmission` at **14:01:07 Malaysia time**:
+**87,581,220 → 87,580,516 bytes (-704)**. Headroom below the strict
+**1,000,000,000-byte** cap: **912,419,484 bytes**. Build, automatic budget gate,
+APK ZIP integrity and independent v2 signature verification passed. SHA-256:
+**8C8D4BEC11FF5F8C10AE7918A713D7F9C86D5E667117D28ED22A90AC5B850A24**.
+The opening measurement is the actual prior shared-lagoon APK, rather than the
+older travel-release measurement below. Signing uses the configured Android
+Debug certificate; store release signing is not established by this check.
+
+Eye-level Fishing stays first person during Left/Right holds and permits manual
+looking. Thirty shared fish wander along independent smooth seeded paths. The
+extra filled rope-side gauge becomes a curved-to-taut line cue with matching
+rope colors and a danger warning. Rules, controls, hooked physics and existing
+art are retained. No new bitmap, model, shader, audio or package was added.
+Protocol is **70**; see [the release note](FISHING-NATURAL-SWIM.md).
+
+The islands bundle is 4,684 compressed bytes smaller, IL2CPP grows 3,626 bytes
+and metadata grows 350 bytes. Both serialized asset inventories are unchanged;
+there is no unexpected large asset growth or deliberate visual reduction.
+Detailed contributors are in [the APK audit](APK-SIZE-AUDIT.md).
+
+**4,930 checks pass** across rules, rendered gameplay, camera/feedback/results
+and local host/guest play. The complete tested Windows player is in
+`Builds/WindowsFinal/` (325 runtime/support files plus its build note), with the
+native data/catalog/bundle hashes preserved by the guarded script refresh.
+Evidence, opening/final APK comparisons, 467 C# source hashes, signature output
+and preserved audits are under `Builds/FishingNatural/Task-20261019-052154Z/`;
+the current audit is also in `Builds/SizeAudit/latest/`.
+The release includes existing uncommitted Fishing work above pulled `main`
+`9bb55646`. Physical Android touch/appearance/FPS and WAN remain unverified.
+
 ## Shared travel and match-start arrivals — 18 October 2026
 
 Fresh `AndroidSubmission` at **14:44:53 Malaysia time**:

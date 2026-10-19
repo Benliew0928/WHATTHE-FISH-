@@ -22,7 +22,9 @@ namespace WhatTheFish {
   public FishingHookCue HookCue {get;private set;}
   public FishingResultsUI Results {get;private set;}
   public FishingTutorialUI Tutorial {get;private set;}
-  public bool BlocksGameplay=>Results&&Results.Visible&&FishingGame.Instance&&FishingGame.Instance.Context||Tutorial&&Tutorial.Visible||GetComponent<FishingAbilityHUD>()&&GetComponent<FishingAbilityHUD>().Modal;
+  public bool BlocksGameplay=>FishingCeremony.Presenting||IslandMenu&&IslandMenu.Visible||Results&&Results.Visible&&FishingGame.Instance&&FishingGame.Instance.Context||Tutorial&&Tutorial.Visible||GetComponent<FishingAbilityHUD>()&&GetComponent<FishingAbilityHUD>().Modal;
+  public FishingSettingsMenu IslandMenu {get;private set;}
+  FishingTensionVisual ropeGauge;
   FishingGame cueGame;Athlete cueActor;bool cueContext,focused=true,paused;
   public Vector2 AimScreenPoint=>RectTransformUtility.WorldToScreenPoint(null,aim.rectTransform.position);
   public float AimAcquireDegrees=>layout.aimAcquireDegrees;
@@ -39,18 +41,20 @@ namespace WhatTheFish {
   public bool RowsMoving=>rows.Values.Any(r=>Mathf.Abs(r.rect.anchoredPosition.y-(-87-r.order*58))>.8f);
   public int VisibleScoreCount=>rows.Values.Count(r=>r.rect.gameObject.activeInHierarchy&&r.points.cachedTextGenerator.vertexCount>0);
   public RectTransform ActionRect=>(RectTransform)transform;
+  public RectTransform HudFrame=>page;
   public RectTransform GearSetupRoot=>drawer;
   public float HudScale {get;private set;}=1;
   public FishingHUDLayout Settings=>layout;
   public FishingCatchCue CatchCue=>catchCue;
   public string GuidanceText=>fightTitle&&gauges.gameObject.activeInHierarchy?fightTitle.text:"";
   public bool TimingGuideVisible=>fightGuide&&fightGuide.gameObject.activeInHierarchy;
-  public void CloseOverlay(){var gear=GetComponent<FishingAbilityHUD>();if(Tutorial&&Tutorial.Visible)Tutorial.Close();else if(gear&&gear.Modal)gear.CloseOverlay();else Results?.Close();}
+  public void CloseRoundOverlays(){IslandMenu?.Close();Tutorial?.Close();GetComponent<FishingAbilityHUD>()?.CloseOverlay();PlayerView.Instance?.ClearMatchInput();}
+  public void CloseOverlay(){if(FishingCeremony.Presenting){FishingCeremony.Instance.Skip();return;}if(IslandMenu&&IslandMenu.Visible){IslandMenu.Close();return;}var gear=GetComponent<FishingAbilityHUD>();if(Tutorial&&Tutorial.Visible)Tutorial.Close();else if(gear&&gear.Modal)gear.CloseOverlay();else Results?.Close();}
   public static void Create(RectTransform page,Font font,RectTransform movement,RectTransform look,RectTransform camera,RectTransform jump,RectTransform back){
    var frame=GolfLeaderboardUI.Rect("Fishing HUD frame",page,Vector2.zero,Vector2.zero,Vector2.zero);frame.anchorMax=Vector2.one;frame.offsetMin=frame.offsetMax=Vector2.zero;
    var node=GolfLeaderboardUI.Rect("Fishing action",frame,Vector2.one,Vector2.zero,new Vector2(235,235));var ui=node.gameObject.AddComponent<FishingHUD>();Instance=ui;ui.page=frame;ui.layout=Resources.Load<FishingHUDLayout>("FishingUILayout");if(!ui.layout)ui.layout=ScriptableObject.CreateInstance<FishingHUDLayout>();
    ui.moveControl=movement;ui.lookControl=look;ui.cameraControl=camera;ui.jumpControl=jump;ui.returnControl=back;foreach(var control in new[]{movement,look,camera,jump,back})control.SetParent(frame,false);look.SetAsFirstSibling();look.anchorMin=Vector2.zero;look.anchorMax=Vector2.one;look.offsetMin=look.offsetMax=Vector2.zero;
-   ui.font=SportsUIStyle.DisplayFont??font;ui.Build();ui.Layout();ui.HookCue=FishingHookCue.Create(frame,node,ui.layout);ui.Results=FishingResultsUI.Create(frame,font);ui.Results.AttachCrewStrip(ui.clockCard);ui.gameObject.AddComponent<FishingAbilityHUD>().Build(frame,ui,ui.font);ui.Tutorial=FishingTutorialUI.Create(frame);
+   ui.font=SportsUIStyle.DisplayFont??font;ui.Build();ui.Layout();ui.HookCue=FishingHookCue.Create(frame,node,ui.layout);ui.Results=FishingResultsUI.Create(frame,font);ui.Results.AttachCrewStrip(ui.clockCard);ui.gameObject.AddComponent<FishingAbilityHUD>().Build(frame,ui,ui.font);ui.Tutorial=FishingTutorialUI.Create(frame);ui.IslandMenu=FishingSettingsMenu.Create(frame);ui.ropeGauge=FishingTensionVisual.Create(frame);
   }
   RectTransform Rect(string name,Transform parent,Vector2 pos,Vector2 size,Vector2? anchor=null)=>GolfLeaderboardUI.Rect(name,parent,anchor??new Vector2(.5f,.5f),pos,size);
   FishingStickerGraphic Graphic(RectTransform node,FishingStickerGraphic.Kind kind,Color tint){var g=node.gameObject.AddComponent<FishingStickerGraphic>();g.kind=kind;g.tint=tint;g.raycastTarget=kind==FishingStickerGraphic.Kind.Panel||kind==FishingStickerGraphic.Kind.Gauge;g.Decorate();return g;}
@@ -107,7 +111,7 @@ namespace WhatTheFish {
    gauges=Rect("Fishing catch and tension",page,Vector2.zero,layout.gaugeSize);var fightPlate=Graphic(gauges,FishingStickerGraphic.Kind.Panel,Cream);fightPlate.UseIllustration("CounterFrame",true);fightPlate.raycastTarget=false;
    // Standard card spacing keeps the title and track below the illustrated bevel.
    Vector2 cardInset=Vector2.down*layout.gap;
-   fightTitle=Text(gauges,"COUNTERSTEER",layout.fightTitlePosition+cardInset,new Vector2(460,38),24);fightTitle.resizeTextForBestFit=true;fightTitle.resizeTextMinSize=18;fightTitle.resizeTextMaxSize=24;
+   fightTitle=Text(gauges,"COUNTERSTEER",layout.fightTitlePosition+cardInset+Vector2.down*layout.gap,new Vector2(460,38),24);fightTitle.resizeTextForBestFit=true;fightTitle.resizeTextMinSize=18;fightTitle.resizeTextMaxSize=24;
    fightGuide=Rect("Fish pull guide",gauges,layout.guidePosition+cardInset,layout.guideSize).gameObject.AddComponent<FishingFightGuide>();fightGuide.raycastTarget=false;
    catchGauge=Graphic(Rect("Catch gauge",gauges,layout.catchPosition,layout.progressSize),FishingStickerGraphic.Kind.Gauge,Teal);
    catchLabel=Text(catchGauge.transform,"CATCH 0%",new Vector2(0,31),new Vector2(236,30),22,Ink);
@@ -116,7 +120,7 @@ namespace WhatTheFish {
    // Fit the guide between its neighbouring rows, including their real label
    // rectangles. The larger timing-circle track must not cover these captions.
    float captionTop=Mathf.Max(layout.catchPosition.y+catchLabel.rectTransform.anchoredPosition.y+catchLabel.rectTransform.rect.height*.5f,layout.tensionPosition.y+tensionLabel.rectTransform.anchoredPosition.y+tensionLabel.rectTransform.rect.height*.5f);
-   float guideBottom=captionTop+layout.gap,guideTop=fightTitle.rectTransform.anchoredPosition.y-fightTitle.rectTransform.rect.height*.5f-layout.gap;
+   float guideBottom=captionTop+layout.gap*.5f,guideTop=fightTitle.rectTransform.anchoredPosition.y-fightTitle.rectTransform.rect.height*.5f-layout.gap*.5f;
    float guideHeight=Mathf.Min(layout.guideSize.y,Mathf.Max(0,guideTop-guideBottom));
    fightGuide.rectTransform.sizeDelta=new Vector2(layout.guideSize.x,guideHeight);
    fightGuide.rectTransform.anchoredPosition=new Vector2(layout.guidePosition.x,Mathf.Clamp(layout.guidePosition.y+cardInset.y,guideBottom+guideHeight*.5f,guideTop-guideHeight*.5f));
@@ -128,12 +132,22 @@ namespace WhatTheFish {
    catchCue=FishingCatchCue.Create(gauges,font);
    actionHintCard=Rect("Fishing next action",page,Vector2.zero,layout.actionHintSize);actionCue=actionHintCard.gameObject.AddComponent<FishingTapCue>();actionCue.raycastTarget=false;
    gauges.gameObject.SetActive(false);
+   cameraControl.gameObject.SetActive(false);returnControl.gameObject.SetActive(false);
    // Apply the same sticker outlines to the existing movement/camera/jump controls.
    foreach(var b in page.GetComponentsInChildren<Button>()){
-    if(b==action||b==cancel||b==ready||b==start||b==practice||modes.Contains(b))continue;
+    if(b.transform==jumpControl||b.transform==cameraControl||b.transform==returnControl||b==action||b==cancel||b==ready||b==start||b==practice||modes.Contains(b))continue;
      var image=b.GetComponent<Image>();if(!image)continue;image.enabled=false;var node=Rect("Sticker button skin",b.transform,Vector2.zero,((RectTransform)b.transform).sizeDelta);node.SetAsFirstSibling();var graphic=Graphic(node,FishingStickerGraphic.Kind.Panel,Cream);graphic.raycastTarget=true;b.targetGraphic=graphic;b.transition=Selectable.Transition.None;foreach(var label in b.GetComponentsInChildren<Text>()){label.font=font;label.fontStyle=FontStyle.Normal;label.color=Ink;foreach(var shadow in label.GetComponents<Shadow>())shadow.enabled=false;}
    }
-   IconControl(cameraControl,FishingStickerGraphic.Kind.Camera,"Fishing Camera icon");IconControl(jumpControl,FishingStickerGraphic.Kind.Jump,"Fishing Jump icon");
+   // Reuse the courts' jump artwork, plate geometry, press feedback and behaviour.
+   foreach(Transform child in jumpControl)Destroy(child.gameObject);
+   var jumpImage=jumpControl.GetComponent<Image>();if(jumpImage)jumpImage.enabled=false;
+   var jb=jumpControl.GetComponent<JumpButton>();if(jb)jb.enabled=false;
+   var original=jumpControl.GetComponent<Button>();if(original)original.enabled=false;
+   jumpControl.sizeDelta=Vector2.one*128;
+   var native=BasketballUIStyle.Center(jumpControl,"Sports jump button",Vector2.one*64,Vector2.zero,Vector2.one*.5f);native.localScale=Vector3.one*2;
+   var plate=native.gameObject.AddComponent<BasketballPlate>();plate.radius=Vector2.one*24;plate.border=2.5f;plate.inset=3;plate.shadow=5;plate.color=CoveUI.Cream;plate.raycastTarget=true;
+   var button=native.gameObject.AddComponent<Button>();button.targetGraphic=plate;button.transition=Selectable.Transition.None;button.navigation=new Navigation{mode=Navigation.Mode.None};
+   BasketballUIStyle.Art(native,BasketballIcon.Jump,16,3,32,32);var jump=native.gameObject.AddComponent<JumpButton>();jump.button=button;jump.illustrated=true;jump.label=BasketballUIStyle.Text(native,"Jump",4,33,56,28,13,true,TextAnchor.MiddleCenter);native.gameObject.AddComponent<BasketballButtonFeedback>();
   }
   void IconControl(RectTransform control,FishingStickerGraphic.Kind kind,string name){
    foreach(var label in control.GetComponentsInChildren<Text>())label.enabled=false;
@@ -217,7 +231,7 @@ namespace WhatTheFish {
    actionLabel.color=directionalControl?Ink:Color.white;actionLabel.GetComponent<Outline>().enabled=!directionalControl;
    if(!fighting){actionGraphic.UseIllustration("ReelButton");actionGraphic.TintIllustration(Color.white);}
    var group=action.GetComponent<CanvasGroup>()??action.gameObject.AddComponent<CanvasGroup>();group.alpha=action.interactable?1:.76f;
-   leftControl.gameObject.SetActive(fighting);moveControl.gameObject.SetActive(!busy);cameraControl.gameObject.SetActive(!busy);jumpControl.gameObject.SetActive(!busy&&game.NearestPier(view.target)<0);returnControl.gameObject.SetActive(!busy);
+   leftControl.gameObject.SetActive(fighting);moveControl.gameObject.SetActive(!busy);cameraControl.gameObject.SetActive(false);jumpControl.gameObject.SetActive(!busy);returnControl.gameObject.SetActive(false);
    bool autoCamera=fighting&&layout.fightCamera&&!MenuPreferences.ReducedMotion;var lookGroup=lookControl.GetComponent<CanvasGroup>()??lookControl.gameObject.AddComponent<CanvasGroup>();lookGroup.interactable=lookGroup.blocksRaycasts=!autoCamera;
    cooling=fighting&&(cooling?p.Value.tension>.58f:p.Value.tension>.82f);
    if(fighting){
@@ -249,7 +263,7 @@ namespace WhatTheFish {
    actionCue.ready=!cooling;
    if(fighting){
     float dt=Time.unscaledDeltaTime;shownProgress=Mathf.Lerp(shownProgress,p.Value.progress,1-Mathf.Exp(-12*dt));shownTension=Mathf.Lerp(shownTension,p.Value.tension,1-Mathf.Exp(-25*dt));
-    catchGauge.Refresh(shownProgress,Teal);tensionGauge.Refresh(shownTension,Color.Lerp(Teal,p.Value.tension<.65f?Gold:Coral,Mathf.InverseLerp(.2f,p.Value.tension<.65f?.65f:.9f,p.Value.tension)),p.Value.tension>.72f);
+    catchGauge.Refresh(shownProgress,Teal);tensionGauge.Refresh(shownTension,FishingTensionVisual.ColorFor(p.Value.tension),p.Value.tension>.72f);
     catchLabel.text="CATCH "+Mathf.RoundToInt(p.Value.progress*100)+"%";tensionLabel.text="TENSION "+Mathf.RoundToInt(p.Value.tension*100)+"%";targetIcon.gameObject.SetActive(p.Value.tension>.72f);
     for(int i=0;i<flames.Length;i++){bool show=p.Value.tension>.72f;flames[i].gameObject.SetActive(show);if(show){flames[i].rectTransform.anchoredPosition=new Vector2(208+i*18,-54+Mathf.Sin(Time.unscaledTime*10+i*1.9f)*5);flames[i].rectTransform.localScale=Vector3.one*(.75f+.22f*Mathf.Sin(Time.unscaledTime*12+i));}}
     for(int i=0;i<sparkles.Length;i++){sparkles[i].rectTransform.anchoredPosition=layout.catchPosition+new Vector2(Mathf.Lerp(-90,90,Mathf.Repeat(Time.unscaledTime*.33f+i*.5f,1)),0);sparkles[i].rectTransform.localScale=Vector3.one*(.7f+.25f*Mathf.Sin(Time.unscaledTime*6+i));}
@@ -257,7 +271,7 @@ namespace WhatTheFish {
   }
   public RectTransform CounterLeftRect=>leftControl;
   public bool CounterControlsVisible=>leftControl&&leftControl.gameObject.activeInHierarchy;
-  void LateUpdate(){if(page){Layout();UpdateAim();UpdateHookCue();}}
+  void LateUpdate(){if(page){Layout();UpdateAim();UpdateHookCue();ropeGauge?.Tick();}}
   void UpdateHookCue(){
    if(!HookCue)return;var game=FishingGame.Instance;var view=PlayerView.Instance;
    bool context=game&&game.Context&&view&&view.target;
@@ -285,23 +299,24 @@ namespace WhatTheFish {
    if(!compact)scale=Mathf.Min(scale,(width*.5f-m)/Mathf.Max(board.sizeDelta.x+clockCard.sizeDelta.x*.5f+gap,returnControl.sizeDelta.x+clockCard.sizeDelta.x*.5f+gap));
    var player=FishingGame.Instance&&PlayerView.Instance?FishingGame.Instance.Player(PlayerView.Instance.target):null;bool fight=player.HasValue&&player.Value.phase==FishingPhase.Reeling;Vector2 controls=fight?layout.fightControlSize:layout.actionSize;
    float leftHeight=board.sizeDelta.y+layout.cameraSize.y+layout.joystickSize.y+gap*2;
-   float rightHeight=layout.returnSize.y+(compact?clockCard.sizeDelta.y+gap:0)+layout.actionSize.y+layout.jumpSize.y+layout.actionHintSize.y+gap*3;
-   float centreHeight=clockCard.sizeDelta.y+layout.gaugeSize.y+gap+(compact?layout.returnSize.y+layout.actionSize.y+layout.jumpSize.y+gap*3:0);
+   float rightHeight=layout.returnSize.y+(compact?clockCard.sizeDelta.y+gap:0)+layout.actionSize.y+jumpControl.sizeDelta.y+layout.actionHintSize.y+gap*3;
+   float centreHeight=clockCard.sizeDelta.y+layout.gaugeSize.y+gap+(compact?layout.returnSize.y+layout.actionSize.y+jumpControl.sizeDelta.y+gap*3:0);
    scale=Mathf.Min(scale,(height-2*m)/Mathf.Max(leftHeight,Mathf.Max(rightHeight,centreHeight)));scale=Mathf.Min(scale,(width-2*m)/(layout.actionSize.x*2+layout.gaugeSize.x+layout.cancelSize.x+gap*4));scale=Mathf.Clamp(scale,.1f,2);
    HudScale=scale;
-   ((RectTransform)transform).sizeDelta=controls;leftControl.sizeDelta=layout.fightControlSize;cameraControl.sizeDelta=layout.cameraSize;jumpControl.sizeDelta=layout.jumpSize;returnControl.sizeDelta=layout.returnSize;moveControl.sizeDelta=layout.joystickSize;
+   ((RectTransform)transform).sizeDelta=controls;leftControl.sizeDelta=layout.fightControlSize;cameraControl.sizeDelta=layout.cameraSize;jumpControl.sizeDelta=Vector2.one*128;returnControl.sizeDelta=layout.returnSize;moveControl.sizeDelta=layout.joystickSize;
    PlaceFrame(board,new Vector2(0,1),new Vector2(0,1),new Vector2(m,-m),scale);
    PlaceFrame(returnControl,Vector2.one,Vector2.one,new Vector2(-m,-m),scale);
-   PlaceFrame(clockCard,compact?Vector2.one:new Vector2(.5f,1),compact?Vector2.one:new Vector2(.5f,1),new Vector2(compact?-m:0,-m-(compact?(layout.returnSize.y+gap)*scale:0)),scale);
+   float topUtility=IslandMenu?IslandMenu.GearBottomInset+gap*scale:(layout.returnSize.y+gap)*scale;
+   PlaceFrame(clockCard,compact?Vector2.one:new Vector2(.5f,1),compact?Vector2.one:new Vector2(.5f,1),new Vector2(compact?-m:0,-m-(compact?topUtility:0)),scale);
    PlaceFrame(leftControl,Vector2.zero,Vector2.zero,new Vector2(m,m),scale);
    PlaceFrame((RectTransform)transform,new Vector2(1,0),new Vector2(1,0),new Vector2(-m,m),scale);
    PlaceFrame((RectTransform)cancel.transform,new Vector2(1,0),new Vector2(1,0),new Vector2(-m-(controls.x+gap)*scale,m),scale);
    PlaceFrame(jumpControl,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-controls.x*scale*.5f,m+(controls.y+gap)*scale),scale);
    bool guideLeft=fight&&FishingState.CounterSide(player.Value,FishingGame.Instance.Now)<0;
    PlaceFrame(actionHintCard,new Vector2(guideLeft?0:1,0),new Vector2(.5f,0),new Vector2(guideLeft?m+controls.x*scale*.5f:-m-controls.x*scale*.5f,m+(controls.y+gap)*scale),scale);
-   if(jumpControl.gameObject.activeSelf&&actionHintCard.gameObject.activeSelf)PlaceFrame(actionHintCard,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-controls.x*scale*.5f,m+(controls.y+layout.jumpSize.y+gap*2)*scale),scale);
+   if(jumpControl.gameObject.activeSelf&&actionHintCard.gameObject.activeSelf)PlaceFrame(actionHintCard,new Vector2(1,0),new Vector2(.5f,0),new Vector2(-m-controls.x*scale*.5f,m+(controls.y+jumpControl.sizeDelta.y+gap*2)*scale),scale);
    PlaceFrame(cameraControl,Vector2.zero,Vector2.zero,new Vector2(m,m+(leftControl.gameObject.activeSelf?(layout.fightControlSize.y+gap)*scale:0)),scale);
-   PlaceFrame(moveControl,Vector2.zero,new Vector2(.5f,0),new Vector2(m+layout.joystickSize.x*scale*.5f,m+(layout.cameraSize.y+gap)*scale),scale);
+   PlaceFrame(moveControl,Vector2.zero,new Vector2(.5f,0),new Vector2(m+layout.joystickSize.x*scale*.5f,m),scale);
    float bottom=m;
    PlaceFrame(gauges,new Vector2(.5f,0),new Vector2(.5f,0),new Vector2(-(layout.cancelSize.x+gap)*.5f*scale,bottom),scale);
    var canvas=page.GetComponentInParent<Canvas>();float canvasScale=canvas?canvas.scaleFactor:1;
@@ -316,7 +331,7 @@ namespace WhatTheFish {
   }
   Rect FrameBounds(RectTransform widget){var c=new Vector3[4];widget.GetWorldCorners(c);var min=page.InverseTransformPoint(c[0]);var max=page.InverseTransformPoint(c[2]);return UnityEngine.Rect.MinMaxRect(min.x,min.y,max.x,max.y);}
   public bool RegionsSeparate(){
-   RectTransform[] regions={board,clockCard,returnControl,(RectTransform)transform,(RectTransform)cancel.transform,jumpControl,cameraControl,moveControl,leftControl,gauges,actionHintCard};
+   RectTransform[] regions={board,clockCard,returnControl,(RectTransform)transform,(RectTransform)cancel.transform,jumpControl,cameraControl,moveControl,leftControl,gauges,actionHintCard};if(IslandMenu)regions=regions.Append(IslandMenu.GearRect).ToArray();
    var gear=GetComponent<FishingAbilityHUD>();if(gear)regions=regions.Concat(gear.VisibleRegions).ToArray();
    for(int i=0;i<regions.Length;i++)for(int j=i+1;j<regions.Length;j++){if(!regions[i].gameObject.activeInHierarchy||!regions[j].gameObject.activeInHierarchy)continue;if(FrameBounds(regions[i]).Overlaps(FrameBounds(regions[j])))return false;}return true;
   }
@@ -330,6 +345,6 @@ namespace WhatTheFish {
   void OnApplicationFocus(bool focus){focused=focus;if(!focus){PlayerView.Instance?.EndFishing(pointer);holding=false;HookCue?.Clear();catchCue?.Clear();}}
   void OnApplicationPause(bool pause){paused=pause;if(pause){PlayerView.Instance?.EndFishing(pointer);holding=false;HookCue?.Clear();catchCue?.Clear();}}
   void OnDisable(){if(holding)PlayerView.Instance?.EndFishing(pointer);holding=false;HookCue?.Clear();catchCue?.Clear();Results?.ClearContext();}
-  void OnDestroy(){if(Instance==this)Instance=null;if(HookCue)Destroy(HookCue.gameObject);if(Results)Destroy(Results.gameObject);if(board)Destroy(board.gameObject);if(gauges)Destroy(gauges.gameObject);}
+  void OnDestroy(){if(Instance==this)Instance=null;if(IslandMenu)Destroy(IslandMenu.gameObject);if(ropeGauge)Destroy(ropeGauge.gameObject);if(HookCue)Destroy(HookCue.gameObject);if(Results)Destroy(Results.gameObject);if(board)Destroy(board.gameObject);if(gauges)Destroy(gauges.gameObject);}
  }
 }

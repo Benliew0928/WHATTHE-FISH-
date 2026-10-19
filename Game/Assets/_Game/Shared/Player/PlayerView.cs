@@ -159,7 +159,7 @@ namespace WhatTheFish {
    var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));var result=new PlayerCommand{move=Vector2.ClampMagnitude(StadiumMovement(v),1),heading=yaw,tackle=tackle,jump=jump,shoot=shoot,finish=pendingFinish,shotReleasedAt=pendingShotReleasedAt,shotBegin=shotBegin,shotCancel=shotCancel,pass=pass,steal=steal,kick=kick,kickCharge=charge,charging=Charging,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f,cartAction=cartAction,cartOwner=cartOwner,golfSwing=golfSwing,golfCharging=GolfCharging,golfBallOwner=golfOwner,golfCharge=golfCharge,golfRound=golfRound};AddFootballInput(ref result);AddDefenseInput(ref result);AddPassInput(ref result);AddFishingInput(ref result);return result;}
   void LateUpdate(){
    if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
-   if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
+   if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingCeremony.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
    if(!active||!target){ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();HideKickAim();return;}
    bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;

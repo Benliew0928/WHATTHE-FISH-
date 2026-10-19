@@ -2,8 +2,8 @@
 
 Current gameplay restores the pictured first **Hold & Countersteer** version:
 one **LEFT** and one **RIGHT** button, the fish marker and gold direction band.
-The timed-tap experiment is superseded. Matching peers require protocol **67**.
-Current camera, rod, rope, swimming, splashes and landing feedback remain.
+The timed-tap experiment is superseded. Matching peers require protocol **70**.
+The directional holds, rod motion, splashes and landing feedback remain. Fish wander independently through one shared pool. The centre track has a larger round fish marker; a loose-to-taut rope icon and gradual orange/red rope show tension. Camera choices, audio, the tutorial and Leave island are in the shared sports-style settings menu.
 
 ## Playing
 
@@ -34,9 +34,11 @@ How to Play reuse the live buttons and meter; the updated guide opens once.
 
 ## Retained presentation and multiplayer
 
-Accepted-hook framing, smooth directional shoulder shifts, obstruction handling
-and return to the preferred camera are unchanged. Reduced Motion retains the
-preferred view. Rod grip/lean, attached line rendering, aggressive fish swimming
+Eye-level view stays at the player's eyes throughout hooking and Left/Right
+holds; looking around remains available. Follow and Island views retain
+accepted-hook framing, smooth directional shoulder shifts, obstruction handling
+and return to the preferred camera. Reduced Motion retains the preferred view.
+Rod grip/lean, attached line rendering, aggressive hooked-fish swimming
 and gravity-driven splashes retain their current implementations. Movement,
 jump, manual camera switching and travel hide while unavailable; Cancel stays
 available. Held gear, Fish Landed/points feedback, sound and rankings remain.

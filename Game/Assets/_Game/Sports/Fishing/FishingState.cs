@@ -50,6 +50,7 @@ namespace WhatTheFish {
  public sealed partial class FishingState {
   public const double MatchSeconds=180,HookSeconds=1.8,HookTransitSeconds=.25,HookClockTolerance=.05,LeaseSeconds=.8,CountdownSeconds=3;
   public const int PierCount=5,FishPerPier=6,SizeCount=3,FishCount=PierCount*FishPerPier,CrewPointsPerPlayer=20;
+  public const float MaxCastDistance=44;
   public FishingMatchSnapshot Match;
   public readonly List<FishingPlayerRecord> Players=new();
   public readonly List<FishingFishRecord> Fish=new();
@@ -98,16 +99,16 @@ namespace WhatTheFish {
    if(!Running)return false;
    switch(action){
     case FishingAction.Cast:
-     if(p.phase!=FishingPhase.Ready||pier<0||pier>=PierCount||!float.IsFinite(origin.x)||!float.IsFinite(origin.y)||!float.IsFinite(origin.z)||!float.IsFinite(castDistance)||castDistance<1.2f||castDistance>12)return false;
+     if(p.phase!=FishingPhase.Ready||pier<0||pier>=PierCount||!float.IsFinite(origin.x)||!float.IsFinite(origin.y)||!float.IsFinite(origin.z)||!float.IsFinite(castDistance)||castDistance<1.2f||castDistance>MaxCastDistance)return false;
      int fish=chosenFish;
-     if(fish<0||fish>=Fish.Count||PierForFish(fish)!=pier||Fish[fish].claimed||now<Fish[fish].respawnAt)return false;
+     if(fish<0||fish>=Fish.Count||Fish[fish].claimed||now<Fish[fish].respawnAt)return false;
      Fish[fish]=new FishingFishRecord{id=fish,claimed=true,owner=owner};p.fish=fish;p.pier=pier;p.origin=origin;p.sequence++;p.casts++;p.phase=FishingPhase.Casting;p.phaseAt=now;p.biteAt=now+1.7+SizeForFish(fish)*.65-(p.quickLure&&now<p.activeUntil?.8:0);p.quickLure=false;p.hookUntil=p.biteAt+HookSeconds;p.result=FishingResult.None;p.progress=0;p.tension=.18f;p.held=p.ready=false;p.castDistance=p.distance=p.lineLength=castDistance;p.velocity=p.strain=p.surge=0;p.fightHeading=fishWorld.HasValue?Vector3.ProjectOnPlane(fishWorld.Value-origin,Vector3.up).normalized:Vector3.forward;p.fightOffset=new Vector2(0,fishWorld.HasValue?waterSurface-fishWorld.Value.y:.64f+SizeForFish(fish)*.12f);p.fightMotion=Vector2.zero;if(remoteHook)remoteHookCasts[owner]=p.sequence;else remoteHookCasts.Remove(owner);break;
     case FishingAction.Hook:
      double hookAt=remoteHook?pressedAt:now;
      if(!double.IsFinite(hookAt)||hookAt>now+HookClockTolerance||now-hookAt>HookTransitSeconds)return false;
      hookAt=Math.Min(hookAt,now);
      if(p.phase!=FishingPhase.Bite||hookAt<p.biteAt||hookAt>=p.hookUntil||remoteHook&&(!remoteHookCasts.TryGetValue(owner,out var castSequence)||castSequence!=sequence))return false;
-     remoteHookCasts.Remove(owner);p.phase=FishingPhase.Reeling;p.phaseAt=now;p.held=false;p.steer=0;p.steerAt=now;p.reelBeat=-1;p.tapGrade=FishingTapGrade.None;p.pull=Pull(p,now);p.hooks++;if(fishWorld.HasValue){p.fightHeading=Vector3.ProjectOnPlane(fishWorld.Value-p.origin,Vector3.up).normalized;p.fightOffset.y=waterSurface-fishWorld.Value.y;}break;
+     remoteHookCasts.Remove(owner);p.phase=FishingPhase.Reeling;p.phaseAt=now;p.held=false;p.steer=0;p.steerAt=now;p.reelBeat=-1;p.tapGrade=FishingTapGrade.None;p.pull=Pull(p,now);p.hooks++;if(fishWorld.HasValue){var reach=Vector3.ProjectOnPlane(fishWorld.Value-p.origin,Vector3.up);p.fightHeading=reach.normalized;p.castDistance=p.distance=p.lineLength=Mathf.Clamp(reach.magnitude,1.2f,MaxCastDistance);p.fightOffset.y=waterSurface-fishWorld.Value.y;}break;
     case FishingAction.ReelStart: return false; // Both directional holds remain explicit.
     case FishingAction.ReelTap: return false; // Retired timing edge cannot renew a hold.
     case FishingAction.ReelLeft:
@@ -145,6 +146,12 @@ namespace WhatTheFish {
     if(p.phase==FishingPhase.Bite&&now>=hookResolveAt)Finish(ref p,FishingPhase.Escaped,FishingResult.Missed,now);
     if(p.phase==FishingPhase.Reeling){
      if(now>=p.reelLease){p.held=false;p.steer=0;}
+     // Long public-pool casts use the same spring/drag fight as a 12 m cast.
+     // Convert only solver distances, then restore world units for rod/camera.
+     // This keeps a distant target from multiplying catch time or strain.
+     float worldCast=p.castDistance,rangeScale=Mathf.Max(1,(worldCast-1.5f)/10.5f);
+     p.castDistance=1.5f+(worldCast-1.5f)/rangeScale;
+     p.distance=1.5f+(p.distance-1.5f)/rangeScale;p.lineLength=1.5f+(p.lineLength-1.5f)/rangeScale;p.velocity/=rangeScale;
      p.pull=Pull(p,now);bool countering=p.held&&p.steer==CounterSide(p,now);
      float step=Mathf.Min(dt,.05f),size=SizeForFish(p.fish);
      p.surge=Mathf.Pow(Mathf.Max(0,Mathf.Sin((float)(now-p.phaseAt)*(1.7f-.2f*size)+p.fish*.8f)),6);
@@ -169,6 +176,7 @@ namespace WhatTheFish {
      p.strain=Mathf.Clamp01(p.strain+strainRate*step);FightMotion(ref p,step,mass);
      p.tension=Mathf.Clamp01(Mathf.Max(0,p.distance-p.lineLength)*8/6.85f+p.strain);
      p.progress=Mathf.Clamp01((p.castDistance-p.distance)/Mathf.Max(.3f,p.castDistance-1.5f));
+     p.castDistance=worldCast;p.distance=Mathf.Max(.9f,1.5f+(p.distance-1.5f)*rangeScale);p.lineLength=Mathf.Max(.9f,1.5f+(p.lineLength-1.5f)*rangeScale);p.velocity*=rangeScale;
      if(p.tension>=1)Finish(ref p,FishingPhase.Escaped,FishingResult.Snapped,now);
      else if(now-p.phaseAt>=30)Finish(ref p,FishingPhase.Escaped,FishingResult.TimedOut,now);
      else if(p.progress>=1)Finish(ref p,FishingPhase.Caught,FishingResult.Landed,now);

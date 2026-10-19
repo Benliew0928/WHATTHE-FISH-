@@ -6,12 +6,14 @@ An old executable/data folder continues to run its old code.
 
 ## Share the tested player
 
-Use `Builds/TravelMatchQA/WhatTheFish-Windows-network68.zip` from this delivery.
-Both teammates should extract that same ZIP into a new
-folder, keep all files and subfolders together, and run `WhatTheFish.exe`.
-Do not replace only the executable or merge the ZIP into an older player folder.
-`LATEST-BUILD.txt` identifies its source/verification limits; the ZIP's SHA-256
-sidecar lets you confirm that both downloaded the same package.
+Share the complete current `Builds/WindowsFinal/` folder. Both teammates should
+copy the same delivery into a new folder, keep all files and subfolders
+together, and run `WhatTheFish.exe`. If packaging it as a ZIP, include the
+entire folder and compare its SHA-256 after transfer. Do not replace only the
+executable or combine it with an older player folder. `LATEST-BUILD.txt`
+identifies the source and verification limits. The older
+`Builds/TravelMatchQA/WhatTheFish-Windows-network68.zip` is historical and does
+not include the current [Fishing update](FISHING-NATURAL-SWIM.md).
 
 Use the main menu's online room flow: one person creates a room and shares its
 code; the other chooses Join and enters that code. Both need internet access to
@@ -19,13 +21,13 @@ the project's Unity online services. The `Explore-*.cmd` launchers are offline
 practice shortcuts. Local automated-test flags use loopback and cannot connect
 two separate computers.
 
-The waiting room shows **Network build 68**. This release increments the network
-protocol from 67 to 68, so the previous player is rejected during connection
+The waiting room shows **Network build 70**. The current Fishing update increments
+the protocol from 69 to 70, so the previous player is rejected during connection
 before entering gameplay. The generic join-failure message also asks clients to
 check their code, connection and matching build; a missing network response
 cannot uniquely identify a version mismatch. The protocol is a compatibility
 number, not an exact hash of every source edit: two privately modified builds
-with the same number are not guaranteed compatible. Sharing the same tested ZIP
+with the same number are not guaranteed compatible. Sharing the same tested player
 is the recommended way to eliminate that ambiguity.
 
 ## Build from the repository
@@ -47,7 +49,7 @@ Do not assume an independently rebuilt player is the already-tested ZIP.
 
 ## Manual checks with your teammate
 
-1. In the waiting room, confirm both see network build 68. Enter as players,
+1. In the waiting room, confirm both see network build 70. Enter as players,
    ready up, and travel together. For Basketball, fill to 2v2 with bots.
 2. Finish a round, then use Next adventure to teleport everyone to a Skyrail
    station. Start another match while a participant remains near the cabin.

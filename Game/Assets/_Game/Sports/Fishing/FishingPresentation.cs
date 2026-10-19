@@ -59,12 +59,15 @@ namespace WhatTheFish {
      fish[i].transform.position=position;
     }
     else if(landed){fighting[i]=false;fish[i].transform.SetPositionAndRotation(position,Quaternion.LookRotation((p.Value.origin-position).normalized));}
-    else fish[i].transform.SetPositionAndRotation(position,tangent.sqrMagnitude>.000001f?Quaternion.LookRotation(tangent):Quaternion.identity);
+    else {
+     var rotation=tangent.sqrMagnitude>.000001f?Quaternion.RotateTowards(fish[i].transform.rotation,Quaternion.LookRotation(tangent),140*Time.deltaTime):fish[i].transform.rotation;
+     fish[i].transform.SetPositionAndRotation(position,rotation);
+    }
     if(!p.HasValue||p.Value.phase!=FishingPhase.Reeling)fighting[i]=false;
     bool splashFight=visible&&p.HasValue&&p.Value.phase==FishingPhase.Reeling;float surface=position.y;
     if(splashFight&&fishRenderers[i].Length>0){surface=float.NegativeInfinity;foreach(var renderer in fishRenderers[i])surface=Mathf.Max(surface,renderer.bounds.max.y);}
     Splash.Observe(i,fish[i].transform.TransformPoint(targetOffsets[i]),surface,splashFight,p.HasValue?p.Value.surge:0);
-    bool selected=view&&view.SelectedFishingFish==i;bool nearby=FishingState.PierForFish(i)==pier&&local.HasValue&&local.Value.phase==FishingPhase.Ready&&game.State.Running&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay);
+    bool selected=view&&view.SelectedFishingFish==i;bool nearby=pier>=0&&local.HasValue&&local.Value.phase==FishingPhase.Ready&&game.State.Running&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay);
     if(p.HasValue&&p.Value.phase==FishingPhase.Reeling&&visible){
      if(!halos[i]){halos[i]=Line("Fighting fish wake "+i,transform,.025f);halos[i].loop=true;halos[i].positionCount=24;}
      var wake=halos[i];wake.enabled=surface>=game.WaterHeight(position)-.18f;float cycle=Mathf.Repeat((float)game.Now*1.6f+i*.13f,1),radius=.28f+cycle*.90f+Mathf.Min(1,smoothVelocity[i].magnitude)*.22f;

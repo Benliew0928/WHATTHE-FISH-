@@ -39,7 +39,7 @@ namespace WhatTheFish {
    reopen=CoveUI.Button(transform,"Open next adventure","Next adventure",0,0,315,76,CoveUI.Sky,Open,size:27);var rr=(RectTransform)reopen.transform;rr.anchorMin=rr.anchorMax=new Vector2(.5f,1);rr.anchoredPosition=new Vector2(0,-65);
    panel.gameObject.SetActive(false);reopen.gameObject.SetActive(false);
   }
-  public static void CloseResults(){FootballMVP.Instance?.Dismiss();BasketballMVP.Instance?.Dismiss();FishingHUD.Instance?.Results?.Close();}
+  public static void CloseResults(){FishingCeremony.Instance?.Cancel();FootballMVP.Instance?.Dismiss();BasketballMVP.Instance?.Dismiss();FishingHUD.Instance?.Results?.Close();}
   string FinishedKey(){
    if(!app||!app.Exploring)return "";
    return app.SelectedSport switch {
@@ -72,7 +72,7 @@ namespace WhatTheFish {
   void Update(){
    app=AppRoot.Instance;if(!app)return;current=FinishedKey();bool busy=TeleportSequence.Busy||RoomTeleport.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling;
    if(!app.Exploring||busy||MatchActive){Close();reopen.gameObject.SetActive(false);if(MatchActive||!app.Exploring)shown="";return;}
-   bool result=FootballMVP.Presenting||BasketballMVP.Presenting||FishingHUD.Instance&&FishingHUD.Instance.Results&&FishingHUD.Instance.Results.Visible;
+   bool result=FishingCeremony.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingHUD.Instance&&FishingHUD.Instance.Results&&FishingHUD.Instance.Results.Visible;
    if(current.Length>0&&shown!=current&&!result){shown=current;Open();}
    reopen.gameObject.SetActive(!Visible&&current.Length>0&&!result);
    if(Visible)Refresh();
