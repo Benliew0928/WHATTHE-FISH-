@@ -10,11 +10,11 @@ namespace WhatTheFish {
   float fishingFightAt,fishingFightYaw,fishingFightSide;Vector3 fishingFightFrom,fishingFightFocus;Quaternion fishingFightRotation;
   public float FishingFightSide=>fishingFightSide;
   public bool FishingFightCameraActive=>fishingFightCamera||fishingFightReturning;
-  bool FishingFightLocksLook {get{var g=FishingGame.Instance;var p=g?g.Player(target):null;var ui=FishingHUD.Instance;return ui&&ui.Settings.fightCamera&&!MenuPreferences.ReducedMotion&&g&&g.Context&&p.HasValue&&p.Value.phase==FishingPhase.Reeling;}}
+  bool FishingFightLocksLook {get{var g=FishingGame.Instance;var p=g?g.Player(target):null;var ui=FishingHUD.Instance;return mode!=0&&ui&&ui.Settings.fightCamera&&!MenuPreferences.ReducedMotion&&g&&g.Context&&p.HasValue&&p.Value.phase==FishingPhase.Reeling;}}
   void ResetFishingFightCamera(){fishingFightCamera=fishingFightReturning=false;fishingCameraActor=null;fishingFightSide=0;}
   void PresentFishingFightCamera(ref Vector3 position,ref Quaternion rotation){
    var g=FishingGame.Instance;var ui=FishingHUD.Instance;
-   if(!g||!g.Context||!target||target.inTransit||!ui||!ui.Settings.fightCamera||MenuPreferences.ReducedMotion){ResetFishingFightCamera();return;}
+   if(mode==0||!g||!g.Context||!target||target.inTransit||!ui||!ui.Settings.fightCamera||MenuPreferences.ReducedMotion){ResetFishingFightCamera();return;}
    if(FishingFightCameraActive&&(fishingCameraActor!=target||fishingCameraRound!=g.State.Match.round))ResetFishingFightCamera();
    var p=g.Player(target);bool fight=!InputBlocked&&!ui.BlocksGameplay&&g.State.Running&&p.HasValue&&p.Value.connected&&p.Value.phase==FishingPhase.Reeling&&p.Value.fish>=0&&p.Value.fish<FishingState.FishCount;
    float duration=ui.Settings.fightCameraTransition;
@@ -69,7 +69,7 @@ namespace WhatTheFish {
    fishingCameraBlend=Mathf.MoveTowards(fishingCameraBlend,Time.unscaledTime<fishingPierCameraUntil?1:0,Time.unscaledDeltaTime*3);
    var forward=Quaternion.Euler(0,yaw,0)*Vector3.forward;
    if(mode==1){focus+=(forward*1.25f+Vector3.up*.55f)*fishingCameraBlend;}
-   else if(mode==2){var pond=target.transform.position+forward*Mathf.Clamp(6.5f-(pitch-20)*.08f,3.5f,10);pond.y=g.WaterY-.6f;focus=Vector3.Lerp(focus,pond,fishingCameraBlend);}
+   else if(mode==2){var pond=target.transform.position+forward*Mathf.Clamp(6.5f-(pitch-20)*.8f,3.5f,FishingState.MaxCastDistance);pond.y=g.WaterY-.6f;focus=Vector3.Lerp(focus,pond,fishingCameraBlend);}
   }
   void QueueFishing(FishingAction action){var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!g||!p.HasValue)return;pendingFishing=action;pendingFishingPressedAt=g.Now;pendingFishingRound=g.State.Match.round;pendingFishingSequence=p.Value.sequence;pendingFishingFish=action==FishingAction.Cast?SelectedFishingFish:-1;}
   public void FishingAbilityInput(FishingAction action,int choice=-1){var game=FishingGame.Instance;var p=game?game.Player(target):null;if(!active||!game||!game.Context||!p.HasValue||pendingFishing!=FishingAction.None)return;QueueFishing(action);pendingFishingFish=choice;}

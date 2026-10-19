@@ -24,23 +24,23 @@ namespace WhatTheFish {
   public void Tick(FishingPlayerRecord p,double now){
    if(!fishIcon){var node=new GameObject("Fish pull marker",typeof(RectTransform),typeof(Image));node.transform.SetParent(transform,false);fishIcon=node.GetComponent<Image>();fishIcon.sprite=Resources.Load<Sprite>("FishingUI/FishBadge");fishIcon.raycastTarget=false;fishIcon.preserveAspect=true;fishIcon.rectTransform.sizeDelta=new Vector2(36,29);}
    pull=Mathf.Lerp(pull,FishingState.Pull(p,now),1-Mathf.Exp(-12*Time.unscaledDeltaTime));
-   fishIcon.rectTransform.anchoredPosition=new Vector2(pull*rectTransform.rect.width*.4f,0);
+   fishIcon.rectTransform.anchoredPosition=new Vector2(pull*rectTransform.rect.width*.4f,4);
    steer=Mathf.Lerp(steer,p.held?p.steer:0,1-Mathf.Exp(-14*Time.unscaledDeltaTime));
    requiredSide=FishingState.CounterSide(p,now);resting=!p.held;wrong=p.held&&p.steer!=requiredSide;danger=p.tension>.82f;
    beat=MenuPreferences.ReducedMotion?0:Mathf.Sin(Time.unscaledTime*7);SetVerticesDirty();
   }
   public float MarkerPosition=>pull;
   protected override void OnPopulateMesh(VertexHelper v){
-   v.Clear();var r=rectTransform.rect;BasketballPlate.Draw(v,r,Ink,Vector2.one*18,2,0,0,0,Ink);float reach=r.width*.40f,y=r.center.y;
-   BasketballUIMesh.Line(v,new Vector2(-reach,y),new Vector2(reach,y),new Color(.65f,.85f,.9f,.35f),9);
+   v.Clear();var r=rectTransform.rect;BasketballPlate.Draw(v,r,Ink,Vector2.one*18,2,0,0,0,Ink);float reach=r.width*.40f,y=r.center.y+4;
+   BasketballUIMesh.Line(v,new Vector2(-reach,y),new Vector2(reach,y),new Color(.65f,.85f,.9f,.35f),12);
    BasketballUIMesh.Line(v,new Vector2(-reach,y-5),new Vector2(-reach,y+5),Ink,3);
    BasketballUIMesh.Line(v,new Vector2(reach,y-5),new Vector2(reach,y+5),Ink,3);
    var zone=new Vector2(requiredSide*reach*.7f,y);var cue=danger?Coral:Gold;
-   BasketballUIMesh.Line(v,zone-Vector2.right*reach*.22f,zone+Vector2.right*reach*.22f,cue,13+beat);
-   float x=pull*reach;BasketballUIMesh.Dot(v,new Vector2(x,y),10,Ink);BasketballUIMesh.Dot(v,new Vector2(x,y),7,Teal);
-   var mark=new Vector2(steer*reach*.7f,y-10);var tint=wrong||danger?Coral:resting?Ink:Gold;
-   BasketballUIMesh.Line(v,mark-Vector2.right*5,mark+Vector2.up*6,tint,3);
-   BasketballUIMesh.Line(v,mark+Vector2.up*6,mark+Vector2.right*5,tint,3);
+   BasketballUIMesh.Line(v,zone-Vector2.right*reach*.22f,zone+Vector2.right*reach*.22f,cue,19+beat);
+   float x=pull*reach;BasketballUIMesh.Dot(v,new Vector2(x,y),20,Ink);BasketballUIMesh.Dot(v,new Vector2(x,y),17,Teal);BasketballUIMesh.Dot(v,new Vector2(x,y),13,CoveUI.Cream);
+   // Separate input dot from the fish marker; the lit side still owns the hold.
+   var mark=new Vector2(steer*reach*.7f,r.yMin+6);var tint=wrong||danger?Coral:resting?CoveUI.Cream:Gold;
+   BasketballUIMesh.Dot(v,mark,6,Ink);BasketballUIMesh.Dot(v,mark,4,tint);
   }
  }
  // A touch-through, texture-free arrow points at the one relevant control.

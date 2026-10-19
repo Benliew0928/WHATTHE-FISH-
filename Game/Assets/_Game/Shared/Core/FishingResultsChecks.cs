@@ -27,13 +27,13 @@ namespace WhatTheFish {
    var hits=new List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);var hit=hits.Count>0?hits[0].gameObject:null;
    check(hit&&hit.GetComponentInParent<Button>()==button,"RESULT_POINTER_ROUTES_TO_"+tag);ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerClickHandler);
   }
-  static void Capture(string report,string tag){
+  internal static void Capture(string report,string tag,int syntheticPlayers=5){
    if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null)return;var camera=Camera.main;if(!camera)return;
    string path=Path.ChangeExtension(report,tag+".png");var canvases=UnityEngine.Object.FindObjectsByType<Canvas>(FindObjectsSortMode.None).Where(c=>c.renderMode==RenderMode.ScreenSpaceOverlay).ToArray();var cameras=canvases.Select(c=>c.worldCamera).ToArray();var planes=canvases.Select(c=>c.planeDistance).ToArray();
    var target=RenderTexture.GetTemporary(Screen.width,Screen.height,24);var previous=camera.targetTexture;var active=RenderTexture.active;var texture=new Texture2D(Screen.width,Screen.height,TextureFormat.RGB24,false);
    try{foreach(var canvas in canvases){canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=.5f;}camera.targetTexture=target;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=target;texture.ReadPixels(new Rect(0,0,Screen.width,Screen.height),0,0);texture.Apply();File.WriteAllBytes(path,texture.EncodeToPNG());}
    finally{camera.targetTexture=previous;RenderTexture.active=active;UnityEngine.Object.Destroy(texture);RenderTexture.ReleaseTemporary(target);for(int i=0;i<canvases.Length;i++){canvases[i].renderMode=RenderMode.ScreenSpaceOverlay;canvases[i].worldCamera=cameras[i];canvases[i].planeDistance=planes[i];}Canvas.ForceUpdateCanvases();}
-   File.AppendAllText(report,"CAPTURE "+Path.GetFileName(path)+" dimensions="+Screen.width+"x"+Screen.height+" synthetic_result_players=5\n");
+   File.AppendAllText(report,"CAPTURE "+Path.GetFileName(path)+" dimensions="+Screen.width+"x"+Screen.height+" synthetic_result_players="+syntheticPlayers+"\n");
   }
   static FishingPlayerRecord[] Players(ulong local){
    var ids=new[]{local}.Concat(Enumerable.Range(1,5).Select(i=>(ulong)i).Where(i=>i!=local)).Take(5).ToArray();

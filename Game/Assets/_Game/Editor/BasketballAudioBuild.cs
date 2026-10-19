@@ -27,4 +27,6 @@ public sealed class BasketballAudioBuild:IPreprocessBuildWithReport {
  }
  public void OnPreprocessBuild(BuildReport report){Prepare();}
  public static void BuildReview(){Prepare();ProjectBuilder.BuildWindowsPlayer("../Builds/BasketballAudioQA/Player/WhatTheFish.exe");}
+ // Only for code changes after a full review build; retain its scene payload.
+ public static void BuildReviewScripts(){var report=PackagedContentBuild.BuildScripts(BuildTarget.StandaloneWindows64,ProjectBuilder.ResolveBuildOutputPath("../Builds/BasketballAudioQA/Player/WhatTheFish.exe"),BuildOptions.Development|BuildOptions.CompressWithLz4HC);if(report.summary.result!=BuildResult.Succeeded)throw new BuildFailedException("Audio review script refresh failed");}
 }

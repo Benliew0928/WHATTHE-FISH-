@@ -7,7 +7,7 @@ namespace WhatTheFish {
   public static readonly string[] Titles={"CHOOSE 2 SKILLS","CAST & CATCH","USE YOUR GEAR","PLAY TO WIN"};
   public static readonly string[] Copy={
    "After this guide, tap CHOOSE 2 SKILLS.\nPick two favourites, then Ready.\nCarry one item. The host starts when all are ready.",
-   "Aim until the reticle turns teal. Tap Cast.\nTap Hook when ! appears.\nHold the glowing Left or Right button.\nSwitch when the glow changes sides.\nRelease both if tension turns red; hold again when it cools.",
+   "Aim at a free fish. Tap Cast when teal.\nTap Hook when ! appears.\nHold the glowing Left or Right button.\nSwitch when the glow changes sides.\nRelease on red rope; hold again when cool.",
    "Tap the shore bag to take one favourite.\nOr recover treasure at a pier: 6 seconds.\nTap your gear icon to use it. The meter shows time left.",
    "Small 2  /  Medium 5  /  Large 10 points.\nWanted fish: +3 once per minute.\nRound: most points after 3 minutes.\nCrew: shared target = 20 x players. All sizes; everyone catches."
   };

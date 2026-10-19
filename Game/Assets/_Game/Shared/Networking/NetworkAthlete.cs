@@ -83,7 +83,8 @@ namespace WhatTheFish {
   public NetworkVariable<GolfAimState> GolfAim=new();
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void GolfAimRpc(bool enabled,ulong owner,uint round,float heading){if(IsSpectator)return;if(IsSpawned&&GolfMatchManager.Instance)GolfMatchManager.Instance.SetAim(athlete,enabled,owner,round,heading);}
   bool sentGolfCharge;uint sentGolfRound;float sentGolfHeading;
-  Athlete athlete; PlayerCommand command; float lastInput; float sendTimer;
+  Athlete athlete; PlayerCommand command,lastSentCommand; float lastInput; float sendTimer;
+  uint inputSequence,acceptedInputSequence;bool receivedInput;
   // NetworkTransform interpolates guests, but deliberately skips its server.
   // The host's own sports character therefore uses the offline per-render-frame
   // movement path; stepping it at 50 Hz makes 30/60/120 Hz frames visibly uneven.
@@ -111,9 +112,12 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseFootballTeamRpc(FootballTeam team,uint selectionRevision){if(IsSpectator)return;if(IsSpawned&&FootballMatch.Instance&&!FootballMatch.Instance.ChooseTeam(athlete,team,selectionRevision))FootballTeamRejectedRpc();}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseBasketballTeamRpc(FootballTeam team,uint revision){if(IsSpectator)return;if(IsSpawned&&WhatTheFish.BasketballMatch.Instance)WhatTheFish.BasketballMatch.Instance.ChooseTeam(athlete,team,revision);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void TravelReadyRpc(uint sequence){if(HostPlayer&&HostPlayer.WorldTravel.Value.phase==SkySailPhase.Preparing&&HostPlayer.WorldTravel.Value.sequence==sequence)TravelReady.Value=sequence;}
-  [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool dash,bool pressure,bool charging,bool guard,bool guardBlock,uint defensePlay,uint round,float passBend){
+  [Rpc(SendTo.Server,Delivery=RpcDelivery.Unreliable,InvokePermission=RpcInvokePermission.Owner)] void InputRpc(Vector2 move,float heading,bool sprint,bool dash,bool pressure,bool charging,bool guard,bool guardBlock,uint defensePlay,uint round,float passBend,uint inputId){
+   // A delayed UDP packet must never undo a newer stop/turn/guard command.
+   if(receivedInput&&!NetworkResponsiveness.Newer(inputId,acceptedInputSequence))return;
    if(float.IsNaN(move.x)||float.IsNaN(move.y)||float.IsNaN(heading)||float.IsInfinity(heading)||float.IsInfinity(move.x)||float.IsInfinity(move.y))return;
    if((IsSpectator?RoomTeleport.Busy||!HostPlayer||!HostPlayer.Exploring.Value||athlete.inTransit:!AcceptRound(round))||!float.IsFinite(passBend))return;
+   receivedInput=true;acceptedInputSequence=inputId;
    command=new PlayerCommand{passBend=Mathf.Clamp(passBend,-1,1),move=Vector2.ClampMagnitude(move,1),heading=heading%360,sprint=sprint,dash=dash,pressure=pressure,charging=charging,guard=guard&&BasketballBall.Active&&defensePlay==BasketballBall.Active.Defense.play,guardBlock=guard&&guardBlock,defensePlay=defensePlay};lastInput=Time.time;
   }
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void TackleRpc(uint round){if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value&&HostPlayer.WorldSport.Value==SportId.Football)athlete.TryTackle();}
@@ -144,7 +148,15 @@ namespace WhatTheFish {
     var c=PlayerView.Instance.ReadCommand();bool exploring=AppRoot.Instance.Exploring;
     if(!exploring)c.move=Vector2.zero;
     // Reliable action edges are sent this frame, independently of movement throttling.
-    if(exploring&&!athlete.inTransit&&(FrameDrivenHost||(sendTimer-=Time.deltaTime)<=0||c.jump||c.tackle||c.shoot||c.pass||c.footballPass||c.kick||c.cartAction!=GolfCartAction.None)){sendTimer=1f/30;InputRpc(c.move,c.heading,c.sprint,c.dash&&exploring,c.pressure&&exploring,c.charging&&exploring,c.guard&&exploring,c.guardBlock&&exploring,c.defensePlay,MatchRevision,c.passBend);}
+    sendTimer-=Time.deltaTime;
+    bool edge=!NetworkResponsiveness.Baseline&&NetworkResponsiveness.InputChanged(c,lastSentCommand);
+    if(exploring&&!athlete.inTransit&&(FrameDrivenHost||sendTimer<=0||edge||c.jump||c.tackle||c.shoot||c.pass||c.footballPass||c.kick||c.cartAction!=GolfCartAction.None)){
+     sendTimer=NetworkResponsiveness.Baseline?NetworkResponsiveness.Interval:sendTimer+NetworkResponsiveness.Interval;
+     // Carry the periodic remainder, but never build a backlog after a hitch or
+     // postpone the heartbeat after a burst of immediate direction changes.
+     if(!NetworkResponsiveness.Baseline)sendTimer=Mathf.Clamp(sendTimer,0,NetworkResponsiveness.Interval);
+     lastSentCommand=c;InputRpc(c.move,c.heading,c.sprint,c.dash&&exploring,c.pressure&&exploring,c.charging&&exploring,c.guard&&exploring,c.guardBlock&&exploring,c.defensePlay,MatchRevision,c.passBend,++inputSequence);
+    }
     if((c.block||c.jumpBlock)&&exploring)BlockRpc(c.heading,c.jumpBlock,c.defensePlay,MatchRevision);
     if(c.steal&&exploring)StealRpc(c.heading,MatchRevision);
     if(c.passBegin&&exploring)PassChargeRpc(false,c.heading,c.passPlay,MatchRevision);if(c.passCancel)PassChargeRpc(true,c.heading,c.passPlay,MatchRevision);

@@ -16,7 +16,7 @@ namespace WhatTheFish {
   public bool Equals(BasketballPropsState b)=>guided==b.guided&&pickup.Equals(b.pickup)&&turboA==b.turboA&&turboB==b.turboB&&aimUntil==b.aimUntil&&aiming==b.aiming&&aimer==b.aimer&&transferring==b.transferring&&receiver==b.receiver&&portalAt==b.portalAt&&portalSequence==b.portalSequence&&source==b.source&&destination==b.destination&&portalOutcome==b.portalOutcome;
  }
  public static class BasketballPropRules {
-  public const float AimSeconds=2,TurboSeconds=SportsAbilityRules.TurboSeconds,TurboMultiplier=SportsAbilityRules.TurboMultiplier,PortalSeconds=SportsAbilityRules.PortalSeconds,RespawnSeconds=SportsAbilityRules.RespawnSeconds,CountdownSeconds=SportsAbilityRules.CountdownSeconds,PickupRadius=SportsAbilityRules.PickupRadius;
+  public const float AimSeconds=1,TurboSeconds=SportsAbilityRules.TurboSeconds,TurboMultiplier=SportsAbilityRules.TurboMultiplier,PortalSeconds=SportsAbilityRules.PortalSeconds,RespawnSeconds=SportsAbilityRules.RespawnSeconds,CountdownSeconds=SportsAbilityRules.CountdownSeconds,PickupRadius=SportsAbilityRules.PickupRadius;
   public static string Name(SportsProp kind)=>kind==SportsProp.LockOn?"LOCK-ON SHOT":kind==SportsProp.Turbo?"TEAM TURBO":kind==SportsProp.Portal?"PORTAL STEAL":"FIND A PROP";
   // The two sideline ends of the centre line; no advantage to either half.
   public static Vector3 Anchor(int index)=>new Vector3(index==0?-7f:7f,.08f,0);

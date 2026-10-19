@@ -24,7 +24,7 @@ namespace WhatTheFish {
   Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned&&a.GetComponent<NetworkAthlete>().IsPlayerObject:a==AppRoot.Instance.LocalAthlete)).OrderBy(Key).ToArray();
   public int ParticipantCount=>Eligible().Length;
   public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&State.Match.phase!=FishingRoundPhase.Playing&&State.Match.phase!=FishingRoundPhase.Countdown&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
-  void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);gameObject.AddComponent<FishingAbilityPresentation>();}
+  void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);gameObject.AddComponent<FishingAbilityPresentation>();gameObject.AddComponent<FishingSpectatorAwards>();}
   void OnEnable(){Instance=this;}
   void OnDisable(){State.Clear();Presentation?.Clear(false);wasContext=false;if(Authority)Publish();if(Instance==this)Instance=null;}
   public FishingPlayerRecord? Player(Athlete actor)=>actor?State.Player(Key(actor)):null;
@@ -36,7 +36,7 @@ namespace WhatTheFish {
    return nearest;
   }
   public bool Busy(Athlete actor)=>Context&&Player(actor).HasValue&&Player(actor).Value.Busy;
-  public bool Available(Athlete actor,int fish){int pier=NearestPier(actor);return Context&&State.Running&&fish>=0&&fish<State.Fish.Count&&FishingState.PierForFish(fish)==pier&&!State.Fish[fish].claimed&&State.Fish[fish].respawnAt<=Now&&Vector3.ProjectOnPlane(FishPosition(fish,Now)-actor.transform.position,Vector3.up).magnitude<=12&&!Physics.Linecast(actor.transform.position+Vector3.up*1.4f,FishPosition(fish,Now),1<<8,QueryTriggerInteraction.Ignore);}
+  public bool Available(Athlete actor,int fish){int pier=NearestPier(actor);return Context&&State.Running&&fish>=0&&fish<State.Fish.Count&&pier>=0&&!State.Fish[fish].claimed&&State.Fish[fish].respawnAt<=Now&&Vector3.ProjectOnPlane(FishPosition(fish,Now)-actor.transform.position,Vector3.up).magnitude<=FishingState.MaxCastDistance&&!Physics.Linecast(actor.transform.position+Vector3.up*1.4f,FishPosition(fish,Now),1<<8,QueryTriggerInteraction.Ignore);}
   public bool CanCast(Athlete actor){var p=Player(actor);return Context&&State.Running&&p.HasValue&&p.Value.phase==FishingPhase.Ready&&State.Fish.Any(f=>Available(actor,f.id));}
   public bool CanCast(Athlete actor,int fish)=>CanCast(actor)&&Available(actor,fish);
   public int PickFish(Athlete actor,Camera camera,Vector2 screenPoint,bool touch){
@@ -70,10 +70,22 @@ namespace WhatTheFish {
   public float WaterY {get;private set;}
   public float WaterHeight(Vector3 world){var p=transform.InverseTransformPoint(world);float t=(float)Now;float fade=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(24,27.8f,new Vector2(p.x,p.z).magnitude));return WaterY+(Mathf.Sin(p.x*.92f+p.z*.46f+t*1.1f)*.023f+Mathf.Sin(p.z*1.27f-p.x*.34f-t*.85f)*.013f)*fade;}
   public Vector3 FishPosition(int fish,double now){
-   int pier=Mathf.Clamp(FishingState.PierForFish(fish),0,Lagoon.standingPositions.Length-1),size=FishingState.SizeForFish(fish),row=fish%FishingState.FishPerPier/FishingState.SizeCount;var point=Pier(pier);var centre=transform.position;var radial=Vector3.ProjectOnPlane(point-centre,Vector3.up).normalized;var side=Vector3.Cross(Vector3.up,radial);
-   // Wide continuous ellipses stay in each pier's school and casting range.
-   float t=(float)(now*.60+fish*2.7);var p=point-radial*(5.8f+row*1.45f+size*.55f+Mathf.Cos(t)*1.65f)+side*((size-1)*2.1f+(row==0?-.35f:.35f)+Mathf.Sin(t)*2.10f);
-   p.y=WaterY-.58f-size*.14f+Mathf.Sin(t*1.4f)*.12f;return p;
+   int size=FishingState.SizeForFish(fish);
+   // Independent seeded waypoints replace the shared orbital motion. A cubic
+   // B-spline has continuous velocity/acceleration and stays inside their hull.
+   // Derive it from fish ID and server time so peers never roll different routes.
+   double route=now/(6.5+(fish%7)*.35)+fish*.719;
+   long segment=(long)System.Math.Floor(route);float t=(float)(route-segment),t2=t*t,t3=t2*t;
+   var point=(SwimWaypoint(fish,segment-1)*Mathf.Pow(1-t,3)+SwimWaypoint(fish,segment)*(3*t3-6*t2+4)+SwimWaypoint(fish,segment+1)*(-3*t3+3*t2+3*t+1)+SwimWaypoint(fish,segment+2)*t3)/6;
+   var p=transform.TransformPoint(new Vector3(point.x,0,point.y));
+   p.y=WaterY-.58f-size*.14f+Mathf.Sin((float)((now*1.2+fish)%(System.Math.PI*2)))*.12f;return p;
+  }
+  static uint SwimHash(uint value){unchecked{value^=value>>16;value*=0x7feb352d;value^=value>>15;value*=0x846ca68b;return value^(value>>16);}}
+  static Vector2 SwimWaypoint(int fish,long segment){
+   uint seed=unchecked((uint)(fish+1)*0x9e3779b9^(uint)segment^(uint)(segment>>32)*0x85ebca6b);
+   float angle=(SwimHash(seed)&0xffffff)*(Mathf.PI*2/16777216f);
+   float radius=3.5f+13*Mathf.Sqrt((SwimHash(seed^0x68bc21eb)&0xffffff)/16777216f);
+   return new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*radius;
   }
   public bool StartMatch(FishingMode mode=FishingMode.Round){if(!CanStart(mode)||!RoomMatchStart.Prepare(SportId.Fishing,out var arrivals))return false;if(!State.Start(Eligible().Select(Key),++nextRound,Now,mode))return false;arrivals.Apply();PlayerView.Instance?.ClearMatchInput();Publish();return true;}
   void BeginPractice(){var actors=Eligible();State.Begin(actors.Length<=5?actors.Select(Key):Array.Empty<ulong>(),++nextRound,Now,false);PlayerView.Instance?.ClearMatchInput();Publish();}

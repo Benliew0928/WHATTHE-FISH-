@@ -14,7 +14,6 @@ namespace WhatTheFish {
    var camera=view.FishingCamera;var ray=camera.ScreenPointToRay(view.FishingAimScreenPoint);
    int candidate=-1;float nearest=FishingHUD.Instance?FishingHUD.Instance.AimAcquireDegrees:8;
    for(int i=0;i<game.State.Fish.Count;i++) {
-    if(FishingState.PierForFish(i)!=pier)continue;
     var point=game.Presentation.TargetPosition(i);var screen=camera.WorldToViewportPoint(point);
     if(screen.z<=camera.nearClipPlane||screen.x<0||screen.x>1||screen.y<0||screen.y>1)continue;
     float angle=Vector3.Angle(ray.direction,point-ray.origin);
@@ -29,7 +28,7 @@ namespace WhatTheFish {
    if(record.claimed)return "FRIEND'S\nFISH";
    if(record.respawnAt>game.Now)return "FISH\nRETURNING";
    var point=game.Presentation.TargetPosition(fish);
-   if(Vector3.ProjectOnPlane(game.FishPosition(fish,game.Now)-actor.transform.position,Vector3.up).magnitude>12)return "MOVE\nCLOSER";
+   if(Vector3.ProjectOnPlane(game.FishPosition(fish,game.Now)-actor.transform.position,Vector3.up).magnitude>FishingState.MaxCastDistance)return "MOVE\nCLOSER";
    if(Physics.Linecast(actor.transform.position+Vector3.up*1.4f,game.FishPosition(fish,game.Now),1<<8,QueryTriggerInteraction.Ignore)
     ||Physics.Linecast(camera.transform.position,point,1<<8,QueryTriggerInteraction.Ignore))return "CAST PATH\nBLOCKED";
    return "AIM AT\nA FISH";

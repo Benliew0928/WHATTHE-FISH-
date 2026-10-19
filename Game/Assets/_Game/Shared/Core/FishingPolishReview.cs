@@ -43,7 +43,7 @@ namespace WhatTheFish {
     record.claimed=false;record.respawnAt=game.Now+3;game.State.Fish[0]=record;
     Check(FishingTargetFeedback.FishLabel(game,actor,view.FishingCamera,0)=="FISH\nRETURNING"&&!game.CanCast(actor,0),"RESPAWNING_FISH_FEEDBACK_MATCHES_HOST_REJECTION");
     record.respawnAt=0;game.State.Fish[0]=record;
-    var target=game.FishPosition(0,game.Now);actor.capsule.enabled=false;actor.transform.position=target+Vector3.right*15;actor.capsule.enabled=true;Physics.SyncTransforms();
+    var target=game.FishPosition(0,game.Now);actor.capsule.enabled=false;actor.transform.position=target+Vector3.right*(FishingState.MaxCastDistance+5);actor.capsule.enabled=true;Physics.SyncTransforms();
     Check(FishingTargetFeedback.FishLabel(game,actor,view.FishingCamera,0)=="MOVE\nCLOSER"&&!game.CanCast(actor,0),"OUT_OF_RANGE_FISH_FEEDBACK_MATCHES_HOST_REJECTION");
     Check(FishingTargetFeedback.ReadyLabel(game,view)=="FIND A PIER","OFF_PIER_BUTTON_EXPLAINS_WHERE_TO_FISH");
     actor.capsule.enabled=false;actor.transform.position=floor.point+Vector3.up*.04f;actor.ResetLocomotion();actor.capsule.enabled=true;Physics.SyncTransforms();yield return new WaitForFixedUpdate();
@@ -80,7 +80,7 @@ namespace WhatTheFish {
    var match=game.State.Match;var players=game.State.Players.ToArray();var fish=game.State.Fish.ToArray();bool review=game.ReviewSnapshot,motion=MenuPreferences.ReducedMotion;int mode=view.mode;float yaw=view.yaw,pitch=view.pitch;
    var position=actor.transform.position;var rotation=actor.transform.rotation;
    try {
-    game.ReviewSnapshot=true;MenuPreferences.SetMotion(false);ui.SendMessage("OnApplicationFocus",true);
+    game.ReviewSnapshot=true;MenuPreferences.SetMotion(false);view.mode=1;ui.SendMessage("OnApplicationFocus",true);
     Check(Physics.Raycast(game.Pier(0)+Vector3.up*12,Vector3.down,out var floor,30,1<<8,QueryTriggerInteraction.Ignore),"CLARITY_FIXTURE_REAL_PIER_FLOOR");
     actor.capsule.enabled=false;actor.transform.position=floor.point+Vector3.up*.04f;actor.ResetLocomotion();actor.capsule.enabled=true;Physics.SyncTransforms();
     game.State.Begin(new[]{FishingGame.Key(actor)},match.round+60000,game.Now,false);yield return null;yield return null;
@@ -106,12 +106,35 @@ namespace WhatTheFish {
     p.tension=.5f;game.State.Players[0]=p;yield return null;yield return null;Check(!labels.Any(t=>t.gameObject.activeInHierarchy&&(t.text.Contains("CLICK")||t.text.Contains("Keyboard")||t.text.Contains(" / F")))&&FishingTutorialUI.Copy.All(c=>!c.Contains("Keyboard")),"MOBILE_HUD_AND_SHARED_TUTORIAL_HAVE_NO_KEYBOARD_GUIDES");
     var guide=ui.GetComponentInParent<Canvas>().GetComponentInChildren<FishingFightGuide>();float marker=guide.MarkerPosition;yield return new WaitForSeconds(.12f);Check(Mathf.Abs(marker-guide.MarkerPosition)>.005f,"FISH_MARKER_FOLLOWS_CURRENT_SWAY");
     foreach(int turnBeat in new[]{2,5}){p.phaseAt=game.Now-FishingState.TimingPeriod*(turnBeat+.05);game.State.Players[0]=p;yield return new WaitForSeconds(.8f);Check(ui.CounterControlsVisible&&Mathf.Sign(view.FishingFightSide)==FishingState.CounterSide(p,game.Now)&&Mathf.Abs(view.FishingFightSide)>.6f,"CAMERA_SHOULDER_FOLLOWS_OPPOSING_PULL_"+turnBeat);}
-    foreach(int chosenMode in new[]{0,2}){
-     view.mode=chosenMode;yield return new WaitForSeconds(.8f);Check(view.FishingFightCameraActive,"FIGHT_FRAMING_AVAILABLE_FROM_PREFERRED_MODE_"+chosenMode);
+    foreach(int chosenMode in new[]{0,1,2}){
+     view.mode=chosenMode;yield return new WaitForSeconds(.8f);
+     if(chosenMode==0){
+      var eye=actor.transform.position+Vector3.up*1.57f;
+      Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,eye)<.08f&&Mathf.Abs(view.FishingCamera.nearClipPlane-.06f)<.001f,"EYE_LEVEL_REELING_STAYS_AT_PLAYER_EYES");
+      PlayerView.LookDelta=new Vector2(24,6);yield return null;yield return null;
+      Check(Mathf.Abs(view.yaw-yaw)>1&&!view.FishingFightCameraActive,"EYE_LEVEL_REELING_PRESERVES_MANUAL_LOOK");view.yaw=yaw;view.pitch=pitch;
+      foreach(int side in new[]{-1,1}){
+       Check(view.BeginCountersteer(side,780+side),"EYE_LEVEL_ACCEPTS_DIRECTIONAL_PRESS_"+side);var held=view.ReadCommand();game.Execute(actor,held.fishingAction,held.fishingRound,held.fishingSequence,held.fishingFish,held.fishingPressedAt);yield return new WaitForSeconds(.15f);
+       Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,actor.transform.position+Vector3.up*1.57f)<.08f,"EYE_LEVEL_DIRECTIONAL_PRESS_NEVER_MOVES_TO_THIRD_PERSON_"+side);view.EndFishing(780+side);view.ReadCommand();
+      }
+      var strain=ui.GetComponentInParent<Canvas>().GetComponentInChildren<FishingTensionVisual>(true);
+      foreach(float value in new[]{.2f,.6f,.9f}){
+       p.tension=value;p.held=false;game.State.Players[0]=p;yield return new WaitForSeconds(.15f);
+       // The rod poses and hides the head in LateUpdate; capture the rendered
+       // pose rather than manually rendering between Update and LateUpdate.
+       yield return new WaitForEndOfFrame();
+       var head=actor.visual.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="mixamorig:Head");
+       Check(head&&head.localScale.sqrMagnitude<.0001f,"EYE_LEVEL_HEAD_HIDDEN_AFTER_FISHING_POSE_"+value);
+       Check(strain&&strain.Visible&&!strain.raycastTarget&&strain.FitsSafeFrame()&&strain.GetComponentsInChildren<UnityEngine.UI.Text>().Length==0,"ROPE_STRAIN_CUE_CLEAR_TOUCH_THROUGH_AND_BOUNDED_"+value);
+       FishingResultsChecks.Capture(report,"eye-level-strain-"+Mathf.RoundToInt(value*100),0);
+      }
+      p.tension=.5f;game.State.Players[0]=p;
+     }else Check(view.FishingFightCameraActive,"FIGHT_FRAMING_AVAILABLE_FROM_PREFERRED_MODE_"+chosenMode);
      p.phase=FishingPhase.Escaped;p.result=FishingResult.Cancelled;game.State.Players[0]=p;yield return new WaitForSeconds(.85f);
      Check(!view.FishingFightCameraActive&&view.mode==chosenMode&&Mathf.Abs(view.yaw-yaw)<.01f&&Mathf.Abs(view.pitch-pitch)<.01f,"CANCEL_RETURNS_PREFERRED_CAMERA_WITHOUT_CHANGING_ANGLE_"+chosenMode);
      p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.result=FishingResult.None;game.State.Players[0]=p;yield return null;
     }
+    view.mode=0;yield return null;yield return null;Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,actor.transform.position+Vector3.up*1.57f)<.08f,"SWITCHING_TO_EYE_LEVEL_CANCELS_PENDING_FIGHT_RETURN");
     MenuPreferences.SetMotion(true);yield return null;yield return null;Check(!view.FishingFightCameraActive,"REDUCED_MOTION_KEEPS_PREFERRED_CAMERA_DURING_FIGHT");
     p.phase=FishingPhase.Caught;p.result=FishingResult.Landed;p.phaseAt=game.Now;p.awardSequence++;p.lastAward=5;p.lastBonus=3;game.State.Players[0]=p;yield return null;yield return null;
     Check(ui.CatchCue.Visible&&ui.CatchCue.PointsText=="+5 POINTS"&&ui.CatchCue.Starts==starts+1,"CATCH_CARD_USES_ACCEPTED_TOTAL_INCLUDING_WANTED");

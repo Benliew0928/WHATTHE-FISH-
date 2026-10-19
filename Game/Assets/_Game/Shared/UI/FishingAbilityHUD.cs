@@ -46,7 +46,9 @@ namespace WhatTheFish {
    gear.interactable=!player.ready&&!player.Busy&&!owner.BlocksGameplay;
    if(Modal)sheet.localScale=Vector3.one*Mathf.Min(1.25f,(frame.rect.width-40)/sheet.rect.width,(frame.rect.height-40)/sheet.rect.height);
    bool raised=player.phase==FishingPhase.Reeling||landing;
-   float scale=owner.HudScale,y=(raised?254:52)*scale+20;
+   float scale=owner.HudScale;
+   float itemHalfHeight=((RectTransform)item.transform).rect.height*.5f*(MenuPreferences.ReducedMotion?1:1+pulse*.06f);
+   float y=owner.Settings.margin+(raised?owner.Settings.gaugeSize.y+owner.Settings.gap+itemHalfHeight:itemHalfHeight)*scale;
    Place(item,raised?-180:0,y,scale*(MenuPreferences.ReducedMotion?1:1+pulse*.06f));Place(supply,-65,146*scale+20,scale);Place(salvage,65,146*scale+20,scale);
    if(!running&&choosing!=FishingAction.Favourites||player.Busy||player.ready&&choosing==FishingAction.Favourites)Close();
   }

@@ -87,10 +87,10 @@ namespace WhatTheFish {
    check(!Act(s,FishingAction.Cast,now,1,1)&&Act(s,FishingAction.Cast,now,1,0)&&Act(s,FishingAction.Cast,now,2,2)&&!Act(s,FishingAction.Cast,now,3,0),"EXCLUSIVE_FISH_CLAIMS");
    check(!s.Act(0,1,0,FishingAction.Cancel,0,Vector3.zero,now),"STALE_CAST_SEQUENCE");
    now=P(s).hookUntil;s.Advance(now,0);check(P(s).result==FishingResult.Missed&&P(s).score==0,"EXACT_HOOK_BOUNDARY_MISSES");
-   float[] ranges={5.5f,8f,10.5f,12f};
+   float[] ranges={5.5f,8f,10.5f,12f,24f,40f};
    for(int fish=0;fish<FishingState.FishCount;fish++)for(int r=0;r<ranges.Length;r++){
     float range=ranges[r];s.Begin(new ulong[]{0},2,0,false);now=0;
-    check(!s.Act(0,s.Match.round,P(s).sequence,FishingAction.Cast,(FishingState.PierForFish(fish)+1)%FishingState.PierCount,Vector3.zero,now,fish,range),"CROSS_PIER_TARGET_REJECTED_"+fish+"_"+range);
+    var shared=new FishingState();shared.Begin(new ulong[]{0,1},2,0,false);check(shared.Act(0,2,0,FishingAction.Cast,(FishingState.PierForFish(fish)+1)%FishingState.PierCount,Vector3.zero,0,fish,range)&&!shared.Act(1,2,0,FishingAction.Cast,0,Vector3.zero,0,fish,range),"PUBLIC_POOL_ACCEPTS_OTHER_PIER_BUT_REJECTS_DOUBLE_CLAIM_"+fish+"_"+range);
     double reelSeconds=Land(s,ref now,fish,0,range);
     check(P(s).phase==FishingPhase.Caught&&P(s).score==FishingState.Points(fish),"BALANCED_LINE_LANDS_"+fish+"_AT_"+range.ToString("0.0",System.Globalization.CultureInfo.InvariantCulture)+"m_"+now.ToString("0.0",System.Globalization.CultureInfo.InvariantCulture)+"s");
     var landed=P(s);check(landed.smallCatches+landed.mediumCatches+landed.largeCatches==1&&landed.catches==1&&landed.bonusTotal==0&&(FishingState.SizeForFish(fish)==0?landed.smallCatches==1:FishingState.SizeForFish(fish)==1?landed.mediumCatches==1:landed.largeCatches==1),"EXACT_SIZE_AND_PRACTICE_STAT_"+fish+"_"+range);

@@ -1,5 +1,30 @@
 ## Golf charge/contact/landing/cup feedback — 17 October 2026
 
+## Golf and latest-main protocol-72 merge - 20 October 2026
+
+Fresh AndroidSubmission at **07:21:42 Malaysia time**: actual APK
+**90,850,906 -> 93,875,514 bytes (+3,024,608)**.
+Strict decimal-GB headroom: **906,124,486 bytes**. Official build/budget
+gate, ZIP integrity and independent APK v2 signature passed. SHA-256:
+**25A3F72A8CF2764BF78DED87E5319D5127BF61EC19C32DB3F0E4538976FF2C2D**.
+
+Merged local Golf `2bfcc5d` with latest main `99685e2`; combined protocol **72**.
+Retained Golf drag/release with 30% idle preview, tees, UI and repaired T1 terrain,
+plus incoming Fishing, responsive networking, audio and room QR updates.
+Most APK growth comes from the incoming Huawei scan library (**936,122** bytes),
+DEX increase (**710,914**), and scanner model assets (**1,026,816**). No new Golf
+artwork or unrelated quality reductions. Largest compressed entries: islands
+**45,055,447**, IL2CPP **12,389,693**, Unity
+**9,807,996**, metadata **2,764,612** bytes.
+
+Complete WindowsFinal updated; **327 files** SHA-256 matched before its note
+was amended. **36 drag/Swing/Putt + 7 host + 7 client tee assertions** passed.
+All **505 C# source hashes** match the tested build. No new WAN session or
+physical-phone touch/FPS/scanner test. Evidence: ignored `Builds/GolfPublishQA/`,
+including `FinalAndroidAudit/` and `apk-entry-growth.json`.
+Reviewed old deliveries archived in `Legacy/20261020-071812-929-golf-main-publish/`.
+See [current integration and publication record](GOLF-MAIN-PUBLISH.md).
+
 ## Golf 30% idle preview restoration - 20 October 2026
 
 Fresh AndroidSubmission at **06:48:37 Malaysia time**: actual APK

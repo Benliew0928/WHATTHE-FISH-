@@ -2,7 +2,13 @@
 
 Current locality rule: grass walk, run and turning footsteps play only for the
 local player. Opponent and teammate footsteps are silent on that client.
-Shared ball contacts, tackles and match sounds retain their existing behavior.
+Updated 18 October 2026: jump/landing, gather and dash movement accents also
+play only for the local player. Walk/run use 28% of their previous gain;
+cut/fabric 22%; body, fall, landing, swipe, dash and slide 35%; turf/post/
+deflection/boundary/Wall impacts 40%; dribble, receive, kick and roll 45%.
+Shared ball contacts and tackles remain audible at these softer levels.
+Match, prop and UI levels remain. Reductions apply once at playback, including
+replay, before saved volume controls. See [verification](QUIETER-SPORTS-AND-LOCK-ON.md).
 
 All sounds approved and integrated on 12 October 2026. The complete validated
 Windows player is in `Builds/WindowsFinal/`; launch `Explore-Football.cmd` there.

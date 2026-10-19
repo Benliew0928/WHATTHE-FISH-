@@ -5,6 +5,7 @@ Run examples from the repository root. Scripts resolve the project from their ow
 | Task | Entry point |
 | --- | --- |
 | Complete Windows player | `./Tools/Build/Build.ps1 -Target Windows` |
+| Football end colours and guest input latency | Unity method `ResponsivenessBuild.Build`, then `python Tools/Build/test_responsiveness.py`; add `--baseline`, `--loss 0.02`, or `--players 12`; [design, diagnosis and evidence](../../Docs/FOOTBALL-DIRECTION-AND-LATENCY.md) |
 | Travel guards, match-start spectator arrivals and Fishing piers | Unity method `TravelMatchBuild.Build`, then `./Tools/Build/Test-TravelMatches.ps1`; three real local clients; [teammate testing](../../Docs/TEAMMATE-TESTING.md) |
 | Reject an older multiplayer build in both host/guest directions | `./Tools/Build/Test-BuildCompatibility.ps1 -PreviousPlayerPath <older-player-executable> -PlayerPath Builds/WindowsFinal/WhatTheFish.exe`; two local connections, protocol rejection and current-client guidance |
 | Football team celebration, solo MVP and looping results | Unity method `FootballCelebrationBuild.BuildReview`, then `./Tools/Build/Test-FootballCelebration.ps1 -CaptureFrames`; [direction and checks](../../Docs/FOOTBALL-CELEBRATION.md) |

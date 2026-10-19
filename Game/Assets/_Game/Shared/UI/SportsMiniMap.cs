@@ -50,7 +50,7 @@ namespace WhatTheFish {
    for(int sign=-1;sign<=1;sign+=2){
     float edge=field.width*.5f,depth=IllustratedFootball?16:23,h=IllustratedFootball?28:40;
     Box(v,new Rect(sign<0?-edge:edge-depth,-h/2,depth,h),paint);
-    if(football)Line(v,new(sign*(field.width*.5f+2),-7),new(sign*(field.width*.5f+2),7),Color.white,2);
+    if(football)Line(v,new(sign*(field.width*.5f+2),-7),new(sign*(field.width*.5f+2),7),FootballGoalIdentity.EndColor(sign),4);
     else {Ring(v,new(sign*69,0),11,paint,1);Ring(v,new(sign*85,0),3,Color.white,1);}
    }
    PlayerCount=0;var app=AppRoot.Instance;var own=app?app.LocalAthlete:null;

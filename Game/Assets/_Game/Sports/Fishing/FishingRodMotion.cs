@@ -11,6 +11,9 @@ namespace WhatTheFish {
   public float GripError {get;private set;}
   public float FightLean {get;private set;}
   public Vector3 Tip=>rod?rod.transform.TransformPoint(tipOffset):transform.position;
+  public bool LineVisible=>line&&line.enabled;
+  public Vector3 LineGaugeAnchor=>line&&line.enabled?line.GetPosition(Mathf.Min(4,line.positionCount-1)):Tip;
+  public Color LineTint {get;private set;}
   public void Bind(Athlete owner,FishingPresentation source){
    actor=owner;presentation=source;if(bones!=null)return;bones=owner.visual.GetComponentsInChildren<Transform>(true);
    Transform Bone(string n)=>Array.Find(bones,t=>t.name=="mixamorig:"+n);
@@ -29,7 +32,7 @@ namespace WhatTheFish {
   void OnDestroy(){if(line)Destroy(line.gameObject);if(floatRing)Destroy(floatRing.gameObject);}
   void LateUpdate(){
    var game=FishingGame.Instance;var state=game?game.Player(actor):null;
-   if(!presentation||!game||!game.Context||!state.HasValue||!state.Value.connected||actor.inTransit||!hand){Stow();return;}
+   if(!presentation||!game||!game.Context||FishingCeremony.Presenting||!state.HasValue||!state.Value.connected||actor.inTransit||!hand){Stow();return;}
    var p=state.Value;
    if(!rod){var template=presentation.RodTemplate(p.owner);if(!template)return;rod=FishingPresentation.CloneVisual(template,transform,"Held fishing rod");tipOffset=template.Find("Tip").localPosition;gripOffset=template.Find("Grip").localPosition;line=presentation.Line("Fishing line",transform,.012f);floatRing=presentation.Line("Bite float ring",transform,.025f);floatRing.loop=true;floatRing.positionCount=10;}
    rod.SetActive(true);for(int i=0;i<bones.Length;i++)saved[i]=bones[i].localRotation;applied=true;
@@ -67,6 +70,8 @@ namespace WhatTheFish {
    if(p.phase==FishingPhase.Casting){float t=Mathf.Clamp01(elapsed/.65f);endpoint=Vector3.Lerp(Tip,endpoint,t)+Vector3.up*Mathf.Sin(t*Mathf.PI)*2;}
    if(p.phase==FishingPhase.Bite)endpoint.y-=.08f+.08f*Mathf.Sin((float)game.Now*18);
    for(int i=0;i<line.positionCount;i++){float t=i/(float)(line.positionCount-1);var point=Vector3.Lerp(Tip,endpoint,t);point.y-=Mathf.Sin(t*Mathf.PI)*(p.phase==FishingPhase.Reeling?Mathf.Lerp(.22f,.015f,p.tension):.16f);line.SetPosition(i,point);}
+   LineTint=p.phase==FishingPhase.Reeling?FishingTensionVisual.ColorFor(p.tension):new Color(.94f,.88f,.52f);
+   line.startColor=line.endColor=LineTint;line.startWidth=line.endWidth=p.phase==FishingPhase.Reeling?.018f+.012f*p.tension:.012f;
    floatRing.startColor=floatRing.endColor=p.phase==FishingPhase.Bite||p.phase==FishingPhase.Reeling&&p.held?new Color(1,.72f,.12f):p.phase==FishingPhase.Reeling&&p.tension>.75f?new Color(1,.32f,.18f):new Color(.2f,1,1);
    float radius=p.phase==FishingPhase.Bite?.20f+.035f*Mathf.Sin((float)game.Now*10):p.phase==FishingPhase.Reeling?.15f+p.surge*.2f:.11f;
    for(int i=0;i<floatRing.positionCount;i++){float angle=i*Mathf.PI*2/floatRing.positionCount;var centre=endpoint;if(p.phase==FishingPhase.Reeling)centre.y=game.WaterHeight(centre);floatRing.SetPosition(i,centre+new Vector3(Mathf.Cos(angle)*radius,.018f,Mathf.Sin(angle)*radius));}
