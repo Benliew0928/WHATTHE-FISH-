@@ -1,5 +1,70 @@
 # APK size audit — measured release records
 
+## Fishing skill-card text cleanup and publication - 20 October 2026
+
+Removed the **BEFORE CASTING / WHILE HOOKED** card labels and the shared-choice
+subtitle. Skill icons, names, descriptions, selection controls and all gameplay
+rules remain. This release includes the approved shared round skills and
+player-anchored Island View from the preceding record.
+
+Fresh AndroidSubmission at **23:41:09 Malaysia time**:
+actual APK **93,899,262 -> 93,903,454 bytes
+(+4,192)**, with **906,096,546 bytes** below the strict
+1,000,000,000-byte limit. Build/budget gate, ZIP CRC, five-scene catalog and bundle
+hash, and independent APK v2 signature verification passed. SHA-256:
+**99B3594EFD68CCDCFD2A3DE5D535C8A8CDAD5A7CA33F4952A01AA52E49B0B0FE**.
+
+Largest compressed entries: islands **45,078,358**, IL2CPP **12,390,337**,
+Unity **9,807,453** and metadata **2,765,147** bytes. The bundle increased by
+**7,415 bytes** while IL2CPP decreased by **3,066 bytes**; no new art was added.
+
+The complete Windows player has **327 files**, all matched to the tested candidate
+before its build note was amended. The code refresh preserved the native scene,
+catalog and islands bundle. **2,084 rule checks and 2,962 rendered gameplay checks**
+passed; the actual card screenshot confirms the removed text and clear descriptions.
+All **507 C# hashes** match through both builds. Protocol remains **73**.
+No new artwork was added. Physical-phone touch/FPS and real WAN sessions were
+not retested; the preceding record retains broader loopback/audio/travel evidence.
+
+Evidence: ignored `Builds/FishingPublish/Task-20261020-232412/`, including `FinalAndroidAudit/`,
+`apk-after.json`, `apk-entry-growth.json`, `apksigner.txt` and `windows-promotion.json`.
+Reviewed superseded player/APK: ignored
+`Legacy/20261020-233141-488-fishing-skill-card-publish/`.
+See [Fishing verification](FISHING-VERIFICATION.md) and [skill rules](FISHING-ABILITIES.md).
+
+## Fishing round skills and Island View - 20 October 2026
+
+Fresh AndroidSubmission at **22:51:18 Malaysia time**: actual local APK
+**87,580,516 -> 93,899,262 bytes (+6,318,746)**.
+Strict decimal-GB headroom: **906,100,738 bytes**. The official build
+and hard-limit gate, ZIP CRC, complete five-scene content catalog and independent
+APK v2 signature verification passed. SHA-256:
+**478B49AB5B57D85914A434A02D614F0B31E0C7A04139D5A1F9FF8E7D0EC6E084**.
+
+This includes the pulled `ca8dc57` source plus the uncommitted Fishing task:
+shared three-card selection, one reusable skill, six skills, a monochrome
+render-only helper, contextual cooldown button and manual player-anchored
+**Island View**. No new bitmap or character model was added; native vector
+icons and a small shader reuse existing art and meshes.
+
+The local before APK predates the incoming Golf/QR work. Largest measured entry
+growth includes islands **+1,936,533**, Huawei scanner library **+936,122**,
+DEX **+710,914** and scanner models **+1,026,816** bytes. This is not an
+asset-only Fishing benchmark. The new APK is **23,748 bytes** larger than the
+previous documented protocol-72 measurement below, which is a separate build.
+Largest compressed entries are islands **45,070,943**, IL2CPP **12,393,403**,
+Unity **9,807,453** and metadata **2,765,303** bytes. Serialized/source sizes
+are different measurements.
+
+The complete WindowsFinal player has **327 files**. All files matched the tested
+candidate before its note was amended. **5,762 checks** passed; **507 C# source
+hashes** match both builds. Protocol **73** requires matching peers. The APK uses
+the configured Android Debug certificate; store signing is separate. Physical
+phone touch/FPS and real internet sessions remain unverified.
+Evidence: ignored `Builds/FishingDraft/Task-20261020-175936/`, including
+`FinalAndroidAudit/`, `apk-after.json`, `apksigner.txt` and source/promotion hashes.
+See [skill rules](FISHING-ABILITIES.md) and [verification](FISHING-VERIFICATION.md).
+
 ## Golf and latest-main protocol-72 merge - 20 October 2026
 
 Fresh AndroidSubmission at **07:21:42 Malaysia time**: actual APK

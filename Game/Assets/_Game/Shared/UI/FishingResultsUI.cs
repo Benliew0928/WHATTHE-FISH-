@@ -113,7 +113,7 @@ namespace WhatTheFish {
    for(int i=0;i<3;i++){float x=width*i/3;Place(crewFish[i].rectTransform,x+2,scoreHeight+2,30,30);Place(crewSizeLabels[i].rectTransform,x+33,scoreHeight+2,width/3-51,sizeHeight);FitSingleLine(crewSizeLabels[i],crewSizeLabels[i].text,layout.crewFontSize);Place(crewChecks[i].rectTransform,x+width/3-17,scoreHeight+2+(sizeHeight-17)*.5f,17,17);}
   }
   void TickCrew(FishingGame game){
-   if(!crewStrip)return;var m=game.State.Match;bool visible=m.mode==FishingMode.Crew&&(m.phase==FishingRoundPhase.Countdown||m.phase==FishingRoundPhase.Playing);crewStrip.gameObject.SetActive(visible);if(!visible)return;
+   if(!crewStrip)return;var m=game.State.Match;bool visible=m.mode==FishingMode.Crew&&(m.phase==FishingRoundPhase.Countdown||m.phase==FishingRoundPhase.Drafting||m.phase==FishingRoundPhase.Playing);crewStrip.gameObject.SetActive(visible);if(!visible)return;
    FitSingleLine(crewScore,"BASKET "+m.crewScore+" / "+m.crewTarget,layout.crewScoreFontSize);
    var needing=game.State.Players.Where(p=>p.connected&&p.catches==0).OrderBy(p=>p.owner==FishingGame.Key(actor)?0:1).ThenBy(p=>p.owner).ToArray();
    string next=needing.Length==0?"":needing[0].owner==FishingGame.Key(actor)?"YOU":game.PlayerName(needing[0].owner);

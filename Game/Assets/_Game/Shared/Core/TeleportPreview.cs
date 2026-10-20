@@ -21,7 +21,7 @@ namespace WhatTheFish {
   public bool Play(SportId sport,TeleportDestination destination,bool maximum){
    if(!app||!app.Exploring||app.rooms.Connected||TeleportSequence.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return false;
    // Reject before touching practice actors when a match or its result is active.
-   if(FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active||GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running||FishingGame.Instance&&(FishingGame.Instance.State.Match.phase==FishingRoundPhase.Playing||FishingGame.Instance.State.Match.phase==FishingRoundPhase.Countdown)||FootballMVP.Presenting||BasketballMVP.Presenting)return false;
+   if(FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active||GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running||FishingGame.Instance&&(FishingGame.Instance.State.Match.phase==FishingRoundPhase.Playing||FishingGame.Instance.State.Preparing)||FootballMVP.Presenting||BasketballMVP.Presenting)return false;
    FootballBots.Instance?.Clear();BasketballBots.Instance?.Clear();
    return TeleportSequence.Ensure().StartPreview(sport,destination,Group(maximum?TeleportDestinations.Capacity(sport):1));
   }

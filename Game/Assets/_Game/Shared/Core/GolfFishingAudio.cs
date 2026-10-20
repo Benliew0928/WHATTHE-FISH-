@@ -25,7 +25,7 @@ namespace WhatTheFish {
   readonly Dictionary<Athlete,Walker> walkers=new();readonly Dictionary<ulong,Cart> carts=new();readonly Dictionary<ulong,Ball> balls=new();
   GolfMatchManager golf;FishingGame fishing;GolfBallPhysicsSettings golfPhysics;bool focused=true,paused,presenting;uint round;
   GolfMatchPhase golfPhase;ulong firstFinisher;FishingMatchSnapshot fishMatch;int tick,wanted;
-  readonly double[] supplies=new double[5],respawns=new double[FishingState.FishCount];
+  readonly double[] respawns=new double[FishingState.FishCount];
   float buttonsAt,uiAt=-10;int uiFrame=-1;string resultCue;double resultAt=-1;
   public bool Context=>isActiveAndEnabled&&(golf&&golf.Context||fishing&&fishing.Context);
   public bool Audible=>Context&&focused&&!paused&&!AudioListener.pause&&Time.timeScale>0;
@@ -135,7 +135,6 @@ namespace WhatTheFish {
    int seconds=m.phase==FishingRoundPhase.Countdown?Mathf.CeilToInt((float)(m.started-now)):m.phase==FishingRoundPhase.Playing?Mathf.CeilToInt((float)(m.deadline-now)):0;
    if(!first&&seconds>0&&seconds<=5&&seconds!=tick)Play("countdown",point,.65f,true);
    int next=fishing.State.Window(now);if(!first&&m.phase==FishingRoundPhase.Playing&&next!=wanted)Play("wanted-change",point,.65f,true);wanted=next;tick=seconds;fishMatch=m;
-   for(int i=0;i<supplies.Length;i++){double ready=fishing.State.SupplyReady(i);if(!first&&fishing.State.Running&&supplies[i]>0&&now>=supplies[i]&&now-Time.unscaledDeltaTime<supplies[i])Play("cart-summon",fishing.SupplyPosition(i),.55f);supplies[i]=ready;}
    foreach(var fish in fishing.State.Fish){if(!first&&respawns[fish.id]>0&&now>=respawns[fish.id]&&now-Time.unscaledDeltaTime<respawns[fish.id]){var pos=fishing.FishPosition(fish.id,now);if(actor&&Vector3.Distance(pos,point)<8&&pos.y>=fishing.WaterY-.12f)Play("fish-bubbles",pos,.4f);}respawns[fish.id]=fish.respawnAt;}
   }
   void Movement(Athlete actor,bool first){

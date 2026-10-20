@@ -5,16 +5,16 @@ namespace WhatTheFish {
   FishingAction pendingFishing;double pendingFishingPressedAt;uint pendingFishingRound,pendingFishingSequence;int pendingFishingFish;
   bool fishingHookPending;uint fishingHookRound,fishingHookSequence;float fishingHookQueuedAt;
   bool fishingHeld;int fishingSource,fishingSide;float fishingRenewAt;
-  float fishingAimFrozenUntil,fishingCameraBlend,fishingPierCameraUntil;
+  float fishingAimFrozenUntil,fishingCameraBlend,fishingPierCameraUntil;bool fishingCameraEntered,fishingCameraRestore;int fishingPreviousMode;
   bool fishingFightCamera,fishingFightReturning;Athlete fishingCameraActor;uint fishingCameraRound;
   float fishingFightAt,fishingFightYaw,fishingFightSide;Vector3 fishingFightFrom,fishingFightFocus;Quaternion fishingFightRotation;
   public float FishingFightSide=>fishingFightSide;
   public bool FishingFightCameraActive=>fishingFightCamera||fishingFightReturning;
-  bool FishingFightLocksLook {get{var g=FishingGame.Instance;var p=g?g.Player(target):null;var ui=FishingHUD.Instance;return mode!=0&&ui&&ui.Settings.fightCamera&&!MenuPreferences.ReducedMotion&&g&&g.Context&&p.HasValue&&p.Value.phase==FishingPhase.Reeling;}}
+  bool FishingFightLocksLook {get{var g=FishingGame.Instance;var p=g?g.Player(target):null;var ui=FishingHUD.Instance;return mode==1&&ui&&ui.Settings.fightCamera&&!MenuPreferences.ReducedMotion&&g&&g.Context&&p.HasValue&&p.Value.phase==FishingPhase.Reeling;}}
   void ResetFishingFightCamera(){fishingFightCamera=fishingFightReturning=false;fishingCameraActor=null;fishingFightSide=0;}
   void PresentFishingFightCamera(ref Vector3 position,ref Quaternion rotation){
    var g=FishingGame.Instance;var ui=FishingHUD.Instance;
-   if(mode==0||!g||!g.Context||!target||target.inTransit||!ui||!ui.Settings.fightCamera||MenuPreferences.ReducedMotion){ResetFishingFightCamera();return;}
+   if(mode!=1||!g||!g.Context||!target||target.inTransit||!ui||!ui.Settings.fightCamera||MenuPreferences.ReducedMotion){ResetFishingFightCamera();return;}
    if(FishingFightCameraActive&&(fishingCameraActor!=target||fishingCameraRound!=g.State.Match.round))ResetFishingFightCamera();
    var p=g.Player(target);bool fight=!InputBlocked&&!ui.BlocksGameplay&&g.State.Running&&p.HasValue&&p.Value.connected&&p.Value.phase==FishingPhase.Reeling&&p.Value.fish>=0&&p.Value.fish<FishingState.FishCount;
    float duration=ui.Settings.fightCameraTransition;
@@ -68,11 +68,24 @@ namespace WhatTheFish {
    if(g.NearestPier(target)>=0)fishingPierCameraUntil=Time.unscaledTime+.25f;
    fishingCameraBlend=Mathf.MoveTowards(fishingCameraBlend,Time.unscaledTime<fishingPierCameraUntil?1:0,Time.unscaledDeltaTime*3);
    var forward=Quaternion.Euler(0,yaw,0)*Vector3.forward;
-   if(mode==1){focus+=(forward*1.25f+Vector3.up*.55f)*fishingCameraBlend;}
-   else if(mode==2){var pond=target.transform.position+forward*Mathf.Clamp(6.5f-(pitch-20)*.8f,3.5f,FishingState.MaxCastDistance);pond.y=g.WaterY-.6f;focus=Vector3.Lerp(focus,pond,fishingCameraBlend);}
+   if(mode==1||mode==2)focus+=(forward*1.25f+Vector3.up*.55f)*fishingCameraBlend;
   }
   void QueueFishing(FishingAction action){var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!g||!p.HasValue)return;pendingFishing=action;pendingFishingPressedAt=g.Now;pendingFishingRound=g.State.Match.round;pendingFishingSequence=p.Value.sequence;pendingFishingFish=action==FishingAction.Cast?SelectedFishingFish:-1;}
-  public void FishingAbilityInput(FishingAction action,int choice=-1){var game=FishingGame.Instance;var p=game?game.Player(target):null;if(!active||!game||!game.Context||!p.HasValue||pendingFishing!=FishingAction.None)return;QueueFishing(action);pendingFishingFish=choice;}
+  // Modal skill choices and skill taps use the same owner-checked RPC directly.
+  // A held directional input cannot discard a skill tap or lose its renewal.
+  public bool FishingAbilityInput(FishingAction action,int choice=-1){
+   var g=FishingGame.Instance;var p=g?g.Player(target):null;
+   if(!active||InputBlocked||!g||!g.Context||!target||target.inTransit||!p.HasValue||action!=FishingAction.ChooseSkill&&action!=FishingAction.UseAbility)return false;
+   var net=target.GetComponent<NetworkAthlete>();
+   if(net&&net.IsSpawned){if(!net.IsOwner)return false;if(!net.IsServer){net.FishingRpc(action,g.State.Match.round,p.Value.sequence,choice,g.Now);return true;}}
+   return g.Execute(target,action,g.State.Match.round,p.Value.sequence,choice,g.Now);
+  }
+  void ObserveFishingArrival(){
+   var g=FishingGame.Instance;bool on=g&&g.Context&&!RoomMatchStart.Travelling;
+   if(!on){if(fishingCameraEntered){fishingCameraEntered=false;fishingCameraRestore=true;}if(fishingCameraRestore&&!RoomMatchStart.Travelling&&target&&!target.inTransit){mode=fishingPreviousMode;fishingCameraRestore=false;}return;}
+   if(fishingCameraEntered||!active||!target||target.inTransit||TeleportSequence.OwnsCamera)return;
+   fishingCameraEntered=true;fishingCameraRestore=false;fishingPreviousMode=mode;mode=1;fishingCameraBlend=0;ResetFishingFightCamera();
+  }
   public void ReadyFishing(){var g=FishingGame.Instance;var p=g?g.Player(target):null;if(active&&g&&p.HasValue&&!p.Value.Busy)QueueFishing(p.Value.ready?FishingAction.Unready:FishingAction.Ready);}
   public bool BeginFishing(int source=int.MinValue){
    var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!active||!g||!g.Context||!p.HasValue||fishingHeld||pendingFishing!=FishingAction.None)return false;
@@ -103,6 +116,7 @@ namespace WhatTheFish {
    var g=FishingGame.Instance;var p=g?g.Player(target):null;
    if(fishingHeld&&(!active||!g||!g.Context||!p.HasValue||p.Value.phase!=FishingPhase.Reeling)){fishingHeld=false;QueueFishing(FishingAction.ReelStop);}
    if(fishingHeld&&pendingFishing==FishingAction.None&&Time.unscaledTime>=fishingRenewAt){fishingRenewAt=Time.unscaledTime+.2f;QueueFishing(fishingSide<0?FishingAction.ReelLeft:FishingAction.ReelRight);}
+   if(g&&g.Context&&g.State.Preparing){command.move=Vector2.zero;command.jump=command.sprint=false;}
    if(pendingFishing!=FishingAction.None){command.fishingPressedAt=pendingFishingPressedAt;command.fishingAction=pendingFishing;command.fishingRound=pendingFishingRound;command.fishingSequence=pendingFishingSequence;command.fishingFish=pendingFishingFish;pendingFishing=FishingAction.None;}
   }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD

@@ -23,7 +23,7 @@ namespace WhatTheFish {
   public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?PlayerIdentity.DisplayName:id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"Guest";}
   Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned&&a.GetComponent<NetworkAthlete>().IsPlayerObject:a==AppRoot.Instance.LocalAthlete)).OrderBy(Key).ToArray();
   public int ParticipantCount=>Eligible().Length;
-  public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&State.Match.phase!=FishingRoundPhase.Playing&&State.Match.phase!=FishingRoundPhase.Countdown&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
+  public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&State.Match.phase!=FishingRoundPhase.Playing&&!State.Preparing&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
   void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);gameObject.AddComponent<FishingAbilityPresentation>();gameObject.AddComponent<FishingSpectatorAwards>();}
   void OnEnable(){Instance=this;}
   void OnDisable(){State.Clear();Presentation?.Clear(false);wasContext=false;if(Authority)Publish();if(Instance==this)Instance=null;}
@@ -64,9 +64,8 @@ namespace WhatTheFish {
    if(currentAngle<=releaseDegrees&&(selected<0||currentAngle<=best+.8f))return current;return selected;
   }
   public Vector3 FightPosition(FishingPlayerRecord p){var position=p.origin+p.fightHeading*p.distance+Vector3.Cross(Vector3.up,p.fightHeading)*p.fightOffset.x;position.y=WaterY-p.fightOffset.y;return position;}
-  public float SpeedMultiplier(Athlete actor){var p=Player(actor);return Context&&p.HasValue&&Now<p.Value.speedUntil?1.3f:1;}
-  public Vector3 SupplyPosition(int pier){var point=Pier(pier);var outwards=Vector3.ProjectOnPlane(point-transform.position,Vector3.up).normalized;return point+outwards*2.1f+Vector3.Cross(Vector3.up,outwards)*2.1f;}
-  public float Heading(Athlete actor){var p=Player(actor);if(!p.HasValue||p.Value.pier<0)return actor.transform.eulerAngles.y;var d=(p.Value.phase==FishingPhase.Reeling?FightPosition(p.Value):p.Value.phase==FishingPhase.Salvaging?transform.position:FishPosition(p.Value.fish,Now))-actor.transform.position;return Mathf.Atan2(d.x,d.z)*Mathf.Rad2Deg;}
+  public float SpeedMultiplier(Athlete actor)=>1;
+  public float Heading(Athlete actor){var p=Player(actor);if(!p.HasValue||p.Value.pier<0)return actor.transform.eulerAngles.y;var d=(p.Value.phase==FishingPhase.Reeling?FightPosition(p.Value):FishPosition(p.Value.fish,Now))-actor.transform.position;return Mathf.Atan2(d.x,d.z)*Mathf.Rad2Deg;}
   public float WaterY {get;private set;}
   public float WaterHeight(Vector3 world){var p=transform.InverseTransformPoint(world);float t=(float)Now;float fade=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(24,27.8f,new Vector2(p.x,p.z).magnitude));return WaterY+(Mathf.Sin(p.x*.92f+p.z*.46f+t*1.1f)*.023f+Mathf.Sin(p.z*1.27f-p.x*.34f-t*.85f)*.013f)*fade;}
   public Vector3 FishPosition(int fish,double now){
@@ -78,7 +77,15 @@ namespace WhatTheFish {
    long segment=(long)System.Math.Floor(route);float t=(float)(route-segment),t2=t*t,t3=t2*t;
    var point=(SwimWaypoint(fish,segment-1)*Mathf.Pow(1-t,3)+SwimWaypoint(fish,segment)*(3*t3-6*t2+4)+SwimWaypoint(fish,segment+1)*(-3*t3+3*t2+3*t+1)+SwimWaypoint(fish,segment+2)*t3)/6;
    var p=transform.TransformPoint(new Vector3(point.x,0,point.y));
-   p.y=WaterY-.58f-size*.14f+Mathf.Sin((float)((now*1.2+fish)%(System.Math.PI*2)))*.12f;return p;
+   p.y=WaterY-.58f-size*.14f+Mathf.Sin((float)((now*1.2+fish)%(System.Math.PI*2)))*.12f;
+   float best=0;Vector3 destination=p;
+   foreach(var player in State.Players){
+    if(!player.connected||(player.schoolFishMask&(1u<<fish))==0)continue;float age=(float)(now-player.schoolAt);
+    if(age<0||age>8)continue;float weight=Mathf.SmoothStep(0,1,age/2)*(1-Mathf.SmoothStep(0,1,(age-6)/2));
+    if(weight<=best)continue;best=weight;float angle=fish*2.399963f+(float)now*.15f;destination=player.schoolPoint+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*(1.5f+fish%3*.45f);destination.y=p.y;
+   }
+   return Vector3.Lerp(p,destination,best);
+
   }
   static uint SwimHash(uint value){unchecked{value^=value>>16;value*=0x7feb352d;value^=value>>15;value*=0x846ca68b;return value^(value>>16);}}
   static Vector2 SwimWaypoint(int fish,long segment){
@@ -92,13 +99,15 @@ namespace WhatTheFish {
   public bool Execute(Athlete actor,FishingAction action,uint round,uint sequence,int fish=-1,double pressedAt=double.NaN){
    if(!Authority||!Context||!actor||actor.inTransit||!Eligible().Contains(actor))return false;
    var p=Player(actor);if(!p.HasValue)return false;int pier=action==FishingAction.Cast?NearestPier(actor):p.Value.pier;
-   if(action>=FishingAction.Favourites&&action<=FishingAction.UseAbility){
+   if(action==FishingAction.ChooseSkill||action==FishingAction.UseAbility||action is FishingAction.Favourites or FishingAction.Supply or FishingAction.Salvage){
     bool remote=NetworkManager.Singleton&&NetworkManager.Singleton.IsListening&&actor.GetComponent<NetworkAthlete>()&&actor.GetComponent<NetworkAthlete>().OwnerClientId!=NetworkManager.ServerClientId;
     if(remote&&(!double.IsFinite(pressedAt)||pressedAt>Now+FishingState.HookClockTolerance||Now-pressedAt>FishingState.LeaseSeconds))return false;
-    if(action==FishingAction.Supply){pier=Enumerable.Range(0,FishingState.PierCount).OrderBy(i=>Vector3.Distance(actor.transform.position,SupplyPosition(i))).First();if(actor.Airborne||actor.LoadingJump||!actor.Grounded||Vector3.Distance(actor.transform.position,SupplyPosition(pier))>2.6f)return false;}
-    if(action==FishingAction.Salvage){pier=NearestPier(actor);if(pier<0)return false;}
-    var nearby=Eligible().Where(a=>Vector3.Distance(a.transform.position,actor.transform.position)<=12).Select(Key).ToArray();
-    bool given=State.AbilityAct(Key(actor),round,sequence,action,fish,pier,actor.transform.position,Now,nearby);if(given)Publish();return given;
+    Vector3 call=Vector3.zero;uint mask=0;
+    if(action==FishingAction.UseAbility&&p.Value.item==FishingAbility.SchoolCall){
+     int shore=NearestPier(actor);if(shore<0)return false;var inward=Vector3.ProjectOnPlane(transform.position-Pier(shore),Vector3.up).normalized;call=Pier(shore)+inward*10;call.y=WaterY-.6f;
+     foreach(int id in State.Fish.Where(f=>!f.claimed&&f.respawnAt<=Now).OrderBy(f=>(FishPosition(f.id,Now)-call).sqrMagnitude).Take(3).Select(f=>f.id))mask|=1u<<id;
+    }
+    bool given=State.AbilityAct(Key(actor),round,sequence,action,fish,pier,actor.transform.position,Now,null,call,mask);if(given)Publish();return given;
    }
    if(action==FishingAction.Cast&&(!CanCast(actor,fish)||Physics.Linecast(actor.transform.position+Vector3.up*1.4f,FishPosition(fish,Now),1<<8,QueryTriggerInteraction.Ignore)))return false;
    if(action!=FishingAction.Cancel&&action!=FishingAction.ReelStop&&action!=FishingAction.Cast&&action!=FishingAction.Ready&&action!=FishingAction.Unready&&pier!=NearestPier(actor))return false;
@@ -115,7 +124,7 @@ namespace WhatTheFish {
    if(!wasContext&&Authority)BeginPractice();wasContext=true;
    if(!Authority){var host=NetworkAthlete.HostPlayer;if(host){bool changed=State.Match.round!=host.FishingMatch.Value.round;State.Receive(host.FishingMatch.Value,host.FishingPlayers,host.FishingFish);if(changed)PlayerView.Instance?.ClearMatchInput();}RecordResult();return;}
    var actors=Eligible();
-   if(State.Match.phase==FishingRoundPhase.Countdown&&actors.Any(a=>!State.Player(Key(a)).HasValue))State.Abandon(Now);
+   if(State.Preparing&&actors.Any(a=>!State.Player(Key(a)).HasValue))State.Abandon(Now);
    if(actors.Length<=5&&(State.Match.phase==FishingRoundPhase.Practice||State.Match.phase==FishingRoundPhase.Ended))foreach(var actor in actors)State.Join(Key(actor));
    foreach(var p in State.Players.ToArray()){
     var actor=actors.FirstOrDefault(a=>Key(a)==p.owner);
@@ -136,7 +145,7 @@ namespace WhatTheFish {
    else if(State.Match.outcome==FishingOutcome.Success){float elapsed=(float)(State.Match.ended-State.Match.started);PlayerPrefs.SetFloat(key,Mathf.Min(PlayerPrefs.GetFloat(key,float.MaxValue),elapsed));}
    PlayerPrefs.Save();
   }
-  public void ReturnToPractice(){if(!Authority||!Context||State.Match.phase==FishingRoundPhase.Playing||State.Match.phase==FishingRoundPhase.Countdown)return;BeginPractice();}
+  public void ReturnToPractice(){if(!Authority||!Context||State.Match.phase==FishingRoundPhase.Playing||State.Preparing)return;BeginPractice();}
   void Publish(){var host=NetworkAthlete.HostPlayer;if(!Authority||!host||!host.IsSpawned)return;host.FishingMatch.Value=State.Match;Sync(host.FishingPlayers,State.Players);Sync(host.FishingFish,State.Fish);}
   static void Sync<T>(NetworkList<T> target,List<T> source)where T:unmanaged,IEquatable<T>{while(target.Count>source.Count)target.RemoveAt(target.Count-1);for(int i=0;i<source.Count;i++){if(i>=target.Count)target.Add(source[i]);else if(!target[i].Equals(source[i]))target[i]=source[i];}}
  }

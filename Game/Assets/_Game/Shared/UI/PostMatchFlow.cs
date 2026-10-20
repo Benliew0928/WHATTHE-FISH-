@@ -7,7 +7,7 @@ namespace WhatTheFish {
  public sealed class PostMatchFlow:MonoBehaviour {
   public static PostMatchFlow Instance {get;private set;}
   public bool Visible=>panel&&panel.gameObject.activeSelf;
-  public static bool MatchActive=>FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active||GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running||FishingGame.Instance&&(FishingGame.Instance.State.Match.phase is FishingRoundPhase.Playing or FishingRoundPhase.Countdown);
+  public static bool MatchActive=>FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active||GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running||FishingGame.Instance&&(FishingGame.Instance.State.Match.phase is FishingRoundPhase.Playing or FishingRoundPhase.Countdown or FishingRoundPhase.Drafting);
   RectTransform panel,content;GameObject hostControls,guestControls;Button reopen,again,teleport,station,game,ready;Button[] cards=new Button[4];CovePlate[] surfaces=new CovePlate[4];Text subtitle,status,party,againLabel,travelLabel,readyLabel;Text[] capacities=new Text[4];
   AppRoot app;SportId selected;TeleportDestination destination;string shown="",current="";bool wasBlocked;string actionMessage="";
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){if(!Instance)new GameObject("Next adventure",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).AddComponent<PostMatchFlow>();}

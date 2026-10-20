@@ -1,5 +1,92 @@
 # Fishing verification records
 
+## Published skill-card text cleanup - 20 October 2026
+
+Removed the phase labels and shared-choice subtitle from the three-card menu.
+Icons, skill names, effect descriptions and pick/countdown controls remain.
+The rendered screenshot was reviewed; landscape layouts, ability buttons,
+cooldown behavior, catching, controls and camera checks passed.
+
+| Fresh review | Passes | Local evidence |
+| --- | ---: | --- |
+| rules and guarded Windows refresh | 2084 | `Builds/FishingPublish/Task-20261020-232412/windows-refresh.log` |
+| rendered offline gameplay | 2962 | `Builds/FishingGameplayQA/Run-20261020-232929/offline.txt` |
+
+Screenshot: `Builds/FishingGameplayQA/Run-20261020-232929/offline.round-skill-choice.png`.
+Complete WindowsFinal promotion matched all **327 files** before amending its note.
+Scene/catalog/bundle hashes remained unchanged; all **507 C# source hashes** match
+the fresh APK. AndroidSubmission: **93,903,454 bytes**, **906,096,546 bytes**
+below the strict limit. ZIP, packaged catalog/hash and APK v2 signature passed.
+See [current size record](BUILD-SIZE.md) and [audit](APK-SIZE-AUDIT.md).
+
+The opening fetch found no newer remote commits beyond `ca8dc57`; this publication
+includes the approved round-skills changes below plus the final text cleanup.
+Protocol remains **73**. Earlier broader loopback/audio/travel validation is
+recorded below. Physical-phone touch/FPS and real WAN sessions remain unverified.
+Current evidence and source/promotion hashes: ignored `Builds/FishingPublish/Task-20261020-232412/`.
+Superseded player/APK archive: `Legacy/20261020-233141-488-fishing-skill-card-publish/`.
+
+## Shared round skills and Island View - 20 October 2026
+
+Source is `ca8dc57` plus the uncommitted Fishing changes, protocol **73**.
+The same three cards are offered to everyone; each player selects one reusable
+skill. There are no bag/treasure controls. A contextual button shows readiness,
+active duration and cooldown. The monochrome helper shares the avatar meshes
+and live pose without adding gameplay actors. Arrival selects Follow; manual
+Island View stays behind the player. Eye-level controls and the accepted hold,
+rope and swimming behavior remain.
+
+**5,762 checks passed:**
+
+| Review | Passes | Local evidence |
+| --- | ---: | --- |
+| rules | 2084 | `Builds/FishingDraft/Task-20261020-175936/windows-refresh-3.log` |
+| rendered gameplay | 2961 | `Builds/FishingGameplayQA/Run-20261020-222615/offline.txt` |
+| camera and results | 192 | `Builds/FishingPolishQA/Run-20261020-222820/polish.txt` |
+| host | 47 | `Builds/FishingGameplayQA/Run-20261020-222853/host.txt` |
+| guest | 49 | `Builds/FishingGameplayQA/Run-20261020-222853/client.txt` |
+| audio | 184 | `Builds/GolfFishingAudioQA/Fishing-20261020-223036-570/results.txt` |
+| travel Host | 117 | `Builds/TravelMatchQA/Run-20261020-223102-465/Host/results.txt` |
+| travel Player | 64 | `Builds/TravelMatchQA/Run-20261020-223102-465/Player/results.txt` |
+| travel Spectator | 64 | `Builds/TravelMatchQA/Run-20261020-223102-465/Spectator/results.txt` |
+
+The complete Windows candidate was promoted to `Builds/WindowsFinal/` with
+all **327 files** SHA-256 matched before amending `LATEST-BUILD.txt`.
+The last code-only refresh guarded the native scene, catalog and islands-bundle
+hashes. All **507 C# source hashes** remain identical through the Android build.
+Rendered reviews cover skill choice at several landscape sizes, all six skill
+buttons/effects, independent held input, cooldown/phase visibility, all piers and
+camera modes, real catches, UI feedback and results. Loopback peers cover shared
+selection, validated skill requests, scoring and rematches. Three peers cover
+player/spectator placement, draft/countdown travel restrictions and room travel.
+The aiming fixture explicitly re-aims through empty water when a neighbouring
+fish is held by the existing selection hysteresis; production aiming is retained.
+
+Fresh APK: **93,899,262 bytes**, with **906,100,738 bytes**
+under the strict decimal-GB limit. ZIP CRC, five-scene catalog/hash and independent
+v2 signature verification passed. See [size record](BUILD-SIZE.md) and
+[packing audit](APK-SIZE-AUDIT.md). Debug-certificate signing does not establish
+store-release signing. No physical phone touch/visual/FPS or real WAN session
+was performed.
+
+Evidence index: `Builds/FishingDraft/Task-20261020-175936/validation-summary.json`,
+`release-sources.json`, `windows-promotion.json`, `apk-after.json`,
+`FinalAndroidAudit/`, `portable-output.txt`, `portable-links.json` and
+`import-restoration.json`. The shared C# path resolver was checked with an output
+path containing spaces and an unrelated working directory; 63 documentation
+links resolved in a sparse clone with spaces. Import cleanup compared the Golf
+prefab by its full named component graph and retained external references, and
+proved the character library change was only an importer hash.
+
+Reviewed superseded candidates/deliveries and the completed path fixture were
+archived, with manifests, in ignored:
+
+- `Legacy/20261020-184854-436-fishing-draft-review/`
+- `Legacy/20261020-223551-295-fishing-round-skills-delivery/`
+- `Legacy/20261020-225313-393-fishing-skills-portability-fixture/`
+
+This record describes validation before the publication refresh above.
+
 ## Eye-level camera, natural swimming and rope cue — 19 October 2026
 
 The current delivery is described in [Fishing camera and swimming](FISHING-NATURAL-SWIM.md).

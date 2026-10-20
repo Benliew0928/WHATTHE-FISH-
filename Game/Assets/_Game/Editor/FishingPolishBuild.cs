@@ -11,6 +11,8 @@ public static class FishingPolishBuild {
  public static void Windows() {
   Rules();
   string output=Path.GetFullPath(Path.Combine(Application.dataPath,"../../Builds/FishingIllustrated/Player/WhatTheFish.exe"));
+  var args=Environment.GetCommandLineArgs();int selected=Array.IndexOf(args,"-fishingReviewPlayer");
+  if(selected>=0&&selected+1<args.Length)output=ProjectBuilder.ResolveBuildOutputPath(args[selected+1]);
   ProjectBuilder.BuildWindowsPlayer(output);
   Debug.Log("FISHING_POLISH_CANDIDATE_BUILT");
  }

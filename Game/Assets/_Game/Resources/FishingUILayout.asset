@@ -59,3 +59,10 @@ MonoBehaviour:
   fightCameraHeight: 4.2
   fightCameraShoulder: 1.1
   fightCameraTransition: 0.7
+
+  islandViewDistance: 7
+  islandPitchRange: {x: 0, y: 35}
+  skillButtonSize: {x: 100, y: 100}
+  skillButtonGap: {x: 8, y: 18}
+  skillCardSize: {x: 204, y: 218}
+  skillCooldownOpacity: 0.42

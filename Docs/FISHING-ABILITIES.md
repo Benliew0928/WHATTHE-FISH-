@@ -1,66 +1,50 @@
-# Fishing skills, shore bags and pier treasure
+# Fishing round skills
 
-Choose **two favourites from six skills** before pressing Ready. Open
-**CHOOSE 2 SKILLS**, select two cards and save. Unready to change your kit.
-The kit stays with you across rematches during this island visit. Carry
-**one item** at a time; an active effect must finish before taking another.
+Before every timed Round, Cup round or Crew game, everyone sees the **same
+three distinct skill cards**. Pick **one** for the whole round. Each menu
+includes both a before-casting skill and a fighting skill. Players may choose
+the same card. There are no bag pickups, treasure or extra skills mid-round.
 
-Walk near a shore supply and tap its **bag icon**, then pick one of your two
-skills. The host accepts the first valid request. That bag has a shared
-**22-second refill**, visible on its button and in the world. Items are never
-collected automatically or swapped over another held item.
+Selection lasts up to **12 seconds**. Once everyone picks, the normal
+three-second countdown starts. An absent choice defaults to the first card.
+Selection does not consume the three-minute match clock. Practice offers an
+untimed choice. Rematches deal a fresh menu and clear cooldowns.
 
-Alternatively, tap the **treasure chest** at a pier. Treasure first becomes
-available 12 seconds into play. Choose one of your two skills, then spend
-**six seconds** recovering it with the rod. Walking and jumping pause during
-recovery. Cancel gives up the item. All piers share one treasure opportunity;
-beginning recovery starts a **28-second cooldown**. Treasure gives gear, not
-points, and costs time you could spend fishing.
+| Skill | Effect | Phase | Cooldown from activation |
+| --- | --- | --- | --- |
+| Steel Wire | Tension cannot rise above its activation value for 3s. Existing tension stays; release to cool. Silver-blue braid on the line. | Hooked | 24s |
+| Power Reel | Wind 30% faster for 4s, with ordinary tension. Gold pulses on the line. | Hooked | 22s |
+| Fishing Buddy | A monochrome helper reels beside you for 4s. Wind 20% faster with 20% less positive strain. | Hooked | 30s |
+| Bubble Guard | Absorb one strong surge within 6s, reducing strain by 0.22. The bubble pops when consumed. | Hooked | 18s |
+| Sonar | Highlight available Wanted fish for 8s. Personal in competition; shared with all connected Crew members. | Before casting | 20s |
+| School Call | Attract up to three unclaimed fish toward your pier for 6s; release them smoothly over 2s. Gold bait ripples mark the location. | Before casting, at a pier | 20s |
 
-| Skill | Effect | When to tap its icon |
-| --- | --- | --- |
-| Sonar | Available Wanted fish gain gold target rings for you and friends within 12 metres, for 8 seconds | Any phase except treasure recovery |
-| Cool Spool | 45% less positive strain buildup for 4 seconds | While fighting a fish |
-| Flippers | Move 30% faster for 5 seconds | While idle |
-| Power Reel | Wind 28% faster, with 35% more positive strain for 4 seconds | While fighting a fish |
-| Bubble Guard | Reduce strain by 0.22 at the next strong surge within 12 seconds | While fighting a fish |
-| Quick Lure | One cast within 12 seconds gets its bite 0.8 seconds sooner | While idle |
+One skill button sits beside Cast / Right. It hides in the wrong phase,
+glows at full opacity when ready, dims with a clock border while recharging,
+and shows a draining ring while active. It works independently of a held
+Left or Right control. Your skill remains yours after activation.
 
-Tap the held **skill icon** to activate it. An unavailable icon dims until
-its required phase. The duration bar and seconds show the remaining effect;
-Quick Lure and Bubble Guard can end early when consumed. Sonar recipients
-come from the host's nearby-player query. Refreshing sonar extends expiry;
-it does not multiply the effect. Reduced motion retains the cues while
-suppressing bobs and button pops. Skills never automatically catch a fish,
-award points, or steal another player's claimed fish.
+Skills never give automatic catches, extra points or ownership of a fish.
+School Call does not reserve or steal fish. Fishing Buddy copies the live
+avatar pose, meshes and rod using a shared black-and-white shader at 82%
+opacity. It has no collider, network player, independent AI or score, and
+requires no extra character model or texture set.
 
-The host owns kits, inventory, cooldowns, treasure reservations, recipients
-and expiry. Both peers need the current **protocol 70**; the three removed abilities
-are rejected rather than silently mapped to another skill. Match endings,
-disconnects and island travel clear the active fishing state.
+The host validates choices, ownership, phase, timestamps, round/cast tokens,
+activation and cooldown. All peers need **protocol 73**. Retired pickup and
+favourites actions are rejected. Disconnecting during selection abandons it;
+results and island travel clear effects.
 
-## First visit and How to Play
+## Tutorial and camera
 
-The first visit opens a four-page tutorial: **Choose 2 Skills → Cast & Catch →
-Use Your Gear → Play to Win**. Next and Back change pages; Skip/Done closes
-the card so you can walk. The **?** on Fishing's leaderboard reopens it while
-idle. Fishing's **How to Play** uses the exact same component, pictures and
-copy in [FishingTutorialUI.cs](../Game/Assets/_Game/Shared/UI/FishingTutorialUI.cs).
+The entry tutorial and How to Play use the exact same
+[component and copy](../Game/Assets/_Game/Shared/UI/FishingTutorialUI.cs):
+**Pick 1 of 3 / Cast & Catch / Use Your Skill / Play to Win**. Examples reuse
+the actual skill graphics, clock border, buttons and fishing meters. The
+leaderboard **?** reopens this guide while idle.
 
-The tutorial uses the live skill icons, mirrored Left/Right circles, timing
-circle, Catch/Tension bars and gear duration meter. Its supporting
-illustrations are small compressed atlases. Sonar shares the sports radar;
-Power Reel shares Fishing's rod/reel image. Source art and reproducible
-delivery hashes are in [the learning art folder](../ArtSource/Fishing/UI/Learning/).
-Football/Basketball meshes, materials and fonts remain shared.
-
-Round is highest score after three minutes. Cup combines three rounds.
-Crew needs a **shared basket worth 20 × player count**, all three fish sizes
-and at least one catch from every player, within the same three minutes.
-Small/medium/large score 2/5/10; Wanted adds +3 once per minute per player.
-See [Fishing rules](FISHING-MINIGAME.md) and
-[verification limits](FISHING-VERIFICATION.md).
-
-The current [Hold the Glow controls](FISHING-COUNTERSTEER.md) restore continuous holding;
-gear choices and acquisition rules above remain. The shared tutorial uses the
-live fish/gold-band meter and the two Left/Right hold controls without keyboard captions.
+Fishing arrival selects Follow. **Island View** remains a manual settings
+choice: a wider follow view behind the player, with gentle pitch and collision
+handling. It stays player anchored while hooked. Eye-level fighting and the
+accepted Follow fight framing remain. See [controls](FISHING-COUNTERSTEER.md)
+and [match rules](FISHING-MINIGAME.md).

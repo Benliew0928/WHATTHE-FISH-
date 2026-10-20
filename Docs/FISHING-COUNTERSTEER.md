@@ -2,7 +2,7 @@
 
 Current gameplay restores the pictured first **Hold & Countersteer** version:
 one **LEFT** and one **RIGHT** button, the fish marker and gold direction band.
-The timed-tap experiment is superseded. Matching peers require protocol **70**.
+The timed-tap experiment is superseded. Matching peers require protocol **73**.
 The directional holds, rod motion, splashes and landing feedback remain. Fish wander independently through one shared pool. The centre track has a larger round fish marker; a loose-to-taut rope icon and gradual orange/red rope show tension. Camera choices, audio, the tutorial and Leave island are in the shared sports-style settings menu.
 
 ## Playing
@@ -35,13 +35,14 @@ How to Play reuse the live buttons and meter; the updated guide opens once.
 ## Retained presentation and multiplayer
 
 Eye-level view stays at the player's eyes throughout hooking and Left/Right
-holds; looking around remains available. Follow and Island views retain
-accepted-hook framing, smooth directional shoulder shifts, obstruction handling
-and return to the preferred camera. Reduced Motion retains the preferred view.
+holds; looking around remains available. Follow retains accepted-hook framing, smooth directional shoulder shifts,
+obstruction handling and return to the preferred camera. Arrival selects Follow.
+Island View is a manual settings choice: a wider follow at about seven metres,
+with gentle pitch and collision handling. It stays behind the player while hooked. Reduced Motion retains the preferred view.
 Rod grip/lean, attached line rendering, aggressive hooked-fish swimming
 and gravity-driven splashes retain their current implementations. Movement,
 jump, manual camera switching and travel hide while unavailable; Cancel stays
-available. Held gear, Fish Landed/points feedback, sound and rankings remain.
+available. The chosen round skill, Fish Landed/points feedback, sound and rankings remain.
 
 The host accepts explicit directional presses and renewals during a valid fight.
 A 0.8-second safety lease refreshes while the thumb stays down; missing releases,
@@ -50,7 +51,7 @@ can take over; releasing an older finger cannot stop it. Timestamp, ownership,
 cast/round tokens, scoring, fish claims and ability validity remain host-controlled.
 Repeated commands without simulation time never create progress or points.
 
-Round, Cup, Crew, Wanted, six skills/two favourites, 2/5/10 points, seven-second
+Round, Cup, Crew, Wanted, six skills with one choice from a shared three-card draft, 2/5/10 points, seven-second
 respawns and results remain. Competitive rounds last three minutes. Crew requires
 20 points times starting players, all sizes and a catch from everyone.
 
@@ -109,7 +110,7 @@ is a stylized force model, rather than a fluid simulation.
 ## Authority and input recovery
 
 The earlier clarity release used **protocol 55** because the replicated Fishing
-record includes physical swim velocity/depth and [gear inventory](FISHING-ABILITIES.md),
+record includes physical swim velocity/depth and [Fishing skill state](FISHING-ABILITIES.md),
 alongside signed steering, its accepted time and fish pull. Fishing
 extends its action enum; Football/Basketball request payloads and rules remain
 unchanged. The host owns pull, spring/drag, strain, distance and scores.
@@ -131,5 +132,5 @@ scoring and development review fixtures are retained.
 Fresh player checks and measured APK results are recorded in
 [Fishing verification](FISHING-VERIFICATION.md), [build size](BUILD-SIZE.md)
 and [packing audit](APK-SIZE-AUDIT.md). Physical-phone touch/visual/FPS and real
-WAN qualification require separate device sessions. New celebrations remain
-deferred.
+WAN qualification require separate device sessions. Arrival and round awards use
+the shared sports presentation.

@@ -4,48 +4,49 @@ using System.Linq;
 using UnityEngine;
 
 namespace WhatTheFish {
- public enum FishingAbility:byte {None=0,Sonar=1,CoolSpool=2,Flippers=3,PowerReel=7,BubbleGuard=8,QuickLure=9}
+ // Retired IDs remain reserved so malformed/old actions cannot become another skill.
+ public enum FishingAbility:byte {None=0,Sonar=1,CoolSpool=2,Flippers=3,PowerReel=7,BubbleGuard=8,QuickLure=9,SteelWire=10,FishingBuddy=11,SchoolCall=12}
  public static class FishingAbilityRules {
-  public const int FavouriteCount=2;
-  public static readonly FishingAbility[] Roster={FishingAbility.Sonar,FishingAbility.CoolSpool,FishingAbility.Flippers,FishingAbility.PowerReel,FishingAbility.BubbleGuard,FishingAbility.QuickLure};
-  public const ushort AllowedMask=(1<<1)|(1<<2)|(1<<3)|(1<<7)|(1<<8)|(1<<9),DefaultFavourites=(1<<1)|(1<<9);
-  public const double SupplySeconds=22,SalvageSeconds=6,SalvageRespawn=28;
+  public const double DraftSeconds=12;
+  public static readonly FishingAbility[] Roster={FishingAbility.SteelWire,FishingAbility.PowerReel,FishingAbility.FishingBuddy,FishingAbility.BubbleGuard,FishingAbility.Sonar,FishingAbility.SchoolCall};
   public static bool Valid(FishingAbility a)=>Array.IndexOf(Roster,a)>=0;
-  public static bool ValidFavourites(int mask)=>mask>0&&(mask&~AllowedMask)==0&&Roster.Count(a=>(mask&(1<<(int)a))!=0)==FavouriteCount;
-  public static string Name(FishingAbility a)=>a switch {FishingAbility.Sonar=>"SONAR",FishingAbility.CoolSpool=>"COOL SPOOL",FishingAbility.Flippers=>"FLIPPERS",FishingAbility.PowerReel=>"POWER REEL",FishingAbility.BubbleGuard=>"BUBBLE GUARD",FishingAbility.QuickLure=>"QUICK LURE",_=>"GEAR"};
-  public static string Description(FishingAbility a)=>a switch {FishingAbility.Sonar=>"Mark crew's Wanted fish: 8s",FishingAbility.CoolSpool=>"Less strain for 4s",FishingAbility.Flippers=>"Move 30% faster for 5s",FishingAbility.PowerReel=>"Faster reel, more strain for 4s",FishingAbility.BubbleGuard=>"Soften one surge within 12s",FishingAbility.QuickLure=>"Next bite 0.8s sooner; use in 12s",_=>"Carry one item at a time"};
-  public static Color Color(FishingAbility a)=>a==FishingAbility.PowerReel?LocalProfile.Hex("FF7659"):a==FishingAbility.BubbleGuard||a==FishingAbility.CoolSpool?LocalProfile.Hex("69C8F4"):a==FishingAbility.QuickLure?LocalProfile.Hex("FFCB53"):LocalProfile.Hex("4CDED6");
+  public static bool BeforeCast(FishingAbility a)=>a is FishingAbility.Sonar or FishingAbility.SchoolCall;
+  public static bool PhaseAllows(FishingAbility a,FishingPhase phase)=>Valid(a)&&(BeforeCast(a)?phase==FishingPhase.Ready:phase==FishingPhase.Reeling);
+  public static bool CanUse(FishingPlayerRecord p,double now)=>p.connected&&Valid(p.item)&&now>=p.cooldownUntil&&now>=p.activeUntil&&PhaseAllows(p.item,p.phase);
+  public static double Duration(FishingAbility a)=>a switch {FishingAbility.SteelWire=>3,FishingAbility.PowerReel or FishingAbility.FishingBuddy=>4,FishingAbility.Sonar=>8,_=>6};
+  public static double Cooldown(FishingAbility a)=>a switch {FishingAbility.SteelWire=>24,FishingAbility.PowerReel=>22,FishingAbility.FishingBuddy=>30,FishingAbility.BubbleGuard=>18,_=>20};
+  public static string Name(FishingAbility a)=>a switch {FishingAbility.Sonar=>"SONAR",FishingAbility.SteelWire=>"STEEL WIRE",FishingAbility.FishingBuddy=>"FISHING BUDDY",FishingAbility.PowerReel=>"POWER REEL",FishingAbility.BubbleGuard=>"BUBBLE GUARD",FishingAbility.SchoolCall=>"SCHOOL CALL",_=>"SKILL"};
+  public static string Description(FishingAbility a)=>a switch {FishingAbility.Sonar=>"Reveal Wanted fish for 8s. Shared in Crew.",FishingAbility.SteelWire=>"3s protection: tension cannot rise.",FishingAbility.FishingBuddy=>"A helper reels with you for 4s.",FishingAbility.PowerReel=>"Reel 30% faster for 4s. Normal tension.",FishingAbility.BubbleGuard=>"Absorb one strong surge within 6s.",FishingAbility.SchoolCall=>"Bring 3 free fish closer for 6s.",_=>"Choose one skill for this round."};
+  public static Color Color(FishingAbility a)=>a switch {FishingAbility.SteelWire=>LocalProfile.Hex("C1F4FF"),FishingAbility.FishingBuddy=>LocalProfile.Hex("DDD9EB"),FishingAbility.PowerReel=>LocalProfile.Hex("FFCB53"),FishingAbility.BubbleGuard=>LocalProfile.Hex("69C8F4"),FishingAbility.SchoolCall=>LocalProfile.Hex("FFAF68"),_=>LocalProfile.Hex("4CDED6")};
  }
  public sealed partial class FishingState {
-  public double SupplyReady(int pier)=>pier switch {0=>Match.supply0,1=>Match.supply1,2=>Match.supply2,3=>Match.supply3,4=>Match.supply4,_=>double.PositiveInfinity};
-  void CoolSupply(int pier,double until){switch(pier){case 0:Match.supply0=until;break;case 1:Match.supply1=until;break;case 2:Match.supply2=until;break;case 3:Match.supply3=until;break;case 4:Match.supply4=until;break;}}
-  // Nearby IDs come only from the host's spatial query, never from an RPC payload.
-  public bool AbilityAct(ulong owner,uint round,uint sequence,FishingAction action,int choice,int pier,Vector3 origin,double now,IEnumerable<ulong> nearby=null){
+  public bool Offered(FishingAbility skill)=>FishingAbilityRules.Valid(skill)&&(Match.offer0==skill||Match.offer1==skill||Match.offer2==skill);
+  public FishingAbility Offer(int index)=>index==0?Match.offer0:index==1?Match.offer1:Match.offer2;
+  void DealSkills(uint seed){
+   // A shared server-owned menu with both before-cast and fight choices.
+   uint Mix(uint n){unchecked{n^=n>>16;n*=0x7feb352d;n^=n>>15;return n*0x846ca68b;}}
+   var before=new[]{FishingAbility.Sonar,FishingAbility.SchoolCall};
+   var fight=FishingAbilityRules.Roster.Where(a=>!FishingAbilityRules.BeforeCast(a)).ToArray();
+   Match.offer0=before[Mix(seed)%2];Match.offer1=fight[Mix(seed^0x68bc21eb)%4];
+   var remaining=FishingAbilityRules.Roster.Where(a=>a!=Match.offer0&&a!=Match.offer1).ToArray();Match.offer2=remaining[Mix(seed^0x9e3779b9)%4];
+   int rotate=(int)(Mix(seed^0x85ebca6b)%3);while(rotate-->0){var a=Match.offer0;Match.offer0=Match.offer1;Match.offer1=Match.offer2;Match.offer2=a;}
+  }
+  public bool AbilityAct(ulong owner,uint round,uint sequence,FishingAction action,int choice,int pier,Vector3 origin,double now,IEnumerable<ulong> nearby=null,Vector3 schoolPoint=default,uint schoolMask=0){
    if(!double.IsFinite(now)||!float.IsFinite(origin.x)||!float.IsFinite(origin.y)||!float.IsFinite(origin.z))return false;
    Advance(now,0);int index=Players.FindIndex(p=>p.owner==owner);if(index<0||round!=Match.round)return false;var p=Players[index];if(!p.connected||p.sequence!=sequence)return false;
-   if(action==FishingAction.Favourites){if(p.Busy||p.ready||Match.phase!=FishingRoundPhase.Practice&&Match.phase!=FishingRoundPhase.Ended||!FishingAbilityRules.ValidFavourites(choice))return false;p.favourites=(ushort)choice;Players[index]=p;return true;}
-   if(!Running)return false;
-   var ability=(FishingAbility)choice;
-   if(action==FishingAction.Supply||action==FishingAction.Salvage){
-    if(p.phase!=FishingPhase.Ready||p.item!=FishingAbility.None||p.activeUntil>now||pier<0||pier>=PierCount||choice<1||choice>9||!FishingAbilityRules.Valid(ability)||(p.favourites&(1<<choice))==0)return false;
-    if(action==FishingAction.Supply){if(now<SupplyReady(pier))return false;CoolSupply(pier,now+FishingAbilityRules.SupplySeconds);p.item=ability;p.itemSequence++;}
-    else {if(now<Match.salvageReadyAt)return false;Match.salvageReadyAt=now+FishingAbilityRules.SalvageRespawn;p.salvageItem=ability;p.phase=FishingPhase.Salvaging;p.phaseAt=now;p.origin=origin;p.pier=pier;p.fish=-1;p.sequence++;p.ready=false;}
-    Players[index]=p;return true;
+   if(action==FishingAction.ChooseSkill){
+    if(p.skillPicked||p.Busy||Match.phase!=FishingRoundPhase.Drafting&&Match.phase!=FishingRoundPhase.Practice||choice<0||choice>byte.MaxValue||!Offered((FishingAbility)choice))return false;
+    p.item=(FishingAbility)choice;p.skillPicked=true;p.cooldownUntil=0;Players[index]=p;return true;
    }
-   if(action!=FishingAction.UseAbility||p.item==FishingAbility.None||p.activeUntil>now||p.phase==FishingPhase.Salvaging)return false;
-   ability=p.item;
-   if((ability==FishingAbility.CoolSpool||ability==FishingAbility.PowerReel||ability==FishingAbility.BubbleGuard)&&p.phase!=FishingPhase.Reeling)return false;
-   if((ability==FishingAbility.Flippers||ability==FishingAbility.QuickLure)&&p.Busy)return false;
-   p.item=FishingAbility.None;p.active=ability;p.itemSequence++;p.activeAt=now;p.activeUntil=now+(ability==FishingAbility.Sonar?8:ability==FishingAbility.CoolSpool||ability==FishingAbility.PowerReel?4:ability==FishingAbility.BubbleGuard?12:ability==FishingAbility.QuickLure?12:5);
-   if(ability==FishingAbility.QuickLure)p.quickLure=true;
-   if(ability==FishingAbility.BubbleGuard)p.bubbleGuard=true;
+   // Bags, treasure, favourites and one-use inventory actions are retired.
+   if(action!=FishingAction.UseAbility||!Running||!FishingAbilityRules.CanUse(p,now))return false;
+   var ability=p.item;
+   if(ability==FishingAbility.SchoolCall&&(schoolMask==0||!float.IsFinite(schoolPoint.x)||!float.IsFinite(schoolPoint.y)||!float.IsFinite(schoolPoint.z)))return false;
+   p.active=ability;p.itemSequence++;p.activeAt=now;p.activeUntil=now+FishingAbilityRules.Duration(ability);p.cooldownUntil=now+FishingAbilityRules.Cooldown(ability);
+   p.steelTension=p.tension;p.bubbleGuard=ability==FishingAbility.BubbleGuard;
+   if(ability==FishingAbility.SchoolCall){p.schoolAt=now;p.schoolPoint=schoolPoint;p.schoolFishMask=schoolMask;}
    Players[index]=p;
-   var ids=new HashSet<ulong>(nearby??Array.Empty<ulong>()){owner};
-   for(int i=0;i<Players.Count;i++){var q=Players[i];if(!q.connected||!ids.Contains(q.owner))continue;
-    if(ability==FishingAbility.Sonar)q.sonarUntil=Math.Max(q.sonarUntil,now+8);
-    if(ability==FishingAbility.Flippers&&q.owner==owner)q.speedUntil=Math.Max(q.speedUntil,now+5);
-    Players[i]=q;
-   }
+   if(ability==FishingAbility.Sonar){for(int i=0;i<Players.Count;i++){var q=Players[i];if(q.connected&&(q.owner==owner||Match.mode==FishingMode.Crew)){q.sonarUntil=Math.Max(q.sonarUntil,now+8);Players[i]=q;}}}
    return true;
   }
   static void FightMotion(ref FishingPlayerRecord p,float dt,float mass){

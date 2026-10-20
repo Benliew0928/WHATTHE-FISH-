@@ -4,16 +4,16 @@ using UnityEngine.UI;
 namespace WhatTheFish {
  // The entry popup and How to Play instantiate this exact view and content.
  public sealed class FishingTutorialUI:MonoBehaviour {
-  public static readonly string[] Titles={"CHOOSE 2 SKILLS","CAST & CATCH","USE YOUR GEAR","PLAY TO WIN"};
+  public static readonly string[] Titles={"PICK 1 OF 3","CAST & CATCH","USE YOUR SKILL","PLAY TO WIN"};
   public static readonly string[] Copy={
-   "After this guide, tap CHOOSE 2 SKILLS.\nPick two favourites, then Ready.\nCarry one item. The host starts when all are ready.",
+   "Ready up. Before each round, everyone sees the same three skills.\nPick one for this round.\nYour skill can be reused after its cooldown.",
    "Aim at a free fish. Tap Cast when teal.\nTap Hook when ! appears.\nHold the glowing Left or Right button.\nSwitch when the glow changes sides.\nRelease on red rope; hold again when cool.",
-   "Tap the shore bag to take one favourite.\nOr recover treasure at a pier: 6 seconds.\nTap your gear icon to use it. The meter shows time left.",
+   "Your skill button sits beside Cast / Right.\nIt appears when the skill can be used.\nBright: tap to use. Dim clock: recharging.\nA bright draining ring shows the active effect.",
    "Small 2  /  Medium 5  /  Large 10 points.\nWanted fish: +3 once per minute.\nRound: most points after 3 minutes.\nCrew: shared target = 20 x players. All sizes; everyone catches."
   };
-  public const string SeenKey="fishing.tutorial.hold-glow.v1";
+  public const string SeenKey="fishing.tutorial.round-skill.v1";
   RectTransform frame,overlay,card;Text title,body,count;Image picture;Button next,back;Text nextLabel;Action closed;int step;bool embedded,entryObserved;
-  readonly RectTransform[] examples=new RectTransform[4];FishingStickerGraphic demoLeft,demoRight,demoCatch,demoTension,demoDuration;FishingFightGuide demoGuide;Text demoRightLabel;
+  readonly RectTransform[] examples=new RectTransform[4];FishingStickerGraphic demoLeft,demoRight,demoCatch,demoTension;FishingSkillGraphic demoCooldown;FishingFightGuide demoGuide;Text demoRightLabel;
   public bool Visible=>overlay&&overlay.gameObject.activeInHierarchy;
   public int Step=>step;
   public string Body=>body?body.text:"";
@@ -38,23 +38,26 @@ namespace WhatTheFish {
    overlay.gameObject.SetActive(false);
   }
   public void Open(){if(!overlay)return;Show(0);overlay.gameObject.SetActive(true);transform.SetAsLastSibling();Layout();}
-  void Show(int value){step=Mathf.Clamp(value,0,3);title.text=Titles[step];body.text=Copy[step];count.text=(step+1)+" / 4";picture.sprite=FishingGearArt.Tutorial(step);for(int i=0;i<examples.Length;i++)examples[i].gameObject.SetActive(i==step);back.interactable=step>0;nextLabel.text=step<3?"NEXT":"LET'S FISH!";}
+  void Show(int value){step=Mathf.Clamp(value,0,3);title.text=Titles[step];body.text=Copy[step];count.text=(step+1)+" / 4";picture.sprite=FishingGearArt.Tutorial(step);picture.enabled=step==1||step==3;for(int i=0;i<examples.Length;i++)examples[i].gameObject.SetActive(i==step);back.interactable=step>0;nextLabel.text=step<3?"NEXT":"LET'S FISH!";}
   Image Icon(Transform parent,string name,Sprite sprite,Vector2 position,Vector2 size){var image=Rect(name,parent,position,size).gameObject.AddComponent<Image>();image.sprite=sprite;image.preserveAspect=true;image.raycastTarget=false;return image;}
   FishingStickerGraphic Graphic(Transform parent,string name,Vector2 position,Vector2 size,FishingStickerGraphic.Kind kind){var g=Rect(name,parent,position,size).gameObject.AddComponent<FishingStickerGraphic>();g.kind=kind;g.raycastTarget=false;return g;}
   void BuildExamples(){
    // These are the same sprites and mesh widgets used in the live HUD. Read-only
    // examples never send gameplay inputs or create a separate set of controls.
    for(int i=0;i<examples.Length;i++)examples[i]=Rect("Tutorial gameplay example "+i,card,new Vector2(-216,-71),new Vector2(376,132));
-   for(int i=0;i<FishingAbilityRules.Roster.Length;i++){var a=FishingAbilityRules.Roster[i];var r=Rect("Tutorial skill "+a,examples[0],new Vector2((i%3-1)*122,32-i/3*64),new Vector2(118,62));Icon(r,"Actual skill icon",FishingGearArt.Ability(a),new Vector2(0,15),Vector2.one*36);Text("Actual skill name",r,FishingAbilityRules.Name(a),new Vector2(0,-18),new Vector2(116,32),16);if(a==FishingAbility.Sonar||a==FishingAbility.QuickLure)Icon(r,"Selected skill",SportsUIStyle.Check,new Vector2(-20,29),Vector2.one*15).color=GolfHUDStyle.Ink;}
+   examples[0].anchoredPosition=new Vector2(-216,12);examples[0].sizeDelta=new Vector2(376,260);
+   var sample=new[]{FishingAbility.SteelWire,FishingAbility.Sonar,FishingAbility.FishingBuddy};
+   for(int i=0;i<3;i++){var a=sample[i];var r=Rect("Tutorial skill choice "+i,examples[0],new Vector2((i-1)*122,0),new Vector2(110,178));var plate=r.gameObject.AddComponent<BasketballPlate>();plate.color=i==0?CoveUI.Sky:CoveUI.Cream;plate.radius=Vector2.one*16;plate.border=i==0?3:2;plate.raycastTarget=false;var icon=Rect("Actual skill icon",r,new Vector2(0,36),Vector2.one*66);FishingSkillGraphic.Icon(icon,a);Text("Actual skill name",r,FishingAbilityRules.Name(a),new Vector2(0,-26),new Vector2(104,46),16);if(i==0)Icon(r,"Selected skill",SportsUIStyle.Check,new Vector2(33,68),Vector2.one*20);}
    demoLeft=Graphic(examples[1],"Actual left control",new Vector2(-143,9),Vector2.one*82,FishingStickerGraphic.Kind.Panel);demoLeft.UseIllustration("SteerLit");Text("Actual left label",demoLeft.transform,"LEFT",new Vector2(0,-20),new Vector2(68,25),18).color=Color.white;
    demoRight=Graphic(examples[1],"Actual right control",new Vector2(143,9),Vector2.one*82,FishingStickerGraphic.Kind.Panel);demoRight.UseIllustration("ReelButton");demoRightLabel=Text("Actual right label",demoRight.transform,"REEL",new Vector2(0,-20),new Vector2(68,25),18);demoRightLabel.color=Color.white;
    demoGuide=Rect("Actual fish pull meter",examples[1],new Vector2(0,43),new Vector2(168,26)).gameObject.AddComponent<FishingFightGuide>();demoGuide.raycastTarget=false;
    demoCatch=Graphic(examples[1],"Actual Catch meter",new Vector2(0,4),new Vector2(164,24),FishingStickerGraphic.Kind.Gauge);Text("Catch demo label",demoCatch.transform,"CATCH",Vector2.zero,new Vector2(150,22),16).color=Color.white;
    demoTension=Graphic(examples[1],"Actual Tension meter",new Vector2(0,-35),new Vector2(164,24),FishingStickerGraphic.Kind.Gauge);Text("Tension demo label",demoTension.transform,"TENSION",Vector2.zero,new Vector2(150,22),16).color=Color.white;
-   for(int i=0;i<3;i++){var r=Rect("Tutorial gear button "+i,examples[2],new Vector2((i-1)*122,6),new Vector2(100,110));var plate=r.gameObject.AddComponent<FishingStickerGraphic>();plate.kind=FishingStickerGraphic.Kind.Panel;plate.cornerRadius=40;plate.UseSolidPanel();plate.raycastTarget=false;Icon(r,"Actual gear icon",i==0?FishingGearArt.Icon(0):i==1?FishingGearArt.Ability(FishingAbility.Sonar):FishingGearArt.Icon(1),new Vector2(0,14),Vector2.one*64);Text("Actual gear caption",r,i==0?"GET":i==1?"USE":"6s",new Vector2(0,-28),new Vector2(88,25),18);if(i==1)demoDuration=Graphic(r,"Actual ability duration",new Vector2(0,-44),new Vector2(74,6),FishingStickerGraphic.Kind.Gauge);}
+   examples[2].anchoredPosition=new Vector2(-216,12);
+   for(int i=0;i<3;i++){var r=Rect("Tutorial round skill state "+i,examples[2],new Vector2((i-1)*122,0),new Vector2(98,100));var plate=r.gameObject.AddComponent<BasketballPlate>();plate.color=i==2?CoveUI.Sky:CoveUI.Cream;plate.radius=Vector2.one*32;plate.border=3;plate.raycastTarget=false;var icon=Rect("Actual skill icon",r,new Vector2(0,10),Vector2.one*60);FishingSkillGraphic.Icon(icon,FishingAbility.SteelWire);var ring=Rect("Actual cooldown border",r,Vector2.zero,Vector2.one*98).gameObject.AddComponent<FishingSkillGraphic>();ring.ring=true;ring.raycastTarget=false;ring.Tick(i==0?.35f:1,i==2?CoveUI.Sky:CoveUI.Gold);if(i==0){demoCooldown=ring;var alpha=r.gameObject.AddComponent<CanvasGroup>();alpha.alpha=.42f;}Text("Actual skill state",r,i==0?"6s":i==1?"USE":"ACTIVE",new Vector2(0,-30),new Vector2(86,23),15);Text("Skill state explanation",examples[2],i==0?"COOLDOWN":i==1?"READY":"IN USE",new Vector2((i-1)*122,-75),new Vector2(116,30),15);}
    for(int i=0;i<3;i++){var fish=Graphic(examples[3],"Actual fish points "+i,new Vector2((i-1)*112,23),new Vector2(46+i*8,42+i*7),FishingStickerGraphic.Kind.Fish);fish.Decorate();Text("Fish points "+i,examples[3],new[]{"2 POINTS","5 POINTS","10 POINTS"}[i],new Vector2((i-1)*112,-24),new Vector2(106,32),18);}
   }
-  void AnimateExamples(){if(!Visible)return;float phase=MenuPreferences.ReducedMotion?.7f:Mathf.Repeat(Time.unscaledTime*.18f,1);float tension=.28f+.42f*Mathf.Sin(phase*Mathf.PI);demoCatch.Refresh(.3f+phase*.65f,LocalProfile.Hex("4CDED6"));demoTension.Refresh(tension,Color.Lerp(GolfHUDStyle.Gold,LocalProfile.Hex("FF7659"),Mathf.InverseLerp(.4f,.8f,tension)));demoDuration.Refresh(1-phase,LocalProfile.Hex("4CDED6"));double now=Mathf.Repeat(Time.unscaledTime,(float)FishingState.TimingPeriod*6);var p=new FishingPlayerRecord{phase=FishingPhase.Reeling,owner=1,fish=0,phaseAt=0,held=true};bool left=FishingState.CounterSide(p,now)<0;p.steer=(sbyte)(left?-1:1);p.tension=tension;demoGuide.Tick(p,now);demoLeft.gameObject.SetActive(true);demoLeft.UseIllustration(left?"SteerLit":"SteerIdle");demoRight.UseIllustration(left?"SteerIdle":"SteerLit",false,true);demoRightLabel.text="RIGHT";}
+  void AnimateExamples(){if(!Visible)return;float phase=MenuPreferences.ReducedMotion?.7f:Mathf.Repeat(Time.unscaledTime*.18f,1);float tension=.28f+.42f*Mathf.Sin(phase*Mathf.PI);demoCatch.Refresh(.3f+phase*.65f,LocalProfile.Hex("4CDED6"));demoTension.Refresh(tension,Color.Lerp(GolfHUDStyle.Gold,LocalProfile.Hex("FF7659"),Mathf.InverseLerp(.4f,.8f,tension)));demoCooldown.Tick(phase,CoveUI.Gold);double now=Mathf.Repeat(Time.unscaledTime,(float)FishingState.TimingPeriod*6);var p=new FishingPlayerRecord{phase=FishingPhase.Reeling,owner=1,fish=0,phaseAt=0,held=true};bool left=FishingState.CounterSide(p,now)<0;p.steer=(sbyte)(left?-1:1);p.tension=tension;demoGuide.Tick(p,now);demoLeft.gameObject.SetActive(true);demoLeft.UseIllustration(left?"SteerLit":"SteerIdle");demoRight.UseIllustration(left?"SteerIdle":"SteerLit",false,true);demoRightLabel.text="RIGHT";}
 
 
   public void Close(){if(overlay)overlay.gameObject.SetActive(false);if(!embedded){PlayerPrefs.SetInt(SeenKey,1);PlayerPrefs.Save();}closed?.Invoke();}

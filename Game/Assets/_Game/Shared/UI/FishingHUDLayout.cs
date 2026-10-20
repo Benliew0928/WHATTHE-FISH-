@@ -29,6 +29,11 @@ namespace WhatTheFish {
   public bool hookCueReducedMotion;
   [Header("Action guidance and fight camera")]
   public Vector2 actionHintSize=new Vector2(64,64);
+  [Header("Island View and round skill")]
+  [Range(6,9)]public float islandViewDistance=7;
+  public Vector2 islandPitchRange=new(0,35);
+  public Vector2 skillButtonSize=new(100,100),skillButtonGap=new(8,18),skillCardSize=new(204,218);
+  [Range(.25f,.65f)]public float skillCooldownOpacity=.42f;
   public bool fightCamera=true;
   [Range(4,12)] public float fightCameraDistance=7.2f;
   [Range(2,8)] public float fightCameraHeight=4.2f;

@@ -13,7 +13,7 @@ entire folder and compare its SHA-256 after transfer. Do not replace only the
 executable or combine it with an older player folder. `LATEST-BUILD.txt`
 identifies the source and verification limits. The older
 `Builds/TravelMatchQA/WhatTheFish-Windows-network68.zip` is historical and does
-not include the current [Fishing update](FISHING-NATURAL-SWIM.md).
+not include the current [Fishing update](FISHING-ABILITIES.md).
 
 Use the main menu's online room flow: one person creates a room and shares its
 code; the other chooses Join and enters that code. Both need internet access to
@@ -21,8 +21,8 @@ the project's Unity online services. The `Explore-*.cmd` launchers are offline
 practice shortcuts. Local automated-test flags use loopback and cannot connect
 two separate computers.
 
-The waiting room shows **Network build 71**. This combined Fishing, responsiveness, audio and QR/menu integration uses
-protocol 72, so earlier protocol-69, protocol-70 and protocol-71 players are rejected during connection
+The waiting room shows **Network build 73**. This combined Fishing, responsiveness, audio and QR/menu integration uses
+protocol 73, so earlier protocol-69, protocol-70, protocol-71 and protocol-72 players are rejected during connection
 before entering gameplay. The generic join-failure message also asks clients to
 check their code, connection and matching build; a missing network response
 cannot uniquely identify a version mismatch. The protocol is a compatibility

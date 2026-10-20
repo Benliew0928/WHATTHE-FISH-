@@ -3,7 +3,7 @@
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **70** players. The room shares one activity and travels together.
+protocol **73** players. The room shares one activity and travels together.
 Fishing supports **two to five friends**, with solo free practice and a solo
 timed practice option. Arrival assigns each active player a distinct coloured
 pier; spectators land on shore. Match start waits for the whole travelling group.
@@ -12,9 +12,10 @@ in a public pool; every player can aim at any reachable, unclaimed fish. The
 school reuses the existing three fish models and materials. Independent seeded
 wandering paths let fish turn, slow and cross the pool without orbiting its centre.
 
-Choose **two favourites from six skills before Ready**. Collect one at
-a shared shore bag, or spend six seconds recovering treasure from a pier.
-Carry one item at a time; tap its illustrated icon to use it. A dim icon is not usable yet.
+After Ready and Start, everyone sees the same three random skill cards and picks
+one for the round. The host waits up to 12 seconds, then starts the ordinary
+countdown. Reuse your chosen skill after its cooldown; its contextual button
+sits beside Cast / Right. There are no bag or treasure controls.
 The first visit opens a four-page tutorial using the same icons and meters as gameplay. The leaderboard **?** and Fishing **How to Play** reopen that shared tutorial.
 See [abilities and acquisition rules](FISHING-ABILITIES.md).
 
@@ -45,7 +46,7 @@ Cancel with the Cancel button. Moving away, jumping out of casting
 position, travelling or leaving the game releases the line. Misses, cancellation,
 snaps and the **30-second reel timeout** award no points. Pointer release/exit does not erase a queued tap. Focus loss, pause and round
 changes clear local input; the host expires each accepted short stroke without
-requiring a release message. Open the sports-style gear button for three saved camera views, four sound sliders, the shared tutorial and Leave island confirmation. Jump uses the same illustrated control as Basketball and hides while fishing. The old Camera and Leave HUD buttons are removed. The rope and central meter share teal/gold/orange/red tension feedback. A small line icon beside the rope hangs loose at low strain, pulls straight as tension rises and shows a warning near snapping; it has no progress fill. Eye-level view stays first person while holding either direction and allows manual looking. Long casts use a normalized spring/drag retrieval range so public-pool distance does not multiply fight duration.
+requiring a release message. Open the sports-style gear button for three camera views for this island visit, four sound sliders, the shared tutorial and Leave island confirmation. Jump uses the same illustrated control as Basketball and hides while fishing. The old Camera and Leave HUD buttons are removed. The rope and central meter share teal/gold/orange/red tension feedback. A small line icon beside the rope hangs loose at low strain, pulls straight as tension rises and shows a warning near snapping; it has no progress fill. Eye-level view stays first person while holding either direction and allows manual looking. Long casts use a normalized spring/drag retrieval range so public-pool distance does not multiply fight duration.
 
 The reaction window remains **1.8 seconds**. A remote Hook carries its press
 time on the synchronized room clock. The host can receive that already-timely
@@ -69,7 +70,7 @@ A short sports-style awards scene precedes the completed-round card. It reuses t
 
 In free practice or after a result, each player presses **Ready**. The host
 chooses a mode and presses **Start** once everyone is ready. A shared
-**three-second countdown** clears practice catches and begins the round.
+three-card selection clears practice catches; the **three-second countdown** then begins the round.
 
 | Mode | Goal and finish |
 | --- | --- |
@@ -91,7 +92,7 @@ A competitive player reaching 20 continues playing until time expires.
 Late arrivals wait for the next scored round. A departed competitive player's
 earned score remains visible with a faded row; the contest continues. A roster
 change invalidates an unfinished Cup series, so start a new Cup with the new
-roster. A disconnect during the countdown or Crew round abandons that round.
+roster. A disconnect during skill selection, the countdown or a Crew round abandons that round.
 Host loss triggers [automatic room recovery](HOST-MIGRATION.md), with the lowest
 occupied player number taking over, then the lowest spectator number if no
 players remain. The roster-change rules above still apply. Local personal bests are saved separately
@@ -99,8 +100,8 @@ by mode and player count; there is no global online ranking service.
 
 ## Sports-style Fishing HUD
 
-[Timed pulls](FISHING-TIMING.md) supersede the continuous hold mechanic in the
-[historical B artwork reference](FishingUI/Hold-Countersteer-Reference.png).
+[Hold the Glow](FISHING-COUNTERSTEER.md) uses the continuous Left/Right hold
+mechanic; the timed-tap experiment is superseded.
 The top-left cream/navy card contains player names, cartoon avatars, shared
 ranks and animated points. Catch awards pop beside the name; the base award
 appears first and a Wanted **+3** follows when earned. Rows slide when another
@@ -111,14 +112,15 @@ Crew rows show contribution checks rather than competitive ranks.
 The clock/Wanted card holds the time and crew checklist. Catch and Tension
 labels sit inside two side-by-side bottom gauges, with a thin navy outline for contrast.
 The fill, shine and flame accents animate;
-the danger triangle reinforces high tension. Skip a timing sweep to recover. Cast, Hook,
-Left/Right, Cancel, Camera, Jump and exit controls keep their text contained.
+the danger triangle reinforces high tension. Release both sides to recover. Cast,
+Hook, Left/Right, Cancel and Jump keep their labels contained. Camera and Leave
+island are available through settings. The contextual skill button uses a clock border.
 Players can set a short room nickname before a round.
 
-The current [timed-pull HUD](FISHING-TIMING.md) reuses the sports
+The current [hold-control HUD](FISHING-COUNTERSTEER.md) reuses the sports
 fonts and press animation. The circular Cast/Hook reel illustration returns;
 Left and Right share aqua/gold circular artwork with their own native labels.
-A small sliced illustrated frame surrounds the native circle timing track and
+A small sliced illustrated frame surrounds the native fish-pull track and
 progress bars. The four existing compressed delivery PNGs total 201,479
 bytes before APK packing. Editable masters stay outside Unity. Round controls
 use fixed safe-area touch frames. Sharper fish darts/breaches and stronger rod
@@ -146,15 +148,16 @@ border so the contribution line stays on the coloured background. The existing
 target and completion rules remain unchanged.
 
 Accepted local actions play short cast, splash, bite, Hook, landing, miss and
-snap sounds. Accepted timed strokes add a quiet ratchet loop and rising strain gives a
+snap sounds. Correct directional holds add a quiet ratchet loop and rising strain gives a
 warning. Cues suppress duplicate/stale snapshots and stop on focus loss, pause,
-stroke expiry or island exit. They obey Game volume and use short synthesized mono
-waveforms; no imported sound pack is added.
+hold lease expiry or island exit. They obey the shared sound sliders; current
+Golf/Fishing audio includes the approved shared bank.
 
 **Settings → Fishing vibration** is off by default. Android uses short native
 touch feedback and respects the device touch-feedback setting. Reduced motion
 disables fishing vibration. Device audibility and tactile quality still need
-physical-phone testing. New celebrations are deferred.
+physical-phone testing. Arrival and round awards use the shared travel and
+ceremony presentation.
 
 ## Simulation and presentation
 

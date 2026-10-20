@@ -131,7 +131,7 @@ namespace WhatTheFish {
    if(GuardHeld&&guardSource==int.MinValue&&Input.GetKey(KeyCode.Q))SetGuardBlock(Input.GetKey(KeyCode.UpArrow));
    if(Input.GetKeyDown(KeyCode.F)){if(AppRoot.Instance.SelectedSport==SportId.Basketball)BeginSteal();else if(AppRoot.Instance.SelectedSport==SportId.Golf){}else if(AppRoot.Instance.SelectedSport==SportId.Fishing)BeginFishing();else BeginKick();}if(Input.GetKeyUp(KeyCode.F)){EndSteal();EndGolfSwing();EndKick();EndFishing();}
   }
-  public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;if(!GolfFishingAudio.PlayMenu("ui-select"))FootballAudio.PlayMenu(FootballSound.UISelect);mode=(mode+1)%3;PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}
+  public void Switch(){if(GolfAimRequested||FishingGame.Instance&&FishingGame.Instance.Busy(target))return;if(!GolfFishingAudio.PlayMenu("ui-select"))FootballAudio.PlayMenu(FootballSound.UISelect);bool fishing=FishingGame.Instance&&FishingGame.Instance.Context;mode=fishing?(mode==0?1:0):(mode+1)%3;if(!fishing){PlayerPrefs.SetInt("camera",mode);PlayerPrefs.Save();}}
   public PlayerCommand ReadCommand(){
    if(target&&target.IsSpectator){
     if(!active||InputBlocked||target.inTransit)return default;
@@ -159,6 +159,7 @@ namespace WhatTheFish {
 #endif
    var touch=stick?stick.value:Vector2.zero;var v=touch+new Vector2(Input.GetAxisRaw("Horizontal"),Input.GetAxisRaw("Vertical"));var result=new PlayerCommand{move=Vector2.ClampMagnitude(StadiumMovement(v),1),heading=yaw,tackle=tackle,jump=jump,shoot=shoot,finish=pendingFinish,shotReleasedAt=pendingShotReleasedAt,shotBegin=shotBegin,shotCancel=shotCancel,pass=pass,steal=steal,kick=kick,kickCharge=charge,charging=Charging,sprint=Input.GetKey(KeyCode.LeftShift)||touch.magnitude>.8f,cartAction=cartAction,cartOwner=cartOwner,golfSwing=golfSwing,golfCharging=GolfCharging,golfBallOwner=golfOwner,golfCharge=golfCharge,golfRound=golfRound};AddFootballInput(ref result);AddDefenseInput(ref result);AddPassInput(ref result);AddFishingInput(ref result);return result;}
   void LateUpdate(){
+   ObserveFishingArrival();
    if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
    if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingCeremony.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
@@ -180,7 +181,9 @@ namespace WhatTheFish {
    Vector3 focus=target.transform.position+Vector3.up*(viewMode==0?1.57f:Mathf.Lerp(1.35f,1,golfFraming));
    if(golf){var ball=GolfMatchManager.Instance.Ball(aimOwner);if(ball)focus=Vector3.Lerp(focus,ball.Body.position+Vector3.up*.35f,golfFraming);}
    FishingCameraFocus(ref focus);
-   var rotation=Quaternion.Euler(golf?Mathf.Clamp(pitch,20,55):mode==2?58:pitch,yaw,0);float distance=viewMode==0?0:viewMode==1?Mathf.Lerp(5,6,golfFraming):AppRoot.Instance.environments.Current.elevatedDistance;
+   bool fishingWide=mode==2&&FishingGame.Instance&&FishingGame.Instance.Context;var fishingLayout=FishingHUD.Instance?FishingHUD.Instance.Settings:null;
+   float widePitch=fishingLayout?Mathf.Clamp(pitch,fishingLayout.islandPitchRange.x,fishingLayout.islandPitchRange.y):Mathf.Clamp(pitch,0,35);
+   var rotation=Quaternion.Euler(golf?Mathf.Clamp(pitch,20,55):fishingWide?widePitch:mode==2?58:pitch,yaw,0);float distance=viewMode==0?0:viewMode==1?Mathf.Lerp(5,6,golfFraming):fishingWide?(fishingLayout?fishingLayout.islandViewDistance:7):AppRoot.Instance.environments.Current.elevatedDistance;
    Vector3 desired=focus-rotation*Vector3.forward*distance+Quaternion.Euler(0,yaw,0)*Vector3.right*(golfShoulderOffset*golfFraming);
    var cameraPath=desired-focus;
    if(distance>0&&Physics.SphereCast(focus,.2f,cameraPath.normalized,out var hit,cameraPath.magnitude,1<<8,QueryTriggerInteraction.Ignore))desired=focus+cameraPath.normalized*Mathf.Max(.35f,hit.distance-.15f);

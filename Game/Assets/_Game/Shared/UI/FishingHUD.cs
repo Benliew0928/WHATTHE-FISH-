@@ -202,7 +202,7 @@ namespace WhatTheFish {
   }
   void Update(){
    var game=FishingGame.Instance;var view=PlayerView.Instance;if(!game||!game.Context||!view){HookCue?.Clear();catchCue?.Clear();Results?.ClearContext();return;}var p=game.Player(view.target);var match=game.State.Match;if(!game.Authority)chosenMode=match.mode;UpdateRows(game,view);Results?.Tick(game,view.target,focused&&!paused);
-   bool setup=match.phase==FishingRoundPhase.Practice||match.phase==FishingRoundPhase.Ended;bool countdown=match.phase==FishingRoundPhase.Countdown;
+   bool setup=match.phase==FishingRoundPhase.Practice||match.phase==FishingRoundPhase.Ended;bool countdown=match.phase==FishingRoundPhase.Countdown;bool drafting=match.phase==FishingRoundPhase.Drafting;
    start.gameObject.SetActive(game.Authority);start.interactable=game.CanStart(chosenMode);startLabel.text=chosenMode==FishingMode.Cup&&match.mode==FishingMode.Cup&&match.cupValid&&!match.cupFinished?"NEXT ROUND":"START";
    ready.interactable=setup&&p.HasValue&&!p.Value.Busy&&PlayerView.Instance&&PlayerView.Instance.active;readyLabel.text=p.HasValue&&p.Value.ready?"READY!":"READY";
    nickname.interactable=setup;practice.gameObject.SetActive(game.Authority&&match.phase==FishingRoundPhase.Ended);
@@ -213,6 +213,7 @@ namespace WhatTheFish {
    bool busy=p.HasValue&&p.Value.Busy;cancel.gameObject.SetActive(busy);cancel.interactable=busy&&view.active&&!BlocksGameplay;
    if(holding&&(!running||!fighting||!view.FishingHeld)){view.EndFishing(pointer);holding=false;}
    if(!p.HasValue)actionLabel.text=game.ParticipantCount>5?"MAX 5 PLAYERS":"NEXT ROUND";
+   else if(drafting)actionLabel.text="CHOOSE SKILL";
    else if(countdown)actionLabel.text="GET READY!";
    else if(!running)actionLabel.text="ROUND OVER";
    else if(phase==FishingPhase.Bite)actionLabel.text=hookPending?"HOOKING…":hookReady?"HOOK!":"MISSED BITE";
@@ -232,7 +233,7 @@ namespace WhatTheFish {
    if(!fighting){actionGraphic.UseIllustration("ReelButton");actionGraphic.TintIllustration(Color.white);}
    var group=action.GetComponent<CanvasGroup>()??action.gameObject.AddComponent<CanvasGroup>();group.alpha=action.interactable?1:.76f;
    leftControl.gameObject.SetActive(fighting);moveControl.gameObject.SetActive(!busy);cameraControl.gameObject.SetActive(false);jumpControl.gameObject.SetActive(!busy);returnControl.gameObject.SetActive(false);
-   bool autoCamera=fighting&&layout.fightCamera&&!MenuPreferences.ReducedMotion;var lookGroup=lookControl.GetComponent<CanvasGroup>()??lookControl.gameObject.AddComponent<CanvasGroup>();lookGroup.interactable=lookGroup.blocksRaycasts=!autoCamera;
+   bool autoCamera=fighting&&view.mode==1&&layout.fightCamera&&!MenuPreferences.ReducedMotion;var lookGroup=lookControl.GetComponent<CanvasGroup>()??lookControl.gameObject.AddComponent<CanvasGroup>();lookGroup.interactable=lookGroup.blocksRaycasts=!autoCamera;
    cooling=fighting&&(cooling?p.Value.tension>.58f:p.Value.tension>.82f);
    if(fighting){
     int counter=FishingState.CounterSide(p.Value,game.Now);
@@ -246,7 +247,7 @@ namespace WhatTheFish {
     actionGraphic.PulseIllustration(counter>0?pulse:1);leftPlate.PulseIllustration(counter<0?pulse:1);
    }
    double remaining=Math.Max(0,match.deadline-game.Now);bool live=match.phase==FishingRoundPhase.Playing,urgent=live&&remaining<10;
-   clock.text=countdown?Math.Max(1,Math.Ceiling(match.started-game.Now)).ToString():live?GolfLeaderboardUI.FinishTime(Math.Ceiling(remaining)):match.phase==FishingRoundPhase.Ended?"RESULTS":"FREE FISHING";
+   clock.text=drafting?"CHOOSE A SKILL":countdown?Math.Max(1,Math.Ceiling(match.started-game.Now)).ToString():live?GolfLeaderboardUI.FinishTime(Math.Ceiling(remaining)):match.phase==FishingRoundPhase.Ended?"RESULTS":"FREE FISHING";
    int window=game.State.Window(game.Now),wantedSize=game.State.Wanted(game.Now);bool claimed=p.HasValue&&(p.Value.wantedMask&(1<<window))!=0,next=live&&window<2&&60-(game.Now-match.started)%60<8;
    SingleLine(wanted,live||countdown?(next?"NEXT UP ":"WANTED ")+FishingState.SizeName(next?(wantedSize+1)%3:wantedSize):game.State.AllReady?"EVERYONE READY!":match.phase==FishingRoundPhase.Ended?"READY TO REMATCH":"READY TO START",layout.wantedFontSize);
    bonus.text=live||countdown?claimed&&!next?"OK":"+3":"GO";bonus.color=claimed&&!next?Teal:Gold;wantedPlate.Refresh(1,next?LocalProfile.Hex("FFF0BC"):Cream);timerPlate.Refresh(1,urgent?LocalProfile.Hex("703F40"):Ink);

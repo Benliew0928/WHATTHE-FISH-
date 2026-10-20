@@ -120,22 +120,17 @@ namespace WhatTheFish {
   void PresentExtras(FishingPlayerRecord p,double now,float clock){
    bool fighting=p.phase==FishingPhase.Reeling,wasFighting=previous.phase==FishingPhase.Reeling;
    bool fresh=now>=p.phaseAt-.15&&now-p.phaseAt<1.1;
-   if(p.phase==FishingPhase.Salvaging&&previous.phase!=p.phase&&fresh)Extra("treasure-start");
-   if(p.itemSequence!=previous.itemSequence&&p.item!=FishingAbility.None){
-    if(previous.phase==FishingPhase.Salvaging)Extra("treasure-rise");
-    Extra("gear-pickup");
-   }
    bool activated=p.activeAt!=previous.activeAt&&p.active!=FishingAbility.None&&now-p.activeAt<=1.1&&now>=p.activeAt-.15;
    if(activated){
-    string cue=p.active switch {FishingAbility.Sonar=>"sonar",FishingAbility.CoolSpool=>"cool-spool",FishingAbility.Flippers=>"flippers",FishingAbility.PowerReel=>"power-reel",FishingAbility.BubbleGuard=>"bubble-guard",_=>"quick-lure"};
+    string cue=p.active switch {FishingAbility.Sonar=>"sonar",FishingAbility.SteelWire=>"cool-spool",FishingAbility.FishingBuddy=>"gear-pickup",FishingAbility.PowerReel=>"power-reel",FishingAbility.BubbleGuard=>"bubble-guard",_=>"quick-lure"};
     Extra(cue);sonarAt=now+2;
    }
    if(p.sonarUntil>previous.sonarUntil&&p.sonarUntil>now&&!activated){Extra("sonar",.6f);sonarAt=now+2;}
    if(p.sonarUntil>now&&now>=sonarAt){Extra("sonar",.28f);sonarAt=now+2;}
    bool absorbed=wasFighting&&fighting&&previous.bubbleGuard&&!p.bubbleGuard&&previous.activeUntil>now;
    if(absorbed)Extra("bubble-block");
-   bool consumedLure=previous.quickLure&&!p.quickLure&&p.phase==FishingPhase.Casting;
-   if(!absorbed&&!consumedLure&&previous.active!=FishingAbility.None&&previous.activeUntil>0&&previous.activeUntil!=expiredAt&&now>=previous.activeUntil&&now-previous.activeUntil<.3&&p.activeUntil<=previous.activeUntil&&p.result!=FishingResult.Cancelled){Extra("gear-expire",.45f);expiredAt=previous.activeUntil;}
+
+   if(!absorbed&&previous.active!=FishingAbility.None&&previous.activeUntil>0&&previous.activeUntil!=expiredAt&&now>=previous.activeUntil&&now-previous.activeUntil<.3&&p.activeUntil<=previous.activeUntil&&p.result!=FishingResult.Cancelled){Extra("gear-expire",.45f);expiredAt=previous.activeUntil;}
    if(p.awardSequence!=previous.awardSequence&&p.phase==FishingPhase.Caught&&fresh){Extra("catch-score",.65f);if(p.lastBonus>0)Extra("wanted-bonus",.7f);}
    int required=fighting?FishingState.CounterSide(p,now):0;
    bool nextCooling=fighting&&(cooling?p.tension>.58f:p.tension>.82f);

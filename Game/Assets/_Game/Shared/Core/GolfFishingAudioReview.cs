@@ -61,13 +61,11 @@ namespace WhatTheFish {
    p.held=false;p.tension=.9f;game.State.Players[0]=p;yield return null;Check(Count("fish-warning")==1,"high tension warns once at cooling threshold");yield return null;Check(Count("fish-warning")==1,"cooling warning does not repeat");
    p.tension=.55f;game.State.Players[0]=p;yield return null;Check(Count("fish-cooled")==1,"cooled cue matches HUD hysteresis");
    foreach(var ability in FishingAbilityRules.Roster){p.active=ability;p.activeAt=game.Now;p.activeUntil=game.Now+8;p.itemSequence++;game.State.Players[0]=p;yield return null;yield return null;yield return new WaitForSeconds(.03f);}
-   foreach(string cue in new[]{"sonar","cool-spool","flippers","power-reel","bubble-guard","quick-lure"})Check(Count(cue)==1,"accepted skill plays once "+cue);
+   foreach(string cue in new[]{"sonar","cool-spool","gear-pickup","power-reel","bubble-guard","quick-lure"})Check(Count(cue)==1,"accepted skill plays once "+cue);
    p.active=FishingAbility.BubbleGuard;p.bubbleGuard=true;p.activeUntil=game.Now+8;game.State.Players[0]=p;yield return null;
    p.bubbleGuard=false;p.activeUntil=game.Now;game.State.Players[0]=p;yield return null;Check(Count("bubble-block")==1,"guard consumption has separate one-shot");
    p.phase=FishingPhase.Caught;p.phaseAt=game.Now;p.awardSequence++;p.lastBonus=3;game.State.Players[0]=p;yield return null;yield return null;
    Check(Count("catch-score")==1&&Count("wanted-bonus")==1,"one confirmed catch reward and wanted bonus");
-   p.phase=FishingPhase.Salvaging;p.phaseAt=game.Now;p.sequence++;game.State.Players[0]=p;yield return null;yield return null;Check(Count("treasure-start")==1,"treasure begins on accepted salvage");
-   p.phase=FishingPhase.Ready;p.item=FishingAbility.Sonar;p.itemSequence++;game.State.Players[0]=p;yield return null;yield return null;Check(Count("treasure-rise")==1&&Count("gear-pickup")==1,"treasure award has emergence and pickup");
    p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.sequence++;game.State.Players[0]=p;yield return null;yield return null;
    int landed=feedback.ReviewCueCount(FishingFeedbackCue.Landed);
    p.phase=FishingPhase.Caught;p.phaseAt=game.Now;p.awardSequence++;p.sequence++;game.State.Players[0]=p;game.State.Match.phase=FishingRoundPhase.Ended;yield return null;yield return null;

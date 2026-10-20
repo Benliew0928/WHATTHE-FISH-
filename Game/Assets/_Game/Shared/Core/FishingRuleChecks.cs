@@ -8,7 +8,7 @@ namespace WhatTheFish {
   static FishingPlayerRecord P(FishingState s,ulong id=0)=>s.Player(id).Value;
   static bool Act(FishingState s,FishingAction a,double now,ulong id=0,int fish=-1,float distance=7)=>s.Act(id,s.Match.round,P(s,id).sequence,a,fish>=0?FishingState.PierForFish(fish):0,Vector3.zero,now,fish,distance);
   static void Ready(FishingState s,double now){foreach(var p in s.Players.ToArray())Act(s,FishingAction.Ready,now,p.owner);}
-  static FishingState Round(int count,FishingMode mode,uint token=2){var s=new FishingState();s.Begin(Enumerable.Range(0,count).Select(i=>(ulong)i),1,0,false);Ready(s,0);if(!s.Start(s.Players.Select(p=>p.owner).ToArray(),token,0,mode))throw new Exception("Start fixture");s.Advance(3,0);return s;}
+  static FishingState Round(int count,FishingMode mode,uint token=2){var s=new FishingState();s.Begin(Enumerable.Range(0,count).Select(i=>(ulong)i),1,0,false);Ready(s,0);if(!s.Start(s.Players.Select(p=>p.owner).ToArray(),token,0,mode))throw new Exception("Start fixture");FishingAbilityChecks.CompleteDraft(s,0);s.Advance(3,0);return s;}
   static void Hook(FishingState s,ref double now,int fish,ulong id=0,float distance=7){if(!Act(s,FishingAction.Cast,now,id,fish,distance))throw new Exception("Cast fixture "+fish);now=P(s,id).biteAt;s.Advance(now,0);if(!Act(s,FishingAction.Hook,now,id))throw new Exception("Hook fixture");}
   static double Land(FishingState s,ref double now,int fish,ulong id=0,float distance=7){Hook(s,ref now,fish,id,distance);double hookedAt=now,limit=now+31;bool hold=true;
    while(P(s,id).phase==FishingPhase.Reeling&&now<limit){var p=P(s,id);if(p.tension>.82f)hold=false;else if(p.tension<.56f)hold=true;Act(s,hold?FishingState.CounterAction(p,now):FishingAction.ReelStop,now,id);now+=.02;s.Advance(now,.02f);}
@@ -106,8 +106,8 @@ namespace WhatTheFish {
    check(P(s).score==0&&P(s).result!=FishingResult.Landed,"RETIRED_TAP_SPAM_NEVER_REELS");
    s.Begin(new ulong[]{0},5,0,false);now=0;Hook(s,ref now,0);s.Advance(now+30,.02f);check(P(s).result==FishingResult.TimedOut&&P(s).score==0&&P(s).timeouts==1,"NO_REEL_TIMEOUT");
    s.Begin(new ulong[]{0,1},6,0,false);Act(s,FishingAction.Ready,0);check(!s.Start(new ulong[]{0,1},7,0,FishingMode.Round),"EVERYONE_MUST_READY");
-   Act(s,FishingAction.Ready,0,1);check(s.Start(new ulong[]{0,1},7,0,FishingMode.Round)&&s.Match.phase==FishingRoundPhase.Countdown&&!Act(s,FishingAction.Cast,2,0,0),"THREE_SECOND_COUNTDOWN_BLOCKS_CAST");
-   s.Advance(3,0);check(s.Match.phase==FishingRoundPhase.Playing&&s.Match.deadline-s.Match.started==180,"SHARED_THREE_MINUTE_ROUND");
+   Act(s,FishingAction.Ready,0,1);check(s.Start(new ulong[]{0,1},7,0,FishingMode.Round)&&s.Match.phase==FishingRoundPhase.Drafting&&!Act(s,FishingAction.Cast,2,0,0),"THREE_SECOND_COUNTDOWN_BLOCKS_CAST");
+   FishingAbilityChecks.CompleteDraft(s,0);s.Advance(3,0);check(s.Match.phase==FishingRoundPhase.Playing&&s.Match.deadline-s.Match.started==180,"SHARED_THREE_MINUTE_ROUND");
    now=3;Land(s,ref now,0);check(P(s).score==5&&P(s).lastBonus==3,"FIRST_WANTED_SMALL_BONUS");
    s.Advance(now+=7.1,0);Land(s,ref now,0);check(P(s).score==7&&P(s).lastBonus==0,"NO_REPEAT_WINDOW_BONUS");
    s.Advance(now=63,0);Land(s,ref now,1);check(P(s).score==15&&P(s).lastBonus==3,"MINUTE_TWO_MEDIUM_BONUS");
@@ -120,7 +120,7 @@ namespace WhatTheFish {
    s=Round(1,FishingMode.Round);now=3;Land(s,ref now,0);s.Advance(now+=2.1,0);Land(s,ref now,3);check(P(s).score==7&&P(s).lastBonus==0&&P(s).wantedMask==1,"SECOND_FISH_OF_WANTED_TIER_DOES_NOT_REPEAT_BONUS");
    s=Round(3,FishingMode.Cup);Scores(s,20,20,5);s.Advance(s.Match.deadline,0);
    check(P(s).cupPoints==3&&P(s,1).cupPoints==3&&P(s,2).cupPoints==1,"CUP_SHARED_FIRST_SKIPS_SECOND");
-   for(int r=2;r<=3;r++){Ready(s,s.Match.deadline+1);double start=s.Match.deadline+1;check(s.Start(new ulong[]{0,1,2},(uint)(r+1),start,FishingMode.Cup)&&s.Match.cupRound==r,"CUP_CONTINUES_ROUND_"+r);s.Advance(s.Match.started,0);Scores(s,r==2?5:10,r==2?4:9,3);s.Advance(s.Match.deadline,0);}
+   for(int r=2;r<=3;r++){Ready(s,s.Match.deadline+1);double start=s.Match.deadline+1;check(s.Start(new ulong[]{0,1,2},(uint)(r+1),start,FishingMode.Cup)&&s.Match.cupRound==r,"CUP_CONTINUES_ROUND_"+r);FishingAbilityChecks.CompleteDraft(s,start);s.Advance(s.Match.started,0);Scores(s,r==2?5:10,r==2?4:9,3);s.Advance(s.Match.deadline,0);}
    check(s.Match.cupFinished&&s.CupRank(0)==1&&P(s).cupScore==35,"THREE_ROUND_CUP_ACCUMULATES_AND_FINISHES");
    s=Round(2,FishingMode.Cup);s.Disconnect(1,20);s.Advance(s.Match.deadline,0);check(!s.Match.cupValid&&P(s).cupPoints==0,"ROSTER_CHANGE_INVALIDATES_CUP");
    for(int count=2;count<=5;count++){s=Round(count,FishingMode.Crew);check(s.Match.crewTarget==count*20,"CREW_TARGET_20_EACH_"+count);}

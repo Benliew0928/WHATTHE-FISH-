@@ -4,56 +4,77 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace WhatTheFish {
  public sealed class FishingAbilityHUD:MonoBehaviour {
-  RectTransform frame,panel,sheet;FishingHUD owner;Font font;Button gear,item,supply,salvage,confirm,close;Text itemText,supplyText,salvageText,title,help;Image itemIcon;
-  Button[] cards=new Button[6];Image[] checks=new Image[6];FishingStickerGraphic meter;ushort selection;FishingAction choosing;uint seenItem,seenRound;float pulse;bool observed;
-  public bool Modal=>panel&&panel.gameObject.activeInHierarchy;
-  RectTransform Rect(string name,Transform parent,Vector2 pos,Vector2 size,Vector2? anchor=null)=>GolfLeaderboardUI.Rect(name,parent,anchor??new Vector2(.5f,.5f),pos,size);
-  Text Label(Transform parent,string value,Vector2 pos,Vector2 size,int points){var text=Rect(value,parent,pos,size).gameObject.AddComponent<Text>();text.font=points<=20?SportsUIStyle.TextFont:font;text.fontSize=points;text.text=value;text.color=LocalProfile.Hex("143B50");text.alignment=TextAnchor.MiddleCenter;text.raycastTarget=false;text.resizeTextForBestFit=true;text.resizeTextMinSize=Mathf.Min(16,points);text.resizeTextMaxSize=points;return text;}
-  Button Button(string name,Transform parent,Vector2 pos,Vector2 size,string label,out Text text){var node=Rect(name,parent,pos,size);var plate=node.gameObject.AddComponent<FishingStickerGraphic>();plate.kind=FishingStickerGraphic.Kind.Panel;plate.tint=LocalProfile.Hex("FFF3D7");plate.UseSolidPanel();plate.raycastTarget=true;var button=node.gameObject.AddComponent<Button>();button.targetGraphic=plate;button.transition=Selectable.Transition.None;node.gameObject.AddComponent<BasketballButtonFeedback>();node.gameObject.AddComponent<GolfFishingButtonSound>();text=Label(node,label,Vector2.zero,size-new Vector2(14,10),22);return button;}
-  Image Icon(Transform parent,Sprite sprite,Vector2 pos,Vector2 size){var image=Rect("Gear illustration",parent,pos,size).gameObject.AddComponent<Image>();image.sprite=sprite;image.preserveAspect=true;image.raycastTarget=false;return image;}
-  Button IconButton(string name,Sprite sprite,string label,out Text text,out Image image){var button=Button(name,frame,Vector2.zero,new Vector2(104,104),label,out text);button.GetComponent<FishingStickerGraphic>().cornerRadius=40;text.rectTransform.anchoredPosition=new Vector2(0,-28);text.rectTransform.sizeDelta=new Vector2(88,25);text.fontSize=18;text.resizeTextMinSize=18;text.resizeTextMaxSize=18;image=Icon(button.transform,sprite,new Vector2(0,14),Vector2.one*64);return button;}
-  public void Build(RectTransform parent,FishingHUD hud,Font display){
-   frame=parent;owner=hud;font=display;
-   gear=Button("Fishing favourites",hud.GearSetupRoot,new Vector2(0,-102),new Vector2(332,44),"CHOOSE 2 SKILLS",out var gearText);gearText.fontSize=20;gear.onClick.AddListener(()=>Open(FishingAction.Favourites));
-   item=IconButton("Fishing held ability",FishingGearArt.Icon(0),"USE",out itemText,out itemIcon);item.onClick.AddListener(()=>PlayerView.Instance?.FishingAbilityInput(FishingAction.UseAbility));
-   meter=Rect("Ability duration",item.transform,new Vector2(0,-43),new Vector2(74,6)).gameObject.AddComponent<FishingStickerGraphic>();meter.kind=FishingStickerGraphic.Kind.Gauge;meter.raycastTarget=false;
-   supply=IconButton("Fishing supplies",FishingGearArt.Icon(0),"GET",out supplyText,out _);supply.onClick.AddListener(()=>Open(FishingAction.Supply));
-   salvage=IconButton("Fishing salvage",FishingGearArt.Icon(1),"6s",out salvageText,out _);salvage.onClick.AddListener(()=>Open(FishingAction.Salvage));
-   panel=Rect("Fishing gear choices",frame,Vector2.zero,Vector2.zero);panel.anchorMin=Vector2.zero;panel.anchorMax=Vector2.one;panel.offsetMin=panel.offsetMax=Vector2.zero;var veil=panel.gameObject.AddComponent<Image>();veil.color=new Color(.04f,.12f,.18f,.62f);
-   sheet=Rect("Fishing gear sheet",panel,Vector2.zero,new Vector2(646,424));var background=sheet.gameObject.AddComponent<FishingStickerGraphic>();background.kind=FishingStickerGraphic.Kind.Panel;background.tint=LocalProfile.Hex("FFF3D7");background.UseSolidPanel();background.raycastTarget=true;
-   title=Label(sheet,"YOUR FISHING KIT",new Vector2(-22,174),new Vector2(540,42),30);help=Label(sheet,"Pick two skills. Carry one gear item.",new Vector2(0,135),new Vector2(600,30),19);
-   close=Button("Close gear",sheet,new Vector2(281,174),new Vector2(52,46),"X",out _);close.onClick.AddListener(Close);
-   for(int i=0;i<cards.Length;i++){var ability=FishingAbilityRules.Roster[i];var button=cards[i]=Button("Gear "+ability,sheet,new Vector2((i%3-1)*204,48-i/3*136),new Vector2(192,128),FishingAbilityRules.Name(ability),out var name);name.rectTransform.anchoredPosition=new Vector2(36,23);name.rectTransform.sizeDelta=new Vector2(110,56);name.fontSize=20;name.resizeTextMinSize=18;name.resizeTextMaxSize=20;Icon(button.transform,FishingGearArt.Ability(ability),new Vector2(-55,23),Vector2.one*64);Label(button.transform,FishingAbilityRules.Description(ability),new Vector2(0,-31),new Vector2(174,44),17);checks[i]=Icon(button.transform,SportsUIStyle.Check,new Vector2(76,49),Vector2.one*16);checks[i].color=LocalProfile.Hex("143B50");button.onClick.AddListener(()=>Choose(ability));}
-   confirm=Button("Confirm favourites",sheet,new Vector2(0,-178),new Vector2(330,44),"SAVE 2 SKILLS",out _);confirm.onClick.AddListener(()=>{if(!FishingAbilityRules.ValidFavourites(selection))return;PlayerView.Instance?.FishingAbilityInput(FishingAction.Favourites,selection);Close();});panel.gameObject.SetActive(false);
+  RectTransform frame,panel,sheet,skillRect,iconRect;FishingHUD owner;Button skill;CanvasGroup skillAlpha;Text skillLabel,title,footer;
+  readonly Button[] cards=new Button[3];readonly RectTransform[] icons=new RectTransform[3];readonly Text[] names=new Text[3],descriptions=new Text[3];
+  FishingSkillGraphic clockRing;FishingAbility shown=FishingAbility.None;FishingAbility[] shownOffers=new FishingAbility[3];uint seenActivation;bool observed,readyBefore;float readyPulse;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+  public bool ReviewPracticeChoice;
+#endif
+  public bool Modal=>panel&&panel.gameObject.activeSelf;
+  public bool SkillVisible=>skillRect&&skillRect.gameObject.activeSelf;
+  public bool SkillReady=>skill&&skill.interactable;
+  public Button SkillButton=>skill;
+  public Button[] ChoiceButtons=>cards;
+  public float SkillOpacity=>skillAlpha?skillAlpha.alpha:0;
+  public float CooldownFill=>clockRing?clockRing.amount:0;
+  public void Build(RectTransform parent,FishingHUD hud,Font unused){
+   frame=parent;owner=hud;
+   skill=BasketballUIStyle.Button(frame,"Fishing round skill","",0,0,100,100,Use,CoveUI.Cream);skillRect=(RectTransform)skill.transform;skillRect.anchorMin=skillRect.anchorMax=skillRect.pivot=Vector2.one*.5f;
+   skill.GetComponent<BasketballPlate>().radius=Vector2.one*35;skill.GetComponent<BasketballPlate>().border=3;skillAlpha=skill.gameObject.AddComponent<CanvasGroup>();
+   iconRect=BasketballUIStyle.Center(skillRect,"Chosen skill icon",Vector2.one*62,new Vector2(0,8),Vector2.one*.5f);
+   skillLabel=BasketballUIStyle.Text(skillRect,"USE",7,72,86,21,12,true,TextAnchor.MiddleCenter);
+   var ringRect=BasketballUIStyle.Center(skillRect,"Skill clock border",Vector2.one*98,Vector2.zero,Vector2.one*.5f);clockRing=ringRect.gameObject.AddComponent<FishingSkillGraphic>();clockRing.ring=true;clockRing.raycastTarget=false;
+   var shade=BasketballUIStyle.Plate(frame,"Fishing skill draft overlay",0,0,100,100,new Color(.035f,.12f,.17f,.65f),0,0);panel=shade.rectTransform;CoveUI.Stretch(panel);shade.raycastTarget=true;
+   var card=BasketballUIStyle.Plate(panel,"Shared three-card draft",0,0,692,366,CoveUI.Cream,26,3,true);sheet=card.rectTransform;sheet.anchorMin=sheet.anchorMax=sheet.pivot=Vector2.one*.5f;sheet.anchoredPosition=Vector2.zero;
+   title=BasketballUIStyle.Text(sheet,"CHOOSE 1 SKILL",18,12,656,43,28,true,TextAnchor.MiddleCenter);
+   for(int i=0;i<3;i++){int index=i;var b=cards[i]=BasketballUIStyle.Button(sheet,"Fishing skill choice "+i,"",18+i*220,92,204,218,()=>Choose(index),BasketballUIStyle.Paper);
+    icons[i]=BasketballUIStyle.Center((RectTransform)b.transform,"Draft skill icon",Vector2.one*72,new Vector2(0,65),Vector2.one*.5f);
+    names[i]=BasketballUIStyle.Text(b.transform,"",8,88,188,30,18,true,TextAnchor.MiddleCenter);
+    descriptions[i]=BasketballUIStyle.Text(b.transform,"",13,123,178,55,14,false,TextAnchor.MiddleCenter);
+   }
+   footer=BasketballUIStyle.Text(sheet,"",18,323,656,28,15,true,TextAnchor.MiddleCenter);panel.gameObject.SetActive(false);skillRect.gameObject.SetActive(false);
   }
-  void Close(){panel.gameObject.SetActive(false);}
-  public void CloseOverlay()=>Close();
-  void Open(FishingAction action){var g=FishingGame.Instance;var view=PlayerView.Instance;var p=g&&view?g.Player(view.target):null;if(!g||!g.Context||!p.HasValue||p.Value.Busy||owner.BlocksGameplay||p.Value.ready&&action==FishingAction.Favourites)return;selection=p.Value.favourites;choosing=action;bool kit=action==FishingAction.Favourites;sheet.sizeDelta=new Vector2(646,kit?424:294);title.rectTransform.anchoredPosition=new Vector2(-22,kit?174:109);help.rectTransform.anchoredPosition=new Vector2(0,kit?135:74);((RectTransform)close.transform).anchoredPosition=new Vector2(281,kit?174:109);title.text=kit?"YOUR FISHING KIT":action==FishingAction.Supply?"SHORE BAG":"PIER TREASURE";help.text=kit?"Pick two skills. Carry one gear item.":action==FishingAction.Supply?"Choose one. This bag refills in 22s.":"Choose one. Recovery takes 6s.";confirm.gameObject.SetActive(kit);panel.gameObject.SetActive(true);panel.SetAsLastSibling();RefreshCards();}
-  void Choose(FishingAbility ability){int bit=1<<(int)ability;if(choosing==FishingAction.Favourites){if((selection&bit)!=0)selection=(ushort)(selection&~bit);else if(FishingAbilityRules.Roster.Count(a=>(selection&(1<<(int)a))!=0)<FishingAbilityRules.FavouriteCount)selection|=(ushort)bit;RefreshCards();}else {PlayerView.Instance?.FishingAbilityInput(choosing,(int)ability);Close();}}
-  void RefreshCards(){int visible=0;bool kit=choosing==FishingAction.Favourites;for(int i=0;i<cards.Length;i++){var ability=FishingAbilityRules.Roster[i];bool chosen=(selection&(1<<(int)ability))!=0;cards[i].gameObject.SetActive(kit||chosen);cards[i].interactable=kit||chosen;cards[i].GetComponent<FishingStickerGraphic>().Refresh(1,chosen?LocalProfile.Hex("A7EFF0"):LocalProfile.Hex("E6E0CF"));checks[i].gameObject.SetActive(chosen);((RectTransform)cards[i].transform).anchoredPosition=kit?new Vector2((i%3-1)*204,48-i/3*136):new Vector2((visible++-.5f)*210,-12);}confirm.interactable=FishingAbilityRules.ValidFavourites(selection);}
+  void SetIcon(RectTransform at,FishingAbility ability){foreach(Transform child in at)Destroy(child.gameObject);var r=BasketballUIStyle.Center(at,"Skill illustration",at.sizeDelta,Vector2.zero,Vector2.one*.5f);FishingSkillGraphic.Icon(r,ability);}
+  void Choose(int i){var game=FishingGame.Instance;var view=PlayerView.Instance;if(game&&view)view.FishingAbilityInput(FishingAction.ChooseSkill,(int)game.State.Offer(i));}
+  void Use(){PlayerView.Instance?.FishingAbilityInput(FishingAction.UseAbility);}
+  public void CloseOverlay(){var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;if(p.HasValue&&!p.Value.skillPicked&&(game.State.Preparing||game.State.Match.phase==FishingRoundPhase.Practice))view.FishingAbilityInput(FishingAction.ChooseSkill,(int)game.State.Match.offer0);panel.gameObject.SetActive(false);}
   void LateUpdate(){
-   var g=FishingGame.Instance;var view=PlayerView.Instance;var p=g&&view?g.Player(view.target):null;bool context=g&&g.Context&&p.HasValue&&view&&view.active;
-   if(!context){Close();item.gameObject.SetActive(false);supply.gameObject.SetActive(false);salvage.gameObject.SetActive(false);observed=false;return;}
-   var player=p.Value;bool running=g.State.Running,active=player.activeUntil>g.Now,empty=player.item==FishingAbility.None&&!active,landing=owner.CatchCue&&owner.CatchCue.Visible;
-   if(!observed||seenRound!=g.State.Match.round){seenRound=g.State.Match.round;seenItem=player.itemSequence;observed=true;}else if(seenItem!=player.itemSequence){seenItem=player.itemSequence;pulse=1;}
-   pulse=Mathf.MoveTowards(pulse,0,Time.unscaledDeltaTime*2.5f);item.gameObject.SetActive(running&&(!empty||player.phase==FishingPhase.Salvaging));itemText.text=player.phase==FishingPhase.Salvaging?Math.Max(0,Math.Ceiling(player.phaseAt+6-g.Now))+"s":active?Math.Ceiling(player.activeUntil-g.Now)+"s":"USE";itemIcon.sprite=FishingGearArt.Ability(active?player.active:player.item);
-   bool fightOnly=player.item==FishingAbility.CoolSpool||player.item==FishingAbility.PowerReel||player.item==FishingAbility.BubbleGuard;bool idleOnly=player.item==FishingAbility.Flippers||player.item==FishingAbility.QuickLure;
-   item.interactable=running&&!owner.BlocksGameplay&&player.item!=FishingAbility.None&&!active&&player.phase!=FishingPhase.Salvaging&&(!fightOnly||player.phase==FishingPhase.Reeling)&&(!idleOnly||!player.Busy);
-   itemIcon.color=new Color(1,1,1,item.interactable||active?1:.55f);var tint=FishingAbilityRules.Color(active?player.active:player.item);item.GetComponent<FishingStickerGraphic>().Refresh(1,LocalProfile.Hex("FFF3D7"));meter.gameObject.SetActive(active||player.phase==FishingPhase.Salvaging);meter.Refresh(player.phase==FishingPhase.Salvaging?Mathf.Clamp01((float)(g.Now-player.phaseAt)/6):Mathf.Clamp01((float)((player.activeUntil-g.Now)/(player.activeUntil-player.activeAt))),tint);
-   int nearest=0;float distance=float.MaxValue;for(int i=0;i<5;i++){float d=(view.target.transform.position-g.SupplyPosition(i)).sqrMagnitude;if(d<distance){nearest=i;distance=d;}}int pier=g.NearestPier(view.target);
-   supply.gameObject.SetActive(running&&empty&&!player.Busy&&!landing&&distance<=2.6f*2.6f);double supplyWait=Math.Max(0,g.State.SupplyReady(nearest)-g.Now);supplyText.text=supplyWait>0?Math.Ceiling(supplyWait)+"s":"GET";supply.interactable=supplyWait<=0&&!owner.BlocksGameplay;
-   salvage.gameObject.SetActive(running&&empty&&!player.Busy&&!landing&&pier>=0);double salvageWait=Math.Max(0,g.State.Match.salvageReadyAt-g.Now);salvageText.text=salvageWait>0?Math.Ceiling(salvageWait)+"s":"6s";salvage.interactable=salvageWait<=0&&!owner.BlocksGameplay;
-   gear.interactable=!player.ready&&!player.Busy&&!owner.BlocksGameplay;
-   if(Modal)sheet.localScale=Vector3.one*Mathf.Min(1.25f,(frame.rect.width-40)/sheet.rect.width,(frame.rect.height-40)/sheet.rect.height);
-   bool raised=player.phase==FishingPhase.Reeling||landing;
-   float scale=owner.HudScale;
-   float itemHalfHeight=((RectTransform)item.transform).rect.height*.5f*(MenuPreferences.ReducedMotion?1:1+pulse*.06f);
-   float y=owner.Settings.margin+(raised?owner.Settings.gaugeSize.y+owner.Settings.gap+itemHalfHeight:itemHalfHeight)*scale;
-   Place(item,raised?-180:0,y,scale*(MenuPreferences.ReducedMotion?1:1+pulse*.06f));Place(supply,-65,146*scale+20,scale);Place(salvage,65,146*scale+20,scale);
-   if(!running&&choosing!=FishingAction.Favourites||player.Busy||player.ready&&choosing==FishingAction.Favourites)Close();
+   var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;
+   bool context=game&&game.Context&&view&&view.active&&p.HasValue;
+   if(!context){panel.gameObject.SetActive(false);skillRect.gameObject.SetActive(false);observed=false;return;}
+   var player=p.Value;bool practice=game.State.Match.phase==FishingRoundPhase.Practice&&!player.skillPicked;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(DevelopmentProbe.TurnCommandActive&&!ReviewPracticeChoice)practice=false;
+#endif
+   bool choose=game.State.Match.phase==FishingRoundPhase.Drafting||practice;
+   choose&=!(owner.Tutorial&&owner.Tutorial.Visible)&&!(owner.IslandMenu&&owner.IslandMenu.Visible)&&!(owner.Results&&owner.Results.Visible)&&!FishingCeremony.Presenting;
+   panel.gameObject.SetActive(choose);if(choose){panel.SetAsLastSibling();var size=owner.Settings.skillCardSize;sheet.sizeDelta=new Vector2(size.x*3+80,size.y+148);float width=sheet.sizeDelta.x;
+    title.text=player.skillPicked?"SKILL LOCKED":"CHOOSE 1 SKILL";title.rectTransform.sizeDelta=new Vector2((width-36)*2,86);
+    footer.text=game.State.Preparing?(player.skillPicked?"Waiting for friends  ·  ":"Pick one  ·  ")+Math.Max(0,Math.Ceiling(game.State.Match.draftUntil-game.Now))+"s":"Choose one to try in practice";
+    for(int i=0;i<3;i++){var ability=game.State.Offer(i);if(shownOffers[i]!=ability){shownOffers[i]=ability;SetIcon(icons[i],ability);}names[i].text=FishingAbilityRules.Name(ability);descriptions[i].text=FishingAbilityRules.Description(ability);
+     var rect=(RectTransform)cards[i].transform;rect.sizeDelta=size;rect.anchoredPosition=new Vector2(18+i*(size.x+16),-92);cards[i].interactable=!player.skillPicked;var plate=cards[i].GetComponent<BasketballPlate>();plate.color=player.skillPicked&&player.item==ability?CoveUI.Sky:BasketballUIStyle.Paper;plate.border=player.skillPicked&&player.item==ability?4:2;plate.Refresh();
+    }
+    sheet.localScale=Vector3.one*Mathf.Min(1,(frame.rect.width-28)/sheet.rect.width,(frame.rect.height-24)/sheet.rect.height);
+   }
+   bool active=player.active!=FishingAbility.None&&game.Now<player.activeUntil;
+   bool show=game.State.Running&&FishingAbilityRules.PhaseAllows(player.item,player.phase)&&!choose&&!owner.BlocksGameplay;
+   skillRect.gameObject.SetActive(show);if(!show){readyBefore=false;return;}
+   if(shown!=player.item){shown=player.item;SetIcon(iconRect,shown);}
+   bool allowed=FishingAbilityRules.CanUse(player,game.Now)&&(player.item!=FishingAbility.SchoolCall||game.NearestPier(view.target)>=0);
+   skill.interactable=allowed;if(allowed&&!readyBefore)readyPulse=1;readyBefore=allowed;readyPulse=Mathf.MoveTowards(readyPulse,0,Time.unscaledDeltaTime*1.7f);
+   if(observed&&seenActivation!=player.itemSequence){readyPulse=1;}seenActivation=player.itemSequence;observed=true;
+   skillAlpha.alpha=allowed||active?1:owner.Settings.skillCooldownOpacity;
+   var tint=FishingAbilityRules.Color(player.item);var plateSkill=skill.GetComponent<BasketballPlate>();plateSkill.color=active?tint:CoveUI.Cream;plateSkill.border=allowed?4:3;plateSkill.Refresh();
+   float fill=active?(float)((player.activeUntil-game.Now)/FishingAbilityRules.Duration(player.active)):allowed?1:1-(float)((player.cooldownUntil-game.Now)/FishingAbilityRules.Cooldown(player.item));clockRing.Tick(fill,active?tint:allowed?CoveUI.Gold:CoveUI.Ink);
+   skillLabel.text=active?"ACTIVE":allowed?"USE":Math.Max(0,Math.Ceiling(player.cooldownUntil-game.Now))+"s";
+   LayoutSkill(MenuPreferences.ReducedMotion?0:readyPulse);
   }
-  static void Place(Button button,float x,float y,float scale){var r=(RectTransform)button.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,0);r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x*scale,y);r.localScale=Vector3.one*scale;}
-  public RectTransform[] VisibleRegions=>new[]{item,supply,salvage}.Where(b=>b&&b.gameObject.activeInHierarchy).Select(b=>(RectTransform)b.transform).ToArray();
-  public bool FitsSafeFrame(){var corners=new Vector3[4];var bounds=frame.rect;foreach(var widget in VisibleRegions.Concat(Modal?new[]{sheet}:Array.Empty<RectTransform>())){widget.GetWorldCorners(corners);foreach(var corner in corners){var point=frame.InverseTransformPoint(corner);if(point.x<bounds.xMin-1||point.x>bounds.xMax+1||point.y<bounds.yMin-1||point.y>bounds.yMax+1)return false;}}return true;}
+  void LayoutSkill(float pulse){
+   float scale=owner.HudScale;var size=owner.Settings.skillButtonSize;skillRect.sizeDelta=size;var corners=new Vector3[4];owner.ActionRect.GetWorldCorners(corners);var top=frame.InverseTransformPoint(corners[1]);
+   Vector2 at=new Vector2(top.x-(size.x*.5f+owner.Settings.skillButtonGap.x)*scale,top.y-size.y*.5f*scale);var half=size*scale*.5f;var b=frame.rect;
+   at.x=Mathf.Clamp(at.x,b.xMin+half.x+8,b.xMax-half.x-8);at.y=Mathf.Clamp(at.y,b.yMin+half.y+8,b.yMax-half.y-8);skillRect.anchoredPosition=at-frame.rect.center;skillRect.localScale=Vector3.one*scale*(1+.05f*pulse);
+  }
+  public RectTransform[] VisibleRegions=>SkillVisible?new[]{skillRect}:Array.Empty<RectTransform>();
+  public bool FitsSafeFrame(){var corners=new Vector3[4];foreach(var widget in VisibleRegions.Concat(Modal?new[]{sheet}:Array.Empty<RectTransform>())){widget.GetWorldCorners(corners);foreach(var c in corners){var at=frame.InverseTransformPoint(c);if(!frame.rect.Contains(at))return false;}}return true;}
  }
 }

@@ -7,6 +7,7 @@ namespace WhatTheFish {
  public sealed class FishingRodMotion:MonoBehaviour {
   Athlete actor;FishingPresentation presentation;Transform upper,lower,hand,socket,leftUpper,leftLower,leftHand,spine,chest;Transform[] bones;Quaternion[] saved;bool applied;
   GameObject rod;LineRenderer line,floatRing;Vector3 tipOffset,gripOffset;Transform head;Vector3 headScale;bool hiddenHead,closedGrip;float shownSteer,shownPull;SkinnedMeshRenderer[] skins;
+  public Transform HeldRod=>rod?rod.transform:null;
   public bool Equipped=>rod&&rod.activeSelf;
   public float GripError {get;private set;}
   public float FightLean {get;private set;}
@@ -61,7 +62,7 @@ namespace WhatTheFish {
    foreach(var skin in skins)skin.SetBlendShapeWeight(skin.sharedMesh.GetBlendShapeIndex("GolfRightGrip"),100);closedGrip=true;
    var palm=socket?socket.position:hand.position;rod.transform.SetPositionAndRotation(palm-rotation*gripOffset,rotation);GripError=Vector3.Distance(rod.transform.TransformPoint(gripOffset),palm);
    if(p.phase==FishingPhase.Reeling&&leftUpper&&leftLower&&leftHand){
-    float cycle=p.held?(float)game.Now*16:0;var wrist=palm-facing*Vector3.right*.12f+facing*Vector3.forward*.03f+facing*Vector3.up*(-.10f+Mathf.Sin(cycle)*.045f);
+    float cycle=p.held?(float)game.Now*(p.active==FishingAbility.PowerReel&&game.Now<p.activeUntil?24:16):0;var wrist=palm-facing*Vector3.right*.12f+facing*Vector3.forward*.03f+facing*Vector3.up*(-.10f+Mathf.Sin(cycle)*.045f);
     Arm(leftUpper,leftLower,leftHand,wrist,-transform.right-Vector3.up*.6f);leftHand.rotation=Quaternion.LookRotation(direction,-(facing*Vector3.right));
    }
    if(head&&PlayerView.Instance&&PlayerView.Instance.active&&PlayerView.Instance.target==actor&&PlayerView.Instance.mode==0&&!PlayerView.Instance.FishingFightCameraActive){headScale=head.localScale;head.localScale=Vector3.one*.001f;hiddenHead=true;}
@@ -70,7 +71,7 @@ namespace WhatTheFish {
    if(p.phase==FishingPhase.Casting){float t=Mathf.Clamp01(elapsed/.65f);endpoint=Vector3.Lerp(Tip,endpoint,t)+Vector3.up*Mathf.Sin(t*Mathf.PI)*2;}
    if(p.phase==FishingPhase.Bite)endpoint.y-=.08f+.08f*Mathf.Sin((float)game.Now*18);
    for(int i=0;i<line.positionCount;i++){float t=i/(float)(line.positionCount-1);var point=Vector3.Lerp(Tip,endpoint,t);point.y-=Mathf.Sin(t*Mathf.PI)*(p.phase==FishingPhase.Reeling?Mathf.Lerp(.22f,.015f,p.tension):.16f);line.SetPosition(i,point);}
-   LineTint=p.phase==FishingPhase.Reeling?FishingTensionVisual.ColorFor(p.tension):new Color(.94f,.88f,.52f);
+   LineTint=p.phase==FishingPhase.Reeling?(p.active==FishingAbility.SteelWire&&game.Now<p.activeUntil?new Color(.78f,.9f,1):FishingTensionVisual.ColorFor(p.tension)):new Color(.94f,.88f,.52f);
    line.startColor=line.endColor=LineTint;line.startWidth=line.endWidth=p.phase==FishingPhase.Reeling?.018f+.012f*p.tension:.012f;
    floatRing.startColor=floatRing.endColor=p.phase==FishingPhase.Bite||p.phase==FishingPhase.Reeling&&p.held?new Color(1,.72f,.12f):p.phase==FishingPhase.Reeling&&p.tension>.75f?new Color(1,.32f,.18f):new Color(.2f,1,1);
    float radius=p.phase==FishingPhase.Bite?.20f+.035f*Mathf.Sin((float)game.Now*10):p.phase==FishingPhase.Reeling?.15f+p.surge*.2f:.11f;

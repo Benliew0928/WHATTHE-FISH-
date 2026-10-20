@@ -129,7 +129,8 @@ namespace WhatTheFish {
        FishingResultsChecks.Capture(report,"eye-level-strain-"+Mathf.RoundToInt(value*100),0);
       }
       p.tension=.5f;game.State.Players[0]=p;
-     }else Check(view.FishingFightCameraActive,"FIGHT_FRAMING_AVAILABLE_FROM_PREFERRED_MODE_"+chosenMode);
+     }else if(chosenMode==1)Check(view.FishingFightCameraActive,"FOLLOW_CAMERA_HAS_ACCEPTED_FIGHT_FRAMING");
+     else Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,actor.transform.position)<10,"ISLAND_VIEW_STAYS_PLAYER_ANCHORED_WHILE_HOOKED");
      p.phase=FishingPhase.Escaped;p.result=FishingResult.Cancelled;game.State.Players[0]=p;yield return new WaitForSeconds(.85f);
      Check(!view.FishingFightCameraActive&&view.mode==chosenMode&&Mathf.Abs(view.yaw-yaw)<.01f&&Mathf.Abs(view.pitch-pitch)<.01f,"CANCEL_RETURNS_PREFERRED_CAMERA_WITHOUT_CHANGING_ANGLE_"+chosenMode);
      p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.result=FishingResult.None;game.State.Players[0]=p;yield return null;
