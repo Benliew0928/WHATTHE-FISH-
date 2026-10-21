@@ -144,6 +144,7 @@ namespace WhatTheFish {
 
    course.gameObject.SetActive(false);
 
+   GolfEventHUD.Create(page);
    swing.BuildSlider();
    cartExit=Resources.Load<Sprite>("GolfUI/Badges/Exit");
 
@@ -281,7 +282,7 @@ namespace WhatTheFish {
 
    hintText.fontSize=aiming?layout.hintFontSize:20;
    hintCaption.enabled=hintText.text=="Walk near your ball to aim";hintText.enabled=!hintCaption.enabled;
-   hint.gameObject.SetActive(!hintCaption.enabled);
+   hint.gameObject.SetActive(false);
    if(countdownAnchor){
     if(match&&match.Starting){
      wasStarting=true;

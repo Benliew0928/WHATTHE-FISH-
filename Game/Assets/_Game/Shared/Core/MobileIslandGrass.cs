@@ -21,9 +21,11 @@ namespace WhatTheFish {
   sealed class Geometry {
    public readonly List<Vector3> vertices=new();
    public readonly List<Vector2> uv=new();
+   public readonly List<Vector2> bend=new();
    public readonly List<int>[] triangles={new(),new()};
    public void Add(Vector3[] points,bool light){
     int start=vertices.Count;vertices.AddRange(points);
+    for(int i=0;i<5;i++)bend.Add(new Vector2(i<2?0:i<4?.55f:1,42));
     // Metre-scaled grain follows the vertical blade plane.
     Vector3 normal=Vector3.Cross(points[1]-points[0],points[2]-points[0]);
     foreach(var p in points)uv.Add(new Vector2(Math.Abs(normal.x)>Math.Abs(normal.z)?p.z:p.x,p.y)*.25f);
@@ -74,7 +76,7 @@ namespace WhatTheFish {
     for(int level=0;level<3;level++){
      var data=cell.lod[level];var go=new GameObject("LOD"+level);go.transform.SetParent(node.transform,false);go.layer=10;
      var mesh=new Mesh{name="Runtime grass "+cell.name+" LOD"+level,indexFormat=data.vertices.Count>65535?IndexFormat.UInt32:IndexFormat.UInt16};
-     mesh.SetVertices(data.vertices);mesh.SetUVs(0,data.uv);mesh.subMeshCount=2;
+     mesh.SetVertices(data.vertices);mesh.SetUVs(0,data.uv);mesh.SetUVs(1,data.bend);mesh.subMeshCount=2;
      for(int sub=0;sub<2;sub++)mesh.SetTriangles(data.triangles[sub],sub,false);
      mesh.RecalculateNormals();mesh.RecalculateTangents();mesh.RecalculateBounds();mesh.UploadMeshData(true);owned.Add(mesh);
      go.AddComponent<MeshFilter>().sharedMesh=mesh;var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterials=new[]{leaf,lightLeaf};renderer.shadowCastingMode=ShadowCastingMode.Off;

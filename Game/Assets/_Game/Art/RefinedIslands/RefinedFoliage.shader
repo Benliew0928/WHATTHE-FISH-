@@ -11,7 +11,19 @@ Shader "WhatTheFish/RefinedFoliage" {
  SubShader {Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque"} Cull Off
  HLSLINCLUDE
  #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
- float3 IslandWind(float3 p){float3 world=TransformObjectToWorld(p);float gust=sin(world.x*.23+world.z*.17+_Time.y*1.1)*.6+sin(world.x*.79-world.z*.5+_Time.y*1.8)*.4;world.x+=gust*.045;world.z+=gust*.023;return TransformWorldToObject(world);}
+ float4 _GolfWind,_GolfWindArea;
+ struct WindInput {float4 p:POSITION;float3 n:NORMAL;float4 tangent:TANGENT;float2 uv:TEXCOORD0;float2 bend:TEXCOORD1;UNITY_VERTEX_INPUT_INSTANCE_ID};
+ float3 IslandWind(float3 p,float2 uv,float2 bend){
+  float3 world=TransformObjectToWorld(p);float event=saturate(_GolfWind.z)*step(distance(world.xz,_GolfWindArea.xy),_GolfWindArea.z);
+  float grass=step(40,bend.y);float flex=lerp(smoothstep(.03,1,uv.y),saturate(bend.x),grass);
+  float t=lerp(_Time.y,_GolfWind.w,event);float ambient=sin(world.x*.23+world.z*.17+t*1.1)*.6+sin(world.x*.79-world.z*.5+t*1.8)*.4;
+  world.xz+=float2(.045,.023)*ambient*lerp(1,flex,event*grass);
+  float phase=dot(world.xz,_GolfWind.xy)*.65-t*2.4;float gust=.78+.22*sin(phase);
+  float2 across=float2(-_GolfWind.y,_GolfWind.x);
+  world.xz+=event*flex*flex*(lerp(.42,.24,grass)*gust*_GolfWind.xy+across*sin(phase*2.3)*.045);
+  return TransformWorldToObject(world);
+ }
+
  ENDHLSL
  Pass {Name "ForwardLit" Tags {"LightMode"="UniversalForward"}
  HLSLPROGRAM
@@ -26,7 +38,7 @@ Shader "WhatTheFish/RefinedFoliage" {
  #pragma multi_compile_fog
  #pragma multi_compile_instancing
  #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
- Varyings WindVertex(Attributes a){UNITY_SETUP_INSTANCE_ID(a);a.positionOS.xyz=IslandWind(a.positionOS.xyz);return LitPassVertex(a);}
+ Varyings WindVertex(WindInput input){UNITY_SETUP_INSTANCE_ID(input);Attributes a=(Attributes)0;UNITY_TRANSFER_INSTANCE_ID(input,a);a.positionOS=float4(IslandWind(input.p.xyz,input.uv,input.bend),1);a.normalOS=input.n;a.tangentOS=input.tangent;a.texcoord=input.uv;a.staticLightmapUV=input.bend;return LitPassVertex(a);}
  ENDHLSL }
  Pass {Name "ShadowCaster" Tags {"LightMode"="ShadowCaster"} ZWrite On ZTest LEqual ColorMask 0
  HLSLPROGRAM
@@ -36,7 +48,7 @@ Shader "WhatTheFish/RefinedFoliage" {
  #pragma multi_compile_instancing
  #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
  #include "Packages/com.unity.render-pipelines.universal/Shaders/ShadowCasterPass.hlsl"
- Varyings WindShadow(Attributes a){UNITY_SETUP_INSTANCE_ID(a);a.positionOS.xyz=IslandWind(a.positionOS.xyz);return ShadowPassVertex(a);}
+ Varyings WindShadow(WindInput input){UNITY_SETUP_INSTANCE_ID(input);Attributes a=(Attributes)0;UNITY_TRANSFER_INSTANCE_ID(input,a);a.positionOS=float4(IslandWind(input.p.xyz,input.uv,input.bend),1);a.normalOS=input.n;a.texcoord=input.uv;return ShadowPassVertex(a);}
  ENDHLSL }
  Pass {Name "DepthOnly" Tags {"LightMode"="DepthOnly"} ZWrite On ColorMask R
  HLSLPROGRAM
@@ -45,7 +57,7 @@ Shader "WhatTheFish/RefinedFoliage" {
  #pragma fragment DepthOnlyFragment
  #pragma multi_compile_instancing
  #include "Packages/com.unity.render-pipelines.universal/Shaders/DepthOnlyPass.hlsl"
- Varyings WindDepth(Attributes a){UNITY_SETUP_INSTANCE_ID(a);a.position.xyz=IslandWind(a.position.xyz);return DepthOnlyVertex(a);}
+ Varyings WindDepth(WindInput input){UNITY_SETUP_INSTANCE_ID(input);Attributes a=(Attributes)0;UNITY_TRANSFER_INSTANCE_ID(input,a);a.position=float4(IslandWind(input.p.xyz,input.uv,input.bend),1);a.texcoord=input.uv;return DepthOnlyVertex(a);}
  ENDHLSL }
  Pass {Name "DepthNormals" Tags {"LightMode"="DepthNormals"} ZWrite On
  HLSLPROGRAM
@@ -55,7 +67,7 @@ Shader "WhatTheFish/RefinedFoliage" {
  #pragma shader_feature_local _NORMALMAP
  #pragma multi_compile_instancing
  #include "Packages/com.unity.render-pipelines.universal/Shaders/LitDepthNormalsPass.hlsl"
- Varyings WindNormals(Attributes a){UNITY_SETUP_INSTANCE_ID(a);a.positionOS.xyz=IslandWind(a.positionOS.xyz);return DepthNormalsVertex(a);}
+ Varyings WindNormals(WindInput input){UNITY_SETUP_INSTANCE_ID(input);Attributes a=(Attributes)0;UNITY_TRANSFER_INSTANCE_ID(input,a);a.positionOS=float4(IslandWind(input.p.xyz,input.uv,input.bend),1);a.normal=input.n;a.tangentOS=input.tangent;a.texcoord=input.uv;return DepthNormalsVertex(a);}
  ENDHLSL }
  }
 }

@@ -45,7 +45,8 @@ namespace WhatTheFish {
    // Only presentation uses the continuous clock. The host still owns expiry.
    float t=Mathf.SmoothStep(0,1,Mathf.Clamp01((age-.5f)/.8f));
    float initial=Mathf.Min(1,(page.rect.width-40)/760),small=Mathf.Min(CornerScale,(page.rect.width*.43f-24)/760);
-   var destination=new Vector2(page.rect.xMin+20+760*small*.5f,page.rect.yMax-20-323*small*.5f);
+   float events=GolfEventHUD.Instance?GolfEventHUD.Instance.StackHeight:0;
+   var destination=new Vector2(page.rect.xMin+20+760*small*.5f,page.rect.yMax-20-events-323*small*.5f);
    root.anchoredPosition=Vector2.Lerp(Vector2.zero,destination,t);root.localScale=Vector3.one*Mathf.Lerp(initial,small,t);
    float tick=Time.unscaledTime-tickAt;
    float angle=MenuPreferences.ReducedMotion?0:tick<.32f?Mathf.Sin(tick*55)*6*(1-tick/.32f):0;

@@ -62,7 +62,7 @@ public static partial class GolfMultiplayerTeeBuild {
   float pathZ=p.z-(p.z<-100?6*Mathf.Exp(-Mathf.Pow((p.x+64)/18,4)):0);
   float road=Mathf.Sqrt(p.x*p.x/(145*145)+pathZ*pathZ/(156*156));pathMask*=1-T1Smooth(1.005f,1.024f,road);
   tint=Color.Lerp(tint,T1Hex("D6C29A"),pathMask);weight=Mathf.Max(weight,pathMask);
-  weight*=1-GolfTeeSite.RestoredBunker(p.x,p.z);
+  weight*=(1-GolfTeeSite.RestoredBunker(p.x,p.z))*(1-OriginalEntryCorridor(p.x,p.z));
   color=new Color(tint.r,tint.g,tint.b,weight);surface=new Vector2(Mathf.Lerp(bunker,pathMask,pathMask),0);
  }
  static void MoveT1Sign(GameObject island,GolfCourse course,MeshCollider[] ground){

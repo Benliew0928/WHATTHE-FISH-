@@ -10,7 +10,7 @@ namespace WhatTheFish {
   [Min(0)] public float minimumSwingLift=2.8f;
   [Min(0)] public float maximumSwingLift=17f;
   [Tooltip("Tangential speed retained when a lofted swing first meets the turf.")]
-  [Range(0,1)] public float landingSpeedRetention=.78f;
+  [Range(0,1)] public float landingSpeedRetention=.72f;
   [Header("Turf landing")]
   [Tooltip("Normal speed retained by each turf bounce; energy falls by its square.")]
   [Range(0,1)] public float turfRestitution=.46f;

@@ -30,8 +30,8 @@ public static partial class GolfMultiplayerTeeBuild {
    var merged=RestoreGrassTriangles(filter.sharedMesh,master,matrix);if(merged)filter.sharedMesh=Save(merged,"cleared-"+filter.name);
   }
  }
- static Mesh RestoreGrassTriangles(Mesh current,Mesh original,Matrix4x4 matrix){
-  var cv=current.vertices;var ov=original.vertices;
+ static Mesh RestoreGrassTriangles(Mesh current,Mesh original,Matrix4x4 matrix,Func<Vector3,bool> selection=null,Func<Vector3,Vector3> warp=null){
+  var cv=current.vertices;var ov=original.vertices;if(warp!=null)ov=ov.Select(warp).ToArray();
   Vector3Int Key(Vector3 v)=>Vector3Int.RoundToInt(v*1000);
   var present=new HashSet<(Vector3Int,Vector3Int,Vector3Int)>();
   for(int sub=0;sub<current.subMeshCount;sub++){var t=current.GetTriangles(sub);for(int i=0;i<t.Length;i+=3)present.Add((Key(cv[t[i]]),Key(cv[t[i+1]]),Key(cv[t[i+2]])));}
@@ -39,7 +39,7 @@ public static partial class GolfMultiplayerTeeBuild {
   for(int sub=0;sub<current.subMeshCount;sub++){
    var output=current.GetTriangles(sub).ToList();var t=original.GetTriangles(sub);
    for(int i=0;i<t.Length;i+=3){var a=ov[t[i]];var b=ov[t[i+1]];var c=ov[t[i+2]];var p=matrix.MultiplyPoint3x4((a+b+c)/3);
-    if(GolfTeeSite.RestoredBunker(p.x,p.z)<.999f||!present.Add((Key(a),Key(b),Key(c))))continue;
+    if(!(selection!=null?selection(p):GolfTeeSite.RestoredBunker(p.x,p.z)>=.999f)||!present.Add((Key(a),Key(b),Key(c))))continue;
     output.AddRange(new[]{cv.Length+t[i],cv.Length+t[i+1],cv.Length+t[i+2]});changed=true;
    }
    outputs.Add(output.ToArray());

@@ -16,6 +16,7 @@ namespace WhatTheFish {
   public readonly float[] Times=new float[Capacity];
   public int Count {get;private set;}
   public GolfShotMode Mode {get;private set;}
+  public GolfShotConditions Conditions {get;private set;}
   public bool Resting {get;private set;}
   public bool HasTarget {get;private set;}
   public Vector3 Normal {get;private set;}
@@ -25,8 +26,9 @@ namespace WhatTheFish {
   public float Duration=>Times[Count-1];
   void Add(Vector3 position,Vector3 velocity,float time){Points[Count]=position;Velocities[Count]=velocity;Times[Count++]=time;}
   static bool Ground(Vector3 p,out RaycastHit hit)=>Physics.Raycast(p+Vector3.up*.18f,Vector3.down,out hit,GolfBall.Radius+.36f,GroundMask,QueryTriggerInteraction.Ignore)&&hit.normal.y>.35f&&Mathf.Abs(Vector3.Dot(p-hit.point,hit.normal)-GolfBall.Radius)<.13f;
-  public void Build(Vector3 origin,Vector3 direction,float charge,GolfShotMode mode,GolfCourse course,GolfBallPhysicsSettings settings){
-   Mode=mode;Count=0;Resting=HasTarget=false;Normal=Vector3.up;ContactCollider=null;
+  public void Build(Vector3 origin,Vector3 direction,float charge,GolfShotMode mode,GolfCourse course,GolfBallPhysicsSettings settings,GolfShotConditions conditions=default){
+   if(mode==GolfShotMode.Putt){conditions.wind=Vector3.zero;if(conditions.kind==GolfEventKind.BounceParty||conditions.kind==GolfEventKind.StickyGreen)conditions=default;}
+   Conditions=conditions;Mode=mode;Count=0;Resting=HasTarget=false;Normal=Vector3.up;ContactCollider=null;
    Vector3 p=origin,v=settings.SwingVelocity(direction,charge,mode);LaunchVelocity=v;Add(p,v,0);
    bool slow=false;float time=0;
    for(int i=1;i<Capacity;i++){
@@ -36,14 +38,15 @@ namespace WhatTheFish {
      // Project onto the authored turf, including its cross-slope break. Below
      // the settling threshold friction holds against gravity, as in GolfBall.
      var hit=support;normal=hit.normal;v=Vector3.ProjectOnPlane(v,normal);slow|=v.magnitude<settings.slowRollingThreshold;
-     float resistance=course.RollingResistance(hit.point,settings)+(slow?settings.rollingResistanceStrength*(1-Mathf.Clamp01(v.magnitude/settings.slowRollingThreshold)):0);
-     if(!slow)v+=Vector3.ProjectOnPlane(Physics.gravity,normal)*Step;
+     float surface=course.RollingResistance(hit.point,settings);float roll=surface<settings.sandResistance-.001f?conditions.RollScale:1;
+     float resistance=(surface+(slow?settings.rollingResistanceStrength*(1-Mathf.Clamp01(v.magnitude/settings.slowRollingThreshold)):0))*roll;
+     if(!slow)v+=Vector3.ProjectOnPlane(Physics.gravity*conditions.GravityScale,normal)*Step;
      v=Vector3.MoveTowards(v,Vector3.zero,resistance*Step);v*=1-.05f*Step;
      if(v.magnitude<settings.stopSpeedThreshold){v=Vector3.zero;Resting=HasTarget=true;Normal=normal;Add(hit.point+normal*GolfBall.Radius,v,time+Step);break;}
      next=p+v*Step;
      if(Ground(next,out var ground)){next=ground.point+ground.normal*(GolfBall.Radius+.001f);normal=ground.normal;}
     }else{
-     v=(v+Physics.gravity*Step)*(1-.05f*Step);next=p+v*Step;
+     v=(v+conditions.AirAcceleration*Step)*(1-.05f*Step);next=p+v*Step;
     }
     var delta=next-p;
     if(delta.sqrMagnitude>1e-9f&&Physics.SphereCast(p,GolfBall.Radius,delta.normalized,out var collision,delta.magnitude,GroundMask,QueryTriggerInteraction.Ignore)){
@@ -52,7 +55,8 @@ namespace WhatTheFish {
      if(!supported||collision.normal.y<.35f){
       next=p+delta.normalized*collision.distance;Normal=collision.normal;
       if(mode==GolfShotMode.Swing||collision.normal.y<.35f){
-       HasTarget=true;ContactCollider=collision.collider;v=mode==GolfShotMode.Swing&&Normal.y>.35f?settings.LandingVelocity(v,Normal,true):Vector3.ProjectOnPlane(v,Normal);
+       HasTarget=true;ContactCollider=collision.collider;v=mode==GolfShotMode.Swing&&Normal.y>.35f?conditions.Landing(settings,v,Normal,true):Vector3.ProjectOnPlane(v,Normal);
+       if(mode==GolfShotMode.Swing&&Normal.y>.35f&&conditions.StopsOnGround){v=Vector3.zero;Resting=true;}
        Add(next,v,time+Step*Mathf.Clamp01(collision.distance/delta.magnitude));break;
       }
       v=Vector3.ProjectOnPlane(v,collision.normal);

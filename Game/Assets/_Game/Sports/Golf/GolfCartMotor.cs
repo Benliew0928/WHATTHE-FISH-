@@ -96,7 +96,8 @@ namespace WhatTheFish {
    float throttle=Mathf.Abs(input.y)<.08f?0:input.magnitude*Mathf.Sign(input.y);
    int ticks=Mathf.Max(1,Mathf.CeilToInt(dt*60));float step=dt/ticks;
    for(int tick=0;tick<ticks;tick++){
-    float wanted=throttle*(throttle<0?ReverseSpeed:ForwardSpeed);
+    float boost=GolfMatchManager.Instance?GolfMatchManager.Instance.EventCartMultiplier:1;
+    float wanted=throttle*(throttle<0?ReverseSpeed:ForwardSpeed)*boost;
     float rate=throttle==0||state.speed*wanted<0?Brake:Acceleration;
     state.speed=Mathf.MoveTowards(state.speed,wanted,rate*step);
     // Remove terrain tilt before extracting steering yaw; Euler Y alone would

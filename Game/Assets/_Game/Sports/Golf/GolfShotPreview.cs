@@ -8,6 +8,7 @@ namespace WhatTheFish {
   readonly List<Vector3> vertices=new(2200);readonly List<Vector2> uvs=new(2200),styles=new(2200);readonly List<int> indices=new(6600);
   Mesh mesh;MeshRenderer lane;Material material;
   Vector3 previousOrigin;float previousHeading,previousCharge;GolfShotMode previousMode;bool sampled;
+  GolfShotConditions previousConditions;
   int shownCount;Vector3 shownEnd,shownNormal;bool blocked;readonly RaycastHit[] hits=new RaycastHit[64];
   public bool Visible=>lane&&lane.enabled;
   public Vector3 EndPoint=>shownEnd;
@@ -26,8 +27,9 @@ namespace WhatTheFish {
   }
   public void Show(GolfBall ball,GolfCourse course,Vector3 origin,float heading,float charge,GolfShotMode mode,Camera camera){
    if(!lane)Create();if(!lane)return;
-   if(!sampled||origin!=previousOrigin||heading!=previousHeading||charge!=previousCharge||mode!=previousMode){
-    plan.Build(origin,Quaternion.Euler(0,heading,0)*Vector3.forward,charge,mode,course,ball.PhysicsSettings);
+   var match=GolfMatchManager.Instance;var conditions=match?match.ShotConditions(mode):default;
+   if(!sampled||!conditions.Equals(previousConditions)||origin!=previousOrigin||heading!=previousHeading||charge!=previousCharge||mode!=previousMode){
+    plan.Build(origin,Quaternion.Euler(0,heading,0)*Vector3.forward,charge,mode,course,ball.PhysicsSettings,conditions);previousConditions=conditions;
     previousOrigin=origin;previousHeading=heading;previousCharge=charge;previousMode=mode;sampled=true;
    }
    LimitPutt(ball);Render(camera);lane.enabled=true;

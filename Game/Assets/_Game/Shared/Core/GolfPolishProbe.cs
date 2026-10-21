@@ -25,6 +25,7 @@ namespace WhatTheFish {
     yield return null;
    }
    match=GolfMatchManager.Instance;Check(match&&match.Context,"GOLF_CONTEXT_READY");
+   if(args.Contains("-golfEventAudit")){yield return EventPresentation();File.AppendAllText(report,"GOLF_EVENTS_COMPLETE checks="+checks+"\n");yield break;}
    if(args.Contains("-golfTeeAudit")){yield return TeePresentation();File.AppendAllText(report,"GOLF_POLISH_COMPLETE checks="+checks+"\n");yield break;}
    if(args.Contains("-golfPersonalRanking")){yield return PersonalRankingPresentation();File.AppendAllText(report,"GOLF_POLISH_COMPLETE checks="+checks+"\n");yield break;}
    if(args.Contains("-golfRankingRollback")){yield return RankingRollbackPresentation();File.AppendAllText(report,"GOLF_POLISH_COMPLETE checks="+checks+"\n");yield break;}

@@ -40,6 +40,9 @@ namespace WhatTheFish {
    foreach(var actor in roster){var nt=actor.GetComponent<NetworkTransform>();passengers.Add(new Passenger{actor=actor,position=actor.transform.position,rotation=actor.transform.rotation,capsule=actor.capsule.enabled,transit=actor.inTransit,networkTransform=nt,transformEnabled=nt&&nt.enabled});actor.ResetLocomotion();actor.inTransit=true;actor.capsule.enabled=false;if(nt)nt.enabled=false;actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();}
    app.view.InputBlocked=true;app.view.ClearMatchInput();SetPhase(TeleportPhase.Preparing);StartCoroutine(Prepare(++version));return true;
   }
+  // Golf course signs are physical scenery, even though their lettering uses
+  // world-space Canvas. Keep them visible while screen HUDs are suspended.
+  public static bool HidesCanvas(Canvas canvas)=>canvas&&!canvas.GetComponent<RoomTeleportStatus>()&&!(canvas.renderMode==RenderMode.WorldSpace&&canvas.GetComponentInParent<GolfCourse>());
   void Awake(){Instance=this;}
   IEnumerator Prepare(int ticket){
    yield return streaming.Prepare(destination);
@@ -55,7 +58,7 @@ namespace WhatTheFish {
    if(destination!=source){arrivalCabin=Instantiate(world.cabin.gameObject,world.scenery);arrivalCabin.name="Teleport arrival cabin view";arrivalCabin.transform.SetLocalPositionAndRotation(SkySailMap.Berth(destination),SkySailMap.Facing(destination));foreach(var c in arrivalCabin.GetComponentsInChildren<Collider>(true))c.enabled=false;}
    foreach(var p in passengers){p.actor.ResetLocomotion();p.actor.inTransit=true;p.actor.capsule.enabled=false;p.actor.GetComponent<CharacterIdentity>()?.Refresh();p.effect=new TeleportEffect(p.actor);if(!p.effect.Supported){Cancel("Teleport materials are missing or unsupported.");yield break;}}
    world.proxies[(int)destination].SetActive(false);
-   foreach(var c in FindObjectsByType<Canvas>(FindObjectsSortMode.None)){if(c.GetComponent<RoomTeleportStatus>())continue;canvases[c]=c.enabled;c.enabled=false;}
+   foreach(var c in FindObjectsByType<Canvas>(FindObjectsSortMode.None)){if(!HidesCanvas(c))continue;canvases[c]=c.enabled;c.enabled=false;}
    sourceFocus=app.LocalAthlete.transform.position+world.Origin+Vector3.up*1.2f;
    int local=passengers.FindIndex(p=>p.actor==app.LocalAthlete);targetFocus=plan[local].position+SkySailMap.Center(destination)+Vector3.up*1.2f;
    Vector3 offset=Quaternion.Euler(0,oldYaw,0)*new Vector3(0,2.2f,-5.8f);Vector3 localFocus=sourceFocus-world.Origin;

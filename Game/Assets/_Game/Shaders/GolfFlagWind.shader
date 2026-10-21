@@ -10,11 +10,13 @@ Shader "WhatTheFish/GolfFlagWind" {
    float _FlagTime;
    half4 _VenueAccent;
   CBUFFER_END
+  float4 _GolfWind;
   TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
   struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
   struct Varyings { float4 positionCS:SV_POSITION; float3 positionWS:TEXCOORD0; half3 normalWS:TEXCOORD1; float2 uv:TEXCOORD2; };
   float3 Wave(float3 p) {
-   float time=_FlagTime<0?_Time.y:_FlagTime;
+   float time=_FlagTime<0?lerp(_Time.y,_GolfWind.w,saturate(_GolfWind.z)):_FlagTime;
+   time*=1+_GolfWind.z*.55;
    float phase=dot(float2(unity_ObjectToWorld._m03,unity_ObjectToWorld._m23),float2(.071,.043));
    float weight=saturate((p.x-.055)/1.065);weight*=weight;
    p.z+=weight*(.211764706*sin(p.x*3.5-time*1.65+phase)+.088235294*sin(p.y*4+p.x*2.5-time*2.1+phase));

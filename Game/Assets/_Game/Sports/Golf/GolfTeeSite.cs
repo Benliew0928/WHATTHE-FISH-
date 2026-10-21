@@ -11,7 +11,7 @@ namespace WhatTheFish {
   public Vector3 Pad(int slot){float a=Angle+Offset(slot)*spacing/radius;return new Vector3(cup.x+radius*Mathf.Cos(a),height,cup.z+radius*Mathf.Sin(a));}
   public Vector3 Waiting(int index){float a=Angle+(index%5-2)*2.5f/(radius+12);return new Vector3(cup.x+(radius+12+index/5*3)*Mathf.Cos(a),height,cup.z+(radius+12+index/5*3)*Mathf.Sin(a));}
   public float AngleDelta(float x,float z)=>Mathf.DeltaAngle(Angle*Mathf.Rad2Deg,Mathf.Atan2(z-cup.z,x-cup.x)*Mathf.Rad2Deg)*Mathf.Deg2Rad;
-  public float HalfWidth=>hole==1?.275f:6.5f/radius;
+  public float HalfWidth=>hole==1?.275f:((Mathf.Max(3,count)-1)*spacing*.5f+2.5f)/radius;
   public float Distance(float x,float z)=>Vector2.Distance(new Vector2(x,z),new Vector2(cup.x,cup.z));
   public float GroundWeight(float x,float z){float r=Distance(x,z);float outside=Mathf.Max(Mathf.Abs(r-(radius+.5f))-4.5f,(Mathf.Abs(AngleDelta(x,z))-HalfWidth)*radius);return 1-Mathf.SmoothStep(0,1,Mathf.Clamp01(outside/5));}
   public bool Clears(float x,float z)=>GroundWeight(x,z)>.01f||hole==1&&x>=-44&&x<=-10&&z>=-147&&z<=-137;

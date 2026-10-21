@@ -52,6 +52,9 @@ Shader "WhatTheFish/GolfTeeIsland" {
   tint=lerp(tint,SRGBToLinear(half3(214,194,154)/255),path);
   float restore=1-smoothstep(.94,1.04,length(float2((p.x+43)/23,(p.y+112.5)/18)));
   paint=half4(tint,max(opening,reclaim)*(1-restore));paint.a=max(paint.a,path*(1-restore));
+  // Only the annotated welcome/coastal path junction returns to native colours.
+  float originalCorridor=(1-smoothstep(14.5,16.5,abs(p.x+38.5)))*(1-smoothstep(7,9,abs(p.y+150)));
+  paint.a*=1-originalCorridor;
   surface=lerp(bunker,path,path);
  }
  half4 frag(V i):SV_Target {

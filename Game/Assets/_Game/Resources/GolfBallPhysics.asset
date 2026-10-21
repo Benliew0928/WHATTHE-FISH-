@@ -16,7 +16,7 @@ MonoBehaviour:
   maximumSwingSpeed: 34
   minimumSwingLift: 2.8
   maximumSwingLift: 17
-  landingSpeedRetention: 0.78
+  landingSpeedRetention: 0.72
   turfRestitution: 0.46
   minimumBounceSpeed: 0.55
   subsequentLandingRetention: 0.92

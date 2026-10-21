@@ -6,6 +6,11 @@ public sealed class GolfUIAssetImporter : AssetPostprocessor {
  void OnPreprocessTexture() {
   if (!assetPath.StartsWith("Assets/_Game/Resources/GolfUI/") || !assetPath.EndsWith(".png")) return;
   var importer = (TextureImporter)assetImporter;
+  if(assetPath.Contains("/Events/")){
+   importer.textureType=TextureImporterType.Default;importer.alphaIsTransparency=true;importer.mipmapEnabled=false;importer.isReadable=false;importer.npotScale=TextureImporterNPOTScale.None;importer.wrapMode=TextureWrapMode.Clamp;importer.filterMode=FilterMode.Bilinear;importer.maxTextureSize=4096;importer.textureCompression=TextureImporterCompression.Uncompressed;
+   foreach(var platform in new[]{"Standalone","Android"})importer.SetPlatformTextureSettings(new TextureImporterPlatformSettings{name=platform,overridden=true,maxTextureSize=4096,format=TextureImporterFormat.RGBA32});
+   return;
+  }
   bool reference=assetPath.Contains("/Reference/");
   bool leaderboard=assetPath.Contains("/Leaderboard/");
   bool finalCountdown=assetPath.Contains("/FinalCountdown/");

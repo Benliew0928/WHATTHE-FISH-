@@ -1,5 +1,328 @@
 # APK size audit — measured release records
 
+## Golf event placement and independent match seed - 22 October 2026
+
+Event notices now start 12 HUD units beyond the Settings button's actual right
+edge, converting world corners into the Golf HUD page's coordinate space. The
+10-second warning, active weather and Rush badges share this offset and clamp
+their width to available space. Original badge artwork and live countdown styles
+are retained. Each authority-started round uses fresh OS random bytes instead
+of truncated wall-clock ticks. The first draw is equally eligible for Wind,
+Sticky Green and Bounce Party; normal random repeats across rounds remain
+possible. Existing no-consecutive-repeat logic, timing and protocol **77** remain.
+
+Complete Windows candidate built successfully and all **328 files** promoted to
+WindowsFinal after the user exited the old game. Official AndroidSubmission at
+**00:06:25 Malaysia time**: actual APK **110,533,860 -> 110,542,380 bytes (+8,520)**;
+headroom **889,457,620 bytes**. Budget gate, ZIP integrity and independent APK v2
+signature passed. SHA-256:
+**93DD353FD887C254C7A7E3648910B33724E4B1611A2F304D4DDBFD60D656BDEF**.
+Largest compressed entries: islands **45,183,633**, IL2CPP **12,608,582**, Unity
+**9,808,208**, metadata **2,793,868**, warning art **2,343,698** and event art
+**1,692,260** bytes. Small code/type-data and bundle-compression variation; no
+new image or map assets. Pre-build source hashes verified after removing only
+reviewed prefab object-ID/provenance regeneration noise; generated packaging
+scenes remain ignored output.
+
+Evidence: ignored `Builds/GolfEventPlacementQA/` (builds, hashes, promotion,
+`AndroidAudit/`, signature and measured verification). Superseded APK archived
+under `Legacy/20261022-000322-019-golf-event-placement-apk/`; full old player under
+`Legacy/20261022-000525-829-golf-event-placement-player/`. No new runtime,
+multiplayer or physical-device testing was performed; build checks do not
+establish those results. No Git staging, commit or push.
+
+## Main pull/merge with local Golf work - 21 October 2026
+
+Fast-forwarded `main` from `ca8dc57` to `4b92d90` (two upstream commits), then
+restored all local Golf work. Both sides' size records were retained; code merged
+without textual conflicts. Upstream profiles/accounts, island bots/settings,
+control layouts and ball-sport updates coexist with the local Golf event, tee,
+physics, slider and signage changes. Both independent branches used protocol 76
+for different payloads; this combined version uses **77**. All peers must update.
+No commit or push was made. The pre-merge local recovery stash is retained.
+
+Complete WindowsFinal player rebuilt successfully at **23:38:25 Malaysia time**.
+Fresh official AndroidSubmission finished at **23:43:56 Malaysia time**: actual
+APK **98,073,922 -> 110,533,860 bytes (+12,459,938)**; headroom
+**889,466,140 bytes** below the decimal 1 GB limit. Official budget gate, ZIP
+integrity and independent APK v2 signature passed. SHA-256:
+**CB698C44FF5AE03119C68425E2D891B466065E82CAC087857B279338CB970B14**.
+Ten newly merged player portraits account for **11,489,098 compressed bytes**
+of growth. Largest compressed entries: islands **45,178,431**, IL2CPP
+**12,605,465**, Unity **9,808,208**, metadata **2,793,652**, warning art
+**2,343,698**, event art **1,692,260** bytes. No unexpected large contributor.
+
+Evidence: ignored `Builds/MergeMain77/`, including `merge-record.json`, source
+hashes, full Windows build log, `AndroidAudit/`, APK entry deltas and signature.
+Reviewed superseded Windows player and APK archived together under
+`Legacy/20261021-233343-731-merge-main77/`. Build-only object-ID/provenance noise
+was restored after semantic inspection; map source content was preserved.
+No new runtime/multiplayer/device tests were run in this merge task. Earlier
+protocol-76 checks are historical and do not validate this merged version.
+
+## Golf entry signage and Moon Golf removal - 21 October 2026
+
+Fresh official AndroidSubmission at **23:22:03 Malaysia time**: actual APK
+**98,087,150 -> 98,073,922 bytes (-13,228)**; decimal-GB headroom
+**901,926,078 bytes**. Official build/budget gate, ZIP integrity and independent
+APK v2 signature passed. SHA-256:
+**17DBC0546EAF97B284794EF27E520D4D42B6D39C24DD590F750B88FB35019B4B**.
+Largest compressed entries: islands **45,186,373**, IL2CPP **12,409,027**,
+Unity **9,809,652**, metadata **2,768,210**, warning art **2,343,698** and event
+art **1,692,260** bytes. Expected small code/type-data reduction; no new bitmap
+assets. Shared source atlas retains its unused Moon region for the other badges.
+Current audit: ignored `Builds/GolfSignEventsQA/AndroidAudit/`.
+
+Golf course world-space signs now remain enabled during teleport. Screen HUDs
+and other teleport presentation keep their prior hide/restore behavior. Verified
+real two-player preparation-room entry: signs visible during flight, arrival,
+settling and normal exploration on **17 Host + 16 Client** checks; actual sign
+captures reviewed. The Hole 1 / PAR 3 text, position and design are unchanged.
+Moon removed from the enum, pool, gravity modifier, display and F2 shortcut.
+Pool is Wind/Sticky/Bounce; their IDs remain 1/3/4 and retired ID 2 cannot trigger
+or display. Each peer passed a 1,800-draw pool/no-repeat fixture. Random cycle,
+warning and first-finisher Rush timing stay unchanged. Protocol **76** required.
+
+**55 offline + 30 Host + 32 Client** event checks also passed, including actual
+shot/preview agreement, remaining badges and replicated event conditions. Complete
+WindowsFinal updated after the user exited the previous player; all **328 files**
+match the validated candidate. **52 map files** retained opening hashes and
+**529 C# hashes** are recorded. Equivalent generated Ball prefab IDs/order and
+identity source hash restored after semantic comparison. No Git publishing.
+Physical phone appearance/FPS/touch and WAN performance remain unmeasured.
+
+Evidence: ignored `Builds/GolfSignEventsQA/Entry/`, `EventsOffline/`,
+`EventNetwork/`, `map-preservation.json` and `verification.json`.
+Reviewed superseded outputs are recoverable in:
+`Legacy/20261021-231900-547-golf-sign-events-apk/` and
+`Legacy/20261021-232224-958-golf-sign-events-player/`.
+
+## Golf event warning HUD correction - 21 October 2026
+
+Fresh official AndroidSubmission at **22:36:08 Malaysia time**: actual APK
+**98,078,070 -> 98,087,150 bytes (+9,080)**; decimal-GB headroom
+**901,912,850 bytes**. Official build/budget gate, ZIP integrity and independent
+APK v2 signature passed. SHA-256:
+**476397F5A7F07BFD7E227F83374DD0F2798F0C985F8879174CD235D9062DA4AF**.
+Largest compressed entries: islands **45,196,617**, IL2CPP **12,412,122**,
+Unity **9,809,652**, metadata **2,768,226**, warning art **2,343,698** and event
+art **1,692,260** bytes. Small code/type metadata growth; both PNG assets remain
+unchanged. Current audit: ignored `Builds/GolfEventHudFixQA/AndroidAudit/`.
+
+Fixed the Canvas's stale atlas binding when warning UVs switch to active-event
+UVs: texture assignment now dirties material and geometry. Removed the 03s
+source-counter exception; 10s..01s share the same font, size, gradient and outline.
+Badge-type transitions reset cached timer formatting. Protocol remains **75**.
+No physics, scoring, scheduling or map changes; **52 map files** retained their
+snapshot hashes. Focused UI validation only: **44 checks at 1600x900 + 44 at
+960x540**, including every warning second, all four repeated event transitions,
+and simultaneous weather/Rush. Actual rendered transition agrees with an explicit
+Canvas refresh (mean RGB error below **0.11/255**). Captures reviewed.
+
+Complete WindowsFinal updated; all **328 files** match the validated full-build
+candidate. Full export was required after the component's serialized layout
+changed; failed scripts-only attempt is archived. **527 C# hashes** retained.
+Only generated equivalent Ball prefab local IDs and identity source hash restored
+after semantic comparison. Physical phone appearance/FPS/touch and WAN remain
+unmeasured. No unrelated gameplay fixtures or Git publishing were performed.
+
+Evidence: ignored `Builds/GolfEventHudFixQA/UI-1600/`, `UI-960/`,
+`render-comparison.json`, `hud-review.png`, `map-preservation.json` and
+`verification.json`. Recoverable archives:
+`Legacy/20261021-223324-362-golf-event-hud-fix-apk/` and
+`Legacy/20261021-223416-864-golf-event-hud-fix-player/`.
+
+## Golf five tees, warning badge and Rush trails - 21 October 2026
+
+Fresh official AndroidSubmission at **21:59:55 Malaysia time**: actual APK
+**95,696,068 -> 98,078,070 bytes (+2,382,002)**; remaining decimal-GB headroom
+**901,921,930 bytes**. Build budget gate, ZIP integrity and independent APK v2
+signature passed. SHA-256:
+**ECBFAF7855BAFF909CD24A34E92EA24C89156F7D587E70D478A7B036F7154B89**.
+The supplied full-resolution warning PNG contributes **2,343,698 compressed bytes**;
+expected island-mesh/code growth accounts for the remainder. Largest compressed
+entries: islands **45,189,958**, IL2CPP **12,409,729**, Unity **9,809,652**,
+metadata **2,768,195**, existing badge sheet **1,692,260** bytes. Audit retained
+under ignored `Builds/GolfRushFiveQA/AndroidAudit/`.
+
+T2–T5 each have five equidistant tee pads, assigned centre then inner/outer sides.
+Native turf textures, world UVs and five-metre joins are retained. T1 data and
+native island masters remain unchanged. Ordinary first landing loses 28%
+horizontal speed; Bounce loses 20% vertical and 25% horizontal speed, excluding
+Putt. Rush lasts 30 seconds and emits fading behind-runner wind ribbons, gold
+wisps, leaves and sparkles while grounded and running. Wind HUD arrow removed.
+The original warning art shows live 10..01 seconds at the top left, then the
+active event badge; final-clock docking below events is preserved. Protocol **75**.
+
+**81 tee/warning/trail + 61 physics/badge + 32 Host + 35 Client assertions** and
+**47 editor surface/UV/support checks** passed. Near/top tee views and actual
+runtime UI/trail captures reviewed. Complete WindowsFinal matches all **328**
+files of the tested player. Last Windows refresh changes a development probe's
+active-row lookup only; the release APK excludes those probes/hotkeys. C# source
+manifest has **525** files. Build-generated equivalent Ball prefab identifiers,
+identity source hash and temporary graphics/quality noise restored against the
+opening snapshot after semantic comparison. No Git publishing performed.
+
+Reviewed superseded outputs/draft evidence are recoverable in:
+`Legacy/20261021-215706-737-golf-rush-five-apk/` and
+`Legacy/20261021-220639-859-golf-rush-five-player/`.
+Current evidence: `Builds/GolfRushFiveQA/ValidatedOffline/`, `PhysicsAndBadges/`,
+`FinalNetwork/`, `surface-audit.txt`, `tee-site-diff.json`, `verification.json`.
+Physical phone appearance/FPS, touch and WAN performance remain unmeasured.
+
+## Golf event V2 physics and wind world - 21 October 2026
+
+Fresh AndroidSubmission at **19:26:05 Malaysia time**: actual APK
+**95,667,940 -> 95,696,068 bytes (+28,128)**; decimal-GB headroom
+**904,303,932 bytes**. Official build/budget gate, ZIP integrity and independent
+APK v2 signature passed. SHA-256:
+**3B4EB14DA9885B2B2F423F9F5EFA73C4FC2B99A20AC5F834BCD9C1C2AC6F2B44**.
+Largest compressed entries: islands **45,164,378**, IL2CPP **12,403,355**,
+Unity **9,809,652**, metadata **2,767,072**, retained badge atlas **1,692,260**
+bytes. Expected small code/shader growth; no new bitmap assets or unrelated
+art growth. Source artwork remains unchanged.
+
+Wind acceleration is **2.6 m/s² (4x)**, with identical preview/flight conditions,
+downwind leaf/grass bending, root weights, five turning flag cloths and a bounded
+pool of airborne sand. Moon gravity is **50%**. Sticky Swing stops at touchdown;
+Putt is unchanged. Bounce Swing retains **90% vertical / 92% tangential speed**;
+Putt is unchanged. Rush gives **2.10x player / 1.90x cart speed**. Swap is removed
+and F5 is unused. The first five-hole finisher stops future random draws, cancels
+unstarted warnings, preserves active weather to expiry, then triggers Rush after
+one second. Lower control hints hidden; central start countdown and GO retained.
+Full rules: [Golf random events](GOLF-RANDOM-EVENTS.md).
+
+**61 offline + 31 Host + 33 Client assertions** passed, including actual landing
+agreement with preview, Sticky PhysX interruption, Putt equivalence, live particle
+movement, downwind cloth orientation and event scheduling. Actual world/UI captures
+reviewed. Complete WindowsFinal updated: **328 files** match the tested candidate;
+**521 C# source hashes** and both changed shader hashes recorded. Full Windows
+content build plus code-only refinements; no authored map layout edits in this
+task. Protocol is now **74**: all peers must update. No phone FPS/touch, physical
+keyboard automation or WAN session verification. Evidence: ignored
+`Builds/GolfEventV2QA/ReleaseOffline/`, `Network/`, `AndroidAudit/` and
+`verification.json`. Equivalent Ball prefab local IDs/order and the generated
+character source stamp were compared and restored to their opening values.
+
+Reviewed superseded player/probe draft archived in
+`Legacy/20261021-192704-857-golf-event-v2-player/`; previous APK in
+`Legacy/20261021-192211-997-golf-event-v2-apk/`. No Git publishing performed.
+
+## Golf reference event badges and T1 seams - 21 October 2026
+
+Fresh AndroidSubmission at **00:12:39 Malaysia time**: actual APK
+**93,985,974 -> 95,667,940 bytes (+1,681,966)**; decimal-GB headroom
+**904,332,060 bytes**. Build/budget gate, ZIP integrity and APK v2 signature passed.
+SHA-256: **2D087D354D2D0875E7AC86537B852F64F72A033A62C11303D6E9B8167BE69E48**.
+Largest compressed entries: islands **45,145,618**, IL2CPP **12,397,260**,
+Unity **9,807,996**, metadata **2,766,629**, new badge atlas **1,692,260** bytes.
+Expected growth is the lossless original-resolution transparent reference atlas;
+no unrelated art growth. Original source PNG SHA-256:
+**5729C41270DE6C4F5C35BDB4D9E3D20838CD19DBB109D7DE2C3736B0E23FC90C**.
+
+Five original-art event badges dock top left with live host timers. Weather and
+Rush stack; the existing finishing clock docks below them, retaining 50x50 digits.
+Random Swap keeps a text notice because the supplied sheet has no corresponding
+art. T1 entry path duplicates and intersecting seams repaired using existing UVs
+and materials. Details: [Golf event badges](GOLF-EVENT-BADGES.md).
+
+**48 offline presentation/event assertions + 38 host + 34 client checks** passed.
+Actual UI and before/after near/overhead corridor captures reviewed. Complete
+WindowsFinal updated: **328 files** match the validated player; **519 C# hashes**
+recorded. Of 190 baseline scene/map/physics resources, **188 are unchanged**;
+only the two intended entry paving/border meshes changed. Protocol stays 73.
+Windows full content build plus code-only presentation refresh. No phone FPS/touch
+or new WAN verification. Evidence: ignored `Builds/GolfEventBadgeQA/`, including
+`FinalUI/`, `Network/`, `SeamsBefore/`, `SeamsAfter/`, `AndroidAudit/` and
+`verification.json`. Build-only character source stamp, equivalent prefab IDs and
+temporary AA setting were compared and restored to their opening values.
+
+Reviewed superseded output archived in:
+- `Legacy/20261020-235851-637-golf-badge-draft/`
+- `Legacy/20261021-000509-115-golf-badge-ui-draft/`
+- `Legacy/20261021-000602-637-golf-badge-apk/`
+- `Legacy/20261021-001310-441-golf-badge-gradient-draft/`
+- `Legacy/20261021-001310-650-golf-badge-player/`
+
+No Git publishing performed.
+
+## Golf event test hotkeys - 20 October 2026
+
+Development Host/offline hotkeys F1-F5 select events, F6 triggers Rush, F7 clears.
+Client authority is rejected. Automatic event cycle resets to 90 seconds after
+manual testing. Full rules and launcher: [Golf event hotkeys](GOLF-EVENT-HOTKEYS.md).
+
+Fresh AndroidSubmission at **23:43:50 Malaysia time**: actual APK
+**93,996,258 -> 93,985,974 bytes (-10,284)**; headroom **906,014,026 bytes**.
+Budget gate, ZIP integrity and APK v2 signature passed. SHA-256:
+**D9A5F257FE0D2CD0CD226BCB3814162024FCFC797664FED5C9C23E78918621E1**.
+Largest compressed entries: islands **45,156,019**, IL2CPP **12,397,923**,
+Unity **9,807,996**, metadata **2,766,184** bytes. No new art or unexpected growth;
+release code/metadata unchanged, small bundle serialization variation only.
+Development hotkeys are excluded from the release Android build.
+
+**51 offline + 38 host + 34 client assertions** passed. Complete WindowsFinal
+updated: **328 files** match the validated candidate; **516 C# source hashes**
+recorded; **190 scene/map/physics resource hashes** unchanged. Code-only Windows
+refresh reused the previous validated content without serialized layout changes.
+Protocol remains **73**. Physical function keys, phone FPS/touch and WAN were not
+verified. Evidence: ignored `Builds/GolfEventHotkeyQA/`, including `verification.json`,
+`Offline/`, `Network/` and `AndroidAudit/`.
+
+Reviewed old player and APK archived as
+`Legacy/20261020-234353-145-golf-hotkeys-player/` and
+`Legacy/20261020-234122-030-golf-hotkeys-apk/`. No Git publishing performed.
+
+## Golf random events and Island Rush - 20 October 2026
+
+Fresh AndroidSubmission at **22:59:22 Malaysia time**: actual APK
+**93,972,974 -> 93,996,258 bytes (+23,284)**.
+Strict decimal-GB headroom: **906,003,742 bytes**. Official build/budget gate,
+ZIP integrity and independent APK v2 signature passed. SHA-256:
+**1BB39CAD70CAD972954E0BD3804A878A7D2C37254995143BE7D444A00C285445**.
+
+Protocol **73** adds the host-synchronized 90-second event cycle: Tropical Wind,
+Moon Golf, Sticky Green, Swing-only Bounce Party and player-only Random Swap.
+Island Rush starts one second after the first five-hole finish, lasting 15 seconds.
+Shot conditions match the guide, persist through motion and clear at rest/recovery.
+Existing ranking, strokes, ownership, map and tee-colour repairs are preserved.
+No new bitmap assets. Largest compressed entries: islands **45,166,301**,
+IL2CPP **12,397,923**, Unity **9,807,996**, metadata **2,766,184** bytes.
+Small growth is confined to updated bundle/code/metadata; no unexpected art growth.
+
+**52 offline + 34 host + 32 client assertions** passed; six actual event UI
+captures reviewed, including concurrent Rush/wind. Complete WindowsFinal updated;
+**327 files** SHA-256 match the tested candidate. All **514 C# hashes** match;
+**190 scene/map/physics asset hashes** remain unchanged. No physical-phone or
+new WAN session verification. Evidence: ignored `Builds/GolfEventsQA/`, including
+`ReleaseChecks/`, `ReleaseNetwork/` and `ReleaseAndroidAudit/`.
+Reviewed old/intermediate deliveries and first UI drafts were archived; see the
+[events design, verification and recovery record](GOLF-RANDOM-EVENTS.md).
+
+## Golf tee colour and annotated corridor repair - 20 October 2026
+
+Fresh AndroidSubmission at **19:03:22 Malaysia time**: actual APK
+**93,875,514 -> 93,972,974 bytes (+97,460)**.
+Strict decimal-GB headroom: **906,027,026 bytes**. Official build/budget
+gate, ZIP integrity and independent APK v2 signature passed. SHA-256:
+**565FFB4F3E28E6BBF696461BF76FB71E03BE0AE5214372771FA4821F1A5E9E78**.
+
+T2–T5 terraces reuse native terrain maps/lighting and preserve original course
+colour layers. Restore original paving and border stones only in the annotated
+T1 coastal curve. No new textures or runtime logic. Largest compressed entries:
+islands **45,152,911**, IL2CPP **12,389,693**, Unity **9,807,996**, metadata
+**2,764,612** bytes. Growth is concentrated in the updated island bundle.
+
+**46 surface assertions + 28 runtime tee assertions** passed; reviewed 11 paired
+actual scene renders. Complete WindowsFinal updated, **326 files** SHA-256 match
+the tested candidate, including its delivery note. Scene/prefab bytes, tee-site
+coordinates and terrace mesh assets are unchanged. All **508 C# hashes** match.
+No physical-phone FPS/appearance or new WAN validation. Evidence is ignored under
+`Builds/GolfTeeColourQA/`, including `AndroidAudit/`. Reviewed previous deliveries
+archived in `Legacy/20261020-190104-358-golf-tee-colour-apk/` and
+`Legacy/20261020-190206-181-golf-tee-colour-player/`.
+See [surface repair and verification](GOLF-TEE-COLOUR-REPAIR.md).
+
 ## Basketball block timing and visible contact — 21 October 2026
 
 Fresh AndroidSubmission at **16:33:40 Malaysia time**: actual APK
