@@ -19,11 +19,11 @@ namespace WhatTheFish {
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
   public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Fishing&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Fishing);
-  public static ulong Key(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;return n&&n.IsSpawned?n.StableId:0;}
-  public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?PlayerIdentity.DisplayName:id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"Guest";}
-  Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned&&a.GetComponent<NetworkAthlete>().IsPlayerObject:a==AppRoot.Instance.LocalAthlete)).OrderBy(Key).ToArray();
+  public static ulong Key(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;return n&&n.IsSpawned?n.StableId:IslandBots.IsBot(actor)?IslandBots.Id(actor):0;}
+  public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);if(IslandBots.IsBot(actor))return IslandBots.Name(actor);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?PlayerIdentity.DisplayName:id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"Guest";}
+  Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned&&a.GetComponent<NetworkAthlete>().IsPlayerObject:a==AppRoot.Instance.LocalAthlete||a.GetComponent<FishingBot>())).OrderBy(Key).ToArray();
   public int ParticipantCount=>Eligible().Length;
-  public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&State.Match.phase!=FishingRoundPhase.Playing&&!State.Preparing&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
+  public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&!(mode==FishingMode.Crew&&IslandBots.Instance&&IslandBots.Instance.Solo)&&State.Match.phase!=FishingRoundPhase.Playing&&!State.Preparing&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
   void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);gameObject.AddComponent<FishingAbilityPresentation>();gameObject.AddComponent<FishingSpectatorAwards>();}
   void OnEnable(){Instance=this;}
   void OnDisable(){State.Clear();Presentation?.Clear(false);wasContext=false;if(Authority)Publish();if(Instance==this)Instance=null;}
@@ -146,6 +146,7 @@ namespace WhatTheFish {
    PlayerPrefs.Save();
   }
   public void ReturnToPractice(){if(!Authority||!Context||State.Match.phase==FishingRoundPhase.Playing||State.Preparing)return;BeginPractice();}
+  public void ResetOfflinePractice(){if(Authority&&Context&&!AppRoot.Instance.rooms.Connected)BeginPractice();}
   void Publish(){var host=NetworkAthlete.HostPlayer;if(!Authority||!host||!host.IsSpawned)return;host.FishingMatch.Value=State.Match;Sync(host.FishingPlayers,State.Players);Sync(host.FishingFish,State.Fish);}
   static void Sync<T>(NetworkList<T> target,List<T> source)where T:unmanaged,IEquatable<T>{while(target.Count>source.Count)target.RemoveAt(target.Count-1);for(int i=0;i<source.Count;i++){if(i>=target.Count)target.Add(source[i]);else if(!target[i].Equals(source[i]))target[i]=source[i];}}
  }

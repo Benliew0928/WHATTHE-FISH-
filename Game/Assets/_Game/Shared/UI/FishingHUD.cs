@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- public sealed class FishingHUD:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler {
+ public sealed partial class FishingHUD:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler {
   public static FishingHUD Instance {get;private set;}
   sealed class Row {
    public ulong id;public RectTransform rect,popRect;public FishingStickerGraphic panel,avatar,flame,crown;
@@ -49,12 +49,12 @@ namespace WhatTheFish {
   public string GuidanceText=>fightTitle&&gauges.gameObject.activeInHierarchy?fightTitle.text:"";
   public bool TimingGuideVisible=>fightGuide&&fightGuide.gameObject.activeInHierarchy;
   public void CloseRoundOverlays(){IslandMenu?.Close();Tutorial?.Close();GetComponent<FishingAbilityHUD>()?.CloseOverlay();PlayerView.Instance?.ClearMatchInput();}
-  public void CloseOverlay(){if(FishingCeremony.Presenting){FishingCeremony.Instance.Skip();return;}if(IslandMenu&&IslandMenu.Visible){IslandMenu.Close();return;}var gear=GetComponent<FishingAbilityHUD>();if(Tutorial&&Tutorial.Visible)Tutorial.Close();else if(gear&&gear.Modal)gear.CloseOverlay();else Results?.Close();}
+  public void CloseOverlay(){if(FishingCeremony.Presenting){FishingCeremony.Instance.Skip();return;}if(IslandMenu&&IslandMenu.Visible){IslandMenu.Back();return;}var gear=GetComponent<FishingAbilityHUD>();if(Tutorial&&Tutorial.Visible)Tutorial.Close();else if(gear&&gear.Modal)gear.CloseOverlay();else Results?.Close();}
   public static void Create(RectTransform page,Font font,RectTransform movement,RectTransform look,RectTransform camera,RectTransform jump,RectTransform back){
    var frame=GolfLeaderboardUI.Rect("Fishing HUD frame",page,Vector2.zero,Vector2.zero,Vector2.zero);frame.anchorMax=Vector2.one;frame.offsetMin=frame.offsetMax=Vector2.zero;
    var node=GolfLeaderboardUI.Rect("Fishing action",frame,Vector2.one,Vector2.zero,new Vector2(235,235));var ui=node.gameObject.AddComponent<FishingHUD>();Instance=ui;ui.page=frame;ui.layout=Resources.Load<FishingHUDLayout>("FishingUILayout");if(!ui.layout)ui.layout=ScriptableObject.CreateInstance<FishingHUDLayout>();
    ui.moveControl=movement;ui.lookControl=look;ui.cameraControl=camera;ui.jumpControl=jump;ui.returnControl=back;foreach(var control in new[]{movement,look,camera,jump,back})control.SetParent(frame,false);look.SetAsFirstSibling();look.anchorMin=Vector2.zero;look.anchorMax=Vector2.one;look.offsetMin=look.offsetMax=Vector2.zero;
-   ui.font=SportsUIStyle.DisplayFont??font;ui.Build();ui.Layout();ui.HookCue=FishingHookCue.Create(frame,node,ui.layout);ui.Results=FishingResultsUI.Create(frame,font);ui.Results.AttachCrewStrip(ui.clockCard);ui.gameObject.AddComponent<FishingAbilityHUD>().Build(frame,ui,ui.font);ui.Tutorial=FishingTutorialUI.Create(frame);ui.IslandMenu=FishingSettingsMenu.Create(frame);ui.ropeGauge=FishingTensionVisual.Create(frame);
+   ui.font=SportsUIStyle.DisplayFont??font;ui.Build();ui.Layout();ui.HookCue=FishingHookCue.Create(frame,node,ui.layout);ui.Results=FishingResultsUI.Create(frame,font);ui.Results.AttachCrewStrip(ui.clockCard);ui.gameObject.AddComponent<FishingAbilityHUD>().Build(frame,ui,ui.font);ui.Tutorial=FishingTutorialUI.Create(frame);ui.IslandMenu=FishingSettingsMenu.Create(frame);ui.ropeGauge=FishingTensionVisual.Create(frame);ui.CreateControlLayout();
   }
   RectTransform Rect(string name,Transform parent,Vector2 pos,Vector2 size,Vector2? anchor=null)=>GolfLeaderboardUI.Rect(name,parent,anchor??new Vector2(.5f,.5f),pos,size);
   FishingStickerGraphic Graphic(RectTransform node,FishingStickerGraphic.Kind kind,Color tint){var g=node.gameObject.AddComponent<FishingStickerGraphic>();g.kind=kind;g.tint=tint;g.raycastTarget=kind==FishingStickerGraphic.Kind.Panel||kind==FishingStickerGraphic.Kind.Gauge;g.Decorate();return g;}
@@ -206,7 +206,8 @@ namespace WhatTheFish {
    start.gameObject.SetActive(game.Authority);start.interactable=game.CanStart(chosenMode);startLabel.text=chosenMode==FishingMode.Cup&&match.mode==FishingMode.Cup&&match.cupValid&&!match.cupFinished?"NEXT ROUND":"START";
    ready.interactable=setup&&p.HasValue&&!p.Value.Busy&&PlayerView.Instance&&PlayerView.Instance.active;readyLabel.text=p.HasValue&&p.Value.ready?"READY!":"READY";
    nickname.interactable=setup;practice.gameObject.SetActive(game.Authority&&match.phase==FishingRoundPhase.Ended);
-   for(int i=0;i<modes.Length;i++){modes[i].interactable=game.Authority&&setup;var g=modes[i].GetComponent<FishingStickerGraphic>();g.Refresh(1,i==(int)chosenMode?Teal:Cream);}
+   if(IslandBots.Instance&&IslandBots.Instance.Solo&&(!setup||chosenMode==FishingMode.Crew))chosenMode=match.mode==FishingMode.Cup?FishingMode.Cup:FishingMode.Round;
+   for(int i=0;i<modes.Length;i++){modes[i].interactable=game.Authority&&setup&&!(i==(int)FishingMode.Crew&&IslandBots.Instance&&IslandBots.Instance.Solo);var g=modes[i].GetComponent<FishingStickerGraphic>();g.Refresh(1,i==(int)chosenMode?Teal:Cream);}
    bool running=game.State.Running;var phase=p.HasValue?p.Value.phase:FishingPhase.Ready;bool fighting=p.HasValue&&phase==FishingPhase.Reeling;
    bool hookPending=view.FishingHookPending;bool hookReady=phase==FishingPhase.Bite&&p.HasValue&&!hookPending&&game.Now<p.Value.hookUntil;
    action.interactable=view.active&&focused&&!paused&&!BlocksGameplay&&running&&p.HasValue&&(phase==FishingPhase.Ready&&!view.FishingCastPending&&game.CanCast(view.target,view.SelectedFishingFish)&&game.VisibleTarget(view.target,view.FishingCamera,view.SelectedFishingFish)||hookReady||fighting);
@@ -328,7 +329,7 @@ namespace WhatTheFish {
    }
   }
   public bool FitsSafeFrame(){
-   var corners=new Vector3[4];var bounds=page.rect;foreach(var pair in frames){if(!pair.Key.gameObject.activeInHierarchy)continue;pair.Value.GetWorldCorners(corners);foreach(var c in corners){var p=page.InverseTransformPoint(c);if(p.x<bounds.xMin-1||p.x>bounds.xMax+1||p.y<bounds.yMin-1||p.y>bounds.yMax+1)return false;}}var gear=GetComponent<FishingAbilityHUD>();return (!gear||gear.FitsSafeFrame())&&(!Results||Results.FitsSafeFrame())&&(!Tutorial||Tutorial.FitsSafeFrame());
+   var corners=new Vector3[4];var bounds=page.rect;foreach(var pair in frames){if(!pair.Key.gameObject.activeInHierarchy)continue;pair.Value.GetWorldCorners(corners);foreach(var c in corners){var p=page.InverseTransformPoint(c);if(p.x<bounds.xMin-1||p.x>bounds.xMax+1||p.y<bounds.yMin-1||p.y>bounds.yMax+1)return false;}}var gear=GetComponent<FishingAbilityHUD>();return (!gear||gear.FitsSafeFrame())&&(!Results||Results.FitsSafeFrame())&&(!Tutorial||Tutorial.FitsSafeFrame())&&(!IslandMenu||IslandMenu.FitsSafeFrame());
   }
   Rect FrameBounds(RectTransform widget){var c=new Vector3[4];widget.GetWorldCorners(c);var min=page.InverseTransformPoint(c[0]);var max=page.InverseTransformPoint(c[2]);return UnityEngine.Rect.MinMaxRect(min.x,min.y,max.x,max.y);}
   public bool RegionsSeparate(){

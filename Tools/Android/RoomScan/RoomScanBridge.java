@@ -27,13 +27,13 @@ public final class RoomScanBridge {
             return bytes.toByteArray();
         } finally { bitmap.recycle(); }
     }
-    public static synchronized void start(Activity parent, int request) {
+    public static synchronized void start(Activity parent, int request, boolean fromImage) {
         if (active) return;
         active = true; activeRequest = request; result = "";
         parent.runOnUiThread(() -> {
             try {
                 ScanUtil.setOperationTrackingEnabled(false);
-                parent.startActivity(new Intent(parent, RoomScanActivity.class));
+                parent.startActivity(new Intent(parent, RoomScanActivity.class).putExtra("fromImage", fromImage));
             } catch (Exception e) { finish("error", "The scanner couldn't open. Enter the room code instead."); }
         });
     }

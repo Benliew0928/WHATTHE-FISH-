@@ -17,7 +17,7 @@ namespace WhatTheFish {
   public static GolfCartWorld Ensure(){if(!Instance)new GameObject("Golf carts").AddComponent<GolfCartWorld>();return Instance;}
   void Awake(){Instance=this;}
   void OnDestroy(){foreach(var record in records.Values)if(record.view)Destroy(record.view.gameObject);if(Instance==this)Instance=null;}
-  public static ulong Key(Athlete athlete){var network=athlete?athlete.GetComponent<NetworkAthlete>():null;return network&&network.StableId!=ulong.MaxValue?network.StableId:OfflineOwner;}
+  public static ulong Key(Athlete athlete){var network=athlete?athlete.GetComponent<NetworkAthlete>():null;return network&&network.StableId!=ulong.MaxValue?network.StableId:IslandBots.IsBot(athlete)?IslandBots.Id(athlete):OfflineOwner;}
   public static int Count=>Instance?Instance.records.Values.Count(r=>r.state.summoned):0;
   public static GolfCart Owned(Athlete athlete)=>athlete&&Instance&&Instance.records.TryGetValue(Key(athlete),out var record)&&record.state.summoned?record.view:null;
   public static bool HasCart(Athlete athlete)=>athlete&&Instance&&Instance.records.TryGetValue(Key(athlete),out var record)&&record.state.summoned;

@@ -2,7 +2,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public sealed class GolfIslandView:StadiumView {
   public Material[] waterMaterials;
-  public override void Apply(StadiumAppearance appearance){}
+  public override void Apply(StadiumAppearance appearance){IslandVenueStyle.Apply(this,appearance);}
   void Update(){
    if(waterMaterials==null)return;
    for(int i=0;i<waterMaterials.Length;i++)if(waterMaterials[i])

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public sealed partial class BasketballMotion {
-  float defenseMotorTime,guardBlend,shufflePhase;bool defenseLaunched;
+  float defenseMotorTime,guardBlend,shufflePhase;bool defenseLaunched;double defenseSimulatedAt;
   Vector3 leftShoulder,rightShoulder;float leftReach,rightReach;
   Vector3[] defenseBasePositions;Quaternion[] defenseBaseRotations;
   public bool GuardActive=>Guarding||Action==BasketballAction.Steal&&State.guardHeld;
@@ -21,27 +21,30 @@ namespace WhatTheFish {
    var value=State;value.guardHeld=true;value.guardBlock=autoBlock&&Guarding;value.heading=heading%360;State=value;
   }
   public void EndGuard(){if(Guarding)BeginDefense(BasketballAction.GuardRecover,State.heading,State.contact);var value=State;value.guardHeld=value.guardBlock=false;State=value;}
-  public void BeginDefense(BasketballAction action,float heading,Vector3 point){
+  public void BeginDefense(BasketballAction action,float heading,Vector3 point,float jumpHeight=BasketballDefenseRules.JumpHeight){
    Begin(action,heading,Vector3.zero);var value=State;value.contact=point;value.finishOrigin=transform.position;
    value.leftHand=Vector3.Dot(point-transform.position,Quaternion.Euler(0,heading,0)*Vector3.right)<0;
    var local=Quaternion.Inverse(Quaternion.Euler(0,heading,0))*(point-transform.position);
    local.x=Mathf.Clamp(local.x,-.42f,.42f);local.y=Mathf.Clamp(local.y,.40f,1.35f);local.z=Mathf.Clamp(local.z,.35f,.70f);
-   value.gather=local;value.finishJump=Mathf.Sqrt(2*JumpMotor.Gravity*BasketballDefenseRules.JumpHeight);
+   value.gather=local;value.finishJump=Mathf.Sqrt(2*JumpMotor.Gravity*Mathf.Clamp(jumpHeight,.2f,2.5f));
    var inverse=Quaternion.Inverse(transform.rotation);
    value.leftFootStart=RigReady?transform.InverseTransformPoint(leftLeg.end.position):leftFoot;value.rightFootStart=RigReady?transform.InverseTransformPoint(rightLeg.end.position):rightFoot;
    value.leftFootRotation=RigReady?inverse*leftLeg.end.rotation:leftFootRotation;value.rightFootRotation=RigReady?inverse*rightLeg.end.rotation:rightFootRotation;State=value;
-   defenseMotorTime=0;defenseLaunched=false;
+   defenseMotorTime=0;defenseLaunched=false;defenseSimulatedAt=Clock;
   }
   public float StepDefenseJump(float dt){
-   defenseMotorTime+=dt;
+   defenseSimulatedAt=Clock;
+   // A block can begin partway through a rendered frame. Advancing by the
+   // whole frame dt launched low-frame-rate defenders ahead of their arms.
+   float next=Mathf.Max(defenseMotorTime,Elapsed);dt=next-defenseMotorTime;defenseMotorTime=next;
    if(defenseMotorTime<BasketballDefenseRules.JumpLoad)return -2*dt;
    if(!defenseLaunched){defenseLaunched=true;athlete.Jump.Launch(State.finishJump);dt=defenseMotorTime-BasketballDefenseRules.JumpLoad;}
    return athlete.Jump.Step(athlete.Grounded&&!athlete.Jump.Airborne,false,dt);
   }
-  static Vector3 DefenseHip(BasketballAction action,float t){
+  Vector3 DefenseHip(BasketballAction action,float t){
    if(action==BasketballAction.JumpBlock){
     float load=Mathf.Sin(Mathf.PI*Mathf.Clamp01(t/BasketballDefenseRules.JumpLoad));
-    float land=BasketballDefenseRules.JumpLoad+2*Mathf.Sqrt(2*JumpMotor.Gravity*BasketballDefenseRules.JumpHeight)/JumpMotor.Gravity;
+    float land=BasketballDefenseRules.JumpLoad+2*State.finishJump/JumpMotor.Gravity;
     float absorb=Mathf.Sin(Mathf.PI*Mathf.Clamp01((t-land)/.22f));
     return new Vector3(0,-.07f*load-.075f*absorb,.018f*load);
    }
@@ -66,11 +69,15 @@ namespace WhatTheFish {
    var action=State.action;Vector3 target;
    if(action==BasketballAction.JumpBlock){
     var low=new Vector3(sign*.34f,.68f,.13f);
-    var high=new Vector3(sign*(strike?.47f:.37f),strike?1.10f:.77f,strike?.19f:.20f);
-    target=Vector3.Lerp(low,high,Phase(time,.08f,.34f));
+    var high=new Vector3(sign*(strike?.50f:.37f),strike?1.22f:.77f,strike?.62f:.20f);
+    // A running torso leans its large head forward. Open the reach beside
+    // that silhouette rather than lifting the forearm through the cheek.
+    float moving=Mathf.Clamp01(athlete.speed/2.2f);
+    if(strike)high=Vector3.Lerp(high,new Vector3(sign*.47f,1.10f,.19f),moving);
+    target=Vector3.Lerp(low,high,Phase(time,.06f,.28f));
     // Lift beside the head with the other arm balancing below the shoulder.
     // A short forward press replaces the old inward swipe across the eyes.
-    target+=new Vector3(0,strike?-.035f:0,strike?.08f:0)*Phase(time,.47f,.70f);
+    target+=new Vector3(0,strike?Mathf.Lerp(-.16f,-.035f,moving):0,strike?Mathf.Lerp(.13f,.08f,moving):0)*Phase(time,.30f,.51f);
     target=Vector3.Lerp(target,rest,Phase(time,.76f,1.10f));
    }else if(action==BasketballAction.Block){
     var cock=new Vector3(sign*.36f,.74f,.19f);var goal=State.gather;
@@ -94,8 +101,18 @@ namespace WhatTheFish {
   }
   // Body and hands turn together. Starts were captured in the body's frame;
   // applying the final heading immediately teleported the arm across the face.
-  public Vector3 DefensePalm(float time)=>transform.position+transform.rotation*DefenseHandLocal(time,State.leftHand);
-  public Vector3 DefenseShoulder=>transform.position+transform.rotation*((State.leftHand?leftShoulder:rightShoulder)+DefenseHip(State.action,Elapsed));
+  Vector3 DefenseOrigin {
+   get {
+    var origin=transform.position;
+    // Local/host movement is frame-driven, while the ball is fixed-step.
+    // Sample the jump at the ball's time instead of using the previous frame's
+    // lower root. Remote actors already simulated this tick need no advance.
+    if(Time.inFixedTimeStep&&JumpBlocking&&defenseLaunched&&athlete.Airborne){float dt=Mathf.Clamp((float)(Clock-defenseSimulatedAt),0,.05f);origin.y+=athlete.Jump.Velocity*dt-.5f*JumpMotor.Gravity*dt*dt;}
+    return origin;
+   }
+  }
+  public Vector3 DefensePalm(float time)=>DefenseOrigin+transform.rotation*DefenseHandLocal(time,State.leftHand);
+  public Vector3 DefenseShoulder=>DefenseOrigin+transform.rotation*((State.leftHand?leftShoulder:rightShoulder)+DefenseHip(State.action,Elapsed));
   void DefenseArm(Limb arm,Vector3 palm,Vector3 normal,Vector3 fingers,Vector3 pole,float blend){
    normal.Normalize();fingers=Vector3.ProjectOnPlane(fingers,normal).normalized;
    var desired=Quaternion.LookRotation(fingers,normal)*Quaternion.Inverse(Quaternion.LookRotation(arm.fingerAxis,arm.palmAxis));

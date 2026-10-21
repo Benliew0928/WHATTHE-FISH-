@@ -34,6 +34,8 @@ namespace WhatTheFish {
    Check(Button("Join with code").IsInteractable(),"manual joining remains enabled");Click("Scan room QR");yield return null;
    Check(field.text=="ABCD"&&Button("Join with code").IsInteractable(),"scanner fallback preserves typed code and join button");
    Check(app.Menu.Content.GetComponentsInChildren<Text>().Any(t=>t.text.Contains("Scanning is available in the Android game")),"desktop scanner limitation explained");
+   Click("Choose room QR image");yield return null;
+   Check(field.text=="ABCD"&&Button("Join with code").IsInteractable()&&!HuaweiRoomScan.Busy,"image fallback preserves typed code and manual joining");
    yield return Capture("join");
    if(Environment.GetCommandLineArgs().Contains("-qrOnline")){
     var create=app.rooms.Create();yield return Wait(()=>create.IsCompleted,100);

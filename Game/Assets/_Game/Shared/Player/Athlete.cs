@@ -64,16 +64,17 @@ namespace WhatTheFish {
    if(IsSpectator){SpectatorMovement.Simulate(this,command,dt);return;}
    if(BasketballMatch.Instance&&BasketballMatch.Instance.AutomaticCommand(this,out var automatic))command=automatic;
    if(GolfMatchManager.Instance&&GolfMatchManager.Instance.IsAiming(this)){command.move=Vector2.zero;command.jump=false;command.cartAction=GolfCartAction.None;}
-   if(BasketballBall.Active&&BasketballBall.Active.PropLocked(this)){command.move=Vector2.zero;command.jump=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=command.guardBlock=false;}
-   if(FootballBall.Instance&&FootballBall.Instance.PropLocked(this)){command.move=Vector2.zero;command.footballPass=command.jump=command.kick=command.tackle=command.dash=command.pressure=command.charging=false;}
+   if(BasketballBall.Active&&BasketballBall.Active.PropLocked(this)){command.move=Vector2.zero;command.targetedPass=command.jump=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=command.guardBlock=false;}
+   if(FootballBall.Instance&&FootballBall.Instance.PropLocked(this)){command.move=Vector2.zero;command.targetedPass=command.footballPass=command.jump=command.kick=command.tackle=command.dash=command.pressure=command.charging=false;}
    if(command.cartAction!=GolfCartAction.None)GolfCartWorld.Execute(this,command.cartAction,command.cartOwner);
    if(GolfCartWorld.Simulate(this,command,dt))return;
    if(!capsule.enabled)return;remote=false;
    if(FootballMatch.KickoffInput(this,command)){FootballEffort.Stop();speed=0;return;}
    if(FootballMatch.BlocksMovement||BasketballMatch.BlocksMovement||GolfMatchManager.BlocksMovement){FootballEffort.Stop();Charging=false;speed=0;return;}
-   if(BasketballMatch.BlocksActions){command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=command.guardBlock=false;}
-   if(FootballMatch.BlocksActions){command.footballPass=command.dash=command.pressure=command.kick=command.tackle=command.jump=command.shoot=command.pass=command.steal=command.charging=false;}
+   if(BasketballMatch.BlocksActions){command.targetedPass=command.shoot=command.pass=command.shotBegin=command.shotCancel=command.passBegin=command.passCancel=command.steal=command.block=command.jumpBlock=command.guard=command.guardBlock=false;}
+   if(FootballMatch.BlocksActions){command.targetedPass=command.footballPass=command.dash=command.pressure=command.kick=command.tackle=command.jump=command.shoot=command.pass=command.steal=command.charging=false;}
    if(FootballBall.Instance){FootballBall.Instance.SyncFootballWalls();FootballBall.Instance.RefreshControl(this);}
+   if(command.targetedPass&&AppRoot.Instance){var receiver=TeammatePassing.Find(command.passReceiver);if(AppRoot.Instance.SelectedSport==SportId.Basketball&&BasketballBall.Active)BasketballBall.Active.TryPassTo(this,receiver,command.passPossession);else if(AppRoot.Instance.SelectedSport==SportId.Football&&FootballBall.Instance)FootballBall.Instance.TryPassTo(this,receiver,command.passPossession);}
    if(command.footballPass&&FootballBall.Instance)FootballBall.Instance.TryPass(this,command.heading);
    if(command.jump)RequestJump();
    if(BasketballBall.Active){BasketballBall.Active.SetGuard(this,(command.guard||command.block||command.jumpBlock)&&command.defensePlay==BasketballBall.Active.Defense.play,command.heading,command.guard&&command.guardBlock);if(command.block||command.jumpBlock)BasketballBall.Active.TryBlock(this,command.heading,command.jumpBlock,command.defensePlay);}

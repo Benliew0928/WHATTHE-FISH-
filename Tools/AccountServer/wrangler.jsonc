@@ -1,0 +1,36 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "whatthefish-huawei-auth",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-10-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "preview_urls": false,
+  "send_metrics": false,
+  "observability": { "enabled": false },
+  "d1_databases": [{
+    "binding": "PROFILES_DB",
+    "database_name": "whatthefish-profiles",
+    "database_id": "ef48165d-6530-49e3-ab47-cc27a7e74623",
+    "migrations_dir": "migrations"
+  }],
+  "vars": {
+    "HUAWEI_APP_ID": "119406947",
+    "UNITY_PROJECT_ID": "633e314c-46d1-4b48-bbbc-2dc5f6fb653c",
+    "UNITY_ENVIRONMENT_ID": "19215999-e921-4fb8-b162-6e2561b1b864",
+    "UNITY_ENVIRONMENT": "production"
+  },
+  "ratelimits": [{
+    "name": "AUTH_RATE_LIMITER",
+    "namespace_id": "119406947",
+    "simple": { "limit": 60, "period": 60 }
+  },{
+    "name": "PROFILE_READ_LIMITER",
+    "namespace_id": "119406948",
+    "simple": { "limit": 120, "period": 60 }
+  },{
+    "name": "PROFILE_WRITE_LIMITER",
+    "namespace_id": "119406949",
+    "simple": { "limit": 20, "period": 60 }
+  }]
+}

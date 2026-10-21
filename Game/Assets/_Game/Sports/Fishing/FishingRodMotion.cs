@@ -36,6 +36,7 @@ namespace WhatTheFish {
    if(!presentation||!game||!game.Context||FishingCeremony.Presenting||!state.HasValue||!state.Value.connected||actor.inTransit||!hand){Stow();return;}
    var p=state.Value;
    if(!rod){var template=presentation.RodTemplate(p.owner);if(!template)return;rod=FishingPresentation.CloneVisual(template,transform,"Held fishing rod");tipOffset=template.Find("Tip").localPosition;gripOffset=template.Find("Grip").localPosition;line=presentation.Line("Fishing line",transform,.012f);floatRing=presentation.Line("Bite float ring",transform,.025f);floatRing.loop=true;floatRing.positionCount=10;}
+   if(!rod.GetComponent<VenueEquipmentFinish>())VenueEquipmentFinish.Attach(rod,SportId.Fishing);
    rod.SetActive(true);for(int i=0;i<bones.Length;i++)saved[i]=bones[i].localRotation;applied=true;
    var facing=Quaternion.Euler(0,p.Busy?game.Heading(actor):transform.eulerAngles.y,0);
    FightLean=0;

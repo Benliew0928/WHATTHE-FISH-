@@ -1,4 +1,4 @@
-﻿param([switch]$RequireApk)
+param([switch]$RequireApk, [string]$ApkPath)
 
 # Read-only check of what the user could publish with git add . from the repo root.
 # This does not stage files, build the game, or establish APK freshness.
@@ -68,14 +68,23 @@ $auditSource = Get-Content -LiteralPath (Join-Path $repoRoot 'Game/Assets/_Game/
 if ($auditSource -notmatch 'LimitBytes\s*=\s*(\d+)') { throw 'Cannot read the APK limit from BuildSizeAudit.cs.' }
 $limitBytes = [long]$Matches[1]
 if ($limitBytes -ne 1000000000) { $problems.Add('The APK limit must match the current 1,000,000,000-byte requirement.') }
-$apkPath = Join-Path $repoRoot 'Builds/Android/WhatTheFish-release.apk'
-if (Test-Path -LiteralPath $apkPath -PathType Leaf) {
-    $apk = Get-Item -LiteralPath $apkPath
+$resolvedApkPath = if ([string]::IsNullOrWhiteSpace($ApkPath)) {
+    Join-Path $repoRoot 'Builds/Android/WhatTheFish-release.apk'
+} elseif ([IO.Path]::IsPathRooted($ApkPath)) {
+    [IO.Path]::GetFullPath($ApkPath)
+} else {
+    # Explicit task releases resolve from this script's repository, even when
+    # the check is launched from another working directory.
+    [IO.Path]::GetFullPath((Join-Path $repoRoot $ApkPath))
+}
+if (Test-Path -LiteralPath $resolvedApkPath -PathType Leaf) {
+    $apk = Get-Item -LiteralPath $resolvedApkPath
+    Write-Output ('APK checked: {0}' -f [IO.Path]::GetRelativePath($repoRoot, $resolvedApkPath))
     Write-Output ('Existing APK: {0} bytes ({1:F2} MB); headroom: {2:F2} MB; modified UTC: {3:o}' -f $apk.Length, ($apk.Length / 1e6), (($limitBytes - $apk.Length) / 1e6), $apk.LastWriteTimeUtc)
     if ($apk.Length -ge $limitBytes) { $problems.Add('APK violates the under-1-GB limit.') }
     Write-Output 'APK freshness, signature, gameplay and phone performance require separate build/test evidence.'
 } elseif ($RequireApk) {
-    $problems.Add('No release APK exists. Build AndroidSubmission before handing off an Android release.')
+    $problems.Add("No release APK exists at $resolvedApkPath. Build AndroidSubmission before handing off an Android release.")
 } else {
     Write-Output 'No local APK: package size is unverified (acceptable for documentation-only work or a fresh clone).'
 }

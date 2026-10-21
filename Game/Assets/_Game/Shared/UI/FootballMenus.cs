@@ -19,6 +19,7 @@ namespace WhatTheFish {
    guideTabs=new Button[4];guidePages=new GameObject[4];string[] tabs={"Controls","Rules","Stamina","Abilities"};
    for(int i=0;i<tabs.Length;i++){int tab=i;guideTabs[i]=FootballUIStyle.Button(guidePage,tabs[i]+" tab",tabs[i],i*(content+9)/4,0,(content-27)/4,32,()=>SelectGuide(tab),BasketballUIStyle.Paper,13);guidePages[i]=CoveUI.Rect(guidePage,tabs[i]+" content",0,45,content,192).gameObject;}
    BuildControls(guidePages[0].transform,content,body);BuildRules(guidePages[1].transform,content,body);BuildStamina(guidePages[2].transform,content,body);BuildAbilities(guidePages[3].transform,content,body);
+   FootballUIStyle.Button(settingsPanel,"Layout","Layout",180,340,120,39,OpenLayout,CoveUI.Sky,14);
    BasketballUIStyle.Plate(settingsPanel,"Footer rule",20,328,w-40,1,CoveUI.Hex("DADCCC"),0,0);
    leaveButton=FootballUIStyle.Button(settingsPanel,"Leave pitch","Leave pitch",20,340,146,39,OpenLeave,CoveUI.Cream,14);var leaveLabel=leaveButton.GetComponentInChildren<Text>();leaveLabel.color=CoveUI.Hex("A63438");leaveLabel.rectTransform.anchoredPosition=new Vector2(44,0);leaveLabel.rectTransform.sizeDelta=new Vector2(190,78);BasketballUIStyle.Art(leaveButton.transform,BasketballIcon.Exit,12,9,24,24);var leavePlate=leaveButton.GetComponent<BasketballPlate>();leavePlate.shadow=0;leavePlate.border=1;leavePlate.edge=CoveUI.Hex("C89F90");FootballUIStyle.Button(settingsPanel,"Back to play","Back to play",w-140,340,120,39,CloseMenu,CoveUI.Mint,14);
    leavePanel=Panel("Leave pitch?",440,256,BasketballIcon.Exit,ShowSettings);leaveText=BasketballUIStyle.Text(leavePanel,"",26,87,388,68,14,false,TextAnchor.MiddleCenter);
@@ -35,7 +36,7 @@ namespace WhatTheFish {
    Card(p,0,0,col,BasketballUIStyle.Icon(BasketballIcon.Move),"Move & look","Left stick to move; push fully to run. Drag right to look.",size);
    Card(p,col+18,0,col,FootballUIStyle.Icon(FootballIcon.Ball),"Kick with control","Tap Shoot for a light kick. Hold for power. Dash stays active.",size);
    Card(p,0,80,col,FootballUIStyle.Icon(FootballIcon.Pressure),"Defend","Hold Pressure to mark the carrier. Tap Tackle when close.",size);
-   Card(p,col+18,80,col,FootballUIStyle.Icon(FootballIcon.Target),"Pass to a teammate","Aim and tap Pass (Space). Hold to see the receiver lock.",size);
+   Card(p,col+18,80,col,FootballUIStyle.Icon(FootballIcon.Target),"Pass to a teammate","Double-tap a teammate. Or aim with Pass (Space) and release.",size);
    Note(p,w,"Changed your mind? Slide into Cancel and lift. Slide back to keep aiming.",size);
   }
   void BuildRules(Transform p,float w,int size){float col=(w-18)/2;
@@ -67,6 +68,6 @@ namespace WhatTheFish {
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();RefreshMenu();}
   void RefreshMenu(){var view=PlayerView.Instance;if(!view)return;for(int i=0;i<3;i++){var p=cameraChoices[i].GetComponent<BasketballPlate>();p.color=i==view.mode?CoveUI.Hex("DCF0D8"):BasketballUIStyle.Paper;p.border=i==view.mode?2.5f:1;p.edge=i==view.mode?CoveUI.Ink:CoveUI.Hex("CAD0BD");p.shadow=i==view.mode?2:0;p.Refresh();cameraChoices[i].transform.Find("Selected camera").gameObject.SetActive(i==view.mode);}cameraNote.text=view.mode==0?"Look through your player's eyes. Drag on the open right side to look around.":view.mode==1?"Drag on the open right side to look around. Your left thumb stays on movement.":"A wider, ball-following view. Drag to pan your view; your player's aim stays independent.";leaveButton.interactable=!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling);}
   public void OpenLeave(){var rooms=AppRoot.Instance.rooms;leaveText.text=rooms.Connected?(rooms.Host?"Everyone returns to the room. The current match ends without a winner.":"Leaving voids the active match without a winner. You return to sport selection."):"Return to sport selection? You can come back for another kickabout.";confirmText.text=rooms.Connected?(rooms.Host?"Return to room":"Leave room"):"Leave pitch";OpenMenu(true);}
-  public void CloseMenu(){MenuPreferences.Save();if(!overlay)return;overlay.gameObject.SetActive(false);controls.blocksRaycasts=true;ClearInput();if(PlayerView.Instance)PlayerView.Instance.InputBlocked=false;UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);}
+  public void CloseMenu(){LayoutEditor?.Dismiss();MenuPreferences.Save();if(!overlay)return;overlay.gameObject.SetActive(false);controls.blocksRaycasts=true;ClearInput();if(PlayerView.Instance)PlayerView.Instance.InputBlocked=false;UnityEngine.EventSystems.EventSystem.current?.SetSelectedGameObject(null);}
  }
 }

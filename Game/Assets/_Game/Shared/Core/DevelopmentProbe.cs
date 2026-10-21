@@ -38,7 +38,13 @@ namespace WhatTheFish {
    Check(animator.GetCurrentAnimatorStateInfo(0).IsName("Run"),"RAINBOW_RUN_ACTIVE");Check(athlete.speed>6,"RAINBOW_SPRINT_SPEED");Capture(Path.ChangeExtension(output,"run.png"));
    IslandDriving=false;yield return new WaitForSeconds(.8f);Check(animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"),"RAINBOW_RETURN_TO_IDLE");Capture(Path.ChangeExtension(output,"still.png"));
   }
-  IEnumerator Cloud(){yield return null;var room=AppRoot.Instance.rooms;var task=args.Contains("-cloudHost")?room.Create(AppRoot.Instance.SelectedSport):room.Join(Value("-cloudCode",""));while(!task.IsCompleted)yield return null;Record("CLOUD_ROOM code="+room.Code+" connected="+room.Connected+" error="+room.Error);if(room.Connected&&args.Contains("-codeFile"))File.WriteAllText(Value("-codeFile","room-code.txt"),room.Code);}
+  IEnumerator Cloud(){
+   // Packaged islands load asynchronously. Creating a room before -sport is
+   // applied otherwise publishes the default Football island to every peer.
+   string requested=Value("-sport","");
+   while(!AppRoot.Instance||!AppRoot.Instance.Menu||AppRoot.Instance.PendingSelection.HasValue||requested.Length>0&&!string.Equals(AppRoot.Instance.SelectedSport.ToString(),requested,StringComparison.OrdinalIgnoreCase))yield return null;
+   var room=AppRoot.Instance.rooms;var task=args.Contains("-cloudHost")?room.Create(AppRoot.Instance.SelectedSport):room.Join(Value("-cloudCode",""));while(!task.IsCompleted)yield return null;Record("CLOUD_ROOM code="+room.Code+" connected="+room.Connected+" error="+room.Error);if(room.Connected&&args.Contains("-codeFile"))File.WriteAllText(Value("-codeFile","room-code.txt"),room.Code);
+  }
   string Value(string key,string fallback){int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback;}
   void Record(string text){File.AppendAllText(output,text+Environment.NewLine);Debug.Log("PROBE "+text);}
   IEnumerator Smoke(){yield return new WaitForSeconds(3);var app=AppRoot.Instance;app.Show("home");yield return new WaitForSeconds(1);Capture(Path.ChangeExtension(output,"home.png"));

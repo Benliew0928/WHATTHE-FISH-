@@ -82,7 +82,7 @@ namespace WhatTheFish {
   static bool BypassRequested(){
    var args=Environment.GetCommandLineArgs();
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-   if(args.Contains("-startupWelcomeReview"))return false;
+   if(args.Contains("-startupWelcomeReview")||args.Contains("-profilesReview"))return false;
    if(args.Contains("-skipWelcome")||args.Contains("-probe")||args.Any(a=>a.StartsWith("-")&&(a.EndsWith("Review",StringComparison.OrdinalIgnoreCase)||a.EndsWith("Audit",StringComparison.OrdinalIgnoreCase))))return true;
 #endif
    // Existing explicit Explore launchers continue to launch the selected sport.
@@ -96,10 +96,12 @@ namespace WhatTheFish {
    Label(card.transform,"Your name appears to other players.",34,92,652,45,24,false,Ink,TextAnchor.MiddleCenter);
    GuestNameField=CoveUI.Field(card.transform,"Guest name","Your name",PlayerIdentity.SavedName,44,159,632,PlayerIdentity.NameLimit);
    var hint=Label(card.transform,"",44,240,632,60,22,false,Ink,TextAnchor.MiddleCenter);
-   Label(card.transform,"Saved on this device. Clearing app data removes your guest profile.",44,312,632,69,23,false,Ink,TextAnchor.MiddleCenter);
+   Label(card.transform,PlayerIdentity.AccountId.Length>0?"Your account is linked. Name edits sync when you go online.":"Guest saved on this device. Link a sign-in account to recover it on another phone.",44,312,632,69,23,false,Ink,TextAnchor.MiddleCenter);
    ActionButton(card.transform,"Cancel guest profile","Back",44,423,230,70,"FFFAEB","F5E9CF","76AA9C",CloseModal,WelcomeSymbol.None,26);
    GuestContinueButton=ActionButton(card.transform,"Confirm guest profile","Let's play",306,423,370,70,"C9FFF0","82DDC4","57A996",()=>{
+    string previous=PlayerIdentity.SavedName;
     if(!PlayerIdentity.SaveName(GuestNameField.text,out var error)){hint.text=error;return;}
+    if(previous!=PlayerIdentity.SavedName)PlayerProfiles.SaveLocalName(GuestNameField.text);
     CloseModal();Dismiss(true);
    },WelcomeSymbol.None,27);
    void Validate(string value){GuestContinueButton.interactable=PlayerIdentity.ValidateName(value,out _,out var error);hint.text=error.Length>0?error:"Up to 16 characters. You can change this later.";}
@@ -114,7 +116,7 @@ namespace WhatTheFish {
   void Update(){
    if(!Visible)return;Layout();
    if(hideProgressAt>=0&&Time.unscaledTime>=hideProgressAt){LoadingPanel.gameObject.SetActive(false);hideProgressAt=-1;}
-   if(Input.GetKeyDown(KeyCode.Escape)&&ModalOpen)CloseModal();
+   if(Input.GetKeyDown(KeyCode.Escape)&&ModalOpen&&!AccountPanel.Visible)CloseModal();
    if(Input.GetKeyDown(KeyCode.Tab)&&EventSystem.current&&!EventSystem.current.currentSelectedGameObject)(IsReady?GuestButton:LanguageButton).Select();
   }
   void OnDestroy(){if(Instance==this)Instance=null;}
@@ -135,7 +137,14 @@ namespace WhatTheFish {
    heading=Label(Design,"Welcome aboard!",1162,337,436,72,38,true,Ink,TextAnchor.MiddleCenter);
    subtitle=Label(Design,"Your island adventure is getting ready.",1170,455,416,104,26,false,Ink,TextAnchor.MiddleCenter);
    actions=Rect(Design,"Sign-in choices",1153,444,457,212);actionGroup=actions.gameObject.AddComponent<CanvasGroup>();
-   HuaweiButton=ArtworkButton(actions,"Huawei sign-in",0,0,457,100,new UnityEngine.Rect(2,1,453,90),45,()=>ShowPlaceholder("Huawei sign-in","Huawei sign-in is coming soon.\nYou can continue as a guest for now.",HuaweiButton));
+   HuaweiButton=ArtworkButton(actions,"Huawei sign-in",0,0,457,100,new UnityEngine.Rect(2,1,453,90),45,()=>{
+    if(!AndroidAccountSignIn.Supported)ShowPlaceholder("Account sign-in","Huawei and Google sign-in use the Android phone's account screen.\nGuest play is available here.",HuaweiButton);
+    else AccountPanel.Open(()=>{CloseModal();ContinueAsGuest();});
+   });
+   if(AndroidAccountSignIn.Supported&&AndroidAccountSignIn.Capabilities.Preferred==AccountProvider.Google){
+    Plate(HuaweiButton.transform,"Google sign-in plate",2,1,453,90,"FFFFFF","FFF7E3","76AA9C",45,false);
+    Label(HuaweiButton.transform,"Sign in with Google",22,1,413,90,28,true,Ink,TextAnchor.MiddleCenter);
+   }
    GuestButton=ArtworkButton(actions,"Continue as guest",0,112,457,100,new UnityEngine.Rect(2,1,453,90),45,ContinueAsGuest);
    LanguageButton=Utility("English",1258,()=>ShowPlaceholder("Language","English is selected.\nMore languages are coming soon.",LanguageButton));
    SettingsButton=Utility("Settings",1398,()=>ShowPlaceholder("Settings","Startup settings are coming soon.\nGame settings are available from the main menu.",SettingsButton));

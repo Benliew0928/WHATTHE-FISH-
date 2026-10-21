@@ -14,7 +14,7 @@ namespace WhatTheFish {
 
  // authority-checked input handlers and existing aim/preview rules.
 
- public sealed class GolfHUD:MonoBehaviour {
+ public sealed partial class GolfHUD:MonoBehaviour {
 
   public static GolfHUD Instance {get;private set;}
 
@@ -65,6 +65,7 @@ namespace WhatTheFish {
   public Button CameraButton=>cameraControl?cameraControl.GetComponent<Button>():null;
 
   public Button JumpButton=>jumpControl?jumpControl.GetComponent<Button>():null;
+  public IslandSettingsMenu IslandMenu {get;private set;}
   readonly Vector3[] captionCorners=new Vector3[4],controlCorners=new Vector3[4];
   public bool CaptionObscured(RectTransform caption){
    caption.GetWorldCorners(captionCorners);var bounds=new UnityEngine.Rect(captionCorners[0].x,captionCorners[0].y,captionCorners[2].x-captionCorners[0].x,captionCorners[2].y-captionCorners[0].y);
@@ -85,7 +86,7 @@ namespace WhatTheFish {
 
    look.SetAsFirstSibling();
 
-   back.gameObject.SetActive(false);camera.gameObject.SetActive(false);camera.GetComponent<Button>().onClick.RemoveAllListeners();camera.name="Golf camera button";jump.name="Golf jump button";hud.Build();hud.Layout();
+   back.gameObject.SetActive(false);camera.gameObject.SetActive(false);camera.GetComponent<Button>().onClick.RemoveAllListeners();camera.name="Golf camera button";jump.name="Golf jump button";hud.Build();hud.Layout();hud.IslandMenu=IslandSettingsMenu.Create(frame,SportId.Golf);hud.CreateControlLayout();
 
   }
 
@@ -345,7 +346,7 @@ namespace WhatTheFish {
 
   public bool FitsSafeFrame(){
 
-   if(!page)return false;var bounds=page.rect;foreach(var pair in frames){if(!Visible(pair.Key))continue;var frame=FrameBounds(pair.Key);if(frame.xMin<bounds.xMin-1||frame.xMax>bounds.xMax+1||frame.yMin<bounds.yMin-1||frame.yMax>bounds.yMax+1)return false;}return true;
+   if(!page)return false;var bounds=page.rect;foreach(var pair in frames){if(!Visible(pair.Key))continue;var frame=FrameBounds(pair.Key);if(frame.xMin<bounds.xMin-1||frame.xMax>bounds.xMax+1||frame.yMin<bounds.yMin-1||frame.yMax>bounds.yMax+1)return false;}return !IslandMenu||IslandMenu.FitsSafeFrame();
 
   }
 

@@ -52,7 +52,7 @@ namespace WhatTheFish {
   }
   public void Open(){
    app=AppRoot.Instance;if(!app||!app.Exploring||TeleportSequence.Busy||RoomTeleport.Busy||MatchActive)return;
-   CloseResults();selected=app.SelectedSport;destination=TeleportDestination.Station;actionMessage="";
+   CloseResults();GolfHUD.Instance?.IslandMenu?.Close();FishingHUD.Instance?.IslandMenu?.Close();selected=app.SelectedSport;destination=TeleportDestination.Station;actionMessage="";
    if(!Visible){wasBlocked=app.view.InputBlocked;app.view.ClearMatchInput();app.view.InputBlocked=true;}panel.gameObject.SetActive(true);reopen.gameObject.SetActive(false);Refresh();
   }
   public void Close(){if(!Visible)return;panel.gameObject.SetActive(false);if(app&&app.view)app.view.InputBlocked=wasBlocked;}
@@ -80,7 +80,7 @@ namespace WhatTheFish {
   void Refresh(){
    bool host=!app.rooms.Connected||app.rooms.Host;int count=app.rooms.Connected?RoomSeats.PlayingCount:1;hostControls.SetActive(host);guestControls.SetActive(!host);
    subtitle.text=host?"Choose another island, or play "+app.SelectedSport.ToString().ToLowerInvariant()+" again.":"The round is over. Your place in the room is kept.";
-   party.text=app.rooms.Connected?count+" PLAYERS  /  SAME ROOM":"SOLO ADVENTURE";
+   party.text=app.rooms.Connected?count+" PLAYERS  /  SAME ROOM":IslandBots.Instance&&IslandBots.Instance.Solo?"YOU + "+IslandBots.Instance.Count+" BOT OPPONENTS":"SOLO ADVENTURE";
    againLabel.text=app.SelectedSport==SportId.Fishing&&FishingGame.Instance&&FishingGame.Instance.State.Match.mode==FishingMode.Cup&&!FishingGame.Instance.State.Match.cupFinished?"Next cup round":"Play again";
    for(int i=0;i<4;i++){bool fits=count<=TeleportDestinations.Capacity((SportId)i);cards[i].interactable=fits;cards[i].GetComponent<CoveFeedback>().SetTint((SportId)i==selected?CoveUI.Mint:fits?CoveUI.Sky:new Color(.85f,.86f,.83f));capacities[i].text=fits?"Up to "+TeleportDestinations.Capacity((SportId)i)+" players":"Your group exceeds 5";}
    station.GetComponent<CoveFeedback>().SetTint(destination==TeleportDestination.Station?CoveUI.Mint:CoveUI.Cream);game.GetComponent<CoveFeedback>().SetTint(destination==TeleportDestination.Game?CoveUI.Mint:CoveUI.Cream);

@@ -23,6 +23,11 @@ namespace WhatTheFish {
   }
   public void TintIllustration(Color color){if(artwork)artwork.color=color;}
   public Image Illustration=>artwork;
+  internal void CopyAppearanceTo(FishingStickerGraphic target){
+   target.resourceName=resourceName;target.fullArtwork=fullArtwork;target.solidPanel=solidPanel;
+   target.artwork=target.transform.Find("Illustrated sticker")?.GetComponent<Image>();
+   target.SetVerticesDirty();
+  }
   public void Refresh(float fill,Color main,bool danger=false){if(Mathf.Abs(value-fill)<.001f&&tint==main&&hot==danger)return;value=fill;tint=main;hot=danger;SetVerticesDirty();}
   // Pulse only the illustration; labels and the button's hit area stay fixed.
   public void PulseIllustration(float scale){if(artwork)artwork.rectTransform.localScale=Vector3.one*Mathf.Clamp(scale,.85f,1.2f);}

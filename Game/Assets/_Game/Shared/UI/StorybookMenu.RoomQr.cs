@@ -34,10 +34,11 @@ namespace WhatTheFish {
    Text(card.transform,"Open Join a room > Scan QR on another phone.\nYou can also type the code. Internet required.",30,657,680,69,23,false,Muted,TextAnchor.MiddleCenter);
    Button(card.transform,"Close room QR","Done",190,741,360,58,Gold,()=>{Destroy(overlay.gameObject);modalRoot=null;roomQrModal=false;group.interactable=true;},size:25).Select();
   }
-  void ScanRoomInvitation() {
+  void ScanRoomInvitation()=>ScanRoomInvitation(false);
+  void ScanRoomInvitation(bool fromImage) {
    if(app.rooms.busy||HuaweiRoomScan.Busy||modalRoot)return;
    var page=content;
-   if(message)message.text="Opening camera…";
+   if(message)message.text=fromImage?"Opening image picker…":"Opening camera…";
    HuaweiRoomScan.Scan((status,value)=>{
     if(!this||Page!="join"||content!=page||!roomCode)return;
     if(status=="success") {
@@ -45,7 +46,7 @@ namespace WhatTheFish {
      else if(message)message.text=error;
     }else if(message)message.text=status=="cancel"?"Scan cancelled. You can still enter the room code.":value;
     Refresh();
-   });
+   },fromImage);
   }
  }
 }

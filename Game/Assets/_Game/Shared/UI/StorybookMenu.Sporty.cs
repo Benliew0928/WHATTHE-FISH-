@@ -17,7 +17,7 @@ namespace WhatTheFish {
   static Color Foreground(Color color)=>(color.r*.299f+color.g*.587f+color.b*.114f)>.6f?DarkInk:Ink;
   static Color Accent(SportId sport)=>sport switch{SportId.Fishing=>Gold,SportId.Basketball=>Hex("FFB17D"),SportId.Football=>Mint,_=>Hex("D1BAFF")};
   static string ShortCaption(SportId sport)=>sport switch{SportId.Fishing=>"Cast & catch",SportId.Basketball=>"Shoot & score",SportId.Football=>"Pass & score",_=>"Aim & putt"};
-  static bool HasBots(SportId sport)=>sport==SportId.Football||sport==SportId.Basketball;
+  static bool HasBots(SportId sport)=>sport==SportId.Football||sport==SportId.Basketball||IslandBots.Supports(sport);
   static Sprite SportArt(SportId sport){
    if(sportArt==null){var atlas=Resources.Load<Texture2D>("SportyMenu/SportCards");sportArt=new Sprite[4];
     if(atlas)for(int i=0;i<HomeSports.Length;i++)sportArt[(int)HomeSports[i]]=Sprite.Create(atlas,new Rect(i%2*atlas.width/2f,(1-i/2)*atlas.height/2f,atlas.width/2f,atlas.height/2f),new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect);
@@ -49,7 +49,8 @@ namespace WhatTheFish {
   void Home(){
    history.Clear();guideFromHub=false;
    Image(content,"Official logo",Resources.Load<Sprite>("Menu/WhatTheFishLogo"),64,0,205,151);
-   Button(content,"Player profile","Your profile",1085,48,248,68,Raised,()=>Go("profile"),CoveSymbol.People,27);
+   Button(content,"Player profile","Your profile",1085,48,248,68,Raised,SocialPanel.OpenOwn,CoveSymbol.People,27);
+   Button(content,"Friends icon","Friends",880,48,185,68,Raised,SocialPanel.OpenFriends,CoveSymbol.People,24);
    Button(content,"Settings","Settings",1353,48,183,68,Raised,()=>Go("settings"),CoveSymbol.Settings,26);
    Plate(content,"Header divider",64,151,1472,2,Line,0,0);
    var room=Plate(content,"Play together",64,176,1472,128,Cream);
@@ -92,7 +93,7 @@ namespace WhatTheFish {
    Text(art.transform,SportCaption(app.SelectedSport),32,482,500,55,25,false,Muted);
    Mode("Explore offline","EXPLORE OFFLINE","Your own pace. Explore the island and practise your skills.",CoveSymbol.Map,665,190,app.EnterOffline,Mint);
    bool bots=HasBots(app.SelectedSport);
-   Mode("Play vs AI","VERSUS BOTS",bots?"Pick your team size and take on computer opponents.":"No bots for this sport yet. Play with friends from the main menu.",CoveSymbol.People,665,489,()=>Go("ai"),Cream,bots);
+   Mode("Play vs AI","VERSUS BOTS",IslandBots.Supports(app.SelectedSport)?"Choose your opponents. Everyone competes for first place.":"Pick your team size and take on computer opponents.",CoveSymbol.People,665,489,()=>Go("ai"),Cream,bots);
    Button(content,"Sport help","How to play",64,807,300,65,Raised,()=>Go("help"),CoveSymbol.Book,27);
    Text(content,"Playing with friends? Create or join a room on the main menu.",445,815,1090,40,23,false,Muted,TextAnchor.MiddleRight);
   }
@@ -102,19 +103,6 @@ namespace WhatTheFish {
    Text(b.transform,title,30,110,800,59,37,true,enabled?ink:Muted);
    Text(b.transform,caption,30,185,800,62,25,false,ink==Ink?Muted:DarkInk);
    if(enabled)Icon(b.transform,CoveSymbol.Next,808,40,28,ink);
-  }
-  void VenueHub(){
-   Heading("CUSTOMIZE VENUE","Your home advantage. Saved looks are used when you host.");
-   SportTabs("Venue",venueSport,s=>{venueSport=s;Rebuild();});
-   var p=Plate(content,"Selected venue",64,294,1472,484,Cream);
-   Image(p.transform,"Venue illustration",SportArt(venueSport),20,24,630,420);
-   bool supported=HasBots(venueSport);
-   Text(p.transform,venueSport.ToString().ToUpperInvariant(),705,42,710,70,51,true,Accent(venueSport));
-   Text(p.transform,supported?"MAKE IT YOURS":"MORE TO COME",708,131,700,42,27,true);
-   Text(p.transform,venueSport==SportId.Football?"Name your ground, choose an accent colour,\nand style the big screen and flags.":venueSport==SportId.Basketball?"Name your arena, recolour the seats and trim,\nand choose your centre-court logo.":"This island is ready to explore.\nVenue customization is coming in a future update.",708,196,700,106,27,false,Muted);
-   var edit=Button(p.transform,"Edit selected venue",supported?"Edit venue":"Coming soon",708,347,380,76,supported?Mint:Raised,()=>{history.Push("venues");ChooseSport(venueSport,"custom");},CoveSymbol.Paint,28);
-   edit.interactable=supported&&CanEdit&&!app.rooms.Connected;
-   Footer("Choose a sport above. Your saved venue designs stay separate.");
   }
   void GuideHub(){
    guideFromHub=true;Help();

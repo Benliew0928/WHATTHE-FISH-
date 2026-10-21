@@ -86,9 +86,9 @@ namespace WhatTheFish {
    if(fishingCameraEntered||!active||!target||target.inTransit||TeleportSequence.OwnsCamera)return;
    fishingCameraEntered=true;fishingCameraRestore=false;fishingPreviousMode=mode;mode=1;fishingCameraBlend=0;ResetFishingFightCamera();
   }
-  public void ReadyFishing(){var g=FishingGame.Instance;var p=g?g.Player(target):null;if(active&&g&&p.HasValue&&!p.Value.Busy)QueueFishing(p.Value.ready?FishingAction.Unready:FishingAction.Ready);}
+  public void ReadyFishing(){var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!InputBlocked&&active&&g&&p.HasValue&&!p.Value.Busy)QueueFishing(p.Value.ready?FishingAction.Unready:FishingAction.Ready);}
   public bool BeginFishing(int source=int.MinValue){
-   var g=FishingGame.Instance;var p=g?g.Player(target):null;if(!active||!g||!g.Context||!p.HasValue||fishingHeld||pendingFishing!=FishingAction.None)return false;
+   var g=FishingGame.Instance;var p=g?g.Player(target):null;if(InputBlocked||!active||!g||!g.Context||!p.HasValue||fishingHeld||pendingFishing!=FishingAction.None)return false;
    if(p.Value.phase==FishingPhase.Ready){if(FishingCastPending||!g.CanCast(target,SelectedFishingFish)||!g.VisibleTarget(target,cam,SelectedFishingFish)){GolfFishingAudio.PlayMenu("ui-error");return false;}QueueFishing(FishingAction.Cast);fishingAimFrozenUntil=Time.unscaledTime+1.5f;}
    else if(p.Value.phase==FishingPhase.Bite){if(FishingHookPending||g.Now>=p.Value.hookUntil)return false;QueueFishing(FishingAction.Hook);fishingHookPending=true;fishingHookRound=pendingFishingRound;fishingHookSequence=pendingFishingSequence;fishingHookQueuedAt=Time.unscaledTime;}
    else if(p.Value.phase==FishingPhase.Reeling)return BeginCountersteer(1,source);
@@ -97,7 +97,7 @@ namespace WhatTheFish {
   }
   public bool BeginCountersteer(int side,int source=int.MinValue){
    var g=FishingGame.Instance;var p=g?g.Player(target):null;
-   if(side!= -1&&side!=1||!active||!g||!g.Context||!p.HasValue||p.Value.phase!=FishingPhase.Reeling||pendingFishing!=FishingAction.None&&pendingFishing!=FishingAction.ReelStop||fishingHeld&&fishingSource==source)return false;
+   if(InputBlocked||side!= -1&&side!=1||!active||!g||!g.Context||!p.HasValue||p.Value.phase!=FishingPhase.Reeling||pendingFishing!=FishingAction.None&&pendingFishing!=FishingAction.ReelStop||fishingHeld&&fishingSource==source)return false;
    fishingHeld=true;fishingSide=side;fishingSource=source;fishingRenewAt=Time.unscaledTime+.2f;
    QueueFishing(side<0?FishingAction.ReelLeft:FishingAction.ReelRight);return true;
   }

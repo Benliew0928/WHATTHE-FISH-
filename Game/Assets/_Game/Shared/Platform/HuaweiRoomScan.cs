@@ -34,7 +34,7 @@ namespace WhatTheFish {
    LastGenerationProvider="Codecrete desktop encoder";return texture;
 #endif
   }
-  public static void Scan(Action<string,string> completed) {
+  public static void Scan(Action<string,string> completed,bool fromImage=false) {
    if(Busy)return;
    if(!Supported){completed("unavailable","Scanning is available in the Android game. Enter or paste the room code here.");return;}
 #if UNITY_ANDROID && !UNITY_EDITOR
@@ -42,7 +42,7 @@ namespace WhatTheFish {
    try {
     using(var player=new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
     using(var activity=player.GetStatic<AndroidJavaObject>("currentActivity"))
-    using(var bridge=new AndroidJavaClass(Bridge))bridge.CallStatic("start",activity,self.request);
+    using(var bridge=new AndroidJavaClass(Bridge))bridge.CallStatic("start",activity,self.request,fromImage);
    }catch(Exception e){Debug.LogWarning("Scan Kit launch failed: "+e.GetType().Name);self.Complete("error","The scanner couldn't open. You can still enter the room code.");}
 #endif
   }

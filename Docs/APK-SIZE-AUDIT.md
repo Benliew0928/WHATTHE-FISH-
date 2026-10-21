@@ -1,5 +1,514 @@
 # APK size audit — measured release records
 
+## Basketball block timing and visible contact — 21 October 2026
+
+Fresh AndroidSubmission at **16:33:40 Malaysia time**: actual APK
+**106,372,384 -> 106,377,892 bytes (+5,508)**, leaving **893,622,108 bytes**
+below the strict 1,000,000,000-byte cap. The official build gate, ZIP integrity,
+all **1,207 exact audit entries**, five-scene catalog/bundle hash and APK v2
+signature verification passed. SHA-256:
+**3A0BFA6F4198AE3D9EE92D99FE287A83FEAD7592864D131EF6C574792D74826B**.
+
+Guard contests now time a real jump and extended palm against the rising shot.
+Ordinary shots release at a **1.26 m** offset and require actual swept contact
+before a swat. Layups/dunks use elevated contact windows; low-frame-rate jump
+and ball interpolation timing are corrected. Both sports retain double-tap
+teammate passing. Protocol **76** requires matching room builds.
+
+Largest compressed entries: islands **45,091,935**, IL2CPP **12,581,591**,
+Unity **9,808,457**, metadata **2,790,141** bytes. Respective opening-to-final
+deltas are **+5,870**, **−473**, **0** and **+110** bytes. No unexpected large
+growth, new art or lossy asset conversion was introduced.
+
+The complete **326-file WindowsFinal player** was hash-verified on promotion.
+Its full player/assets were built at **15:50:55**, with final scripts at
+**16:26:44**. All **548 C# input-file hashes** were unchanged through packaging;
+this includes editor/development-only inputs, not 548 runtime classes.
+**909 checks** passed: 130 at 20 fps, 114 at 60 fps, 194 host/10 guest,
+252 defense geometry/motion, 39 basketball/40 football direct passing and
+130 at 30 fps using default paths from a folder with spaces and an unrelated
+working directory. The 60 fps and geometry runs precede a test-fixture isolation
+adjustment only; gameplay code matches delivery. A further 62 shot-motion checks
+and the charge suite passed on an earlier candidate with unchanged shot code.
+Actual contact/deflection frames were inspected. Physical Android touch/FPS
+and real WAN latency remain unverified. Existing local changes are preserved.
+
+Evidence: ignored `Builds/BlockVisualQA/`, including `apk-verification.json`,
+`apk-signature.txt`, `SizeAuditFinal/`, `source-final.json`, `player-manifest.json`,
+`verification.json`, `PortableValidation/` and `block-contact.png`. The current
+APK and full Windows player are in their standard delivery folders.
+Archives: `Legacy/20261021-162831-015-basketball-block-android/` and
+`Legacy/20261021-163558-439-basketball-block-delivery/`. The latter preserves
+superseded players, tuning trials and development-only geometry fixtures.
+See [basketball defense](BASKETBALL-DEFENSE.md) for behavior and test details.
+
+## Direct teammate passing — 21 October 2026
+
+Fresh AndroidSubmission at **15:15:58 Malaysia time**: actual APK
+**106,371,104 -> 106,372,384 bytes (+1,280)**, leaving **893,627,616 bytes**
+below the strict 1,000,000,000-byte cap. Build gate, ZIP integrity, all **1,207
+exact audit entries**, five-scene catalog/bundle hash and APK v2 signature
+verification passed. SHA-256:
+**816C9AC93F57AA202148CD60032E428D48C7B461514C8C9F019CC4CE994C24FC**.
+
+Largest compressed entries: islands **45,086,065**, IL2CPP **12,582,064**,
+Unity **9,808,457**, metadata **2,790,031** bytes. Relative to the opening APK,
+islands changed **−12,837**, IL2CPP **+13,329**, metadata **+677**. All entries
+match the retained audit; no unexpected large growth was found. No new art,
+lossy conversion or build-setting changes were introduced.
+
+The code adds exact teammate double-tap passing and bounded receiver lead for
+both ball sports. Protocol **75** requires matching room builds. Existing
+local work is preserved. The full WindowsFinal player was hash-verified on
+promotion. Passing and regression suites passed **699 assertions** across
+offline and local host/guest runs; physical Android touch/FPS and real WAN
+latency remain unverified.
+
+Evidence: `Builds/TargetPassQA/apk-verification.json`, `apk-signature.txt` and
+`SizeAuditFinal/` under that same directory. Prior APK archive:
+`Legacy/20261021-151145-857-teammate-pass-android/`; Windows/helper archive:
+`Legacy/20261021-151303-191-teammate-pass-windows/`.
+See [the measured release record](BUILD-SIZE.md) and
+[passing verification details](TEAMMATE-PASSING.md).
+
+## Teammate Fishing integration with local features — 21 October 2026
+
+Pulled `4c3b6ce` and integrated shared round skills and Island View with the
+existing local profiles, bots, settings and personal layouts. Combined protocol
+**74** rejects incompatible protocol-73 builds. Local work remains uncommitted.
+Fresh AndroidSubmission at **00:09:55 Malaysia time**: actual APK
+**106,347,516 -> 106,371,104 bytes (+23,588)**; remaining headroom
+**893,628,896 bytes** below the strict decimal-GB cap. Official build gate,
+ZIP integrity, all **1,207 exact audit entries**, five-scene bundle/catalog hash
+and independent APK v2 signature verification passed. Development-signed.
+SHA-256: **7A91DA70BAC772873F6CCD5B2D24C74D04C16064DBB46955C9E2936852EBA455**.
+
+Largest compressed entries: islands **45,098,902**, IL2CPP **12,568,735**,
+Unity **9,808,457**, metadata **2,789,354** bytes. Islands grew **15,249**
+bytes; IL2CPP grew **4,345**. No unexpected large entry growth or additional
+lossy asset conversion was introduced for this integration.
+
+Complete WindowsFinal: **327 files** SHA-256 matched before amending its note.
+All **407 compiled C# documents** match integrated source. Passed **2,960 offline
+Fishing, 47 host, 49 client, 72 bot Cup/rematch, 234 layout edit, 3 layout restart
+and 54 offline settings assertions**, plus **2,084 Fishing rules**. Reviewed skill/layout captures. The final
+settings fixture waits for draft UI closure; Fishing camera changes stay local
+to the visit. No new physical Android touch/FPS, account/scanner-device or real
+WAN validation. Prior source-feature records below retain their original scope.
+
+Evidence: ignored `Builds/TeammateFishingMergeQA/`, plus referenced test runs.
+Archives: `Legacy/20261020-235205-618-teammate-fishing-candidate/`,
+`Legacy/20261021-000645-949-teammate-fishing-android/` and
+`Legacy/20261021-000738-465-teammate-fishing-windows-retry/`.
+The first Windows archive attempt was blocked by the running old player;
+its manifest remains in `Legacy/20261021-000714-187-teammate-fishing-windows/`.
+See [integration details](TEAMMATE-FISHING-INTEGRATION.md).
+
+## Control layout visual correction — 20 October 2026
+
+Fresh AndroidSubmission at **23:34 Malaysia time**: actual APK
+**106,333,260 -> 106,347,516 bytes (+14,256)**, leaving **893,652,484 bytes**
+below the strict 1,000,000,000-byte cap. The official build gate, ZIP integrity
+and independent APK v2 signature verification passed. Development-signed;
+unpublished. SHA-256:
+**B05BC792C1F13A76782C816230B64A2DFBF9460CCA44B6994A608E5BD43B8B4A**.
+
+The layout editor now uses actual gameplay graphics, native fonts and original
+child placement. Oversized replacement cards and duplicate labels are removed.
+A compact toolbar provides a control picker, size slider, Cancel, Reset and
+Save. This is a code-only visual correction with no new binary art or lossy
+asset changes. Current profile, venue and bot features remain included.
+
+Largest compressed entries: islands **45,083,653**, IL2CPP **12,564,390**,
+Unity **9,808,059**, metadata **2,788,981** bytes. Opening-to-final deltas:
+IL2CPP **+16,031**, islands **−5,670**, Burst **+3,466**, metadata **+336**.
+All **1,205 APK entries** match the retained size audit exactly; no unexplained
+large growth was found. These are compressed entry sizes, not source sizes.
+
+The complete **327-file Windows player** was hash-verified on promotion to
+`Builds/WindowsFinal/` at 23:34 and reopened. It uses the validated full assets
+from 21:58 and final scripts from 23:30. All **405 compiled C# documents**
+match current source. The layout suite passed **996 assertions**, including
+artwork geometry, typography, input, persistence and restarts, with default
+paths in a checkout containing spaces from an unrelated working directory.
+The Android package is a separate fresh build of the same task code.
+Physical Android touch, cutouts, appearance and performance remain unverified.
+
+Exact APK: `Builds/ControlLayoutVisualQA/Android/WhatTheFish-release.apk`.
+Matching audit: `Builds/ControlLayoutVisualQA/SizeAuditFinal/`.
+Evidence in `Builds/ControlLayoutVisualQA/` includes `apk-final.json`,
+`apk-signature.txt`, `compiled-source.json`, `promoted-player-manifest.json`
+and the final suite under `Portable Review/Builds/ControlLayoutQA/`.
+Superseded player and iteration runs were archived to
+`Legacy/20261020-233355-953-layout-visual-delivery/`; the earlier candidate is
+in `Legacy/20261020-232147-645-layout-visual-old-candidate/`.
+See [CONTROL-LAYOUT.md](CONTROL-LAYOUT.md) for the editor and validation scope.
+
+## Player profile and friends visual refresh — 20 October 2026
+
+Fresh AndroidSubmission at **22:23 Malaysia time**: actual APK
+**94,765,380 -> 106,333,260 bytes (+11,567,880)** from the opening baseline,
+leaving **893,666,740 bytes** below the strict 1,000,000,000-byte cap.
+The official gate, ZIP integrity, native bridge checks and independent APK v2
+signature verification passed. Development-signed; unpublished.
+SHA-256: **5725395E6DDAC47C3E08969CD99B1E06EEDF0B8FE297807D16E620590A3CCFCB**.
+
+Restores ten original character illustrations, with byte-identical editable
+masters and runtime sources. Android imports use ASTC 4×4 at 1024×1536.
+The ten portraits account for **11,489,098 compressed APK bytes**; their Unity
+serialized size is **1,572,988 bytes each**, a separate measurement. The profile,
+friends, search and peer views now reuse the main menu's navy, lime and cyan
+theme. Camera/gallery photos and existing social actions remain available.
+
+Largest compressed entries: islands **45,089,323**, IL2CPP **12,548,359**, Unity
+**9,808,059**, metadata **2,788,645** bytes. Compared with the opening baseline,
+IL2CPP grew **68,097**, metadata **10,203**, and islands shrank **461** bytes.
+The matching size audit was inspected and retained in
+`Builds/ProfileStyleQA/SizeAuditFinal/`. No unexplained large growth was found.
+This combined build also contains concurrent bot, venue and layout work.
+
+The complete **327-file Windows player** was hash-verified on promotion to
+`Builds/WindowsFinal/` at 22:29. Full assets were built at 21:58; final scripts
+at 22:16. All **404 compiled C# documents** matched current source at promotion.
+Final verification passed **140 live multiplayer/restart assertions**, **36
+backend tests** and **14 deployed API smoke assertions**. Captures were inspected
+at 1600×900, 1200×900 and 1920×824. Physical Android camera/gallery, appearance,
+touch and performance remain unverified.
+
+Exact APK: `Builds/ProfileStyleQA/Android/WhatTheFish-release.apk`.
+Evidence: `Builds/ProfileStyleQA/ReleaseNetwork/`, `apk-verification.json`,
+`apk-signature.txt`, `compiled-source.json` and `promoted-player-manifest.json`.
+Superseded player and reviewed temporary copies were archived to
+`Legacy/20261020-222912-992-profile-ui-delivery/`.
+See [PLAYER-PROFILES-PLAN.md](PLAYER-PROFILES-PLAN.md) and
+[the original artwork record](../ArtSource/PlayerPortraits/README.md).
+
+## Personal control layouts — 20 October 2026
+
+Fresh AndroidSubmission at **22:21 Malaysia time**: actual APK
+**94,765,380 -> 106,342,532 bytes (+11,577,152)** from the opening baseline.
+Immediately preceding shared APK: **106,341,732 bytes**, a difference of
+**+800 bytes**. Remaining headroom: **893,657,468 bytes** below the strict
+1,000,000,000-byte cap. The official build gate, ZIP integrity and independent
+APK v2 signature verification passed. Development-signed; unpublished.
+SHA-256: **50BA89EB359FB3A074CAB5E3AEFA91E95BC42F7137C21DC8B5BC729E33A8083B**.
+
+Adds Settings → Layout to all four sports and a four-sport chooser in main-menu
+settings. Players move and resize highlighted controls over a dimmed background,
+with Save, Cancel and reset. Preferences are separate per identity and sport on
+the device. Main-menu styling and distinct in-game themes reuse existing art.
+No binary art, world-model changes or lossy asset changes were introduced.
+
+Largest compressed entries: islands **45,098,588**, IL2CPP **12,548,359**, Unity
+**9,808,059**, metadata **2,788,645** bytes. Concurrent player portraits account
+for **11,489,098 compressed bytes** of growth from the opening baseline.
+Other opening deltas include IL2CPP **+68,097**, metadata **+10,203**, and islands
+**+8,804** bytes. The latest audit was inspected and retained at
+`Builds/ControlLayoutQA/SizeAuditFinal/`. No unexplained large art growth was
+found; the entire combined increase must not be attributed to layout controls.
+
+The final Windows candidate passed **286** layout assertions, including real
+HUD input, main-menu previews, per-account storage and process restarts, using
+default paths in a checkout with spaces from an unrelated working directory.
+The complete shared WindowsFinal delivery has matching code/content, apart from
+build/debug identifiers in `boot.config`; another **73** layout assertions passed
+on that delivered copy. An earlier feature candidate passed **110** Golf/Fishing
+settings assertions. Captures were inspected across three window sizes.
+All layout-task source checksums match. Later concurrent `PlayerProfiles.cs`
+and `SocialPanel.cs` edits are outside the tested Windows snapshot. Android is
+a separate later snapshot. Physical Android touch, cutouts, appearance and
+phone performance remain unverified.
+
+Exact retained APK: `Builds/ControlLayoutQA/Android/WhatTheFish-release.apk`.
+Evidence: `apk-final.json`, `apk-signature.txt`, `build-android-final.log` and
+the Windows evidence under `Builds/ControlLayoutQA/`. See
+[CONTROL-LAYOUT.md](CONTROL-LAYOUT.md) for checks, source limits and archive
+recovery batches, and [GROUP-B-IMPROVEMENTS.md](GROUP-B-IMPROVEMENTS.md) for
+the rubric-based recommendations.
+
+## Fishing and golf AI opponents — 20 October 2026
+
+Fresh AndroidSubmission at **22:15 Malaysia time**: actual APK
+**94,765,380 -> 106,341,732 bytes (+11,576,352)**, leaving **893,658,268 bytes**
+below the strict 1,000,000,000-byte cap. The official gate, ZIP integrity and
+independent APK v2 signature verification passed. Development-signed, unpublished.
+SHA-256: **203EF5525104ED03F09657BD97663604E36FD257E4C3C6BB7CD34C680088F6E5**.
+
+Adds 1–4 independent opponents for Fishing Round/Cup and the existing five-hole
+Golf match. Bots use normal input validation, movement, equipment and scoring.
+No art assets or lossy changes were introduced by this bot work. The ten
+concurrent player portraits account for **11,489,098 compressed bytes** of the
+combined increase. Other deltas include IL2CPP **+69,593**, metadata **+10,242**,
+and islands **+6,471** bytes. The intervening venue APK was 106,342,788 bytes.
+
+Largest compressed entries: islands **45,096,255**, IL2CPP **12,549,855**, Unity
+**9,808,059**, metadata **2,788,684** bytes. Reviewed the matching size audit and
+retained it in `Builds/IslandBotsQA/SizeAuditFinal/`. The exact APK is
+`Builds/IslandBotsQA/Android/WhatTheFish-release.apk`.
+
+The complete Windows player passed **71 fishing + 46 golf** assertions, including
+full matches, rematches and cleanup, using default paths from a location with
+spaces and an unrelated working directory. The preceding candidate passed
+**249 basketball/football** regression assertions with the same bot gameplay.
+All 404 compiled C# documents matched when the final candidate was copied;
+subsequent concurrent `PlayerProfiles.cs` and `SocialPanel.cs` edits are outside
+that Windows snapshot. Physical Android appearance, touch and performance remain
+unverified. Details and evidence: [ISLAND-BOTS.md](ISLAND-BOTS.md).
+
+## Direct venue customization — 20 October 2026
+
+Fresh AndroidSubmission at **22:07 Malaysia time**: actual APK
+**94,765,380 -> 106,342,788 bytes (+11,577,408)**, leaving **893,657,212 bytes**
+below the strict 1,000,000,000-byte cap. Official build gate, ZIP integrity and
+independent APK v2 signature verification passed. Development-signed; not
+published. SHA-256:
+**C56E0981958B5DE3148B99EFF9BE0B5E2CFEC401EB629B836A82E5B77281630D**.
+
+All four venue tabs open their controls directly, beside live world previews.
+Golf and Fishing gain venue names, flag/pier accents, three equipment finishes
+and welcome-sign styles. Changes save per sport; the host controls the shared
+room look. Rack and newly held equipment share the saved finish. No new binary
+art was introduced by the venue work; the four-island travel model is unchanged.
+
+Largest compressed entries: islands **45,098,225**, IL2CPP **12,548,962**, Unity
+**9,808,059**, metadata **2,788,662** bytes. The ten player portraits added by
+concurrent workspace work account for **11,489,098 compressed bytes** of growth,
+confirmed by mapping ZIP entries to `packed-layout.csv`. Other deltas include
+IL2CPP **+68,700**, metadata **+10,220** and islands **+8,441** bytes. Reviewed
+`Builds/SizeAudit/latest/` and retained the matching reports under
+`Builds/VenueCustomizationQA/SizeAuditFinal/`; no unexplained large venue-art
+growth or lossy asset changes. This combined APK includes concurrent work, so its
+entire size increase must not be attributed to venue customization.
+
+The complete 327-file Windows player was hash-verified on promotion to
+`Builds/WindowsFinal/` and reopened. Passed **863** offline venue checks,
+**202** local host/guest checks, **20** Golf equipment checks and **22** Fishing
+rod checks; an additional **863** offline checks passed with default paths in a
+checkout containing spaces, launched from an unrelated working directory.
+Captures at 1600×900, 1280×800 and 1920×1080 were inspected. Venue C# checksums
+match the Windows player. Later concurrent changes in `ControlLayoutReview.cs`,
+`PlayerHubStyle.cs` and `GolfBot.cs` were absent from that Windows snapshot.
+Android was built later from the shared workspace and is a different snapshot.
+Physical Android appearance, touch and phone performance remain unverified.
+
+Evidence and the retained APK: `Builds/VenueCustomizationQA/`, including
+`Android/WhatTheFish-release.apk`, `apk-final.json`, `apk-signature.txt` and
+`portrait-size-attribution.json`. Superseded player, APK/audit and temporary
+portable copy were archived in dated venue batches under `Legacy/`; exact
+recovery locations and feature details are in
+[VENUE-CUSTOMIZATION.md](VENUE-CUSTOMIZATION.md).
+
+
+## Player profiles and friends — 20 October 2026
+
+Fresh AndroidSubmission at **18:17:45 Malaysia time**: actual APK
+**94,676,500 -> 94,765,380 bytes (+88,880)** from the opening sign-in baseline.
+An intervening settings delivery was **94,681,516 bytes**; the final combined
+build adds **83,864 bytes** to that delivery. Remaining headroom is
+**905,234,620 bytes** below the strict 1,000,000,000-byte cap. Official build gate,
+ZIP integrity and independent APK v2 signature verification passed. SHA-256:
+**A39F9619808E50619B261D5DE74C231727290441C85E8EF987221C6050CA3051**.
+Development-signed; no app publication.
+
+Adds cloud profiles for guests/linked accounts, Android camera/gallery crop,
+local cache and pending saves, live name/photo badges, tappable profiles, precise
+name/code search and friend request/accept/decline/cancel/remove/block/report.
+Protocol **73** requires matching clients. The existing Cloudflare Free Worker
+and new Free D1 database serve these features. No paid upgrade or payment method
+was added. Includes the newer Golf/Fishing settings work from this workspace.
+
+Largest compressed entries: islands **45,089,784**, IL2CPP **12,480,262**, Unity
+**9,808,059**, metadata **2,778,442** bytes. Against the opening baseline, growth
+is IL2CPP **68,191**, metadata **9,110**, DEX **5,759**, bundle **3,254** bytes.
+Reviewed `Builds/SizeAudit/latest/` and ZIP deltas; no unexplained large art growth
+or lossy asset change. Full reports are in `Builds/PlayerProfilesQA/SizeAuditFinal/`.
+Native photo/account/scanner bridges survive shrinking. The photo activity and
+FileProvider are non-exported, the provider exposes only its capture cache,
+and no broad storage/image permission was added. Generated Golf prefab differences
+were IDs/order only across 14 objects/components and were restored after comparison.
+
+Complete WindowsFinal: **327 files** SHA-256 matched on promotion. All **387**
+compiled C# documents match current source. Full assets were built at 18:02;
+subsequent supported script-only builds included the final gameplay photo/tap
+integration. Passed **61** real Relay profile/friend/restart checks, **35** backend
+tests, **13** deployed service checks, **12** local identity, **36** account UI,
+**110** Golf/Fishing settings and **183** Football identity assertions. The profile
+suite and backend tests passed from a copied checkout with spaces, launched from
+an unrelated directory. UI/gameplay captures were inspected. The older Basketball
+identity fixture fails its match-start assumption and the same **31** checks on
+both candidate and preceding player; its baseline comparison is retained.
+Physical Android camera/gallery, permissions, provider sign-in and phone performance
+remain unverified. Two Windows peers on one internet connection establish functional
+cloud play, not peak concurrent capacity or cross-network WAN performance.
+
+Evidence: `Builds/PlayerProfilesQA/`, including `PortableValidation/`, plus the
+referenced account/identity/settings review folders. Superseded Windows player:
+`Legacy/20261020-181749-893-profiles-windows/`. Earlier profile candidates were
+archived separately. Historical size-record encoding/blank-line damage was repaired
+only after proving every historical nonblank line matched its original content.
+See [implementation and capacity](PLAYER-PROFILES-PLAN.md).
+
+## Golf and fishing settings — 20 October 2026
+
+Fresh AndroidSubmission at **18:02:03 Malaysia time**: actual APK
+**94,676,500 -> 94,681,516 bytes (+5,016)**, leaving **905,318,484 bytes**
+below the strict 1,000,000,000-byte cap. Official budget gate, ZIP integrity and
+independent APK v2 signature verification passed. Development-signed; not
+published. SHA-256:
+**5CE7883C4AFB03A7C5888F8F6B67F23742F223D779327B304C6620E67A829AFA**.
+
+Golf gains the shared courts-style settings gear, saved cameras and four audio
+sliders, guide, Back handling and role-aware leave confirmation. Fishing shares
+that implementation, sends cancellation through the blocked command reader,
+restores prior input blocks, waits before automatic tutorial display and updates
+countdown / Cup / Crew leave warnings. Results close settings before taking
+input ownership. Room timers continue. No new artwork, lossy asset changes,
+travel-model changes or protocol changes.
+
+Largest compressed entries: islands **45,089,793**, IL2CPP **12,411,828**, Unity
+**9,808,060**, metadata **2,769,727** bytes. Bundle variation is **+3,263** bytes;
+metadata **+395**, IL2CPP **-243**. Reviewed ZIP deltas and
+`Builds/SizeAudit/latest/`; no unexpected large art growth. Full reports are in
+`Builds/IslandSettingsQA/SizeAuditFinal/`.
+
+Passed **998 core settings assertions** across offline, local and real Unity
+cloud relay sessions, including both games' host returns and guest exits and
+online fishing Round, Cup and Crew. Final player repeated **110 offline** checks;
+**57** additional checks passed using default paths in a checkout with spaces,
+launched from an unrelated working directory. Fishing gameplay: **2,750 offline +
+46 host + 49 client** assertions. Current Golf drag-power regression: **36**.
+Menu, guide, inset and live-match captures were inspected. The older Golf HUD
+fixture still expects pre-drag artwork; candidate and unchanged baseline fail the
+same assertion. Current drag/settings checks pass.
+
+Complete WindowsFinal promoted; all **327 files** SHA-256 matched before updating
+its note. All **381** compiled C# documents match a fixed source snapshot. That
+snapshot excludes concurrent PlayerProfiles / SocialPanel work; its identity
+source exactly matches the earlier account delivery's compiled checksum and all
+15 identity methods match its IL. The original workspace's profile changes are
+preserved. This is not validation of that concurrent feature. The concurrent
+work subsequently began updating the shared Windows delivery too. The matching
+validated player is retained at `Builds/IslandSettingsQA/Windows/`; use it with
+this task's retained APK. The newer shared delivery was preserved. Original generated
+Golf prefab changes were proved to be IDs/document order only across 14 objects;
+its serialization and two build-added desktop resource registrations were
+restored without affecting unrelated work.
+
+Local evidence: `Builds/IslandSettingsQA/` and
+`Builds/FishingGameplayQA/Run-20261020-175152/`. Superseded Windows player:
+`Legacy/20261020-180145-656-island-settings-windows/`; previous APK/audit:
+`Legacy/20261020-180343-186-island-settings-android/`. Earlier task candidates were
+also archived. Promoted duplicates and verified generated backups are in
+`Legacy/20261020-180624-364-island-settings-promoted-copies/`. Physical Android touch/Back, appearance and phone performance are
+unverified; no phone was connected. Cloud peers used one internet connection;
+different-network WAN conditions remain unverified.
+The exact task APK is retained at
+`Builds/IslandSettingsQA/Android/WhatTheFish-release.apk` while concurrent profile
+work replaces the shared Android output. Readiness can check that explicit APK
+with `-RequireApk -ApkPath` without substituting another task's build.
+See [settings behavior and validation](ISLAND-SETTINGS.md).
+
+## Huawei and Google sign-in — 20 October 2026
+
+Fresh AndroidSubmission at **16:44:24 Malaysia time**: actual APK
+**93,910,630 -> 94,676,500 bytes (+765,870)**, leaving **905,323,500 bytes**
+below the strict 1,000,000,000-byte cap. Official build/budget gate, ZIP integrity
+and independent APK v2 signature verification passed. SHA-256:
+**CBD063BE12B922A2D39F7072620D4E453FAC7DFBDDEEE06AAC4D3AAFD5FCD1C7**.
+The APK uses the registered development certificate, not production signing.
+
+Adds Huawei Account Kit, Google Credential Manager and account management/linking
+UI while retaining guests and both QR camera/image joining paths. The public
+Google client ID and Huawei HTTPS endpoint are present in the manifest; native
+account/scanner bridges survive release shrinking. Service credentials remain in
+Cloudflare encrypted secrets. No new art, texture reduction or gameplay protocol
+change. The app has not been published.
+
+Largest compressed entries: islands **45,086,530**, IL2CPP **12,412,071**, Unity
+**9,808,059**, metadata **2,769,332** bytes. Main growth is Android resource table
+**+347,904**, DEX **+311,971**, IL2CPP **+22,721** bytes. The island bundle changed
+by **-2,243** bytes. Reviewed `Builds/SizeAudit/latest/` and retained the complete
+report in `Builds/AccountSignInQA/SizeAuditFinal/`; no unexplained large art growth.
+Generated Golf prefab changes were semantically identical across 14 components;
+original IDs/document order were restored. One material differed only in line
+endings and was restored after verification.
+
+The complete Windows candidate has **327 files**, all SHA-256 matched on promotion
+to WindowsFinal before updating its note. All **379** compiled C# source documents
+matched current source. Final changes after that Windows build affect the Android
+postprocessor/native dependencies and server/docs only. Validation: **36** account
+assertions, **338** startup assertions, **12** two-peer name checks, **1,057** offline
+menu assertions, **25** backend tests and **7** deployed Worker smoke checks.
+Windows captures were inspected. Real Android provider success/linking/recovery,
+QR camera/image recognition and phone performance remain unverified.
+
+Evidence: `Builds/AccountSignInQA/`, `Builds/PlayerIdentityQA/Network-20261020-161630-129/`
+and `Builds/StorybookMenuQA/AccountSignIn-20261020/`. Reviewed superseded player:
+`Legacy/20261020-165230-530-account-signin-windows/`; initial candidate:
+`Legacy/20261020-160733-356-account-initial-candidate/`.
+The account suite also passed from a copied checkout with spaces, launched from
+an unrelated working directory. Its 36 UI assertions and 25 backend tests are in
+`Builds/AccountSignInQA/PortabilityReview/`. Promoted duplicates, the temporary
+checkout and obsolete diagnostics were archived in
+`Legacy/20261020-165507-840-account-signin-promoted-copies/`.
+See [sign-in implementation and setup](PLAYER-LOGIN.md) and
+[remaining profile/friends work](PLAYER-PROFILES-PLAN.md).
+
+## Saved-image room QR scanning — 20 October 2026
+
+Fresh AndroidSubmission at **15:35:31 Malaysia time**: actual APK
+**93,906,462 -> 93,910,630 bytes (+4,168)**, leaving **906,089,370 bytes**
+below the strict 1,000,000,000-byte cap. Build budget gate, ZIP integrity and
+independent APK v2 signature verification passed. SHA-256:
+**CC7B355C003A2F659896D0D088CBB5A31FB95CE5335A749C9AF9227645285F34**.
+The APK still uses the registered development certificate, not production signing.
+
+Adds Android Choose QR image using the system document picker and Huawei image
+mode, with manual joining preserved and no broad storage permission. Largest
+compressed entries: islands **45,088,773**, IL2CPP **12,389,350**, Unity
+**9,807,995**, metadata **2,764,748** bytes. DEX grew **1,947** bytes; bundle
+variation was **2,404** bytes. No new artwork or quality reduction. The generated
+Golf prefab was semantically identical (14 objects/components); only IDs/order
+changed, so original serialization was restored. One material had line-ending-only
+changes and was restored too.
+
+Complete WindowsFinal: **327 files** matched the tested player before its note
+update. **41 QR/live-room assertions**, **1,057 offline menu assertions** and
+**20 native policy assertions** passed; SDK API compilation and path portability
+checks passed. Join layout inspected. Physical Android picker/native image decode,
+camera and phone performance remain unverified. Evidence: `Builds/ScanImageQA/`
+and `Builds/StorybookMenuQA/ScanImage-20261020/`. Reviewed old Windows player:
+`Legacy/20261020-153542-299-scan-image-windows/`; promoted duplicate/initial compile
+output: `Legacy/20261020-153706-101-scan-image-promoted-copies/`.
+See [scanner behaviour](HUAWEI-SCAN-KIT.md) and the separate, unimplemented
+[profile/friends plan](PLAYER-PROFILES-PLAN.md).
+
+## Local validation of pulled main - 20 October 2026
+
+Fast-forwarded to `ca8dc57` with protocol **72**; Git LFS integrity passed.
+Fresh AndroidSubmission at **15:01:21 Malaysia time**: actual APK
+**90,579,220 -> 93,906,462 bytes (+3,327,242)**, leaving
+**906,093,538 bytes** below the strict decimal-GB cap. Build budget gate,
+ZIP integrity and independent APK v2 signature verification passed. SHA-256:
+**C7C49A7BB97963B2DC9271DA0A4EBC8507E218663C4C7D5DB22BA743D27854C7**.
+
+Largest compressed entries: islands bundle **45,086,369**, IL2CPP
+**12,389,677**, Unity **9,807,995**, metadata **2,764,610** bytes.
+The islands bundle accounts for **1,932,405** bytes of growth; the update
+includes Golf meshes, UI and textures. Entry deltas and packed-asset inventories
+were reviewed; no additional asset-quality reductions were made locally.
+
+Fresh complete Windows player: **327 files** SHA-256 matched the tested
+candidate before updating its delivery note. Passed **36 drag/Swing/Putt,
+7 host and 9 client tee assertions**; inspected the aiming capture. The initial
+network probe lacked its network-mode flag and was corrected before the passing
+run. No new physical Android, WAN or phone FPS validation. Generated Golf prefab
+changes were verified as local IDs/document ordering only before restoring the
+committed serialization; generated material changes were line endings only.
+Evidence: ignored `Builds/GolfPullQA/`, including `SizeAuditFinal/`.
+Superseded deliveries: `Legacy/20261020-145840-280-golf-pull-delivery/`;
+old candidate: `Legacy/20261020-145226-948-golf-pull-candidate/`.
+
 ## Fishing skill-card text cleanup and publication - 20 October 2026
 
 Removed the **BEFORE CASTING / WHILE HOOKED** card labels and the shared-choice

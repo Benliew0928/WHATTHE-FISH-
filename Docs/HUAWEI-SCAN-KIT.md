@@ -3,7 +3,7 @@
 The Android game generates and scans room QR invitations with Huawei Scan
 Kit SDK-Plus **2.15.0.301**. Manual entry and Paste code remain available.
 Windows generates compatible invitations with the MIT Codecrete encoder;
-its Scan button explains that scanning requires the Android game.
+its camera and image buttons explain that scanning requires the Android game.
 
 ## Player flow
 
@@ -13,6 +13,11 @@ its Scan button explains that scanning requires the Android game.
    The scanner offers Cancel and a flashlight on supported devices.
 3. A valid scan fills the room-code field. Tap Join room to use the existing
    Unity Gaming Services session and Relay connection.
+4. For a saved invitation, select **Choose QR image** on Join a room, or from
+   the camera scanner. Android opens its document picker filtered to images.
+   Select a screenshot/photo; Huawei decodes it and fills the same room-code
+   field. This path does not request camera permission. Picker cancellation
+   and decoding errors preserve any code already typed.
 
 An invitation is `WTFROOM:1:ROOMCODE`, with a 4–12 character uppercase
 alphanumeric code. It contains no account credentials, access tokens or
@@ -47,10 +52,43 @@ by its resolved path with `-Target AndroidSubmission`. Java source and settings
 are regenerated each build. A first build needs access to Huawei's Maven
 repository. Do not edit generated files in `Game/Library` as permanent source.
 
-The scanner asks only for camera access, when selected. It does not offer
-gallery import or request storage access. Huawei operation tracking is disabled
+The camera scanner asks for camera access only when selected. Image import uses
+`ACTION_OPEN_DOCUMENT`, supported on the game's Android versions without GMS,
+and a temporary grant to the selected content URI. It requests no broad
+storage/media permission and retains no image or persistent URI grant.
+Huawei operation tracking is disabled
 before encoding or opening the scanner. A scan result is not written to logs.
 The game still uses its existing network services when creating or joining rooms.
+
+## Saved-image handling
+
+`Tools/Android/RoomScan/RoomQrImageDecoder.java` bounds compressed stream reads
+to 24 MiB and downsamples photos to approximately 2048 pixels per dimension.
+It decodes off the UI thread using Huawei's QR-only photo mode. Image memory
+and streams are released after decoding. Multiple copies of the same invitation
+are accepted; different room invitations in one image require cropping rather
+than choosing a room arbitrarily. Foreign codes are ignored. The selected
+invitation passes the normal Unity validation again before filling the field.
+
+Unreadable/unsupported images, revoked URI access, missing document picker and
+no valid QR return a useful error; camera/manual joining stay available. A
+cancelled or destroyed activity cannot apply a late decoder result to the menu.
+The existing Android activity-result API is used intentionally to avoid a new
+AndroidX dependency for this small native bridge.
+
+Run `Tools/Build/Test-RoomQrImage.ps1` for real SDK API compilation and JVM
+checks of ambiguity, payload rejection and image-memory sizing. These do not
+run Huawei's native image decoder. `RoomQrReview` checks the Windows menu,
+pointer targets, generated invitations and manual fallback.
+
+Physical-device acceptance remains required: PNG/JPEG screenshot and photo,
+rotated image, high-resolution image with a small QR, multiple room QRs, foreign
+QR, corrupt file, picker cancellation, camera permission denied, document
+provider failure, back/background/return, and a Huawei Android phone without
+GMS. The decoder may require a cropped screenshot when the original QR is too
+small after downsampling. Unsupported formats should offer another image/manual
+join, not crash. Current Android APK support does not imply native HarmonyOS
+NEXT support.
 
 ## Huawei app registration
 

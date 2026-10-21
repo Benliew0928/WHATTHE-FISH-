@@ -1,5 +1,12 @@
 # Basketball movement and ball handling
 
+The 21 October blocking update uses a timed jump and an open, forward-reaching
+palm for automatic contests. Ordinary shots leave a **1.26 m** release offset
+(previously 1.19 m) and visibly rise before the ball is swatted outward/down.
+Moving defenders use a wider, lower arm path to clear the stylized head; the
+arm stays within its calibrated bone lengths. See [blocking timing and
+contact rules](BASKETBALL-DEFENSE.md).
+
 Basketball adds a procedural pose layer to the existing Rainbow Sprinter rig. It reuses the authored running and jumping clips, both character LODs, the basketball mesh and all existing materials. No animation package, texture or duplicate character mesh is required. The current 30 cm ball has updated dribble positions, palm contacts and two-handed grips; [shot physics and net response](BASKETBALL-GAMEPLAY.md) describe the hold/release controls and scoring.
 
 ## Guard, block and jump block

@@ -29,7 +29,7 @@ namespace WhatTheFish {
   public static float HintAlpha(float time,int index){float age=Mathf.Repeat(time-index*.16f,1.3f);return age<ArrowLifetime?Mathf.Sin(Mathf.PI*age/ArrowLifetime):0;}
   void Update(){
    var view=PlayerView.Instance;var match=GolfMatchManager.Instance;
-   button.interactable=view&&view.GolfAiming&&match&&!match.Starting&&match.CanStrike(view.target,match.Ball(view.AimedGolfOwner));
+   button.interactable=view&&!view.InputBlocked&&view.GolfAiming&&match&&!match.Starting&&match.CanStrike(view.target,match.Ball(view.AimedGolfOwner));
    if(holding&&(!button.interactable||!view.GolfCharging))Cancel();
    if(knob){knob.anchoredPosition=new Vector2(0,Mathf.Lerp(Top,Bottom,power));rail.color=button.interactable?Color.white:new Color(.82f,.86f,.88f,1);
     for(int i=0;i<hints.Length;i++){hints[i].rectTransform.anchoredPosition=new Vector2(0,Mathf.Lerp(Top-35,Bottom,i/(float)(hints.Length-1)));hints[i].color=new Color(1,1,1,holding?0:HintAlpha(Time.unscaledTime,i));}
@@ -54,6 +54,7 @@ namespace WhatTheFish {
   // Pointer capture continues outside the rail, as with a native slider.
   public void OnPointerExit(PointerEventData e){}
   void ResetSlider(){power=0;if(knob)knob.anchoredPosition=new Vector2(0,Top);}
+  public void CancelGesture()=>Cancel();
   void Cancel(){if(holding)PlayerView.Instance?.CancelGolfSwing(pointer);holding=false;ResetSlider();}
   void OnDisable(){Cancel();}
   void OnApplicationFocus(bool focused){if(!focused)Cancel();}

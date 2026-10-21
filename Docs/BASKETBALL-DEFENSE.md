@@ -9,7 +9,7 @@ Teammates cannot steal, block or apply guard pressure to one another. See
 
 | Touch slot | Attack | Defense |
 | --- | --- | --- |
-| Main | Hold Shoot; finish/cancel paths | Hold Guard, swipe up and keep holding for automatic blocks within 2.5 m |
+| Main | Hold Shoot; finish/cancel paths | Hold Guard, swipe up and keep holding for a timed jump contest against nearby shots |
 | Lower-left secondary | Hold Pass | Steal; swipe here from Guard to steal immediately |
 | Jump | Jump | Jump Block |
 
@@ -55,17 +55,28 @@ keyboard/host steal requests are rejected while block mode is armed. Selecting
 block during a steal does not interrupt its animation or recovery; readiness can
 begin only after recovery ends. Bots select the same block mode against a charging
 shooter and cannot issue a steal in that mode. The input command and replicated
-pose include the selected mode; multiplayer protocol **67** requires matching builds.
+pose include the selected mode; multiplayer protocol **76** requires matching builds.
 
-When an opponent commits a shot, layup or dunk within **2.5 m**, with matching
-elevation (less than 0.8 m difference) and clear sight, a ready defender always
-blocks it. The host checks throughout the committed gather before release;
-charging or cancelling a fake alone does not trigger a block. The nearest ready
-defender wins, with player ID breaking ties. This uses no hand-contact or random
-success check. Passes, teammates, distant shots and shots through walls do not
-trigger it. The ball is knocked loose, the shooter recoils, and the cancelled
-attempt cannot launch or score. One attempt awards one block, with the existing
-pickup and recovery rules. Bots use the same held-guard rule at close range.
+When an opponent commits a shot, layup or dunk, a ready defender within
+**2.5 m**, at matching elevation and with clear sight, can begin a timed jump
+contest. This distance selects a defender; it does not guarantee a block.
+The nearest ready defender wins, with player ID breaking ties. For ordinary shots the jump begins
+in the final **0.19 s** before release. Layups use **0.34 s**, and dunks use
+**0.70 s**, to match their different takeoff and release heights. Charging or cancelling a fake alone does
+not trigger it, and passes do not trigger it.
+
+For an ordinary shot, the shooter completes the upward release. Contact becomes eligible
+**0.04 s after release**, using a swept **0.16 m palm radius** and the existing
+0.15 m ball radius. The raised hand must actually meet the rising ball; distant,
+behind-the-shooter and obstructed contests can miss. No ball is detached from a
+stationary carry pose just because the defender is nearby. A successful contact
+presses the ball outward and down into a physical rebound. The released shot
+counts as one attempt, remains live, and may still ricochet into the basket.
+For layups and dunks, physical contact is also allowed during the final
+**0.12 s** of an elevated layup or **0.32 s** of an elevated dunk, before the ball enters its protected downward
+path over the rim. A blocked held finish retains the existing recoil and does
+not create a released attempt. The defender retains jump/recovery commitment
+and cannot repeat a block on the same flight. Bots use the same rule.
 
 Manual E and Jump Block retain the physical contact rules below for other
 defensive challenges.
@@ -78,13 +89,14 @@ the far side. Unguarded steals retain their low swipe and dribble-exposure rules
 
 Jump Block has a 0.16 s load, a 2.20 m physical root rise, an active hand window
 of 0.16–0.98 s and a 1.30 s action. This stylized jump reaches the existing dunk
-height. It uses gravity, bounded air steering and ordinary ceiling/floor
+height. Automatic dunk contests use a bounded 2.50 m rise to meet the dunk
+reach; other blocks retain 2.20 m. It uses gravity, bounded air steering and ordinary ceiling/floor
 contacts. Takeoff carries movement but has no target-seeking displacement.
 Early or late jumps can miss. Standing, jumping and stealing cannot cancel
 one another to bypass recovery.
 
 The host sweeps the ball and the blocking palm between physics samples using
-the 0.15 m ball radius and a forgiving 0.30 m hand radius. Contacts require the active
+the 0.15 m ball radius and a forgiving 0.30 m hand radius for manual challenges (0.16 m for automatic shot contests). Contacts require the active
 window, actual height/reach, a forward approach, and a clear path past scenery
 and player torsos. Rig-calibrated shoulder positions and arm lengths bound the
 same palm path used by the visible pose. Clients cannot supply a success flag,
@@ -95,6 +107,10 @@ Networked physics extrapolates the basketball clock from the last synchronized
 rendered frame for each fixed step. This keeps the active hand window, carried
 ball and physical jump together when Unity runs several catch-up steps during
 a slow frame; the rendered pose still uses the synchronized network time.
+The jump motor starts at the action timestamp instead of spending a whole
+rendered frame at takeoff. Fixed-step contact sampling advances the local/host
+root by at most 0.05 s to align frame-driven movement with the ball. Direction
+changes clear the incoming ball interpolation segment at impact.
 
 Before release, a block cancels the queued shot or finish and releases the
 ball at contact. The attacker recoils and continues falling under gravity.
@@ -149,7 +165,7 @@ processes. `-PlayerPath` selects a task candidate; omitting it uses the complete
 WindowsFinal player. Captures and reports are written under ignored
 `Builds/BasketballDefenseQA/`. Existing finish, charge, steal, physics,
 gameplay and jump reviews cover regressions. Rooms require matching
-**protocol 32** builds. Windows captures do not qualify physical phone touch,
+**protocol 76** builds. Windows captures do not qualify physical phone touch,
 Android appearance/FPS, thermals or internet latency.
 
 Development Windows builds write `defense-geometry.json` next to the player.
@@ -162,3 +178,25 @@ dunks. Front, side and oblique captures accompany rendered offline runs.
 Use `-PassOnly` for the added pass hold, push and cancel surface checks.
 The fixture is external to the game data and is not included in the release
 APK. Keep it with a development Windows player when running this review.
+
+## Visual contact verification — 21 October 2026
+
+`Tools/Build/Test-BasketballControls.ps1 -BlockVisual -Fps 20` runs the focused
+block review; supported rates are 20, 30, 60 and 120 fps. Its default player is
+`Builds/WindowsFinal/WhatTheFish.exe`. The full suite retains offline and local
+host/guest passing, guard, finish and inbound checks.
+
+The focused review checks both shot sides and close contest distances, no
+contact during a fake or before an ordinary shot rises, actual elevated palm
+contact, outgoing deflection and one released shot attempt. Negative cases
+cover plain guard, out-of-range/behind defenders, released holds, scenery,
+teammates and passing. Layup/dunk fixtures start fresh matches to avoid a
+previous rebound or shot-clock reset contaminating a later finish scenario.
+Rendered palms are interpolated across the physics impact with a 0.06 m
+sampling tolerance; this does not enlarge the game's collision radius.
+
+Validated at 20, 30 and 60 fps, plus local host/guest and both sports' direct
+passing. The defense geometry review also passed both LODs, stationary/moving
+poses, joint continuity, contact alignment, landing and head-penetration checks.
+Evidence and the inspected contact image are in `Builds/BlockVisualQA/`.
+Windows review does not establish physical Android touch/FPS or WAN latency.

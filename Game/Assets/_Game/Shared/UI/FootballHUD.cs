@@ -11,7 +11,7 @@ namespace WhatTheFish {
   RectTransform root,parent;Vector2 parentSize;Rect lastSafe;CanvasGroup controls;
   KickButton kick;FootballEffortButton dash;FootballPassButton jump;TackleButton tackle;FootballActionSlot slot;
   Image primaryArt;Text primaryHint,dashHint,jumpHint,tackleHint;BasketballPlate staminaFill;CanvasGroup dashGroup;
-  public static void Create(RectTransform parent,Font unused){var r=CoveUI.Rect(parent,"Football touchline UI",0,0,800,450);var hud=r.gameObject.AddComponent<FootballHUD>();hud.root=r;hud.parent=parent;Instance=hud;hud.Build();hud.Layout();}
+  public static void Create(RectTransform parent,Font unused){var r=CoveUI.Rect(parent,"Football touchline UI",0,0,800,450);var hud=r.gameObject.AddComponent<FootballHUD>();hud.root=r;hud.parent=parent;Instance=hud;hud.Build();hud.Layout();hud.CreateControlLayout();}
   void Build(){
    var layer=CoveUI.Rect(root,"Pitch controls",0,0,800,450);CoveUI.Stretch(layer);controls=layer.gameObject.AddComponent<CanvasGroup>();
    var look=BasketballUIStyle.Plate(layer,"Look and aim",0,0,1,1,new Color(1,1,1,.001f),0,0);look.raycastTarget=true;look.rectTransform.anchorMin=new Vector2(.34f,0);look.rectTransform.anchorMax=Vector2.one;look.rectTransform.offsetMin=look.rectTransform.offsetMax=Vector2.zero;look.gameObject.AddComponent<TouchPad>().look=true;

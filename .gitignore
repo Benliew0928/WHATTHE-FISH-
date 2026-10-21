@@ -33,6 +33,9 @@ Docs/VisualDirection/WorldConnections/GameReview/**/*.log
 *.keystore
 *.jks
 .env*
+Tools/AccountServer/node_modules/
+Tools/AccountServer/.wrangler/
+Tools/AccountServer/.dev.vars*
 Tools/Downloads/
 Game/Assets/Resources/PerformanceTestRun*.json*
 __pycache__/

@@ -26,7 +26,7 @@ namespace WhatTheFish {
    plan=new Placement();Message="";var app=AppRoot.Instance;
    if(!app||!app.Exploring||app.SelectedSport!=sport||Travelling||app.PendingSelection.HasValue||app.environments.GetComponent<SkySailStreaming>().Busy)return Reject("Wait for everyone to arrive before starting.");
    if(app.rooms.Connected&&!app.rooms.Host)return Reject("Your host starts the match.");
-   var people=app.rooms.Connected?RoomTeleport.Players().Select(n=>n.GetComponent<Athlete>()).ToArray():new[]{app.LocalAthlete};
+   var people=app.rooms.Connected?RoomTeleport.Players().Select(n=>n.GetComponent<Athlete>()).ToArray():IslandBots.Instance&&IslandBots.Instance.Solo?IslandBots.Instance.Roster:new[]{app.LocalAthlete};
    var actors=people.Where(a=>a&&(a.IsSpectator||sport==SportId.Fishing)).ToArray();
    if(actors.Any(a=>a.inTransit||!a.isActiveAndEnabled))return Reject("Wait for everyone to arrive before starting.");
    if(actors.Length==0)return true;

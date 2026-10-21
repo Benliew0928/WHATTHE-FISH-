@@ -13,7 +13,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed partial class RoomService:MonoBehaviour,IRoomService {
-  public const ushort ProtocolVersion=73;
+  public const ushort ProtocolVersion=76;
   public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&(Recovering||NetworkManager.Singleton&&NetworkManager.Singleton.IsListening);
   public bool Host=>Connected&&!Recovering&&NetworkManager.Singleton.IsHost;
@@ -30,18 +30,7 @@ namespace WhatTheFish {
   }
   bool leaving;
   public void SetTravelSport(SportId sport){if(Host)Sport=sport;}
-  async Task Initialize(){
-   if(string.IsNullOrEmpty(Application.cloudProjectId))throw new InvalidOperationException("Online rooms need a linked Unity cloud project. Offline Explore is ready to use. See Docs/SETUP.md.");
-   if(UnityServices.State!=ServicesInitializationState.Initialized){
-    var options=new InitializationOptions().SetEnvironmentName("production");
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-    var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-authProfile");
-    if(i>=0&&i+1<args.Length)options.SetProfile(args[i+1]);
-#endif
-    await UnityServices.InitializeAsync(options);
-   }
-   if(!AuthenticationService.Instance.IsSignedIn)await AuthenticationService.Instance.SignInAnonymouslyAsync();
-  }
+  async Task Initialize(){await PlayerAccount.EnsureOnline();await PlayerProfiles.EnsureCloud();}
   public async Task Create(SportId sport=SportId.Football){if(Connected)return;AppRoot.Instance.SelectSport(sport);Sport=sport;await Run(async()=>{
    await Initialize();PrepareIdentity(AuthenticationService.Instance.PlayerId);
    Session=await MultiplayerService.Instance.CreateSessionAsync(new SessionOptions{MaxPlayers=20,IsPrivate=true,Name=Sport+" • "+LocalProfile.ForSport(Sport).title}.WithRelayNetwork().WithNetworkHandler(new RoomNetworkHandler(this)));

@@ -1,0 +1,14 @@
+{
+  "name": "whatthefish-huawei-auth",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test *.test.mjs",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "check:worker": "wrangler deploy --dry-run --outdir ../../Builds/AccountSignInQA/WorkerBundle"
+  },
+  "devDependencies": { "wrangler": "4.151.2" }
+}

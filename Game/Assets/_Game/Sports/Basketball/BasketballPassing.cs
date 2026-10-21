@@ -21,9 +21,29 @@ namespace WhatTheFish {
   }
  }
  public sealed partial class BasketballBall {
-  BasketballPassAim passAim;float pendingPassPower;
+  BasketballPassAim passAim;float pendingPassPower;bool directPass;
+  public bool ValidDirectReceiver(Athlete passer,Athlete receiver){
+   if(!PassTeammate(passer,receiver)||receiver.IsSpectator)return false;
+   var delta=Vector3.ProjectOnPlane(receiver.transform.position-passer.transform.position,Vector3.up);
+   return delta.sqrMagnitude>=.25f&&delta.sqrMagnitude<=900&&Mathf.Abs(receiver.transform.position.y-passer.transform.position.y)<2.5f&&!OutsidePaint(CourtPoint(receiver.transform.position))&&!Physics.Linecast(passer.transform.position+Vector3.up,receiver.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore);
+  }
+  public bool TryPassTo(Athlete actor,Athlete receiver,uint play){
+   if(!Authority||play!=Defense.play||!CanPass(actor)||!Eligible(actor)||chargingAthlete||passAim.phase==1||!ValidDirectReceiver(actor,receiver))return false;
+   var delta=Vector3.ProjectOnPlane(receiver.transform.position-actor.transform.position,Vector3.up);
+   float heading=Mathf.Atan2(delta.x,delta.z)*Mathf.Rad2Deg;
+   if(!TryAction(actor,heading,BasketballAction.Pass))return false;
+   pendingPassPower=Mathf.Clamp01((delta.magnitude-6)/9);directPass=true;
+   passAim=new BasketballPassAim{locked=true,receiver=TeammatePassing.Id(receiver),destination=receiver.transform.position+Vector3.up*.9f,heading=heading,phase=2,play=play,owner=PlayerId(actor),power=pendingPassPower,started=BasketballMotion.Clock};sendAt=0;return true;
+  }
+  Vector3 PassDestination(Athlete receiver,Vector3 origin){
+   var centre=receiver.transform.position+Vector3.up*.9f;var destination=centre;
+   for(int i=0;i<4;i++){var path=BasketballPassPath.ToReceiver(origin,destination,pendingPassPower,passAim.bend,PassFloor(origin));destination=centre+TeammatePassing.Lead(receiver,path.duration);}
+   return OutsidePaint(CourtPoint(destination))||Physics.Linecast(centre,destination,1<<8,QueryTriggerInteraction.Ignore)?centre:destination;
+  }
   public Athlete PassReceiver {get {var aim=PassAim;if(!aim.locked)return null;foreach(var actor in Athlete.Active)if(BasketballMatch.PlayerId(actor)==aim.receiver)return actor;return null;}}
-  public bool PassTeammate(Athlete passer,Athlete candidate)=>candidate&&candidate!=passer&&candidate.isActiveAndEnabled&&!candidate.inTransit&&!candidate.BasketballFreeRoam&&SportsPossession.SameTeam(passer,candidate,SportId.Basketball)&&(!BasketballMatch.Instance||!BasketballMatch.Instance.Competitive||BasketballMatch.Instance.Contains(candidate));
+  // The participant dictionary lives only on the authority. Replicas use the
+  // replicated team for previews; the host still checks exact membership.
+  public bool PassTeammate(Athlete passer,Athlete candidate)=>candidate&&candidate!=passer&&candidate.isActiveAndEnabled&&!candidate.inTransit&&!candidate.BasketballFreeRoam&&SportsPossession.SameTeam(passer,candidate,SportId.Basketball)&&(!BasketballMatch.Instance||!BasketballMatch.Instance.Competitive||!Authority||BasketballMatch.Instance.Contains(candidate));
   public static float PassLockRadius(Athlete candidate)=>candidate&&candidate.capsule?candidate.capsule.radius*4*Mathf.Max(candidate.transform.lossyScale.x,candidate.transform.lossyScale.z):1.2f;
   public Athlete SelectPassReceiver(Athlete passer,float cameraHeading,Athlete retained=null){
    if(!passer||!float.IsFinite(cameraHeading))return null;
@@ -73,7 +93,7 @@ namespace WhatTheFish {
    SetPassReceiver(actor,heading);
    if(IsInbound(actor)&&BasketballMatch.Instance&&BasketballMatch.Instance.Competitive&&!passAim.locked)return false;
    if(!TryAction(actor,passAim.heading,BasketballAction.Pass))return false;
-   pendingPassPower=power;passAim.phase=2;passAim.play=Defense.play;passAim.owner=PlayerId(actor);passAim.power=power;passAim.bend=bend;passAim.started=BasketballMotion.Clock;sendAt=0;return true;
+   directPass=false;pendingPassPower=power;passAim.phase=2;passAim.play=Defense.play;passAim.owner=PlayerId(actor);passAim.power=power;passAim.bend=bend;passAim.started=BasketballMotion.Clock;sendAt=0;return true;
   }
   void StepPassCharge(){
    if(passAim.phase!=1)return;

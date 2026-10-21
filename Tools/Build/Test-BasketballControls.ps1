@@ -1,13 +1,15 @@
-param([string]$PlayerPath,[switch]$Local,[int]$Port=7998,[int]$Width=1280,[int]$Height=720)
+param([string]$PlayerPath,[switch]$Local,[int]$Port=7998,[int]$Width=1280,[int]$Height=720,[switch]$BlockVisual,[ValidateSet(20,30,60,120)][int]$Fps=60)
 $ErrorActionPreference='Stop'
 $root=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/BasketballControlQA/Player/WhatTheFish.exe'}
-$out=Join-Path $root ('Builds/BasketballControlQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
+$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $root 'Builds/WindowsFinal/WhatTheFish.exe'}
+$base=if($BlockVisual){'Builds/BlockVisualQA/Reviews/'}else{'Builds/BasketballControlQA/'}
+$out=Join-Path $root ($base+'Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 $running=@()
 try {
  foreach($role in $(if($Local){@('host','guest')}else{@('offline')})){
   $folder=Join-Path $out $role;New-Item -ItemType Directory -Force -Path $folder | Out-Null
   $arguments=@('-batchmode','-force-d3d11','-screen-width',"$Width",'-screen-height',"$Height",'-screen-fullscreen','0','-job-worker-count','2','-probe','-sport','Basketball','-basketballControlsReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'),'-exitAfter','190')
+  if($BlockVisual){$arguments+=@('-blockVisual','-blockRate',"$Fps")}
   if($role -eq 'offline'){$arguments+='-offline'}else{$arguments+=@($(if($role -eq 'host'){'-localHost'}else{'-localClient'}),'-port',"$Port",'-expected','2','-startAt','5','-returnAt','185')}
   $p=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru;$running+=@{process=$p;folder=$folder}
   if($role -eq 'host'){Start-Sleep -Seconds 2}

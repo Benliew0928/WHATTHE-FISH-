@@ -119,10 +119,10 @@ namespace WhatTheFish {
    if(State.action==BasketballAction.PassCancel)return Vector3.Lerp(State.gather,DribbleOffset(0),Ease(elapsed/.32f));
    if(State.action==BasketballAction.Cancel)return Vector3.Lerp(State.gather,DribbleOffset(0),Ease(elapsed/.22f));
    if(State.action==BasketballAction.Shoot){
-    if(State.prepared)return Vector3.Lerp(State.gather,new Vector3(.09f,1.19f,.43f),Ease(elapsed/.44f));
+    if(State.prepared)return Vector3.Lerp(State.gather,new Vector3(.09f,1.26f,.43f),Ease(elapsed/.44f));
     if(elapsed<.14f)return Vector3.Lerp(State.gather,pocket,Ease(elapsed/.14f));
     if(elapsed<.29f)return Vector3.Lerp(pocket,new Vector3(.10f,.97f,.39f),Ease((elapsed-.14f)/.15f));
-    return Vector3.Lerp(new Vector3(.10f,.97f,.39f),new Vector3(.09f,1.19f,.43f),Ease((elapsed-.29f)/.15f));
+    return Vector3.Lerp(new Vector3(.10f,.97f,.39f),new Vector3(.09f,1.26f,.43f),Ease((elapsed-.29f)/.15f));
    }
    if(elapsed<.14f)return Vector3.Lerp(State.gather,PassPocket,Ease(elapsed/.14f));
    return Vector3.Lerp(PassPocket,PassReleasePoint(State.passBend),Ease((elapsed-.14f)/.16f));

@@ -12,7 +12,7 @@ namespace WhatTheFish {
   BasketballShootButton shoot,pass;JumpButton jump;BasketballStealButton steal;BasketballPropHUD props;
   BasketballPlate passMarker;Athlete previewReceiver;
   Image shootArt,passArt;Text hold;BasketballPlate shootPlate,passPlate;Vector2 parentSize;Rect lastSafe;
-  public static void Create(Transform parent,Font unused){var r=CoveUI.Rect(parent,"Basketball courtside UI",0,0,800,450);var hud=r.gameObject.AddComponent<BasketballHUD>();hud.root=r;hud.parent=(RectTransform)parent;Instance=hud;hud.Build();hud.Layout();}
+  public static void Create(Transform parent,Font unused){var r=CoveUI.Rect(parent,"Basketball courtside UI",0,0,800,450);var hud=r.gameObject.AddComponent<BasketballHUD>();hud.root=r;hud.parent=(RectTransform)parent;Instance=hud;hud.Build();hud.Layout();hud.CreateControlLayout();}
   void Build(){
    var layer=CoveUI.Rect(root,"Court controls",0,0,800,450);CoveUI.Stretch(layer);controls=layer.gameObject.AddComponent<CanvasGroup>();
    var look=BasketballUIStyle.Plate(layer,"Look and aim",0,0,1,1,new Color(1,1,1,.001f),0,0);look.raycastTarget=true;look.rectTransform.anchorMin=new Vector2(.34f,0);look.rectTransform.anchorMax=Vector2.one;look.rectTransform.offsetMin=look.rectTransform.offsetMax=Vector2.zero;look.gameObject.AddComponent<TouchPad>().look=true;

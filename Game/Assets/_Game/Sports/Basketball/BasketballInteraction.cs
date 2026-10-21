@@ -93,7 +93,6 @@ namespace WhatTheFish {
      else if(!motion.Busy&&(DribblePhase>.90f||DribblePhase<.10f||holder.Airborne||holder.LoadingJump)){var start=CarryPosition(holder);motion.Begin(BasketballAction.Charge,heading,Quaternion.Inverse(Quaternion.Euler(0,heading,0))*(start-holder.transform.position));}
     }
     if(pendingAction!=BasketballAction.None){
-     if((pendingAction==BasketballAction.Shoot||BasketballFinishRules.IsFinish(pendingAction))&&TryGuardShotBlock(holder))return;
      var motion=holder.BasketballMotion;
      if(!motion)pendingAction=BasketballAction.None;
      else if(!motion.Busy){
@@ -173,7 +172,7 @@ namespace WhatTheFish {
     }else if(!ShotVelocity(athlete,start,hoop,out velocity)){EndPropAim();athlete.BasketballMotion.ResetPose();return;}
     shotHoop=hoop;
     if(velocity.magnitude>maxShotSpeed){EndPropAim();athlete.BasketballMotion.ResetPose();return;}
-   }else {if(passAim.locked){var recipient=PassReceiver;if(!PassTeammate(athlete,recipient)){if(IsInbound(athlete)){passAim=default;athlete.BasketballMotion.ResetPose();return;}passAim.locked=false;}else passAim.destination=recipient.transform.position+Vector3.up*.9f;}
+   }else {if(passAim.locked){var recipient=PassReceiver;if(directPass?!ValidDirectReceiver(athlete,recipient):!PassTeammate(athlete,recipient)){if(directPass||IsInbound(athlete)){passAim=default;athlete.BasketballMotion.ResetPose();return;}passAim.locked=false;}else passAim.destination=PassDestination(recipient,start);}
     launchedPass=PassPath(start,passAim,pendingPassPower);velocity=launchedPass.velocity;}
    // Reject an obstructed release instead of materializing inside architecture.
    if(Physics.CheckSphere(start,Radius+.015f,1<<8,QueryTriggerInteraction.Ignore)||Physics.Linecast(athlete.transform.position+Vector3.up*1.1f,start,1<<8,QueryTriggerInteraction.Ignore)){if(BasketballFinishRules.IsFinish(action))InterruptFinish(athlete);else {EndPropAim();athlete.BasketballMotion.ResetPose();}return;}
@@ -186,6 +185,7 @@ namespace WhatTheFish {
    ignoredShooter=athlete.capsule;if(ignoredShooter)Physics.IgnoreCollision(GetComponent<SphereCollider>(),ignoredShooter,true);
    Body.linearVelocity=velocity;Body.angularVelocity=Vector3.Cross(Vector3.up,Vector3.ProjectOnPlane(velocity,Vector3.up).normalized)*-backspin;
    LastLaunchVelocity=velocity;LastReleasePower=pendingPower;BasketballAudio.Emit(BasketballSound.Release,start);
+   foreach(var contest in blockAttempts)if(contest.shotContest)contest.releaseAt=BasketballMotion.Clock;
    if(shotHoop)BeginAttempt(shotHoop,athlete,start);if(propShotQueued)StartPropFlight(start,shotHoop);
    passing=action==BasketballAction.Pass;if(passing)BasketballMatch.Instance?.RecordPass(athlete);passBounceArmed=passing&&launchedPass.Bounces;passLaunchedAt=BasketballMotion.Clock;if(passing){passAim.phase=3;passAim.origin=start;passAim.released=BasketballMotion.Clock;}else passAim=default;Body.WakeUp();reset++;if(shotHoop)shotCount++;else passCount++;sendAt=0;
   }

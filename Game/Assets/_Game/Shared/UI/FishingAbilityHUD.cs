@@ -22,6 +22,7 @@ namespace WhatTheFish {
    skill=BasketballUIStyle.Button(frame,"Fishing round skill","",0,0,100,100,Use,CoveUI.Cream);skillRect=(RectTransform)skill.transform;skillRect.anchorMin=skillRect.anchorMax=skillRect.pivot=Vector2.one*.5f;
    skill.GetComponent<BasketballPlate>().radius=Vector2.one*35;skill.GetComponent<BasketballPlate>().border=3;skillAlpha=skill.gameObject.AddComponent<CanvasGroup>();
    iconRect=BasketballUIStyle.Center(skillRect,"Chosen skill icon",Vector2.one*62,new Vector2(0,8),Vector2.one*.5f);
+   SetIcon(iconRect,FishingAbility.Sonar);
    skillLabel=BasketballUIStyle.Text(skillRect,"USE",7,72,86,21,12,true,TextAnchor.MiddleCenter);
    var ringRect=BasketballUIStyle.Center(skillRect,"Skill clock border",Vector2.one*98,Vector2.zero,Vector2.one*.5f);clockRing=ringRect.gameObject.AddComponent<FishingSkillGraphic>();clockRing.ring=true;clockRing.raycastTarget=false;
    var shade=BasketballUIStyle.Plate(frame,"Fishing skill draft overlay",0,0,100,100,new Color(.035f,.12f,.17f,.65f),0,0);panel=shade.rectTransform;CoveUI.Stretch(panel);shade.raycastTarget=true;
@@ -34,6 +35,7 @@ namespace WhatTheFish {
    }
    footer=BasketballUIStyle.Text(sheet,"",18,323,656,28,15,true,TextAnchor.MiddleCenter);panel.gameObject.SetActive(false);skillRect.gameObject.SetActive(false);
   }
+  public void RegisterLayout(ControlLayoutEditor editor){editor.Register("ability","Round skill",skillRect,FishingGearArt.Icon(0));}
   void SetIcon(RectTransform at,FishingAbility ability){foreach(Transform child in at)Destroy(child.gameObject);var r=BasketballUIStyle.Center(at,"Skill illustration",at.sizeDelta,Vector2.zero,Vector2.one*.5f);FishingSkillGraphic.Icon(r,ability);}
   void Choose(int i){var game=FishingGame.Instance;var view=PlayerView.Instance;if(game&&view)view.FishingAbilityInput(FishingAction.ChooseSkill,(int)game.State.Offer(i));}
   void Use(){PlayerView.Instance?.FishingAbilityInput(FishingAction.UseAbility);}
@@ -58,7 +60,7 @@ namespace WhatTheFish {
    }
    bool active=player.active!=FishingAbility.None&&game.Now<player.activeUntil;
    bool show=game.State.Running&&FishingAbilityRules.PhaseAllows(player.item,player.phase)&&!choose&&!owner.BlocksGameplay;
-   skillRect.gameObject.SetActive(show);if(!show){readyBefore=false;return;}
+   LayoutSkill(0);skillRect.gameObject.SetActive(show);if(!show){readyBefore=false;return;}
    if(shown!=player.item){shown=player.item;SetIcon(iconRect,shown);}
    bool allowed=FishingAbilityRules.CanUse(player,game.Now)&&(player.item!=FishingAbility.SchoolCall||game.NearestPier(view.target)>=0);
    skill.interactable=allowed;if(allowed&&!readyBefore)readyPulse=1;readyBefore=allowed;readyPulse=Mathf.MoveTowards(readyPulse,0,Time.unscaledDeltaTime*1.7f);

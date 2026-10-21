@@ -376,7 +376,10 @@ namespace WhatTheFish {
    Check(!ui.HookCue.Visible&&ui.HookCue.CueStarts==starts,"FOCUS_RESUME_DOES_NOT_REPLAY_STALE_BITE");
    ReviewBite(0);yield return PoseFrame();starts=ui.HookCue.CueStarts;ui.SendMessage("OnApplicationPause",true);yield return PoseFrame();Check(!ui.HookCue.Visible,"PAUSE_CLEARS_BITE_CUE");ui.SendMessage("OnApplicationPause",false);yield return PoseFrame();Check(!ui.HookCue.Visible&&ui.HookCue.CueStarts==starts,"PAUSE_RESUME_SUPPRESSES_SAME_CAST_CUE");
    ReviewBite(0);yield return PoseFrame();Check(ui.HookCue.Visible,"ROUND_END_STARTS_FROM_VISIBLE_BITE_CUE");var match=game.State.Match;match.phase=FishingRoundPhase.Ended;game.State.Receive(match,game.State.Players.ToArray(),game.State.Fish.ToArray());yield return PoseFrame();Check(!ui.HookCue.Visible,"ROUND_END_CLEARS_HOOK_CUE");Capture("bite-round-ended");Check(ui.Results.Visible,"ROUND_END_OPENS_RECAP_CARD");ui.Results.Close();yield return PoseFrame();
-   match.phase=FishingRoundPhase.Playing;match.round++;game.State.Receive(match,game.State.Players.ToArray(),game.State.Fish.ToArray());ReviewBite(0);yield return PoseFrame();Check(ui.HookCue.Visible,"NEW_ROUND_CAN_SHOW_NEW_CAST_CUE");
+   match.phase=FishingRoundPhase.Playing;match.round++;game.State.Receive(match,game.State.Players.ToArray(),game.State.Fish.ToArray());
+   // Let the production post-match card release its input block before
+   // injecting a new cast. Real rounds have a countdown before any bite.
+   yield return PoseFrame();ReviewBite(0);yield return PoseFrame();Check(ui.HookCue.Visible,"NEW_ROUND_CAN_SHOW_NEW_CAST_CUE");
    foreach(var size in new[]{new[]{844,390},new[]{1024,768},new[]{1600,900}}){
     Screen.SetResolution(size[0],size[1],false);yield return new WaitForSeconds(.6f);ui.ReviewFrameInsets(new Vector2(48,24),new Vector2(24,16));ReviewBite(0);yield return PoseFrame();
     Check(ui.HookCue.Visible&&ui.HookCue.FitsSafeFrame()&&ui.FitsSafeFrame()&&ui.RegionsSeparate()&&game.State.Players.Count==5&&(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null||ui.VisibleScoreCount==5),"HOOK_ALERT_RESPECTS_FIVE_ROWS_AND_SAFE_AREA_"+size[0]+"x"+size[1]);Capture("bite-layout-"+size[0]+"x"+size[1]);ui.ReviewFrameInsets(Vector2.zero,Vector2.zero);

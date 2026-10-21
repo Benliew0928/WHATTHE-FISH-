@@ -101,14 +101,15 @@ namespace WhatTheFish {
    AppearanceData.OnValueChanged+=OnAppearance;OnAppearance(default,AppearanceData.Value);
    if(BotSlot.Value>0&&IsServer){if(BotSport.Value==SportId.Basketball)gameObject.AddComponent<BasketballBot>().Initialize(BotSlot.Value);else gameObject.AddComponent<FootballBot>().Initialize(BotSlot.Value,FootballBots.Instance?FootballBots.Instance.Seed:1729);}
    if(IsOwner&&IsPlayerObject){RecoveryAcknowledgedRpc();if(!AppRoot.Instance.rooms.Recovering){AppearanceRpc(JsonUtility.ToJson(LocalProfile.Character));NicknameRpc(PlayerIdentity.DisplayName);}AppRoot.Instance.LocalAthlete=athlete;}
+   StartPublicProfile();
   }
-  public override void OnNetworkDespawn(){if(HostPlayer==this)AppRoot.Instance.rooms.HostDespawned();IdentityNumber.OnValueChanged-=OnIdentity;GolfCartWorld.Forget(athlete);AppearanceData.OnValueChanged-=OnAppearance;if(HostPlayer==this)HostPlayer=null;}
+  public override void OnNetworkDespawn(){StopPublicProfile();if(HostPlayer==this)AppRoot.Instance.rooms.HostDespawned();IdentityNumber.OnValueChanged-=OnIdentity;GolfCartWorld.Forget(athlete);AppearanceData.OnValueChanged-=OnAppearance;if(HostPlayer==this)HostPlayer=null;}
   void OnIdentity(byte previous,byte current){if(athlete&&current>0)CharacterIdentity.Ensure(athlete).SetNumber(current);}
   void OnAppearance(FixedString128Bytes oldValue,FixedString128Bytes newValue){if(newValue.Length>0)athlete.Appearance(JsonUtility.FromJson<CharacterAppearance>(newValue.ToString()));}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void AppearanceRpc(FixedString128Bytes json){CharacterAppearance a;try{a=JsonUtility.FromJson<CharacterAppearance>(json.ToString());}catch(System.ArgumentException){return;}a.Clamp();if(!appearanceInitialized&&IsPlayerObject&&!(HostPlayer&&HostPlayer.Exploring.Value)){byte preferred=RoomSeats.Free(AppRoot.Instance.rooms.Sport,IsSpectator,a.preset);if(preferred!=RoomSeats.Unassigned&&preferred%10==a.preset)SetRoomSeat(preferred);}appearanceInitialized=true;a.preset=IdentityNumber.Value-1;AppearanceData.Value=JsonUtility.ToJson(a);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ReadyRpc(bool value){if(!HostPlayer||!HostPlayer.Exploring.Value)Ready.Value=value;}
   public static string CleanNickname(string value)=>PlayerIdentity.CleanName(value);
-  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void NicknameRpc(FixedString64Bytes value){string text=CleanNickname(value.ToString());Nickname.Value=text.Length>0?text:OwnerClientId==0?"HOST":"FRIEND "+OwnerClientId;}
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void NicknameRpc(FixedString64Bytes value){if(ProfileId.Value.Length>0&&!AppRoot.Instance.rooms.LocalTest)return;string text=CleanNickname(value.ToString());Nickname.Value=text.Length>0?text:OwnerClientId==0?"HOST":"FRIEND "+OwnerClientId;}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseFootballTeamRpc(FootballTeam team,uint selectionRevision){if(IsSpectator)return;if(IsSpawned&&FootballMatch.Instance&&!FootballMatch.Instance.ChooseTeam(athlete,team,selectionRevision))FootballTeamRejectedRpc();}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void ChooseBasketballTeamRpc(FootballTeam team,uint revision){if(IsSpectator)return;if(IsSpawned&&WhatTheFish.BasketballMatch.Instance)WhatTheFish.BasketballMatch.Instance.ChooseTeam(athlete,team,revision);}
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void TravelReadyRpc(uint sequence){if(HostPlayer&&HostPlayer.WorldTravel.Value.phase==SkySailPhase.Preparing&&HostPlayer.WorldTravel.Value.sequence==sequence)TravelReady.Value=sequence;}
@@ -128,6 +129,12 @@ namespace WhatTheFish {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    if(System.Environment.GetCommandLineArgs().Contains("-footballPlaymakerReview"))Debug.Log("PLAYMAKER_PASS_RPC actor="+NetworkObjectId+" heading="+heading+" valid="+valid+" passed="+passed+" round="+round+" current="+MatchRevision+" position="+transform.position+" ball="+(FootballBall.Instance?FootballBall.Instance.Body.position:Vector3.zero));
 #endif
+  }
+  [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] public void TargetPassRpc(ulong receiverId,uint possession,uint round,uint abilityRevision){
+   if(!IsSpawned||!HostPlayer||!HostPlayer.Exploring.Value||!AcceptRound(round))return;
+   var receiver=TeammatePassing.Find(receiverId);
+   if(HostPlayer.WorldSport.Value==SportId.Basketball&&AcceptBasketball(round)&&BasketballBall.Active)BasketballBall.Active.TryPassTo(athlete,receiver,possession);
+   else if(HostPlayer.WorldSport.Value==SportId.Football&&!FootballMatch.BlocksActions&&FootballBall.Instance&&abilityRevision==FootballBall.Instance.PropBallRevision)FootballBall.Instance.TryPassTo(athlete,receiver,possession);
   }
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void JumpRpc(uint round){if(AcceptRound(round)&&IsSpawned&&HostPlayer&&HostPlayer.Exploring.Value)athlete.RequestJump();}
   // Reliable begin/release edges let the host measure the hold duration. A
@@ -162,6 +169,7 @@ namespace WhatTheFish {
     if(c.passBegin&&exploring)PassChargeRpc(false,c.heading,c.passPlay,MatchRevision);if(c.passCancel)PassChargeRpc(true,c.heading,c.passPlay,MatchRevision);
     if(c.shotBegin&&exploring)ShotChargeRpc(false,c.heading,MatchRevision);if(c.shotCancel)ShotChargeRpc(true,c.heading,MatchRevision);
     if(c.kick&&exploring)KickRpc(c.kickCharge,MatchRevision,FootballBall.Instance?FootballBall.Instance.PropBallRevision:0,c.heading);if(c.jump&&exploring)JumpRpc(MatchRevision);if(c.tackle&&exploring)TackleRpc(MatchRevision);if(c.shoot&&exploring)ShootRpc(c.heading,c.shotReleasedAt,c.finish,MatchRevision);else if(c.pass&&exploring)PassRpc(c.heading,c.passPlay,c.passReleasedAt,c.passBend,MatchRevision);
+    if(c.targetedPass&&exploring)TargetPassRpc(c.passReceiver,c.passPossession,MatchRevision,FootballBall.Instance?FootballBall.Instance.PropBallRevision:0);
     if(c.footballPass&&exploring)FootballPassRpc(c.heading,MatchRevision,FootballBall.Instance?FootballBall.Instance.PropBallRevision:0);
     if(c.cartAction!=GolfCartAction.None&&exploring)GolfCartRpc(c.cartAction,c.cartOwner);
     bool golfCharge=c.golfCharging&&exploring;

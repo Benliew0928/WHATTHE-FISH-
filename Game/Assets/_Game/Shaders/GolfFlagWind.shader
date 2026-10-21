@@ -1,5 +1,5 @@
 Shader "WhatTheFish/GolfFlagWind" {
- Properties { _FlagTime("Preview time (-1 uses game clock)",Float)=-1 _BaseMap("Approved front and back artwork",2D)="white" {} }
+ Properties { _FlagTime("Preview time (-1 uses game clock)",Float)=-1 _BaseMap("Approved front and back artwork",2D)="white" {} _VenueAccent("Venue accent (alpha enables)",Color)=(1,1,1,0) }
  SubShader {
   Tags { "RenderPipeline"="UniversalPipeline" "RenderType"="TransparentCutout" "Queue"="AlphaTest" }
   Cull Off
@@ -8,6 +8,7 @@ Shader "WhatTheFish/GolfFlagWind" {
   #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
   CBUFFER_START(UnityPerMaterial)
    float _FlagTime;
+   half4 _VenueAccent;
   CBUFFER_END
   TEXTURE2D(_BaseMap); SAMPLER(sampler_BaseMap);
   struct Attributes { float4 positionOS:POSITION; float3 normalOS:NORMAL; float2 uv:TEXCOORD0; UNITY_VERTEX_INPUT_INSTANCE_ID };
@@ -37,6 +38,10 @@ Shader "WhatTheFish/GolfFlagWind" {
    #pragma multi_compile_instancing
    half4 Frag(Varyings input, FRONT_FACE_TYPE facing:FRONT_FACE_SEMANTIC):SV_Target {
     half4 artwork=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,float2(input.uv.x*.5+IS_FRONT_VFACE(facing,0,.5),input.uv.y));clip(artwork.a-.5);
+    // Recolour saturated fabric; preserve white numbers and neutral outlines.
+    half brightest=max(artwork.r,max(artwork.g,artwork.b));
+    half saturation=brightest-min(artwork.r,min(artwork.g,artwork.b));
+    artwork.rgb=lerp(artwork.rgb,_VenueAccent.rgb*brightest,saturate(saturation*4)*_VenueAccent.a);
     half3 normal=normalize(input.normalWS)*IS_FRONT_VFACE(facing,1,-1);
     Light light=GetMainLight();
     half diffuse=saturate(dot(normal,light.direction));

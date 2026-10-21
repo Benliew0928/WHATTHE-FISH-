@@ -64,6 +64,7 @@ namespace WhatTheFish {
   void Layout(){if(!frame||!card)return;float scale=Mathf.Min(embedded?1.15f:1.35f,frame.rect.width*.88f/860,frame.rect.height*(embedded?.68f:.88f)/452);card.localScale=Vector3.one*Mathf.Max(.1f,scale);}
   void LateUpdate(){Layout();AnimateExamples();if(embedded)return;var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;bool context=game&&game.Context&&view&&view.active&&p.HasValue;
    if(!context){if(overlay)overlay.gameObject.SetActive(false);entryObserved=false;return;}
+   if(FishingHUD.Instance&&FishingHUD.Instance.IslandMenu&&FishingHUD.Instance.IslandMenu.Visible)return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    if(DevelopmentProbe.TurnCommandActive&&!ReviewEntry)return;
 #endif

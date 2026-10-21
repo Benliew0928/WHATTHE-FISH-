@@ -1,0 +1,86 @@
+{
+  "base": "repository root",
+  "source": "Recovered original generated character artwork, 15 October 2026; pixels unchanged.",
+  "files": [
+    {
+      "number": 1,
+      "master": "ArtSource/PlayerPortraits/Character-01-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-01.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "792d6a92757e30471a08f78c626b8a53a589e45f13d1ef830b8e55e9cd213165"
+    },
+    {
+      "number": 2,
+      "master": "ArtSource/PlayerPortraits/Character-02-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-02.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "1bef4c98696e6120532fdfd5ce7605d55672ab5e0748dbfc2a98071ee36f26fa"
+    },
+    {
+      "number": 3,
+      "master": "ArtSource/PlayerPortraits/Character-03-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-03.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "236fedef6ce8fe81f2fce58f161ebfd7907f54dfd1df0d843161f4d55ac30edf"
+    },
+    {
+      "number": 4,
+      "master": "ArtSource/PlayerPortraits/Character-04-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-04.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "73454a991d1e90a08694b236baf7673e2b421e816a85d25ab256e537e5d4a463"
+    },
+    {
+      "number": 5,
+      "master": "ArtSource/PlayerPortraits/Character-05-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-05.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "2d79aa72e2f407f55d82ad3122b1b099694a2ebb207ba303c3b0c32c7da5a876"
+    },
+    {
+      "number": 6,
+      "master": "ArtSource/PlayerPortraits/Character-06-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-06.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "a76a9ec475895b00053880ea497b4956047dae0e3db727e3aa1ed792b0d0ebde"
+    },
+    {
+      "number": 7,
+      "master": "ArtSource/PlayerPortraits/Character-07-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-07.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "2c245cf369d9464687aa07c57e4805a153bb1165937b6036f2b4b9dfe3074a14"
+    },
+    {
+      "number": 8,
+      "master": "ArtSource/PlayerPortraits/Character-08-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-08.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "e08a597c4ac60a3e5119fca5615ecc53f8760e2805f7f5a0e5e23beca157267c"
+    },
+    {
+      "number": 9,
+      "master": "ArtSource/PlayerPortraits/Character-09-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-09.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "843af9ccb828dc846b5cde5f6bccdaf60582be2ef9fb9a119cefbc6b46eaa5e8"
+    },
+    {
+      "number": 10,
+      "master": "ArtSource/PlayerPortraits/Character-10-master.png",
+      "asset": "Game/Assets/_Game/Resources/PlayerPortraits/Character-10.png",
+      "width": 1024,
+      "height": 1536,
+      "sha256": "f72226bf643437cbefa0e7522374f11168ceed4f54cf992db8fd3ebb455c94e9"
+    }
+  ]
+}

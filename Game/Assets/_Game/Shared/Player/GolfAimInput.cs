@@ -11,10 +11,10 @@ namespace WhatTheFish {
   public GolfShotMode GolfMode=>GolfMatchManager.Instance?GolfMatchManager.Instance.Aim(target).mode:GolfShotMode.Swing;
   public float GolfDisplayedCharge=>GolfCharging&&chargePresented?presentedCharge:GolfCharge;
   public bool GolfAiming {get{var match=GolfMatchManager.Instance;var aim=match?match.Aim(target):default;return aimWanted&&aim.active&&aim.owner==aimOwner&&aim.round==aimRound;}}
-  public bool CanAimGolf=>active&&target&&GolfMatchManager.Instance&&GolfMatchManager.Instance.AimCandidate(target);
+  public bool CanAimGolf=>!InputBlocked&&active&&target&&GolfMatchManager.Instance&&GolfMatchManager.Instance.AimCandidate(target);
   public void ToggleGolfAim(){if(aimWanted)CancelGolfAim();else BeginGolfAim();}
   public bool BeginGolfAim(){
-   if(aimWanted)return GolfAiming;var match=GolfMatchManager.Instance;var ball=active&&match?match.AimCandidate(target):null;if(!ball){GolfFishingAudio.PlayMenu("ui-error");return false;}
+   if(InputBlocked)return false;if(aimWanted)return GolfAiming;var match=GolfMatchManager.Instance;var ball=active&&match?match.AimCandidate(target):null;if(!ball){GolfFishingAudio.PlayMenu("ui-error");return false;}
    aimWanted=true;aimAccepted=false;golfReleased=false;aimOwner=ball.Owner;aimRound=match.Round;aimRequestedAt=Time.unscaledTime;
    ReturnFromGolfShot();
    pendingJump=false;pendingCart=GolfCartAction.None;
