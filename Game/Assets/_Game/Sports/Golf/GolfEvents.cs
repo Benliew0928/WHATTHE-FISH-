@@ -29,11 +29,12 @@ namespace WhatTheFish {
  }
  public sealed class GolfEventSchedule {
   public const double Cycle=90,Warning=10,RushDelay=1,RushDuration=30;
+  public const double WeatherDuration=45;
   public const float WindAcceleration=2.6f;
   public static IReadOnlyList<GolfEventKind> RandomKinds {get;}=Array.AsReadOnly(new[]{GolfEventKind.TropicalWind,GolfEventKind.StickyGreen,GolfEventKind.BounceParty});
   public static bool IsRandom(GolfEventKind kind)=>kind==GolfEventKind.TropicalWind||kind==GolfEventKind.StickyGreen||kind==GolfEventKind.BounceParty;
   public GolfEventSnapshot Snapshot {get;private set;}
-  public static double Duration(GolfEventKind kind)=>kind==GolfEventKind.TropicalWind||kind==GolfEventKind.StickyGreen?20:kind==GolfEventKind.BounceParty?15:0;
+  public static double Duration(GolfEventKind kind)=>IsRandom(kind)?WeatherDuration:0;
   // Only the authority starts a schedule. Use independent OS entropy per match;
   // keep the explicit-seed overload for reproducible development fixtures.
   public void Begin(double started){

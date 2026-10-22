@@ -1,5 +1,168 @@
 # APK size audit — measured release records
 
+## Golf crossing assistance, clearer events, Fishing skills and menus - 22 October 2026
+
+Source: `03409e7` plus local changes. Ground-level cup crossings now drop in
+up to **6 m/s**, with the centre anywhere inside the visible opening and up to
+**1.3 ball radii** high. A swept crossing catches entries between fixed steps.
+Very hard shots can still roll across; airborne and outside shots are excluded.
+Cup geometry stays at the existing 0.19 m radius.
+
+Wind now has 28 brighter, wider, longer streaks, a **72-unit direction compass**
+below the badge and a stronger persistent grey-blue edge gust. Sticky/Bounce
+have coloured edges, larger outlines and **1.4-second** contact rings. Rush
+ribbons and foot puffs are stronger. The centre remains clear; Reduced Motion
+suppresses wind streaks and edge tint. No new image, model or shader was added.
+
+Fishing skills last **5s Steel Wire, 6s Power Reel/Buddy, up to 9s Bubble Guard,
+12s Sonar and 10s School Call plus 2s release**. Cooldowns remain unchanged.
+Descriptions, Sonar recipients, school motion and ripples share those times.
+Requested promotional subtitles are removed from Home, Settings, Friends and
+sport entry; existing navigation and gameplay modes remain.
+
+Official AndroidSubmission completed at **2026-10-22T19:18:20+08:00**:
+actual APK **110,599,710 -> 110,590,846 bytes (-8,864)**;
+strict decimal-GB headroom **889,409,154 bytes**. Build/budget gate,
+ZIP CRC, five-scene catalog/bundle hash and independent APK v2 signature passed.
+Existing Android Debug signing is retained for local testing. SHA-256:
+**37D9DFB0C8009EC607E59C0006B6FAC0F23CDF22A54344FFDAF8ADCD97FA4697**.
+
+Largest compressed entries: islands **45,221,620** (-8,308), IL2CPP
+**12,616,091** (-462), Unity **9,808,205** (unchanged), metadata **2,796,209**
+(-104) bytes. No unexpected large growth or lossy art change was found.
+
+Validation: **32 editor cup/weather/geometry checks**, **1,040 Fishing ability
+checks**, **18 rendered checks** including ordinary 4.5 m/s capture, hard-shot
+overshoot, lingering wind/contact feedback and clean menu screens. Windows
+exited cleanly. **579 C# hashes**, **185 Golf asset hashes** and the complete
+**327-file WindowsFinal** promotion match. Protocol/wire schema remain 77;
+matching builds are required. Physical-phone touch/FPS and WAN multiplayer
+remain untested; unchanged broad runtime suites were not rerun.
+
+Evidence: ignored `Builds/GolfClarity/Task-20261022-184551/` (build logs, focused review/captures, source and
+asset hashes, APK/signature/audit data and reviewed import cleanup).
+Superseded player/APK: `Legacy/20261022-190652-271-golf-clarity-fishing-menu/`.
+See [Golf rules and effects](GOLF-CUP-AND-EVENT-POLISH.md) and
+[Fishing skill rules](FISHING-ABILITIES.md). Git publishing is tracked in the task final report.
+
+## Golf easier cups and longer events - 22 October 2026
+
+Source: `03409e7` plus the local Golf changes. Physical cup radius is now
+**0.19 m** (0.38 m diameter), about **13% wider again**. Terrain, lining, rim,
+floor and scene/prefab metadata agree. Gentle-entry capture increases from
+**1.2 to 1.6 m/s**, with a **6.45 mm inside-rim allowance** and entry starting
+at a centre height of **0.9 ball radii**. Hard shots still overshoot; outside
+balls are not attracted. Existing ranking and final-countdown rules remain.
+
+Wind, Sticky Green and Bounce Party now each last **45 seconds** (previously
+20/20/15). The 90-second cycle and ten-second warning stay unchanged. Rush
+remains tied to the existing finishing countdown. Wind streaks are clearer,
+the arrival sweep lasts 1.2 seconds, a faint 2.5% edge tint persists, and contact
+rings last 0.85 seconds. No new image/model or extra effect pool was added.
+
+Official AndroidSubmission at **17:02:06 Malaysia time**:
+actual APK **110,589,114 -> 110,599,710 bytes (+10,596)**;
+strict decimal-GB headroom **889,400,290 bytes**. Build/budget gate,
+ZIP integrity, five-scene catalog/bundle hash and independent APK v2 signature
+verification passed. Existing Android Debug signing is retained for local tests.
+SHA-256:
+**49E138557CC9C3E042C79F1209E190433B9994EC4B6D3203A3715D876BF6CCF7**.
+
+Largest compressed entries: islands **45,229,928** (+12,912), IL2CPP
+**12,616,553** (-2,654), Unity **9,808,205** (unchanged), metadata **2,796,313**
+(+330) bytes. No unexpected large contributor or lossy art change was found.
+
+Focused validation: **31 editor rule/geometry checks**, **12 rendered gameplay
+checks**, including actual off-centre entry, hard-shot overshoot, next-tee
+readiness, all three 45-second events and lingering wind/contact feedback.
+The Windows player exited cleanly. All **579 C# source hashes** and **185 Golf
+asset hashes** match through both builds. Complete WindowsFinal promotion
+matched **327 files**. Network wire schema/protocol **77** remain unchanged.
+Physical-phone touch/FPS, WAN multiplayer and broad historical suites were not run.
+
+Evidence: ignored `Builds/GolfEase/Task-20261022-154854/`, including
+`windows-build.log`, `review.txt`, cup/effect captures, `AndroidAudit/`, actual
+APK/signature measurements, continuity hashes and reviewed import cleanup.
+Superseded player/APK: `Legacy/20261022-165028-349-golf-easier-cups-longer-events/`.
+See [current rules and tuning](GOLF-CUP-AND-EVENT-POLISH.md).
+Git staging, commit and push were not performed.
+
+## Golf cup, target guide and event polish - 22 October 2026
+
+Source: `03409e7` plus the local Golf changes. Cups are 18% wider with matching
+terrain/lining/floor geometry. Powerful shots can cross the opening; slow valid
+entry visibly sinks before scoring. A numbered aim/edge guide replaces the
+competing compass while aiming. Existing event art/materials support wind
+streaks/edge arrival/compass, mint Sticky Green and orange Bounce Party contacts,
+and cyan/gold Rush ribbons with foot puffs. No new bitmap or model was imported.
+
+Official AndroidSubmission at **15:27:43 Malaysia time**:
+actual APK **110,557,160 -> 110,589,114 bytes (+31,954)**;
+strict decimal-GB headroom **889,410,886 bytes**. Build/budget gate,
+APK ZIP integrity, five-scene catalog/bundle SHA-256 and independent APK v2
+signature verification passed. The existing Android Debug signer is retained
+for local testing. APK SHA-256:
+**2D94F4CD51EE0F2C98BB424BC5DDF8DC34AA587C420C2623DE8C47479CA497A8**.
+
+Largest compressed entries: islands **45,217,016** (+16,407), IL2CPP
+**12,619,207** (+12,557), Unity **9,808,205** (unchanged), metadata
+**2,795,983** (+2,109) bytes. New presentation settings contribute 1,094 bytes.
+No unexpected large contributor or lossy art change was found.
+
+Focused verification: **22 editor rule/geometry checks** and **14 rendered
+runtime checks**, including real fast guided crossing, slow sink/next-tee
+readiness, numbered visible/offscreen guidance, wide landscape layout and actual
+Sticky/Bounce contacts. The player exited cleanly. All **579 C# source hashes**
+and **185 Golf asset hashes** match across the Windows and Android builds.
+Complete WindowsFinal promotion matched **327 files**, including support/data.
+Protocol **77** and the existing event wire schema remain unchanged.
+
+Physical-phone touch/FPS, WAN multiplayer, broad historical suites and a separate
+Rush foot-puff presentation check were not run. Focused previews do not establish
+phone quality. Earlier opt-in fixtures for rim-touch scoring and old compass
+layouts describe superseded behaviour; this task uses `-golfCupReview`.
+
+Evidence: ignored `Builds/GolfCupEffects/Task-20261022-142302/`, including
+`prepare.log`, `review.txt`, landscape/effect captures, `AndroidAudit/`,
+`apk-after.json`, `apksigner.txt`, source/asset continuity and promotion hashes.
+Superseded player/APK: `Legacy/20261022-151513-026-golf-cup-event-polish/`.
+See [current behaviour and tuning](GOLF-CUP-AND-EVENT-POLISH.md).
+Git staging, commit and push were not performed.
+
+## Local current-main event rebuild - 22 October 2026
+
+Rebuilt source `03409e7` for local event testing. This includes Golf's Tropical
+Wind, Sticky Green and Bounce Party, plus the first-finisher Island Rush,
+profiles and the other pulled updates. No gameplay code or art was edited.
+
+Official AndroidSubmission at **13:33:23 Malaysia time**:
+actual local APK **93,903,454 -> 110,557,160 bytes (+16,653,706)**;
+strict decimal-GB headroom **889,442,840 bytes**. Build/budget gate,
+ZIP integrity, five-scene catalog/bundle hash and independent APK v2 signature
+verification passed. SHA-256:
+**2E075EABE759919D243D9B6CA90A1A605CC7F326E81960BBFC8EE1B98438E7A4**.
+
+The opening local APK predates the pulled profiles/events. Expected growth
+includes ten portraits (previously measured at 11,489,098 compressed bytes) and
+warning/event art (**2,343,698 / 1,692,260 bytes**). This is a rebuild of the
+latest source, not an asset-only comparison. Largest compressed entries are
+islands **45,200,609**, IL2CPP **12,606,650**, Unity **9,808,205** and metadata
+**2,793,874** bytes. No unexpected large new contributor or lossy asset change.
+
+Complete WindowsFinal updated; **327 files** matched the candidate before its
+note was amended. Minimal verification as requested: full compilation and a
+brief Golf launch/clean exit with no detected runtime exception. Detailed event,
+network and physical-phone tests were not run. All **572 C# input hashes** match
+through both builds. Protocol **77** requires matching room peers.
+
+Evidence: ignored `Builds/EventRebuild/Task-20261022-125316/`, including
+`AndroidAudit/`, `apk-after.json`, `apk-entry-growth.json`, `apksigner.txt`,
+`launch-summary.txt`, source/promotion hashes and reviewed import cleanup.
+Superseded local player/APK and the unused detailed-test draft were archived in
+`Legacy/20261022-131328-164-local-event-rebuild/`. Git publishing was not performed.
+For manual testing, [start a Golf round](GOLF-RANDOM-EVENTS.md): warning at
+80 seconds and first random event at 90 seconds; Swing shows the weather effects.
+
 ## Golf event placement and independent match seed - 22 October 2026
 
 Event notices now start 12 HUD units beyond the Settings button's actual right

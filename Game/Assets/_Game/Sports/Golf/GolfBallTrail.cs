@@ -13,6 +13,12 @@ namespace WhatTheFish {
   public uint SeenStrike {get;private set;}
   GolfBall ball;Vector3 lastPosition;float lastMovement;
   MaterialPropertyBlock properties;
+  GolfEventKind tintKind;
+  public void EventTint(GolfEventKind kind){
+   if(!Ribbon||kind==tintKind)return;tintKind=kind;var config=GolfPresentationSettings.Current;
+   var color=kind==GolfEventKind.StickyGreen?config.stickyColor:kind==GolfEventKind.BounceParty?config.bounceColor:new Color(1,.83f,.22f);
+   Ribbon.colorGradient=new Gradient{colorKeys=new[]{new GradientColorKey(color,0),new GradientColorKey(Color.Lerp(color,Color.white,.6f),1)},alphaKeys=new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(.6f,.45f),new GradientAlphaKey(0,1)}};
+  }
   static readonly int Fade=Shader.PropertyToID("_Fade");
   void Awake(){
    ball=GetComponent<GolfBall>();

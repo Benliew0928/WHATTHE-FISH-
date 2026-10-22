@@ -33,3 +33,7 @@ MonoBehaviour:
   sandResistance: 8
   externalVelocityChange: 0.2
   newForceGracePeriod: 0.12
+  cupCaptureSpeed: 6
+  cupRimForgiveness: 1
+  cupEntryHeightRatio: 1.3
+  cupSinkSeconds: 0.32

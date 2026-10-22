@@ -12,12 +12,12 @@ untimed choice. Rematches deal a fresh menu and clear cooldowns.
 
 | Skill | Effect | Phase | Cooldown from activation |
 | --- | --- | --- | --- |
-| Steel Wire | Tension cannot rise above its activation value for 3s. Existing tension stays; release to cool. Silver-blue braid on the line. | Hooked | 24s |
-| Power Reel | Wind 30% faster for 4s, with ordinary tension. Gold pulses on the line. | Hooked | 22s |
-| Fishing Buddy | A monochrome helper reels beside you for 4s. Wind 20% faster with 20% less positive strain. | Hooked | 30s |
-| Bubble Guard | Absorb one strong surge within 6s, reducing strain by 0.22. The bubble pops when consumed. | Hooked | 18s |
-| Sonar | Highlight available Wanted fish for 8s. Personal in competition; shared with all connected Crew members. | Before casting | 20s |
-| School Call | Attract up to three unclaimed fish toward your pier for 6s; release them smoothly over 2s. Gold bait ripples mark the location. | Before casting, at a pier | 20s |
+| Steel Wire | Tension cannot rise above its activation value for 5s. Existing tension stays; release to cool. Silver-blue braid on the line. | Hooked | 24s |
+| Power Reel | Wind 30% faster for 6s, with ordinary tension. Gold pulses on the line. | Hooked | 22s |
+| Fishing Buddy | A monochrome helper reels beside you for 6s. Wind 20% faster with 20% less positive strain. | Hooked | 30s |
+| Bubble Guard | Absorb one strong surge within 9s, reducing strain by 0.22. The bubble pops when consumed. | Hooked | 18s |
+| Sonar | Highlight available Wanted fish for 12s. Personal in competition; shared with all connected Crew members. | Before casting | 20s |
+| School Call | Attract up to three unclaimed fish toward your pier for 10s; release them smoothly over 2s. Gold bait ripples mark the location. | Before casting, at a pier | 20s |
 
 One skill button sits beside Cast / Right. It hides in the wrong phase,
 glows at full opacity when ready, dims with a clock border while recharging,
@@ -31,7 +31,7 @@ opacity. It has no collider, network player, independent AI or score, and
 requires no extra character model or texture set.
 
 The host validates choices, ownership, phase, timestamps, round/cast tokens,
-activation and cooldown. All peers need **protocol 73**. Retired pickup and
+activation and cooldown. Use matching builds (current protocol **77**). Retired pickup and
 favourites actions are rejected. Disconnecting during selection abandons it;
 results and island travel clear effects.
 
@@ -48,3 +48,8 @@ choice: a wider follow view behind the player, with gentle pitch and collision
 handling. It stays player anchored while hooked. Eye-level fighting and the
 accepted Follow fight framing remain. See [controls](FISHING-COUNTERSTEER.md)
 and [match rules](FISHING-MINIGAME.md).
+
+The longer-duration update keeps the same cooldowns: Steel Wire 5s, Power Reel
+6s, Fishing Buddy 6s, Bubble Guard up to 9s, Sonar 12s and School Call 10s plus
+a 2s release. Bubble Guard still ends early when it absorbs one surge. Ability
+cards, active rings, shared Sonar and School Call motion use these same times.

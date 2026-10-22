@@ -49,6 +49,14 @@ namespace WhatTheFish {
   [Min(.1f)] public float fairwayResistance=3.3f;
   [Min(.1f)] public float roughResistance=4.5f;
   [Min(.1f)] public float sandResistance=8f;
+  [Header("Cup crossing assistance")]
+  [Tooltip("Ground-level crossings up to this speed drop in; harder shots can roll across.")]
+  [Min(.1f)] public float cupCaptureSpeed=6f;
+  [Tooltip("Inside-rim allowance as a fraction of the ball radius. One accepts the ball centre anywhere inside the opening.")]
+  [Range(0,1)] public float cupRimForgiveness=1f;
+  [Tooltip("Ball-centre height at which a gentle entry can begin sinking.")]
+  [Range(.5f,1.5f)] public float cupEntryHeightRatio=1.3f;
+  [Range(.12f,.8f)] public float cupSinkSeconds=.32f;
   [Header("New gameplay forces")]
   [Tooltip("Unexpected velocity change (m/s) that restarts settling. Ground gravity is excluded.")]
   [Min(.01f)] public float externalVelocityChange=.2f;
@@ -61,6 +69,7 @@ namespace WhatTheFish {
    settlingMaxSpeed=Mathf.Clamp(settlingMaxSpeed,stopSpeedThreshold,slowRollingThreshold);
    stopDelay=Mathf.Max(.02f,stopDelay);rollingResistanceStrength=Mathf.Max(.01f,rollingResistanceStrength);
    turfRestitution=Mathf.Clamp01(turfRestitution);minimumBounceSpeed=Mathf.Max(0,minimumBounceSpeed);subsequentLandingRetention=Mathf.Clamp01(subsequentLandingRetention);
+   cupCaptureSpeed=Mathf.Max(.1f,cupCaptureSpeed);cupRimForgiveness=Mathf.Clamp01(cupRimForgiveness);cupEntryHeightRatio=Mathf.Clamp(cupEntryHeightRatio,.5f,1.5f);cupSinkSeconds=Mathf.Clamp(cupSinkSeconds,.12f,.8f);
   }
  }
 }

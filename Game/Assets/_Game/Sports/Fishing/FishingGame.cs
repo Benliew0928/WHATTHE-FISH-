@@ -81,7 +81,8 @@ namespace WhatTheFish {
    float best=0;Vector3 destination=p;
    foreach(var player in State.Players){
     if(!player.connected||(player.schoolFishMask&(1u<<fish))==0)continue;float age=(float)(now-player.schoolAt);
-    if(age<0||age>8)continue;float weight=Mathf.SmoothStep(0,1,age/2)*(1-Mathf.SmoothStep(0,1,(age-6)/2));
+    float hold=(float)FishingAbilityRules.Duration(FishingAbility.SchoolCall),release=FishingAbilityRules.SchoolReleaseSeconds;
+    if(age<0||age>hold+release)continue;float weight=Mathf.SmoothStep(0,1,age/2)*(1-Mathf.SmoothStep(0,1,(age-hold)/release));
     if(weight<=best)continue;best=weight;float angle=fish*2.399963f+(float)now*.15f;destination=player.schoolPoint+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*(1.5f+fish%3*.45f);destination.y=p.y;
    }
    return Vector3.Lerp(p,destination,best);

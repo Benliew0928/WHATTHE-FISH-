@@ -16,7 +16,6 @@ namespace WhatTheFish {
   static Color Surface(Color color)=>color==Color.white?Raised:color;
   static Color Foreground(Color color)=>(color.r*.299f+color.g*.587f+color.b*.114f)>.6f?DarkInk:Ink;
   static Color Accent(SportId sport)=>sport switch{SportId.Fishing=>Gold,SportId.Basketball=>Hex("FFB17D"),SportId.Football=>Mint,_=>Hex("D1BAFF")};
-  static string ShortCaption(SportId sport)=>sport switch{SportId.Fishing=>"Cast & catch",SportId.Basketball=>"Shoot & score",SportId.Football=>"Pass & score",_=>"Aim & putt"};
   static bool HasBots(SportId sport)=>sport==SportId.Football||sport==SportId.Basketball||IslandBots.Supports(sport);
   static Sprite SportArt(SportId sport){
    if(sportArt==null){var atlas=Resources.Load<Texture2D>("SportyMenu/SportCards");sportArt=new Sprite[4];
@@ -54,54 +53,49 @@ namespace WhatTheFish {
    Button(content,"Settings","Settings",1353,48,183,68,Raised,()=>Go("settings"),CoveSymbol.Settings,26);
    Plate(content,"Header divider",64,151,1472,2,Line,0,0);
    var room=Plate(content,"Play together",64,176,1472,128,Cream);
-   Text(room.transform,"ONE ROOM. FOUR SPORTS.",28,17,710,48,35,true,Mint);
-   Text(room.transform,"Invite your crew. Travel and play together.",28,72,710,32,23,false,Muted);
+   Text(room.transform,"ONE ROOM. FOUR SPORTS.",28,40,710,48,35,true,Mint);
    ActionButton("Create room","Create room",883,205,300,70,Mint,()=>Go("create"),CoveSymbol.People,28);
    ActionButton("Join room","Join room",1203,205,305,70,Raised,()=>Go("join"),CoveSymbol.Join,28);
    Text(content,"CHOOSE YOUR SPORT",64,322,1000,48,35,true);
-   Text(content,"Solo adventures & versus bots",1000,329,536,36,23,false,Muted,TextAnchor.MiddleRight);
    for(int i=0;i<HomeSports.Length;i++){var sport=HomeSports[i];SportCard(sport,64+i*374,390,350,310,()=>ChooseSport(sport,"sport"));}
-   Utility("Customize venue","CUSTOMIZE VENUE","Make it your home ground",64,730,724,Cream,CoveSymbol.Paint,()=>Go("venues"));
-   Utility("How to play","HOW TO PLAY","Controls, rules & tips",812,730,724,Cream,CoveSymbol.Book,()=>{guideSport=app.SelectedSport;Go("guides");});
+   Utility("Customize venue","CUSTOMIZE VENUE",64,730,724,Cream,CoveSymbol.Paint,()=>Go("venues"));
+   Utility("How to play","HOW TO PLAY",812,730,724,Cream,CoveSymbol.Book,()=>{guideSport=app.SelectedSport;Go("guides");});
    if(!string.IsNullOrEmpty(app.rooms.Error))NoticeLater(app.rooms.Error);
   }
   void SportCard(SportId sport,float x,float y,float w,float h,Action action,string id=null,string caption=null,bool enabled=true){
    var b=Button(content,id??"Island - "+sport,"",x,y,w,h,Cream,action);b.interactable=enabled;
    if(enabled)busyButtons.Add(b);
-   float artHeight=Mathf.Min(w*2/3f,h-112);
+   float artHeight=Mathf.Min(w*2/3f,h-(string.IsNullOrEmpty(caption)?76:112));
    // The original approved atlas is sliced at exact quadrant boundaries, without recompression.
    var mask=Plate(b.transform,"Artwork window",2,2,w-4,artHeight,Color.white,12,0);mask.gameObject.AddComponent<Mask>().showMaskGraphic=false;
    float imageHeight=(w-4)*2/3f;
    var art=Image(mask.transform,sport+" illustration",SportArt(sport),0,(artHeight-imageHeight)/2,w-4,imageHeight);art.preserveAspect=false;
    Plate(b.transform,"Sport accent",2,artHeight, w-4,4,Accent(sport),0,0);
-   Text(b.transform,sport.ToString().ToUpperInvariant(),24,artHeight+20,w-104,44,34,true);
-   Text(b.transform,caption??ShortCaption(sport),24,artHeight+69,w-48,32,21,false,Muted);
+   Text(b.transform,sport.ToString().ToUpperInvariant(),24,artHeight+14,w-104,44,34,true);
+   if(!string.IsNullOrEmpty(caption))Text(b.transform,caption,24,artHeight+60,w-48,32,21,false,Muted);
    var arrow=Plate(b.transform,"Open sport",w-64,artHeight+27,40,40,enabled?Accent(sport):Raised,9,0);
    Icon(arrow.transform,enabled?CoveSymbol.Next:CoveSymbol.Flag,10,10,20,enabled?DarkInk:Muted);
   }
-  void Utility(string id,string title,string caption,float x,float y,float width,Color color,CoveSymbol icon,Action action){
+  void Utility(string id,string title,float x,float y,float width,Color color,CoveSymbol icon,Action action){
    var b=Button(content,id,"",x,y,width,124,color,action);var ink=Foreground(color);
    var tile=Plate(b.transform,"Icon tile",28,34,56,56,Color.Lerp(color,DarkInk,.13f),12,0);Icon(tile.transform,icon,14,14,28,ink);
-   Text(b.transform,title,106,21,width-180,48,32,true,ink);Text(b.transform,caption,106,72,width-180,30,21,false,ink==Ink?Muted:DarkInk);
+   Text(b.transform,title,106,38,width-180,48,32,true,ink);
    Icon(b.transform,CoveSymbol.Next,width-55,49,26,ink);
   }
   void SportHome(){
-   guideFromHub=false;Heading(app.SelectedSport.ToString().ToUpperInvariant(),ShortCaption(app.SelectedSport)+". Choose how you want to play.");
+   guideFromHub=false;Heading(app.SelectedSport.ToString().ToUpperInvariant(),"");
    var art=Plate(content,"Sport hero",64,190,565,574,Cream,16,1);
    Image(art.transform,"Sport artwork",SportArt(app.SelectedSport),2,2,561,374);
-   Text(art.transform,"LET'S PLAY.",30,402,505,70,51,true,Accent(app.SelectedSport));
-   Text(art.transform,SportCaption(app.SelectedSport),32,482,500,55,25,false,Muted);
-   Mode("Explore offline","EXPLORE OFFLINE","Your own pace. Explore the island and practise your skills.",CoveSymbol.Map,665,190,app.EnterOffline,Mint);
+   Text(art.transform,"LET'S PLAY.",30,438,505,70,51,true,Accent(app.SelectedSport));
+   Mode("Explore offline","EXPLORE OFFLINE",CoveSymbol.Map,665,190,app.EnterOffline,Mint);
    bool bots=HasBots(app.SelectedSport);
-   Mode("Play vs AI","VERSUS BOTS",IslandBots.Supports(app.SelectedSport)?"Choose your opponents. Everyone competes for first place.":"Pick your team size and take on computer opponents.",CoveSymbol.People,665,489,()=>Go("ai"),Cream,bots);
+   Mode("Play vs AI","VERSUS BOTS",CoveSymbol.People,665,489,()=>Go("ai"),Cream,bots);
    Button(content,"Sport help","How to play",64,807,300,65,Raised,()=>Go("help"),CoveSymbol.Book,27);
-   Text(content,"Playing with friends? Create or join a room on the main menu.",445,815,1090,40,23,false,Muted,TextAnchor.MiddleRight);
   }
-  void Mode(string id,string title,string caption,CoveSymbol icon,float x,float y,Action action,Color color,bool enabled=true){
+  void Mode(string id,string title,CoveSymbol icon,float x,float y,Action action,Color color,bool enabled=true){
    var b=Button(content,id,"",x,y,870,275,color,action);b.interactable=enabled;if(enabled)busyButtons.Add(b);var ink=Foreground(color);
    Icon(b.transform,icon,30,30,44,enabled?ink:Muted);
    Text(b.transform,title,30,110,800,59,37,true,enabled?ink:Muted);
-   Text(b.transform,caption,30,185,800,62,25,false,ink==Ink?Muted:DarkInk);
    if(enabled)Icon(b.transform,CoveSymbol.Next,808,40,28,ink);
   }
   void GuideHub(){

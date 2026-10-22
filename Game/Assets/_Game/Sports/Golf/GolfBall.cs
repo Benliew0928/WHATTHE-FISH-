@@ -4,7 +4,7 @@ namespace WhatTheFish {
  public enum GolfBallMotion { Flying,FastRolling,SlowRolling,Resting }
  [RequireComponent(typeof(Rigidbody),typeof(SphereCollider))]
  [DefaultExecutionOrder(50)]
- public sealed class GolfBall:MonoBehaviour {
+ public sealed partial class GolfBall:MonoBehaviour {
   public const float ModelRadius=.0215f,VisualScale=3f,Radius=ModelRadius*VisualScale;
   public ulong Owner {get;private set;}
   public Rigidbody Body {get;private set;}
@@ -18,7 +18,7 @@ namespace WhatTheFish {
   public bool Live {get;private set;}
   public GolfBallMotion Motion {get;private set;}=GolfBallMotion.Flying;
   public bool IsGrounded {get;private set;}
-  public bool ReadyToAim=>Live&&shot==null&&(match.Authority?Body.linearVelocity.sqrMagnitude<.04f:!received||Vector3.Distance(before.position,target.position)<.015f);
+  public bool ReadyToAim=>Live&&!Sinking&&shot==null&&(match.Authority?Body.linearVelocity.sqrMagnitude<.04f:!received||Vector3.Distance(before.position,target.position)<.015f);
   public bool FollowingShot=>shot!=null;
   public Vector3 Velocity=>shot!=null?shotVelocity:Body.linearVelocity;
   public Vector3 LastGuideContact {get;private set;}
@@ -41,13 +41,14 @@ namespace WhatTheFish {
    // Character shoreline walls stay in place; only golf balls can leave the course.
    shape.excludeLayers=(1<<9)|(1<<GolfCartMotor.Layer);
    Trail=gameObject.AddComponent<GolfBallTrail>();
+   gameObject.AddComponent<GolfBallEventFX>();
   }
   internal void Bind(GolfMatchManager manager,ulong owner){
    if(bound)return;bound=true;match=manager;Owner=owner;
    IgnorePlayers();
   }
   void IgnorePlayers(){foreach(var actor in Athlete.Active)if(actor&&actor.capsule&&actor.capsule.enabled)Physics.IgnoreCollision(shape,actor.capsule);}
-  internal void SetLive(bool live){Live=live;bool dynamic=live&&match.Authority;if(dynamic&&shot==null){Body.isKinematic=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;}else if(!dynamic){ResetMotion();Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;Body.isKinematic=true;}Body.detectCollisions=dynamic;}
+  internal void SetLive(bool live){Live=live;bool dynamic=live&&match.Authority;if(dynamic&&shot==null&&!Sinking){Body.isKinematic=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;}else if(!dynamic){ResetMotion();Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;Body.isKinematic=true;}Body.detectCollisions=dynamic&&!Sinking;}
   internal void Place(Vector3 position,bool newAnchor){
    if(!match.Authority)return;
    ResetMotion();Conditions=default;Body.isKinematic=false;Body.linearVelocity=Body.angularVelocity=Vector3.zero;
@@ -56,6 +57,7 @@ namespace WhatTheFish {
    previous=position;feedbackLandingAt=Time.time;if(newAnchor){LastShotPosition=position;LastDryPosition=position;hasDryPosition=true;}ResetSequence++;SetLive(Live);Trail.Clear();
   }
   void ResetMotion(){
+   CancelCupSink();
    if(shot!=null){shot=null;Body.isKinematic=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousDynamic;Body.linearVelocity=shotVelocity;Body.angularVelocity=Vector3.Cross(Vector3.up,shotVelocity)/Radius;}
    Motion=GolfBallMotion.Flying;StopTimer=0;IsGrounded=false;hasExpectedVelocity=false;freeUntil=Time.fixedTime+PhysicsSettings.newForceGracePeriod;Body.useGravity=true;
   }
@@ -68,6 +70,11 @@ namespace WhatTheFish {
   void FollowShot(){
    shotTime=Mathf.Min(shotTime+Time.fixedDeltaTime,shot.Duration);shot.Sample(shotTime,ref shotIndex,out var next,out var velocity);
    if(CheckWater(Body.position,next))return;
+   // The guide must not drag a rolling ball through the cup or pin it to its
+   // floor. From the approach lip onward, the real lining and inertia decide.
+   foreach(var cup in match.HoleTriggers)if(cup.ApproachCrossed(Body.position,next)){
+    shotVelocity=velocity;ResetMotion();Body.WakeUp();return;
+   }
    var delta=next-Body.position;
    // Moving balls are intentionally not baked into the guide. Hand them back
    // to PhysX before impact so opponents can still knock one another's balls.
@@ -169,11 +176,12 @@ namespace WhatTheFish {
    // Reapply for late arrivals and controllers re-enabled after a cart ride.
    // Players and carts stay excluded; other golf balls can still collide.
    IgnorePlayers();
+   if(AdvanceCupSink())return;
    var position=Body.position;
    if(match.OutsideCourse(position)){Recover();return;}
    if(CheckWater(previous,position))return;
    TrackDryGround(position);
-   foreach(var hole in match.HoleTriggers)if(hole.Contains(position)||hole.Crossed(previous,position)){match.EnterHole(this,hole.Hole.number);previous=Body.position;return;}
+   foreach(var hole in match.HoleTriggers)if(TryCupCapture(hole))return;
    previous=position;
    if(shot!=null)FollowShot();else {GroundMotion(position);if(!IsGrounded&&Motion!=GolfBallMotion.Resting&&Body.useGravity)Body.linearVelocity+=(Conditions.AirAcceleration-Physics.gravity)*Time.fixedDeltaTime;}
    preStepVelocity=Body.linearVelocity;

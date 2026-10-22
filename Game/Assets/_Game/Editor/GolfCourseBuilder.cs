@@ -266,4 +266,37 @@ public static class GolfCourseBuilder {
   try{TrimGrass(contents,layout);PrefabUtility.SaveAsPrefabAsset(contents,prefab);}finally{PrefabUtility.UnloadPrefabContents(contents);}
   AssetDatabase.SaveAssets();Debug.Log("GOLF_AUTHORED_MEADOW_RESTORED_FIVE_CUPS_RETAINED");
  }
+ // A narrow migration of the existing course. Recut the current terrain rather
+ // than restoring the FBX, preserving later tee, slope and bunker repairs.
+ public static void ResizeCurrentCups(){
+  var layout=JsonUtility.FromJson<Layout>(AssetDatabase.LoadAssetAtPath<TextAsset>(Config).text);
+  var written=new HashSet<string>();
+  void Resize(GameObject island){
+   var course=island.GetComponentInChildren<GolfCourse>(true);bool changed=false;
+   foreach(var hole in course.holes){
+    float old=hole.cupRadius;if(Mathf.Abs(old-layout.cupRadius)<.00001f)continue;
+    if(old>layout.cupRadius)throw new InvalidOperationException("Cup migration only enlarges existing openings; rebuild required to shrink.");
+    foreach(var nodeName in new[]{"Cup lining","Cup rim","Cup floor"}){
+     var filter=hole.cup.Find(nodeName).GetComponent<MeshFilter>();var mesh=filter.sharedMesh;string path=AssetDatabase.GetAssetPath(mesh);
+     if(written.Add(path)){var copy=Object.Instantiate(mesh);copy.name=mesh.name;var vertices=copy.vertices;
+      for(int i=0;i<vertices.Length;i++){float radius=new Vector2(vertices[i].x,vertices[i].z).magnitude;if(radius<.000001f)continue;float next=radius>old+.015f?layout.cupRadius+.035f:layout.cupRadius;vertices[i].x*=next/radius;vertices[i].z*=next/radius;}
+      copy.vertices=vertices;copy.RecalculateNormals();copy.RecalculateBounds();Save(copy,path);
+     }
+     var collider=filter.GetComponent<MeshCollider>();if(collider){collider.sharedMesh=null;collider.sharedMesh=mesh;}
+    }
+    hole.cupRadius=layout.cupRadius;changed=true;
+   }
+   if(!changed)return;
+   foreach(var filter in island.GetComponentsInChildren<MeshFilter>(true).Where(f=>f.name.StartsWith("Terrain__")&&f.GetComponent<MeshCollider>())){
+    string path=AssetDatabase.GetAssetPath(filter.sharedMesh);if(!written.Add(path))continue;
+    var cut=Cut(filter.sharedMesh,island.transform.worldToLocalMatrix*filter.transform.localToWorldMatrix,layout.holes,layout.cupRadius,false);
+    if(cut){filter.sharedMesh=Save(cut,path);var collider=filter.GetComponent<MeshCollider>();collider.sharedMesh=null;collider.sharedMesh=filter.sharedMesh;}
+   }
+   EditorUtility.SetDirty(course);
+  }
+  var scene=EditorSceneManager.OpenScene("Assets/_Game/Scenes/SkySail_Golf.unity");Resize(scene.GetRootGameObjects().Single(r=>r.GetComponent<SkySailIslandScene>()));EditorSceneManager.SaveScene(scene);
+  const string prefab="Assets/_Game/Prefabs/Environments/GolfEnvironment.prefab";var contents=PrefabUtility.LoadPrefabContents(prefab);
+  try{Resize(contents);PrefabUtility.SaveAsPrefabAsset(contents,prefab);}finally{PrefabUtility.UnloadPrefabContents(contents);}
+  AssetDatabase.SaveAssets();Physics.SyncTransforms();Debug.Log("GOLF_CUPS_RESIZED_WITH_EXISTING_COURSE_REPAIRS_PRESERVED");
+ }
 }

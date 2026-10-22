@@ -23,9 +23,9 @@ finish and lasts 30 seconds. Subsequent finishers do not retrigger it. The exist
 
 | Event | Duration | Current response |
 | --- | --- | --- |
-| Tropical Wind | 20 seconds | Random horizontal airborne acceleration of 2.6 m/s², four times the previous 0.65. Putt has no wind acceleration. Higher flights accumulate more drift. |
-| Sticky Green | 20 seconds | Swing stops at the first supported ground touchdown, with zero linear and angular velocity. Putt is identical to ordinary Putt. |
-| Bounce Party | 15 seconds | Swing landing retains 80% incoming normal speed and 75% tangential speed, above the existing minimum bounce threshold. Putt is unchanged. |
+| Tropical Wind | 45 seconds | Random horizontal airborne acceleration of 2.6 m/s², four times the previous 0.65. Putt has no wind acceleration. Higher flights accumulate more drift. |
+| Sticky Green | 45 seconds | Swing stops at the first supported ground touchdown, with zero linear and angular velocity. Putt is identical to ordinary Putt. |
+| Bounce Party | 45 seconds | Swing landing retains 80% incoming normal speed and 75% tangential speed, above the existing minimum bounce threshold. Putt is unchanged. |
 | Island Rush | 30 seconds | Player movement multiplier 2.10 (+110%); cart target forward/reverse speed multiplier 1.90 (+90%). |
 
 Moon Golf is removed from the enum, random pool, gravity modifier and F2 shortcut.
@@ -39,7 +39,11 @@ The shot preview, actual flight and environment use the replicated
 world wind direction. Leaves and grass bend downwind with travelling gusts.
 Generated grass includes per-blade root-to-tip weights: roots remain anchored,
 while tips bend most. Non-Golf foliage keeps its original ambient motion.
-Trunks and collision geometry remain fixed. The separate wind-direction arrow is removed.
+Trunks and collision geometry remain fixed. A large 72-unit compass below the existing weather badge points where wind
+pushes the ball, relative to the current camera. Twenty-eight wide, bright
+world-space streaks follow that direction. Arrival tints the edges grey-blue
+for 1.2 seconds, then a slowly breathing 8.4-12% border remains for the event.
+The middle of the screen stays clear. Reduced Motion suppresses streaks and tint.
 
 Only the cloth of the five flags turns downwind; poles stay fixed. Existing
 30 cm maximum single-sided flutter is retained, with a faster event flutter.
@@ -51,6 +55,15 @@ before their estimated ground return. Emission is limited to nearby dry sand;
 no water, rock or grass source is used. Existing particle materials are reused.
 The world effects are cosmetic; they do not move scenery colliders or alter
 other sports. Physical phone FPS has not been measured.
+
+Sticky Green shots gain a mint outline and trail accent, with a mint ripple at
+confirmed touchdown. Bounce Party uses an orange accent, contact ring and brief
+visual squash. Mint/orange screen edges reinforce the active weather. Contact rings are wider
+and linger for 1.4 seconds. The sphere collider does not squash.
+These effects follow the
+shot's captured conditions even if the weather expires before landing. Ordinary
+Putts retain their normal presentation. Contact effects reuse the existing
+Host-confirmed feedback channel and pooled geometry/materials.
 
 ## HUD and testing
 
@@ -71,11 +84,17 @@ Ordinary Swing first-contact tangential retention is 0.72 (28% loss). Later
 ordinary contacts keep the existing 0.92 retention. Bounce Party uses its own
 0.80 normal / 0.75 tangential response; Putt remains excluded.
 
-During Rush, grounded running golfers emit pooled world-space cyan/white and
+During Rush, grounded running golfers emit pooled world-space cyan and
 gold ribbons, leaf chips and sparkles behind their body. Stationary players,
 cart drivers, spectators and players outside Golf emit nothing. Samples fade
 within 0.7 seconds. Sharp turns discard forward history; a shader plane clips
 any fragment in front of the runner. Teleports clear the history.
+Small fading foot puffs accompany running; local aiming stops new emissions.
+Reduced Motion suppresses the wind edge sweep, streaks, foot puffs and impact
+squash, and leaves a steady numbered hole marker.
+
+See [cup and aiming presentation](GOLF-CUP-AND-EVENT-POLISH.md) for the current
+physical entry behaviour and editable presentation asset.
 
 The supplied warning artwork is retained unmodified as `WarningSheet.png`.
 The Host selects at 80 seconds; live 10..01 seconds occupy the top-left badge

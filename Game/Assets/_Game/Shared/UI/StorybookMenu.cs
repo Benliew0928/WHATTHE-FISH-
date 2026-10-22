@@ -119,13 +119,12 @@ namespace WhatTheFish {
   }
   void Heading(string title,string subtitle) {
    Image(content,"Official logo",Resources.Load<Sprite>("Menu/WhatTheFishLogo"),35,20,144,126);
-   Text(content,title,206,25,1000,72,49,true);headingCaption=Text(content,subtitle,209,99,1050,40,24,false,Ink);
+   Text(content,title,206,string.IsNullOrEmpty(subtitle)?49:25,1000,72,49,true);headingCaption=string.IsNullOrEmpty(subtitle)?null:Text(content,subtitle,209,99,1050,40,24,false,Ink);
    ActionButton("Back","Back",1372,50,170,66,Cream,Back,CoveSymbol.Back,25);
   }
   void Footer(string value) {Text(content,value,150,830,1300,40,22,false,Ink,TextAnchor.MiddleCenter);}
   void CardTitle(Transform parent,string title,string caption,float y=28) {Text(parent,title,36,y,1100,49,32,true);if(!string.IsNullOrEmpty(caption))Text(parent,caption,36,y+51,1100,58,23,false,Muted);}
   void Badge(Transform parent,string text,float x,float y,float w,Color? color=null) {var p=Plate(parent,"Badge",x,y,w,39,color??Sky,18,0);Text(p.transform,text,10,0,w-20,39,19,true,Foreground(color??Sky),TextAnchor.MiddleCenter);}
-  static string SportCaption(SportId sport)=>sport switch {SportId.Football=>"Team matches & kickabouts",SportId.Basketball=>"Dribble, pass & shoot",SportId.Golf=>"Five holes. Fewest strokes.",_=>"Cast, catch & compete with friends"};
   void NoticeLater(string value){StartCoroutine(DeferredNotice(value));}
   void AISetup(){
    if(IslandBots.Supports(app.SelectedSport)){IslandAISetup();return;}
@@ -162,7 +161,6 @@ namespace WhatTheFish {
    var side=Plate(content,"Your island",983,175,557,614,Cream,32,2,true);
    Image(side.transform,"Island preview",SportArt(app.SelectedSport),43,15,470,324);
    Text(side.transform,app.SelectedSport.ToString(),30,322,497,60,39,true,null,TextAnchor.MiddleCenter);
-   Text(side.transform,SportCaption(app.SelectedSport),27,384,503,45,24,false,Muted,TextAnchor.MiddleCenter);
    ActionButton("Create private room","Create room",1021,679,481,76,Coral,()=>{_=Connect(false);},CoveSymbol.People,30);
    message=Text(content,"",100,704,803,60,22,false,Muted);
    Footer("Your device hosts the room. Keep the game open while your friends play.");
@@ -294,7 +292,7 @@ namespace WhatTheFish {
    SocialPanel.OpenOwn();
   }
   void Settings() {
-   Heading("SETTINGS","A little tuning for your kind of play.");
+   Heading("SETTINGS","");
    var p=Plate(content,"Settings controls",97,183,1406,605,Cream,34,2,true);
    Text(p.transform,"Sound",35,25,1280,48,34,true);
    Volume(p.transform,"Game volume",MenuPreferences.MasterVolume,35,111,630,MenuPreferences.SetMaster);

@@ -1,6 +1,6 @@
 {
   "coordinateBase": "Golf island local metres; heights are sampled from its original terrain",
-  "cupRadius": 0.1425,
+  "cupRadius": 0.19,
   "cupDepth": 0.18,
   "holes": [
     {

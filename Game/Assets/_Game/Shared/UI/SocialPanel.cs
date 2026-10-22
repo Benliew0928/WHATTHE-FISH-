@@ -57,7 +57,8 @@ namespace WhatTheFish {
    if(body){body.gameObject.SetActive(false);Destroy(body.gameObject);}body=CoveUI.Rect(design,"Social "+page,310,170,1250,630);
    if(draftTexture){Destroy(draftTexture);draftTexture=null;}avatarButtons=null;Navigation();
    title.text=page=="edit"?"YOUR PROFILE":page=="player"?"PLAYER PROFILE":page=="room"?"IN THIS ROOM":page=="search"?"FIND YOUR CREW":"YOUR FRIENDS";
-   subtitle.text=page=="edit"?"Make it yours. Every game starts with you.":page=="search"?"Search a name, meet a teammate.":page=="room"?"The players sharing your adventure.":"One room. Four sports. Better together.";
+   subtitle.text=page=="edit"?"Make it yours. Every game starts with you.":page=="search"?"Search a name, meet a teammate.":page=="room"?"The players sharing your adventure.":"";
+   subtitle.gameObject.SetActive(!string.IsNullOrEmpty(subtitle.text));
    if(page=="edit"){Edit();return;}
    if(page=="player"){liveKey=LiveKey(id);_ = ViewPlayer(id,generation);return;}
    if(page=="search"){

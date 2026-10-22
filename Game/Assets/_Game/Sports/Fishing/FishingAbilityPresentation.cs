@@ -20,7 +20,7 @@ namespace WhatTheFish {
    foreach(var actor in Athlete.Active){
     if(!actor)continue;var record=game.Player(actor);if(!record.HasValue||!record.Value.connected)continue;var p=record.Value;ulong id=FishingGame.Key(actor);
     if(effects.TryGetValue(id,out var e)&&e.actor!=actor){Destroy(e.root.gameObject);effects.Remove(id);e=null;}
-    bool active=game.State.Running&&p.active!=FishingAbility.None&&game.Now<p.activeUntil;bool tail=game.State.Running&&p.schoolFishMask!=0&&game.Now>=p.schoolAt&&game.Now<p.schoolAt+8;
+    bool active=game.State.Running&&p.active!=FishingAbility.None&&game.Now<p.activeUntil;bool tail=game.State.Running&&p.schoolFishMask!=0&&game.Now>=p.schoolAt&&game.Now<p.schoolAt+FishingAbilityRules.Duration(FishingAbility.SchoolCall)+FishingAbilityRules.SchoolReleaseSeconds;
     if(e==null){if(!active&&!tail)continue;e=new Effect{actor=actor,root=new GameObject("Fishing skill effects "+id).transform};e.root.SetParent(transform,false);effects[id]=e;}
     if(e.observed&&e.previous.bubbleGuard&&!p.bubbleGuard&&game.Now<e.previous.activeUntil)e.popAt=Time.unscaledTime;
     float age=(float)(game.Now-p.activeAt);var rod=actor.GetComponent<FishingRodMotion>();var hook=p.fish>=0?game.Presentation.HookPoint(p):actor.transform.position;
@@ -34,7 +34,7 @@ namespace WhatTheFish {
     float pop=Time.unscaledTime-e.popAt;bool bubble=active&&p.active==FishingAbility.BubbleGuard&&p.bubbleGuard;
     if(bubble||pop<.45f){var at=hook;at.y=game.WaterHeight(at)+.34f;float radius=bubble?.52f:.52f+pop*1.8f;var color=new Color(.5f,.9f,1,bubble?.82f:Mathf.Clamp01(1-pop/.45f));for(int i=0;i<3;i++)Circle(e,i,at,radius,color,.035f,i);if(pop<.45f)Circle(e,3,new Vector3(at.x,game.WaterHeight(at)+.03f,at.z),radius*1.4f,color,.05f);}
     if(active&&p.active==FishingAbility.Sonar){for(int i=0;i<3;i++){float phase=Mathf.Repeat(age*.42f+i/3f,1);var at=game.transform.position;at.y=game.WaterY+.025f;Circle(e,i,at,1+phase*23,new Color(.25f,1,.85f,(1-phase)*.85f),.055f);}}
-    if(tail){float schoolAge=(float)(game.Now-p.schoolAt);for(int i=0;i<3;i++){float phase=MenuPreferences.ReducedMotion?.5f:Mathf.Repeat(schoolAge*.7f+i/3f,1);var at=p.schoolPoint;at.y=game.WaterHeight(at)+.025f;float fade=1-Mathf.SmoothStep(0,1,(schoolAge-6)/2);Circle(e,i,at,.45f+phase*2.6f,new Color(1,.73f,.22f,(1-phase)*fade),.05f);}}
+    if(tail){float schoolAge=(float)(game.Now-p.schoolAt);for(int i=0;i<3;i++){float phase=MenuPreferences.ReducedMotion?.5f:Mathf.Repeat(schoolAge*.7f+i/3f,1);var at=p.schoolPoint;at.y=game.WaterHeight(at)+.025f;float fade=1-Mathf.SmoothStep(0,1,(schoolAge-(float)FishingAbilityRules.Duration(FishingAbility.SchoolCall))/FishingAbilityRules.SchoolReleaseSeconds);Circle(e,i,at,.45f+phase*2.6f,new Color(1,.73f,.22f,(1-phase)*fade),.05f);}}
     e.previous=p;e.observed=true;
    }
    foreach(var pair in effects){if(!pair.Value.actor||!game.State.Player(pair.Key).HasValue||!game.State.Player(pair.Key).Value.connected){foreach(var l in pair.Value.lines)if(l)l.enabled=false;pair.Value.buddy?.Hide();}}

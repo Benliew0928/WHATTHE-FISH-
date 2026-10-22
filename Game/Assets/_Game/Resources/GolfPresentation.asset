@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11e6e0fbf6d0416d994e6a3afd6cf5c7, type: 3}
+  m_Name: GolfPresentation
+  m_EditorClassIdentifier: Assembly-CSharp::WhatTheFish.GolfPresentationSettings
+  holeGuideSize: {x: 64, y: 82}
+  holeGuideWorldLift: 1.8
+  guideFadeSeconds: 0.18
+  windStreakCount: 28
+  windStreakOpacity: 0.88
+  windEdgeOpacity: 0.3
+  windEdgeSeconds: 1.2
+  windSustainOpacity: 0.12
+  windCompassSize: 72
+  weatherEdgeOpacity: 0.085
+  impactSeconds: 1.4
+  impactRadius: 1.15
+  bounceSquash: 0.24
+  stickyColor: {r: 0.25, g: 1, b: 0.66, a: 1}
+  bounceColor: {r: 1, g: 0.48, b: 0.12, a: 1}
+  windColor: {r: 0.72, g: 0.88, b: 1, a: 1}

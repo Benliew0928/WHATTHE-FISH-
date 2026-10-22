@@ -13,10 +13,11 @@ namespace WhatTheFish {
   public static bool BeforeCast(FishingAbility a)=>a is FishingAbility.Sonar or FishingAbility.SchoolCall;
   public static bool PhaseAllows(FishingAbility a,FishingPhase phase)=>Valid(a)&&(BeforeCast(a)?phase==FishingPhase.Ready:phase==FishingPhase.Reeling);
   public static bool CanUse(FishingPlayerRecord p,double now)=>p.connected&&Valid(p.item)&&now>=p.cooldownUntil&&now>=p.activeUntil&&PhaseAllows(p.item,p.phase);
-  public static double Duration(FishingAbility a)=>a switch {FishingAbility.SteelWire=>3,FishingAbility.PowerReel or FishingAbility.FishingBuddy=>4,FishingAbility.Sonar=>8,_=>6};
+  public static double Duration(FishingAbility a)=>a switch {FishingAbility.SteelWire=>5,FishingAbility.PowerReel or FishingAbility.FishingBuddy=>6,FishingAbility.Sonar=>12,FishingAbility.SchoolCall=>10,_=>9};
+  public const float SchoolReleaseSeconds=2;
   public static double Cooldown(FishingAbility a)=>a switch {FishingAbility.SteelWire=>24,FishingAbility.PowerReel=>22,FishingAbility.FishingBuddy=>30,FishingAbility.BubbleGuard=>18,_=>20};
   public static string Name(FishingAbility a)=>a switch {FishingAbility.Sonar=>"SONAR",FishingAbility.SteelWire=>"STEEL WIRE",FishingAbility.FishingBuddy=>"FISHING BUDDY",FishingAbility.PowerReel=>"POWER REEL",FishingAbility.BubbleGuard=>"BUBBLE GUARD",FishingAbility.SchoolCall=>"SCHOOL CALL",_=>"SKILL"};
-  public static string Description(FishingAbility a)=>a switch {FishingAbility.Sonar=>"Reveal Wanted fish for 8s. Shared in Crew.",FishingAbility.SteelWire=>"3s protection: tension cannot rise.",FishingAbility.FishingBuddy=>"A helper reels with you for 4s.",FishingAbility.PowerReel=>"Reel 30% faster for 4s. Normal tension.",FishingAbility.BubbleGuard=>"Absorb one strong surge within 6s.",FishingAbility.SchoolCall=>"Bring 3 free fish closer for 6s.",_=>"Choose one skill for this round."};
+  public static string Description(FishingAbility a)=>a switch {FishingAbility.Sonar=>$"Reveal Wanted fish for {Duration(a)}s. Shared in Crew.",FishingAbility.SteelWire=>$"{Duration(a)}s protection: tension cannot rise.",FishingAbility.FishingBuddy=>$"A helper reels with you for {Duration(a)}s.",FishingAbility.PowerReel=>$"Reel 30% faster for {Duration(a)}s. Normal tension.",FishingAbility.BubbleGuard=>$"Absorb one strong surge within {Duration(a)}s.",FishingAbility.SchoolCall=>$"Bring 3 free fish closer for {Duration(a)}s.",_=>"Choose one skill for this round."};
   public static Color Color(FishingAbility a)=>a switch {FishingAbility.SteelWire=>LocalProfile.Hex("C1F4FF"),FishingAbility.FishingBuddy=>LocalProfile.Hex("DDD9EB"),FishingAbility.PowerReel=>LocalProfile.Hex("FFCB53"),FishingAbility.BubbleGuard=>LocalProfile.Hex("69C8F4"),FishingAbility.SchoolCall=>LocalProfile.Hex("FFAF68"),_=>LocalProfile.Hex("4CDED6")};
  }
  public sealed partial class FishingState {
@@ -46,7 +47,7 @@ namespace WhatTheFish {
    p.steelTension=p.tension;p.bubbleGuard=ability==FishingAbility.BubbleGuard;
    if(ability==FishingAbility.SchoolCall){p.schoolAt=now;p.schoolPoint=schoolPoint;p.schoolFishMask=schoolMask;}
    Players[index]=p;
-   if(ability==FishingAbility.Sonar){for(int i=0;i<Players.Count;i++){var q=Players[i];if(q.connected&&(q.owner==owner||Match.mode==FishingMode.Crew)){q.sonarUntil=Math.Max(q.sonarUntil,now+8);Players[i]=q;}}}
+   if(ability==FishingAbility.Sonar){for(int i=0;i<Players.Count;i++){var q=Players[i];if(q.connected&&(q.owner==owner||Match.mode==FishingMode.Crew)){q.sonarUntil=Math.Max(q.sonarUntil,now+FishingAbilityRules.Duration(ability));Players[i]=q;}}}
    return true;
   }
   static void FightMotion(ref FishingPlayerRecord p,float dt,float mass){

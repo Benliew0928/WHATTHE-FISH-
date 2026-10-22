@@ -118,7 +118,7 @@ namespace WhatTheFish {
    if(!CanSwing(actor))return null;
    return balls.Values.Where(b=>CanStrike(actor,b)).OrderBy(b=>Vector3.SqrMagnitude(b.Body.position-actor.transform.position)).FirstOrDefault();
   }
-  public bool CanStrike(Athlete actor,GolfBall ball)=>CanSwing(actor)&&ball&&Player(actor).PlayerId==ball.Owner&&Ball(ball.Owner)==ball&&ball.Live&&State.Player(ball.Owner)!=null&&!State.Player(ball.Owner).IsFinished&&!State.Player(ball.Owner).IsDNF&&InRange(actor,ball);
+  public bool CanStrike(Athlete actor,GolfBall ball)=>CanSwing(actor)&&ball&&!ball.Sinking&&Player(actor).PlayerId==ball.Owner&&Ball(ball.Owner)==ball&&ball.Live&&State.Player(ball.Owner)!=null&&!State.Player(ball.Owner).IsFinished&&!State.Player(ball.Owner).IsDNF&&InRange(actor,ball);
   bool InRange(Athlete actor,GolfBall ball)=>actor.GolfClubMotion.CanAddress(ball.Body.position)&&VisibleBall(actor,ball);
   public void SetCharging(Athlete actor,bool value,ulong owner,float heading,uint round){
    if(!Authority||!actor||!actor.GolfClubMotion||round!=Round||!float.IsFinite(heading))return;

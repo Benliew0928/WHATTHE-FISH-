@@ -114,6 +114,7 @@ namespace WhatTheFish {
   void Present(GolfFeedbackEvent e){
    if(observedRound!=match.Round){Quiet();observedRound=match.Round;}
    if(!Audible)return;isQuiet=false;counts[(int)e.cue]++;
+   match.Ball(e.owner)?.GetComponent<GolfBallEventFX>()?.Contact(e);
    bool local=e.actor==LocalOwner;float gain;
    switch(e.cue){
     case GolfFeedbackCue.Whoosh:gain=.35f*e.strength;break;

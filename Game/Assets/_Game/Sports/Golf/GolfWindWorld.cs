@@ -9,6 +9,9 @@ namespace WhatTheFish {
   struct Flag {public Transform cloth;public Quaternion home;}
   readonly List<Flag> flags=new();readonly List<GolfSandPatch> sand=new(),nearSand=new();GolfBallPhysicsSettings settings;
   GolfMatchManager match;ParticleSystem dust;float strength,emitCredit;int patchCursor;
+  sealed class Streak {public LineRenderer line;public Vector3 origin;public float born=-100,lifetime;}
+  Streak[] streaks;
+  public int VisibleStreaks {get;private set;}
   static readonly int WindId=Shader.PropertyToID("_GolfWind"),AreaId=Shader.PropertyToID("_GolfWindArea");
   public float Strength=>strength;public int TotalSandParticles {get;private set;}
   public Vector3 Direction {get;private set;}
@@ -30,10 +33,22 @@ namespace WhatTheFish {
    if(!match)return;bool active=match.Context&&match.Events.Active(match.Now)==GolfEventKind.TropicalWind;
    strength=Mathf.MoveTowards(strength,active?1:0,Time.unscaledDeltaTime*2);if(active)Direction=match.Events.Snapshot.wind.normalized;
    if(!match.Context)strength=0;
+   WindStreaks();
    Shader.SetGlobalVector(WindId,new Vector4(Direction.x,Direction.z,strength,(float)(match.Now+Time.timeAsDouble-Time.fixedTimeAsDouble)));
    var centre=match.transform.position;Shader.SetGlobalVector(AreaId,new Vector4(centre.x,centre.z,250,0));
    foreach(var f in flags)if(f.cloth){var home=f.cloth.parent.rotation*f.home;float yaw=Mathf.Atan2(-Direction.z,Direction.x)*Mathf.Rad2Deg;f.cloth.rotation=Quaternion.Slerp(home,Quaternion.Euler(0,yaw,0),strength);}
    if(strength<.01f){if(dust&&dust.particleCount==0)dust.Stop();return;}if(!dust)BuildDust();if(!dust.isPlaying)dust.Play();EmitSand();
+  }
+  void WindStreaks(){
+   VisibleStreaks=0;var camera=Camera.main;bool visible=strength>.01f&&camera&&!MenuPreferences.ReducedMotion;
+   if(!visible){if(streaks!=null)foreach(var s in streaks){s.line.enabled=false;s.born=-100;}return;}
+   var config=GolfPresentationSettings.Current;
+   if(streaks==null){streaks=new Streak[config.windStreakCount];for(int i=0;i<streaks.Length;i++){var node=new GameObject("Tropical wind streak");node.transform.SetParent(transform,false);var line=node.AddComponent<LineRenderer>();line.sharedMaterial=Resources.Load<Material>("GolfBallTrail");line.positionCount=3;line.useWorldSpace=true;line.widthMultiplier=.09f;line.numCapVertices=2;line.shadowCastingMode=ShadowCastingMode.Off;line.receiveShadows=false;streaks[i]=new Streak{line=line};}}
+   for(int i=0;i<streaks.Length;i++){var s=streaks[i];float age=Time.time-s.born;
+    if(age>s.lifetime){s.lifetime=Random.Range(.65f,1.15f);s.born=Time.time+Random.Range(0,.12f);s.origin=camera.transform.position+camera.transform.forward*Random.Range(5,14)+camera.transform.right*Random.Range(.8f,6f)*(i%2==0?1:-1)+camera.transform.up*Random.Range(-2,3);age=Time.time-s.born;}
+    float phase=Mathf.Clamp01(age/s.lifetime);var tint=config.windColor;tint.a=Mathf.Sin(phase*Mathf.PI)*strength*config.windStreakOpacity;s.line.startColor=s.line.endColor=tint;s.line.enabled=age>=0&&tint.a>.01f;
+    var point=s.origin+Direction*age*9;var length=Direction*Mathf.Lerp(2.4f,4.2f,(i%5)/4f);s.line.SetPosition(0,point-length);s.line.SetPosition(1,point-length*.5f+Vector3.up*.1f);s.line.SetPosition(2,point);if(s.line.enabled)VisibleStreaks++;
+   }
   }
   void EmitSand(){
    var camera=Camera.main;if(!camera||sand.Count==0)return;
@@ -49,6 +64,6 @@ namespace WhatTheFish {
     dust.Emit(new ParticleSystem.EmitParams{position=hit.point+hit.normal*.035f,velocity=Direction*Random.Range(3f,6f)+Vector3.up*lift,startLifetime=Mathf.Min(1.35f,2*lift/(Physics.gravity.magnitude*.18f)),startSize=Random.Range(.055f,.14f),startColor=new Color(.87f,.73f,.47f,.65f)},1);TotalSandParticles++;
    }
   }
-  void OnDisable(){Shader.SetGlobalVector(WindId,Vector4.zero);foreach(var f in flags)if(f.cloth)f.cloth.localRotation=f.home;if(dust)dust.Clear();strength=0;}
+  void OnDisable(){Shader.SetGlobalVector(WindId,Vector4.zero);foreach(var f in flags)if(f.cloth)f.cloth.localRotation=f.home;if(dust)dust.Clear();if(streaks!=null)foreach(var s in streaks)s.line.enabled=false;strength=0;VisibleStreaks=0;}
  }
 }

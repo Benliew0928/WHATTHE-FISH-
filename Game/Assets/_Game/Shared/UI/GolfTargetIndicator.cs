@@ -20,10 +20,13 @@ namespace WhatTheFish {
   public int TargetHole {get;private set;}
   CanvasGroup ballVisibility;
   RectTransform targetEdgeArrow;
+  GolfHoleGuideGraphic holeGuide;Text holeNumber;CanvasGroup guideOpacity;bool guideOffscreen;
+  LineRenderer cupGlow;
+  public bool HoleGuideVisible=>targetEdgeArrow&&targetEdgeArrow.gameObject.activeInHierarchy&&guideOpacity.alpha>.01f;
   public RectTransform TargetCard=>targetCard;
   public RectTransform EdgeArrow=>targetEdgeArrow;
   public bool LargeTargetArrowVisible=>targetArrow&&targetArrow.gameObject.activeInHierarchy;
-  public bool EdgeArrowVisible=>targetEdgeArrow&&targetEdgeArrow.gameObject.activeInHierarchy;
+  public bool EdgeArrowVisible=>HoleGuideVisible&&guideOffscreen;
 
   public ulong BallOwner {get;private set;}
   static readonly Vector2[] CaptionOffsets={new Vector2(103,56),new Vector2(-103,56),new Vector2(103,-78),new Vector2(-103,-78)};
@@ -33,7 +36,11 @@ namespace WhatTheFish {
    page=parent;scorecard=parent.GetComponentInChildren<GolfLeaderboardUI>();layout=Resources.Load<GolfHUDLayout>("GolfUILayout");if(!layout)layout=ScriptableObject.CreateInstance<GolfHUDLayout>();
 
    targetArrow=Arrow("Your target hole",parent,new Vector2(.5f,1),layout.targetArrowPosition,layout.targetArrowSize,GolfHUDStyle.Gold,"Arrow");
-   targetEdgeArrow=Arrow("Offscreen target hole",parent,new Vector2(.5f,.5f),Vector2.zero,layout.aimEdgeArrowSize,GolfHUDStyle.Gold,"Arrow");targetEdgeArrow.gameObject.SetActive(false);
+   targetEdgeArrow=GolfHUDStyle.Rect("Numbered current hole guide",parent,new Vector2(.5f,.5f),Vector2.zero,GolfPresentationSettings.Current.holeGuideSize);
+   holeGuide=targetEdgeArrow.gameObject.AddComponent<GolfHoleGuideGraphic>();holeGuide.raycastTarget=false;
+   guideOpacity=targetEdgeArrow.gameObject.AddComponent<CanvasGroup>();guideOpacity.blocksRaycasts=guideOpacity.interactable=false;guideOpacity.alpha=0;
+   holeNumber=GolfHUDStyle.Text("Current hole number",targetEdgeArrow,"1",new Vector2(48,45),32,TextAnchor.MiddleCenter,GolfHUDStyle.Ink);holeNumber.rectTransform.anchoredPosition=new Vector2(0,8);
+   targetEdgeArrow.gameObject.SetActive(false);
 
    targetCard=GolfHUDStyle.Rect("Golf target card",parent,new Vector2(.5f,1),layout.targetPosition,layout.targetSize);GolfReferenceUI.Plate(targetCard,"Hole",false);
 
@@ -90,11 +97,17 @@ namespace WhatTheFish {
   void AimDirection(Camera camera,Vector3 target){
    var viewport=camera.WorldToViewportPoint(target);
    bool visible=viewport.z>=camera.nearClipPlane&&viewport.z<=camera.farClipPlane&&viewport.x>=0&&viewport.x<=1&&viewport.y>=0&&viewport.y<=1;
-   targetEdgeArrow.gameObject.SetActive(!visible);if(visible)return;
    RectTransformUtility.ScreenPointToLocalPointInRectangle(page,camera.WorldToScreenPoint(target),null,out var point);
-   var direction=point-page.rect.center;if(viewport.z<0)direction=-direction;
+   var safe=page.rect;float pad=layout.margin+GolfPresentationSettings.Current.holeGuideSize.x*.6f;
+   visible&=point.x>safe.xMin+pad&&point.x<safe.xMax-pad&&point.y>safe.yMin+200&&point.y<safe.yMax-150;
+   guideOffscreen=!visible;
+   if(visible){targetEdgeArrow.anchoredPosition=point+Vector2.up*34;holeGuide.Point(0);return;}
+   var direction=point-page.rect.center;
+   // Behind-camera projection can point up at the sky. Give a horizontal
+   // turn cue instead, choosing the nearest side in camera space.
+   if(viewport.z<0){var local=camera.transform.InverseTransformPoint(target);direction=new Vector2(local.x>=0?1:-1,0);}
    if(direction.sqrMagnitude<.001f)direction=Vector2.down;
-   var half=page.rect.size*.5f-Vector2.one*layout.margin-layout.aimEdgeArrowSize*.5f;
+   var half=page.rect.size*.5f-Vector2.one*layout.margin-GolfPresentationSettings.Current.holeGuideSize*.6f;
    half.x=Mathf.Max(1,half.x);half.y=Mathf.Max(1,half.y);
    var edge=direction/Mathf.Max(Mathf.Abs(direction.x)/half.x,Mathf.Abs(direction.y)/half.y);
    // Keep the top-centre card clear even when the hole is above the view.
@@ -104,9 +117,24 @@ namespace WhatTheFish {
    // edge above that band for targets behind/below the camera instead.
    float bottom=-half.y+layout.actionSize.y+layout.gap+layout.aimEdgeArrowSize.y;
    if(edge.y<bottom){edge.x=(direction.x>0?1:-1)*half.x;edge.y=Mathf.Min(half.y,bottom);}
-   targetEdgeArrow.anchoredPosition=edge;targetEdgeArrow.sizeDelta=layout.aimEdgeArrowSize;
-   targetEdgeArrow.localRotation=Quaternion.Euler(0,0,Mathf.Atan2(-direction.x,direction.y)*Mathf.Rad2Deg);
+   targetEdgeArrow.anchoredPosition=edge;
+   holeGuide.Point(Mathf.Atan2(direction.x,-direction.y)*Mathf.Rad2Deg);
   }
+
+  void Guide(Camera camera,GolfHole hole,bool aiming){
+   var config=GolfPresentationSettings.Current;float desired=aiming&&hole!=null?1:0;
+   guideOpacity.alpha=Mathf.MoveTowards(guideOpacity.alpha,desired,Time.unscaledDeltaTime/Mathf.Max(.01f,config.guideFadeSeconds));
+   bool visible=hole!=null&&guideOpacity.alpha>.001f;targetEdgeArrow.gameObject.SetActive(visible);
+   if(!visible){if(cupGlow)cupGlow.enabled=false;return;}
+   holeNumber.text=hole.number.ToString();targetEdgeArrow.sizeDelta=config.holeGuideSize;
+   float pulse=MenuPreferences.ReducedMotion?1:1+.035f*Mathf.Sin(Time.unscaledTime*4);targetEdgeArrow.localScale=Vector3.one*pulse;
+   AimDirection(camera,hole.cup.position+Vector3.up*config.holeGuideWorldLift);
+   if(!cupGlow){var node=new GameObject("Current cup aim halo");cupGlow=node.AddComponent<LineRenderer>();cupGlow.sharedMaterial=Resources.Load<Material>("GolfBallTrail");cupGlow.useWorldSpace=true;cupGlow.loop=true;cupGlow.positionCount=40;cupGlow.widthMultiplier=.022f;cupGlow.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;cupGlow.receiveShadows=false;}
+   cupGlow.enabled=true;var tint=GolfHUDStyle.Gold;tint.a=guideOpacity.alpha*.65f;cupGlow.startColor=cupGlow.endColor=tint;
+   for(int i=0;i<40;i++){float a=i*Mathf.PI/20;cupGlow.SetPosition(i,hole.cup.TransformPoint(new Vector3(Mathf.Cos(a)*(hole.cupRadius+.12f),.015f,Mathf.Sin(a)*(hole.cupRadius+.12f))));}
+  }
+  void OnDisable(){if(cupGlow)cupGlow.enabled=false;}
+  void OnDestroy(){if(cupGlow)Destroy(cupGlow.gameObject);}
 
   void LateUpdate(){
 
@@ -133,8 +161,9 @@ namespace WhatTheFish {
    targetCard.anchoredPosition=position;targetCard.sizeDelta=layout.targetSize;targetArrow.anchoredPosition=(aiming?new Vector2(0,-layout.aimTargetTopMargin-layout.targetArrowSize.y*layout.aimTargetScale*.5f):layout.targetArrowPosition+Vector2.right*(position.x-layout.targetPosition.x));targetArrow.sizeDelta=layout.targetArrowSize*(aiming?layout.aimTargetScale:1);
 
    bool running=hole!=null&&match.State.Running;
-   TargetHole=hole?.number??0;targetArrow.gameObject.SetActive(running);targetCard.gameObject.SetActive(running);
-   targetEdgeArrow.gameObject.SetActive(false);
+   TargetHole=hole?.number??0;targetArrow.gameObject.SetActive(running&&!aiming);targetCard.gameObject.SetActive(running&&!aiming);
+   var camera=app&&app.view?app.view.GetComponent<Camera>():null;
+   if(camera)Guide(camera,running?hole:null,aiming);else {targetEdgeArrow.gameObject.SetActive(false);if(cupGlow)cupGlow.enabled=false;}
 
    // Read the presented camera, including the cart's third-person reverse turn.
 
@@ -142,7 +171,7 @@ namespace WhatTheFish {
 
    bool show=ball&&match.State.Running&&match.Player(actor)?.IsFinished==false;ballMarker.gameObject.SetActive(show);if(!show)return;BallOwner=ball.Owner;
 
-   var camera=app.view.GetComponent<Camera>();var screen=camera.WorldToScreenPoint(ball.Body.position);
+   var screen=camera.WorldToScreenPoint(ball.Body.position);
 
    // Keep the arrow tip above the tiny ball at every camera distance.
 

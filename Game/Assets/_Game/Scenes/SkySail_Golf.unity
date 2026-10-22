@@ -53901,7 +53901,7 @@ MonoBehaviour:
     cup: {fileID: 422799847}
     flag: {fileID: 326110538}
     tee: {fileID: 1899687668}
-    cupRadius: 0.1425
+    cupRadius: 0.19
     cupDepth: 0.18
     greenRadius: 6
   - number: 2
@@ -53910,7 +53910,7 @@ MonoBehaviour:
     cup: {fileID: 1872185454}
     flag: {fileID: 2112981391}
     tee: {fileID: 1437818922}
-    cupRadius: 0.1425
+    cupRadius: 0.19
     cupDepth: 0.18
     greenRadius: 6
   - number: 3
@@ -53919,7 +53919,7 @@ MonoBehaviour:
     cup: {fileID: 1420107866}
     flag: {fileID: 1196140239}
     tee: {fileID: 1198840259}
-    cupRadius: 0.1425
+    cupRadius: 0.19
     cupDepth: 0.18
     greenRadius: 6
   - number: 4
@@ -53928,7 +53928,7 @@ MonoBehaviour:
     cup: {fileID: 689184482}
     flag: {fileID: 1045276325}
     tee: {fileID: 324596904}
-    cupRadius: 0.1425
+    cupRadius: 0.19
     cupDepth: 0.18
     greenRadius: 6
   - number: 5
@@ -53937,7 +53937,7 @@ MonoBehaviour:
     cup: {fileID: 702393825}
     flag: {fileID: 311397406}
     tee: {fileID: 32978417}
-    cupRadius: 0.1425
+    cupRadius: 0.19
     cupDepth: 0.18
     greenRadius: 6
   greens:
