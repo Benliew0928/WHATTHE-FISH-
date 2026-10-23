@@ -62,7 +62,7 @@ namespace WhatTheFish {
   public void ToggleSettings(){if(MenuOpen)CloseMenu();else ShowSettings();}
   void OpenMenu(bool leave){ClearInput();PlayerView.Instance.InputBlocked=true;controls.blocksRaycasts=false;settingsPanel.gameObject.SetActive(!leave);leavePanel.gameObject.SetActive(leave);overlay.gameObject.SetActive(true);RefreshMenu();}
   public void ShowSettings()=>OpenMenu(false);
-  public void OpenGuide(){SelectMenu(1);ShowSettings();}
+  public void OpenGuide(){CloseMenu();SportTutorialUI.Find(SportId.Football)?.Open();}
   public void SelectMenu(int page){menuPage=Mathf.Clamp(page,0,3);cameraPage.gameObject.SetActive(menuPage==0);guidePage.gameObject.SetActive(menuPage==1);audioPage.gameObject.SetActive(menuPage==2);customizePage.gameObject.SetActive(menuPage==3);RefreshAudio();for(int i=0;i<4;i++){var p=(i==0?cameraNav:i==1?guideNav:i==2?audioNav:customizeNav).GetComponent<BasketballPlate>();p.color=i==menuPage?CoveUI.Hex("D5EBDE"):CoveUI.Cream;p.border=i==menuPage?1:0;p.edge=CoveUI.Hex("96B9AE");p.shadow=0;p.Refresh();}}
   public void SelectGuide(int tab){guideTab=Mathf.Clamp(tab,0,guidePages.Length-1);for(int i=0;i<guidePages.Length;i++){guidePages[i].SetActive(i==guideTab);guideTabs[i].GetComponent<BasketballPlate>().color=i==guideTab?CoveUI.Ink:BasketballUIStyle.Paper;guideTabs[i].GetComponentInChildren<Text>().color=i==guideTab?CoveUI.Cream:CoveUI.Ink;}}
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();RefreshMenu();}

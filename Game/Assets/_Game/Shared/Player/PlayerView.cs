@@ -31,7 +31,7 @@ namespace WhatTheFish {
   public void EndKick(int source=int.MinValue){if(!Charging||source!=chargeSource)return;float charge=Charge;Charging=false;HideKickAim();RequestKick(charge);}
   public void CancelKick(int source){if(Charging&&source==chargeSource){FootballAudio.PlayMenu(FootballSound.UIBack);Charging=false;HideKickAim();}}
   bool inputBlocked;
-  public bool InputBlocked {get=>inputBlocked||RoomChatUI.Typing||SocialPanel.Visible||AccountPanel.Visible||TutorialSession.Active&&(!TutorialSession.Active.Ready||TutorialSession.Active.Paused||TutorialSession.Active.Finished);set=>inputBlocked=value;}
+  public bool InputBlocked {get=>inputBlocked||IslandTutorialUI.ModalOpen||RoomChatUI.Typing||SocialPanel.Visible||AccountPanel.Visible||TutorialSession.Active&&(!TutorialSession.Active.Ready||TutorialSession.Active.Paused||TutorialSession.Active.Finished);set=>inputBlocked=value;}
   public void ClearMatchInput(){CancelInput();golfFraming=0;ReturnFromGolfShot();}
   void CancelInput(){ClearTargetPass();if(FootballHUD.Instance)foreach(var swipe in FootballHUD.Instance.GetComponentsInChildren<FootballActionSwipe>())swipe.OnCancel(null);CancelFootballPass();pendingFootballPass=false;CancelFishing();CancelGolfAim();if(PassCharging||pendingPass||pendingPassBegin)pendingPassCancel=true;ClearFootballInput();ClearDefenseInput();CancelShot();CancelPass();pendingShotBegin=pendingPassBegin=false;StealHeld=pendingSteal=false;Charging=GolfCharging=false;HideKickAim();pendingKick=pendingGolf=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingCart=GolfCartAction.None;}
   void HideKickAim(){if(kickAim)kickAim.enabled=false;}

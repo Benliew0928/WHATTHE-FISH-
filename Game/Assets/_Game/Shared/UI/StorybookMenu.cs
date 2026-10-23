@@ -259,18 +259,9 @@ namespace WhatTheFish {
   }
   void Help() {
    var sport=guideFromHub?guideSport:app.SelectedSport;
-   Heading("HOW TO PLAY",sport+" · Controls, rules and a few tips to get started.");
+   Heading("HOW TO PLAY","");
    SportTabs("Guide",sport,s=>{guideSport=s;guideFromHub=true;Rebuild();});
-   if(sport==SportId.Fishing){FishingTutorialUI.Create(content,true,Back);return;}
-   var left=Plate(content,"Getting around",102,267,663,523,Cream,31,2,true);CardTitle(left.transform,"Getting around","");
-   Detail(left.transform,"Move & run","Use the left stick to move. Push it fully to run.",34,116,594);
-   Detail(left.transform,"Look around","Swipe the open right side to look around.",34,242,594);
-   Detail(left.transform,sport==SportId.Football?"Camera":"Jump & camera",sport==SportId.Football?"Choose your camera angle in Settings.":"Tap Jump. Change camera angle in Settings.",34,368,594);
-   var right=Plate(content,"Sport instructions",795,267,704,523,Cream,31,2,true);CardTitle(right.transform,sport.ToString(),"");
-   var rows=sport==SportId.Football?new[]{("Kick & tackle","Hold Shoot, then release. Slide to Cancel to stop. Tap Tackle to challenge for the ball."),("Play a match","In a room, travel to the pitch. Host starts with 2–10 players in even teams."),("Choose your team","Pick a team before the 10-second countdown ends.")}:sport==SportId.Basketball?new[]{("Shoot","Hold Shoot. Release in green; the needle loops faster farther away. Slide to Cancel to stop."),("Pass & steal","Tap Pass toward a teammate. Hold Steal to swipe repeatedly; chase the loose ball."),("Explore freely","Switch Free roam on to walk without picking up the ball.")}:sport==SportId.Golf?new[]{("Start & swing","Tap Start. Walk near a ball and tap Aim. Pull the ball handle down for power; release to swing."),("Aim & ride","Swipe to aim. Tap Cancel to walk. Tap Buggy to summon your cart, then Drive or Exit."),("Finish the course","Complete five holes. Fewest strokes wins; the first finisher starts a 30-second countdown.")}:Array.Empty<(string,string)>();
-   for(int i=0;i<rows.Length;i++){Text(right.transform,rows[i].Item1,34,111+i*130,635,35,26,true);Text(right.transform,rows[i].Item2,34,149+i*130,635,77,23,false,Muted);}
-   if(!app.rooms.Connected&&!guideFromHub)ActionButton("Try offline","Try it offline",1180,808,320,65,Mint,app.EnterOffline,CoveSymbol.Map,26);
-   else if(app.rooms.Connected)Footer("Everyone stays on the same island. Ask the host when you're ready to travel.");
+   IslandTutorialUI.CreateFor(content,sport,true,Back);
   }
   void AthleteCard() {
    Heading("Your Rainbow Sprinter","One bright little athlete, ready for all four islands.");

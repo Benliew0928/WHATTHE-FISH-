@@ -79,7 +79,7 @@ namespace WhatTheFish {
   void ShowSettings(){settings.gameObject.SetActive(true);leave.gameObject.SetActive(false);if(guide)guide.gameObject.SetActive(false);}
   public void Back(){if(!Visible)return;if(!settings.gameObject.activeSelf){ShowSettings();Refresh();}else Close();}
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);if(!Fishing){PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();}Refresh();}
-  void OpenGuide(){if(Fishing){Close();FishingHUD.Instance?.Tutorial?.Open();}else {settings.gameObject.SetActive(false);guide.gameObject.SetActive(true);}}
+  void OpenGuide(){Close();if(Fishing)FishingHUD.Instance?.Tutorial?.Open();else SportTutorialUI.Find(SportId.Golf)?.Open();}
   void Refresh(){
    var view=PlayerView.Instance;for(int i=0;i<3;i++){bool chosen=view&&view.mode==i;var p=cameras[i].GetComponent<BasketballPlate>();p.color=chosen?CoveUI.Sky:BasketballUIStyle.Paper;p.border=chosen?3:2;p.Refresh();cameras[i].transform.Find("Selected camera").gameObject.SetActive(chosen);}
    note.text=view&&view.mode==0?"See from your player's eyes. Drag to look around.":view&&view.mode==1?"Stay behind your player. Drag to look around.":Fishing?"Frame your cast and hooked fish. Drag to look before casting.":"See your shot and landing area, then follow the ball.";

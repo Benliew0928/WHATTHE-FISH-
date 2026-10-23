@@ -1,0 +1,21 @@
+{
+  "tool": "Built-in image_gen",
+  "generated": "2026-10-24",
+  "assets": [
+    {
+      "sport": "Football",
+      "file": "Football.png",
+      "prompt": "Use case: illustration-story. Asset: one horizontal illustration for a mobile game's four-step tutorial card. Original cheerful cartoon sticker art, bold dark navy outlines, rounded shapes, glossy cyan and gold highlights, cream-friendly colors, like a polished tropical sports game. A clean transparent background with one compact centered vignette, no panel, no text, no letters, no numbers, no logos, no interface buttons. Wide composition roughly 2.4:1 with all important objects inside a generous safe margin. Readable when displayed 350 by 142 pixels. Show a small cheerful teal-haired cartoon athlete in a plain blue football kit kicking a black and white soccer ball toward a small goal on a tiny bright green patch of pitch. A second teammate is running into space. The ball has a short curved gold motion arc. Friendly, lively, clear association football, no American football."
+    },
+    {
+      "sport": "Basketball",
+      "file": "Basketball.png",
+      "prompt": "Use case: illustration-story. Asset: one horizontal illustration for a mobile game's four-step tutorial card. Original cheerful cartoon sticker art, bold dark navy outlines, rounded shapes, glossy cyan and gold highlights, cream-friendly colors, like a polished tropical sports game. A clean transparent background with one compact centered vignette, no panel, no text, no letters, no numbers, no logos, no interface buttons. Wide composition roughly 2.4:1 with all important objects inside a generous safe margin. Readable when displayed 350 by 142 pixels. Show a small cheerful teal-haired cartoon athlete in a plain blue basketball kit shooting an orange basketball toward a hoop and backboard on a tiny warm coral court patch, with one teammate ready to receive a pass. The ball has a short curved cyan and gold motion arc. Clear action with beautiful readable silhouettes."
+    },
+    {
+      "sport": "Golf",
+      "file": "Golf.png",
+      "prompt": "Use case: illustration-story. Asset: one horizontal illustration for a mobile game's four-step tutorial card. Original cheerful cartoon sticker art, bold dark navy outlines, rounded shapes, glossy cyan and gold highlights, cream-friendly colors, like a polished tropical sports game. A clean transparent background with one compact centered vignette, no panel, no text, no letters, no numbers, no logos, no interface buttons. Wide composition roughly 2.4:1 with all important objects inside a generous safe margin. Readable when displayed 350 by 142 pixels. Show a small cheerful teal-haired cartoon athlete in blue sports clothes gently putting a white golf ball toward a visible circular golf cup and a red pennant flag on a tiny mint-green island putting green. A short gold dotted ball path points into the cup. Keep the flag and cup obvious and readable, playful tropical golf, not realistic photography."
+    }
+  ]
+}

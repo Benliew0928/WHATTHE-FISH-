@@ -1,0 +1,29 @@
+[
+  {
+    "master": "ArtSource/SportsTutorial/Football.png",
+    "output": "Game/Assets/_Game/Resources/IslandTutorial/Football.png",
+    "width": 768,
+    "height": 320,
+    "sourceBytes": 1748246,
+    "bytes": 342659,
+    "sha256": "4dc374b70463174050e51bbd0d85ba424dfe9225a907ef41c42b8687f87d68c0"
+  },
+  {
+    "master": "ArtSource/SportsTutorial/Basketball.png",
+    "output": "Game/Assets/_Game/Resources/IslandTutorial/Basketball.png",
+    "width": 763,
+    "height": 320,
+    "sourceBytes": 1293317,
+    "bytes": 249749,
+    "sha256": "4843f26b189a59ff9cd7390edd22c9a72e7811f16826f87f519b4461e8fe508c"
+  },
+  {
+    "master": "ArtSource/SportsTutorial/Golf.png",
+    "output": "Game/Assets/_Game/Resources/IslandTutorial/Golf.png",
+    "width": 768,
+    "height": 320,
+    "sourceBytes": 1205907,
+    "bytes": 236972,
+    "sha256": "9c75ca654414c20250fe76d4bf8890882256c1419e62df963aeda531aad47f2a"
+  }
+]

@@ -1,5 +1,72 @@
 # Build size — measured release records
 
+## Shared illustrated island rules - 24 October 2026
+
+Football, Basketball and Golf now share Fishing's four-page rules shell,
+animations, native control examples, first-visit flow and Settings/How to Play
+reference. See [Illustrated island rules](ISLAND-RULES.md). The new decorative
+art is compressed for delivery; full-resolution masters, generation prompts
+and AI asset disclosure remain in `ArtSource/SportsTutorial/`.
+
+Official AndroidSubmission: **113,332,706 -> 113,711,916 bytes
+(+379,210)**. Headroom below the strict 1,000,000,000-byte boundary:
+**886,288,084 bytes**. SHA-256:
+**7C5478B3B053A49410A221DCCD4239107FA81D9C9E2BC951DDFC30E529954109**.
+
+The build/budget gate, ZIP CRC, APK v2 signature and five-scene bundle size/hash
+passed. Both shared rules types and all three tutorial sprites are present;
+the development review fixture is absent from release metadata. All
+**620** frozen `_Game` C# source hashes still match.
+The complete **327-file** Windows player passed **125** focused entry,
+navigation, input-gating, replay, landscape-bounds and nonblank-render checks.
+Its sixteen page captures were retained; representative pages were visually
+reviewed. Every promoted payload hash matches. This is UI verification, not a
+full gameplay regression or a phone/WAN test.
+
+Largest compressed APK entries: islands **45,386,017**,
+IL2CPP **12,777,349**, Unity
+**9,809,038**, metadata
+**2,817,658** bytes. The retained entry inventory records
+all contributors; serialized Unity reports and PNG source sizes measure
+different things. No world art was downscaled for this tutorial change.
+
+Evidence: `Builds/IslandRules/Task-20261024-003827/`, including
+`RuntimeReview-Final-Golf/`, `apk-after.json`, `apk-signature.txt`,
+`release-content-check.json`, `AndroidAudit/` and `windows-promotion.json`.
+Recovery: `Legacy/20261024-011113-440-island-rules-delivery/` (previous APK/player)
+and `Legacy/20261024-012403-721-island-rules-final-player/` (superseded UI revision).
+Source base: `a653bd1` plus the reviewed local tutorial changes. Android physical
+touch input, appearance/FPS and live WAN behavior remain unverified.
+
+## Local rebuild after pulling main — 23 October 2026
+
+Pulled `main` from `00eebcd` to `a653bd1` and fetched its Git LFS assets.
+The official AndroidSubmission build produced **113,332,706 bytes**, compared
+with the previous local APK's **111,342,842 bytes**: **+1,989,864 bytes**.
+Remaining headroom below the strict 1,000,000,000-byte limit is
+**886,667,294 bytes**. SHA-256:
+**8B53DDB80FBCE35BCE8A00ED3DEA7F48A521CCC18CB6CFA59E03AB875E9CA0D5**.
+
+The build/budget gate, ZIP CRC, APK v2 signature and five-scene bundle hash/size
+passed. All **617** current `_Game` C# source hashes match the frozen rebuild
+snapshot. Largest compressed entries: islands **45,392,945**, IL2CPP
+**12,770,545**, Unity **9,809,038**, metadata **2,816,268** bytes. New serialized
+data entries account for much of the growth; the scene bundle grew **162,156**
+bytes and IL2CPP **124,346** bytes. No additional source art or lossy conversion
+was introduced for this rebuild. These measurements describe this local APK;
+earlier records below belong to their recorded source snapshots.
+
+Evidence: `Builds/LocalRebuild/Task-20261023-220613/`, including
+`apk-after.json`, `apk-entry-growth.json`, `apk-signature.txt` and `AndroidAudit/`.
+Previous local APK recovery:
+`Legacy/20261023-220904-653-local-rebuild-previous-apk/`.
+The matching complete **327-file** Windows player passed a brief offline Golf
+startup check and normal exit, then was promoted to `Builds/WindowsFinal/` with
+every file hash verified. Its superseded player is recoverable from
+`Legacy/20261023-224919-836-local-rebuild-windows-player/`. No broad gameplay
+regression suite was rerun for this build-only request.
+Android device appearance, touch input/FPS and WAN multiplayer were not tested.
+
 ## Open type labels and activity cameras — 23 October 2026
 
 The [approved second label design](PLAYER-IDENTITY-CAMERAS.md) is now shared
