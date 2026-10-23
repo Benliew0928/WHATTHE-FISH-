@@ -1,0 +1,32 @@
+[
+  {
+    "master": "TornadoBadge-master.png",
+    "delivery": "Game/Assets/_Game/Resources/GolfUI/Events/TornadoBadge.png",
+    "size": [
+      768,
+      289
+    ],
+    "bytes": 56753,
+    "sha256": "e5d46960b96d232b3fe8d4fda8da01b5a370d2f5741ad845780106cea0fc2e9a"
+  },
+  {
+    "master": "CrabBadge-master.png",
+    "delivery": "Game/Assets/_Game/Resources/GolfUI/Events/CrabBadge.png",
+    "size": [
+      768,
+      277
+    ],
+    "bytes": 66710,
+    "sha256": "d5ae4475789dc4615108a49f62c6c8027187523b901f0a2ccf1f67a2475cf19c"
+  },
+  {
+    "master": "StormPuff-master.png",
+    "delivery": "Game/Assets/_Game/Resources/GolfUI/Events/StormPuff.png",
+    "size": [
+      512,
+      512
+    ],
+    "bytes": 287662,
+    "sha256": "118540b2817e0391c12c822778128415c9bd9e021b79deeba8ab4cd90a488adf"
+  }
+]

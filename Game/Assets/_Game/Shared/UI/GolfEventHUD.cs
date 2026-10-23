@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace WhatTheFish {
  [DefaultExecutionOrder(-50)] public sealed class GolfEventHUD:MonoBehaviour {
   sealed class Row {public RectTransform root;public GolfEventBadgeGraphic art;public Text clock;public int previous=-1,index=-1;}
-  RectTransform page,card;Row weather,rushRow;Texture2D sheet,warningSheet;
+  RectTransform page,card;Row weather,rushRow;Texture2D sheet,warningSheet,tornadoSheet,crabSheet;
   readonly Vector3[] gearCorners=new Vector3[4];
   RectTransform windArrow,windCompass;GolfWindEdgeGraphic edge;GolfEventKind observed;uint observedRound;bool observedRush;float windAt=-100,weatherAt=-100,rushAt=-100;
   float windEdgeLevel;
@@ -15,7 +15,7 @@ namespace WhatTheFish {
   public static GolfEventHUD Instance {get;private set;}
   public static GolfEventHUD Create(RectTransform page){var ui=page.gameObject.AddComponent<GolfEventHUD>();ui.Build(page);return ui;}
   void Build(RectTransform parent){
-   Instance=this;page=parent;sheet=Resources.Load<Texture2D>("GolfUI/Events/BadgeSheet");warningSheet=Resources.Load<Texture2D>("GolfUI/Events/WarningSheet");
+   Instance=this;page=parent;sheet=Resources.Load<Texture2D>("GolfUI/Events/BadgeSheet");warningSheet=Resources.Load<Texture2D>("GolfUI/Events/WarningSheet");tornadoSheet=Resources.Load<Texture2D>("GolfUI/Events/TornadoBadge");crabSheet=Resources.Load<Texture2D>("GolfUI/Events/CrabBadge");
    var border=GolfHUDStyle.Rect("Wind arrival screen edges",page,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);border.anchorMin=Vector2.zero;border.anchorMax=Vector2.one;border.offsetMin=border.offsetMax=Vector2.zero;border.SetAsFirstSibling();edge=border.gameObject.AddComponent<GolfWindEdgeGraphic>();edge.raycastTarget=false;edge.Strength(0);
    card=GolfHUDStyle.Rect("Golf event notices",page,new Vector2(0,1),new Vector2(20,-20),new Vector2(410,230));card.pivot=new Vector2(0,1);
    var group=card.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;group.interactable=false;
@@ -31,15 +31,17 @@ namespace WhatTheFish {
    var outline=row.clock.gameObject.AddComponent<Outline>();outline.effectColor=LocalProfile.Hex("123A91");outline.effectDistance=new Vector2(1.6f,-1.6f);
    return row;
   }
-  public static string Name(GolfEventKind kind)=>kind switch {GolfEventKind.TropicalWind=>"TROPICAL WIND",GolfEventKind.StickyGreen=>"STICKY GREEN",GolfEventKind.BounceParty=>"BOUNCE PARTY",_=>""};
+  public static string Name(GolfEventKind kind)=>kind switch {GolfEventKind.TropicalWind=>"TROPICAL WIND",GolfEventKind.StickyGreen=>"STICKY GREEN",GolfEventKind.BounceParty=>"BOUNCE PARTY",GolfEventKind.Tornado=>"TORNADO",GolfEventKind.CrabCrossing=>"CRAB CROSSING",_=>""};
+  static int BadgeIndex(GolfEventKind kind)=>kind switch {GolfEventKind.StickyGreen=>2,GolfEventKind.BounceParty=>3,GolfEventKind.Tornado=>6,GolfEventKind.CrabCrossing=>7,_=>0};
   float ShowRow(Row row,int index,int seconds,float y,float width){
    row.root.gameObject.SetActive(true);row.root.anchoredPosition=new Vector2(0,-y);
+   row.art.enabled=true;
    float height=width*GolfEventBadgeGraphic.Crop(index).height/GolfEventBadgeGraphic.Crop(index).width;row.root.sizeDelta=new Vector2(width,height);
    {
     var crop=GolfEventBadgeGraphic.Crop(index);var box=GolfEventBadgeGraphic.TimeBox(index);float scale=width/crop.width;
     if(row.index!=index){row.index=index;row.previous=-1;row.art.Badge=index;}
-    var r=row.clock.rectTransform;r.anchorMin=r.anchorMax=new Vector2(0,1);r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(box.center.x-crop.x,-(box.center.y-crop.y))*scale;r.sizeDelta=box.size*scale;row.clock.fontSize=Mathf.RoundToInt((index==5?310:45)*scale);
-    row.art.Sheet=index==5?warningSheet:sheet;row.clock.enabled=true;row.clock.fontStyle=index==5?FontStyle.Bold:FontStyle.Normal;
+    var r=row.clock.rectTransform;r.anchorMin=r.anchorMax=new Vector2(0,1);r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(box.center.x-crop.x,-(box.center.y-crop.y))*scale;r.sizeDelta=box.size*scale;row.clock.fontSize=Mathf.RoundToInt((index==5?310:index>=6?42:45)*scale);
+    row.art.Sheet=index==5?warningSheet:index==6?tornadoSheet:index==7?crabSheet:sheet;row.clock.enabled=true;row.clock.fontStyle=index==5?FontStyle.Bold:FontStyle.Normal;
     var outline=row.clock.GetComponent<Outline>();outline.effectColor=index==5?Color.white:LocalProfile.Hex("123A91");outline.effectDistance=Vector2.one*(index==5?2.3f:1.6f);
     var gradient=row.clock.GetComponent<GolfWarningGradient>();if(index==5&&!gradient)gradient=row.clock.gameObject.AddComponent<GolfWarningGradient>();if(gradient)gradient.enabled=index==5;
     if(row.previous!=seconds){row.previous=seconds;row.clock.text=(index==5?Mathf.Max(0,seconds).ToString("00"):Mathf.Max(0,seconds).ToString())+"s";}
@@ -68,7 +70,7 @@ namespace WhatTheFish {
    }
    card.anchoredPosition=new Vector2(left,-20);
    float width=Mathf.Min(410,Mathf.Min(page.rect.width*.43f-24,page.rect.width-left-20)),y=0;weather.root.gameObject.SetActive(warn||active!=GolfEventKind.None);rushRow.root.gameObject.SetActive(rush);
-   if(warn||active!=GolfEventKind.None){int index=warn?5:Mathf.Clamp((int)state.kind-1,0,3);int seconds=(int)Math.Ceiling(warn?state.start-now:state.end-now);y+=ShowRow(weather,index,seconds,y,width)+8;}
+   if(warn||active!=GolfEventKind.None){int index=warn?5:BadgeIndex(state.kind);int seconds=(int)Math.Ceiling(warn?state.start-now:state.end-now);y+=ShowRow(weather,index,seconds,y,width)+8;}
    if(active==GolfEventKind.TropicalWind&&!warn)y+=config.windCompassSize+16;
    if(rush)y+=ShowRow(rushRow,4,(int)Math.Ceiling(state.rushAt+GolfEventSchedule.RushDuration-now),y,width)+8;
    Pulse(weather,weatherAt);Pulse(rushRow,rushAt);

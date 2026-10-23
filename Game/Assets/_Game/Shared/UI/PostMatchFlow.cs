@@ -86,7 +86,7 @@ namespace WhatTheFish {
    station.GetComponent<CoveFeedback>().SetTint(destination==TeleportDestination.Station?CoveUI.Mint:CoveUI.Cream);game.GetComponent<CoveFeedback>().SetTint(destination==TeleportDestination.Game?CoveUI.Mint:CoveUI.Cream);
    bool allowed=RoomTeleport.Instance&&RoomTeleport.Instance.CanRequest(selected,destination,out _);teleport.interactable=allowed;travelLabel.text=app.rooms.Connected?"Teleport everyone":"Teleport";
    status.text=actionMessage.Length>0?actionMessage:selected+" · "+(destination==TeleportDestination.Station?"Beside the Skyrail station":"At the game area")+"  /  "+count+" reserved arrival "+(count==1?"space":"spaces");
-   ready.gameObject.SetActive(app.SelectedSport==SportId.Fishing);if(FishingGame.Instance){var p=FishingGame.Instance.Player(app.LocalAthlete);readyLabel.text=p.HasValue&&p.Value.ready?"Ready for the next round":"Ready for next round";ready.interactable=p.HasValue&&!p.Value.ready;}
+   ready.gameObject.SetActive(false);
    var safe=Screen.safeArea;var root=(RectTransform)transform;content.localScale=Vector3.one*Mathf.Min(1,safe.width/Screen.width*root.rect.width/1480,safe.height/Screen.height*root.rect.height/760);content.anchoredPosition=new Vector2((safe.center.x/Screen.width-.5f)*root.rect.width,(safe.center.y/Screen.height-.5f)*root.rect.height);
   }
   void OnDestroy(){Close();if(Instance==this)Instance=null;}

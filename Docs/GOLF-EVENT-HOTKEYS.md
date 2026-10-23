@@ -13,8 +13,10 @@ Typing in a selected text input suppresses the keyboard shortcuts.
 | F5 | Unused; Random Swap removed |
 | F6 | Island Rush immediately, for 30 seconds |
 | F7 | Clear random event and Rush |
+| F8 | Tornado |
+| F9 | Crab Crossing |
 
-Manual triggers restart the automatic 90-second cycle during ordinary play;
+Manual triggers restart the automatic 60-second cycle during ordinary play;
 once the first player finishes, the cycle remains stopped. An airborne ball keeps
 its captured shot conditions until it rests or recovers. Clearing events affects
 subsequent shots; it does not rewrite the physics of a shot already in progress.
@@ -30,4 +32,6 @@ Focused validation: 55 offline + 30 Host + 32 Client event assertions passed.
 Actual preparation-room entry/sign visibility passed 17 Host + 16 Client checks.
 Evidence is under ignored `Builds/GolfSignEventsQA/`. Dispatch is exercised via
 the development API; physical function-key presses were not automated. Protocol
-is now 76; update every peer. Android release excludes development hotkeys.
+is now 78; update every peer. Android release excludes development hotkeys.
+The earlier assertion counts above describe the original shortcuts. The new
+hazards have a separate focused review; see [hazard rules](GOLF-HAZARDS.md).

@@ -5,17 +5,17 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- // Read-only completed-round presentation. Host rules and normal Ready controls
- // remain authoritative; opening this card never awards or persists a score.
+ // Read-only completed-round presentation. The host starts the next round;
+ // opening this card never awards or persists a score.
  public sealed class FishingResultsUI:MonoBehaviour {
   sealed class Standing {
    public RectTransform rect;public FishingStickerGraphic panel;public Text rank,name,score,cupPoints,cupCatch,status;
   }
   RectTransform page,modal,card,reopen,crewStrip,summary,notes,footer;
   FishingResultsLayout layout;Font fallback;
-  Text title,subtitle,scoreHeading,cupHeading,cupCatchHeading,summaryTitle,notesLine,detailLine,readyLabel,crewScore,crewNeed;
+  Text title,subtitle,scoreHeading,cupHeading,cupCatchHeading,summaryTitle,notesLine,detailLine,crewScore,crewNeed;
   Text[] statLabels,crewSizeLabels;CoveIcon[] crewChecks;FishingStickerGraphic[] crewFish;
-  Button closeButton,readyButton,walkingButton,reopenButton;Standing[] standings;
+  Button closeButton,walkingButton,reopenButton;Standing[] standings;
   FishingGame boundGame;Athlete actor;uint observedRound;bool observed,hasResult;FishingCeremony ceremony;
   FishingMatchSnapshot frozenMatch;FishingPlayerRecord[] frozenPlayers=Array.Empty<FishingPlayerRecord>();string[] frozenNames=Array.Empty<string>();ulong frozenLocal;
   public bool Visible=>modal&&modal.gameObject.activeSelf;
@@ -26,7 +26,6 @@ namespace WhatTheFish {
   public RectTransform CardRect=>card;
   public RectTransform ReopenRect=>reopen;
   public Button CloseButton=>closeButton;
-  public Button ReadyButton=>readyButton;
   public Button ReopenButton=>reopenButton;
   public int ShownRounds {get;private set;}
   public uint ResultRound=>hasResult?frozenMatch.round:0;
@@ -90,8 +89,8 @@ namespace WhatTheFish {
    statLabels=new Text[9];string[] statNames={"Small catch total","Medium catch total","Large catch total","Wanted bonus total","Missed bite total","Snapped line total","Cancelled cast total","Timed out total","Local personal best"};
    for(int i=0;i<9;i++)statLabels[i]=Label("Fishing result "+statNames[i],summary,"",layout.statFontSize,i%3==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);
    notes=Rect("Fishing result conditions",card,Vector2.zero,Vector2.zero);notesLine=Label("Fishing result conditions line",notes,"",layout.labelFontSize,TextAnchor.MiddleLeft);detailLine=Label("Fishing result detail line",notes,"",layout.labelFontSize,TextAnchor.MiddleLeft);
-   footer=Rect("Fishing results controls",card,Vector2.zero,Vector2.zero);readyButton=MakeButton("Fishing result ready and close",footer,"READY & CLOSE",GolfHUDStyle.Teal,ReadyAndClose,out readyLabel);walkingButton=MakeButton("Fishing result keep walking",footer,"CLOSE",GolfHUDStyle.Cream,Close,out _);
-   CardNavigation(readyButton,walkingButton,walkingButton,closeButton,closeButton);CardNavigation(walkingButton,readyButton,readyButton,closeButton,closeButton);CardNavigation(closeButton,readyButton,walkingButton,walkingButton,readyButton);
+   footer=Rect("Fishing results controls",card,Vector2.zero,Vector2.zero);walkingButton=MakeButton("Fishing result keep walking",footer,"CLOSE",GolfHUDStyle.Teal,Close,out _);
+   CardNavigation(walkingButton,walkingButton,walkingButton,closeButton,closeButton);CardNavigation(closeButton,walkingButton,walkingButton,walkingButton,walkingButton);
    modal.gameObject.SetActive(false);Layout();
   }
   static void CardNavigation(Button button,Button left,Button right,Button up,Button down){button.navigation=new Navigation{mode=Navigation.Mode.Explicit,selectOnLeft=left,selectOnRight=right,selectOnUp=up,selectOnDown=down};}
@@ -143,7 +142,7 @@ namespace WhatTheFish {
 #endif
     if(!animate||!ceremony.Begin(game,frozenPlayers,Open))Open();
    }
-   if(!hasResult)return;RefreshReady(game);reopen.gameObject.SetActive(!Visible&&!FishingCeremony.Presenting);Layout();
+   if(!hasResult)return;reopen.gameObject.SetActive(!Visible&&!FishingCeremony.Presenting);Layout();
   }
   void Capture(FishingGame game,ulong local){
    frozenMatch=game.State.Match;frozenLocal=local;
@@ -177,16 +176,11 @@ namespace WhatTheFish {
    if(frozenMatch.mode!=FishingMode.Crew){int best=PlayerPrefs.GetInt(key,0);if(frozenMatch.outcome!=FishingOutcome.Abandoned)best=Math.Max(best,local.score);return "LOCAL BEST "+best+" PTS";}
    float elapsed=PlayerPrefs.GetFloat(key,float.MaxValue);if(frozenMatch.outcome==FishingOutcome.Success)elapsed=Mathf.Min(elapsed,(float)(frozenMatch.ended-frozenMatch.started));return elapsed==float.MaxValue?"LOCAL BEST —":"LOCAL BEST "+GolfLeaderboardUI.FinishTime(elapsed);
   }
-  void RefreshReady(FishingGame game){
-   var p=game.Player(actor);readyButton.interactable=actor&&p.HasValue&&p.Value.connected&&!p.Value.Busy&&PlayerView.Instance&&PlayerView.Instance.active;
-   readyLabel.text=p.HasValue&&p.Value.ready?"READY! · CLOSE":"READY & CLOSE";
-  }
-  void ReadyAndClose(){var p=boundGame&&actor?boundGame.Player(actor):null;if(p.HasValue&&!p.Value.ready)PlayerView.Instance?.ReadyFishing();Close();}
-  void FocusCard(){if(EventSystem.current)EventSystem.current.SetSelectedGameObject(readyButton.interactable?readyButton.gameObject:closeButton.gameObject);}
+  void FocusCard(){if(EventSystem.current)EventSystem.current.SetSelectedGameObject(walkingButton.gameObject);}
   void ClearCardFocus(){var events=EventSystem.current;if(events&&events.currentSelectedGameObject&&events.currentSelectedGameObject.transform.IsChildOf(transform))events.SetSelectedGameObject(null);}
   public void Close()=>HideCard(true);
   void HideCard(bool allowReopen){ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(allowReopen&&hasResult&&CanPresent(boundGame)&&SceneLifetime.CanPresent(reopen.gameObject));}
-  public void Open(){if(!hasResult||!CanPresent(boundGame)||!boundGame.Context||boundGame.State.Match.phase!=FishingRoundPhase.Ended||boundGame.State.Match.round!=frozenMatch.round)return;PostMatchFlow.Instance?.Close();modal.gameObject.SetActive(true);reopen.gameObject.SetActive(false);RefreshReady(boundGame);FocusCard();Layout();}
+  public void Open(){if(!hasResult||!CanPresent(boundGame)||!boundGame.Context||boundGame.State.Match.phase!=FishingRoundPhase.Ended||boundGame.State.Match.round!=frozenMatch.round)return;PostMatchFlow.Instance?.Close();modal.gameObject.SetActive(true);reopen.gameObject.SetActive(false);FocusCard();Layout();}
   public void ClearContext(){ceremony?.Cancel();ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(false);if(crewStrip)crewStrip.gameObject.SetActive(false);boundGame=null;actor=null;hasResult=observed=false;frozenPlayers=Array.Empty<FishingPlayerRecord>();frozenNames=Array.Empty<string>();}
   void Layout(){
    if(!page||!card)return;float width=Mathf.Max(400,layout.cardWidth),pad=layout.padding,gap=layout.gap,inner=width-pad*2;
@@ -206,7 +200,7 @@ namespace WhatTheFish {
    float cell=(inner-32)/3,line=(summaryHeight-summaryHeadingHeight-4)/3;
    for(int i=0;i<9;i++){Place(statLabels[i].rectTransform,16+(i%3)*cell,summaryHeadingHeight+4+(i/3)*line,cell-10,line);FitSingleLine(statLabels[i],statLabels[i].text,layout.statFontSize);}y+=summaryHeight+gap;
    Place(notes,pad,y,inner,notesHeight);Place(notesLine.rectTransform,0,0,inner,notesHeight*.5f);Place(detailLine.rectTransform,0,notesHeight*.5f,inner,notesHeight*.5f);FitSingleLine(notesLine,notesLine.text,layout.labelFontSize);FitSingleLine(detailLine,detailLine.text,layout.labelFontSize);y+=notesHeight+gap;
-   Place(footer,pad,y,inner,layout.footerHeight);Place((RectTransform)readyButton.transform,inner*.5f-layout.readySize.x-gap*.5f,4,layout.readySize.x,layout.readySize.y);Place(footer.Find("Fishing result keep walking") as RectTransform,inner*.5f+gap*.5f,4,layout.readySize.x,layout.readySize.y);
+   Place(footer,pad,y,inner,layout.footerHeight);Place((RectTransform)walkingButton.transform,(inner-layout.readySize.x)*.5f,4,layout.readySize.x,layout.readySize.y);
    reopen.anchorMin=reopen.anchorMax=new Vector2(.5f,1);reopen.pivot=new Vector2(.5f,.5f);reopen.sizeDelta=layout.reopenSize;reopen.anchoredPosition=new Vector2(Mathf.Clamp(layout.reopenPosition.x,-page.rect.width*.5f+layout.margin+layout.reopenSize.x*.5f,page.rect.width*.5f-layout.margin-layout.reopenSize.x*.5f),Mathf.Clamp(layout.reopenPosition.y,-page.rect.height+layout.margin+layout.reopenSize.y*.5f,-layout.margin-layout.reopenSize.y*.5f));LayoutCrew();
   }
   void LateUpdate(){Layout();}

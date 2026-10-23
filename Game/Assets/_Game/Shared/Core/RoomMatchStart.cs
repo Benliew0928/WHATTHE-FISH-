@@ -44,7 +44,7 @@ namespace WhatTheFish {
    if(Travelling)return "Wait for everyone to arrive.";
    if(PostMatchFlow.MatchActive)return "Match in progress";
    if(CanStart(sport))return "Spectators move to the viewing area when the match starts.";
-   return sport switch{SportId.Football=>"Needs even teams: 2–10 players",SportId.Basketball=>"Needs even teams: 4–10 players",SportId.Fishing=>"Needs 2–5 players, all ready",_=>"Waiting for a playing participant"};
+   return sport switch{SportId.Football=>"Needs even teams: 2–10 players",SportId.Basketball=>"Needs even teams: 4–10 players",SportId.Fishing=>"Needs 1–5 players on the island",_=>"Waiting for a playing participant"};
   }
  }
  public sealed class MatchStartNotice:MonoBehaviour {

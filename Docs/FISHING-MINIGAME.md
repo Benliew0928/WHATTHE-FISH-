@@ -1,18 +1,18 @@
-# Lagoon Cup and Crew Catch
+# Lagoon fishing round
 
 Launch the complete Windows player with `Builds/WindowsFinal/Explore-Fishing.cmd`,
 or choose **Let's play → Fishing → Explore offline**. To play with friends,
 the host opens a Fishing room and guests join the same room using matching
-protocol **73** players. The room shares one activity and travels together.
-Fishing supports **two to five friends**, with solo free practice and a solo
-timed practice option. Arrival assigns each active player a distinct coloured
+protocol **79** players. The room shares one activity and travels together.
+Fishing supports **one to five active players**, with free practice before
+the host starts a timed round. Arrival assigns each active player a distinct coloured
 pier; spectators land on shore. Match start waits for the whole travelling group.
 The lagoon has **30 shared fish**, ten of each size. They swim across pier sectors
 in a public pool; every player can aim at any reachable, unclaimed fish. The
 school reuses the existing three fish models and materials. Independent seeded
 wandering paths let fish turn, slow and cross the pool without orbiting its centre.
 
-After Ready and Start, everyone sees the same three random skill cards and picks
+After the host presses Start, everyone sees the same three random skill cards and picks
 one for the round. The host waits up to 12 seconds, then starts the ordinary
 countdown. Reuse your chosen skill after its cooldown; its contextual button
 sits beside Cast / Right. There are no bag or treasure controls.
@@ -64,35 +64,27 @@ FISH**, **FISH RETURNING**, **MOVE CLOSER** and **CAST PATH BLOCKED**. Missed
 bites, snaps, cancellations and reel timeouts have distinct labels. These
 diagnostics do not reserve fish or change the selected target.
 
-A short sports-style awards scene precedes the completed-round card. It reuses the existing render-only characters and celebration takes; players, scores and network actors stay unchanged. Tied winners share the honours, Crew success celebrates everyone, and abandoned rounds go straight to results. Tap Show results to skip. Spectators watch the same ceremony.
+A short sports-style awards scene precedes the completed-round card. It reuses the existing render-only characters and celebration takes; players, scores and network actors stay unchanged. Tied winners share the honours, and abandoned rounds go straight to results. Tap Show results to skip. Spectators watch the same ceremony.
 
 ## Playing together
 
-In free practice or after a result, each player presses **Ready**. The host
-chooses a mode and presses **Start** once everyone is ready. A shared
-three-card selection clears practice catches; the **three-second countdown** then begins the round.
-
-| Mode | Goal and finish |
-| --- | --- |
-| Round | Highest points after **three minutes**. Equal totals share the rank/win. |
-| Cup x3 | Three Round contests with the same roster. Ready again between rounds. Each round awards `N + 1 − rank` Cup points, including shared ranks; compare total Cup points, then total catch scores. Exact ties share the championship. |
-| Crew | One shared basket: **20 × starting players** points, all three fish sizes across the crew, and at least one catch per player. Finish early when all conditions are met; otherwise fail at three minutes. |
+In free practice or after a result, the host presses **Start / Play Again**.
+There is no Ready step, mode picker, Free button or in-island nickname field.
+The current island always starts the default **Round**: highest points after
+**three minutes** wins, and equal totals share the rank/win. A shared
+three-card selection clears practice catches; the **three-second countdown**
+then begins the round. The whole travelling group must still reach the island.
 
 Every minute has a different **Wanted** size. A player's first matching catch
 landed in that minute earns **+3**, at most once per minute and **+9 per round**.
 The card warns about the next size near the change. All three sizes appear once;
-the starting size rotates on rematches. Wanted awards count toward the crew basket.
-
-Crew goals are **40 / 60 / 80 / 100** for two / three / four / five players.
-Everyone contributes a catch, but each person does not need to score 20
-individually. All crew members earn the same completion medal: **Gold** with at
-least 40 seconds left, **Silver** with at least 20, otherwise **Bronze**.
-A competitive player reaching 20 continues playing until time expires.
+the starting size rotates on rematches. A player reaching 20 continues playing
+until time expires. Legacy Cup/Crew simulation and snapshot fields are retained
+for compatibility; their old mode selectors are not exposed in this island.
 
 Late arrivals wait for the next scored round. A departed competitive player's
-earned score remains visible with a faded row; the contest continues. A roster
-change invalidates an unfinished Cup series, so start a new Cup with the new
-roster. A disconnect during skill selection, the countdown or a Crew round abandons that round.
+earned score remains visible with a faded row; the contest continues.
+A disconnect during skill selection or the countdown abandons that round.
 Host loss triggers [automatic room recovery](HOST-MIGRATION.md), with the lowest
 occupied player number taking over, then the lowest spectator number if no
 players remain. The roster-change rules above still apply. Local personal bests are saved separately
@@ -107,15 +99,14 @@ ranks and animated points. Catch awards pop beside the name; the base award
 appears first and a Wanted **+3** follows when earned. Rows slide when another
 player overtakes, with brief direction cues. Scores near 20 glow warm with a
 flame; crossing the milestone celebrates briefly without ending the contest.
-Crew rows show contribution checks rather than competitive ranks.
 
-The clock/Wanted card holds the time and crew checklist. Catch and Tension
+The clock/Wanted card holds the time and wanted fish. Catch and Tension
 labels sit inside two side-by-side bottom gauges, with a thin navy outline for contrast.
 The fill, shine and flame accents animate;
 the danger triangle reinforces high tension. Release both sides to recover. Cast,
 Hook, Left/Right, Cancel and Jump keep their labels contained. Camera and Leave
 island are available through settings. The contextual skill button uses a clock border.
-Players can set a short room nickname before a round.
+Player names come from the existing profile/room identity.
 
 The current [hold-control HUD](FISHING-COUNTERSTEER.md) reuses the sports
 fonts and press animation. The circular Cast/Hook reel illustration returns;
@@ -126,26 +117,20 @@ bytes before APK packing. Editable masters stay outside Unity. Round controls
 use fixed safe-area touch frames. Sharper fish darts/breaches and stronger rod
 and torso motion reuse existing models and materials; feet remain planted.
 
-## Results, Crew checklist and sound
+## Results and sound
 
 A centered cream/navy results card opens once at the end of a scored round.
-It freezes final standings, shared ranks, round points and applicable Cup totals.
+It freezes final standings, shared ranks and round points.
 Your summary shows catches by size, Wanted bonus points, missed bites, snapped
 lines, cancelled casts, reel timeouts and the existing local best. The host
 replicates these per-round counters and clears them for the next round.
-Abandoned rounds and invalid Cups are labelled explicitly.
+Abandoned rounds are labelled explicitly.
 
-**READY & CLOSE** uses the existing Ready action; **CLOSE** or Escape restores
+**CLOSE**, the top corner close button or Escape restores
 walking. **RESULTS** reopens the same completed round. While open, the card
 blocks movement, camera input and underlying buttons without pausing the room.
 Editable layout settings are in
 `Game/Assets/_Game/Resources/FishingResultsLayout.asset`.
-
-Crew's live timer card shows the basket, three fish-size badges/checkmarks and
-the next player who needs a catch, with a count of any other missing contributors.
-The results layout's `padding` also reserves space inside the clock's pale
-border so the contribution line stays on the coloured background. The existing
-target and completion rules remain unchanged.
 
 Accepted local actions play short cast, splash, bite, Hook, landing, miss and
 snap sounds. Correct directional holds add a quiet ratchet loop and rising strain gives a

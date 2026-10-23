@@ -23,7 +23,7 @@ namespace WhatTheFish {
   public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);if(IslandBots.IsBot(actor))return IslandBots.Name(actor);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?PlayerIdentity.DisplayName:id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"Guest";}
   Athlete[] Eligible()=>Athlete.Active.Where(a=>a&&a.isActiveAndEnabled&&!a.IsSpectator&&!a.inTransit&&(AppRoot.Instance.rooms.Connected?a.GetComponent<NetworkAthlete>()&&a.GetComponent<NetworkAthlete>().IsSpawned&&a.GetComponent<NetworkAthlete>().IsPlayerObject:a==AppRoot.Instance.LocalAthlete||a.GetComponent<FishingBot>())).OrderBy(Key).ToArray();
   public int ParticipantCount=>Eligible().Length;
-  public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&!(mode==FishingMode.Crew&&IslandBots.Instance&&IslandBots.Instance.Solo)&&State.Match.phase!=FishingRoundPhase.Playing&&!State.Preparing&&ParticipantCount<=5&&ParticipantCount>0&&(mode==FishingMode.Round&&!AppRoot.Instance.rooms.Connected||ParticipantCount>=2)&&State.AllReady;
+  public bool CanStart(FishingMode mode)=>Authority&&Context&&!RoomMatchStart.Travelling&&!(mode==FishingMode.Crew&&(ParticipantCount<2||IslandBots.Instance&&IslandBots.Instance.Solo))&&State.Match.phase!=FishingRoundPhase.Playing&&!State.Preparing&&ParticipantCount<=5&&ParticipantCount>0;
   void Awake(){Lagoon=GetComponent<FishingLagoonView>();Presentation=gameObject.AddComponent<FishingPresentation>();Presentation.Bind(this);FishingFeedback.Ensure(this);gameObject.AddComponent<FishingAbilityPresentation>();gameObject.AddComponent<FishingSpectatorAwards>();}
   void OnEnable(){Instance=this;}
   void OnDisable(){State.Clear();Presentation?.Clear(false);wasContext=false;if(Authority)Publish();if(Instance==this)Instance=null;}
@@ -82,7 +82,7 @@ namespace WhatTheFish {
    foreach(var player in State.Players){
     if(!player.connected||(player.schoolFishMask&(1u<<fish))==0)continue;float age=(float)(now-player.schoolAt);
     float hold=(float)FishingAbilityRules.Duration(FishingAbility.SchoolCall),release=FishingAbilityRules.SchoolReleaseSeconds;
-    if(age<0||age>hold+release)continue;float weight=Mathf.SmoothStep(0,1,age/2)*(1-Mathf.SmoothStep(0,1,(age-hold)/release));
+    if(age<0||age>hold+release)continue;float weight=Mathf.SmoothStep(0,1,age/1.3f)*(1-Mathf.SmoothStep(0,1,(age-hold)/release));
     if(weight<=best)continue;best=weight;float angle=fish*2.399963f+(float)now*.15f;destination=player.schoolPoint+new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*(1.5f+fish%3*.45f);destination.y=p.y;
    }
    return Vector3.Lerp(p,destination,best);
@@ -105,8 +105,8 @@ namespace WhatTheFish {
     if(remote&&(!double.IsFinite(pressedAt)||pressedAt>Now+FishingState.HookClockTolerance||Now-pressedAt>FishingState.LeaseSeconds))return false;
     Vector3 call=Vector3.zero;uint mask=0;
     if(action==FishingAction.UseAbility&&p.Value.item==FishingAbility.SchoolCall){
-     int shore=NearestPier(actor);if(shore<0)return false;var inward=Vector3.ProjectOnPlane(transform.position-Pier(shore),Vector3.up).normalized;call=Pier(shore)+inward*10;call.y=WaterY-.6f;
-     foreach(int id in State.Fish.Where(f=>!f.claimed&&f.respawnAt<=Now).OrderBy(f=>(FishPosition(f.id,Now)-call).sqrMagnitude).Take(3).Select(f=>f.id))mask|=1u<<id;
+     int shore=NearestPier(actor);if(shore<0)return false;var inward=Vector3.ProjectOnPlane(transform.position-Pier(shore),Vector3.up).normalized;call=Pier(shore)+inward*6.5f;call.y=WaterY-.6f;
+     foreach(int id in State.Fish.Where(f=>!f.claimed&&f.respawnAt<=Now).OrderBy(f=>(FishPosition(f.id,Now)-call).sqrMagnitude).Take(5).Select(f=>f.id))mask|=1u<<id;
     }
     bool given=State.AbilityAct(Key(actor),round,sequence,action,fish,pier,actor.transform.position,Now,null,call,mask);if(given)Publish();return given;
    }

@@ -30,9 +30,9 @@ namespace WhatTheFish {
     yield return null;
    }
    Check(flight&&arrival,"FLIGHT_AND_ARRIVAL_OBSERVED");Check(!TeleportSequence.Busy&&app.Exploring&&app.SelectedSport==SportId.Golf,"GOLF_ENTRY_COMPLETES");Check(signs.All(c=>c.enabled)&&!app.view.InputBlocked,"SIGNS_AND_CONTROLS_RETAINED_AFTER_ENTRY");yield return new WaitForEndOfFrame();Capture(first,"entered-sign");
-   var settings=Resources.Load<GolfBallPhysicsSettings>("GolfBallPhysics");Check(GolfEventSchedule.RandomKinds.Count==3&&!Enum.GetNames(typeof(GolfEventKind)).Contains("MoonGolf"),"MOON_REMOVED_FROM_POOL_AND_ENUM");
-   bool valid=true,noRepeat=true;for(uint seed=0;seed<300;seed++){var state=new GolfMatchState();state.Start(new[]{new GolfEntrant(1,"One"),new GolfEntrant(2,"Two")},0);var schedule=new GolfEventSchedule();schedule.Begin(0,seed);var previous=GolfEventKind.None;for(int cycle=0;cycle<6;cycle++){schedule.Advance(state,80+cycle*90,2);var kind=schedule.Snapshot.kind;valid&=GolfEventSchedule.IsRandom(kind)&&(byte)kind!=2;noRepeat&=kind!=previous;previous=kind;}}
-   Check(valid&&noRepeat,"1800_DRAWS_ONLY_THREE_EVENTS_NO_IMMEDIATE_REPEAT");Check(new GolfShotConditions{kind=(GolfEventKind)2}.GravityScale==1&&GolfEventSchedule.Duration((GolfEventKind)2)==0,"REMOVED_ID_HAS_NO_GRAVITY_OR_DURATION");
+   var settings=Resources.Load<GolfBallPhysicsSettings>("GolfBallPhysics");Check(GolfEventSchedule.RandomKinds.Count==5&&!Enum.GetNames(typeof(GolfEventKind)).Contains("MoonGolf"),"MOON_REMOVED_FROM_POOL_AND_ENUM");
+   bool valid=true,noRepeat=true;for(uint seed=0;seed<300;seed++){var state=new GolfMatchState();state.Start(new[]{new GolfEntrant(1,"One"),new GolfEntrant(2,"Two")},0);var schedule=new GolfEventSchedule();schedule.Begin(0,seed);var previous=GolfEventKind.None;for(int cycle=0;cycle<6;cycle++){schedule.Advance(state,50+cycle*GolfEventSchedule.Cycle,2);var kind=schedule.Snapshot.kind;valid&=GolfEventSchedule.IsRandom(kind)&&(byte)kind!=2;noRepeat&=kind!=previous;previous=kind;}}
+   Check(valid&&noRepeat,"1800_DRAWS_ONLY_FIVE_EVENTS_NO_IMMEDIATE_REPEAT");Check(new GolfShotConditions{kind=(GolfEventKind)2}.GravityScale==1&&GolfEventSchedule.Duration((GolfEventKind)2)==0,"REMOVED_ID_HAS_NO_GRAVITY_OR_DURATION");
    var stale=new GolfEventSchedule();stale.Receive(new GolfEventSnapshot{kind=(GolfEventKind)2,start=10,end=30});Check(!stale.WarningActive(5)&&stale.Active(15)==GolfEventKind.None,"REMOVED_ID_CANNOT_SHOW_WARNING_OR_EVENT");
    File.AppendAllText(Path.Combine(folder,"results.txt"),(failed?"FAILED":"COMPLETE")+" checks="+checks+"\n");
   }

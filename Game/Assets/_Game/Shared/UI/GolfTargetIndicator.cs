@@ -105,7 +105,11 @@ namespace WhatTheFish {
    var direction=point-page.rect.center;
    // Behind-camera projection can point up at the sky. Give a horizontal
    // turn cue instead, choosing the nearest side in camera space.
-   if(viewport.z<0){var local=camera.transform.InverseTransformPoint(target);direction=new Vector2(local.x>=0?1:-1,0);}
+   if(viewport.z<=camera.nearClipPlane||point.y>safe.yMax-pad){
+    var flat=Vector3.ProjectOnPlane(target-camera.transform.position,Vector3.up);
+    var right=Vector3.ProjectOnPlane(camera.transform.right,Vector3.up).normalized;
+    float side=Vector3.Dot(flat,right);direction=new Vector2(Mathf.Abs(side)<.05f?0:Mathf.Sign(side),-.35f);
+   }
    if(direction.sqrMagnitude<.001f)direction=Vector2.down;
    var half=page.rect.size*.5f-Vector2.one*layout.margin-GolfPresentationSettings.Current.holeGuideSize*.6f;
    half.x=Mathf.Max(1,half.x);half.y=Mathf.Max(1,half.y);
@@ -128,7 +132,9 @@ namespace WhatTheFish {
    if(!visible){if(cupGlow)cupGlow.enabled=false;return;}
    holeNumber.text=hole.number.ToString();targetEdgeArrow.sizeDelta=config.holeGuideSize;
    float pulse=MenuPreferences.ReducedMotion?1:1+.035f*Mathf.Sin(Time.unscaledTime*4);targetEdgeArrow.localScale=Vector3.one*pulse;
-   AimDirection(camera,hole.cup.position+Vector3.up*config.holeGuideWorldLift);
+   // Project the real cup, then offset its badge in screen space. Lifting a
+   // nearby world target above an aiming camera can send the pointer skyward.
+   AimDirection(camera,hole.cup.position+Vector3.up*.08f);
    if(!cupGlow){var node=new GameObject("Current cup aim halo");cupGlow=node.AddComponent<LineRenderer>();cupGlow.sharedMaterial=Resources.Load<Material>("GolfBallTrail");cupGlow.useWorldSpace=true;cupGlow.loop=true;cupGlow.positionCount=40;cupGlow.widthMultiplier=.022f;cupGlow.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;cupGlow.receiveShadows=false;}
    cupGlow.enabled=true;var tint=GolfHUDStyle.Gold;tint.a=guideOpacity.alpha*.65f;cupGlow.startColor=cupGlow.endColor=tint;
    for(int i=0;i<40;i++){float a=i*Mathf.PI/20;cupGlow.SetPosition(i,hole.cup.TransformPoint(new Vector3(Mathf.Cos(a)*(hole.cupRadius+.12f),.015f,Mathf.Sin(a)*(hole.cupRadius+.12f))));}

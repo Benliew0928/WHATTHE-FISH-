@@ -9,7 +9,7 @@ namespace WhatTheFish {
    Check(!match.ReviewEventHotkey(KeyCode.F5),"F5_SWAP_REMOVED");var ball=match.Ball(local);var home=ball.Body.position;
    var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.layer=8;floor.name="Event response fixture";floor.transform.position=home+Vector3.up*35;floor.transform.localScale=new Vector3(180,.2f,180);Physics.SyncTransforms();var origin=floor.transform.position+Vector3.up*(.102f+GolfBall.Radius);
    var normal=new GolfShotPlan();normal.Build(origin,Vector3.forward,.35f,GolfShotMode.Swing,match.Course,ball.PhysicsSettings);
-   foreach(var kind in GolfEventSchedule.RandomKinds){
+   foreach(var kind in GolfEventSchedule.RandomKinds.Where(k=>!GolfHazardRules.IsHazard(k))){
     match.ReviewEventHotkey((KeyCode)((int)KeyCode.F1+(int)kind-1));var conditions=match.ShotConditions(GolfShotMode.Swing);var plan=new GolfShotPlan();plan.Build(origin,Vector3.forward,.35f,GolfShotMode.Swing,match.Course,ball.PhysicsSettings,conditions);
     if(kind==GolfEventKind.TropicalWind)Check(plan.EndPoint.x>normal.EndPoint.x+2,"WIND_PREVIEW_DEFLECTS_BY_METRES");
     if(kind==GolfEventKind.StickyGreen)Check(plan.Resting&&plan.Velocities[plan.Count-1]==Vector3.zero,"STICKY_PREVIEW_ENDS_AT_STOP");

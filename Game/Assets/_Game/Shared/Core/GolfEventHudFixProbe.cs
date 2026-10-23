@@ -9,8 +9,8 @@ namespace WhatTheFish {
   IEnumerator EventHudFixPresentation(){
    yield return StartMatch();yield return new WaitForSeconds(.3f);
    var hud=GolfEventHUD.Instance;var atlas=Resources.Load<Texture2D>("GolfUI/Events/BadgeSheet");var warningAtlas=Resources.Load<Texture2D>("GolfUI/Events/WarningSheet");
-   var art=hud.Card.GetComponentsInChildren<GolfEventBadgeGraphic>(true).First(a=>a.name=="Golf weather badge");var clock=art.GetComponentInChildren<Text>(true);int materialChanges=0;UnityEngine.Events.UnityAction changed=()=>materialChanges++;art.RegisterDirtyMaterialCallback(changed);
-   var state=match.Events.Snapshot;state.kind=GolfEventKind.StickyGreen;state.start=match.Now+10;state.end=state.start+GolfEventSchedule.Duration(state.kind);state.nextCycle=state.start+90;state.rushAt=0;match.Events.Receive(state);
+   var art=hud.Card.GetComponentsInChildren<GolfEventBadgeGraphic>(true).First(a=>a.name=="Golf weather badge");var clock=art.GetComponentsInChildren<Text>(true).First(t=>t.name=="Event seconds");int materialChanges=0;UnityEngine.Events.UnityAction changed=()=>materialChanges++;art.RegisterDirtyMaterialCallback(changed);
+   var state=match.Events.Snapshot;state.kind=GolfEventKind.StickyGreen;state.start=match.Now+10;state.end=state.start+GolfEventSchedule.Duration(state.kind);state.nextCycle=state.start+GolfEventSchedule.Cycle;state.rushAt=0;match.Events.Receive(state);
    yield return null;yield return new WaitForEndOfFrame();Check(art.Sheet==warningAtlas&&art.Badge==5&&materialChanges>0,"WARNING_ATLAS_DIRTIES_CANVAS_MATERIAL");
    var font=clock.font;int size=clock.fontSize;var style=clock.fontStyle;var outline=clock.GetComponent<Outline>();var color=outline.effectColor;var offset=outline.effectDistance;int before=materialChanges;
    for(int second=10;second>=1;second--){
@@ -24,8 +24,8 @@ namespace WhatTheFish {
    float end=Time.unscaledTime+2;while(art.Badge==5&&Time.unscaledTime<end)yield return null;yield return new WaitForEndOfFrame();
    Check(art.Badge==2&&art.Sheet==atlas&&materialChanges>before,"WARNING_END_REBINDS_ACTIVE_EVENT_ATLAS");Check(!clock.GetComponent<GolfWarningGradient>().enabled&&clock.fontStyle==FontStyle.Normal&&clock.enabled,"ACTIVE_EVENT_SECONDS_STYLE_RESTORED");
    CaptureUI("transition-initial",null,0,0,0,false);art.SetAllDirty();Canvas.ForceUpdateCanvases();CaptureUI("transition-forced-refresh",null,0,0,0,false);
-   foreach(var kind in GolfEventSchedule.RandomKinds){
-    state=match.Events.Snapshot;state.kind=kind;state.start=match.Now+.4;state.end=state.start+GolfEventSchedule.Duration(kind);state.nextCycle=state.start+90;match.Events.Receive(state);yield return new WaitForSeconds(.15f);yield return new WaitForEndOfFrame();Check(art.Badge==5&&art.Sheet==warningAtlas,"REPEATED_WARNING_"+kind);
+   foreach(var kind in GolfEventSchedule.RandomKinds.Where(k=>!GolfHazardRules.IsHazard(k))){
+    state=match.Events.Snapshot;state.kind=kind;state.start=match.Now+.4;state.end=state.start+GolfEventSchedule.Duration(kind);state.nextCycle=state.start+GolfEventSchedule.Cycle;match.Events.Receive(state);yield return new WaitForSeconds(.15f);yield return new WaitForEndOfFrame();Check(art.Badge==5&&art.Sheet==warningAtlas,"REPEATED_WARNING_"+kind);
     yield return new WaitForSeconds(.4f);yield return new WaitForEndOfFrame();Check(art.Badge==(int)kind-1&&art.Sheet==atlas,"CORRECT_EVENT_TYPE_"+kind);CaptureUI("active-"+kind,null,0,0,0,false);
    }
    match.ReviewEventHotkey(KeyCode.F6);yield return null;yield return new WaitForEndOfFrame();Check(hud.Card.GetComponentsInChildren<GolfEventBadgeGraphic>(true).Where(a=>a.gameObject.activeInHierarchy).All(a=>a.Sheet==atlas)&&hud.Card.GetComponentsInChildren<GolfEventBadgeGraphic>(true).Count(a=>a.gameObject.activeInHierarchy)==2,"RUSH_AND_WEATHER_USE_EVENT_ATLAS");

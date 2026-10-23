@@ -6,7 +6,8 @@ namespace WhatTheFish {
   public const int HoleCount=5;
   public ulong PlayerId {get;}
   public string PlayerName {get;}
-  public int CurrentHole=>Math.Min(CompletedHoleCount+1,HoleCount);
+  internal int RouteCode=12345;
+  public int CurrentHole=>GolfMatchState.RouteHole(RouteCode,CompletedHoleCount);
   public int CompletedHoleCount {get;private set;}
   public int CurrentHoleStroke {get;private set;}
   public int TotalStroke {get;private set;}

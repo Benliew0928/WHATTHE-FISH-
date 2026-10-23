@@ -19,7 +19,7 @@ namespace WhatTheFish {
   GolfHoleTrigger sinkingCup;Vector3 sinkFrom;float sinkAt;
   public bool Sinking=>sinkingCup;
   internal bool TryCupCapture(GolfHoleTrigger cup){
-   if(!bound||!match||!match.Authority||!Live||!match.Context||!match.State.Running||Sinking||!cup)return false;
+   if(!bound||!match||!match.Authority||!Live||!match.Context||!match.State.Running||Sinking||HazardHeld||!cup)return false;
    var entry=Body.position;
    if(!cup.Contains(entry)&&!cup.CrossingPoint(previous,entry,out entry))return false;
    var local=cup.transform.InverseTransformPoint(entry);

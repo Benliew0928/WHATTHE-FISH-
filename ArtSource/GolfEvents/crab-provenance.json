@@ -1,0 +1,13 @@
+{
+  "authoring": "Codex-assisted local Blender generator; no Lux3D task or external download",
+  "master": "CrossingCrab.blend",
+  "delivery": "../../Game/Assets/_Game/Art/Golf/Events/CrossingCrab.fbx",
+  "triangles": [
+    2168,
+    1056
+  ],
+  "bones": 11,
+  "externalImages": 0,
+  "externalLibraries": 0,
+  "fbxSha256": "e7202f0417ec39de51896fa03fd17fb97e0a657947e0085b038277d1437f4550"
+}

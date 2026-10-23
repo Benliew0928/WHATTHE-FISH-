@@ -9,7 +9,7 @@ namespace WhatTheFish {
    var app=AppRoot.Instance;var local=app.LocalAthlete;var helper=Instantiate(app.athletePrefab).GetComponent<Athlete>();helper.Setup();
    ulong id=GolfCartWorld.Key(local);bool ready=false;float until=Time.time+18;while(!ready&&Time.time<until){ready=match.StartTestMatch(new[]{(id,local,"You"),(101UL,helper,"Other")});if(!ready)yield return null;}Check(ready,"BADGE_MATCH_STARTED");yield return new WaitForSeconds(.8f);
    var hud=GolfEventHUD.Instance;Check(hud&&Resources.Load<Texture2D>("GolfUI/Events/BadgeSheet"),"SUPPLIED_BADGE_ATLAS_LOADED");
-   foreach(var kind in GolfEventSchedule.RandomKinds){int i=(int)kind-1;
+   foreach(var kind in GolfEventSchedule.RandomKinds.Where(k=>!GolfHazardRules.IsHazard(k))){int i=(int)kind-1;
     match.ReviewEventHotkey((KeyCode)((int)KeyCode.F1+i));yield return null;yield return new WaitForEndOfFrame();
     var art=hud.Card.GetComponentsInChildren<GolfEventBadgeGraphic>().Single(a=>a.enabled);Check(art.Badge==i,"CORRESPONDING_BADGE_"+i);
     var label=art.GetComponentInChildren<Text>();string first=label.text;Check(first.EndsWith("s"),"LIVE_SECONDS_"+i);Canvas.ForceUpdateCanvases();Check(label.cachedTextGenerator.vertexCount>4,"SECONDS_GLYPHS_RENDER_"+i);CaptureUI("badge-"+i,null,0,0,0,false);

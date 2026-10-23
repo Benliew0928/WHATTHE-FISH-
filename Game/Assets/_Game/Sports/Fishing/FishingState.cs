@@ -75,7 +75,7 @@ namespace WhatTheFish {
    DealSkills(round);if(!competitive)for(int i=0;i<Players.Count;i++){var p=Players[i];p.item=Match.offer0;Players[i]=p;}
   }
   public bool Start(IEnumerable<ulong> owners,uint round,double now,FishingMode mode){
-   var ids=owners.Distinct().OrderBy(i=>i).ToArray();if(ids.Length<1||ids.Length>5||mode==FishingMode.Crew&&ids.Length<2||!AllReady||!ids.SequenceEqual(Players.Where(p=>p.connected).Select(p=>p.owner).OrderBy(i=>i))||Match.phase==FishingRoundPhase.Playing||Preparing)return false;
+   var ids=owners.Distinct().OrderBy(i=>i).ToArray();if(ids.Length<1||ids.Length>5||mode==FishingMode.Crew&&ids.Length<2||!ids.SequenceEqual(Players.Where(p=>p.connected).Select(p=>p.owner).OrderBy(i=>i))||Match.phase==FishingRoundPhase.Playing||Preparing)return false;
    bool continuing=mode==FishingMode.Cup&&Match.mode==mode&&Match.phase==FishingRoundPhase.Ended&&Match.cupValid&&!Match.cupFinished&&ids.SequenceEqual(Players.Select(p=>p.owner).OrderBy(i=>i));
    var old=Players.ToArray();int cup=continuing?Match.cupRound+1:1;byte offset=(byte)(Match.phase==FishingRoundPhase.Ended?(Match.wantedOffset+1)%SizeCount:0);Begin(ids,round,now,false);
    for(int i=0;i<Players.Count;i++){var p=Players[i];p.ready=true;p.item=FishingAbility.None;if(continuing){var previous=old.First(q=>q.owner==p.owner);p.cupPoints=previous.cupPoints;p.cupScore=previous.cupScore;}Players[i]=p;}
@@ -165,7 +165,7 @@ namespace WhatTheFish {
      bool boosted=p.active==FishingAbility.PowerReel&&now<p.activeUntil,steel=p.active==FishingAbility.SteelWire&&now<p.activeUntil,buddy=p.active==FishingAbility.FishingBuddy&&now<p.activeUntil;
      // Limited early winding assist: mainly trims longer fights, without automatic progress.
       if(now-p.phaseAt<5)speed+=.18f;
-     if(boosted)speed*=1.3f;if(buddy)speed*=1.2f;
+     if(boosted)speed*=1.55f;if(buddy)speed*=1.45f;
      // Restore continuous winding. Catch progress still comes from the real
      // spring/drag line simulation, rather than a timed stroke or score shortcut.
      p.lineLength=Mathf.Clamp(p.lineLength+(countering?-speed:p.held?.04f:.16f)*step,.9f,p.castDistance+1);
@@ -177,8 +177,8 @@ namespace WhatTheFish {
      p.distance=Mathf.Clamp(p.distance+p.velocity*step,.9f,p.castDistance+1.2f);
      // A little more recovery room, while large surges still punish uninterrupted reeling.
      float strainRate=countering?(.09f+.05f*size)*.94f:p.held?.15f+.075f*size:-.35f;
-     if(strainRate>0){if(steel)strainRate=0;if(buddy)strainRate*=.8f;}
-     if(p.bubbleGuard&&p.surge>.75f){p.strain=Mathf.Max(0,p.strain-.22f);p.bubbleGuard=false;p.activeUntil=now;}
+     if(strainRate>0){if(steel)strainRate=0;if(buddy)strainRate*=.6f;}
+     if(p.bubbleGuard&&p.surge>.75f){p.strain=Mathf.Max(0,p.strain-.35f);p.bubbleGuard=false;p.activeUntil=now;}
      p.strain=Mathf.Clamp01(p.strain+strainRate*step);FightMotion(ref p,step,mass);
      p.tension=Mathf.Clamp01(Mathf.Max(0,p.distance-p.lineLength)*8/6.85f+p.strain);
      if(steel){

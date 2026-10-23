@@ -17,6 +17,15 @@ namespace WhatTheFish {
  public sealed class GolfMatchState {
   public const double FinalCountdownSeconds=30;
   readonly Dictionary<ulong,GolfPlayerState> players=new();
+  public int RouteCode {get;private set;}=12345;
+  public static bool ValidRoute(int code){int mask=0;for(int i=0;i<5;i++){int n=code%10;code/=10;if(n<1||n>5||(mask&(1<<n))!=0)return false;mask|=1<<n;}return code==0&&(mask&2)!=0;}
+  public static int RouteHole(int code,int completed){if(!ValidRoute(code))code=12345;for(int i=0;i<4-Math.Min(completed,4);i++)code/=10;return code%10;}
+  public void ShuffleRoute(uint seed){
+   if(players.Values.Any(p=>p.CompletedHoleCount>0||p.TotalStroke>0))return;
+   var route=new[]{1,2,3,4,5};var rng=new Random(unchecked((int)(seed^0x68bc21eb)));
+   for(int i=4;i>1;i--){int j=rng.Next(1,i+1);(route[i],route[j])=(route[j],route[i]);}
+   RouteCode=0;foreach(int hole in route)RouteCode=RouteCode*10+hole;foreach(var p in players.Values)p.RouteCode=RouteCode;
+  }
   public IReadOnlyCollection<GolfPlayerState> Players=>players.Values;
   public GolfMatchPhase Phase {get;private set;}
   public double StartedAt {get;private set;}
@@ -60,10 +69,10 @@ namespace WhatTheFish {
    return results;
   }
   static bool SameScore(GolfPlayerState a,GolfPlayerState b)=>a.IsFinished&&b.IsFinished&&a.TotalStroke==b.TotalStroke&&a.FinishTime==b.FinishTime;
-  public void Clear(){players.Clear();Phase=GolfMatchPhase.Idle;StartedAt=CountdownDeadline=0;FirstFinisher=ulong.MaxValue;}
+  public void Clear(){players.Clear();RouteCode=12345;Phase=GolfMatchPhase.Idle;StartedAt=CountdownDeadline=0;FirstFinisher=ulong.MaxValue;}
   internal void Receive(GolfMatchSnapshot match,IEnumerable<(ulong id,GolfPlayerSnapshot state)> roster){
-   Clear();Phase=match.phase;StartedAt=match.started;CountdownDeadline=match.deadline;FirstFinisher=match.firstFinisher;
-   foreach(var item in roster){if(!item.state.valid||item.state.round!=match.round)continue;var p=new GolfPlayerState(item.id,item.state.name.ToString());p.Receive(item.state);players.Add(item.id,p);}
+   Clear();Phase=match.phase;StartedAt=match.started;CountdownDeadline=match.deadline;FirstFinisher=match.firstFinisher;RouteCode=ValidRoute(match.routeCode)&&RouteHole(match.routeCode,0)==1?match.routeCode:12345;
+   foreach(var item in roster){if(!item.state.valid||item.state.round!=match.round)continue;var p=new GolfPlayerState(item.id,item.state.name.ToString()){RouteCode=RouteCode};p.Receive(item.state);players.Add(item.id,p);}
   }
  }
 }

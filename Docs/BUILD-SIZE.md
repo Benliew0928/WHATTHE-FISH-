@@ -1,5 +1,98 @@
 # Build size — measured release records
 
+## Golf event rotation, random routes and shared awards - 23 October 2026
+
+Based on `a374059` with the reviewed Golf hazards and Golf/Fishing round
+changes. Network protocol **79** requires matching builds.
+
+Golf events start every **60 seconds**. Seeded five-event bags cover all five
+before repeating and avoid repeats at bag boundaries; an early finish can
+end before the five-minute rotation completes. Tornado contact radius is
+3.5 metres, with larger visuals and preferred 14-20 metre dry throws. Narrow
+fairways use checked shorter throws. Same-size crabs pursue nearby balls,
+animate stronger claw hits and launch balls with a per-owner cooldown.
+Queued club contact cannot undo a hazard launch.
+
+Hole 1 stays first; the other four holes use one shared host-shuffled route.
+The route, progress, event sequence and flight cues survive snapshots. The
+cup guide projects the cup itself and handles near/behind-camera targets.
+Short screen taps skip shot/hazard flight follow without stopping the ball.
+Golf and Fishing reuse court models, poses and UI for skippable team/winner
+awards, hiding and restoring live controls/equipment. Shared winners retain
+group framing. Fishing skills have longer/stronger effects and useful cooldowns;
+School Call attracts up to five free fish closer to the pier. The misleading
+pre-hook arrow above Jump is removed. See [Golf rules](GOLF-HAZARDS.md) and
+[Fishing skill values](FISHING-ABILITIES.md).
+
+Fresh official AndroidSubmission APK: **111,341,614 -> 111,342,842
+bytes (+1,228)**. Remaining strict decimal-GB headroom:
+**888,657,158 bytes**. Budget gate, ZIP CRC, five-scene bundle/catalog
+integrity and independent APK v2 signature verification passed. Android Debug
+signing is retained for local testing. SHA-256: **9737CACA876F91D2D5383B142C434A49D181921B8CE2B7EE62637E62776D1434**.
+
+Largest compressed APK entries: `assets/PackagedContent/islands.bundle` **45,230,789**; `lib/arm64-v8a/libil2cpp.so` **12,646,199**; `lib/arm64-v8a/libunity.so` **9,808,819**; `assets/bin/Data/Managed/Metadata/global-metadata.dat` **2,800,759** bytes.
+The fresh size audit and entry growth were reviewed; no unexpected large
+asset duplication was found. No additional character model or texture set was
+needed for these round changes; prior illustrated hazard masters remain editable.
+
+Validation: **13 asset checks**, **14 focused round-rule checks**,
+**38 rendered runtime checks**, **580 current C# hashes**,
+**524 art/resource/source hashes** and **326 complete Windows runtime/support
+hashes**. Phone input/FPS and live WAN multiplayer remain untested. Broad
+unchanged sport suites were not rerun. The temporary local-only SDK listing
+workaround was restored byte-for-byte after building.
+
+The complete tested player is in `Builds/WindowsFinal/`. Current evidence is
+ignored `Builds/GolfFishingPolish/Task-20261023-172827/`. The archive batch is
+recorded there in `delivery-archive.txt`. Git publication follows the user's
+explicit request to push to `main`.
+
+## Golf hazards, illustrated weather and simpler Fishing rounds - 23 October 2026
+
+Source: `a374059` plus local changes. Tornado and Crab Crossing join the random
+Golf pool. Events now start every **70 seconds**, with a ten-second warning
+and 45-second duration. Host-controlled hazards preserve stroke counts, cup
+safe areas and existing shot rules. Protocol is **78**; every peer needs the
+updated build. The carried-ball lock survives ordinary match updates and
+blocks queued club contact.
+
+The line spiral is replaced by a curved shaded condensation body, billowing
+vapor, a compact storm cloud and rotating ground dust. Golf's background clouds
+are smaller and farther away, with shared travel scenery restored on exit.
+Imagegen badges and vapor preserve alpha; three delivery PNGs total **411,125
+bytes** before Unity packing. Full masters and exact prompts are retained.
+The editable local Blender crab uses 2,168 / 1,056 triangles and four shared
+solid materials. See [hazards and asset provenance](GOLF-HAZARDS.md).
+
+Fishing uses the default three-minute Round and one host Start / Play Again
+control. Ready, mode selection, Free and nickname entry are removed from the
+island leaderboard. Shared skill selection/countdown and the existing fishing
+mechanics remain. Results have one Close action.
+
+Fresh official AndroidSubmission: actual APK **110,590,846 ->
+111,341,614 bytes (+750,768)**. Remaining strict decimal-GB
+headroom: **888,658,386 bytes**. Budget gate, ZIP CRC, five-scene
+catalog/bundle hash and independent APK v2 verification passed. Existing
+Android Debug signing is retained for local testing. SHA-256:
+**C2B4253FB94DC383973FCA391CAB6183D531660774931305B60AA90789126477**.
+
+Largest compressed APK entries: `assets/PackagedContent/islands.bundle` **45,238,326**; `lib/arm64-v8a/libil2cpp.so` **12,638,797**; `lib/arm64-v8a/libunity.so` **9,808,819**; `assets/bin/Data/Managed/Metadata/global-metadata.dat` **2,799,421** bytes.
+The fresh size audit was reviewed; generated art is bounded and no unexpected
+large asset duplication was found.
+
+Validation: **13 editor preparation checks**, **26 focused rendered runtime
+checks**, **578 current C# hashes**, **524 art/resource/source hashes** and
+**326 complete Windows player/support/launcher hashes**. Physical-phone input,
+FPS and WAN play remain untested. Broad unchanged sport suites were not rerun.
+The installed SDK's supported local-package list avoided a stalled remote
+metadata fetch; its launcher was restored byte-for-byte afterward.
+
+Current evidence: ignored `Builds/GolfHazards/Task-20261023-135847/`.
+The complete tested player is in `Builds/WindowsFinal/`. The superseded complete
+player/APK is recoverable from
+`Legacy/20261023-153738-660-golf-hazards-fishing-round-delivery/`.
+Git publishing remains with the user.
+
 ## Golf crossing assistance, clearer events, Fishing skills and menus - 22 October 2026
 
 Source: `03409e7` plus local changes. Ground-level cup crossings now drop in

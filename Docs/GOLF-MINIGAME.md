@@ -1,5 +1,14 @@
 # Golf mini game
 
+Current random events use a **60-second cycle**, ten-second warning and
+45-second duration. Tornado and Crab Crossing join Wind, Sticky Green and
+Bounce Party; see [hazard rules and animation](GOLF-HAZARDS.md). Current network
+protocol is **79**; protocol numbers in dated change records below are historical.
+Each five-event bag covers every event before repeating. A short match can
+finish before the full five-minute rotation. Hole 1 opens every round; the
+remaining four are shuffled identically for everyone. Tap the screen to skip
+ball-flight follow. Golf and Fishing share the courts' awards models and poses.
+
 Current owner-only aim/swing policy and circular address refinements: [18 October change record](GOLF-ADDRESS-AND-COUNTDOWN-20261018.md). Historical helper test descriptions below predate this policy.
 
 ## V5 controls restored - 14 October 2026
@@ -24,7 +33,7 @@ was extended to 90 m without changing the shot model.
 
 Enter Golf offline, or start the host's ready room, then select **Start golf match**. Only the offline player or host can start or restart a match. The existing character movement, three camera modes, golf carts and group island travel remain available. Returning to the lobby or leaving the island clears the round without producing a result.
 
-All five existing numbered aqua flags and cups remain present and open together. Each participant gets one ball at the first existing tee and an independent target starting at Hole 1. Completing a hole places only that owner's ball at the next existing tee; characters continue moving normally. After Hole 5 the player is Finished, their target indicator disappears, and their ball is excluded from further swings.
+All five existing numbered aqua flags and cups remain present and open together. Each participant gets one ball at the first existing tee and an independent target starting at Hole 1. All players share a host-shuffled order for the remaining four physical holes. Completing a hole places only that owner's ball at the next existing tee; characters continue moving normally. After completing all five holes the player is Finished, their target indicator disappears, and their ball is excluded from further swings.
 
 At match start, each existing ball rests on a small wooden support at its
 opening Hole 1 position. The [reference and editable generator](../ArtSource/Golf/Tee/README.md)
@@ -38,11 +47,11 @@ material and tiny texture; no new ball, scoring rule or network field is added.
 
 ## Rules and authority
 
-- Complete holes strictly in order, 1 through 5. Cup detection checks the ball's permanent owner and that owner's current target.
+- Complete Hole 1, then follow the shared random order of the remaining four holes, each once. Cup detection checks the ball's permanent owner and that owner's current target.
 - Every accepted swing adds one to the hitter's current-hole strokes and total strokes. Only the ball owner may aim at or strike it; foreign requests are rejected before a stroke is recorded.
 - Progress, finish state, finish time and accepted swings belong to the ball owner. Striking another player's ball is not permitted.
 - Entering another cup or crossing the shoreline restores the struck ball to its last shot position, stops its motion and preserves all scores. Recovery adds no penalty stroke. The recovery anchor updates whenever its owner hits that ball, and starts at the tee for a new hole.
-- The first Hole 5 completion stores elapsed time from match start and starts one shared **30-second** countdown. Later finishers never change its deadline.
+- The first completion of all five holes stores elapsed time from match start and starts one shared **30-second** countdown. Later finishers never change its deadline.
 - End immediately when all participants have finished, or when that deadline is reached. The latter marks all remaining participants DNF, preserving their completed holes and total strokes.
 - There is no global, single-hole, AFK or maximum-duration timer before the first finisher.
 - Finished players rank ahead of DNF, by total strokes ascending, then elapsed finish time ascending. Equal strokes and equal finish time share a rank and a Tie marker. DNF remains in roster order and receives no competitive rank.

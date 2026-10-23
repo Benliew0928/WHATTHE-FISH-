@@ -15,7 +15,7 @@ namespace WhatTheFish {
     s.Begin(new ulong[]{0,1},seed,0,false);var peer=new FishingState();peer.Begin(new ulong[]{1,0},seed,0,false);var offers=Enumerable.Range(0,3).Select(s.Offer).ToArray();
     check(offers.Distinct().Count()==3&&offers.All(FishingAbilityRules.Valid)&&offers.Any(FishingAbilityRules.BeforeCast)&&offers.Any(a=>!FishingAbilityRules.BeforeCast(a))&&offers.SequenceEqual(Enumerable.Range(0,3).Select(peer.Offer)),"SHARED_DISTINCT_BALANCED_DRAFT_"+seed);
    }
-   s.Begin(new ulong[]{0,1},91,0,false);foreach(var q in s.Players.ToArray())s.Act(q.owner,91,q.sequence,FishingAction.Ready,0,Vector3.zero,0);
+   s.Begin(new ulong[]{0,1},91,0,false);check(s.Players.All(q=>!q.ready),"HOST_START_TEST_HAS_NO_READY_PLAYERS");
    check(s.Start(new ulong[]{0,1},92,0,FishingMode.Round)&&s.Preparing&&s.Match.phase==FishingRoundPhase.Drafting&&!s.Running&&s.Match.deadline==0,"DRAFT_PRECEDES_COUNTDOWN_AND_MATCH_CLOCK");
    check(!A(0,FishingAction.ChooseSkill,257,0)&&!A(0,FishingAction.ChooseSkill,-1,0)&&!A(0,FishingAction.ChooseSkill,0,0)&&!A(0,FishingAction.UseAbility,-1,0),"DRAFT_REJECTS_WRAPPED_INVALID_AND_EARLY_USE");
    var excluded=FishingAbilityRules.Roster.First(a=>!s.Offered(a));check(!A(0,FishingAction.ChooseSkill,(int)excluded,0),"UNOFFFERED_SKILL_CANNOT_BE_FORGED");

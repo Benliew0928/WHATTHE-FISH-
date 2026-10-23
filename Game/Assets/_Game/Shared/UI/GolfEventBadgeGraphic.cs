@@ -10,8 +10,8 @@ namespace WhatTheFish {
   // atlas must invalidate both, or event UVs sample the previous warning sheet.
   public Texture2D Sheet {get=>sheet;set{if(sheet==value)return;sheet=value;SetAllDirty();}}
   public int Badge {get=>badge;set{if(badge==value)return;badge=value;SetVerticesDirty();}}
-  static readonly Rect[] Bounds={new(14,105,734,261),new(746,108,709,258),new(1454,125,701,245),new(297,375,823,303),new(1120,410,795,245),new(0,0,1983,793)};
-  static readonly Rect[] Times={new(609,228,91,56),new(1313,229,91,56),new(2029,230,91,56),new(938,512,92,59),new(1781,526,91,56),new(930,278,670,295)};
+  static readonly Rect[] Bounds={new(14,105,734,261),new(746,108,709,258),new(1454,125,701,245),new(297,375,823,303),new(1120,410,795,245),new(0,0,1983,793),new(0,0,768,289),new(0,0,768,277)};
+  static readonly Rect[] Times={new(609,228,91,56),new(1313,229,91,56),new(2029,230,91,56),new(938,512,92,59),new(1781,526,91,56),new(930,278,670,295),new(588,162,144,46),new(584,134,146,43)};
   static readonly float[] Empty={610,1321,2032,935,1785,910};
   public static Rect Crop(int index)=>Bounds[index];
   public static Rect TimeBox(int index)=>Times[index];
@@ -23,6 +23,7 @@ namespace WhatTheFish {
     void V(float x,float y,float u,float v){var p=UIVertex.simpleVert;p.color=color;p.position=new Vector2(r.xMin+(x-crop.x)/crop.width*r.width,r.yMax-(y-crop.y)/crop.height*r.height);p.uv0=new Vector2(u/Sheet.width,1-v/Sheet.height);vh.AddVert(p);}
     V(x0,y0,u0,v0);V(x1,y0,u1,v0);V(x1,y1,u1,v1);V(x0,y1,u0,v1);vh.AddTriangle(n,n+1,n+2);vh.AddTriangle(n,n+2,n+3);
    }
+   if(Badge>=6){Quad(0,0,crop.width,crop.height,0,0,crop.width,crop.height);return;}
    if(Badge==5){
     const float split=1440,lower=368;
     Quad(0,0,crop.width,time.yMin,0,0,crop.width,time.yMin);

@@ -24,7 +24,7 @@ namespace WhatTheFish {
      if((phase==FishingRoundPhase.Drafting||phase==FishingRoundPhase.Practice)&&!p.skillPicked){
       Intent="Choose round skill";action=FishingAction.ChooseSkill;fish=(int)game.State.Offer(Slot%3);
      }else if(phase==FishingRoundPhase.Practice||phase==FishingRoundPhase.Ended){
-      Intent="Ready";if(!p.ready&&!p.Busy)action=FishingAction.Ready;
+      Intent="Wait for host";
      }else if(phase==FishingRoundPhase.Playing){
       if(p.phase==FishingPhase.Ready){
        Intent="Choose fish";float best=float.NegativeInfinity;

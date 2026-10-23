@@ -51,9 +51,11 @@ can take over; releasing an older finger cannot stop it. Timestamp, ownership,
 cast/round tokens, scoring, fish claims and ability validity remain host-controlled.
 Repeated commands without simulation time never create progress or points.
 
-Round, Cup, Crew, Wanted, six skills with one choice from a shared three-card draft, 2/5/10 points, seven-second
-respawns and results remain. Competitive rounds last three minutes. Crew requires
-20 points times starting players, all sizes and a catch from everyone.
+The live island uses the default three-minute Round. The host starts it
+directly without Ready flags or a mode picker. Wanted, six skills with one
+choice from a shared three-card draft, 2/5/10 points, seven-second respawns
+and results remain. Legacy Cup/Crew state is retained for compatibility but
+is not selectable in the current island UI.
 
 ## Shared sports artwork and editable layout
 

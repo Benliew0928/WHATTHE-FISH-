@@ -107,6 +107,7 @@ namespace WhatTheFish {
    pendingCart=driving?GolfCartAction.Leave:GolfCartAction.Drive;pendingCartOwner=cart.Owner;
   }
   void Update(){
+   if(UpdateGolfReplayInput())return;
    if(!active||InputBlocked||!target||target.inTransit||FootballMatch.BlocksActions&&!FootballMatch.CanAimKickoff(target)||GolfMatchManager.BlocksMovement||FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay){CancelInput();return;}
    if(EventSystem.current&&EventSystem.current.currentSelectedGameObject){var field=EventSystem.current.currentSelectedGameObject.GetComponent<UnityEngine.UI.InputField>();if(field&&field.isFocused){CancelInput();return;}}
    UpdateTargetPassInput();UpdateFishingTargetInput();UpdateCountersteerKeyboard();

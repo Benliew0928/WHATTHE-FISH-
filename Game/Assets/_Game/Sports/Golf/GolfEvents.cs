@@ -5,7 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 
 namespace WhatTheFish {
- public enum GolfEventKind:byte { None=0,TropicalWind=1,StickyGreen=3,BounceParty=4 }
+ public enum GolfEventKind:byte { None=0,TropicalWind=1,StickyGreen=3,BounceParty=4,Tornado=5,CrabCrossing=6 }
  // Conditions are captured per shot; preview and authority share this response.
  public struct GolfShotConditions:INetworkSerializable,IEquatable<GolfShotConditions> {
   public GolfEventKind kind;public Vector3 wind;
@@ -28,11 +28,11 @@ namespace WhatTheFish {
   public bool Equals(GolfEventSnapshot b)=>kind==b.kind&&last==b.last&&sequence==b.sequence&&seed==b.seed&&start==b.start&&end==b.end&&nextCycle==b.nextCycle&&rushAt==b.rushAt&&wind==b.wind;
  }
  public sealed class GolfEventSchedule {
-  public const double Cycle=90,Warning=10,RushDelay=1,RushDuration=30;
+  public const double Cycle=60,Warning=10,RushDelay=1,RushDuration=30;
   public const double WeatherDuration=45;
   public const float WindAcceleration=2.6f;
-  public static IReadOnlyList<GolfEventKind> RandomKinds {get;}=Array.AsReadOnly(new[]{GolfEventKind.TropicalWind,GolfEventKind.StickyGreen,GolfEventKind.BounceParty});
-  public static bool IsRandom(GolfEventKind kind)=>kind==GolfEventKind.TropicalWind||kind==GolfEventKind.StickyGreen||kind==GolfEventKind.BounceParty;
+  public static IReadOnlyList<GolfEventKind> RandomKinds {get;}=Array.AsReadOnly(new[]{GolfEventKind.TropicalWind,GolfEventKind.StickyGreen,GolfEventKind.BounceParty,GolfEventKind.Tornado,GolfEventKind.CrabCrossing});
+  public static bool IsRandom(GolfEventKind kind)=>kind is GolfEventKind.TropicalWind or GolfEventKind.StickyGreen or GolfEventKind.BounceParty or GolfEventKind.Tornado or GolfEventKind.CrabCrossing;
   public GolfEventSnapshot Snapshot {get;private set;}
   public static double Duration(GolfEventKind kind)=>IsRandom(kind)?WeatherDuration:0;
   // Only the authority starts a schedule. Use independent OS entropy per match;
@@ -44,6 +44,17 @@ namespace WhatTheFish {
   public void Begin(double started,uint seed){Snapshot=new GolfEventSnapshot{nextCycle=started+Cycle,seed=seed};}
   public void Receive(GolfEventSnapshot value){Snapshot=value;}
   public void Clear(){Snapshot=default;}
+  // A seeded bag covers every event once. Its boundary cannot repeat the
+  // preceding bag's last item; sequence + seed also survive host migration.
+  static GolfEventKind[] Bag(uint seed,uint bag){
+   var result=new GolfEventKind[RandomKinds.Count];for(int i=0;i<result.Length;i++)result[i]=RandomKinds[i];
+   var rng=new System.Random(unchecked((int)(seed+bag*104729)));
+   for(int i=result.Length-1;i>0;i--){int j=rng.Next(i+1);(result[i],result[j])=(result[j],result[i]);}return result;
+  }
+  public static GolfEventKind ScheduledKind(uint seed,uint sequence){
+   uint bag=sequence/(uint)RandomKinds.Count;int slot=(int)(sequence%(uint)RandomKinds.Count);var order=Bag(seed,bag);
+   if(bag>0&&order[0]==Bag(seed,bag-1)[^1])(order[0],order[1])=(order[1],order[0]);return order[slot];
+  }
   public GolfEventKind Active(double now)=>IsRandom(Snapshot.kind)&&now>=Snapshot.start&&now<Snapshot.end?Snapshot.kind:GolfEventKind.None;
   public bool WarningActive(double now)=>IsRandom(Snapshot.kind)&&now<Snapshot.start&&now>=Snapshot.start-Warning;
   public bool RushActive(double now)=>Snapshot.rushAt>0&&now>=Snapshot.rushAt&&now<Snapshot.rushAt+RushDuration;
@@ -61,8 +72,7 @@ namespace WhatTheFish {
    }
    if(state.nextCycle<=0||now<state.nextCycle-Warning||state.start==state.nextCycle){Snapshot=state;return;}
    var rng=new System.Random(unchecked((int)(state.seed+state.sequence*7919)));
-   int previous=-1;for(int i=0;i<RandomKinds.Count;i++)if(RandomKinds[i]==state.last)previous=i;
-   int index=rng.Next(RandomKinds.Count-(previous>=0?1:0));if(previous>=0&&index>=previous)index++;var kind=RandomKinds[index];
+   var kind=ScheduledKind(state.seed,state.sequence);
    state.sequence++;state.kind=state.last=kind;state.start=state.nextCycle;state.end=state.start+Duration(kind);
    float angle=(float)(rng.NextDouble()*Math.PI*2);state.wind=new Vector3(Mathf.Cos(angle),0,Mathf.Sin(angle))*WindAcceleration;
    state.nextCycle+=Cycle;while(state.nextCycle<=now)state.nextCycle+=Cycle;Snapshot=state;

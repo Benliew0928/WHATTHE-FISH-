@@ -44,9 +44,9 @@ namespace WhatTheFish {
    var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;
    bool context=game&&game.Context&&view&&view.active&&p.HasValue;
    if(!context){panel.gameObject.SetActive(false);skillRect.gameObject.SetActive(false);observed=false;return;}
-   var player=p.Value;bool practice=game.State.Match.phase==FishingRoundPhase.Practice&&!player.skillPicked;
+   var player=p.Value;bool practice=false;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-   if(DevelopmentProbe.TurnCommandActive&&!ReviewPracticeChoice)practice=false;
+   practice=ReviewPracticeChoice&&game.State.Match.phase==FishingRoundPhase.Practice&&!player.skillPicked;
 #endif
    bool choose=game.State.Match.phase==FishingRoundPhase.Drafting||practice;
    choose&=!(owner.Tutorial&&owner.Tutorial.Visible)&&!(owner.IslandMenu&&owner.IslandMenu.Visible)&&!(owner.Results&&owner.Results.Visible)&&!FishingCeremony.Presenting;

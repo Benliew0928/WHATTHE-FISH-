@@ -6,10 +6,10 @@ namespace WhatTheFish {
  public sealed class FishingTutorialUI:MonoBehaviour {
   public static readonly string[] Titles={"PICK 1 OF 3","CAST & CATCH","USE YOUR SKILL","PLAY TO WIN"};
   public static readonly string[] Copy={
-   "Ready up. Before each round, everyone sees the same three skills.\nPick one for this round.\nYour skill can be reused after its cooldown.",
+   "The host starts the round. Everyone sees the same three skills.\nPick one for this round.\nYour skill can be reused after its cooldown.",
    "Aim at a free fish. Tap Cast when teal.\nTap Hook when ! appears.\nHold the glowing Left or Right button.\nSwitch when the glow changes sides.\nRelease on red rope; hold again when cool.",
    "Your skill button sits beside Cast / Right.\nIt appears when the skill can be used.\nBright: tap to use. Dim clock: recharging.\nA bright draining ring shows the active effect.",
-   "Small 2  /  Medium 5  /  Large 10 points.\nWanted fish: +3 once per minute.\nRound: most points after 3 minutes.\nCrew: shared target = 20 x players. All sizes; everyone catches."
+   "Small 2  /  Medium 5  /  Large 10 points.\nWanted fish: +3 once per minute.\nMost points after 3 minutes wins.\nThe host can start another round."
   };
   public const string SeenKey="fishing.tutorial.round-skill.v1";
   RectTransform frame,overlay,card;Text title,body,count;Image picture;Button next,back;Text nextLabel;Action closed;int step;bool embedded,entryObserved;

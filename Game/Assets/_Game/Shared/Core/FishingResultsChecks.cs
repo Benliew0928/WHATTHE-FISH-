@@ -74,9 +74,8 @@ namespace WhatTheFish {
      Click(ui.CloseButton,check,"CLOSE_"+tag);yield return Frame();check(ui.FitsSafeFrame(),"RESULT_REOPEN_BUTTON_INSIDE_SAFE_FRAME_"+tag);Click(ui.ReopenButton,check,"REOPEN_"+tag);yield return Frame();
     }
     Screen.SetResolution(1600,900,false);yield return new WaitForSeconds(.4f);safe.anchorMin=Vector2.zero;safe.anchorMax=Vector2.one;safe.offsetMin=safe.offsetMax=Vector2.zero;yield return Frame();
-    ui.ReadyButton.onClick.Invoke();var command=app.view.ReadCommand();check(!ui.Visible&&command.fishingAction==FishingAction.Ready&&command.fishingRound==round,"RESULT_READY_CLOSE_QUEUES_EXISTING_READY_ACTION_ONCE");
-    check(game.Execute(app.LocalAthlete,command.fishingAction,command.fishingRound,command.fishingSequence)&&game.Player(app.LocalAthlete).Value.ready,"RESULT_READY_COMMAND_ACCEPTED_BY_HOST_RULES");
-    ui.Open();ui.Tick(game,app.LocalAthlete,true);ui.ReadyButton.onClick.Invoke();command=app.view.ReadCommand();check(!ui.Visible&&command.fishingAction==FishingAction.None&&game.Player(app.LocalAthlete).Value.ready,"ALREADY_READY_CLOSE_NEVER_TOGGLES_UNREADY");
+    ui.CloseButton.onClick.Invoke();var command=app.view.ReadCommand();check(!ui.Visible&&command.fishingAction==FishingAction.None,"RESULT_CLOSE_DOES_NOT_QUEUE_READY_ACTION");
+    ui.Open();ui.Tick(game,app.LocalAthlete,true);ui.CloseButton.onClick.Invoke();command=app.view.ReadCommand();check(!ui.Visible&&command.fishingAction==FishingAction.None,"REOPEN_AND_CLOSE_NEVER_CHANGES_PLAYER_READINESS");
     match.round=++round;match.mode=FishingMode.Cup;match.cupRound=3;match.cupValid=match.cupFinished=true;game.State.Receive(match,players,savedFish);ui.Tick(game,app.LocalAthlete,true);yield return Frame();
     check(ui.Visible&&ui.Title=="CUP RESULTS"&&ui.CardRect.Find("Fishing final standing 0/Fishing final cup points 0").GetComponent<Text>().text=="12"&&ui.CardRect.Find("Fishing final standing 0/Fishing final cup catch 0").GetComponent<Text>().text=="112","CUP_RESULTS_SEPARATE_ROUND_AND_TOTAL_POINTS");
     check(ui.CardRect.Find("Fishing final standing 0/Fishing final rank 0").GetComponent<Text>().text=="1"&&ui.CardRect.Find("Fishing final standing 1/Fishing final rank 1").GetComponent<Text>().text=="1","CUP_TIE_RETAINS_SHARED_RANK");Capture(report,"cup-results");

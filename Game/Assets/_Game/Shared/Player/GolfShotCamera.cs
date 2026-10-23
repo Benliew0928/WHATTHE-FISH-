@@ -10,6 +10,26 @@ namespace WhatTheFish {
   Quaternion golfCameraRotation;
   public bool GolfShotCameraActive=>golfCameraPhase!=GolfCameraPhase.None;
   public bool GolfFollowingBall=>golfCameraPhase==GolfCameraPhase.Flight;
+  uint observedHazardLaunch,observedHazardRound;GolfBall observedHazardBall;
+  Vector2 replayPress;float replayPressedAt=-1;
+  public bool SkipGolfReplay(){if(!GolfFollowingBall||Time.time-golfCameraAt<.45f)return false;ReturnFromGolfShot();return true;}
+  bool UpdateGolfReplayInput(){
+   if(!GolfFollowingBall){replayPressedAt=-1;return false;}
+   if(Input.GetMouseButtonDown(0)){replayPress=Input.mousePosition;replayPressedAt=Time.unscaledTime;}
+   if(Input.GetMouseButtonUp(0)&&replayPressedAt>=0){bool tap=Time.unscaledTime-replayPressedAt<.4f&&Vector2.Distance(replayPress,Input.mousePosition)<24;replayPressedAt=-1;if(tap)return SkipGolfReplay();}
+   for(int i=0;i<Input.touchCount;i++){var touch=Input.GetTouch(i);if(touch.phase==TouchPhase.Began){replayPress=touch.position;replayPressedAt=Time.unscaledTime;}else if(touch.phase==TouchPhase.Ended&&replayPressedAt>=0){bool tap=Time.unscaledTime-replayPressedAt<.4f&&Vector2.Distance(replayPress,touch.position)<24;replayPressedAt=-1;if(tap)return SkipGolfReplay();}}
+   return false;
+  }
+  void ObserveGolfHazard(){
+   var match=GolfMatchManager.Instance;var ball=match&&match.Context?match.Ball(target):null;
+   if(!ball){observedHazardBall=null;return;}
+   if(observedHazardBall!=ball||observedHazardRound!=match.Round){observedHazardBall=ball;observedHazardRound=match.Round;observedHazardLaunch=ball.HazardLaunch;return;}
+   if(observedHazardLaunch==ball.HazardLaunch)return;observedHazardLaunch=ball.HazardLaunch;
+   if(InputBlocked||!active||!match.State.Running)return;
+   followedGolfBall=ball;golfCameraActor=target;golfCameraRound=match.Round;golfCameraReset=ball.ResetSequence;
+   golfCameraPhase=GolfCameraPhase.Flight;golfCameraAt=Time.time;golfCameraStill=0;
+   golfCameraFrom=transform.position;golfCameraRotation=transform.rotation;golfCameraFocus=golfCameraPrevious=ball.transform.position;golfCameraVelocity=Vector3.zero;
+  }
 
   void WatchGolfShot(GolfBall ball){
    followedGolfBall=ball;golfCameraActor=target;golfCameraRound=GolfMatchManager.Instance.Round;
@@ -25,6 +45,7 @@ namespace WhatTheFish {
   }
   static float GolfCameraEase(float t){t=Mathf.Clamp01(t);return t*t*t*(t*(t*6-15)+10);}
   void PresentGolfShotCamera(ref Vector3 position,ref Quaternion rotation){
+   ObserveGolfHazard();
    if(golfCameraPhase==GolfCameraPhase.None)return;
    var match=GolfMatchManager.Instance;
    if(!match||!match.Context||match.Round!=golfCameraRound||target!=golfCameraActor||target.inTransit){ResetGolfShotCamera();return;}
