@@ -12,7 +12,7 @@ namespace WhatTheFish {
    bool ready=PlayerView.Instance&&!PlayerView.Instance.InputBlocked&&athlete&&athlete.TackleReady;button.interactable=ready;
    float cooldown=athlete?athlete.TackleCooldown:0;
    if(illustrated)return;
-   label.text=cooldown>.05f?$"Tackle\n{cooldown:F1}s":Application.isMobilePlatform?"Tackle":"Tackle\nE";
+   label.text=cooldown>.05f?$"Tackle\n{cooldown:F1}s":"Tackle";
   }
   public void OnPointerDown(PointerEventData data){if(data.button==PointerEventData.InputButton.Left&&button.interactable){PlayerView.Instance.RequestTackle();GetComponent<FootballActionSwipe>()?.Capture(data);}}
  }

@@ -1,5 +1,563 @@
 # APK size audit — measured release records
 
+## Open type labels and activity cameras — 23 October 2026
+
+Official AndroidSubmission completed at **21:21 Malaysia time**. Actual APK:
+**113,342,826 -> 113,344,522 bytes (+1,696)**; strict-cap headroom:
+**886,655,478 bytes**. SHA-256:
+**9EFC70C3405A0B4F7F57CD66E71D18178EAB37A85C0FA3178BE3E80AF0B60476**.
+The budget gate, ZIP CRC, all **1,238** exact compressed/uncompressed entry
+measurements, five-scene catalog/hash/size, APK v2 signature, native scanner
+assets, seven Java bridges and eight room-chat stickers passed. Release
+metadata includes the identity/activity-camera implementation and excludes its
+development review and filming types. **331** compiled Android runtime source
+hashes match the checkout.
+
+Largest compressed entries: islands **45,408,219** (-7,418), IL2CPP
+**12,767,728** (+8,730), Unity **9,809,041** (unchanged), metadata **2,816,268**
+(+309), and classes.dex **1,382,331** (unchanged). No new art, downscaling or
+unexpected large entry was introduced. The lossless scene bundle's size change
+does not represent a source-art quality reduction.
+
+The [feature report](PLAYER-IDENTITY-CAMERAS.md) describes the approved Open type
+labels and Golf/Fishing camera behavior. **935** assertions passed, including
+rendered checks at 1600x900, Fishing at 1280x800 and Golf at 1920x864; separate
+court-camera regression ran at 1280x720. The complete **334-file** Windows player
+matches the tested payload. **471** compiled Windows runtime hashes and all
+**628** `_Game` C# source hashes match. Device appearance/FPS remains unverified.
+
+Evidence: `Builds/PlayerIdentityCameraQA/` and `Builds/SizeAudit/latest/`.
+Recovery: `Legacy/20261023-212308-021-open-type-activity-cameras/` (superseded
+complete Windows player, prior APK/mapping/audit and intermediate captures).
+
+## Golf cinematic extension and current merged game — 23 October 2026
+
+Official AndroidSubmission completed around **20:28 Malaysia time**. Actual APK:
+**112,464,858 -> 113,342,826 bytes (+877,968)**; strict-cap headroom:
+**886,657,174 bytes**. SHA-256:
+**4D2731D19026318CCB13D948B67EED864B5696358BFE3E2BA7B37CBD2261246E**.
+The budget gate, ZIP CRC, all **1,238** exact entry measurements, five-scene
+bundle catalog/hash/size, APK v2 signature, native scan assets and seven Java
+bridges passed. All filming types, including `TrailerGolf`, are excluded from
+release metadata; current game hazards, room chat and shared controls remain.
+
+The preceding Android APK predated the completed Golf hazard work and current
+merge. Its largest new compressed entries are the storm puff texture **389,979**,
+Crab badge **97,529**, Tornado badge **83,679**, crab mesh **67,576**, and shared
+SimpleLit shader **55,100** bytes. The scene bundle is **45,415,637** (+141,621),
+IL2CPP **12,758,998** (+25,575), Unity **9,809,041** (+466), metadata **2,815,959**
+(+2,606), and classes.dex **1,382,331** (unchanged). The new filming fixture adds
+no art. No unexpected large contributor or new lossy conversion was introduced.
+These are compressed APK bytes; source PNG sizes and serialized asset reports
+measure different things.
+
+The [57.3-second review](TRAILER-PROTOTYPE.md) fully decodes to **1,719 frames**.
+The 334-file Windows player matches the candidate and preserves all 634 current
+C# files. Golf and the other sports passed 316 main assertions, with 89 extra
+Golf cancellation checks. Close crab and full tornado views were checked at
+1080p; phone quality/FPS and multiplayer filming remain unverified.
+
+Evidence and exact asset mappings: `Builds/TrailerPrototype/Revision7/` and
+`Builds/SizeAudit/latest/`. Recovery:
+`Legacy/20261023-203017-138-trailer-golf-delivery/`.
+
+## Trailer crowd and celebration review — 23 October 2026
+
+Fresh AndroidSubmission completed at **18:09 Malaysia time**. Actual APK:
+**111,093,062 -> 112,464,858 bytes (+1,371,796)** against the task's initial
+baseline; **887,535,142 bytes** remain below the strict decimal-GB limit.
+Compared with the concurrent control-art release below, the delta is **+3,284**.
+SHA-256:
+**C0C168E47D23AF30D931E9C086C5884D11180CE60AA9F07BB62C745EDD0D74AF**.
+Build/budget gate, ZIP CRC, all **1,224** exact entries, five-scene bundle
+catalog/hash/size, APK v2 signature, native scanner assets and seven Java
+bridges passed. Later code edits are development-only filming verification or
+whitespace. The release excludes all filming types and retains room chat and
+the current shared controls.
+
+Largest compressed entries: islands **45,274,016** (+29,721), IL2CPP
+**12,733,423** (+3,273), Unity **9,808,575** (unchanged), metadata **2,813,353**
+(+298), classes.dex **1,382,331** (unchanged). The three new control-art atlases
+account for **1,335,532** bytes of growth. No unexpected large contributor was
+introduced. The staged crowd reuses existing character art and animation;
+its pose meshes are created only during development filming. Instancing shader
+variants are retained by the character materials and their generator.
+
+The [46.9-second review](TRAILER-PROTOTYPE.md) fully decodes to 1,407 frames.
+Final Windows crowd readback, Football recording and complete payload hashes
+passed. Windows capture does not establish phone appearance/FPS or network
+spectator capacity. Evidence is under `Builds/TrailerPrototype/Revision6/`.
+Recovery: `Legacy/20261023-182615-960-trailer-crowd-windows/` and
+`Legacy/20261023-182541-322-trailer-crowd-android/`.
+
+## Approved shared control artwork — 23 October 2026
+
+Fresh AndroidSubmission completed at **17:58 Malaysia time**. Actual APK:
+**111,093,062 -> 112,461,574 bytes (+1,368,512)**, leaving **887,538,426 bytes**
+below the strict 1,000,000,000-byte limit. SHA-256:
+**19A83ACB878484909A83000BB45B5A04237BFA3C4F7E3C062BE122FEF8330507**.
+The build gate, ZIP CRC, all **1,224** audit entries, five-scene packaged-content
+catalog/hash/size and APK v2 signature passed.
+
+The three new shared control atlas entries total **1,335,532 compressed bytes**.
+Largest entries are islands **45,270,727** (+26,432), IL2CPP **12,733,423**
+(+3,273), Unity **9,808,572** (-3), metadata **2,813,360** (+305), classes.dex
+**1,382,331** (unchanged). No unexpected large contributor was introduced.
+The packed-assets report separately records roughly 2.10 MB of serialized
+texture data; that is not the APK delta or source-folder size.
+
+See [CONTROL-ART.md](CONTROL-ART.md) for source masters, reusable sprites and
+editing instructions. Full RGBA masters and reviewed designs remain editable;
+the Android importer uses ASTC 6×6 with alpha, matching the retained Fishing
+artwork. Windows captures do not establish physical-phone quality or FPS.
+Evidence is retained in `Builds/ApprovedControlsQA/SizeAudit/` and
+`apk-verification.json`. Previous delivery recovery:
+`Legacy/20261023-175227-897-approved-controls-android/`.
+
+## Complete cinematic trailer — 23 October 2026
+
+Fresh AndroidSubmission completed at **17:16 Malaysia time**. Actual APK:
+**111,098,026 -> 111,093,062 bytes (-4,964)**; strict-cap headroom:
+**888,906,938 bytes**. SHA-256:
+**63E5E0ADC293312F1706F78086FC9CAC444374513C0B1CF139FC3310F0C9A201**.
+ZIP CRC, all **1,220** exact audit entries, the five-scene bundle catalog/hash/
+size, APK v2 signature, native scanner assets and seven Java bridges passed.
+`TrailerJourney` and the existing filming types are absent from release metadata;
+room chat and shared-control types are present.
+
+Largest compressed entries are islands **45,244,295 bytes (-5,038)**, IL2CPP
+**12,730,150**, Unity **9,808,575**, metadata **2,813,055** and classes.dex
+**1,382,331** (all four unchanged). No new art, lossy asset conversion or
+unexpected asset growth was introduced. Exact differences and the preserved
+audit are under `Builds/TrailerPrototype/Revision5/`.
+
+The [full 41.5-second review](TRAILER-PROTOTYPE.md) fully decodes to **1,245
+frames**. The complete **331-file Windows payload** matches the tested candidate;
+its **617-C#-file** snapshot matches the checkout. **333 main assertions** and
+separate teleport/riding cancellation checks passed. Physical phone performance
+and multiplayer filming remain unverified.
+
+Recovery: `Legacy/20261023-171851-869-trailer-full-windows/` and
+`Legacy/20261023-172018-029-trailer-full-android/`. No extra Unity checkout/cache
+was created for this milestone.
+
+## Fishing filming extension — 23 October 2026
+
+Fresh AndroidSubmission, completed around **16:34 Malaysia time**:
+**111,107,490 -> 111,098,026 bytes (-9,464)**, leaving **888,901,974 bytes** under
+the strict 1,000,000,000-byte limit. APK SHA-256:
+**9E156E55DEF3E0FFA3435912BC4BD481622C11069EFD4430A19FEBBAB5B8722C**.
+ZIP CRC, all **1,220** audit entries, five-scene bundle catalog/hash/size,
+APK v2 signature, native scan assets and seven Java bridges passed.
+Room-chat and shared-control types are present; filming types remain excluded.
+
+The islands entry is **45,249,333 compressed bytes (-9,473)**. IL2CPP is
+**12,730,150 (+1)**, Unity **9,808,575 (+3)**, metadata **2,813,055 (+7)**, and
+classes.dex **1,382,331 (unchanged)**. There is no new art, lossy conversion or
+unexpected growth. Exact entry changes and the preserved audit are under
+`Builds/TrailerPrototype/Revision4/`.
+
+The [24-second filming review](TRAILER-PROTOTYPE.md) passed full decoding and
+**219** combined Fishing/Football/Basketball assertions. The complete **330-file
+WindowsFinal** matched the tested candidate; its **616-C#-file** snapshot matched
+the checkout at promotion, including final room chat and shared control designs.
+Physical phone controls/FPS and multiplayer filming remain unverified.
+
+Recovery: `Legacy/20261023-163205-790-trailer-fishing-windows/` and
+`Legacy/20261023-163925-624-trailer-fishing-android/`. Older inactive validation
+snapshots were compressed in place for SSD recovery; that preserves assets and
+does not reduce or change the delivered APK. See the private allocation evidence
+under `Builds/TrailerPrototype/Revision4/` for actual disk savings.
+
+## Room chat — final combined delivery, 23 October 2026
+
+Final actual APK: **111,107,490 bytes**, SHA-256
+**DF887352BE63413A31832E62F47AAA6F83B32849D8B38881AAE37212191C4B18**.
+Task-opening bytes were **110,721,046** (+386,444); immediately preceding bytes
+were **111,097,730** (+9,760). **888,892,510 bytes** remain below the strict cap.
+These deltas include concurrent control/filming releases and are not an isolated
+chat-only measurement. AndroidSubmission completed at 16:02:41 Malaysia time;
+all **321** compiled production documents match the final chat/control source.
+
+Independent ZIP CRC, all **1,220** entry sizes, five-scene catalog/hash, native
+scan assets, seven Java bridges and APK v2 signature passed. Chat types and all
+eight sticker resources are present; development chat review and filming types
+are absent. Largest compressed entries: islands **45,258,806** (+12,767),
+IL2CPP **12,730,149** (-3,429), Unity **9,808,572** (-3), metadata **2,813,048**
+(+294). Eight sticker entries total **344,607 bytes**. No unexpected art growth
+was found. Transparent masters remain intact; delivery sprites use 256px ASTC
+4×4 on Android. Phone appearance/performance still needs device review.
+
+The matching complete Windows candidate passed **356 chat assertions**, with
+all **453** compiled runtime documents verified. Its newer shared controls and
+both filming launchers were retained. Details and limits:
+[ROOM-CHAT.md](ROOM-CHAT.md) and [BUILD-SIZE.md](BUILD-SIZE.md).
+Evidence: `Builds/RoomChatQA/FinalReview/` and final port-7986/7987/7988 runs.
+The wrapper's unset-exit-code report and earlier failed builds are recorded;
+the successful Unity build plus independent checks validate this fresh APK.
+
+## Shared control designs — 23 October 2026
+
+All **24** layout-editable controls use the same presentation factories in
+Basketball, Football, Golf and Fishing, including both Layout editor contexts.
+See [design editing and verification](CONTROL-LAYOUT.md). No new artwork or
+lossy asset conversion was introduced. Existing layout preferences remain valid.
+
+The exact complete Windows player passed **2,586 assertions** (**1,185** normal,
+**1,401** with deliberate shared-design edits). All **329** payload files matched
+by SHA-256 when promoted to `Builds/WindowsFinal/`, before updating its delivery
+note. Its **453** compiled runtime source documents include the layout changes;
+three later concurrent room-chat documents are excluded from that Windows
+snapshot, as detailed in the control-layout report. The prior validated
+protocol-80 room chat, stickers and filming code are retained.
+
+Official **AndroidSubmission** succeeded; the APK was written at
+**16:02:40 Malaysia time**. The actual APK changed from the immediately preceding **111,097,730** to
+**111,107,490 bytes (+9,760)**. Headroom below the strict 1,000,000,000-byte
+cap is **888,892,510 bytes**. The task-opening APK was **110,720,790 bytes**;
+the intervening room-chat/filming releases account for much of that larger
+**+386,700-byte** difference. This is not an isolated control-code size delta.
+
+The build/budget gate, ZIP CRC, all **1,220** exact audit entries, five-scene
+catalog/bundle size and SHA-256, and APK **v2 signature** passed. Shared design
+classes are present in release metadata; the development mutation hook and
+layout review are absent. All **321** source documents in the stripped Android
+PDB matched the production checkout at verification, including the newer chat
+code; this later APK is a different source snapshot from the tested Windows
+player. Native QR/account/photo classes remain present. APK SHA-256:
+**DF887352BE63413A31832E62F47AAA6F83B32849D8B38881AAE37212191C4B18**.
+
+Largest compressed entries: islands **45,258,806** (+12,767), IL2CPP
+**12,730,149** (-3,429), Unity **9,808,572** (-3), metadata **2,813,048** (+294),
+and classes.dex **1,382,331** (unchanged) bytes. Growth is concentrated in the
+regenerated scene bundle and small runtime records. No unexpected artwork
+increase was found. Serialized asset totals are not APK byte measurements.
+
+Evidence: `Builds/SharedControlDesignQA/` (normal/mutation suites, source and
+player manifests, promotion hashes, portable-link checks, APK verification and
+signature) and `Builds/SizeAudit/latest/`. Current deliveries remain
+`Builds/WindowsFinal/` and `Builds/Android/WhatTheFish-release.apk`.
+The wrapper's post-build unset-exit-code check produced a false failure; Unity
+itself exited successfully and the exact APK passed independent verification.
+Historical Golf probe limitations are recorded separately in the layout report.
+Physical-phone touch, cutouts and FPS remain unverified.
+
+Recovery archives: `Legacy/20261023-154823-417-shared-controls-old-windows-bundle/`,
+`Legacy/20261023-155816-458-shared-controls-android/`, and
+`Legacy/20261023-160046-645-shared-controls-windows/`. The failed first Windows
+packaging log is retained as evidence; the tested release is the successful
+full rebuild after disk space became available.
+
+## Basketball filming extension — 23 October 2026
+
+The [sports filming guide](TRAILER-PROTOTYPE.md) now includes a **seven-second
+Basketball take** and a **17-second Football-to-Basketball edit**, both silent
+at 1920×1080 / 30 FPS. The exact player passed **68 Basketball and 70 Football
+assertions**. All 210/300 input frames and all **510 joined frames** decoded.
+The complete **329-file WindowsFinal** payload matched the tested candidate by
+SHA-256 before updating its delivery note.
+
+Official AndroidSubmission completed at **15:40:51 Malaysia time**. Actual APK:
+**110,720,790 -> 111,097,730 bytes (+376,940)**. Remaining headroom under the
+strict 1,000,000,000-byte cap is **888,902,270 bytes**. Build/budget gate, ZIP
+CRC, all **1,220** exact audit entries, five-scene catalog/bundle hash and size,
+APK v2 signature, native scanner assets and all seven QR/account/profile Java
+bridges passed. Filming types are absent from release metadata. APK SHA-256:
+**A1A03A4B888BE2B782D91B956CF43221615E054FC14458745630E82800B4EEB4**.
+
+This measured release preserves the already validated **protocol-80 room chat
+and eight stickers**. The eight sticker entries account for **344,607 compressed
+bytes**; their APK entry GUIDs match the RoomChat sprite metadata. Other largest
+entries: islands **45,246,039** (-7,150), IL2CPP **12,733,578** (+35,036), Unity
+**9,808,575** (+371), and metadata **2,812,754** (+2,207) bytes. Growth is
+consistent with the chat/sticker integration relative to the protocol-79 APK.
+This filming task adds no art, lossy conversion or release filming runtime.
+
+The tested **612-C#-file** snapshot includes chat production code and filming
+changes, but excludes the later concurrent control/HUD redesign. Differences
+are recorded in `Builds/TrailerPrototype/Revision3/concurrent-differences.json`.
+The new APK validates that snapshot, not the advancing shared checkout.
+Physical phone controls/FPS, native Android sign-in and actual multiplayer
+filming remain unverified by this task.
+
+Current outputs: `Builds/WindowsFinal/`,
+`Builds/Android/WhatTheFish-release.apk`, and
+`Builds/TrailerPrototype/Review-V3/Football-Basketball-Preview.mp4`.
+Evidence: `Builds/TrailerPrototype/Revision3/` (source/native/player manifests,
+APK verification, growth, signature and SizeAudit) and
+`Builds/TrailerPrototype/Review-V3/` (takes, assertions and decoded-video
+records). The edit reuses the approved Football MP4; the current player also
+has a separate successful Football regression capture.
+
+Recovery archives:
+`Legacy/20261023-151618-427-trailer-basketball-baseline/` (prior isolated
+Football candidate),
+`Legacy/20261023-153849-207-trailer-basketball-windows/` (prior complete
+protocol-80 player and two superseded camera drafts), and
+`Legacy/20261023-154320-666-trailer-basketball-android/` (prior APK/shared audit).
+
+## Faster cinematic prototype, revision 2 — 23 October 2026
+
+The revised [Football prototype](TRAILER-PROTOTYPE.md) is **10 seconds,
+eight shots, 1920×1080 at 30 FPS**. Low side tracking, a feet/ball close-up
+and a pitch-side goal view follow continuous gameplay across faster cuts.
+The exact Windows candidate passed **70 assertions** and all **300 video
+frames** decoded. The complete **328-file WindowsFinal** payload matched its
+tested candidate by SHA-256 before updating the delivery note.
+
+Official AndroidSubmission completed at **15:00:31 Malaysia time**. Actual
+APK: **110,721,046 -> 110,720,790 bytes (-256)**. Remaining headroom under the
+strict 1,000,000,000-byte cap: **889,279,210 bytes**. Build/budget gate, ZIP CRC,
+all **1,212** exact audit entries, five-scene catalog/bundle hash and size,
+APK v2 signature, native scanner assets and all seven QR/account/profile Java
+bridges passed. Filming types are absent from release metadata. APK SHA-256:
+**F7CEFF3593F585395D8F56EF192EB80209FC11F78802699C01FA16DCD9C57A52**.
+
+Largest compressed entries: islands **45,253,189** (-250), IL2CPP
+**12,698,542**, Unity **9,808,204**, metadata **2,810,547**, and classes.dex
+**1,382,331** bytes (last four unchanged). No new art, lossy conversion or
+unexpected growth was introduced.
+
+The tested protocol-79 snapshot is the previous validated **606 C# files**
+plus filming changes. Concurrent RoomChat work, including changes to
+RoomMigration, RoomService, PlayerView and AppRoot, is excluded. This build
+does not validate those advancing shared-checkout changes. Capture ran from
+a workspace containing spaces and an unrelated working directory. Staged
+offline footage and its fixed recording clock do not establish multiplayer
+filming, phone FPS/touch performance or native Android sign-in behavior.
+
+Current review: `Builds/TrailerPrototype/Review-V2/Football-Prototype.mp4`.
+The original 20-second review remains for comparison. Evidence:
+`Builds/TrailerPrototype/Revision2/` (source/native/player manifests,
+APK verification, signature and SizeAudit), and
+`Builds/TrailerPrototype/Review-V2/` (70 checks and video verification).
+Complete delivery locations remain `Builds/WindowsFinal/` and
+`Builds/Android/WhatTheFish-release.apk`.
+
+Recovery archives:
+`Legacy/20261023-145252-907-trailer-isolate-scope/` (accidental isolated WIP
+copy; shared source preserved),
+`Legacy/20261023-145847-103-trailer-v2-windows/` (prior complete player,
+duplicate test player and rejected camera draft), and
+`Legacy/20261023-150243-943-trailer-v2-android/` (prior APK and size audit).
+
+## Football filming prototype — 23 October 2026
+
+The first review milestone is a **20-second, 1920×1080, 30 FPS silent video**:
+four staged offline arrivals, native Football gameplay/HUD, Portal Steal and a
+physical scored goal. Golf filming and the full multi-sport/Skyrail story remain
+deferred. See the [prototype guide and review video](TRAILER-PROTOTYPE.md).
+
+The complete **328-file WindowsFinal** player matched its tested candidate by
+SHA-256 before updating its delivery note. The exact player passed **49
+assertions**, including cancellation/restoration in cinematic and gameplay
+shots. All **600 video frames** decoded with the expected 20-second duration.
+Recording ran with default script paths from a workspace containing spaces and
+an unrelated working directory. All **606 C# source files** matched the shared
+checkout at promotion; native Android sources were separately hash verified.
+Existing inbound-clearance, tutorial and passing changes are included.
+
+Official AndroidSubmission completed at **14:35:59 Malaysia time**. Actual APK:
+**110,718,422 -> 110,721,046 bytes (+2,624)** versus the immediately preceding
+inbound/tutorial release, or **+14,588** from this task's opening
+110,706,458-byte APK. Remaining headroom under the strict 1,000,000,000-byte
+cap is **889,278,954 bytes**. Build/budget gate, ZIP CRC, all **1,212** exact
+audit entries, the five-scene bundle catalog/hash/size, APK v2 signature, native
+scanner assets and all seven QR/account/profile Java bridges passed. Filming
+types are absent from release metadata. APK SHA-256:
+**9F58D01C8F2B4FE344311F053E7939FA96E83730B5CA93314C1BB7C1D4691F5B**.
+
+Largest compressed entries: islands **45,253,439** (+2,624), IL2CPP
+**12,698,542** (-5), Unity **9,808,204** (-1), metadata **2,810,547** (-1)
+bytes. Growth is concentrated in the regenerated scene bundle; no new art or
+lossy asset conversion was introduced. The initial isolated APK lacked native
+bridge source dependencies and was rejected, archived and rebuilt before
+promotion. It was never delivered as the current release.
+
+Current outputs: `Builds/WindowsFinal/`,
+`Builds/Android/WhatTheFish-release.apk`, and
+`Builds/TrailerPrototype/Review/Football-Prototype.mp4`.
+Evidence in `Builds/TrailerPrototype/`: source/native-source/player manifests,
+`Review/results.txt`, `Review/video-verification.json`,
+`apk-verification.json`, `apk-signature.txt`, and `SizeAudit/`.
+The fixed recording clock is not a real-time performance measurement. Physical
+phone touch/FPS, native Android sign-in and actual multiplayer filming remain
+unverified by this task.
+
+Recovery archives:
+`Legacy/20261023-142814-248-trailer-prototype-windows/` (prior complete player
+and draft outputs),
+`Legacy/20261023-143314-687-trailer-rejected-android/` (rejected candidate),
+and `Legacy/20261023-143654-296-trailer-prototype-android/` (prior release/audit).
+
+## Basketball inbound clearance and tutorial feedback — 23 October 2026
+
+The combined protocol **79** delivery adds an opponent-only inbound radius of
+**7.1628 m** (25% of the full court length), preserves teammate access and
+predictive passing, and includes the latest tutorial feedback/mobile wording.
+See [inbound behavior and verification](BASKETBALL-INBOUND-CLEARANCE.md) and
+[the tutorial report](GUIDED-TUTORIALS.md).
+
+Official AndroidSubmission completed at **14:20 Malaysia time**. Actual APK:
+**110,706,458 -> 110,718,422 bytes (+11,964)**. Remaining headroom under the
+strict 1,000,000,000-byte limit: **889,281,578 bytes**. The build/budget gate,
+ZIP CRC, all **1,212** exact audit entries, five-scene catalog/bundle size and
+SHA-256, and APK v2 signature passed. APK SHA-256:
+**D6C52B9F9DE64BE5D74D8CD02E9B9B5FFAB02551D8276D8B4073901F4CE469F8**.
+
+Largest compressed contributors: islands **45,250,815** (+2,128), IL2CPP
+**12,698,547** (+8,928), Unity **9,808,205** (unchanged), and metadata
+**2,810,548** (+635) bytes. Growth is small and concentrated in compiled code.
+No unexpected large contributor, new art or lossy asset conversion was introduced.
+
+The exact complete **327-file Windows candidate** passed **816 restart
+assertions** (403 offline, 405 host, 8 guest), **120 basketball passing
+assertions** (69/40/11), and **602 tutorial assertions across 58 lessons**.
+Restart tests used the default player path from a folder with spaces and an
+unrelated working directory. All payload files matched by SHA-256 when
+promoted to `Builds/WindowsFinal/`; only its delivery note was then updated.
+Phone touch/performance and real WAN latency remain unverified.
+
+The tested source snapshot contains **606 C# files**. At release audit, 603
+still matched; later concurrent edits to `Editor/TrailerBuild.cs`,
+`Shared/Core/TrailerDirector.cs` and `Shared/Core/TrailerDirector.Actions.cs`
+(relative to `Game/Assets/_Game/`) belong to separate trailer development.
+Those files are wholly editor/development-only; trailer types are absent from
+the release APK's IL2CPP metadata. The Windows player retains the validated
+snapshot, including the earlier trailer tooling, rather than those later edits.
+All inbound, passing and tutorial production sources matched.
+
+Current outputs: `Builds/Android/WhatTheFish-release.apk` and
+`Builds/WindowsFinal/`. Evidence under `Builds/InboundClearanceQA/`:
+`apk-verification.json`, `apk-signature.txt`, `SizeAudit/`,
+`source-candidate.json`, `player-final-manifest.json` and
+`Portable Review/Builds/BasketballRestartQA/`.
+Tutorial evidence is indexed in `Builds/TutorialFeedbackQA/tutorial-results.json`.
+
+Reviewed superseded outputs were archived in
+`Legacy/20261023-141310-049-inbound-clearance-candidates/`,
+`Legacy/20261023-141543-080-inbound-clearance-android/` and
+`Legacy/20261023-141810-027-inbound-clearance-windows/`.
+All build output and evidence remain ignored; publishing is left to the user.
+
+## Predictive passing and guided tutorials — 23 October 2026
+
+Combined protocol **79** delivery includes single-tap predictive passing in both
+sports, all four guided tutorial courses, and the current Friends/room UI.
+All **598 C# files** matched the frozen combined source snapshot after packaging.
+See [passing behavior and checks](TEAMMATE-PASSING.md) and
+[tutorial scope](GUIDED-TUTORIALS.md).
+
+Official AndroidSubmission completed at **13:23 Malaysia time**. The actual APK
+is **110,706,458 bytes**, up **40,376** from the immediately preceding
+110,666,082-byte Friends/room delivery, or **63,052** from this task's opening
+110,643,406-byte APK. Remaining headroom under the strict 1,000,000,000-byte
+cap is **889,293,542 bytes**. Build/budget gate, ZIP CRC, all **1,212** exact
+audit entries, five-scene catalog/bundle size and hash, and APK v2 signature
+passed. SHA-256:
+**CE75B2F297E4EB0019C84E6112AAC0FBB76DF2B80EBABBC5FDE6061DED7480FA**.
+
+Largest compressed entries versus the preceding delivery: islands
+**45,248,687** (-1,038), IL2CPP **12,689,619** (+36,488), Unity
+**9,808,205** (unchanged), metadata **2,809,913** (+6,135) bytes. Growth is
+primarily compiled gameplay/tutorial code and metadata. No unexpected large
+contributor, new art or lossy asset conversion was introduced.
+
+The complete **327-file WindowsFinal** player was verified against the tested
+candidate before its delivery-note update. The exact combined player passed
+**240 passing assertions**, including offline and local host/guest tests in
+both sports, from a folder with spaces and an unrelated working directory.
+Tutorial checks passed **201 assertions** across all **58 lessons**, including
+skip/resume/retry and quit cleanup. Protocol 78 was rejected in both directions
+before player spawn. Rendered controls and paths were inspected. Physical
+Android touch/FPS, native Android sign-in and real WAN latency remain unverified.
+
+Current outputs: `Builds/Android/WhatTheFish-release.apk` and the complete
+`Builds/WindowsFinal/` player. Durable evidence:
+`Builds/PredictivePassQA/apk-verification.json`, `apk-signature.txt`,
+`SizeAudit/`, `player-final-manifest.json`, `source-candidate.json`, and
+`Portable Review/Builds/TargetPassQA/`; tutorial evidence:
+`Builds/TutorialQA/Run-20261023-131827-993/` and `Run-20261023-131827-994/`.
+The reviewed preceding outputs were archived with hashes and recovery manifests
+to `Legacy/20261023-132008-386-predictive-pass-tutorial-android/` and
+`Legacy/20261023-132255-097-predictive-pass-tutorial-windows/`.
+
+## Friends and room lobby — 23 October 2026
+
+Task snapshot: `a374059` plus the opening online UI changes and Friends/room
+changes. This isolated delivery is **protocol 78**. Concurrent tutorial/passing
+work in the shared checkout is excluded; that source has advanced independently
+to protocol 79. See [scope and validation](FRIENDS-AND-ROOM-UI.md).
+
+AndroidSubmission completed at **13:12:37 Malaysia time**. Actual APK:
+**110,643,406 -> 110,666,082 bytes (+22,676)**; remaining headroom under the
+strict 1,000,000,000-byte cap: **889,333,918 bytes**. Build/budget gate, ZIP CRC,
+all **1,214** exact audit entries, five-scene catalog/bundle hash and APK v2
+signature passed. SHA-256:
+**8739A502851446237D2F49C018A19204ACA54718A500D9B8E22E06744863CCF5**.
+
+Largest compressed entries: islands **45,249,725** (+5,344), IL2CPP
+**12,653,131** (+13,920), Unity **9,808,205** (unchanged), metadata
+**2,803,778** (+1,773) bytes. Two generated performance-test metadata entries
+account for another **1,216** compressed bytes. No unexpected large contributor,
+new art or lossy asset conversion was introduced.
+
+The complete **327-file WindowsFinal** player was hash verified. The full menu
+suite passed **3,959 checks**, the final readiness-feedback host/guest run another
+**2,654**, and live profile-service/restart tests **143**. Six-peer capacity,
+spectator-host departure and a default-path promotion check passed **21 checks
+each**. All **587 C# input hashes** remain unchanged through Android packaging.
+Physical Android touch/appearance/FPS and real WAN latency remain unverified.
+
+Evidence: ignored `Builds/LobbyRefreshQA/`, `Builds/StorybookMenuQA/LobbyRefresh-Validated/`
+and `Builds/StorybookMenuQA/LobbyRefresh-Feedback/`. Current APK and audit are in
+`Builds/Android/` and `Builds/SizeAudit/latest/`. Archive batches and snapshot
+limits are recorded in the [task report](FRIENDS-AND-ROOM-UI.md).
+
+## Scene UI redesign with latest golf/fishing merge — 22 October 2026
+
+Source: **`a374059` plus uncommitted scene UI changes**. The requested pull
+fast-forwarded `4b92d90` through two commits and restored local work without
+conflicts. Shared testing uses **protocol 77**. In-world waiting, travel and
+recovery panels now use restrained charcoal surfaces over the actual islands;
+loading, readiness, cancellation, failures and leave actions have explicit
+states and recovery paths. The pulled golf events/cups, fishing durations and
+menu changes are included.
+
+Official AndroidSubmission at **21:26:10 Malaysia time**: actual APK
+**106,377,892 -> 110,643,406 bytes (+4,265,514)**, leaving **889,356,594 bytes**
+below the strict 1,000,000,000-byte cap. The pre-pull UI APK measured
+106,392,492 bytes; it was archived before rebuilding merged source. The official
+build gate, ZIP integrity, all **1,212 exact audit entries**, five-scene catalog
+hash and APK v2 signature checks passed. SHA-256:
+**B770BF1D49948101391430951873F06A6BFFDB952B8570FE445BE0F28AD98AD3**.
+
+Largest compressed entries: islands **45,244,381**, IL2CPP **12,639,211**,
+Unity **9,808,205**, metadata **2,802,005** bytes. Their task-opening deltas are
++152,446, +57,620, -252 and +11,864 bytes. The two large new resource entries
+are the pulled golf **WarningSheet (2,343,698)** and **BadgeSheet (1,692,260)**
+compressed bytes, confirmed by the packed layout. These explain most growth;
+no unexpected large contributor or additional lossy conversion was introduced.
+The scene UI itself reuses existing art/fonts.
+
+The complete **328-file WindowsFinal player** and its shared ZIP were hash
+verified, including extracted files. The ZIP is **437,624,006 bytes**. Final
+merged validation passed 287 scene checks, 534 teleport checks, 1,686 menu/lobby
+checks, 18 golf cup/event checks, 2,966 fishing rule/gameplay/skill checks and
+175 real cloud room checks. The extracted ZIP passed another 287 scene checks.
+The final fishing reset fix is covered by the final UI/fishing runs. Earlier
+merged suites retain unchanged relevant code. Before pull, 3,928 checks covered
+20-person repeated host handovers; those are not claimed as protocol-77 recovery
+testing. Physical Android touch/FPS, native sign-in and real WAN latency remain
+unverified; startup profile persistence was unavailable and recovery UI was tested.
+
+Evidence: ignored `Builds/OnlineUIQA/`, including `source-final.json` (584 C#
+input hashes), `SizeAuditMerged/`, `apk-verification.json`, `apk-signature.txt`,
+`player-manifest.json` and `zip-verification.json`. Full player/assets were built
+at 21:17 and final scripts at 21:21. The source hashes remained unchanged through
+Android packaging. Generator-only golf ball IDs were restored after a semantic
+serialized-property comparison. See [scope, verification and archive batches](ONLINE-UI-REDESIGN.md).
+
 ## Golf event rotation, random routes and shared awards - 23 October 2026
 
 Based on `a374059` with the reviewed Golf hazards and Golf/Fishing round

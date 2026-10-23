@@ -41,7 +41,7 @@ namespace WhatTheFish {
    if(s.phase==BasketballMatchPhase.TeamSelection||s.phase==BasketballMatchPhase.Countdown)clock.text=Math.Ceiling(Math.Max(0,s.deadline-m.Now)).ToString();
    if(s.phase==BasketballMatchPhase.Buzzer)clock.text="00:00";
    if(s.phase==BasketballMatchPhase.Cancelled)clock.text="VOID";
-   shot.text=s.phase==BasketballMatchPhase.Restart?CharacterIdentity.TeamName(s.possession).ToUpperInvariant()+(m.RestartReady?" · PASS TO OPEN":" · COLLECTING BALL"):m.Running&&s.possession!=FootballTeam.None?"SHOT CLOCK  "+Math.Ceiling(Math.Max(0,s.shotDeadline-m.Now)):"";
+   shot.text=s.phase==BasketballMatchPhase.Restart?CharacterIdentity.TeamName(s.possession).ToUpperInvariant()+(m.RestartReady?" · PASS TO OPEN":BasketballBall.Active.InboundPending&&!m.InboundSpaceClear?" · CLEARING SPACE":" · COLLECTING BALL"):m.Running&&s.possession!=FootballTeam.None?"SHOT CLOCK  "+Math.Ceiling(Math.Max(0,s.shotDeadline-m.Now)):"";
    team.text=own==FootballTeam.None?"":"YOU: "+CharacterIdentity.TeamName(own).ToUpperInvariant();
    bool canOffer=m.Authority&&m.MatchMode&&!m.Active;start.gameObject.SetActive(canOffer);start.interactable=m.CanStart;startText.text=!m.CanStart?"Even teams: 4-10 players":s.phase==BasketballMatchPhase.Idle?"Start match":"New match";
    var bots=BasketballBots.Instance;bool offer=canOffer&&m.Room&&bots;botSizes.gameObject.SetActive(offer);botsButton.gameObject.SetActive(offer);
@@ -52,7 +52,7 @@ namespace WhatTheFish {
    if(selecting&&solo)clock.text="READY";
    chooseAText.text=solo?(own==FootballTeam.A?"Blue  ✓":"Blue"):"Blue  "+s.teamA+" / "+s.capacity;chooseBText.text=solo?(own==FootballTeam.B?"Red  ✓":"Red"):"Red  "+s.teamB+" / "+s.capacity;
    chooseA.interactable=selecting&&(own==FootballTeam.A||s.teamA<s.capacity);chooseB.interactable=selecting&&(own==FootballTeam.B||s.teamB<s.capacity);
-   hint.text=own==FootballTeam.None?(solo?"Pick a side, then start when you're ready.":"Unselected players are assigned when time expires."):CharacterIdentity.TeamName(own)+" selected";
+   hint.text=own==FootballTeam.None?(solo?"Pick a side, then start when you're ready.":"Auto-assignment in "+Math.Ceiling(Math.Max(0,s.deadline-m.Now))+"s"):CharacterIdentity.TeamName(own)+" selected"+(solo?"":" · Starts in "+Math.Ceiling(Math.Max(0,s.deadline-m.Now))+"s");
   }
  }
 }

@@ -76,16 +76,17 @@ namespace WhatTheFish {
    b.transition=Selectable.Transition.None;label=Text(node,value,Vector2.zero,node.sizeDelta-new Vector2(16,6),25);
    node.gameObject.AddComponent<BasketballButtonFeedback>();node.gameObject.AddComponent<GolfFishingButtonSound>();return b;
   }
+  Button DesignButton(RectTransform node,string id,out Text label){var design=ControlDesigns.Build(node,SportId.Fishing,id);label=design.Label;var button=ControlDesigns.BindButton(design);node.gameObject.AddComponent<GolfFishingButtonSound>();return button;}
   void Build(){
    aim=Graphic(Rect("Fishing aim reticle",page,Vector2.zero,layout.aimSize,layout.aimAnchor),FishingStickerGraphic.Kind.Aim,Cream);aim.raycastTarget=false;
    aimTarget=Graphic(Rect("Selected fish brackets",page,Vector2.zero,layout.aimSize*.85f),FishingStickerGraphic.Kind.Aim,Teal);aimTarget.value=0;aimTarget.raycastTarget=false;
-   action=Button((RectTransform)transform,"AIM AT A FISH",Gold,out actionLabel);actionLabel.rectTransform.anchoredPosition=new Vector2(0,-58);actionLabel.rectTransform.sizeDelta=new Vector2(164,64);actionLabel.fontSize=27;actionLabel.color=Color.white;InkOutline(actionLabel,1);action.GetComponent<FishingStickerGraphic>().UseIllustration("ReelButton");
-   leftControl=Rect("Fishing countersteer left",page,Vector2.zero,layout.actionSize);var left=Button(leftControl,"HOLD LEFT",Teal,out leftLabel);leftLabel.rectTransform.anchoredPosition=layout.fightLabelPosition;leftLabel.rectTransform.sizeDelta=layout.fightLabelSize;leftLabel.fontSize=24;leftLabel.resizeTextForBestFit=true;leftLabel.resizeTextMinSize=18;leftLabel.resizeTextMaxSize=24;leftLabel.text="LEFT";
+   action=DesignButton((RectTransform)transform,"cast",out actionLabel);
+   leftControl=Rect("Fishing countersteer left",page,Vector2.zero,ControlDesigns.Size(SportId.Fishing,"left"));var left=DesignButton(leftControl,"left",out leftLabel);
    leftPlate=left.GetComponent<FishingStickerGraphic>();leftButton=leftControl.gameObject.AddComponent<FishingCounterButton>();leftButton.side=-1;leftControl.gameObject.SetActive(false);
    action.GetComponent<BasketballButtonFeedback>().FixedFishingLabels=true;left.GetComponent<BasketballButtonFeedback>().FixedFishingLabels=true;
-   actionLabel.resizeTextForBestFit=true;actionLabel.resizeTextMinSize=18;actionLabel.resizeTextMaxSize=28;
-   cancel=Button(Rect("Fishing cancel",page,Vector2.zero,layout.cancelSize),"CANCEL",CancelRed,out var cancelText);cancel.GetComponent<FishingStickerGraphic>().UseSolidPanel();cancelText.fontSize=23;float crossSize=layout.cancelSize.y*.34f;cancelText.rectTransform.anchoredPosition=new Vector2(crossSize*.5f,0);cancelText.rectTransform.sizeDelta=new Vector2(layout.cancelSize.x-crossSize-18,layout.cancelSize.y-12);Graphic(Rect("Fishing cancel X",cancel.transform,new Vector2(-layout.cancelSize.x*.5f+crossSize*.8f,0),Vector2.one*crossSize),FishingStickerGraphic.Kind.Close,Ink).raycastTarget=false;cancel.onClick.AddListener(()=>PlayerView.Instance?.CancelFishing());
+   cancel=DesignButton(Rect("Fishing cancel",page,Vector2.zero,layout.cancelSize),"cancel",out _);cancel.onClick.AddListener(()=>PlayerView.Instance?.CancelFishing());
    board=Rect("Lagoon sticker leaderboard",page,new Vector2(20,-20),new Vector2(365,370),new Vector2(0,1));board.pivot=new Vector2(0,1);Graphic(board,FishingStickerGraphic.Kind.Panel,Cream);
+   CharacterIdentityBadges.ReserveHUD(board);
    var header=Text(board,"LAGOON CUP",new Vector2(13,0),new Vector2(295,45),30,Ink);header.rectTransform.anchorMin=header.rectTransform.anchorMax=new Vector2(.5f,1);header.rectTransform.anchoredPosition=new Vector2(14,-31);
    Graphic(Rect("Header fish",board,new Vector2(30,-32),new Vector2(49,42),new Vector2(0,1)),FishingStickerGraphic.Kind.Fish,Teal);
    var tutorial=Button(Rect("Fishing tutorial help",board,new Vector2(331,-31),new Vector2(38,38),new Vector2(0,1)),"?",Teal,out var question);question.font=SportsUIStyle.TextFont;question.fontSize=22;question.rectTransform.sizeDelta=new Vector2(30,34);tutorial.onClick.AddListener(()=>{var g=FishingGame.Instance;var v=PlayerView.Instance;if(g&&v&&g.Player(v.target) is FishingPlayerRecord p&&!p.Busy&&!BlocksGameplay)Tutorial?.Open();});
@@ -135,11 +136,8 @@ namespace WhatTheFish {
    var jumpImage=jumpControl.GetComponent<Image>();if(jumpImage)jumpImage.enabled=false;
    var jb=jumpControl.GetComponent<JumpButton>();if(jb)jb.enabled=false;
    var original=jumpControl.GetComponent<Button>();if(original)original.enabled=false;
-   jumpControl.sizeDelta=Vector2.one*128;
-   var native=BasketballUIStyle.Center(jumpControl,"Sports jump button",Vector2.one*64,Vector2.zero,Vector2.one*.5f);native.localScale=Vector3.one*2;
-   var plate=native.gameObject.AddComponent<BasketballPlate>();plate.radius=Vector2.one*24;plate.border=2.5f;plate.inset=3;plate.shadow=5;plate.color=CoveUI.Cream;plate.raycastTarget=true;
-   var button=native.gameObject.AddComponent<Button>();button.targetGraphic=plate;button.transition=Selectable.Transition.None;button.navigation=new Navigation{mode=Navigation.Mode.None};
-   BasketballUIStyle.Art(native,BasketballIcon.Jump,16,3,32,32);var jump=native.gameObject.AddComponent<JumpButton>();jump.button=button;jump.illustrated=true;jump.label=BasketballUIStyle.Text(native,"Jump",4,33,56,28,13,true,TextAnchor.MiddleCenter);native.gameObject.AddComponent<BasketballButtonFeedback>();
+   var jumpDesign=ControlDesigns.Build(jumpControl,SportId.Fishing,"jump");var native=jumpDesign.Visual;var button=ControlDesigns.BindButton(jumpDesign,inputRoot:native);
+   var jump=native.gameObject.AddComponent<JumpButton>();jump.button=button;jump.illustrated=true;jump.label=jumpDesign.Label;
   }
   void IconControl(RectTransform control,FishingStickerGraphic.Kind kind,string name){
    foreach(var label in control.GetComponentsInChildren<Text>())label.enabled=false;
@@ -217,8 +215,7 @@ namespace WhatTheFish {
 
    var actionGraphic=action.GetComponent<FishingStickerGraphic>();actionGraphic.Refresh(1,Gold);
    bool directionalControl=fighting;
-   actionLabel.rectTransform.anchoredPosition=directionalControl?layout.fightLabelPosition:new Vector2(0,-58);actionLabel.rectTransform.sizeDelta=directionalControl?layout.fightLabelSize:new Vector2(164,64);
-   actionLabel.color=directionalControl?Ink:Color.white;actionLabel.GetComponent<Outline>().enabled=!directionalControl;
+   ControlDesigns.FishingActionCaption(actionLabel,directionalControl);
    if(!fighting){actionGraphic.UseIllustration("ReelButton");actionGraphic.TintIllustration(Color.white);}
    var group=action.GetComponent<CanvasGroup>()??action.gameObject.AddComponent<CanvasGroup>();group.alpha=action.interactable?1:.76f;
    leftControl.gameObject.SetActive(fighting);moveControl.gameObject.SetActive(!busy);cameraControl.gameObject.SetActive(false);jumpControl.gameObject.SetActive(!busy);returnControl.gameObject.SetActive(false);
@@ -293,7 +290,7 @@ namespace WhatTheFish {
    float centreHeight=clockCard.sizeDelta.y+layout.gaugeSize.y+gap+(compact?layout.returnSize.y+layout.actionSize.y+jumpControl.sizeDelta.y+gap*3:0);
    scale=Mathf.Min(scale,(height-2*m)/Mathf.Max(leftHeight,Mathf.Max(rightHeight,centreHeight)));scale=Mathf.Min(scale,(width-2*m)/(layout.actionSize.x*2+layout.gaugeSize.x+layout.cancelSize.x+gap*4));scale=Mathf.Clamp(scale,.1f,2);
    HudScale=scale;
-   ((RectTransform)transform).sizeDelta=controls;leftControl.sizeDelta=layout.fightControlSize;cameraControl.sizeDelta=layout.cameraSize;jumpControl.sizeDelta=Vector2.one*128;returnControl.sizeDelta=layout.returnSize;moveControl.sizeDelta=layout.joystickSize;
+   ((RectTransform)transform).sizeDelta=controls;leftControl.sizeDelta=layout.fightControlSize;cameraControl.sizeDelta=layout.cameraSize;jumpControl.sizeDelta=ControlDesigns.Size(SportId.Fishing,"jump");returnControl.sizeDelta=layout.returnSize;moveControl.sizeDelta=layout.joystickSize;
    PlaceFrame(board,new Vector2(0,1),new Vector2(0,1),new Vector2(m,-m),scale);
    PlaceFrame(returnControl,Vector2.one,Vector2.one,new Vector2(-m,-m),scale);
    float topUtility=IslandMenu?IslandMenu.GearBottomInset+gap*scale:(layout.returnSize.y+gap)*scale;

@@ -24,7 +24,7 @@ namespace WhatTheFish {
    lane.shadowCastingMode=ShadowCastingMode.Off;lane.receiveShadows=false;
   }
   void LateUpdate(){
-   var aim=ball.PassAim;bool active=ball.Playing&&aim.phase>0&&(aim.phase<3?ball.Held:ball.PassClock-aim.released<BasketballPassRules.FlashSeconds);
+   var aim=ball.PassAim;bool active=ball.Playing&&!ball.PassFlight.active&&aim.phase>0&&(aim.phase<3?ball.Held:ball.PassClock-aim.released<BasketballPassRules.FlashSeconds);
    if(!active){visibility=0;if(lane)lane.enabled=false;return;}
    if(!lane)Create();if(!lane)return;
    float power=ball.PassPower;Length=BasketballPassRules.Range(power,aim.bend);Vector3 origin=aim.origin;

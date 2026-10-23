@@ -74,6 +74,7 @@ namespace WhatTheFish {
   // Modal skill choices and skill taps use the same owner-checked RPC directly.
   // A held directional input cannot discard a skill tap or lose its renewal.
   public bool FishingAbilityInput(FishingAction action,int choice=-1){
+   if(!TutorialSession.Allows(action==FishingAction.ChooseSkill?"skills":"ability"))return false;
    var g=FishingGame.Instance;var p=g?g.Player(target):null;
    if(!active||InputBlocked||!g||!g.Context||!target||target.inTransit||!p.HasValue||action!=FishingAction.ChooseSkill&&action!=FishingAction.UseAbility)return false;
    var net=target.GetComponent<NetworkAthlete>();

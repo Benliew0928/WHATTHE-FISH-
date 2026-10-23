@@ -23,8 +23,9 @@ namespace WhatTheFish {
    foreach(var actor in Roster){
     if(!CharacterIdentityBadges.TryGetScreenRect(actor,out var screenRect))continue;visible++;
     var identity=actor.GetComponent<CharacterIdentity>();bool presented=CharacterIdentityBadges.TryGetPresentation(actor,out var number,out var playerName,out var team,out var plate,out var accent);
-    Check(presented&&number==identity.Number.ToString("00")&&playerName==ExpectedName(actor),stage+" rendered number and name "+identity.Number);
-    Check(presented&&team==Team(actor)&&SameRGB(accent,CharacterIdentity.TeamColor(team))&&!SameRGB(plate,accent),stage+" rendered team tab and neutral plate "+identity.Number);
+    bool local=actor==app.LocalAthlete;
+    Check(presented&&(local?number==""&&playerName=="You":number==identity.Number.ToString("00")&&(playerName==""||playerName==ExpectedName(actor)||playerName.EndsWith("…"))),stage+" open type identity "+identity.Number);
+    Check(presented&&team==Team(actor)&&SameRGB(accent,CharacterIdentity.TeamColor(team))&&plate.a==0,stage+" team accent and transparent name background "+identity.Number);
     if(notice)Check(!noticeBounds.Overlaps(screenRect),stage+" nameplate clears automatic-movement hint "+identity.Number);
    }
    Check(visible>0,stage+" has visible nameplates");

@@ -10,11 +10,13 @@ namespace WhatTheFish {
   public bool BeginPass(int source=int.MinValue){
    var ball=BasketballBall.Active;
    if(InputBlocked||pendingTargetPass||PassCharging||ShotCharging||pendingShoot||pendingShotBegin||pendingPass||!active||!target||!ball||!ball.CanPass(target))return false;
-   PassBend=0;PassCharging=true;passSource=source;passPlay=ball.Defense.play;passStarted=BasketballMotion.Clock;pendingPassBegin=true;return true;
+   var receiver=ball.SelectPassReceiver(target,yaw);
+   if(receiver)return RequestTargetPass(receiver);
+   // Practice without a teammate still permits an immediate forward pass.
+   PassBend=0;passSource=source;passPlay=ball.Defense.play;passStarted=BasketballMotion.Clock;pendingPassBegin=true;pendingPass=true;passReleasedAt=ball.PassClock;return true;
   }
   public void EndPass(int source=int.MinValue){
-   if(!PassCharging||source!=passSource)return;
-   PassCharging=false;pendingPass=true;passReleasedAt=BasketballBall.Active?BasketballBall.Active.PassClock:BasketballMotion.Clock;
+   // Single-tap passes commit on the down edge; lifting never fires again.
   }
   public void CancelPass(int source=int.MinValue){
    if(!PassCharging||source!=int.MinValue&&source!=passSource)return;

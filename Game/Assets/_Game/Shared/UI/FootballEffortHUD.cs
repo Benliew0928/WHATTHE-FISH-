@@ -16,8 +16,8 @@ namespace WhatTheFish {
    if(!eligible||pressed&&pressure&&!view.PressureHeld)Clear();button.interactable=eligible&&(pressure||pressed||!view.target.FootballEffort.Exhausted);
    bool held=view&&(pressure?view.PressureHeld:view.DashHeld);
    if(illustrated)return;
-   label.text=pressure?(held?"Pressuring":GameButtonStyle.Caption("Pressure","Q")):
-    view&&view.target&&view.target.FootballEffort.Exhausted?"Recovering":held?"Dashing":GameButtonStyle.Caption("Dash","Ctrl");
+   label.text=pressure?(held?"Pressuring":GameButtonStyle.Caption("Pressure")):
+    view&&view.target&&view.target.FootballEffort.Exhausted?"Recovering":held?"Dashing":GameButtonStyle.Caption("Dash");
   }
   public void OnPointerDown(PointerEventData e){
    if(e.button!=PointerEventData.InputButton.Left||pressed||!button.interactable)return;var v=PlayerView.Instance;
@@ -115,7 +115,9 @@ namespace WhatTheFish {
      foreach(var bone in actor.GetComponentsInChildren<Transform>())if(bone.name=="mixamorig:HeadTop_End_end"){bar.head=bone;break;}
      bars.Add(actor,bar);
     }
-    bool visible=active&&camera&&!actor.inTransit&&!(actor==view.target&&view.mode==0);
+    // The local Dash control already carries stamina. Keep Open type clean
+    // at rest; a peer's meter appears only when effort is being spent/recovered.
+    bool visible=active&&camera&&!actor.inTransit&&actor!=view.target&&(actor.FootballEffort.Stamina<99||actor.FootballEffort.Dashing||actor.FootballEffort.Pressuring);
     var world=bar.head?bar.head.position+Vector3.up*.2f:actor.transform.position+Vector3.up*2.15f;
     var screen=camera?camera.WorldToScreenPoint(world):Vector3.zero;
     bool identified=actor.GetComponent<CharacterIdentity>();Rect badge=default;
@@ -127,7 +129,7 @@ namespace WhatTheFish {
     // Separate nearby overhead meters in broadcast view without hiding any player.
     if(!identified)for(int pass=0;pass<placed.Count;pass++)foreach(var previous in placed)if(Mathf.Abs(previous.x-point.x)<88&&Mathf.Abs(previous.y-point.y)<30)point.y=previous.y+30;
     placed.Add(point);bar.root.anchoredPosition=point;bar.state.rectTransform.anchoredPosition=new Vector2(0,16);Paint(bar,actor,false);VisibleBars++;
-    if(identified){bar.state.text="";bar.root.sizeDelta=new Vector2(badge.width/canvas.scaleFactor,6/canvas.scaleFactor);}
+    if(identified){bar.state.text="";bar.root.sizeDelta=new Vector2(Mathf.Min(badge.width,50*Screen.height/720f)/canvas.scaleFactor,5/canvas.scaleFactor);}
    }
    removed.Clear();foreach(var pair in bars)if(!pair.Key||!Athlete.Active.Contains(pair.Key)){Destroy(pair.Value.root.gameObject);removed.Add(pair.Key);}foreach(var actor in removed)bars.Remove(actor);
   }

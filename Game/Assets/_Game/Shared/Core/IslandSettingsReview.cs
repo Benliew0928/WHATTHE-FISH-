@@ -58,7 +58,7 @@ namespace WhatTheFish {
    // Repeated open/close fixtures above all ran in one update.
    yield return null;
    int savedCamera=PlayerPrefs.GetInt("camera",-1);
-   for(int i=0;i<3;i++){Click(Button(new[]{"Eye level","Follow","Island view"}[i]),"CAMERA_"+i);Check(view.mode==i&&PlayerPrefs.GetInt("camera",-1)==(app.SelectedSport==SportId.Fishing?savedCamera:i),"CAMERA_PREFERENCE_"+i);}
+   for(int i=0;i<3;i++){Click(Button(new[]{"Eye level","Follow",app.SelectedSport==SportId.Fishing?"Lagoon":"Course"}[i]),"CAMERA_"+i);Check(view.mode==i&&PlayerPrefs.GetInt("camera",-1)==(app.SelectedSport==SportId.Fishing?savedCamera:i),"CAMERA_PREFERENCE_"+i);}
    var sliders=menu.GetComponentsInChildren<Slider>(true);Check(sliders.Length==4,"FOUR_AUDIO_CHANNELS");for(int i=0;i<4;i++)sliders[i].value=.35f+i*.1f;
    Check(Mathf.Abs(MenuPreferences.MasterVolume-.35f)<.001f&&Mathf.Abs(MenuPreferences.SFXVolume-.45f)<.001f&&Mathf.Abs(MenuPreferences.UIVolume-.55f)<.001f&&Mathf.Abs(MenuPreferences.AmbienceVolume-.65f)<.001f,"SLIDERS_CHANGE_SHARED_PREFERENCES");
    Check(HasText(online?"Room play continues":"Play continues"),"HONEST_MODE_SPECIFIC_PLAY_NOTE");Capture("settings");
@@ -91,7 +91,7 @@ namespace WhatTheFish {
     var table=FindFirstObjectByType<GolfLeaderboardUI>();yield return null;Click(table.ToggleButton,"EXPAND_RANKING");yield return null;Check(table.Expanded,"RANKING_EXPANDED_BEFORE_SETTINGS");menu.Open();yield return null;Click(Button("Follow"),"CAMERA_ABOVE_EXPANDED_RANKING");Check(menu.Visible&&view.InputBlocked,"EXPANDED_RANKING_CANNOT_STEAL_MODAL_INPUT");menu.Close();
     if(!online){
      menu.Open();ulong owner=match.Player(app.LocalAthlete).PlayerId;for(int hole=1;hole<=GolfPlayerState.HoleCount;hole++)match.State.EnterHole(owner,hole,match.Now);
-     yield return Until(()=>PostMatchFlow.Instance.Visible,"FINISHED_GAME_OPENS_NEXT_ADVENTURE");Check(!menu.Visible&&view.InputBlocked,"RESULTS_TAKE_INPUT_AFTER_CLOSING_SETTINGS");PostMatchFlow.Instance.Close();Check(!view.InputBlocked,"CLOSING_RESULTS_RESTORES_ORIGINAL_INPUT_BLOCK");
+     yield return null;Check(menu.Visible&&!PostMatchFlow.Instance.Visible,"NEXT_ADVENTURE_WAITS_FOR_EXISTING_SETTINGS");menu.Close();yield return Until(()=>PostMatchFlow.Instance.Visible,"FINISHED_GAME_OPENS_NEXT_ADVENTURE");Check(!menu.Visible&&view.InputBlocked,"RESULTS_TAKE_INPUT_AFTER_CLOSING_SETTINGS");PostMatchFlow.Instance.Close();Check(!view.InputBlocked,"CLOSING_RESULTS_RESTORES_ORIGINAL_INPUT_BLOCK");
     }
    }else{
     var game=FishingGame.Instance;

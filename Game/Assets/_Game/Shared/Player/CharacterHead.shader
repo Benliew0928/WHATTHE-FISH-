@@ -12,9 +12,9 @@ Shader "WhatTheFish/CharacterHead" {
   CBUFFER_START(UnityPerMaterial)
   half4 _BaseColor,_DetailColor;half _Smoothness;
   CBUFFER_END
-  struct Attributes{float4 positionOS:POSITION;float3 normalOS:NORMAL;half4 color:COLOR;};
+  struct Attributes{float4 positionOS:POSITION;float3 normalOS:NORMAL;half4 color:COLOR;UNITY_VERTEX_INPUT_INSTANCE_ID};
   struct Varyings{float4 positionCS:SV_POSITION;float3 positionWS:TEXCOORD0;half3 normalWS:TEXCOORD1;half4 color:COLOR;half fog:TEXCOORD2;half3 vertexLighting:TEXCOORD3;};
-  Varyings Vert(Attributes v){Varyings o;o.positionWS=TransformObjectToWorld(v.positionOS.xyz);o.positionCS=TransformWorldToHClip(o.positionWS);o.normalWS=TransformObjectToWorldNormal(v.normalOS);o.color=v.color;o.fog=ComputeFogFactor(o.positionCS.z);o.vertexLighting=VertexLighting(o.positionWS,o.normalWS);return o;}
+  Varyings Vert(Attributes v){UNITY_SETUP_INSTANCE_ID(v);Varyings o;o.positionWS=TransformObjectToWorld(v.positionOS.xyz);o.positionCS=TransformWorldToHClip(o.positionWS);o.normalWS=TransformObjectToWorldNormal(v.normalOS);o.color=v.color;o.fog=ComputeFogFactor(o.positionCS.z);o.vertexLighting=VertexLighting(o.positionWS,o.normalWS);return o;}
   half4 Frag(Varyings i):SV_Target{
    half3 normal=normalize(i.normalWS);
    InputData input=(InputData)0;input.positionWS=i.positionWS;input.normalWS=normal;input.viewDirectionWS=GetWorldSpaceNormalizeViewDir(i.positionWS);input.shadowCoord=TransformWorldToShadowCoord(i.positionWS);input.bakedGI=SampleSH(normal);input.vertexLighting=i.vertexLighting;input.normalizedScreenSpaceUV=GetNormalizedScreenSpaceUV(i.positionCS);input.shadowMask=half4(1,1,1,1);
@@ -27,6 +27,7 @@ Shader "WhatTheFish/CharacterHead" {
   Pass {
    Name "ForwardLit" Tags {"LightMode"="UniversalForward"}
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma target 3.0
    #pragma vertex Vert
    #pragma fragment Frag
@@ -41,6 +42,7 @@ Shader "WhatTheFish/CharacterHead" {
   Pass {
    Name "ShadowCaster" Tags {"LightMode"="ShadowCaster"} ZWrite On ColorMask 0
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma vertex Shadow
    #pragma fragment Depth
    #pragma multi_compile_vertex _ _CASTING_PUNCTUAL_LIGHT_SHADOW
@@ -61,6 +63,7 @@ Shader "WhatTheFish/CharacterHead" {
   Pass {
    Name "DepthOnly" Tags {"LightMode"="DepthOnly"} ZWrite On ColorMask R
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma vertex Vert
    #pragma fragment Depth
    ENDHLSL
@@ -68,6 +71,7 @@ Shader "WhatTheFish/CharacterHead" {
   Pass {
    Name "DepthNormals" Tags {"LightMode"="DepthNormals"} ZWrite On
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma vertex Vert
    #pragma fragment Normals
    ENDHLSL

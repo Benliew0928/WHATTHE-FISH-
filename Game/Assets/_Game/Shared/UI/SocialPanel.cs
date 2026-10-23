@@ -50,7 +50,8 @@ namespace WhatTheFish {
   }
   void Nav(string id,string label,string destination,float y,CoveSymbol icon){
    bool active=page==destination||destination=="friends"&&(page=="incoming"||page=="outgoing"||page=="blocks"||page=="player");
-   Action(rail,id,label,0,y,240,72,active?Lime:Panel,()=>Show(destination),icon,26);
+   var button=Action(rail,id,label,0,y,240,72,active?Lime:Panel,()=>Show(destination),icon,26);
+   if(destination=="friends")FriendRequestBadge.Add(button.transform,190,18);
   }
   void Show(string next,string id=""){
    if(working)return;generation++;page=next;selectedId=id;searching=false;pollAt=Time.unscaledTime+25;feedback.text="";
@@ -70,7 +71,8 @@ namespace WhatTheFish {
    }
    if(page=="room"){ListArea(0,630);liveKey=RoomKey();Room();return;}
    Action(body,"Friends list","Friends",0,0,295,64,page=="friends"?Lime:Panel,()=>Show("friends"),size:25);
-   Action(body,"Incoming requests","Requests",315,0,295,64,page=="incoming"?Lime:Panel,()=>Show("incoming"),size:25);
+   var requests=Action(body,"Incoming requests","Requests",315,0,295,64,page=="incoming"?Lime:Panel,()=>Show("incoming"),size:25);
+   FriendRequestBadge.Add(requests.transform,231,14);
    Action(body,"Sent requests","Sent",630,0,295,64,page=="outgoing"?Lime:Panel,()=>Show("outgoing"),size:25);
    Action(body,"Blocked players","Blocked",945,0,305,64,page=="blocks"?Lime:Panel,()=>Show("blocks"),size:25);
    ListArea(88,542);_ = LoadList(generation);
@@ -96,7 +98,7 @@ namespace WhatTheFish {
    Label(row.transform,p.name,122,10,650,44,32,true);
    Label(row.transform,"#"+p.code,124,57,650,31,20,false,Muted);
    string state=blocked?"Blocked":p.relationship=="incoming"?"Request received":p.relationship=="outgoing"?"Request sent":p.relationship=="friends"?"Friend":p.match=="similar"?"Similar name":"View profile";
-   if(blocked)Action(row.transform,"Unblock "+p.code,"Unblock",997,22,230,60,Raised,()=>Run(async()=>{await PlayerProfiles.Unblock(p.id);ShowAfter("blocks");}),size:24);
+   if(blocked)Action(row.transform,"Unblock "+p.code,"Unblock",997,22,230,60,Raised,()=>Run("Removing block…",async()=>{await PlayerProfiles.Unblock(p.id);ShowAfter("blocks");}),size:24);
    else{Label(row.transform,state,813,29,340,45,23,false,p.relationship=="friends"?Cyan:Muted,TextAnchor.MiddleRight);CoveUI.Icon(row.transform,CoveSymbol.Join,1182,36,30,Cyan);}
    list.sizeDelta=new Vector2(1250,(index+1)*118);
   }
@@ -154,8 +156,8 @@ namespace WhatTheFish {
     ProfileAvatar.Add(b.transform,new PublicProfile{avatar=i},34,3,92);
     Label(b.transform,(i+1).ToString("00"),12,95,136,28,20,true,Muted,TextAnchor.MiddleRight);
    }
-   Action(body,"Save player profile","Save profile",354,568,310,62,Lime,()=>Run(async()=>{string message=await PlayerProfiles.Save(nameField.text,avatar,photo);edited=false;HeroCode();feedback.text=message;}),CoveSymbol.Check,28);
-   Action(body,"Reload player profile","Reload cloud",682,568,260,62,Raised,()=>Run(async()=>{await PlayerProfiles.EnsureCloud(true);ShowAfter("edit");}),size:25);
+   Action(body,"Save player profile","Save profile",354,568,310,62,Lime,()=>Run("Saving your profile…",async()=>{string message=await PlayerProfiles.Save(nameField.text,avatar,photo);edited=false;HeroCode();feedback.text=message;}),CoveSymbol.Check,28);
+   Action(body,"Reload player profile","Reload cloud",682,568,260,62,Raised,()=>Run("Loading your cloud profile…",async()=>{await PlayerProfiles.EnsureCloud(true);ShowAfter("edit");}),size:25);
    Action(body,"Manage account","Sign-in options",960,568,290,62,Raised,()=>AccountPanel.Open(()=>{Show("edit");}),size:25);
    Preview();feedback.text=PlayerProfiles.Status+(PlayerIdentity.AccountId.Length==0?" · Link a sign-in account to recover this guest on another device.":"");_ = LoadEdit(generation);
   }
@@ -180,7 +182,7 @@ namespace WhatTheFish {
     var number=b.GetComponentsInChildren<Text>().Last();number.color=chosen?Lime:Muted;number.text=chosen?"SELECTED  "+(i+1).ToString("00"):(i+1).ToString("00");
    }
   }
-  async void ChoosePhoto(bool camera){if(working)return;await RunTask(async()=>{photo=await ProfilePhoto.Choose(camera);edited=true;Preview();feedback.text="Picture ready. Tap Save profile to share it with other players.";});}
+  async void ChoosePhoto(bool camera){if(working)return;await RunTask(camera?"Opening camera…":"Opening your pictures…",async()=>{photo=await ProfilePhoto.Choose(camera);edited=true;Preview();feedback.text="Picture ready. Tap Save profile to share it with other players.";});}
   async Task ViewPlayer(string id,int version){
    feedback.text="Loading player…";
    try{
@@ -206,19 +208,19 @@ namespace WhatTheFish {
     feedback.text="A player code stays the same, even when a name changes.";
    }catch(Exception e){if(this&&generation==version)feedback.text=PlayerProfiles.Explain(e);}
   }
-  void FriendAction(string id,string action)=>Run(async()=>{await PlayerProfiles.Friend(id,action);ShowAfter("player",id);});
-  void Report(string id,string reason)=>Run(async()=>{await PlayerProfiles.Report(id,reason);feedback.text="Report saved for the game team to review. You can also block this player.";});
+  void FriendAction(string id,string action)=>Run(action=="request"?"Sending friend request…":"Updating friendship…",async()=>{await PlayerProfiles.Friend(id,action);ShowAfter("player",id);});
+  void Report(string id,string reason)=>Run("Sending your report…",async()=>{await PlayerProfiles.Report(id,reason);feedback.text="Report saved for the game team to review. You can also block this player.";});
   void ConfirmBlock(string id){
    feedback.text="Block this player? This removes friendship and hides each profile from the other.";
    if(body.Find("Confirm block player"))return;
-   Action(body,"Confirm block player","Confirm block",388,545,828,56,Cyan,()=>Run(async()=>{await PlayerProfiles.Block(id);ShowAfter("friends");}),size:26);
+   Action(body,"Confirm block player","Confirm block",388,545,828,56,Cyan,()=>Run("Blocking player…",async()=>{await PlayerProfiles.Block(id);ShowAfter("friends");}),size:26);
   }
   void ShowAfter(string next,string id=""){working=false;Show(next,id);}
-  async void Run(Func<Task> action)=>await RunTask(action);
-  async Task RunTask(Func<Task> action){
-   if(working)return;working=true;foreach(var s in design.GetComponentsInChildren<Selectable>())s.interactable=false;feedback.text="Please wait…";
+  async void Run(string operation,Func<Task> action)=>await RunTask(operation,action);
+  async Task RunTask(string operation,Func<Task> action){
+   if(working)return;working=true;var states=design.GetComponentsInChildren<Selectable>().Select(s=>(control:s,enabled:s.interactable)).ToArray();foreach(var item in states)item.control.interactable=false;feedback.text=operation;
    try{await action();}catch(Exception e){if(this)feedback.text=PlayerProfiles.Explain(e);}
-   finally{if(this){working=false;foreach(var s in design.GetComponentsInChildren<Selectable>())s.interactable=true;}}
+   finally{if(this){working=false;foreach(var item in states)if(item.control)item.control.interactable=item.enabled;}}
   }
   void Layout(){var safe=Screen.safeArea;float scale=Mathf.Min(safe.width/1600,safe.height/900)*.96f;design.localScale=Vector3.one*scale;design.anchoredPosition=new Vector2(safe.center.x-800*scale,-(Screen.height-safe.center.y-450*scale));}
   static string LiveKey(string id){var p=RoomTeleport.Players().FirstOrDefault(n=>n.ProfileId.Value.ToString()==id);return p?p.Nickname.Value+":"+p.ProfileAvatarVersion.Value:"";}

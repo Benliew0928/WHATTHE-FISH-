@@ -14,6 +14,8 @@ namespace WhatTheFish {
   public static bool Busy=>Instance&&Instance.Phase!=TeleportPhase.Idle;
   public static bool OwnsCamera=>Busy&&Instance.Phase!=TeleportPhase.Preparing&&Instance.Phase!=TeleportPhase.Settling;
   public TeleportPhase Phase {get;private set;}
+  public SportId Destination=>destination;
+  public TeleportDestination DestinationKind=>landingKind;
   public float PhaseProgress=>Mathf.Clamp01(phaseElapsed/Mathf.Max(.01f,Duration));
   public float Duration=>Phase switch{TeleportPhase.Charging=>ChargeSeconds,TeleportPhase.Absorbing=>AbsorbSeconds,TeleportPhase.Travelling=>travelSeconds,TeleportPhase.Arriving=>ArrivalSeconds,TeleportPhase.Settling=>SettleSeconds,_=>1};
   public string Error {get;private set;}="";

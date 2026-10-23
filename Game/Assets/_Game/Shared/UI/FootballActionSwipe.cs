@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 namespace WhatTheFish {
  // One captured pointer can visit every action. Continuous Dash/Pressure holds
- // survive the visit; Pass/Shoot release when returning to another action.
+ // survive the visit. Pass commits on entry; Shoot releases on return.
  public sealed class FootballActionSwipe:MonoBehaviour,IPointerDownHandler,IInitializePotentialDragHandler,IBeginDragHandler,IDragHandler,IPointerUpHandler,IEndDragHandler,ICancelHandler {
   FootballActionSwipe[] targets;readonly List<FootballActionSwipe> holds=new();
   FootballActionSwipe current,transient;int pointer;bool tracking;static bool dispatching;

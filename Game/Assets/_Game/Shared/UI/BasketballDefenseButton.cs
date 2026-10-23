@@ -12,7 +12,7 @@ namespace WhatTheFish {
    var view=PlayerView.Instance;var ball=BasketballBall.Active;
    button.interactable=view&&view.active&&!view.InputBlocked&&ball&&ball.Role(view.target)==BasketballRole.Defense;
    if(pressed&&(!button.interactable||!view.GuardHeld))Clear();
-   label.fontSize=illustrated?42:22;label.text=view&&view.AutoBlockHeld?"Block":"Guard";
+   if(illustrated)ControlDesigns.Caption(label,view&&view.AutoBlockHeld?"Block":"Guard");else{label.fontSize=22;label.text=view&&view.AutoBlockHeld?"Block":"Guard";}
    if(guide){guide.gameObject.SetActive(pressed);guide.Select(ball&&view&&ball.GuardBlockReady(view.target));}
   }
   public void OnPointerDown(PointerEventData data){

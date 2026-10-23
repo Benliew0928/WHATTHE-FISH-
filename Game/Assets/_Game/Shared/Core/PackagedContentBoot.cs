@@ -172,6 +172,6 @@ namespace WhatTheFish {
    return path.Contains("://")?path:new Uri(path).AbsoluteUri;
   }
   void SetProgress(float value,string label){fraction=Mathf.Max(fraction,value);if(welcome)welcome.SetProgress(fraction,label);}
-  void Fail(){busy=false;welcome.ShowError();Debug.LogError("CONTENT_LOAD_FAILED "+Error);}
+  void Fail(){busy=false;welcome.ShowError(Error);Debug.LogError("CONTENT_LOAD_FAILED "+Error);}
  }
 }

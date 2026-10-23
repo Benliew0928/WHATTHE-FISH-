@@ -79,8 +79,12 @@ namespace WhatTheFish {
      if(golfCameraStill>.85f||age>22)ReturnFromGolfShot();
      else {
       var look=golfCameraFocus+Vector3.up*.3f+Vector3.ClampMagnitude(golfCameraVelocity*.08f,.8f);
-      var followRotation=Quaternion.Euler(Mathf.Clamp(pitch,22,48),yaw,0);
-      float distance=Mathf.Lerp(5,8,Mathf.Clamp01(golfCameraVelocity.magnitude/24));
+      bool course=mode==2;
+      var followRotation=Quaternion.Euler(course?34:Mathf.Clamp(pitch,22,48),yaw,0);
+      float distance=Mathf.Lerp(course?10:5,course?16:8,Mathf.Clamp01(golfCameraVelocity.magnitude/24));
+      if(course&&Physics.Raycast(point+Vector3.up*.1f,Vector3.down,out var terrain,100,(1<<8)|(1<<GolfTee.Layer),QueryTriggerInteraction.Ignore)){
+       float height=Mathf.Max(0,point.y-terrain.point.y);look-=Vector3.up*(height*.3f);distance=Mathf.Max(distance,height*1.8f);
+      }
       var desired=look-followRotation*Vector3.forward*distance;
       var path=desired-look;
       if(Physics.SphereCast(look,.2f,path.normalized,out var hit,path.magnitude,1<<8,QueryTriggerInteraction.Ignore))desired=look+path.normalized*Mathf.Max(.4f,hit.distance-.15f);

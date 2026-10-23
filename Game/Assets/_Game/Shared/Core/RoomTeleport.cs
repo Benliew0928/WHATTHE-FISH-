@@ -84,10 +84,11 @@ namespace WhatTheFish {
    }
    s=State;
    if(s.phase!=observed){observed=s.phase;
-    if(s.phase==RoomTeleportPhase.Cancelled){Message=s.reason.ToString();if(launched)TeleportSequence.Instance?.Cancel(Message);launched=false;if(s.entry&&app.rooms.Host)_=app.rooms.SetExploring(false);}
+    if(s.phase==RoomTeleportPhase.Cancelled){Message=s.reason.ToString();if(launched)TeleportSequence.Instance?.Cancel(Message);launched=false;if(s.entry){app.rooms.ReportError(Message);if(app.rooms.Host)_=ReturnAfterEntryFailure(Message);}}
     else if(s.phase==RoomTeleportPhase.Complete){if(launched)TeleportSequence.Instance?.FinishRoom();launched=false;Message="";}
    }
   }
+  async System.Threading.Tasks.Task ReturnAfterEntryFailure(string reason){await app.rooms.SetExploring(false);app.rooms.ReportError(reason);}
   void OnDestroy(){if(Instance==this)Instance=null;}
  }
 }

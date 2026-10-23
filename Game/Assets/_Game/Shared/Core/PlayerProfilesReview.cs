@@ -70,12 +70,18 @@ namespace WhatTheFish {
     }else{
      await Until(()=>File.Exists(Path.Combine(shared,"requested.txt")),"request available");
      Check((await PlayerProfiles.Friends()).incoming.Any(p=>p.id==otherId),"incoming request visible to recipient");
+     Check(PlayerProfiles.PendingRequestCount==1,"incoming request updates notification count");
+     SocialPanel.OpenFriends();await Task.Delay(600);
+     var badge=B("Incoming requests").GetComponentInChildren<FriendRequestBadge>();
+     Check(badge&&badge.GetComponentInChildren<Text>().text=="1","requests tab shows received count in a badge");
+     await Capture("request-count-badge");
      SocialPanel.OpenPlayer(otherId);
      await Until(()=>FindObjectsByType<Button>(FindObjectsSortMode.None).Any(b=>b.name=="Accept friend request"&&b.gameObject.activeInHierarchy),"incoming profile exposes accept action");
      Check(B("Decline friend request").interactable,"incoming profile exposes decline action");
      await Capture("incoming-request");B("Accept friend request").onClick.Invoke();
      await Until(()=>FindObjectsByType<Button>(FindObjectsSortMode.None).Any(b=>b.name=="Player friendship action"&&b.gameObject.activeInHierarchy),"accept action completes");
      Check((await PlayerProfiles.Get(otherId)).relationship=="friends","accept request saves friendship");
+     Check(PlayerProfiles.PendingRequestCount==0,"accept removes incoming count immediately");
      B("Close social panel").onClick.Invoke();await Task.Delay(150);
      File.WriteAllText(Path.Combine(shared,"accepted.txt"),"ready");
     }
@@ -122,7 +128,7 @@ namespace WhatTheFish {
     await Until(()=>AppRoot.Instance.Exploring&&!RoomTeleport.Busy&&AppRoot.Instance.view.active,"shared travel reaches playable world",90);
     Check(B("Open room profiles").gameObject.activeInHierarchy,"Players control available during gameplay");
     await Until(()=>FindObjectsByType<Button>(FindObjectsSortMode.None).Any(b=>b.name=="View character profile "+otherId&&b.gameObject.activeInHierarchy),"peer nameplate is tappable in gameplay");
-    Check(B("View character profile "+otherId).GetComponentInChildren<ProfileAvatar>(),"peer nameplate includes profile picture");
+    Check(!B("View character profile "+otherId).GetComponentInChildren<ProfileAvatar>()&&B("View character profile "+otherId).GetComponentsInChildren<Text>().Any(t=>t.name=="Player number"),"peer open-type label retains identity without overhead portrait");
     await Capture("world-profiles");
     B("View character profile "+otherId).onClick.Invoke();await Task.Delay(1200);
     Check(SocialPanel.Visible&&B("Player friendship action").GetComponentInChildren<Text>().text=="Remove friend","tapping gameplay nameplate opens correct peer profile");

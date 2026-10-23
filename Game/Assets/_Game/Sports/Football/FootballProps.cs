@@ -95,7 +95,7 @@ namespace WhatTheFish {
    if(Physics.CheckBox(wall.Centre+Vector3.up*.06f,new Vector3(e.x,e.y-.06f,e.z),rotation,1<<8,QueryTriggerInteraction.Ignore)){reason="An obstacle is in the way";return false;}
    reason="";return true;
   }
-  public bool RequestProp(Athlete actor,float heading){
+  public bool RequestProp(Athlete actor,float heading){if(!TutorialSession.Allows("ability"))return false;
    if(!actor)return false;var n=actor.GetComponent<NetworkAthlete>();var slot=PropSlot(actor);uint round=FootballMatch.Instance?FootballMatch.Instance.Snapshot.revision:0;
    if(n&&n.IsSpawned){if(!n.IsOwner)return false;n.UseFootballPropRpc(slot.revision,round,heading);return true;}
    return TryUseProp(actor,slot.revision,round,heading);

@@ -54,7 +54,7 @@ namespace WhatTheFish {
    if(controller&&(!controller.isActiveAndEnabled||controller.inTransit||!controller.capsule.enabled))ReleaseControl();
    // Walking, sprinting, facing and distance never eject an attached ball.
    if(!controller&&!Body.isKinematic&&candidate&&CanControl(candidate)){
-    controller=candidate;sequence++;FootballMatch.Instance?.RecordTouch(candidate,true);
+    assistedPass.Clear();controller=candidate;sequence++;FootballMatch.Instance?.RecordTouch(candidate,true);
     Physics.IgnoreCollision(sphere,candidate.capsule,true);SetPhysicsMode(false);
     Body.interpolation=RigidbodyInterpolation.None;FollowController(candidate);FootballAudio.Emit(FootballSound.Receive,Body.position,.85f);
    }
@@ -65,7 +65,7 @@ namespace WhatTheFish {
    return FootballEffort.PlayerPace*(charging&&!actor.FootballEffort.Dashing&&InKickRange(actor)?4*chargeMovementMultiplier:(sprint?7:4)*(CurrentController==actor?dribbleMovementMultiplier:1));
   }
   public void ForgetPlayer(Athlete actor){if(controller==actor)ReleaseControl();mustApproach.Remove(actor);}
-  void ReleaseControl(Athlete excluded=null){
+  void ReleaseControl(Athlete excluded=null){assistedPass.Clear();
    if(controller){if(controller.capsule)Physics.IgnoreCollision(sphere,controller.capsule,false);controller=null;sequence++;Body.interpolation=freeInterpolation;SetPhysicsMode(Allowed);}
    if(excluded)mustApproach.Add(excluded);
   }
@@ -118,7 +118,7 @@ namespace WhatTheFish {
   bool Online=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   public bool HasAuthority=>!Online||NetworkManager.Singleton.IsServer;
   void Awake(){
-   Body=GetComponent<Rigidbody>();freeInterpolation=Body.interpolation;ApplyDamping();sphere=GetComponent<SphereCollider>();localOrigin=transform.localPosition;localOriginRotation=transform.localRotation;Body.solverIterations=12;Body.solverVelocityIterations=4;Body.maxAngularVelocity=120;sphere.contactOffset=.002f;
+   gameObject.AddComponent<PassFlightVisual>();Body=GetComponent<Rigidbody>();freeInterpolation=Body.interpolation;ApplyDamping();sphere=GetComponent<SphereCollider>();localOrigin=transform.localPosition;localOriginRotation=transform.localRotation;Body.solverIterations=12;Body.solverVelocityIterations=4;Body.maxAngularVelocity=120;sphere.contactOffset=.002f;
    if(transform.parent)foreach(var mesh in transform.parent.GetComponentsInChildren<MeshFilter>(true))if(mesh.name=="Lawn__Pitch"&&mesh.sharedMesh){
     Pitch=transform.parent;var source=mesh.sharedMesh.bounds;var bounds=new Bounds(Pitch.InverseTransformPoint(mesh.transform.TransformPoint(source.min)),Vector3.zero);
     for(int corner=0;corner<8;corner++)bounds.Encapsulate(Pitch.InverseTransformPoint(mesh.transform.TransformPoint(new Vector3((corner&1)==0?source.min.x:source.max.x,(corner&2)==0?source.min.y:source.max.y,(corner&4)==0?source.min.z:source.max.z))));
@@ -181,7 +181,7 @@ namespace WhatTheFish {
     if(!dynamic)ReleaseControl();
     if(dynamic&&!PortalBusy){
      if(!followThrough){
-      RefreshControl();
+      StepAssistedPass();RefreshControl();
       if(!controller){Athlete closest=null;float distance=float.MaxValue;foreach(var candidate in Athlete.Active)if(CanControl(candidate)){float d=(candidate.transform.position-Body.position).sqrMagnitude;if(d<distance){distance=d;closest=candidate;}}if(closest)RefreshControl(closest);}
      }
      float sea=RefinedIslandEnvironment.Active?RefinedIslandEnvironment.Active.layout.sea_level:0;
@@ -193,7 +193,7 @@ namespace WhatTheFish {
      publishTimer-=Time.fixedDeltaTime;
      if(publishTimer<=0||!NetworkResponsiveness.Baseline&&NetworkAthlete.HostPlayer.Ball.Value.sequence!=sequence){
       publishTimer=NetworkResponsiveness.Baseline?.05f:Mathf.Clamp(publishTimer+NetworkResponsiveness.Interval,0,NetworkResponsiveness.Interval);
-      NetworkAthlete.HostPlayer.Ball.Value=new FootballBallSnapshot{valid=true,position=Body.position,rotation=Body.rotation,sequence=sequence,controllerId=ControllerId(),props=footballProps};
+      NetworkAthlete.HostPlayer.Ball.Value=new FootballBallSnapshot{passFlight=PassFlight,valid=true,position=Body.position,rotation=Body.rotation,sequence=sequence,controllerId=ControllerId(),props=footballProps};
      }
     }
    }else if(NetworkAthlete.HostPlayer){
@@ -242,6 +242,7 @@ namespace WhatTheFish {
    if(point.z!=original.z){if(velocity.z*(original.z-point.z)>0)velocity.z=0;spin.x=0;hit=true;}
    if(point.y!=original.y){if(velocity.y>0)velocity.y=0;hit=true;}
    if(!hit)return;
+   assistedPass.Clear();
    if(enteredGoal<0)AudioBoundary(Pitch.TransformPoint(point),Body.linearVelocity);
    Body.position=Pitch.TransformPoint(point);Body.linearVelocity=Pitch.TransformDirection(velocity);Body.angularVelocity=Pitch.TransformDirection(spin);impulsePending=false;sequence++;
    if(Vector3.ProjectOnPlane(Body.linearVelocity,Vector3.up).sqrMagnitude<.0064f)Body.angularVelocity=Vector3.zero;
@@ -268,6 +269,7 @@ namespace WhatTheFish {
    AudioCollision(collision);
    var actor=collision.collider.GetComponentInParent<Athlete>();if(actor)StopAtPlayer(actor);
    if(!HasAuthority||!(Allowed||FootballMatch.GoalFollowThrough))return;
+   for(int i=0;i<collision.contactCount;i++)if(collision.GetContact(i).normal.y<.55f){assistedPass.Clear();break;}
    var net=collision.collider.GetComponentInParent<FootballGoalNet>();if(!net)return;
    // The callback's collider-relative vector points opposite the ball's incoming motion.
    for(int i=0;i<collision.contactCount;i++){var contact=collision.GetContact(i);net.Contact(contact.point,-collision.relativeVelocity,contact.normal);}
@@ -344,7 +346,7 @@ namespace WhatTheFish {
   // Only grounded rolling loses speed; gravity and collision response stay with PhysX.
   public void ApplyRollingResistance(float dt){
    // Give a newly applied contact/kick one physics step before resistance or sleeping.
-   if(impulsePending){impulsePending=false;return;}
+   if(assistedPass.Active)return;if(impulsePending){impulsePending=false;return;}
    if(Body.isKinematic||Body.IsSleeping())return;
    // Free physics is not restricted by a low global speed cap.
    float radius=sphere.radius*transform.lossyScale.x;

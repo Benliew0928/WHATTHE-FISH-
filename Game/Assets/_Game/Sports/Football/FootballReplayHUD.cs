@@ -49,7 +49,7 @@ namespace WhatTheFish {
     subtitle.text=returning?(match.Snapshot.phase==FootballMatchPhase.Finished?"FULL TIME":CharacterIdentity.TeamName(match.Snapshot.kickoffTeam).ToUpperInvariant()+"  ·  CENTRE KICKOFF"):"THE ISLAND. THE GAME. THE MOMENT.";
    }
    bool ready=match&&match.KickoffReady;kickoff.gameObject.SetActive(ready);
-   if(ready){var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;bool yours=FootballMatch.CanAimKickoff(actor);kickoff.text=yours?"YOUR KICKOFF\nLook to aim 360° · Hold KICK / F, release to play":CharacterIdentity.TeamName(match.Snapshot.kickoffTeam).ToUpperInvariant()+" KICKOFF\nWaiting for the centre kick";}
+   if(ready){var actor=AppRoot.Instance?AppRoot.Instance.LocalAthlete:null;bool yours=FootballMatch.CanAimKickoff(actor);kickoff.text=yours?"YOUR KICKOFF\nSwipe to aim · Hold Shoot, then release":CharacterIdentity.TeamName(match.Snapshot.kickoffTeam).ToUpperInvariant()+" KICKOFF\nWaiting for the centre kick";}
   }
  }
  // Small native vector drawings share the UI material and add no shipped textures.

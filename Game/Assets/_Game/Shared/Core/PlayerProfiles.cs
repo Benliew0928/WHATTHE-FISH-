@@ -43,6 +43,15 @@ namespace WhatTheFish {
   public static Rect AvatarCropFor(int index)=>index==7?new Rect(.16f,.46f,.8f,.8f*2f/3f):AvatarCrop;
   static readonly Texture2D[] defaults=new Texture2D[AvatarCount];
   public static event Action Changed;
+  static readonly HashSet<string> incomingRequests=new();
+  static string friendsScope="";static int friendsVersion;static float friendsPollAt;
+  static Task<FriendResults> friendsLoading;
+  public static int PendingRequestCount=>friendsScope==Scope?incomingRequests.Count:0;
+  public static async void PollFriendRequests(){
+   if(friendsLoading!=null||Time.unscaledTime<friendsPollAt||UnityServices.State!=ServicesInitializationState.Initialized||!AuthenticationService.Instance.IsSignedIn)return;
+   friendsPollAt=Time.unscaledTime+25;
+   try{await Friends();}catch(Exception){ /* Keep the last known count on transient failures. */ }
+  }
   static string Scope=>PlayerIdentity.ProfileStorageKey;
   static string FileFor(string key) {
    using var sha=SHA256.Create();string hash=BitConverter.ToString(sha.ComputeHash(Encoding.UTF8.GetBytes(key))).Replace("-","");
@@ -74,7 +83,7 @@ namespace WhatTheFish {
    if(link&&oldKey!=newKey&&!File.Exists(FileFor(newKey))) {
     string oldFile=FileFor(oldKey);if(File.Exists(oldFile)){Directory.CreateDirectory(Path.GetDirectoryName(FileFor(newKey)));File.Copy(oldFile,FileFor(newKey));}
    }
-   saved=null;scope="";loadedId="";loading=null;Changed?.Invoke();
+   saved=null;scope="";loadedId="";loading=null;friendsVersion++;friendsScope="";incomingRequests.Clear();friendsLoading=null;friendsPollAt=0;Changed?.Invoke();
   }
   public static string Explain(Exception e) {
    if(e is OperationCanceledException)return "Cancelled. Your profile is unchanged.";
@@ -148,9 +157,19 @@ namespace WhatTheFish {
   }
   public static Task<PublicProfile> Get(string id)=>Json<PublicProfile>("/v1/players/"+Uri.EscapeDataString(id));
   public static Task<ProfileResults> Search(string query,int offset=0)=>Json<ProfileResults>("/v1/search?q="+Uri.EscapeDataString(query)+"&offset="+offset);
-  public static Task<FriendResults> Friends()=>Json<FriendResults>("/v1/friends");
-  public static Task<PublicProfile> Friend(string target,string action)=>Json<PublicProfile>("/v1/friends","POST",new ActionRequest{target=target,action=action});
-  public static Task<byte[]> Block(string target)=>Request("/v1/blocks","POST",new ActionRequest{target=target});
+  public static Task<FriendResults> Friends()=>friendsLoading??=LoadFriends(Scope,friendsVersion);
+  static async Task<FriendResults> LoadFriends(string owner,int version){
+   try{
+    var result=await Json<FriendResults>("/v1/friends");
+    if(owner==Scope&&version==friendsVersion){friendsScope=owner;incomingRequests.Clear();foreach(var p in result.incoming)incomingRequests.Add(p.id);friendsPollAt=Time.unscaledTime+25;}
+    return result;
+   }finally{if(version==friendsVersion)friendsLoading=null;}
+  }
+  static void FriendshipChanged(string target,string owner){
+   if(owner!=Scope)return;friendsVersion++;friendsLoading=null;friendsPollAt=0;incomingRequests.Remove(target);
+  }
+  public static async Task<PublicProfile> Friend(string target,string action){string owner=Scope;var result=await Json<PublicProfile>("/v1/friends","POST",new ActionRequest{target=target,action=action});FriendshipChanged(target,owner);return result;}
+  public static async Task<byte[]> Block(string target){string owner=Scope;var result=await Request("/v1/blocks","POST",new ActionRequest{target=target});FriendshipChanged(target,owner);return result;}
   public static Task<byte[]> Report(string target,string reason)=>Request("/v1/reports","POST",new ActionRequest{target=target,reason=reason});
   public static Task<ProfileResults> Blocks()=>Json<ProfileResults>("/v1/blocks");
   public static Task<byte[]> Unblock(string target)=>Request("/v1/blocks","DELETE",new ActionRequest{target=target});

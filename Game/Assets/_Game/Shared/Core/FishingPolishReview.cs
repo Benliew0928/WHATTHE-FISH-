@@ -98,8 +98,11 @@ namespace WhatTheFish {
     command=view.ReadCommand();Check(command.fishingAction==FishingAction.ReelStop&&!view.FishingHeld,"MATCHING_FINGER_RELEASE_QUEUES_REAL_STOP");
     var p=game.State.Players[0];p.fish=0;p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.origin=actor.transform.position;p.castDistance=p.distance=p.lineLength=6;p.tension=.86f;p.held=false;p.reelBeat=-1;p.tapGrade=FishingTapGrade.None;p.steerAt=game.Now;p.steer=0;p.item=FishingAbility.Sonar;game.State.Players[0]=p;yield return null;yield return null;
     Check(ui.TimingGuideVisible&&ui.GuidanceText=="RELEASE TO COOL","HIGH_TENSION_SHOWS_RELEASE_TO_COOL");
-    var frame=ui.ActionRect.parent.parent;var labels=frame.GetComponentsInChildren<UnityEngine.UI.Text>(true);
-    Check(!labels.First(t=>t.text=="LAGOON CUP").transform.parent.Find("Fishing match setup").gameObject.activeSelf,"PRACTICE_SETUP_HIDDEN_WHILE_FIGHTING");
+    var frame=ui.GetComponentInParent<Canvas>().transform;var labels=frame.GetComponentsInChildren<UnityEngine.UI.Text>(true);
+    // Shared control wrappers no longer share the board's immediate parent.
+    // The current host-start flow deliberately keeps setup available in practice.
+    var setup=frame.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="Fishing match setup");
+    Check(setup.gameObject.activeSelf==game.Authority,"PRACTICE_HOST_START_REMAINS_AVAILABLE_WHILE_FIGHTING");
     Check(ui.GetComponentInParent<Canvas>().GetComponentsInChildren<UnityEngine.UI.Image>(true).Count(i=>i.name=="Fish pull marker")==1,"PICTURED_METER_HAS_ONE_FISH_PULL_MARKER");
     p.held=false;p.steer=0;p.tension=.68f;game.State.Players[0]=p;yield return null;yield return null;
     Check(ui.TimingGuideVisible&&ui.GuidanceText=="RELEASE TO COOL","COOLING_GUIDANCE_PERSISTS_UNTIL_SAFE");
@@ -130,7 +133,7 @@ namespace WhatTheFish {
       }
       p.tension=.5f;game.State.Players[0]=p;
      }else if(chosenMode==1)Check(view.FishingFightCameraActive,"FOLLOW_CAMERA_HAS_ACCEPTED_FIGHT_FRAMING");
-     else Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,actor.transform.position)<10,"ISLAND_VIEW_STAYS_PLAYER_ANCHORED_WHILE_HOOKED");
+     else Check(!view.FishingFightCameraActive&&view.ActivityStadiumFollowing,"LAGOON_VIEW_FRAMES_ANGLER_AND_HOOKED_FISH");
      p.phase=FishingPhase.Escaped;p.result=FishingResult.Cancelled;game.State.Players[0]=p;yield return new WaitForSeconds(.85f);
      Check(!view.FishingFightCameraActive&&view.mode==chosenMode&&Mathf.Abs(view.yaw-yaw)<.01f&&Mathf.Abs(view.pitch-pitch)<.01f,"CANCEL_RETURNS_PREFERRED_CAMERA_WITHOUT_CHANGING_ANGLE_"+chosenMode);
      p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.result=FishingResult.None;game.State.Players[0]=p;yield return null;

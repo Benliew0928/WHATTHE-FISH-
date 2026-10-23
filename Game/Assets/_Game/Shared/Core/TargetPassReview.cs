@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 
 namespace WhatTheFish {
- public sealed class TargetPassReview:MonoBehaviour {
+ public sealed partial class TargetPassReview:MonoBehaviour {
   string folder,shared;bool failed,basket;AppRoot app;Athlete actor,mate,other,enemy;Athlete[] roster;BasketballBall bb;FootballBall fb;Transform field;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-targetPassReview");if(i>=0&&i+1<args.Length)new GameObject("Target pass review").AddComponent<TargetPassReview>().folder=args[i+1];}
   void Check(bool value,string label){failed|=!value;File.AppendAllText(Path.Combine(folder,"results.txt"),(value?"PASS ":"FAIL ")+label+"\n");}
@@ -25,7 +25,7 @@ namespace WhatTheFish {
    from=from?from:actor;app.view.ClearMatchInput();DevelopmentProbe.TurnCommand=default;if(basket)bb.ResetHome();else fb.ResetBall(true);
    for(int i=0;i<roster.Length;i++)Place(roster[i],new Vector3(5,.07f,-8+i*2));
    Place(from,new Vector3(0,.07f,-5));Place(from==actor?mate:actor,new Vector3(2.8f,.07f,3));Place(other,new Vector3(-2,.07f,1));Place(enemy,new Vector3(-4,.07f,5));
-   if(basket){bb.autoPickup=true;bb.GiveMatchPossession(from);BasketballMatch.Instance.Control(from);}else {fb.ReviewFootballBall(from.transform.position+from.transform.forward*.8f+Vector3.up*fb.WorldRadius,Vector3.zero);fb.RefreshControl(from);}
+   if(basket){var match=BasketballMatch.Instance;match.State.Control(BasketballMatchState.Other(match.TeamOf(from)),match.Now);bb.autoPickup=true;bb.GiveMatchPossession(from);match.Control(from);}else {fb.ReviewFootballBall(from.transform.position+from.transform.forward*.8f+Vector3.up*fb.WorldRadius,Vector3.zero);fb.RefreshControl(from);}
    app.view.yaw=field.eulerAngles.y;DevelopmentProbe.TurnCommand=new PlayerCommand{heading=app.view.yaw};
   }
   Vector2 ScreenPoint(Athlete a){var cam=Camera.main;cam.transform.position=field.TransformPoint(new Vector3(0,9,-11));cam.transform.LookAt(field.TransformPoint(new Vector3(0,0,1)));return cam.WorldToScreenPoint(a.transform.position+Vector3.up*.9f);}
@@ -75,6 +75,7 @@ namespace WhatTheFish {
     while(Holder!=mate&&Time.time<end){mate.Simulate(running,Time.deltaTime);var body=basket?bb.Body:fb.Body;File.AppendAllText(Path.Combine(folder,"moving.csv"),$"{Time.time:F3},{mate.transform.position:F3},{mate.Motor.Velocity:F3},{body.position:F3},{body.linearVelocity:F3}\n");yield return null;}
     Check(Holder==mate,"lead pass caught by running teammate");
    }
+   if(!online)yield return PredictionChecks();
    if(basket){Fixture();yield return new WaitForSeconds(.3f);uint count=bb.PassCount;Check(PassTo(actor,mate,Possession),"direct gather starts");mate.BasketballFreeRoam=true;yield return new WaitForSeconds(.7f);Check(Holder==actor&&bb.PassCount==count,"invalid receiver during gather keeps possession");mate.BasketballFreeRoam=false;}
    if(online){Fixture(mate);yield return new WaitForSeconds(.4f);Signal("guest-turn");yield return Until(()=>Has("guest-done"),"guest completed",20);Check(Holder==actor,"guest targeted pass reaches host");Signal("host-done");yield return new WaitForSeconds(.5f);}
    Finish();
@@ -97,7 +98,7 @@ namespace WhatTheFish {
    if(basket){BasketballHUD.Instance.SelectGuide(1);BasketballHUD.Instance.OpenGuide();}else FootballHUD.Instance.OpenGuide();yield return Capture("controls-guide");if(basket)BasketballHUD.Instance.CloseMenu();else FootballHUD.Instance.CloseMenu();
   }
   IEnumerator Guest(){
-   yield return Until(()=>Has("guest-turn"),"host fixture ready",110);mate=Athlete.Active.First(a=>a&&a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&n.IsPlayerObject&&!n.IsOwner);yield return Until(()=>Holder==actor&&!app.view.InputBlocked,"guest possession snapshot");
+   bool sawFlight=false,sawPath=false;yield return Until(()=>{sawFlight|=Flight.active;sawPath|=FlightVisual&&FlightVisual.Visible;return Has("guest-turn");},"host fixture ready",110);Check(sawFlight&&sawPath,"guest sees host pass flight and shared path");mate=Athlete.Active.First(a=>a&&a.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&n.IsPlayerObject&&!n.IsOwner);yield return Until(()=>Holder==actor&&!app.view.InputBlocked,"guest possession snapshot");
    Check(!PassTo(actor,mate,Possession),"replica cannot author physics");var net=actor.GetComponent<NetworkAthlete>();uint round=basket?BasketballMatch.Instance.Snapshot.revision:FootballMatch.Instance.Snapshot.revision;
    net.TargetPassRpc(TeammatePassing.Id(mate),Possession+1,round,fb?fb.PropBallRevision:0);net.TargetPassRpc(TeammatePassing.Id(mate),Possession,round+1,fb?fb.PropBallRevision:0);net.TargetPassRpc(ulong.MaxValue,Possession,round,fb?fb.PropBallRevision:0);yield return new WaitForSeconds(.4f);Check(Holder==actor,"host rejects stale possession stale round and unknown receiver RPCs");
    InspectPick(mate);Check(app.view.TeammateAtScreen(ScreenPoint(mate))==mate,"guest can pick host model");Check(!Tap(mate)&&Tap(mate),"guest double tap queues receiver ID");

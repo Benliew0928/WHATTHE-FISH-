@@ -15,6 +15,7 @@ namespace WhatTheFish {
   static AndroidAccountSignIn instance;static AccountCapabilities config;
   TaskCompletionSource<string> pending;int request;float nextPoll,deadline;
   [Serializable,Preserve]sealed class Result {public int request;public string status,token,message;}
+  public static bool Pending=>instance&&instance.pending!=null;
   public static bool Supported=>Application.platform==RuntimePlatform.Android;
   public static AccountCapabilities Capabilities {
    get {
@@ -31,7 +32,7 @@ namespace WhatTheFish {
    get {if(!instance){var go=new GameObject("Android account sign-in");DontDestroyOnLoad(go);instance=go.AddComponent<AndroidAccountSignIn>();}return instance;}
   }
   public static string Unavailable(AccountProvider provider) {
-   if(!Supported)return "Account sign-in uses the Android phone's account screen. Guest play is available on Windows.";
+   if(!Supported)return "Account sign-in is unavailable on this device. You can continue as a guest.";
    if(provider==AccountProvider.Google) {
     if(!Capabilities.googleAvailable)return "Google Play services are unavailable on this phone. Use Huawei or continue as a guest.";
     if(string.IsNullOrEmpty(Capabilities.googleClientId))return "Google sign-in setup is not finished for this build. You can continue as a guest.";

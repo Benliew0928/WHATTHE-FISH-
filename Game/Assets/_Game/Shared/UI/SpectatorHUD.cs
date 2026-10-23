@@ -1,16 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
-
 namespace WhatTheFish {
  public sealed class SpectatorHUD:MonoBehaviour {
-  Text score,startHint;public Button startButton;
-  void Start(){var plate=CoveUI.Plate(transform,"Spectator scoreboard",500,120,600,58,CoveUI.Cream,20,0,true);score=CoveUI.Text(plate.transform,"",12,0,576,58,25,true,CoveUI.Ink,TextAnchor.MiddleCenter);if(startButton){var note=CoveUI.Plate(transform,"Host match guidance",450,190,700,48,CoveUI.Cream,14,0,true);startHint=CoveUI.Text(note.transform,"",12,0,676,48,19,true,CoveUI.Ink,TextAnchor.MiddleCenter);}}
-  void Update(){
-   if(!score)return;var app=AppRoot.Instance;
-   if(startButton){startButton.interactable=RoomMatchStart.CanStart(app.SelectedSport);startHint.text=RoomMatchStart.Hint(app.SelectedSport);}
-   if(app.SelectedSport==SportId.Football&&FootballMatch.Instance){var s=FootballMatch.Instance.Snapshot;score.text=s.phase==FootballMatchPhase.Idle?"Football · Waiting for the match":"BLUE  "+s.scoreA+"  :  "+s.scoreB+"  RED";}
-   else if(app.SelectedSport==SportId.Basketball&&BasketballMatch.Instance){var s=BasketballMatch.Instance.Snapshot;score.text=s.phase==BasketballMatchPhase.Idle?"Basketball · Waiting for the match":"BLUE  "+s.scoreA+"  :  "+s.scoreB+"  RED";}
-   else score.text=app.SelectedSport+" · Watching your room";
+  Text score,startHint;RectTransform strip;public Button startButton;
+  void Start(){strip=CoveUI.Rect(transform,"Spectator scoreboard",0,0,640,96);strip.anchorMin=strip.anchorMax=strip.pivot=new Vector2(.5f,1);strip.anchoredPosition=new Vector2(0,-122);WorldUI.Card(strip,"Spectator surface",0,0,640,96);score=WorldUI.Label(strip,"",18,8,604,36,27,true,null,TextAnchor.MiddleCenter);startHint=WorldUI.Label(strip,"",18,50,604,32,20,false,WorldUI.Muted,TextAnchor.MiddleCenter);}
+  void Update(){if(!score)return;var app=AppRoot.Instance;strip.localScale=Vector3.one*Mathf.Min(1,(((RectTransform)transform).rect.width-40)/640);
+   strip.gameObject.SetActive(!RoomMatchStart.Travelling&&!(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible));
+   if(startButton){startButton.interactable=RoomMatchStart.CanStart(app.SelectedSport);startButton.gameObject.SetActive(!PostMatchFlow.MatchActive&&!RoomMatchStart.Travelling);}
+   bool active=PostMatchFlow.MatchActive;startHint.text=active?"Spectating · walk around and follow the action":app.rooms.Host?RoomMatchStart.Hint(app.SelectedSport):"Waiting for "+WorldUI.HostName+" · you are spectating";
+   score.text=app.SelectedSport+" · "+(active?"Match in progress":"Between matches");
+   if(app.SelectedSport==SportId.Football&&FootballMatch.Instance&&active){var s=FootballMatch.Instance.Snapshot;score.text="BLUE  "+s.scoreA+"  :  "+s.scoreB+"  RED";}
+   else if(app.SelectedSport==SportId.Basketball&&BasketballMatch.Instance&&active){var s=BasketballMatch.Instance.Snapshot;score.text="BLUE  "+s.scoreA+"  :  "+s.scoreB+"  RED";}
   }
  }
 }

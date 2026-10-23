@@ -24,7 +24,7 @@ namespace WhatTheFish {
   public bool Active=>Context&&Snapshot.phase!=BasketballMatchPhase.Idle&&Snapshot.phase!=BasketballMatchPhase.Finished&&Snapshot.phase!=BasketballMatchPhase.Cancelled;
   public bool Running=>Snapshot.phase==BasketballMatchPhase.Regulation||Snapshot.phase==BasketballMatchPhase.Overtime;
   public bool BoundaryReleased=>Context&&(Snapshot.phase==BasketballMatchPhase.Finished||Snapshot.phase==BasketballMatchPhase.Cancelled);
-  public bool RestartReady=>Snapshot.phase==BasketballMatchPhase.Restart&&ball.InboundPending&&Now>=Snapshot.deadline;
+  public bool RestartReady=>Snapshot.phase==BasketballMatchPhase.Restart&&ball.InboundPending&&Now>=Snapshot.deadline&&InboundSpaceClear;
   public bool Live=>!Competitive||Running&&Now<Snapshot.deadline||RestartReady;
   public bool BallLive=>Live||Competitive&&Snapshot.phase==BasketballMatchPhase.Buzzer;
   public static bool BlocksActions=>Instance&&Instance.Context&&!Instance.Live;
@@ -74,7 +74,7 @@ namespace WhatTheFish {
    if(!Context){if(wasContext||State.Phase!=BasketballMatchPhase.Idle)Clear();wasContext=false;return;}wasContext=true;
    if(!State.Active)return;
    if(!RosterValid()){Cancel();return;}
-   StepRestartMovement();
+   StepRestartMovement();EnsureInboundClearance();
    if(State.Phase==BasketballMatchPhase.TeamSelection&&!SoloTeamSelection&&Now>=State.Deadline)ConfirmTeams();
   }
   public void AfterBallStep(){if(!Authority||!Context)return;State.Advance(Now);Synchronize();}
@@ -154,10 +154,10 @@ namespace WhatTheFish {
      if(!Ground(local,out var destination))return false;StartAutomaticMove(scorer,destination,false);
     }
    }
-   lastTouch=State.Possession;return true;
+   EnsureInboundClearance();lastTouch=State.Possession;return true;
   }
   public bool OpenInbound(Athlete actor){
-   if(!Authority||!ball.IsInbound(actor)||!State.OpenInbound(TeamOf(actor),Now))return false;
+   if(!Authority||!ball.IsInbound(actor)||!InboundSpaceClear||!State.OpenInbound(TeamOf(actor),Now))return false;
    lastTouch=TeamOf(actor);Synchronize();return true;
   }
   public bool RestrictedHalf(Athlete actor)=>Competitive&&Snapshot.phase==BasketballMatchPhase.Restart&&Snapshot.restart==BasketballRestart.Basket&&TeamOf(actor)!=FootballTeam.None&&TeamOf(actor)!=Snapshot.possession&&!AutomaticMovement(actor);

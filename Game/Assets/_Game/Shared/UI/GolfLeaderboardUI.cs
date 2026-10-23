@@ -11,7 +11,7 @@ namespace WhatTheFish {
   sealed class ScoreRow {
    public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];
   }
-  GolfFinalCountdown finalCountdown;
+  GolfFinalCountdown finalCountdown;RectTransform finishedCard;Text finishedText;
   Text footer,timer,notice;Image titleArt,frameArt,columnArt;RectTransform page,board,frame,columnBand,viewport,content,countdownCard,noticeCard;
   Button toggle,titleToggle,backdrop;ScrollRect scroll;Scrollbar scrollbar;RectTransform scrollTrack;GolfHUDLayout layout;Font fallbackFont;
   readonly List<ScoreRow> rows=new();readonly List<int> selected=new();readonly List<ulong> displayedIds=new();
@@ -48,9 +48,12 @@ namespace WhatTheFish {
   Image Art(RectTransform parent,string name,bool sliced=false){var rect=Rect("Leaderboard art "+name,parent,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);Stretch(rect);var image=rect.gameObject.AddComponent<Image>();image.sprite=Sprite(name);image.type=sliced?Image.Type.Sliced:Image.Type.Simple;image.raycastTarget=false;return image;}
   Button Touch(RectTransform rect){var image=rect.gameObject.AddComponent<Image>();image.color=Color.clear;var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=image;button.transition=Selectable.Transition.None;rect.gameObject.AddComponent<CoveFeedback>().enabled=false;rect.gameObject.AddComponent<GolfFishingButtonSound>();return button;}
   void Build(RectTransform parent,Font font){
-   page=parent;fallbackFont=font;layout=Resources.Load<GolfHUDLayout>("GolfUILayout");if(!layout)layout=ScriptableObject.CreateInstance<GolfHUDLayout>();
+   page=parent;fallbackFont=font;
+   finishedCard=CoveUI.Rect(page,"Golf finished waiting",0,0,620,88);finishedCard.anchorMin=finishedCard.anchorMax=new Vector2(.5f,0);finishedCard.pivot=new Vector2(.5f,0);finishedCard.anchoredPosition=new Vector2(0,118);
+   WorldUI.Card(finishedCard,"Finish surface",0,0,620,88);finishedText=WorldUI.Label(finishedCard,"",20,8,580,72,24,true,null,TextAnchor.MiddleCenter);finishedCard.gameObject.SetActive(false);layout=Resources.Load<GolfHUDLayout>("GolfUILayout");if(!layout)layout=ScriptableObject.CreateInstance<GolfHUDLayout>();
    var shade=Rect("Golf ranking backdrop",page,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);Stretch(shade);backdrop=Touch(shade);shade.GetComponent<Image>().color=new Color(.025f,.16f,.2f,.54f);backdrop.onClick.AddListener(()=>SetExpanded(false));shade.gameObject.SetActive(false);
    board=Rect("Golf leaderboard",page,Vector2.one,Vector2.zero,Vector2.zero);board.pivot=Vector2.one;
+   CharacterIdentityBadges.ReserveHUD(board);
    board.gameObject.AddComponent<GolfRankingHover>().owner=this;
    frame=Rect("Golf leaderboard frame",board,new Vector2(0,1),Vector2.zero,Vector2.zero);frame.pivot=new Vector2(0,1);frameArt=Art(frame,"Frame",true);frameArt.raycastTarget=true;
    titleArt=Art(Rect("Golf leaderboard title",board,new Vector2(.5f,1),Vector2.zero,Vector2.zero),"Title");titleArt.preserveAspect=true;
@@ -140,8 +143,10 @@ namespace WhatTheFish {
   }
   public static string FinishTime(double seconds){var total=(long)Math.Max(0,Math.Floor(seconds));return $"{total/60:00}:{total%60:00}";}
   void Update(){
-   var match=GolfMatchManager.Instance;if(!match||!match.Context){board.gameObject.SetActive(false);if(expanded)SetExpanded(false);return;}
+   var match=GolfMatchManager.Instance;if(!match||!match.Context){board.gameObject.SetActive(false);finishedCard.gameObject.SetActive(false);if(expanded)SetExpanded(false);return;}
    var state=match.State;var ranked=state.Results();var local=match.Player(AppRoot.Instance.LocalAthlete);
+   bool finished=local!=null&&local.IsFinished&&state.Running&&!expanded&&!PlayerView.Instance.InputBlocked;
+   finishedCard.gameObject.SetActive(finished);if(finished){int remaining=state.Players.Count(p=>!p.IsFinished&&!p.IsDNF);finishedText.text="Course complete · "+remaining+" still playing\nFollow the final countdown or open the standings.";finishedCard.localScale=Vector3.one*Mathf.Min(1,(page.rect.width-40)/620);finishedCard.SetAsLastSibling();}
    // The shared look pad is created later than this card; interactive ranking
    // controls must remain above that pad in both compact and expanded modes.
    board.SetAsLastSibling();if(countdownCard.gameObject.activeSelf)countdownCard.SetAsLastSibling();if(noticeCard.gameObject.activeSelf)noticeCard.SetAsLastSibling();

@@ -65,7 +65,7 @@ namespace WhatTheFish {
   void OnEnable(){wheelsReady=false;if(!GetComponent<GolfCartGroundFX>())gameObject.AddComponent<GolfCartGroundFX>();}
   public void Camera(Camera camera,float yaw,float pitch,int mode){
    Vector3 focus=mode==0?seat.position+transform.up*.65f+transform.forward*.12f:transform.position+Vector3.up*1.30f;
-   var rotation=Quaternion.Euler(mode==2?58:pitch,yaw,0);float distance=mode==0?0:mode==1?6.2f:10;
+    var rotation=Quaternion.Euler(mode==2?32:pitch,yaw,0);float distance=mode==0?0:mode==1?6.2f:10;
    var desired=focus-rotation*Vector3.forward*distance;
    if(distance>0&&Physics.SphereCast(focus,.2f,(desired-focus).normalized,out var hit,distance,1<<8,QueryTriggerInteraction.Ignore))desired=focus+(desired-focus).normalized*Mathf.Max(.45f,hit.distance-.15f);
    camera.nearClipPlane=mode==0?.045f:.15f;camera.transform.SetPositionAndRotation(desired,rotation);

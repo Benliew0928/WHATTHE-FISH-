@@ -1,0 +1,54 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-10-23",
+  "assets": [
+    {
+      "id": "ggwp",
+      "file": "stickers/ggwp.png",
+      "reference": null,
+      "prompt": "Use case: illustration-story.\nAsset type: a single premium 2D in-game chat sticker for the tropical multiplayer sports game \"WhatTheFish\".\nPrimary request: an adorable expressive orange-coral fish mascot celebrating good teamwork, smiling joyfully with big glossy navy eyes, cream muzzle and belly, short rounded orange fins, three simple coral dorsal fin lobes, small cheek blush, thick clean dark teal contour, confident geometric silhouette. One flipper raised in a cheering pose. A small mint sports headband with no logo. Exactly two tiny golden sparkle accents. Below its face a bold compact cream sticker-word badge with exact text \"GGWP\" in chunky dark-teal uppercase letters, one line, very legible at small scale.\nStyle/medium: polished professional 2D mobile game emoji art, crisp vector-like filled shapes, smooth controlled cel shading, tasteful subtle gradients, beautiful expressive face. Consistent intentional line weight. Not a 3D render, not hand-drawn, not sketchy, not painterly, no texture.\nComposition: one isolated sticker, square canvas, centered, silhouette fills 80% of canvas, 10% transparent padding, complete uncut silhouette, continuous thick warm-white die-cut outline around fish and text badge with a very subtle dark outer edge. A unified compact icon, no background scenery.\nColor palette: coral orange #FF975D, cream #FFF6DE, deep teal #173C47, aqua mint #68D4C5, golden #FFD477.\nConstraints: genuinely transparent background; exactly one fish; exactly the text GGWP, no extra labels, no watermark, no border around the canvas; no hands or human fingers. Cute and friendly premium game-quality collectible sticker."
+    },
+    {
+      "id": "laugh",
+      "file": "stickers/laugh.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Edit the reference sticker to create ONE LAUGH reaction sticker from the SAME character family. Preserve the exact orange-coral fish identity, cream muzzle and belly, three dorsal fin lobes, mint sports headband, dark teal contour, thick warm-white die-cut border, vector-like clean professional 2D cel shading and polished subtle gradients. Change expression and pose only as follows: Laughing uncontrollably, eyes squeezed into joyful crescent arcs, wide open smiling mouth, one fin on its cream belly, two small aqua laugh tears. No words, letters, caption or text badge. Remove the original GGWP text and original raised-fin pose completely. Single sticker centered on a square transparent canvas; leave transparent padding and show entire silhouette without clipping. High-end cute 2D game sticker, not 3D, not a sketch, no paper or brush texture, no human fingers, no watermark. Genuinely transparent background."
+    },
+    {
+      "id": "cry",
+      "file": "stickers/cry.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Edit the reference sticker to create ONE CRY reaction sticker from the SAME character family. Preserve the exact orange-coral fish identity, cream muzzle and belly, three dorsal fin lobes, mint sports headband, dark teal contour, thick warm-white die-cut border, vector-like clean professional 2D cel shading and polished subtle gradients. Change expression and pose only as follows: Adorably dramatic crying: big navy eyes brimming with tears, two flowing aqua tear streams, small quivering downturned open mouth, both fins tucked close to cheeks. Sympathetic cute sadness, not grotesque. No words, letters, caption or text badge. Remove the original GGWP text and original raised-fin pose completely. Single sticker centered on a square transparent canvas; leave transparent padding and show entire silhouette without clipping. High-end cute 2D game sticker, not 3D, not a sketch, no paper or brush texture, no human fingers, no watermark. Genuinely transparent background."
+    },
+    {
+      "id": "angry",
+      "file": "stickers/angry.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Create a single angry reaction by editing the reference GGWP fish. Keep the identical cute orange-coral fish, cream muzzle and belly, mint headband, teal linework, polished professional 2D cel shading and thick clean cream die-cut outline. Change expression to adorably grumpy with deeply furrowed eyebrows, puffed round cheeks, tiny downturned mouth, fins on hips. Remove GGWP lettering and both sparkle stars completely. No text. NO steam, smoke, sparkles, detached accents or particles anywhere. All features must be part of one continuous filled smooth silhouette. The entire outer background must be fully transparent and completely clean without any white flecks, noise or loose pixels. Only one compact fish sticker, centered square canvas, full silhouette visible with 10% padding. Not 3D, no hand-drawn texture."
+    },
+    {
+      "id": "thanks",
+      "file": "stickers/thanks.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Edit the reference sticker to create ONE THANKS reaction sticker from the SAME character family. Preserve the exact orange-coral fish identity, cream muzzle and belly, three dorsal fin lobes, mint sports headband, dark teal contour, thick warm-white die-cut border, vector-like clean professional 2D cel shading and polished subtle gradients. Change expression and pose only as follows: Warm gratitude: smiling with soft closed eyes and rosy cheeks, two flippers hugging a single pink heart against cream belly, two very small pink floating hearts. No words, letters, caption or text badge. Remove the original GGWP text and original raised-fin pose completely. Single sticker centered on a square transparent canvas; leave transparent padding and show entire silhouette without clipping. High-end cute 2D game sticker, not 3D, not a sketch, no paper or brush texture, no human fingers, no watermark. Genuinely transparent background."
+    },
+    {
+      "id": "oops",
+      "file": "stickers/oops.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Edit the reference sticker to create ONE OOPS reaction sticker from the SAME character family. Preserve the exact orange-coral fish identity, cream muzzle and belly, three dorsal fin lobes, mint sports headband, dark teal contour, thick warm-white die-cut border, vector-like clean professional 2D cel shading and polished subtle gradients. Change expression and pose only as follows: Cute embarrassed apology: tilted face, small awkward smile, eyebrows raised inward, one aqua sweat drop, one flipper touching back of head, strong rosy cheek blush. No words, letters, caption or text badge. Remove the original GGWP text and original raised-fin pose completely. Single sticker centered on a square transparent canvas; leave transparent padding and show entire silhouette without clipping. High-end cute 2D game sticker, not 3D, not a sketch, no paper or brush texture, no human fingers, no watermark. Genuinely transparent background."
+    },
+    {
+      "id": "wow",
+      "file": "stickers/wow.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Edit the reference sticker to create ONE WOW reaction sticker from the SAME character family. Preserve the exact orange-coral fish identity, cream muzzle and belly, three dorsal fin lobes, mint sports headband, dark teal contour, thick warm-white die-cut border, vector-like clean professional 2D cel shading and polished subtle gradients. Change expression and pose only as follows: Amazed delight: extra wide sparkling eyes, small round O mouth, both flippers raised near face, two gold four-point sparkle accents. No words, letters, caption or text badge. Remove the original GGWP text and original raised-fin pose completely. Single sticker centered on a square transparent canvas; leave transparent padding and show entire silhouette without clipping. High-end cute 2D game sticker, not 3D, not a sketch, no paper or brush texture, no human fingers, no watermark. Genuinely transparent background."
+    },
+    {
+      "id": "lets-go",
+      "file": "stickers/lets-go.png",
+      "reference": "stickers/ggwp.png",
+      "prompt": "Use case: identity-preserve. Edit the reference sticker to create ONE LET'S GO reaction sticker from the SAME character family. Preserve the exact orange-coral fish identity, cream muzzle and belly, three dorsal fin lobes, mint sports headband, dark teal contour, thick warm-white die-cut border, vector-like clean professional 2D cel shading and polished subtle gradients. Change expression and pose only as follows: Excited cheering with bright confident joyful eyes, open smile, both flippers raised energetically, two gold rays. Add a compact warm-cream word badge under the face with exact text \"LET'S GO!\" in chunky dark teal uppercase. Single unified silhouette. Remove the original GGWP text and original raised-fin pose completely. Single sticker centered on a square transparent canvas; leave transparent padding and show entire silhouette without clipping. High-end cute 2D game sticker, not 3D, not a sketch, no paper or brush texture, no human fingers, no watermark. Genuinely transparent background."
+    }
+  ]
+}

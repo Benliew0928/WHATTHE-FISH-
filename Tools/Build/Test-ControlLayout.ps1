@@ -1,6 +1,7 @@
 param(
  [string]$PlayerPath,
- [ValidateSet('Basketball','Football','Golf','Fishing','All')][string]$Sport='All'
+ [ValidateSet('Basketball','Football','Golf','Fishing','All')][string]$Sport='All',
+ [switch]$DesignMutation
 )
 $ErrorActionPreference='Stop'
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
@@ -16,6 +17,7 @@ foreach($taskSport in $taskSports){
   New-Item -ItemType Directory -Path $taskFolder -Force | Out-Null
   $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -offline -sport $taskSport -probe -startAt 10000 -returnAt 10000 -exitAfter 240 -guestProfile $taskProfile -layoutReview `"$taskFolder`" -report `"$taskFolder/probe.txt`" -logFile `"$taskFolder/player.log`""
   if($taskPhase -eq 'Restart'){$taskArgs+=' -layoutRestart'}
+  if($DesignMutation){$taskArgs+=' -layoutDesignMutation'}
   $taskProcess=Start-Process -FilePath $PlayerPath -ArgumentList $taskArgs -WorkingDirectory $env:TEMP -WindowStyle Hidden -PassThru
   try{
    $taskDeadline=(Get-Date).AddSeconds(240)

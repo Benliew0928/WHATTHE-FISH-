@@ -1,34 +1,20 @@
 # Football passing, player statistics and MVP
 
-## Controls
+## Controls and passing
 
-Dash is the large main thumb button. Shoot occupies the diagonal upper-left
-slot and still changes to Pressure on defense. Hold Dash, slide onto Shoot
-to charge, then return to Dash to release the shot while keeping Dash held.
-Lifting releases the shot and ends Dash. All four action hitboxes accept captured swipes in either direction: Dash, Shoot/Pressure, Pass and Tackle (when eligible). Dash and Pressure remain held while visiting other actions. Returning to Dash releases an aimed pass or shot; switching directly between Shoot and Pass cancels the previous aim to avoid firing both. Lifting ends every hold owned by that finger. Shoot also accepts a separate finger.
-Cancelling that shot does not cancel the independent Dash hold. Exhaustion,
-hits, menu changes and match transitions still stop invalid input.
+Tap Pass or press Space to immediately lead the eligible teammate closest to
+the camera heading. Double-tap a teammate to choose them directly. Pass no
+longer has a hold/aim/release gesture. Sliding from Dash onto Pass also commits
+immediately; Dash can remain held. Shoot still charges, and returning to Dash
+releases that shot. Switching from an aimed shot to Pass cancels the shot.
 
-Pass replaces the football Jump button. Aim with the camera and tap Pass;
-hold it to see a continuous world-space energy ribbon using the football
-shooting material and a small landing halo, then release. No floating lock
-badge covers the receiver.
-The endpoint eases into and out of a receiver lock, while the mint tint and
-halo ease in smoothly. The ribbon uses metre-spaced flow like basketball
-and keeps its arrowhead compact at long range. Free passes show the direction without a teammate lock. Space performs the same action
-on keyboard; F remains Shoot and Left Control remains Dash. Charging a shot
-while dashing preserves dash movement and stamina drain. Without Dash, the
-existing charging movement penalty remains.
-
-## Passing
-
-Only a player controlling the ball can pass. Target selection chooses the
-nearest teammate ahead of the aim heading, up to 30 metres away, inside a
-lane with a 1.8-metre half-width. Scenery obstructing the route rejects that
-lock. Without a teammate in the lane, Pass sends a free grounded pass in the
-aim direction. Opponents remain able to block either kind of pass. The ball
-is physical: there is no homing or receiver teleport. Bots use this same Pass
-action when their existing policy decides to pass.
+The local halo previews the selected receiver. The authoritative flight ribbon
+appears for everyone after initiation, including guests and spectators. Moving
+receivers collect clear passes automatically within receiving reach. Small
+corrections follow normal running; sharp turns preserve the original predicted
+destination. Teammates and opponents in the lane can intercept. There is no
+receiver teleport or ball U-turn. See [shared passing rules](TEAMMATE-PASSING.md)
+for selection, prediction, interception and multiplayer details.
 
 ## Host-authoritative match records
 

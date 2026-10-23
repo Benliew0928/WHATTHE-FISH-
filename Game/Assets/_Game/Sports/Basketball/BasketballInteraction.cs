@@ -36,12 +36,12 @@ namespace WhatTheFish {
   public Athlete Holder=>Authority?holder:ResolveHolder();
   public bool Playing=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Basketball&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling);
 
-  static ulong PlayerId(Athlete athlete){if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.PlayerId(athlete);var net=athlete?athlete.GetComponent<NetworkAthlete>():null;return net&&net.IsSpawned?net.StableId:ulong.MaxValue;}
+  static ulong PlayerId(Athlete athlete){if(TutorialSession.Owns(athlete))return BasketballMatch.PlayerId(athlete);if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.PlayerId(athlete);var net=athlete?athlete.GetComponent<NetworkAthlete>():null;return net&&net.IsSpawned?net.StableId:ulong.MaxValue;}
   bool Connected=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
   bool Eligible(Athlete athlete){
    if(!athlete||athlete.IsSpectator||!athlete.gameObject.activeInHierarchy||athlete.inTransit||athlete.BasketballFreeRoam)return false;
    if(BasketballMatch.Instance&&BasketballMatch.Instance.Competitive)return BasketballMatch.Instance.Live&&BasketballMatch.Instance.Contains(athlete)&&!BasketballMatch.Instance.AutomaticMovement(athlete);
-   if(!Connected)return AppRoot.Instance&&AppRoot.Instance.LocalAthlete==athlete;
+   if(!Connected)return TutorialSession.Owns(athlete)||AppRoot.Instance&&AppRoot.Instance.LocalAthlete==athlete;
    var net=athlete.GetComponent<NetworkAthlete>();return net&&net.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(net.OwnerClientId);
   }
   Athlete ResolveHolder(){
@@ -52,7 +52,7 @@ namespace WhatTheFish {
   public bool CanShoot(Athlete athlete)=>!IsInbound(athlete)&&CanPass(athlete);
   public bool CanPass(Athlete athlete)=>!BasketballMatch.BlocksActions&&!PropLocked(athlete)&&!PortalBusy&&Playing&&athlete&&!athlete.inTransit&&!athlete.BasketballFreeRoam&&!ActionQueued&&(!athlete.BasketballMotion||!athlete.BasketballMotion.Busy)&&Held&&(Authority?holder==athlete:PlayerId(athlete)==target.holder);
   public void CancelAction(Athlete athlete){if(Authority&&holder==athlete){pendingAction=BasketballAction.None;passAim=default;CancelShotCharge(athlete);}}
-  void ClearPossession(){ResetBoundaryTracking();CancelPropBall();passBounceArmed=false;passAim=default;ClearDefense();approachActor=null;ClearSteals();ResetShotTracking();passing=false;if(holder&&holder.BasketballMotion)holder.BasketballMotion.ResetPose();pendingAction=BasketballAction.None;holder=null;lastShooter=null;RestoreShooterCollision();if(Body){Body.linearDamping=restDamping;RestoreFloorContacts();}}
+  void ClearPossession(){assistedPass.Clear();ResetBoundaryTracking();CancelPropBall();passBounceArmed=false;passAim=default;ClearDefense();approachActor=null;ClearSteals();ResetShotTracking();passing=false;if(holder&&holder.BasketballMotion)holder.BasketballMotion.ResetPose();pendingAction=BasketballAction.None;holder=null;lastShooter=null;RestoreShooterCollision();if(Body){Body.linearDamping=restDamping;RestoreFloorContacts();}}
   void RestoreFloorContacts(){shotFlying=false;Body.collisionDetectionMode=CollisionDetectionMode.ContinuousSpeculative;}
   void RestoreShooterCollision(){if(ignoredShooter){Physics.IgnoreCollision(GetComponent<SphereCollider>(),ignoredShooter,false);ignoredShooter=null;}}
   bool Outside(Vector3 world){var p=transform.parent?transform.parent.InverseTransformPoint(world):world;var recovery=Vector2.Max(courtLimits,PlayerCourtLimits+new Vector2(2.4f,2.7f));return Mathf.Abs(p.x)>recovery.x||Mathf.Abs(p.z)>recovery.y;}
@@ -111,6 +111,11 @@ namespace WhatTheFish {
    // it can leave a kinematic ball suspended at its last carried position.
    if(!ReferenceEquals(holder,null)){ResetHome();return;}
    if(StepBoundaryRecovery())return;
+   if(assistedPass.Active){
+    assistedPass.Step(Body,true);
+    var recipient=assistedPass.FirstReceiver(Body,pickupRadius,pickupHeight,a=>Eligible(a)&&!Outside(a.transform.position)&&(!a.BasketballMotion||!a.BasketballMotion.Challenging&&!a.BasketballMotion.Finishing),out _);
+    if(autoPickup&&recipient){CatchPass(recipient);return;}
+   }
    if(!autoPickup||Time.time<pickupAt||Body.linearVelocity.magnitude>(passing?14*BasketballPassRules.SpeedMultiplier:pickupMaxSpeed)||Body.linearVelocity.y>1)return;
    Athlete nearest=null;float best=float.PositiveInfinity;ulong bestId=ulong.MaxValue;
    void Consider(Athlete athlete){
@@ -126,7 +131,10 @@ namespace WhatTheFish {
    else if(Connected){foreach(var client in NetworkManager.Singleton.ConnectedClientsList)if(client.PlayerObject)Consider(client.PlayerObject.GetComponent<Athlete>());}
    else Consider(AppRoot.Instance.LocalAthlete);
    if(!nearest)return;
-   ResetShotTracking();
+   CatchPass(nearest);
+  }
+  void CatchPass(Athlete nearest){
+   assistedPass.Clear();ResetShotTracking();
    NewDefensePlay();passBounceArmed=false;passAim=default;passing=false;RestoreShooterCollision();RestoreStealerCollision();RestoreFloorContacts();holder=nearest;dribblePhase=0;pendingAction=BasketballAction.None;Body.linearDamping=restDamping;Body.isKinematic=false;Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;Body.isKinematic=true;Body.detectCollisions=false;reset++;looseFor=outsideFor=0;Follow(holder);BasketballMatch.Instance?.Control(holder);BasketballAudio.Emit(BasketballSound.Catch,Body.position);sendAt=0;
   }
   public Transform SelectHoop(Vector3 origin,float heading,Athlete actor=null){
@@ -151,7 +159,7 @@ namespace WhatTheFish {
    if(!TryAction(athlete,heading,BasketballAction.Shoot))return false;
    pendingPower=power;return true;
   }
-  public bool TryPass(Athlete athlete,float heading){return CommitPass(athlete,heading,0);}
+  public bool TryPass(Athlete athlete,float heading){var receiver=SelectPassReceiver(athlete,heading);return receiver?TryPassTo(athlete,receiver,Defense.play):CommitPass(athlete,heading,0);}
   bool TryAction(Athlete athlete,float heading,BasketballAction action){
    if(!Authority||!(action==BasketballAction.Pass?CanPass(athlete):CanShoot(athlete))||!Eligible(athlete)||!float.IsFinite(heading))return false;
    var motion=athlete.BasketballMotion;if(!motion)return false;
@@ -175,7 +183,7 @@ namespace WhatTheFish {
    }else {if(passAim.locked){var recipient=PassReceiver;if(directPass?!ValidDirectReceiver(athlete,recipient):!PassTeammate(athlete,recipient)){if(directPass||IsInbound(athlete)){passAim=default;athlete.BasketballMotion.ResetPose();return;}passAim.locked=false;}else passAim.destination=PassDestination(recipient,start);}
     launchedPass=PassPath(start,passAim,pendingPassPower);velocity=launchedPass.velocity;}
    // Reject an obstructed release instead of materializing inside architecture.
-   if(Physics.CheckSphere(start,Radius+.015f,1<<8,QueryTriggerInteraction.Ignore)||Physics.Linecast(athlete.transform.position+Vector3.up*1.1f,start,1<<8,QueryTriggerInteraction.Ignore)){if(BasketballFinishRules.IsFinish(action))InterruptFinish(athlete);else {EndPropAim();athlete.BasketballMotion.ResetPose();}return;}
+   if(Physics.CheckSphere(start,Radius+.015f,1<<8,QueryTriggerInteraction.Ignore)||Physics.Linecast(athlete.transform.position+Vector3.up*1.1f,start,1<<8,QueryTriggerInteraction.Ignore)){if(BasketballFinishRules.IsFinish(action))InterruptFinish(athlete);else {passAim=default;assistedPass.Clear();EndPropAim();athlete.BasketballMotion.ResetPose();}return;}
    if(shotHoop&&BasketballMatch.Instance&&!BasketballMatch.Instance.Release(athlete)){EndPropAim();athlete.BasketballMotion.ResetPose();return;}
    if(IsInbound(athlete)&&BasketballMatch.Instance&&BasketballMatch.Instance.Competitive&&!BasketballMatch.Instance.OpenInbound(athlete)){athlete.BasketballMotion.ResetPose();return;}
    inboundFlight=IsInbound(athlete);inboundReleased=BasketballMotion.Clock;
@@ -187,8 +195,8 @@ namespace WhatTheFish {
    LastLaunchVelocity=velocity;LastReleasePower=pendingPower;BasketballAudio.Emit(BasketballSound.Release,start);
    foreach(var contest in blockAttempts)if(contest.shotContest)contest.releaseAt=BasketballMotion.Clock;
    if(shotHoop)BeginAttempt(shotHoop,athlete,start);if(propShotQueued)StartPropFlight(start,shotHoop);
-   passing=action==BasketballAction.Pass;if(passing)BasketballMatch.Instance?.RecordPass(athlete);passBounceArmed=passing&&launchedPass.Bounces;passLaunchedAt=BasketballMotion.Clock;if(passing){passAim.phase=3;passAim.origin=start;passAim.released=BasketballMotion.Clock;}else passAim=default;Body.WakeUp();reset++;if(shotHoop)shotCount++;else passCount++;sendAt=0;
+   passing=action==BasketballAction.Pass;if(passing)BasketballMatch.Instance?.RecordPass(athlete);passBounceArmed=passing&&launchedPass.Bounces;passLaunchedAt=BasketballMotion.Clock;if(passing){assistedPass.Begin(athlete,PassReceiver,launchedPass.Point(launchedPass.duration),velocity,launchedPass.duration);passAim.phase=3;passAim.origin=start;passAim.released=BasketballMotion.Clock;}else passAim=default;Body.WakeUp();reset++;if(shotHoop)shotCount++;else passCount++;sendAt=0;
   }
-  void OnCollisionEnter(Collision collision){if(Authority){var actor=collision.collider.GetComponentInParent<Athlete>();if(actor)BasketballMatch.Instance?.Touch(actor);AudioContact(collision);guidedPropShot=false;propState.guided=false;if(BouncePassContact(collision))return;ShotContact(collision);Body.linearDamping=restDamping;passing=false;}}
+  void OnCollisionEnter(Collision collision){if(Authority){var actor=collision.collider.GetComponentInParent<Athlete>();if(actor)BasketballMatch.Instance?.Touch(actor);AudioContact(collision);guidedPropShot=false;propState.guided=false;if(BouncePassContact(collision))return;assistedPass.Clear();passAim=default;ShotContact(collision);Body.linearDamping=restDamping;passing=false;}}
  }
 }

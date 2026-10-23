@@ -7,88 +7,99 @@ namespace WhatTheFish {
  public sealed class PostMatchFlow:MonoBehaviour {
   public static PostMatchFlow Instance {get;private set;}
   public bool Visible=>panel&&panel.gameObject.activeSelf;
+  public bool WaitingVisible=>dock&&dock.gameObject.activeSelf;
   public static bool MatchActive=>FootballMatch.Instance&&FootballMatch.Instance.Active||BasketballMatch.Instance&&BasketballMatch.Instance.Active||GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Running||FishingGame.Instance&&(FishingGame.Instance.State.Match.phase is FishingRoundPhase.Playing or FishingRoundPhase.Countdown or FishingRoundPhase.Drafting);
-  RectTransform panel,content;GameObject hostControls,guestControls;Button reopen,again,teleport,station,game,ready;Button[] cards=new Button[4];CovePlate[] surfaces=new CovePlate[4];Text subtitle,status,party,againLabel,travelLabel,readyLabel;Text[] capacities=new Text[4];
+  RectTransform panel,content,dock;GameObject hostControls,guestControls;Button reopen,again,teleport,station,game,ready;Button[] cards=new Button[4];Text title,subtitle,status,party,againLabel,travelLabel,readyLabel,dockTitle,dockHint;Text[] capacities=new Text[4];
   AppRoot app;SportId selected;TeleportDestination destination;string shown="",current="";bool wasBlocked;string actionMessage="";
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){if(!Instance)new GameObject("Next adventure",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).AddComponent<PostMatchFlow>();}
-  void Awake(){Instance=this;var canvas=GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=950;var scaler=GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;Build();}
+  void Awake(){Instance=this;WorldUI.Canvas(gameObject,950);Build();}
   void Build(){
-   panel=CoveUI.Rect(transform,"Next adventure overlay",0,0,1600,900);CoveUI.Stretch(panel);panel.gameObject.AddComponent<Image>().color=new Color(.02f,.10f,.16f,.66f);
-   content=CoveUI.Rect(panel,"Safe adventure card",0,0,1440,720);content.anchorMin=content.anchorMax=content.pivot=Vector2.one*.5f;content.anchoredPosition=Vector2.zero;
-   CoveUI.Plate(content,"Warm adventure card",0,0,1440,720,CoveUI.Cream,36,0,true);
-   CoveUI.Text(content,"ROUND COMPLETE",42,26,650,34,24,true,CoveUI.Muted);
-   CoveUI.Text(content,"Where to next?",38,54,800,88,50,true);
-   subtitle=CoveUI.Text(content,"",42,141,1350,42,28,false,CoveUI.Muted);
-   hostControls=CoveUI.Rect(content,"Host choices",0,0,1440,720).gameObject;
-   again=CoveUI.Button(hostControls.transform,"Play again","Play again",1050,46,348,86,CoveUI.Gold,()=>PlayAgain(),size:32);againLabel=again.GetComponentInChildren<Text>();
+   panel=CoveUI.Rect(transform,"Next adventure overlay",0,0,1600,900);CoveUI.Stretch(panel);panel.gameObject.AddComponent<Image>().color=new Color(.025f,.045f,.04f,.34f);
+   content=CoveUI.Rect(panel,"Safe adventure card",0,0,1180,626);WorldUI.Card(content,"Adventure card",0,0,1180,626);
+   title=WorldUI.Label(content,"NEXT ADVENTURE",30,22,700,32,21,true,WorldUI.Muted);
+   WorldUI.Label(content,"Where to next?",28,56,750,64,44,true);
+   subtitle=WorldUI.Label(content,"",30,126,1120,42,23,false,WorldUI.Muted);
+   hostControls=CoveUI.Rect(content,"Host choices",0,0,1180,626).gameObject;
+   again=WorldUI.Button(hostControls.transform,"Play again","Play again",868,49,282,64,()=>PlayAgain());againLabel=again.GetComponentInChildren<Text>();
    for(int i=0;i<4;i++){
-    var sport=(SportId)i;float x=42+i*345;var b=CoveUI.Button(hostControls.transform,"Choose "+sport,"",x,205,321,230,CoveUI.Sky,()=>{selected=sport;actionMessage="";},size:30);cards[i]=b;surfaces[i]=b.GetComponent<CovePlate>();
-    CoveUI.Image(b.transform,sport+" island",CoveUI.Island(sport),42,3,237,125);CoveUI.Text(b.transform,sport.ToString(),12,124,297,65,32,true,null,TextAnchor.MiddleCenter);capacities[i]=CoveUI.Text(b.transform,"",12,184,297,38,24,false,CoveUI.Muted,TextAnchor.MiddleCenter);
+    var sport=(SportId)i;var b=WorldUI.Button(hostControls.transform,"Choose "+sport,"",30+i*284,188,268,208,()=>{selected=sport;actionMessage="";});cards[i]=b;
+    CoveUI.Image(b.transform,sport+" island",CoveUI.Island(sport),30,0,208,119);
+    WorldUI.Label(b.transform,sport.ToString(),10,116,248,42,29,true,null,TextAnchor.MiddleCenter);
+    capacities[i]=WorldUI.Label(b.transform,"",10,162,248,32,21,false,WorldUI.Muted,TextAnchor.MiddleCenter);
    }
-   station=CoveUI.Button(hostControls.transform,"Choose station","Skyrail station",42,465,462,88,CoveUI.Cream,()=>destination=TeleportDestination.Station,size:32);
-   game=CoveUI.Button(hostControls.transform,"Choose game location","Game area",522,465,462,88,CoveUI.Cream,()=>destination=TeleportDestination.Game,size:32);
-   teleport=CoveUI.Button(hostControls.transform,"Teleport everyone","Teleport everyone",1002,465,396,88,CoveUI.Sky,Travel,size:30);travelLabel=teleport.GetComponentInChildren<Text>();
-   status=CoveUI.Text(hostControls.transform,"",42,570,1356,46,26,false,CoveUI.Muted);
-   guestControls=CoveUI.Rect(content,"Guest waiting",42,214,1356,330).gameObject;
-   CoveUI.Plate(guestControls.transform,"Together card",0,0,1356,308,CoveUI.Sky,28,0);
-   CoveUI.Text(guestControls.transform,"Your host is choosing the next adventure",35,35,1286,70,41,true,null,TextAnchor.MiddleCenter);
-   CoveUI.Text(guestControls.transform,"Stay in the room. Everyone will travel together.",35,115,1286,50,29,false,CoveUI.Muted,TextAnchor.MiddleCenter);
-   ready=CoveUI.Button(guestControls.transform,"Ready for fishing","Ready for next round",435,193,486,84,CoveUI.Mint,ReadyFishing,size:30);readyLabel=ready.GetComponentInChildren<Text>();
-   party=CoveUI.Text(content,"",42,640,730,42,25,true,CoveUI.Muted);
-   CoveUI.Button(content,"Keep exploring","Keep exploring",1020,628,378,66,CoveUI.Cream,Close,size:27);
-   reopen=CoveUI.Button(transform,"Open next adventure","Next adventure",0,0,315,76,CoveUI.Sky,Open,size:27);var rr=(RectTransform)reopen.transform;rr.anchorMin=rr.anchorMax=new Vector2(.5f,1);rr.anchoredPosition=new Vector2(0,-65);
-   panel.gameObject.SetActive(false);reopen.gameObject.SetActive(false);
+   WorldUI.Label(hostControls.transform,"ARRIVE AT",30,416,500,25,18,true,WorldUI.Muted);
+   station=WorldUI.Button(hostControls.transform,"Choose station","Skyrail station",30,452,302,64,()=>destination=TeleportDestination.Station);
+   game=WorldUI.Button(hostControls.transform,"Choose game location","Game area",346,452,242,64,()=>destination=TeleportDestination.Game);
+   teleport=WorldUI.Button(hostControls.transform,"Teleport everyone","Take everyone",610,452,540,64,Travel,CoveUI.Mint,28);travelLabel=teleport.GetComponentInChildren<Text>();
+   status=WorldUI.Label(hostControls.transform,"",30,526,1120,38,21,false,WorldUI.Muted);
+   guestControls=CoveUI.Rect(content,"Guest waiting",30,184,1120,345).gameObject;
+   WorldUI.Label(guestControls.transform,"Stay for the next adventure",24,25,1072,62,36,true);
+   WorldUI.Label(guestControls.transform,"Your host chooses the next island. You can keep exploring until departure.\nEveryone in the room travels together, including spectators.",24,105,1072,100,25,false,WorldUI.Muted);
+   ready=WorldUI.Button(guestControls.transform,"Ready for fishing","Ready for next round",24,230,480,68,ReadyFishing,CoveUI.Mint);readyLabel=ready.GetComponentInChildren<Text>();
+   party=WorldUI.Label(content,"",30,581,700,28,20,true,WorldUI.Muted);
+   WorldUI.Button(content,"Keep exploring","Keep exploring",892,560,258,56,Close,size:22);
+   dock=CoveUI.Rect(transform,"Waiting for next adventure",0,0,800,100);WorldUI.Card(dock,"Waiting surface",0,0,800,100);
+   dockTitle=WorldUI.Label(dock,"",22,12,525,34,25,true);dockHint=WorldUI.Label(dock,"",22,51,525,32,19,false,WorldUI.Muted);
+   reopen=WorldUI.Button(dock,"Open next adventure","Details",568,20,210,60,Open);
+   panel.gameObject.SetActive(false);dock.gameObject.SetActive(false);
   }
   public static void CloseResults(){FishingCeremony.Instance?.Cancel();FootballMVP.Instance?.Dismiss();BasketballMVP.Instance?.Dismiss();FishingHUD.Instance?.Results?.Close();}
+  bool Abandoned=>app&&app.SelectedSport==SportId.Fishing&&FishingGame.Instance&&FishingGame.Instance.State.Match.outcome==FishingOutcome.Abandoned;
+  bool Voided=>app&&(app.SelectedSport==SportId.Football&&FootballMatch.Instance&&FootballMatch.Instance.Snapshot.phase==FootballMatchPhase.Cancelled||app.SelectedSport==SportId.Basketball&&BasketballMatch.Instance&&BasketballMatch.Instance.Snapshot.phase==BasketballMatchPhase.Cancelled);
   string FinishedKey(){
    if(!app||!app.Exploring)return "";
    return app.SelectedSport switch {
-    SportId.Football when FootballMatch.Instance&&FootballMatch.Instance.Snapshot.phase==FootballMatchPhase.Finished&&!FootballMatch.Instance.GoalSequence=>"Football:"+FootballMatch.Instance.Snapshot.revision,
-    SportId.Basketball when BasketballMatch.Instance&&BasketballMatch.Instance.Snapshot.phase==BasketballMatchPhase.Finished=>"Basketball:"+BasketballMatch.Instance.Snapshot.revision,
+    SportId.Football when FootballMatch.Instance&&(FootballMatch.Instance.Snapshot.phase is FootballMatchPhase.Finished or FootballMatchPhase.Cancelled)&&!FootballMatch.Instance.GoalSequence=>"Football:"+FootballMatch.Instance.Snapshot.revision,
+    SportId.Basketball when BasketballMatch.Instance&&(BasketballMatch.Instance.Snapshot.phase is BasketballMatchPhase.Finished or BasketballMatchPhase.Cancelled)=>"Basketball:"+BasketballMatch.Instance.Snapshot.revision,
     SportId.Golf when GolfMatchManager.Instance&&GolfMatchManager.Instance.State.Phase==GolfMatchPhase.Ended=>"Golf:"+GolfMatchManager.Instance.Round,
     SportId.Fishing when FishingGame.Instance&&FishingGame.Instance.State.Match.phase==FishingRoundPhase.Ended=>"Fishing:"+FishingGame.Instance.State.Match.round,
     _=>""
    };
   }
   public void Open(){
-   app=AppRoot.Instance;if(!app||!app.Exploring||TeleportSequence.Busy||RoomTeleport.Busy||MatchActive)return;
-   CloseResults();GolfHUD.Instance?.IslandMenu?.Close();FishingHUD.Instance?.IslandMenu?.Close();selected=app.SelectedSport;destination=TeleportDestination.Station;actionMessage="";
-   if(!Visible){wasBlocked=app.view.InputBlocked;app.view.ClearMatchInput();app.view.InputBlocked=true;}panel.gameObject.SetActive(true);reopen.gameObject.SetActive(false);Refresh();
+   app=AppRoot.Instance;if(!app||!app.Exploring||RoomService.Paused||RoomMatchStart.Travelling||MatchActive)return;
+   CloseResults();if(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen)FootballHUD.Instance.CloseMenu();if(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)BasketballHUD.Instance.CloseMenu();GolfHUD.Instance?.IslandMenu?.Close();FishingHUD.Instance?.IslandMenu?.Close();selected=app.SelectedSport;destination=TeleportDestination.Station;actionMessage="";
+   if(!Visible){wasBlocked=app.view.InputBlocked;app.view.ClearMatchInput();app.view.InputBlocked=true;}panel.gameObject.SetActive(true);dock.gameObject.SetActive(false);Refresh();
   }
   public void Close(){if(!Visible)return;panel.gameObject.SetActive(false);if(app&&app.view)app.view.InputBlocked=wasBlocked;}
   public bool PlayAgain(){
-   app=AppRoot.Instance;if(!app||app.rooms.Connected&&!app.rooms.Host||RoomTeleport.Busy||TeleportSequence.Busy||MatchActive)return false;
+   app=AppRoot.Instance;if(!app||app.rooms.Connected&&!app.rooms.Host||RoomMatchStart.Travelling||MatchActive)return false;
    CloseResults();Close();bool started=false;
    switch(app.SelectedSport){
-    case SportId.Football: if(app.rooms.Connected)started=FootballMatch.Instance&&FootballMatch.Instance.StartMatch();else{app.PlayAgainstAI();started=true;}break;
+    case SportId.Football:if(app.rooms.Connected)started=FootballMatch.Instance&&FootballMatch.Instance.StartMatch();else{app.PlayAgainstAI();started=true;}break;
     case SportId.Basketball:if(app.rooms.Connected)started=BasketballMatch.Instance&&BasketballMatch.Instance.StartMatch();else{app.PlayAgainstAI();started=true;}break;
     case SportId.Golf:started=GolfMatchManager.Instance&&GolfMatchManager.Instance.StartMatch();break;
     case SportId.Fishing:ReadyFishing();started=FishingGame.Instance&&FishingGame.Instance.StartMatch(FishingGame.Instance.State.Match.mode);break;
    }
-   if(!started){Open();actionMessage=app.SelectedSport==SportId.Fishing?"Every player needs to be ready before the next round.":"The next match needs an even team roster. Use the match settings to add players or bots.";}return started;
+   if(!started){Open();actionMessage=RoomMatchStart.Hint(app.SelectedSport);}return started;
   }
   void ReadyFishing(){var f=FishingGame.Instance;var a=app?app.LocalAthlete:null;var p=f&&a?f.Player(a):null;if(!p.HasValue||p.Value.ready)return;var n=a.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned&&!n.IsServer)n.FishingRpc(FishingAction.Ready,f.State.Match.round,p.Value.sequence);else f.Execute(a,FishingAction.Ready,f.State.Match.round,p.Value.sequence);}
   void Travel(){if(RoomTeleport.Instance.Request(selected,destination))Close();else actionMessage=RoomTeleport.Instance.Message;}
   void Update(){
-   app=AppRoot.Instance;if(!app)return;current=FinishedKey();bool busy=TeleportSequence.Busy||RoomTeleport.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling;
-   if(!app.Exploring||busy||MatchActive){Close();reopen.gameObject.SetActive(false);if(MatchActive||!app.Exploring)shown="";return;}
+   app=AppRoot.Instance;if(!app)return;current=FinishedKey();
+   if(!app.Exploring||RoomService.Paused||RoomMatchStart.Travelling||MatchActive){Close();dock.gameObject.SetActive(false);if(MatchActive||!app.Exploring)shown="";return;}
    bool result=FishingCeremony.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingHUD.Instance&&FishingHUD.Instance.Results&&FishingHUD.Instance.Results.Visible;
-   if(current.Length>0&&shown!=current&&!result){shown=current;Open();}
-   reopen.gameObject.SetActive(!Visible&&current.Length>0&&!result);
+   bool host=!app.rooms.Connected||app.rooms.Host;
+   if(current.Length>0&&shown!=current&&!result&&!app.view.InputBlocked&&!SocialPanel.Visible&&!AccountPanel.Visible){shown=current;if(host)Open();}
+   bool other=app.view.InputBlocked||SocialPanel.Visible||AccountPanel.Visible;
+   dock.gameObject.SetActive(!Visible&&current.Length>0&&!result&&!other);
+   if(dock.gameObject.activeSelf){dockTitle.text=Abandoned?"Round abandoned · ready again":Voided?"Match ended · no winner":host?"Ready for another adventure?":"Waiting for "+WorldUI.HostName;dockHint.text=host?"Choose an island or play again.":"Keep exploring · the host will take everyone together";reopen.GetComponentInChildren<Text>().text=host?"Choose next":"Details";WorldUI.Fit(dock,(RectTransform)transform,800,100,true,142);}
    if(Visible)Refresh();
   }
   void Refresh(){
    bool host=!app.rooms.Connected||app.rooms.Host;int count=app.rooms.Connected?RoomSeats.PlayingCount:1;hostControls.SetActive(host);guestControls.SetActive(!host);
-   subtitle.text=host?"Choose another island, or play "+app.SelectedSport.ToString().ToLowerInvariant()+" again.":"The round is over. Your place in the room is kept.";
-   party.text=app.rooms.Connected?count+" PLAYERS  /  SAME ROOM":IslandBots.Instance&&IslandBots.Instance.Solo?"YOU + "+IslandBots.Instance.Count+" BOT OPPONENTS":"SOLO ADVENTURE";
+   title.text=Abandoned?"ROUND ABANDONED":Voided?"MATCH VOID · A PLAYER LEFT":"NEXT ADVENTURE";
+   subtitle.text=Abandoned?"The crew changed during this round. Ready up again, or choose another island.":Voided?"No winner was awarded. Your crew can explore or start a new match.":host?"Play "+app.SelectedSport.ToString().ToLowerInvariant()+" again, or take the crew to another island.":WorldUI.HostName+" is choosing what happens next.";
+   party.text=app.rooms.Connected?count+" players · "+(RoomTeleport.Players().Length-count)+" spectators · one crew":IslandBots.Instance&&IslandBots.Instance.Solo?"You + "+IslandBots.Instance.Count+" bot opponents":"Solo adventure";
    againLabel.text=app.SelectedSport==SportId.Fishing&&FishingGame.Instance&&FishingGame.Instance.State.Match.mode==FishingMode.Cup&&!FishingGame.Instance.State.Match.cupFinished?"Next cup round":"Play again";
-   for(int i=0;i<4;i++){bool fits=count<=TeleportDestinations.Capacity((SportId)i);cards[i].interactable=fits;cards[i].GetComponent<CoveFeedback>().SetTint((SportId)i==selected?CoveUI.Mint:fits?CoveUI.Sky:new Color(.85f,.86f,.83f));capacities[i].text=fits?"Up to "+TeleportDestinations.Capacity((SportId)i)+" players":"Your group exceeds 5";}
-   station.GetComponent<CoveFeedback>().SetTint(destination==TeleportDestination.Station?CoveUI.Mint:CoveUI.Cream);game.GetComponent<CoveFeedback>().SetTint(destination==TeleportDestination.Game?CoveUI.Mint:CoveUI.Cream);
-   bool allowed=RoomTeleport.Instance&&RoomTeleport.Instance.CanRequest(selected,destination,out _);teleport.interactable=allowed;travelLabel.text=app.rooms.Connected?"Teleport everyone":"Teleport";
-   status.text=actionMessage.Length>0?actionMessage:selected+" · "+(destination==TeleportDestination.Station?"Beside the Skyrail station":"At the game area")+"  /  "+count+" reserved arrival "+(count==1?"space":"spaces");
+   for(int i=0;i<4;i++){bool fits=count<=TeleportDestinations.Capacity((SportId)i);cards[i].interactable=fits;var p=cards[i].GetComponent<CovePlate>();p.borderColor=(SportId)i==selected?WorldUI.Accent(selected):WorldUI.Line;p.border=(SportId)i==selected?3:1.5f;cards[i].GetComponent<CoveFeedback>().activeBorder=p.borderColor;cards[i].GetComponent<CoveFeedback>().SetTint(WorldUI.Raised);capacities[i].text=fits?"Up to "+TeleportDestinations.Capacity((SportId)i)+" players":"Room has too many players";}
+   Mark(station,destination==TeleportDestination.Station);Mark(game,destination==TeleportDestination.Game);
+   string why="";bool allowed=RoomTeleport.Instance&&RoomTeleport.Instance.CanRequest(selected,destination,out why);teleport.interactable=allowed;travelLabel.text=(app.rooms.Connected?"Take everyone to ":"Visit ")+selected;
+   status.text=actionMessage.Length>0?actionMessage:!allowed?why:selected+" · "+(destination==TeleportDestination.Station?"Explore from the Skyrail station":"Arrive beside the game area");
    ready.gameObject.SetActive(false);
-   var safe=Screen.safeArea;var root=(RectTransform)transform;content.localScale=Vector3.one*Mathf.Min(1,safe.width/Screen.width*root.rect.width/1480,safe.height/Screen.height*root.rect.height/760);content.anchoredPosition=new Vector2((safe.center.x/Screen.width-.5f)*root.rect.width,(safe.center.y/Screen.height-.5f)*root.rect.height);
+   WorldUI.Fit(content,(RectTransform)transform,1180,626);
   }
+  static void Mark(Button button,bool selected){var f=button.GetComponent<CoveFeedback>();f.activeBorder=selected?CoveUI.Mint:WorldUI.Line;button.GetComponent<CovePlate>().border=selected?3:1.5f;}
   void OnDestroy(){Close();if(Instance==this)Instance=null;}
  }
 }

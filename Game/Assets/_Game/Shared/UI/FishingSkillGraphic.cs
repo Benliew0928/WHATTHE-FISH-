@@ -1,11 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 namespace WhatTheFish {
- // Vector art stays crisp at every HUD scale and adds no bitmap payload.
+ // Live cooldown geometry; roster illustrations come from the shared control atlas.
  public sealed class FishingSkillGraphic:MaskableGraphic {
   public FishingAbility ability;public bool ring;public float amount=1;public Color tint=CoveUI.Gold;
   public static void Icon(RectTransform parent,FishingAbility ability){
-   Sprite sprite=ability switch {FishingAbility.Sonar=>SportsUIStyle.PropIcon(SportsProp.LockOn),FishingAbility.PowerReel=>Resources.Load<Sprite>("FishingUI/ReelButton"),FishingAbility.BubbleGuard=>FishingGearArt.Icon(4),_=>null};
+   Sprite sprite=ControlArt.Skill(ability);
    if(sprite){var image=parent.gameObject.AddComponent<Image>();image.sprite=sprite;image.preserveAspect=true;image.raycastTarget=false;}
    else {var image=parent.gameObject.AddComponent<FishingSkillGraphic>();image.ability=ability;image.raycastTarget=false;}
   }

@@ -30,6 +30,7 @@ if ($Target -in @('Android', 'AndroidRelease', 'AndroidSubmission', 'OptimizeAnd
 if ($Target -in @('Windows','MobilePreview')) { $argsList += @('-buildTarget', 'Win64') }
 
 $process = Start-Process -FilePath $UnityEditorPath -ArgumentList $argsList -PassThru -WindowStyle Hidden
+$null = $process.Handle # Retain the process handle so ExitCode survives a fast exit on Windows.
 $process.WaitForExit()
 if ($Target -in @('Android', 'AndroidRelease', 'AndroidSubmission','OptimizeAndroid')) {
     $auditPath=Join-Path $buildRoot 'SizeAudit\latest'

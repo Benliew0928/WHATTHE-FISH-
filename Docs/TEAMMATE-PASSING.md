@@ -1,37 +1,73 @@
-# Direct teammate passing
+# Predictive teammate passing
 
-Basketball and football support double-tapping a visible teammate's character
-while possessing the ball. Windows also accepts two left clicks. Both taps must
-hit the same teammate: each press lasts at most 0.25 seconds and the releases
-are at most 0.34 seconds apart. A single tap does not throw. Existing Pass
-buttons, camera lane selection, basketball charge/loft/bounce and keyboard
-controls remain available.
+Basketball and football now commit Pass with one button tap (Q in basketball,
+Space in football). Holding, dragging and lifting Pass do not charge, aim or
+fire a second pass. Shooting keeps its existing charge controls. The selected
+teammate is the eligible player with the smallest angle to the camera heading
+in the forward hemisphere, within 30 metres; distance breaks angle ties.
+Scenery blocks selection. With no eligible teammate, a tap sends a forward
+practice pass. A local marker identifies the current automatic target.
 
-The gesture works across the gameplay viewport, including the left side away
-from controls. UI hits, camera drags, long holds, simultaneous world fingers,
-opponents, obstructed characters, and a changed possession cancel or reject it.
-A separate finger can keep holding the movement stick. Opening a menu, losing
-focus, travelling or losing possession clears the gesture. A queued shot or a
-held pass takes priority over a new direct pass.
+Double-tapping a visible teammate still chooses that exact character. Each
+press lasts at most 0.25 seconds, with releases at most 0.34 seconds apart.
+A single character tap does not throw. UI hits, camera drags, long holds,
+obstructed characters, opponents, stale possession and simultaneous world
+fingers reject the gesture. A separate finger can keep moving the player.
 
-The host resolves the requested receiver identity and rechecks possession,
-team, distance (30 metres), height, obstruction and match state. Invalid
-requests do not fall back to another teammate. Basketball validates again at
-the animation's release; a receiver who becomes invalid leaves the ball with
-the passer. Remote model picking works when remote physics colliders are
-disabled. The nearest visible character blocks selection of one behind it.
+The host rechecks possession, team, range, height, scenery and match state.
+Basketball also rechecks the receiver at its animated release. Locked passes
+predict current running velocity and travel time. Small corrections can follow
+normal motion; a sharp turn, reversal, stop or large displacement permanently
+returns the destination to its original release-time prediction. Correction
+acceleration and heading are bounded, so the ball cannot U-turn to chase a
+receiver. Rotating without changing running velocity does not break a pass.
 
-Locked passes predict the receiver's current movement with a bounded lead
-(at most 1.2 seconds or 6 metres). Basketball chooses direct-pass power from
-distance and launches its usual chest-pass trajectory. Football retains a
-grounded rolling pass. These remain physical balls: opponents can intercept,
-and a receiver who changes direction after release can miss the ball.
+The physical ball uses the same receiving reach for all players. The first
+reachable teammate or opponent in its swept path can take it; the selected
+receiver has no priority over an interceptor. Clear passes into normal reach
+are collected automatically, including moving receivers. Wall contacts,
+resets and possession changes end assistance. Sharp course changes can leave
+the ball at the original predicted destination, as intended.
 
-The reliable receiver-ID RPC was introduced with network protocol **75**.
-The current basketball block update uses **76**; all room members need matching builds. No new art, persistent settings or world-model changes
-are required.
+A shared ribbon appears on initiation/gather and remains during flight.
+Flight state is replicated from the host and rendered on the ball, independent
+of a player's controls, so remote players and spectators can see it. Catching,
+interception and resets remove it. Network protocol **79** includes this state;
+all room members need matching builds. Existing materials and models are reused.
 
 ## Verification
+
+The 23 October 2026 predictive-pass checks passed **240 assertions**:
+Basketball offline 69, host 40, guest 11; Football offline 70, host 39,
+guest 11. Coverage includes immediate button-down commitment without holding,
+angle-over-distance selection, preserved double-taps, stationary/crossing/
+away/diagonal catches, a long boundary run, teammate and opponent interception,
+sharp-turn fallback without reversed flight, reset cleanup, invalid receivers
+and replicated host flight paths. Older protocol-78 players were rejected in
+both host/client directions by protocol 79 before spawning.
+
+All 240 checks passed again on the exact combined tutorial/passing player,
+from a folder with spaces and an unrelated working directory. Final evidence
+under ignored `Builds/PredictivePassQA/Portable Review/Builds/TargetPassQA/`:
+`Basketball-Offline-20261023-131917-580/`,
+`Football-Offline-20261023-131917-583/`,
+`Basketball-Local-20261023-132018-586/` and
+`Football-Local-20261023-132018-592/`.
+The extended fixture refreshes the shot clock between independent scenarios;
+it does not change live match rules. The court-boundary prediction now clamps
+the expected destination into the playable court instead of falling back to
+the runner's earlier position. These tests use scripted Windows input and local
+networking, not physical Android touch or WAN latency measurements.
+
+At the earlier passing delivery, the complete 327-file tested player was hash
+verified on promotion to `Builds/WindowsFinal/`. The combined tutorial checks
+passed 201 assertions across all 58 lessons. That AndroidSubmission passed at 110,706,458 bytes,
+with 889,293,542 bytes of headroom. ZIP contents, exact size-audit entries,
+five-scene catalog/bundle hash and APK v2 signature passed. See the
+[current release record](BUILD-SIZE.md) for before/after measurements and
+evidence. The prior Android/audit and Windows deliveries are recoverable from
+`Legacy/20261023-132008-386-predictive-pass-tutorial-android/` and
+`Legacy/20261023-132255-097-predictive-pass-tutorial-windows/`.
 
 `Tools/Build/Test-TargetPass.ps1 -Sport Basketball -Mode Offline` runs the direct
 passing checks. `-Sport Football` selects football; `-Mode Local` uses a host
@@ -44,7 +80,7 @@ disabled remote colliders, invalid receivers, exact target dispatch, physical
 receipt, moving receivers and guest authority. These synthetic pointer checks
 do not establish physical Android touch feel or phone performance.
 
-Validated on 21 October 2026:
+Historical verification on 21 October 2026 (before the single-tap change):
 
 - Direct passing: **178 assertions** across both sports (basketball offline 39,
   host 40, guest 10; football offline 40, host 39, guest 10). Both running
@@ -61,7 +97,7 @@ Validated on 21 October 2026:
   player files** matched the tested candidate by SHA-256 on promotion to
   `Builds/WindowsFinal/`. Rendered gameplay and control guides were inspected.
 
-Current evidence: `Builds/TargetPassQA/`, including `player-manifest.json`,
+Historical evidence: `Builds/TargetPassQA/`, including `player-manifest.json`,
 `source-final.json`, local basketball run `Basketball-Local-20261021-150821-493`,
 football run `Football-Local-20261021-150330-637`, and the `Portable Review`
 offline results. Regressions: `Builds/BasketballPassQA/Reviews/Offline-30-20261021-150821-512/`

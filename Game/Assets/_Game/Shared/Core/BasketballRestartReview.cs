@@ -9,7 +9,7 @@ using Unity.Netcode.Components;
 using UnityEngine;
 
 namespace WhatTheFish {
- public sealed class BasketballRestartReview:MonoBehaviour {
+ public sealed partial class BasketballRestartReview:MonoBehaviour {
   string folder;bool failed,sampling;int checks;AppRoot app;BasketballMatch match;BasketballBall ball;Athlete[] roster;
   readonly Dictionary<Athlete,Vector3> previous=new();float largestStep;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var args=Environment.GetCommandLineArgs();int i=Array.IndexOf(args,"-basketballRestartReview");if(i>=0&&i+1<args.Length)new GameObject("Basketball continuous restart review").AddComponent<BasketballRestartReview>().folder=args[i+1];}
@@ -20,7 +20,7 @@ namespace WhatTheFish {
    if(!app.rooms.Connected)foreach(var a in roster)if(a&&a!=app.LocalAthlete)a.Simulate(default,Time.fixedDeltaTime);
    if(sampling)foreach(var a in roster){if(previous.TryGetValue(a,out var p))largestStep=Mathf.Max(largestStep,Vector3.ProjectOnPlane(a.transform.position-p,Vector3.up).magnitude);previous[a]=a.transform.position;}
   }
-  void Place(Athlete a,Vector3 local){var p=ball.transform.parent.TransformPoint(local);a.capsule.enabled=false;a.transform.position=p;a.capsule.enabled=true;a.ResetLocomotion();var n=a.GetComponent<NetworkTransform>();if(n&&n.IsSpawned)n.Teleport(p,a.transform.rotation,a.transform.localScale);Physics.SyncTransforms();}
+  void Place(Athlete a,Vector3 local){var p=ball.transform.parent.TransformPoint(local);a.capsule.enabled=false;a.transform.position=p;a.capsule.enabled=true;a.ResetLocomotion();a.GetComponent<NetworkAthlete>()?.ClearMatchInput();var n=a.GetComponent<NetworkTransform>();if(n&&n.IsSpawned)n.Teleport(p,a.transform.rotation,a.transform.localScale);Physics.SyncTransforms();}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    yield return Until(()=>DevelopmentProbe.ReadyToReviewSport&&BasketballMatch.Instance,"court ready",90);
@@ -31,10 +31,14 @@ namespace WhatTheFish {
    Check(app.rooms.Connected?BasketballBots.Instance.FillRoom(3):BasketballBots.Instance.StartSolo(3),"six-player fixture");yield return null;
    roster=BasketballBots.Roster.OrderBy(BasketballMatch.PlayerId).ToArray();foreach(var a in roster){var bot=a.GetComponent<BasketballBot>();if(bot)bot.enabled=false;}
    Check(roster.Length==6&&roster.Contains(app.LocalAthlete),"fixture includes the actual local player and exactly six participants");
+   yield return Until(()=>!RoomMatchStart.Travelling&&!app.PendingSelection.HasValue&&!app.environments.GetComponent<SkySailStreaming>().Busy&&!app.Menu.IsTransitioning&&!app.view.InputBlocked,"arrival completes before starting restart fixture",30);
    Check(app.rooms.Connected?match.StartMatch():match.ReviewStart(roster,600,.1),"match starts");
    for(int i=0;i<roster.Length;i++)Check(match.ChooseTeam(roster[i],i<3?FootballTeam.A:FootballTeam.B,match.Snapshot.revision),"team slot "+i);
    if(!app.rooms.Connected)Check(match.ConfirmSoloTeam(),"solo confirmation");yield return Until(()=>match.Running,"regulation begins",20);
+   if(failed){Finish();yield break;}
    ball.autoPickup=false;
+   yield return ClearanceChecks();
+   if(failed){Finish();yield break;}
    yield return BlockedInbounds();
    if(failed){Finish();yield break;}
    // Keep the scoring rotation checks independent of the boundary fixtures.
@@ -46,6 +50,9 @@ namespace WhatTheFish {
     var scoring=trial<3?FootballTeam.A:FootballTeam.B;var receiving=BasketballMatchState.Other(scoring);float attack=scoring==FootballTeam.A?1:-1;
     var scorers=roster.Where(a=>match.TeamOf(a)==scoring).ToArray();var receivers=roster.Where(a=>match.TeamOf(a)==receiving).ToArray();
     sampling=false;ball.ResetHome();DevelopmentProbe.TurnCommand=default;
+    // Let the guest observe the prior run's unlock and send neutral input before
+    // teleporting this independent fixture; old test commands must not move it.
+    yield return new WaitForSeconds(.4f);
     for(int i=0;i<scorers.Length;i++)Place(scorers[i],new Vector3(-4+i*4,.07f,attack*(4+i*3)));
     for(int i=0;i<receivers.Length;i++)Place(receivers[i],new Vector3(-4+i*4,.07f,-attack*4));
     if(trial==0)Place(receivers[2],new Vector3(-4,.07f,attack*1.7f)); // A stationary teammate blocks the scorer's direct return path.
@@ -111,7 +118,7 @@ namespace WhatTheFish {
     Place(inbound,approach+localInward*3);
     // Occupy the required waypoint: going around cannot reach its arrival
     // radius. Exercise both teams, a crowded baseline and a boundary corner.
-    var blocker=roster.First(a=>a!=inbound&&(trial==0?match.TeamOf(a)==match.TeamOf(inbound):match.TeamOf(a)!=match.TeamOf(inbound)));
+    var blocker=roster.First(a=>a!=inbound&&match.TeamOf(a)==match.TeamOf(inbound));
     Place(blocker,approach);
     if(trial>=2){var crowd=roster.Where(a=>a!=inbound&&a!=blocker).Take(2).ToArray();Place(crowd[0],approach+side*.8f);Place(crowd[1],approach-side*.8f);}
     double clock=match.Remaining;var possession=match.State.Possession;var blockerStart=blocker.transform.position;
@@ -146,9 +153,13 @@ namespace WhatTheFish {
    }
   }
   IEnumerator Guest(){
-   bool returnSeen=false,inboundSeen=false,unlocked=false;var own=app.LocalAthlete;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");float end=Time.realtimeSinceStartup+160;
+   bool returnSeen=false,inboundSeen=false,unlocked=false,clearanceSeen=false,clearanceHeld=false;var own=app.LocalAthlete;string done=Path.Combine(Directory.GetParent(folder).FullName,"host-done");float end=Time.realtimeSinceStartup+220;
    while(!File.Exists(done)&&Time.realtimeSinceStartup<end){
-    if(match.AutomaticMovement(own)){
+    if(match.Snapshot.phase==BasketballMatchPhase.Restart&&match.Snapshot.restart!=BasketballRestart.Basket&&match.TeamOf(own)!=match.Snapshot.possession&&match.TryInboundClearance(out var center)){
+     var toward=Vector3.ProjectOnPlane(center-own.transform.position,Vector3.up);DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.up,heading=Quaternion.LookRotation(toward).eulerAngles.y,sprint=true,jump=true};
+     if(match.AutomaticMovement(own))clearanceSeen|=match.MovementHint(own).Contains("INBOUND SPACE");
+     else if(match.RestartReady&&toward.magnitude>=match.InboundClearanceRadius)clearanceHeld=true;
+    }else if(match.AutomaticMovement(own)){
      DevelopmentProbe.TurnCommand=new PlayerCommand{move=Vector2.one,sprint=true,jump=true,block=true};
      if(match.RetrievingInbound(own)&&!inboundSeen){inboundSeen=true;yield return Capture("guest-inbound-hint");}
      else if(!match.RetrievingInbound(own)&&!returnSeen){returnSeen=true;yield return Capture("guest-return-hint");}
@@ -156,6 +167,7 @@ namespace WhatTheFish {
     yield return null;
    }
    Check(File.Exists(done),"host fixture completed");Check(returnSeen,"guest receives automatic return");Check(inboundSeen,"guest receives automatic inbound duty");Check(unlocked,"guest receives individual control return");
+   Check(clearanceSeen,"guest receives opponent clearance movement and explanation");Check(clearanceHeld,"guest cannot run back into replicated inbound clearance");
    Check(!ball.BeginInbound(own,Vector3.zero)&&!match.OpenInbound(own),"guest cannot author restart possession");
   }
   IEnumerator Capture(string name){

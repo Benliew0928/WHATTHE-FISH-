@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>WhatTheFish · Room chat review</title>
+  <link rel="stylesheet" href="prototype.css">
+  <script src="prototype.js" defer></script>
+</head>
+<body>
+<main>
+  <header class="review-header">
+    <div><p class="eyebrow">WHATTHEFISH / SOCIAL PLAY</p><h1>Room chat & stickers</h1></div>
+    <div class="review-badge"><span></span> INTERACTIVE DESIGN PROTOTYPE</div>
+  </header>
+  <p class="intro">One conversation, from the lobby to the last whistle. Try a message or tap a sticker.</p>
+  <section class="preview" aria-label="Chat over real game captures">
+    <div class="review-toolbar">
+      <div class="scene-tabs" aria-label="Preview scene">
+        <button data-scene="lobby" aria-pressed="false">Room lobby</button>
+        <button data-scene="football" aria-pressed="true">Football</button>
+        <button data-scene="basketball" aria-pressed="false">Basketball</button>
+      </div>
+      <div class="review-tools"><button id="incoming">Receive a message</button><button id="replay">Replay bubbles</button><label><input id="quiet" type="checkbox"> Hide bubbles</label></div>
+    </div>
+    <div id="viewport" class="viewport">
+      <div id="world" class="world" data-scene="football">
+        <img id="scene-image" class="scene-image" src="reference/football.png" alt="Actual WhatTheFish football match capture with the proposed chat interface overlaid">
+        <div id="bubbles" class="bubble-layer" aria-live="polite"></div>
+        <div class="chat-launchers">
+          <button id="chat-toggle" class="chat-toggle" aria-label="Open room chat" aria-expanded="false"><span class="chat-glyph" aria-hidden="true">···</span><span>Chat</span><span id="unread" class="unread">2</span></button>
+          <button id="quick-toggle" class="quick-toggle" aria-label="Open quick stickers" aria-expanded="false"><img src="stickers/laugh.png" alt=""></button>
+        </div>
+        <section id="chat-panel" class="chat-panel" aria-label="Room chat history" hidden>
+          <header class="panel-header"><div><strong>ROOM CHAT</strong><small>Everyone in your room · all islands</small></div><button id="chat-close" aria-label="Close room chat">×</button></header>
+          <div id="history" class="history" role="log" aria-label="Messages in this room"></div>
+          <div id="panel-stickers" class="panel-stickers" aria-label="Choose a sticker" hidden></div>
+          <form id="composer" class="composer"><button id="composer-stickers" type="button" aria-label="Choose a sticker" aria-expanded="false"><img src="stickers/laugh.png" alt=""></button><input id="message" aria-label="Message everyone in this room" placeholder="Message your room…" maxlength="120" autocomplete="off"><button id="send" type="submit" aria-label="Send message">↑</button></form>
+          <div class="composer-note"><span id="send-status" role="status">Enter to send · Esc to close</span><span id="counter">0 / 120</span></div>
+        </section>
+        <section id="quick-panel" class="quick-panel" aria-label="Quick sticker tray" hidden><div class="quick-heading"><strong>Say it with a sticker</strong><button id="quick-close" aria-label="Close sticker tray">×</button></div><div id="quick-stickers" class="quick-stickers"></div><small>Tap once to send to the room</small></section>
+        <div id="toast" class="toast" role="status" hidden></div>
+      </div>
+    </div>
+    <footer class="preview-footer"><span id="preview-status">Example bubbles held for review. Replay to watch them fade.</span><span>Actual game capture + proposed UI</span></footer>
+  </section>
+  <section id="sticker-section" class="sticker-section" aria-labelledby="sticker-title">
+    <div class="section-title"><div><p class="eyebrow">THE STARTER PACK</p><h2 id="sticker-title">Small fish. Big feelings.</h2></div><span>8 free reactions · tap to try above your player</span></div>
+    <div id="sticker-gallery" class="sticker-gallery"></div>
+  </section>
+  <div class="behavior-notes"><p><strong>Here, then gone.</strong> One bubble per player. Text fades after 4 seconds; stickers after 3. Full messages stay in chat.</p><p><strong>Your room stays together.</strong> Switch lobby or sport above. Text and stickers remain in the same history.</p><p><strong>Space to play.</strong> Chat starts closed. No screen dimming. Compact bubbles avoid the existing movement and action controls.</p></div>
+  <footer class="review-footer">Review prototype · 23 October 2026 · Local simulated chat; multiplayer delivery and device performance are not implemented or verified.</footer>
+</main>
+</body>
+</html>

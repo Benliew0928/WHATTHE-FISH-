@@ -6,7 +6,7 @@ namespace WhatTheFish {
  // No imported textures, per-frame hierarchy scans or action listeners.
  public sealed class GameButtonStyle:MonoBehaviour {
   Button button;CovePlate plate;Text[] labels;bool previous=true;CoveFeedback feedback;FootballActionSlot football;BasketballShootButton basketball;bool lastAttack;
-  public static string Caption(string action,string key)=>action+"\n"+(Application.isMobilePlatform?"Hold":key);
+  public static string Caption(string action,string gesture="Hold")=>action+"\n"+gesture;
   public static void Apply(Transform parent){foreach(var b in parent.GetComponentsInChildren<Button>(true))Apply(b);}
   public static void Apply(Button b){
    if(b.GetComponent<GameButtonStyle>()||b is CoveButton)return;

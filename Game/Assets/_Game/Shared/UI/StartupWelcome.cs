@@ -63,13 +63,13 @@ namespace WhatTheFish {
    Progress=Mathf.Clamp(value,0,.99f);status.text=label;percentage.text=Mathf.FloorToInt(Progress*100)+"%";
    fill.rectTransform.sizeDelta=new Vector2(258*Progress,22);fill.SetVerticesDirty();
   }
-  public void ShowError(){
+  public void ShowError(string cause=""){
    HasError=true;IsReady=false;hideProgressAt=-1;
    actionGroup.alpha=0;actionGroup.interactable=actionGroup.blocksRaycasts=false;
    GuestButton.interactable=HuaweiButton.interactable=false;
    blankSign.SetActive(true);heading.gameObject.SetActive(true);
    heading.text="Let’s try again";subtitle.text="Your adventure will be here when you’re ready.";subtitle.gameObject.SetActive(true);
-   status.text="Check storage, then retry.";percentage.gameObject.SetActive(false);RetryButton.gameObject.SetActive(true);LoadingPanel.gameObject.SetActive(true);
+   status.text=cause.IndexOf("space",StringComparison.OrdinalIgnoreCase)>=0||cause.IndexOf("disk",StringComparison.OrdinalIgnoreCase)>=0?"Free some storage, then retry.":cause.IndexOf("hash",StringComparison.OrdinalIgnoreCase)>=0||cause.IndexOf("integrity",StringComparison.OrdinalIgnoreCase)>=0?"Content needs repair. Retry loading.":"Could not load islands. Try again.";percentage.gameObject.SetActive(false);RetryButton.gameObject.SetActive(true);LoadingPanel.gameObject.SetActive(true);
   }
   public void SetReady(){
    if(IsReady)return;IsReady=true;HasError=false;Progress=1;

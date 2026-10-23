@@ -28,11 +28,11 @@ namespace WhatTheFish {
   void Update(){if(Input.GetKeyDown(KeyCode.T)&&!TeleportSequence.Busy)panel=!panel;}
   void OnGUI(){
    if(!app)return;float scale=Mathf.Min(Screen.width/1100f,Screen.height/680f);GUI.matrix=Matrix4x4.Scale(Vector3.one*scale);var service=TeleportSequence.Instance;
-   if(TeleportSequence.Busy){GUI.Box(new Rect(20,20,350,74),"TELEPORT · "+service.Phase);if(GUI.Button(new Rect(32,54,326,28),"Cancel preview [Esc]"))service.Cancel();return;}
-   if(!panel){if(GUI.Button(new Rect(20,20,240,38),"Teleport preview [T]"))panel=true;return;}
+   if(TeleportSequence.Busy){GUI.Box(new Rect(20,20,350,74),"TELEPORT · "+service.Phase);if(GUI.Button(new Rect(32,54,326,28),"Cancel preview"))service.Cancel();return;}
+   if(!panel){if(GUI.Button(new Rect(20,20,240,38),"Teleport preview"))panel=true;return;}
    GUI.Box(new Rect(20,20,390,350),"BLUE LIGHT TELEPORT · DESIGN PREVIEW");fullGroup=GUI.Toggle(new Rect(36,58,350,30),fullGroup,"Preview full island capacity (10 / fishing 5)");
    int row=0;foreach(var sport in SkySailMap.Circuit){float y=100+row++*48;GUI.Label(new Rect(36,y+6,110,30),sport.ToString());if(GUI.Button(new Rect(146,y,116,36),"Station"))Play(sport,TeleportDestination.Station,fullGroup);if(GUI.Button(new Rect(274,y,116,36),"Game"))Play(sport,TeleportDestination.Game,fullGroup);}
-   GUI.Label(new Rect(36,296,355,40),service&&service.Error.Length>0?service.Error:"Walk anywhere, then choose an arrival. T hides controls.");if(GUI.Button(new Rect(36,335,355,25),"Hide controls [T]"))panel=false;
+   GUI.Label(new Rect(36,296,355,40),service&&service.Error.Length>0?service.Error:"Walk anywhere, then choose an arrival.");if(GUI.Button(new Rect(36,335,355,25),"Hide controls"))panel=false;
   }
   void OnDestroy(){foreach(var actor in extras)if(actor)Destroy(actor.gameObject);if(Instance==this)Instance=null;}
  }

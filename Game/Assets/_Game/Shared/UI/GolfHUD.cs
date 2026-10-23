@@ -28,9 +28,9 @@ namespace WhatTheFish {
 
   GolfHUDLayout layout;GolfSwingButton swing;GolfCartButton[] carts;Font fallbackFont;GolfLeaderboardUI scorecard;
 
-  Text station,hintText,countdownBanner;FishingStickerGraphic aimIcon;Skin aimSkin;Image aimCaption,hintCaption;readonly List<(GolfCartButton cart,Skin skin)> cartSkins=new();Sprite cartDrive,cartBuggy,cartRecall,cartFallback,cartExit;
+  Text station,hintText,countdownBanner;Image hintCaption;readonly List<(GolfCartButton cart,Skin skin)> cartSkins=new();
   Image countdownImage;RectTransform countdownAnchor;Sprite[] countdownSprites;Sprite goSprite;
-  static readonly Vector2 PowerSize=new(210,350);
+  static Vector2 PowerSize=>ControlDesigns.Size(SportId.Golf,"power");
   int lastCountdownSec=-1;float countdownAnimTimer,goDisplayTimer;bool wasStarting;
 
   readonly List<Skin> skins=new();readonly Dictionary<RectTransform,RectTransform> frames=new();
@@ -94,6 +94,13 @@ namespace WhatTheFish {
 
   static void Stretch(RectTransform rect){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;}
 
+  Skin DesignButton(Button button,string id,Text label){
+   var control=(RectTransform)button.transform;var hit=control.GetComponent<Image>();if(hit){hit.color=Color.clear;hit.raycastTarget=true;}
+   var design=ControlDesigns.Build(control,SportId.Golf,id,label);ControlDesigns.BindButton(design,false);
+   if(!button.GetComponent<GolfFishingButtonSound>())button.gameObject.AddComponent<GolfFishingButtonSound>();
+   var feedback=button.GetComponent<CoveFeedback>()??button.gameObject.AddComponent<CoveFeedback>();feedback.pressScale=.91f;feedback.releaseBounce=.045f;feedback.UseVisual(design.Visual);
+   var skin=new Skin{button=button,visual=design.Visual,art=design.Art,opacity=design.Visual.gameObject.AddComponent<CanvasGroup>()};skin.opacity.interactable=skin.opacity.blocksRaycasts=false;skins.Add(skin);return skin;
+  }
   Skin SkinButton(Button button,Color color,bool solid=false,string reference="Utility"){
    if(!button.GetComponent<GolfFishingButtonSound>())button.gameObject.AddComponent<GolfFishingButtonSound>();
 
@@ -126,14 +133,6 @@ namespace WhatTheFish {
 
   static void PlaceLabel(Text text,Vector2 position,Vector2 size,int points){var rect=text.rectTransform;rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(.5f,.5f);rect.anchoredPosition=position;rect.sizeDelta=size;text.fontSize=points;text.alignment=TextAnchor.MiddleCenter;text.resizeTextForBestFit=false;}
 
-  FishingStickerGraphic Icon(Transform parent,string name,FishingStickerGraphic.Kind kind,Vector2 position,Vector2 size,Color color){var graphic=GolfHUDStyle.Rect(name,parent,new Vector2(.5f,.5f),position,size).gameObject.AddComponent<FishingStickerGraphic>();graphic.kind=kind;graphic.tint=color;graphic.accent=GolfHUDStyle.Teal;graphic.raycastTarget=false;return graphic;}
-
-  void IconButton(RectTransform control,FishingStickerGraphic.Kind kind,string name,Vector2 iconSize){
-
-   var skin=SkinButton(control.GetComponent<Button>(),GolfHUDStyle.Cream);skin.art.sprite=Resources.Load<Sprite>("GolfUI/Badges/Jump");skin.art.preserveAspect=true;foreach(var label in control.GetComponentsInChildren<Text>(true))label.enabled=false;
-
-  }
-
   void Build(){
 
    course=GolfHUDStyle.Rect("Golf course sticker",page,new Vector2(0,1),Vector2.zero,layout.courseSize);GolfReferenceUI.Plate(course,"Course",false);
@@ -146,29 +145,12 @@ namespace WhatTheFish {
 
    GolfEventHUD.Create(page);
    swing.BuildSlider();
-   cartExit=Resources.Load<Sprite>("GolfUI/Badges/Exit");
-
-   aimSkin=SkinButton(swing.aimButton,GolfHUDStyle.Red,true,"Aim");aimIcon=Icon(aimSkin.visual,"Golf aim or cancel icon",FishingStickerGraphic.Kind.Aim,new Vector2(-layout.aimSize.x*.34f,0),new Vector2(34,34),GolfHUDStyle.Ink);aimIcon.enabled=false;
-
-   PlaceLabel(swing.aimLabel,new Vector2(31,0),new Vector2(layout.aimSize.x-108,layout.aimSize.y-28),32);swing.aimLabel.color=Color.white;swing.aimLabel.supportRichText=true;var aimOutline=swing.aimLabel.gameObject.AddComponent<Outline>();aimOutline.effectColor=LocalProfile.Hex("B34B50");aimOutline.effectDistance=new Vector2(1,-1);
-   aimCaption=GolfReferenceUI.Caption(aimSkin.art.rectTransform,"Aim",new Vector2(257,123),new Vector2(104,83),new Vector2(35.5f,-1));aimSkin.caption=aimCaption;
-
-   var start=SkinButton(swing.startButton,GolfHUDStyle.Gold);start.art.sprite=Resources.Load<Sprite>("GolfUI/StartButton/StartGame");start.art.preserveAspect=true;PlaceLabel(swing.startLabel,Vector2.zero,layout.startSize-new Vector2(32,20),30);
-
-   IconButton(jumpControl,FishingStickerGraphic.Kind.Jump,"Golf Jump icon",new Vector2(48,49));
-
+   DesignButton(swing.aimButton,"aim",swing.aimLabel);
+   DesignButton(swing.startButton,"start",swing.startLabel);
+   DesignButton(jumpControl.GetComponent<Button>(),"jump",jumpControl.GetComponentInChildren<Text>(true));
    var back=SkinButton(returnControl.GetComponent<Button>(),GolfHUDStyle.Cream,false,"Leave");var backLabel=returnControl.GetComponentInChildren<Text>(true);PlaceLabel(backLabel,new Vector2(28,0),new Vector2(layout.returnSize.x-92,layout.returnSize.y-20),26);
    backLabel.enabled=false;back.caption=GolfReferenceUI.Caption(back.art.rectTransform,"Leave",new Vector2(274,81),new Vector2(168,37),new Vector2(35,-1));
-
-   // Door artwork is already part of the reference plate.
-
-   cartDrive=Resources.Load<Sprite>("GolfUI/CartButtons/Drive");cartBuggy=Resources.Load<Sprite>("GolfUI/CartButtons/Buggy");cartRecall=Resources.Load<Sprite>("GolfUI/CartButtons/Recall");cartFallback=Resources.Load<Sprite>("GolfUI/Reference/Buggy");
-   foreach(var cart in carts){
-    var skin=SkinButton(cart.button,GolfHUDStyle.Gold,false,"Buggy");
-    PlaceLabel(cart.label,new Vector2(35,0),layout.cartSize-new Vector2(105,20),27);
-    cartSkins.Add((cart,skin));
-   }
-
+   foreach(var cart in carts)cartSkins.Add((cart,DesignButton(cart.button,cart.summon?"buggy":"drive",cart.label)));
    hint=GolfHUDStyle.Rect("Golf framed control hint",page,new Vector2(.5f,0),Vector2.zero,layout.hintSize);GolfReferenceUI.Plate(hint,"Hint",false);hintCaption=GolfReferenceUI.Caption(hint,"Hint",new Vector2(390,84),new Vector2(282,35),new Vector2(36,-1.5f));
 
    // The exact attention badge is retained in the reference art.
@@ -184,9 +166,6 @@ namespace WhatTheFish {
    var bannerOutline=countdownBanner.gameObject.AddComponent<Outline>();bannerOutline.effectColor=GolfHUDStyle.Ink;bannerOutline.effectDistance=new Vector2(1.5f,-1.5f);countdownBanner.gameObject.SetActive(false);
    countdownAnchor.gameObject.SetActive(false);
 
-   var movementImage=moveControl.GetComponent<Image>();if(movementImage)movementImage.color=new Color(.44f,.82f,.74f,.28f);
-
-   var pad=moveControl.GetComponent<TouchPad>();if(pad&&pad.knob){var knobImage=pad.knob.GetComponent<Image>();if(knobImage)knobImage.color=GolfHUDStyle.Cream;}
 
   }
 
@@ -258,13 +237,13 @@ namespace WhatTheFish {
 
    if(!page)return;Layout();var view=PlayerView.Instance;bool aiming=view&&view.GolfAimRequested;UpdateFocus(aiming);
    swing.aimLabel.text=aiming?"Cancel":"Aim";
-   aimCaption.enabled=false;swing.aimLabel.enabled=true;
+   swing.aimLabel.enabled=true;
    swing.startLabel.enabled=false;
    swing.label.enabled=false;
    foreach(var item in cartSkins){
     // These approved images already contain their exact icon and lettering.
-    var sprite=item.cart.label.text switch {"Drive"=>cartDrive,"Buggy"=>cartBuggy,"Recall"=>cartRecall,"Exit"=>cartExit,_=>null};
-    item.skin.art.sprite=sprite?sprite:cartFallback;item.skin.art.preserveAspect=true;
+    var sprite=ControlDesigns.GolfCartArt(item.cart.label.text);
+    item.skin.art.sprite=sprite;item.skin.art.preserveAspect=true;
     item.cart.label.enabled=!sprite;
    }
 

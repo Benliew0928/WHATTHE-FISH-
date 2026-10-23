@@ -31,6 +31,7 @@ namespace WhatTheFish {
   }
   public Vector3 ConstrainPlayerInput(Athlete actor,Vector3 direction){
    if(IsInbound(actor))return Vector3.zero;
+   if(BasketballMatch.Instance)direction=BasketballMatch.Instance.ConstrainInboundInput(actor,direction);
    if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return direction;
    var local=arena?arena.InverseTransformDirection(direction):direction;
    if(BasketballMatch.Instance&&BasketballMatch.Instance.RestrictedHalf(actor)){
@@ -45,7 +46,7 @@ namespace WhatTheFish {
   }
   public Vector3 ConstrainPlayerMotion(Athlete actor,Vector3 displacement){
    if(IsInbound(actor)){displacement.x=displacement.z=0;return displacement;}
-   if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return displacement;
+   if(!TryPlayerCourt(actor,out var arena,out var point,out var limits))return BasketballMatch.Instance?BasketballMatch.Instance.ConstrainInboundMotion(actor,displacement):displacement;
    var target=point+(arena?arena.InverseTransformVector(displacement):displacement);
    float x=Mathf.Clamp(target.x,-limits.x,limits.x),z=Mathf.Clamp(target.z,-limits.y,limits.y);
    if(BasketballMatch.Instance&&BasketballMatch.Instance.RestrictedHalf(actor)){
@@ -56,7 +57,8 @@ namespace WhatTheFish {
    if(z!=target.z)actor.Motor.Constrain((arena?arena.forward:Vector3.forward)*-Mathf.Sign(target.z));
    target.x=x;target.z=z;
    // No collider is created: the ball and camera can pass through this wall.
-   return arena?arena.TransformVector(target-point):target-point;
+   var constrained=arena?arena.TransformVector(target-point):target-point;
+   return BasketballMatch.Instance?BasketballMatch.Instance.ConstrainInboundMotion(actor,constrained):constrained;
   }
  }
 }

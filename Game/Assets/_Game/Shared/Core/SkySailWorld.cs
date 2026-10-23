@@ -57,7 +57,7 @@ namespace WhatTheFish {
   void SetState(SkySailJourney s){if(app.rooms.Connected){if(!app.rooms.Host||!NetworkAthlete.HostPlayer)return;NetworkAthlete.HostPlayer.WorldTravel.Value=s;}else offlineJourney=s;}
   Athlete[] Group()=>app.rooms.Connected?FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).Where(a=>a.IsPlayerObject).OrderBy(a=>a.OwnerClientId).Select(a=>a.GetComponent<Athlete>()).ToArray():new[]{app.LocalAthlete};
   public string StationAttendance {get{var group=Group();var missing=group.Where(a=>Vector3.Distance(a.transform.position,SkySailMap.Port(app.SelectedSport))>18).ToArray();var count=(group.Length-missing.Length)+"/"+group.Length+" at station";if(missing.Length==0)return count;var n=missing[0].GetComponent<NetworkAthlete>();string name=n?n.Nickname.Value.ToString():"player";if(name.Length>16)name=name.Substring(0,16);return count+" · Waiting for "+name+(missing.Length>1?" +"+(missing.Length-1):"");}}
-  void Update(){if(RoomService.Paused)return;
+  void Update(){if(RoomService.Paused){if(ui)ui.enabled=false;return;}
    if(!app)return;
    Shader.SetGlobalVector("_SkySailOrigin",Origin);
    Journey=app.rooms.Connected&&NetworkAthlete.HostPlayer?NetworkAthlete.HostPlayer.WorldTravel.Value:offlineJourney;
@@ -143,31 +143,30 @@ namespace WhatTheFish {
   void BuildAudio(){
    var clip=AudioClip.Create("SkySail quiet electric drive",24000,1,24000,false);var samples=new float[24000];for(int i=0;i<samples.Length;i++){float t=i/24000f;samples[i]=.10f*Mathf.Sin(2*Mathf.PI*80*t)+.035f*Mathf.Sin(2*Mathf.PI*160*t)+.015f*Mathf.Sin(2*Mathf.PI*241*t);}clip.SetData(samples,0);motor=gameObject.AddComponent<AudioSource>();motor.clip=clip;motor.loop=true;motor.spatialBlend=0;motor.volume=0;motor.Play();
   }
-  Text Text(Transform parent,string value,int size,Vector2 position,Vector2 dimensions){var o=new GameObject(value,typeof(RectTransform),typeof(Text));o.transform.SetParent(parent,false);var t=o.GetComponent<Text>();t.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");t.fontSize=size;t.alignment=TextAnchor.MiddleCenter;t.color=new Color(.96f,.94f,.86f);t.raycastTarget=false;t.text=value;var r=t.rectTransform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=position;r.sizeDelta=dimensions;return t;}
+  RectTransform journeyCard;
   void BuildUI(){
-   ui=new GameObject("Sky-Sail journey UI",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();ui.renderMode=RenderMode.ScreenSpaceOverlay;ui.sortingOrder=20;
-   var scaler=ui.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);scaler.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;
-   var safe=new GameObject("Safe",typeof(RectTransform));safe.transform.SetParent(ui.transform,false);var sr=safe.GetComponent<RectTransform>();var sa=Screen.safeArea;sr.anchorMin=new Vector2(sa.x/Screen.width,sa.y/Screen.height);sr.anchorMax=new Vector2(sa.xMax/Screen.width,sa.yMax/Screen.height);sr.offsetMin=sr.offsetMax=Vector2.zero;
-   var panel=new GameObject("Journey card",typeof(RectTransform),typeof(Image));panel.transform.SetParent(safe.transform,false);var r=panel.GetComponent<RectTransform>();r.anchorMin=r.anchorMax=new Vector2(.5f,0);r.anchoredPosition=new Vector2(0,175);r.sizeDelta=new Vector2(680,160);panel.GetComponent<Image>().color=new Color(.035f,.16f,.18f,.93f);
-   heading=Text(panel.transform,"SKY-SAIL CIRCUIT",22,new Vector2(0,52),new Vector2(650,32));caption=Text(panel.transform,"",18,new Vector2(0,20),new Vector2(650,35));
-   previous=TravelButton(panel.transform,-165,-37,-1);next=TravelButton(panel.transform,165,-37,1);GameButtonStyle.Apply(panel.transform);
-   var bar=new GameObject("Journey progress",typeof(RectTransform),typeof(Image));bar.transform.SetParent(panel.transform,false);progressFill=bar.GetComponent<Image>();progressFill.color=new Color(.89f,.68f,.35f);var br=bar.GetComponent<RectTransform>();br.anchorMin=new Vector2(0,0);br.anchorMax=new Vector2(1,0);br.pivot=Vector2.zero;br.anchoredPosition=Vector2.zero;br.sizeDelta=new Vector2(0,4);
-   wayfinding=Text(safe.transform,"",17,new Vector2(0,350),new Vector2(500,35));
-   wayfinding.rectTransform.anchorMin=wayfinding.rectTransform.anchorMax=new Vector2(0,1);wayfinding.rectTransform.pivot=new Vector2(0,.5f);wayfinding.rectTransform.anchoredPosition=new Vector2(66,-192);wayfinding.alignment=TextAnchor.MiddleLeft;
+   ui=new GameObject("Skyrail journey UI",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();WorldUI.Canvas(ui.gameObject,20);
+   journeyCard=CoveUI.Rect(ui.transform,"Journey card",0,0,820,194);WorldUI.Card(journeyCard,"Station surface",0,0,820,194);
+   heading=WorldUI.Label(journeyCard,"SKYRAIL",24,12,772,34,26,true);
+   caption=WorldUI.Label(journeyCard,"",24,52,772,52,21,false,WorldUI.Muted);
+   previous=WorldUI.Button(journeyCard,"Previous Skyrail station","",24,110,378,64,()=>RequestTravel(SkySailMap.Neighbor(app.SelectedSport,-1)),size:23);
+   next=WorldUI.Button(journeyCard,"Next Skyrail station","",418,110,378,64,()=>RequestTravel(SkySailMap.Neighbor(app.SelectedSport,1)),size:23);
+   var bar=CoveUI.Rect(journeyCard,"Journey progress",24,186,772,3);progressFill=bar.gameObject.AddComponent<Image>();progressFill.color=CoveUI.Gold;progressFill.raycastTarget=false;
+   wayfinding=WorldUI.Label(ui.transform,"",30,180,700,35,21);wayfinding.gameObject.SetActive(false);
   }
-  Button TravelButton(Transform parent,float x,float y,int direction){var g=new GameObject("Travel",typeof(RectTransform),typeof(Image),typeof(Button));g.transform.SetParent(parent,false);var r=g.GetComponent<RectTransform>();r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(302,54);g.GetComponent<Image>().color=new Color(.12f,.40f,.42f,1);var b=g.GetComponent<Button>();b.onClick.AddListener(()=>RequestTravel(SkySailMap.Neighbor(app.SelectedSport,direction)));Text(g.transform,"",21,Vector2.zero,new Vector2(290,50));return b;}
   void UpdateUI(){
-   if(!ui)return;ui.enabled=app.Exploring&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen);if(!ui.enabled)return;
+   if(!ui)return;ui.enabled=app.Exploring&&!RoomService.Paused&&!RoomTeleportStatus.Visible&&!(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible)&&!(GolfHUD.Instance&&GolfHUD.Instance.IslandMenu&&GolfHUD.Instance.IslandMenu.Visible)&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen);if(!ui.enabled)return;
    float distance=Vector3.Distance(app.LocalAthlete.transform.position,SkySailMap.Port(app.SelectedSport));heading.transform.parent.gameObject.SetActive(Travelling||distance<28);
    bool court=app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
-   ((RectTransform)heading.transform.parent).anchoredPosition=new Vector2(0,!Travelling&&court?420:175);
-   wayfinding.text=Travelling?"Look around • Camera: cabin / chase / panorama":"SKY-SAIL STATION  ·  "+Mathf.RoundToInt(distance)+" m";
+   journeyCard.sizeDelta=new Vector2(820,Travelling?116:194);WorldUI.Fit(journeyCard,(RectTransform)ui.transform,820,Travelling?116:194,true,Travelling?24:court?280:24);
+   wayfinding.text=Travelling?"Look around • Camera: cabin / chase / panorama":"SKYRAIL STATION  ·  "+Mathf.RoundToInt(distance)+" m";
    // Golf displays this same distance inside its course badge.
    wayfinding.gameObject.SetActive(Travelling||app.SelectedSport!=SportId.Fishing&&app.SelectedSport!=SportId.Golf&&app.SelectedSport!=SportId.Basketball&&app.SelectedSport!=SportId.Football);
    previous.gameObject.SetActive(!Travelling);next.gameObject.SetActive(!Travelling);
    if(Travelling){heading.text=Journey.from.ToString().ToUpperInvariant()+"  →  "+Journey.to.ToString().ToUpperInvariant();caption.text=Journey.phase switch{SkySailPhase.Preparing=>"Preparing your island • Everyone travels together",SkySailPhase.Boarding=>"Doors closing • Enjoy the journey",SkySailPhase.Docking=>"Welcome to "+Journey.to+" • Doors opening",_=>"Over the sea • "+Mathf.CeilToInt((1-Progress)*Journey.duration)+" seconds to arrival"};}
-   else{heading.text="SKY-SAIL CIRCUIT";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+(Application.isMobilePlatform||app.SelectedSport==SportId.Fishing||app.SelectedSport==SportId.Basketball||app.SelectedSport==SportId.Football?" →":" → [F]");previous.interactable=CanTravel(a,out var leftReason);next.interactable=CanTravel(b,out var rightReason);caption.text=!Authority?"Your host chooses the next island":!previous.interactable?leftReason:!next.interactable?rightReason:Time.unscaledTime<noticeUntil?Message:StationAttendance+" · Everyone boards together";}
-   progressFill.rectTransform.localScale=new Vector3(Travelling?Mathf.Max(.015f,Progress):1,1,1);
+   else{heading.text="SKYRAIL CIRCUIT";var a=SkySailMap.Neighbor(app.SelectedSport,-1);var b=SkySailMap.Neighbor(app.SelectedSport,1);previous.GetComponentInChildren<Text>().text="← "+a;next.GetComponentInChildren<Text>().text=b+" →";previous.interactable=CanTravel(a,out var leftReason);next.interactable=CanTravel(b,out var rightReason);caption.text=!Authority?StationAttendance+" · "+WorldUI.HostName+" chooses the destination":!previous.interactable?leftReason:!next.interactable?rightReason:Message.Length>0?Message:StationAttendance+" · Everyone boards together";}
+   progressFill.rectTransform.anchoredPosition=new Vector2(24,Travelling?-108:-186);progressFill.gameObject.SetActive(Travelling&&Journey.phase==SkySailPhase.Riding);progressFill.rectTransform.localScale=new Vector3(Progress,1,1);
+   journeyCard.GetComponentInChildren<CovePlate>().rectTransform.sizeDelta=new Vector2(820,Travelling?116:194);
   }
  }
 }

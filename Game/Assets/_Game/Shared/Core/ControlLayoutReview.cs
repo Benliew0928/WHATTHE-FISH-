@@ -9,8 +9,16 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- public sealed class ControlLayoutReview:MonoBehaviour {
+ public sealed partial class ControlLayoutReview:MonoBehaviour {
   string folder;int checks;AppRoot app;ControlLayoutEditor layout;
+  [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]static void PrepareDesign(){
+   if(!Environment.GetCommandLineArgs().Contains("-layoutDesignMutation"))return;
+   ControlDesigns.ReviewDesign=(sport,id,view)=>{
+    if(view.Face is BasketballPlate plate){plate.radius+=Vector2.one*3;plate.border+=1;}
+    if(view.Label){view.Label.fontSize+=2;if(view.Label.resizeTextForBestFit){view.Label.resizeTextMinSize+=2;view.Label.resizeTextMaxSize+=2;}}
+    var probe=new GameObject("Shared design probe",typeof(RectTransform),typeof(Image)).GetComponent<Image>();probe.transform.SetParent(view.Root,false);probe.rectTransform.sizeDelta=new Vector2(4,4);probe.color=CoveUI.Coral;probe.raycastTarget=false;
+   };
+  }
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Boot(){
    var args=Environment.GetCommandLineArgs();
    if(args.Contains("-layoutReview")&&args.Contains("-guestProfile"))new GameObject("Control layout review").AddComponent<ControlLayoutReview>();
@@ -52,6 +60,7 @@ namespace WhatTheFish {
    layout=FindObjectsByType<ControlLayoutEditor>(FindObjectsSortMode.None).First(l=>!l.Preview&&l.Sport==app.SelectedSport);
    Check(layout.Controls.Count==(app.SelectedSport==SportId.Basketball?5:app.SelectedSport==SportId.Football?6:app.SelectedSport==SportId.Golf?7:6),"ALL_SPORT_ACTION_BINDINGS");
    string profile=PlayerIdentity.ProfileStorageKey;
+   if(!Environment.GetCommandLineArgs().Contains("-layoutRestart")){yield return ReviewButtonStates();Capture("gameplay-default");}
    if(Environment.GetCommandLineArgs().Contains("-layoutRestart")){
     Check((layout.NormalizedCenter(0)-new Vector2(.25f,.28f)).magnitude<.003f&&Mathf.Abs(layout.Size(0)-1.3f)<.001f,"RESTART_RESTORES_SAVED_LAYOUT");
     foreach(SportId sport in Enum.GetValues(typeof(SportId)))PlayerPrefs.DeleteKey(ControlLayouts.Key(profile,sport));PlayerPrefs.Save();
@@ -142,7 +151,20 @@ namespace WhatTheFish {
   void Complete(){File.AppendAllText(Path.Combine(folder,"results.txt"),"CONTROL_LAYOUT_COMPLETE checks="+checks+"\n");Application.Quit();}
   void VerifyArtwork(ControlLayoutEditor editor){
    foreach(var c in editor.Controls){
+    var source=c.target.GetComponentsInChildren<ControlDesignSource>(true).FirstOrDefault(s=>s.Sport==editor.Sport&&s.Id==c.id);
+    Check(source&&source.View!=null,"SHARED_DESIGN_SOURCE_"+editor.Sport+"_"+c.id);
+    Check(source.View.Root.rect.size==ControlDesigns.Size(editor.Sport,c.id),"SHARED_NATIVE_DIMENSIONS_"+editor.Sport+"_"+c.id);
+    if(Environment.GetCommandLineArgs().Contains("-layoutDesignMutation")){
+     Check(source.transform.Find("Shared design probe")&&c.Artwork.Root.GetComponentsInChildren<Image>(true).Any(i=>i.name=="Shared design probe"),"DESIGN_EDIT_REACHES_"+(editor.Preview?"MENU":"GAME")+"_"+editor.Sport+"_"+c.id);
+     if(source.View.Label){int points=source.View.LabelPoints,actual=source.View.Label.fontSize;Check(actual==points||editor.Sport==SportId.Football&&c.id=="shoot"&&actual==Mathf.RoundToInt(points*26f/34)||c.id=="jump"&&actual==Mathf.RoundToInt(points*20f/26),"DESIGNED_TYPOGRAPHY_NOT_OVERRIDDEN_"+editor.Sport+"_"+c.id);}
+    }
+    bool glossy=editor.Sport==SportId.Basketball||editor.Sport==SportId.Football||c.id=="move"||editor.Sport==SportId.Fishing&&(c.id=="jump"||c.id=="cancel"||c.id=="ability");
+    Check(source.View.Glossy==glossy,"APPROVED_ART_SCOPE_"+editor.Sport+"_"+c.id);
+    if(glossy)Check(source.GetComponentsInChildren<Image>(true).Any(i=>i.sprite&&i.sprite.name.StartsWith("ControlArt/")),"PRODUCTION_ART_LOADED_"+editor.Sport+"_"+c.id);
     Check(c.Artwork!=null&&c.Artwork.Graphics.Any(p=>p.copy.enabled),"ACTUAL_ART_EXISTS_"+editor.Sport+"_"+c.id);
+    // Availability can change after gameplay is blocked. The editor freezes
+    // the opening appearance, but must retain the same shared sprite assets.
+    Check(c.Artwork.Graphics.All(pair=>pair.source is not Image a||pair.copy is Image b&&a.sprite==b.sprite),"SHARED_SPRITES_REACH_LAYOUT_"+editor.Sport+"_"+c.id);
     Check(c.Artwork.Root.GetComponentsInChildren<Selectable>(true).Length==0&&c.Artwork.Root.GetComponentsInChildren<TouchPad>(true).Length==0,"ART_HAS_NO_GAMEPLAY_INPUT_"+editor.Sport+"_"+c.id);
     Check(c.Artwork.Graphics.All(pair=>pair.source is not Text a||pair.copy is Text b&&a.font==b.font&&a.fontSize==b.fontSize&&a.alignment==b.alignment&&a.text==b.text),"ORIGINAL_TYPOGRAPHY_"+editor.Sport+"_"+c.id);
     Check(c.proxy.GetComponentsInChildren<Text>(true).Length==c.target.GetComponentsInChildren<Text>(true).Length,"NO_ADDED_BUTTON_CAPTIONS_"+editor.Sport+"_"+c.id);

@@ -32,13 +32,13 @@ public static class CharacterIdentityBuild {
      string path=Folder+mesh.name+".asset";Save(mesh,path);if(lod==0)library.nearHair[preset]=AssetDatabase.LoadAssetAtPath<Mesh>(path);else library.farHair[preset]=AssetDatabase.LoadAssetAtPath<Mesh>(path);
     }
     var digits=Digits();Save(digits,Folder+"Numbers.asset");
-    var material=new Material(Shader.Find("WhatTheFish/CharacterIdentity")){name="Shared identity body"};
+    var material=new Material(Shader.Find("WhatTheFish/CharacterIdentity")){name="Shared identity body",enableInstancing=true};
     material.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Game/Art/RainbowSprinter/albedo.png"));
     material.SetTexture("_BumpMap",AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Game/Art/RainbowSprinter/normal.png"));
     material.SetTexture("_MetallicGlossMap",AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/_Game/Art/RainbowSprinter/metallic_smoothness.png"));
     material.SetTexture("_Numbers",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"Numbers.asset"));
     Save(material,Folder+"Body.mat");library.bodyMaterial=AssetDatabase.LoadAssetAtPath<Material>(Folder+"Body.mat");
-    var hair=new Material(Shader.Find("WhatTheFish/CharacterHead")){name="Shared sculpted hair"};hair.SetFloat("_Smoothness",.3f);Save(hair,Folder+"Hair.mat");library.hairMaterial=AssetDatabase.LoadAssetAtPath<Material>(Folder+"Hair.mat");
+    var hair=new Material(Shader.Find("WhatTheFish/CharacterHead")){name="Shared sculpted hair",enableInstancing=true};hair.SetFloat("_Smoothness",.3f);Save(hair,Folder+"Hair.mat");library.hairMaterial=AssetDatabase.LoadAssetAtPath<Material>(Folder+"Hair.mat");
     library.sourceHash=hash;EditorUtility.SetDirty(library);
    }finally{UnityEngine.Object.DestroyImmediate(model);}
   }

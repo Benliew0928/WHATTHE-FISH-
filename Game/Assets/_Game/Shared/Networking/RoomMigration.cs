@@ -20,7 +20,7 @@ namespace WhatTheFish {
   public string MemberId=>memberId;
   string memberId;ushort localPort;float nextCheckpoint,recoveryStarted,nextRefresh,previousTimeScale=1;
   double observedHeartbeat=-1;bool electing,localRecovery;uint recoveryVersion;
-  Canvas recoveryCanvas;Text recoveryText;
+  RoomRecoveryUI recoveryUI;
   readonly Dictionary<ulong,string> approvedMembers=new();
   readonly Dictionary<ulong,string> connectedMembers=new();
   readonly HashSet<string> departedMembers=new();
@@ -32,9 +32,9 @@ namespace WhatTheFish {
    public readonly Dictionary<string,MemberCheckpoint> members=new();
   }
   internal sealed class MemberCheckpoint {
-   public string member;public byte seat;public ulong id;public Vector3 position;public Quaternion rotation;public byte[] fields;
+   public string member,name;public byte seat;public ulong id;public Vector3 position;public Quaternion rotation;public byte[] fields;
   }
-  void PrepareIdentity(string id){memberId=id;checkpoint=null;excludedMembers.Clear();departedMembers.Clear();connectedMembers.Clear();observedHeartbeat=-1;SetPayload();}
+  void PrepareIdentity(string id){RoomChatService.Ensure(this).ResetRoom();memberId=id;checkpoint=null;excludedMembers.Clear();departedMembers.Clear();connectedMembers.Clear();observedHeartbeat=-1;SetPayload();}
   void SetPayload(){NetworkManager.Singleton.NetworkConfig.ConnectionData=Encoding.UTF8.GetBytes(memberId??"");}
   bool ApproveReturning(NetworkManager.ConnectionApprovalRequest request,NetworkManager.ConnectionApprovalResponse response){
    string member=Encoding.UTF8.GetString(request.Payload??Array.Empty<byte>());
@@ -66,7 +66,6 @@ namespace WhatTheFish {
    if(leaving||!n)return;
    if(!Recovering&&n.IsServer&&Session?.IsHost==true&&departedMembers.Count>0&&!pruning&&Time.realtimeSinceStartup>=nextPrune)_=PruneDepartedMembers();
    if(Recovering){
-    if(recoveryText)recoveryText.text="Keeping your room together\n\n"+RecoveryMessage;
     if(n.IsServer&&host){
      SetServerClock(checkpoint.clock);
      var connected=RoomTeleport.Players().Where(p=>p.RecoveryAcknowledged.Value).Select(p=>p.MemberId.Value.ToString()).ToHashSet();
@@ -85,7 +84,7 @@ namespace WhatTheFish {
    if(host.RoomHeartbeat.Value==observedHeartbeat)return;
    observedHeartbeat=host.RoomHeartbeat.Value;
    var saved=new RoomCheckpoint{host=host.MemberId.Value.ToString(),clock=observedHeartbeat,sport=host.WorldSport.Value,world=host.CaptureFields(true)};
-   foreach(var actor in RoomTeleport.Players())if(actor.MemberId.Value.Length>0)saved.members[actor.MemberId.Value.ToString()]=new MemberCheckpoint{member=actor.MemberId.Value.ToString(),seat=actor.RoomSeat.Value,id=actor.StableId,position=actor.transform.position,rotation=actor.transform.rotation,fields=actor.CaptureFields(false)};
+   foreach(var actor in RoomTeleport.Players())if(actor.MemberId.Value.Length>0)saved.members[actor.MemberId.Value.ToString()]=new MemberCheckpoint{member=actor.MemberId.Value.ToString(),name=actor.Nickname.Value.ToString(),seat=actor.RoomSeat.Value,id=actor.StableId,position=actor.transform.position,rotation=actor.transform.rotation,fields=actor.CaptureFields(false)};
    if(saved.members.ContainsKey(memberId))checkpoint=saved;
   }
   internal void HostDespawned(){if(!leaving&&!Recovering&&checkpoint!=null)BeginRecovery();}
@@ -116,7 +115,7 @@ namespace WhatTheFish {
    if(checkpoint==null)return null;var available=present.ToHashSet();
    return checkpoint.members.Values.Where(p=>p.member!=departing&&!excludedMembers.Contains(p.member)&&available.Contains(p.member)).OrderBy(p=>p.seat).ThenBy(p=>p.member,StringComparer.Ordinal).FirstOrDefault();
   }
-  void Describe(MemberCheckpoint next){RecoveryMessage=next==null?"Finding the next host…":(next.seat<10?"Player ":"Spectator ")+(next.seat%10+1).ToString("00")+" is becoming host…";}
+  void Describe(MemberCheckpoint next){RecoveryMessage=next==null?"Finding the next host…":(string.IsNullOrEmpty(next.name)?"A crew member":next.name)+" is becoming host…";}
   async Task RefreshElection(){try{if(Session!=null){await Session.RefreshAsync();await ElectOnlineHost();}}catch(Exception e){Debug.LogWarning("Room recovery: "+e.Message);}}
   async Task ElectOnlineHost(){
    if(electing||leaving||!Recovering||Session==null)return;electing=true;
@@ -163,16 +162,10 @@ namespace WhatTheFish {
   void EndRecovery(){
    if(Recovering&&!leaving&&NetworkManager.Singleton.IsServer&&checkpoint!=null&&checkpoint.host!=memberId)departedMembers.Add(checkpoint.host);
    if(Recovering)Time.timeScale=previousTimeScale;Recovering=false;recoveryVersion++;
-   if(recoveryCanvas)Destroy(recoveryCanvas.gameObject);recoveryCanvas=null;recoveryText=null;observedHeartbeat=-1;nextCheckpoint=0;
+   if(recoveryUI)Destroy(recoveryUI.gameObject);recoveryUI=null;observedHeartbeat=-1;nextCheckpoint=0;
    if(!leaving){Changed?.Invoke();if(AppRoot.Instance&&AppRoot.Instance.Exploring)AppRoot.Instance.Show("stadium");}
   }
-  void ShowRecovery(){
-   RecoveryMessage="Finding the next host…";
-   recoveryCanvas=new GameObject("Room reconnecting",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();recoveryCanvas.renderMode=RenderMode.ScreenSpaceOverlay;recoveryCanvas.sortingOrder=32000;
-   var scaler=recoveryCanvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1600,900);
-   var panel=new GameObject("Shade",typeof(Image)).GetComponent<Image>();panel.transform.SetParent(recoveryCanvas.transform,false);panel.color=new Color(.03f,.12f,.15f,.85f);panel.rectTransform.anchorMin=Vector2.zero;panel.rectTransform.anchorMax=Vector2.one;panel.rectTransform.offsetMin=panel.rectTransform.offsetMax=Vector2.zero;
-   recoveryText=new GameObject("Message",typeof(Text)).GetComponent<Text>();recoveryText.transform.SetParent(panel.transform,false);recoveryText.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");recoveryText.fontSize=32;recoveryText.color=new Color(.95f,.98f,.86f);recoveryText.alignment=TextAnchor.MiddleCenter;recoveryText.rectTransform.sizeDelta=new Vector2(1000,250);
-  }
+  void ShowRecovery(){RecoveryMessage="Finding the next host…";recoveryUI=RoomRecoveryUI.Create(this);}
   void RestoreGames(){RoomGameRecovery.Restore();}
   sealed class RoomNetworkHandler:INetworkHandler {
    readonly RoomService room;readonly SemaphoreSlim gate=new(1,1);
@@ -188,12 +181,14 @@ namespace WhatTheFish {
 #endif
     await gate.WaitAsync();try{
      if(room.leaving)return;
-     await room.StopTransport();room.SetPayload();var n=NetworkManager.Singleton;var transport=n.GetComponent<UnityTransport>();
+     room.CheckConnection();if(!room.Recovering)room.Stage("Connecting to the shared game…");
+     await room.StopTransport();room.CheckConnection();room.SetPayload();var n=NetworkManager.Singleton;var transport=n.GetComponent<UnityTransport>();
      transport.SetRelayServerData(configuration.RelayServerData);
      bool host=configuration.Role!=NetworkRole.Client;bool started=host?n.StartHost():n.StartClient();
      if(!started)throw new InvalidOperationException("Could not start the room connection.");
      float deadline=Time.realtimeSinceStartup+45;
-     while(!n.IsConnectedClient&&n.IsListening&&Time.realtimeSinceStartup<deadline)await Task.Yield();
+     while(!n.IsConnectedClient&&n.IsListening&&Time.realtimeSinceStartup<deadline){room.CheckConnection();await Task.Yield();}
+     room.CheckConnection();
      if(!n.IsConnectedClient)throw new InvalidOperationException("Room connection timed out.");
     }finally{gate.Release();}
    }

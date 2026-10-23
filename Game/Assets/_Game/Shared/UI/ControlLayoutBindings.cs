@@ -7,7 +7,7 @@ namespace WhatTheFish {
    LayoutEditor=ControlLayoutEditor.Create(root,SportId.Basketball);
    LayoutEditor.Register("move","Move",(RectTransform)AppRoot.Instance.view.stick.transform,BasketballUIStyle.Icon(BasketballIcon.Move));
    LayoutEditor.Register("shoot","Shoot / Guard",(RectTransform)shoot.transform,BasketballUIStyle.Icon(BasketballIcon.Shoot),(RectTransform)shoot.guide.transform);
-   LayoutEditor.Register("pass","Pass / Steal",(RectTransform)pass.transform,BasketballUIStyle.Icon(BasketballIcon.Pass),(RectTransform)pass.guide.transform);
+   LayoutEditor.Register("pass","Pass / Steal",(RectTransform)pass.transform,BasketballUIStyle.Icon(BasketballIcon.Pass));
    LayoutEditor.Register("jump","Jump",(RectTransform)jump.transform,BasketballUIStyle.Icon(BasketballIcon.Jump));
    LayoutEditor.Register("ability","Ability",(RectTransform)props.transform,SportsUIStyle.PropIcon(SportsProp.Turbo));
   }
@@ -19,7 +19,7 @@ namespace WhatTheFish {
    LayoutEditor=ControlLayoutEditor.Create(root,SportId.Football);
    LayoutEditor.Register("move","Move",(RectTransform)AppRoot.Instance.view.stick.transform,BasketballUIStyle.Icon(BasketballIcon.Move));
    LayoutEditor.Register("shoot","Shoot / Pressure",(RectTransform)kick.transform,FootballUIStyle.Icon(FootballIcon.Ball),(RectTransform)kick.guide.transform);
-   LayoutEditor.Register("dash","Dash",(RectTransform)dash.transform.parent,FootballUIStyle.Icon(FootballIcon.Dash));
+   LayoutEditor.Register("dash","Dash",(RectTransform)dash.transform,FootballUIStyle.Icon(FootballIcon.Dash));
    LayoutEditor.Register("pass","Pass",(RectTransform)jump.transform,FootballUIStyle.Icon(FootballIcon.Target));
    LayoutEditor.Register("tackle","Tackle",(RectTransform)tackle.transform,FootballUIStyle.Icon(FootballIcon.Tackle));
    LayoutEditor.Register("ability","Ability",(RectTransform)FootballPropHUD.Instance.transform,FootballPropHUD.Icon(SportsProp.Wall));

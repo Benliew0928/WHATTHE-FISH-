@@ -19,6 +19,7 @@ namespace WhatTheFish {
   Athlete actor;SkinnedMeshRenderer[] body;MeshRenderer near,far,nearScalp,farScalp;Transform head;bool hidden,bound;
   int applied=-1,appliedTeam=-1;byte number;ulong offlineKey;
   public byte Number=>number;
+  public Vector3 LabelAnchor=>head?head.position+Vector3.up*.34f:transform.position+Vector3.up*1.86f;
   public int Preset=>Mathf.Max(0,number-1);
   public FootballTeam UniformTeam=>ResolveTeam(actor);
   public bool OriginalHair=>Preset==0;

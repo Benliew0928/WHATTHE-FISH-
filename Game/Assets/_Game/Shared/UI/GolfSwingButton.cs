@@ -6,24 +6,20 @@ namespace WhatTheFish {
  // Single-pointer drag/release input. The existing match authority validates each shot.
  public sealed class GolfSwingButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,IDragHandler,IInitializePotentialDragHandler {
   public Button button,startButton,aimButton;public Text label,startLabel,aimLabel;
-  bool holding;int pointer;float grabOffset,power;RectTransform knob;Image rail;readonly Graphic[] hints=new Graphic[5];
+  bool holding;int pointer;float grabOffset,power;RectTransform knob;Image rail;Graphic[] hints;
   public bool Dragging=>holding;
   public float Power=>power;
   public RectTransform Knob=>knob;
   public const float ArrowLifetime=.5f;
   RectTransform Root=>(RectTransform)transform;
-  float Top=>Root.rect.height*.385f;
-  float Bottom=>-Root.rect.height*.34f;
+  float Top=>ControlDesigns.PowerTop(Root);
+  float Bottom=>ControlDesigns.PowerBottom(Root);
   public void BuildSlider(){
    gameObject.name="Golf drag power slider";label.enabled=false;
    var hit=GetComponent<Image>();hit.color=Color.clear;hit.raycastTarget=true;button.transition=Selectable.Transition.None;
-   rail=GolfHUDStyle.Art(transform,"Golf power rail","GolfUI/PowerSlider/Rail",new Vector2(210,350),Vector2.zero);
-   rail.rectTransform.anchorMin=Vector2.zero;rail.rectTransform.anchorMax=Vector2.one;rail.rectTransform.offsetMin=rail.rectTransform.offsetMax=Vector2.zero;
-   for(int i=0;i<hints.Length;i++){
-    var r=GolfHUDStyle.Rect("Downward drag hint "+i,transform,new Vector2(.5f,.5f),Vector2.zero,new Vector2(22,13));
-    hints[i]=r.gameObject.AddComponent<GolfPowerChevron>();hints[i].raycastTarget=false;
-   }
-   knob=GolfHUDStyle.Art(transform,"Golf ball power handle","GolfUI/PowerSlider/Knob",new Vector2(138,70),Vector2.zero).rectTransform;
+   var design=ControlDesigns.Build(Root,SportId.Golf,"power",label);rail=design.Art;
+   hints=design.Arrows;
+   knob=design.Thumb;
    ResetSlider();
   }
   public static float HintAlpha(float time,int index){float age=Mathf.Repeat(time-index*.16f,1.3f);return age<ArrowLifetime?Mathf.Sin(Mathf.PI*age/ArrowLifetime):0;}

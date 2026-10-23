@@ -33,7 +33,7 @@ namespace WhatTheFish {
    var modalCanvas=overlay.gameObject.AddComponent<Canvas>();modalCanvas.overrideSorting=true;modalCanvas.sortingOrder=200;overlay.gameObject.AddComponent<GraphicRaycaster>();
    settings=Panel("Island settings",650,422,BasketballIcon.Gear);
    BasketballUIStyle.Text(settings,"Camera angle",20,70,590,20,15,true);
-   cameras=new Button[3];string[] names={"Eye level","Follow","Island view"};BasketballIcon[] icons={BasketballIcon.Eye,BasketballIcon.Follow,BasketballIcon.Court};
+   cameras=new Button[3];string[] names={"Eye level","Follow",Fishing?"Lagoon":"Course"};BasketballIcon[] icons={BasketballIcon.Eye,BasketballIcon.Follow,BasketballIcon.Court};
    for(int i=0;i<3;i++){int mode=i;cameras[i]=BasketballUIStyle.Button(settings,names[i],"",20+i*207,98,196,86,()=>SelectCamera(mode),BasketballUIStyle.Paper);BasketballUIStyle.Art(cameras[i].transform,icons[i],70,5,56,42);BasketballUIStyle.Text(cameras[i].transform,names[i],4,51,188,28,16,true,TextAnchor.MiddleCenter);CoveUI.Image(cameras[i].transform,"Selected camera",SportsUIStyle.Check,166,2,23,22).color=CoveUI.Ink;}
    note=BasketballUIStyle.Text(settings,"",20,191,610,26,12);
    for(int i=0;i<4;i++){
@@ -82,17 +82,18 @@ namespace WhatTheFish {
   void OpenGuide(){if(Fishing){Close();FishingHUD.Instance?.Tutorial?.Open();}else {settings.gameObject.SetActive(false);guide.gameObject.SetActive(true);}}
   void Refresh(){
    var view=PlayerView.Instance;for(int i=0;i<3;i++){bool chosen=view&&view.mode==i;var p=cameras[i].GetComponent<BasketballPlate>();p.color=chosen?CoveUI.Sky:BasketballUIStyle.Paper;p.border=chosen?3:2;p.Refresh();cameras[i].transform.Find("Selected camera").gameObject.SetActive(chosen);}
-   note.text=view&&view.mode==0?"See from your player's eyes. Drag to look around.":view&&view.mode==1?"Stay behind your player. Drag to look around.":Fishing?"A wider view behind your player. Drag to look.":"A wider view of the course. Drag to look around.";
+   note.text=view&&view.mode==0?"See from your player's eyes. Drag to look around.":view&&view.mode==1?"Stay behind your player. Drag to look around.":Fishing?"Frame your cast and hooked fish. Drag to look before casting.":"See your shot and landing area, then follow the ball.";
    for(int i=0;i<4;i++){float value=i==0?MenuPreferences.MasterVolume:i==1?MenuPreferences.SFXVolume:i==2?MenuPreferences.UIVolume:MenuPreferences.AmbienceVolume;volumes[i].SetValueWithoutNotify(value);captions[i].text=AudioNames[i]+" "+Mathf.RoundToInt(value*100)+"%";}
    playNote.text=AppRoot.Instance.rooms.Connected?"Room play continues while settings are open.":"Play continues while settings are open.";RefreshLeave();
   }
   void RefreshLeave(){
    var rooms=AppRoot.Instance.rooms;leaveButton.interactable=confirm.interactable=CanLeave;
-   leaveText.text=rooms.Connected?(rooms.Host?"Everyone returns to the room. The current match ends without a winner.":GuestLeaveCopy()):"Return to sport selection? This practice score will reset.";
+   leaveText.text=rooms.Connected?(rooms.Host?(PostMatchFlow.MatchActive?"Everyone returns to the waiting room. The current match ends.":"Everyone returns to the waiting room. You remain the host."):GuestLeaveCopy()):"Return to sport selection? This practice score will reset.";
    confirmText.text=rooms.Connected?(rooms.Host?"Return to room":"Leave room"):"Leave island";
   }
   string GuestLeaveCopy(){
    const string departure="You leave the room. ";
+   if(AppRoot.Instance.LocalAthlete&&AppRoot.Instance.LocalAthlete.IsSpectator)return departure+"The remaining crew can continue playing.";
    if(Fishing&&FishingGame.Instance){var match=FishingGame.Instance.State.Match;
     if(match.phase==FishingRoundPhase.Drafting||match.phase==FishingRoundPhase.Countdown)return departure+"Leaving during skill choice or the countdown ends the match for everyone.";
     if(match.mode==FishingMode.Crew&&match.phase==FishingRoundPhase.Playing)return departure+"Leaving ends Crew Catch for everyone.";

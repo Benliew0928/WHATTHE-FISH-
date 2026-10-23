@@ -14,14 +14,14 @@ namespace WhatTheFish {
    button.interactable=view&&view.active&&!view.InputBlocked&&ball&&(pass?ball.CanPass(view.target):ball.CanShoot(view.target))&&(pass?!view.ShotCharging:!view.PassCharging);
    bool holding=view&&(pass?view.PassCharging:view.ShotCharging);
    if(tracking&&(!button.interactable||!view||ball.Defense.play!=play))ResetGesture();else if(pressed&&!holding)CancelGesture();
-   if(illustrated){label.fontSize=pass?34:42;label.text=pass?"Pass":"Shoot";return;}
+   if(illustrated){ControlDesigns.Caption(label,pass?"Pass":"Shoot");return;}
    if(cancelArea)cancelArea.gameObject.SetActive(tracking||holding);
-   if(!tracking&&holding&&cancelLabel)cancelLabel.text=Application.isMobilePlatform?"Cancel":"Cancel [X]";
+   if(!tracking&&holding&&cancelLabel)cancelLabel.text="Cancel";
    label.fontSize=22;
-   if(pass){label.text=holding?$"{BasketballPassRules.Name(view.PassBend)}\n{Mathf.RoundToInt(view.PassPower*100)}%":ball&&ball.ActionQueued?"Passing...":GameButtonStyle.Caption("Pass","Q");return;}
-   label.text=view&&view.target&&view.target.BasketballFreeRoam?"Free roam":holding?view.ShotFinish.ToString()+"\nRelease":ball&&ball.ActionQueued?"Gathering...":GameButtonStyle.Caption("Shoot","E");
+   if(pass){label.text=holding?$"{BasketballPassRules.Name(view.PassBend)}\n{Mathf.RoundToInt(view.PassPower*100)}%":ball&&ball.ActionQueued?"Passing...":GameButtonStyle.Caption("Pass","Tap");return;}
+   label.text=view&&view.target&&view.target.BasketballFreeRoam?"Free roam":holding?view.ShotFinish.ToString()+"\nRelease":ball&&ball.ActionQueued?"Gathering...":GameButtonStyle.Caption("Shoot");
   }
-  public void OnPointerDown(PointerEventData data){if(data.button!=PointerEventData.InputButton.Left||!button.interactable||tracking||!PlayerView.Instance||PlayerView.Instance.InputBlocked)return;if(pass?PlayerView.Instance.BeginPass(data.pointerId):PlayerView.Instance.BeginShot(data.pointerId)){pressed=tracking=true;pointer=data.pointerId;pressPosition=data.position;play=BasketballBall.Active.Defense.play;if(guide)guide.Begin();else {if(cancelLabel)cancelLabel.text="Cancel";if(cancelArea)cancelArea.gameObject.SetActive(true);}}}
+  public void OnPointerDown(PointerEventData data){if(data.button!=PointerEventData.InputButton.Left||!button.interactable||tracking||!PlayerView.Instance||PlayerView.Instance.InputBlocked)return;if(pass){PlayerView.Instance.BeginPass(data.pointerId);return;}if(PlayerView.Instance.BeginShot(data.pointerId)){pressed=tracking=true;pointer=data.pointerId;pressPosition=data.position;play=BasketballBall.Active.Defense.play;if(guide)guide.Begin();else {if(cancelLabel)cancelLabel.text="Cancel";if(cancelArea)cancelArea.gameObject.SetActive(true);}}}
   public void OnInitializePotentialDrag(PointerEventData data){data.useDragThreshold=false;}
   public void OnBeginDrag(PointerEventData data){CheckCancel(data);}
   public void OnDrag(PointerEventData data){CheckCancel(data);}

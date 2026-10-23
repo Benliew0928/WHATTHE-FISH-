@@ -71,10 +71,14 @@ namespace WhatTheFish {
    var app=AppRoot.Instance;Check(app&&app.Menu&&app.Menu.Page=="home"&&!app.Exploring,"guest opens the existing home menu");
    Check(app&&!app.rooms.Connected,"guest creation works without an online session");yield return new WaitForSecondsRealtime(.6f);yield return Capture("main-menu");
    Click(app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Player profile"));yield return new WaitForSecondsRealtime(.4f);
-   var profileName=app.Menu.Content.GetComponentsInChildren<InputField>().First(f=>f.name=="Profile name");profileName.text="  Island Buddy  ";
-   Click(app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Save player name"));yield return null;
-   Check(profileName.text=="Island Buddy"&&PlayerIdentity.GuestId==File.ReadAllText(Path.Combine(folder,"guest-id.txt")),"profile editor saves trimmed name without replacing guest ID");yield return Capture("profile");
-   Click(app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Done profile"));yield return new WaitForSecondsRealtime(.4f);
+   var hub=FindFirstObjectByType<SocialPanel>();Check(hub&&SocialPanel.Visible,"profile action opens current player hub");
+   var profileName=hub.GetComponentsInChildren<InputField>().First(f=>f.name=="Profile name");profileName.text="  Crew Buddy  ";
+   var save=hub.GetComponentsInChildren<Button>().First(b=>b.name=="Save player profile");Click(save);yield return null;
+   yield return Until(()=>save.IsInteractable(),"profile operation restores controls",80);
+   if(PlayerIdentity.DisplayName=="Crew Buddy")Check(true,"profile save trims the submitted name");
+   else {Check(profileName.text.Trim()=="Crew Buddy"&&hub.GetComponentsInChildren<Text>().Any(t=>t.text.Contains("try again")||t.text.Contains("unavailable")||t.text.Contains("sign in")),"profile failure retains draft and gives recovery feedback");File.AppendAllText(Path.Combine(folder,"results.txt"),"LIMIT Cloud profile save unavailable in this startup run; guest entry and recovery controls were verified.\n");}
+   Check(PlayerIdentity.GuestId==File.ReadAllText(Path.Combine(folder,"guest-id.txt")),"profile editor preserves guest ID");yield return Capture("profile");
+   Click(hub.GetComponentsInChildren<Button>().First(b=>b.name=="Close social panel"));yield return new WaitForSecondsRealtime(.4f);
    app.EnterOffline();yield return new WaitForSecondsRealtime(.8f);Check(app.Exploring&&app.view.active&&!app.view.InputBlocked,"normal gameplay input restored after guest entry");
    Finish();
   }

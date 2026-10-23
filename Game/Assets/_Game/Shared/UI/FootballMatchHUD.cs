@@ -20,7 +20,7 @@ namespace WhatTheFish {
    for(int i=0;i<4;i++){int size=i+2;sizeButtons[i]=FootballUIStyle.Button(botSizes,"Bot team size "+size,size+"v"+size,i*56,0,52,28,()=>FootballBots.PreferredTeamSize=size,CoveUI.Cream,12);}
    botsButton=FootballUIStyle.Button(transform,"Room bots","Fill with bots",42,145,220,34,()=>{var bots=FootballBots.Instance;if(!bots)return;if(bots.Count>0)bots.Clear();else bots.FillRoom();},CoveUI.Sky,13);botLabel=botsButton.GetComponentInChildren<Text>();
    selectionPanel=BasketballUIStyle.Plate(transform,"Team selection",-78,115,460,176,CoveUI.Cream,22,2,true).rectTransform;
-   BasketballUIStyle.Text(selectionPanel,"Choose your team",20,9,420,32,21,true,TextAnchor.MiddleCenter);selectionSubtitle=BasketballUIStyle.Text(selectionPanel,"Your choice locks when the countdown ends.",20,42,420,23,12,false,TextAnchor.MiddleCenter);
+   BasketballUIStyle.Text(selectionPanel,"Choose your team",20,9,420,32,21,true,TextAnchor.MiddleCenter);selectionSubtitle=BasketballUIStyle.Text(selectionPanel,"Unselected players are assigned when time expires.",20,42,420,23,12,false,TextAnchor.MiddleCenter);
    chooseA=FootballUIStyle.Button(selectionPanel,"Team A choice","Blue",18,73,207,55,()=>FootballMatch.Instance?.RequestTeam(FootballTeam.A),CoveUI.Sky,17);chooseALabel=chooseA.GetComponentInChildren<Text>();
    chooseB=FootballUIStyle.Button(selectionPanel,"Team B choice","Red",235,73,207,55,()=>FootballMatch.Instance?.RequestTeam(FootballTeam.B),FootballUIStyle.Cancel,17);chooseBLabel=chooseB.GetComponentInChildren<Text>();
    selectionHint=BasketballUIStyle.Text(selectionPanel,"",18,140,424,23,12,false,TextAnchor.MiddleCenter);selectionPanel.gameObject.SetActive(false);
@@ -43,12 +43,12 @@ namespace WhatTheFish {
    if(s.phase==FootballMatchPhase.Cancelled){timer.text="VOID";timer.fontSize=26;phase.text="PLAYER LEFT";}
    startButton.gameObject.SetActive(authority&&(s.phase==FootballMatchPhase.Idle||s.phase==FootballMatchPhase.Finished||s.phase==FootballMatchPhase.Cancelled));startLabel.text=s.phase==FootballMatchPhase.Idle?"Start match":"New match";
    bool selecting=s.phase==FootballMatchPhase.TeamSelection,solo=FootballMatch.Instance&&FootballMatch.Instance.SoloTeamSelection;selectionPanel.gameObject.SetActive(selecting);
-   selectionPanel.sizeDelta=new Vector2(460,solo?234:176);selectionSubtitle.text=solo?"Pick a side, then start when you're ready.":"Your choice locks when the countdown ends.";
+   selectionPanel.sizeDelta=new Vector2(460,solo?234:176);selectionSubtitle.text=solo?"Pick a side, then start when you're ready.":"Unselected players are assigned when time expires.";
    confirmTeam.gameObject.SetActive(selecting&&solo);confirmTeam.interactable=FootballMatch.Instance&&FootballMatch.Instance.CanConfirmSoloTeam;
    if(selecting&&solo){timer.text="READY";timer.fontSize=20;}
    chooseALabel.text=solo?(team==FootballTeam.A?"Blue  ✓":"Blue"):"Blue  "+s.teamA+" / "+s.teamCapacity+(s.teamA>=s.teamCapacity?" · Full":"");chooseBLabel.text=solo?(team==FootballTeam.B?"Red  ✓":"Red"):"Red  "+s.teamB+" / "+s.teamCapacity+(s.teamB>=s.teamCapacity?" · Full":"");
    chooseA.interactable=selecting&&(team==FootballTeam.A||s.teamA<s.teamCapacity);chooseB.interactable=selecting&&(team==FootballTeam.B||s.teamB<s.teamCapacity);
-   selectionHint.text=team==FootballTeam.None?"Choose Blue or Red to continue.":"You: "+CharacterIdentity.TeamName(team)+(solo?" · Ready to start":" · Confirmed when time expires");youA.SetActive(team==FootballTeam.A);youB.SetActive(team==FootballTeam.B);
+   selectionHint.text=team==FootballTeam.None?(solo?"Choose Blue or Red to continue.":"Auto-assignment in "+Math.Ceiling(Math.Max(0,remaining))+"s"):"You: "+CharacterIdentity.TeamName(team)+(solo?" · Ready to start":" · Confirmed when time expires");youA.SetActive(team==FootballTeam.A);youB.SetActive(team==FootballTeam.B);
   }
 #if UNITY_EDITOR
   public void Preview(FootballMatchSnapshot snapshot,double seconds,FootballTeam team,float elapsed=0){Present(snapshot,seconds,team,true,elapsed);}

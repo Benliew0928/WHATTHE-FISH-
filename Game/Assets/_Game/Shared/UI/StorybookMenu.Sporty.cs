@@ -49,7 +49,8 @@ namespace WhatTheFish {
    history.Clear();guideFromHub=false;
    Image(content,"Official logo",Resources.Load<Sprite>("Menu/WhatTheFishLogo"),64,0,205,151);
    Button(content,"Player profile","Your profile",1085,48,248,68,Raised,SocialPanel.OpenOwn,CoveSymbol.People,27);
-   Button(content,"Friends icon","Friends",880,48,185,68,Raised,SocialPanel.OpenFriends,CoveSymbol.People,24);
+   var friends=Button(content,"Friends icon","Friends",880,48,185,68,Raised,SocialPanel.OpenFriends,CoveSymbol.People,24);
+   FriendRequestBadge.Add(friends.transform,153,-12,34);
    Button(content,"Settings","Settings",1353,48,183,68,Raised,()=>Go("settings"),CoveSymbol.Settings,26);
    Plate(content,"Header divider",64,151,1472,2,Line,0,0);
    var room=Plate(content,"Play together",64,176,1472,128,Cream);
@@ -59,7 +60,7 @@ namespace WhatTheFish {
    Text(content,"CHOOSE YOUR SPORT",64,322,1000,48,35,true);
    for(int i=0;i<HomeSports.Length;i++){var sport=HomeSports[i];SportCard(sport,64+i*374,390,350,310,()=>ChooseSport(sport,"sport"));}
    Utility("Customize venue","CUSTOMIZE VENUE",64,730,724,Cream,CoveSymbol.Paint,()=>Go("venues"));
-   Utility("How to play","HOW TO PLAY",812,730,724,Cream,CoveSymbol.Book,()=>{guideSport=app.SelectedSport;Go("guides");});
+   Utility("Tutorials","TUTORIALS",812,730,724,Cream,CoveSymbol.Book,()=>Go("tutorials"));
    if(!string.IsNullOrEmpty(app.rooms.Error))NoticeLater(app.rooms.Error);
   }
   void SportCard(SportId sport,float x,float y,float w,float h,Action action,string id=null,string caption=null,bool enabled=true){

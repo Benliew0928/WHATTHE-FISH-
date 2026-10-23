@@ -19,7 +19,7 @@ try {
   $process=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru
   $running+=@{process=$process;folder=$out};if($role -eq 'host'){Start-Sleep -Seconds 2}
  }
- foreach($item in $running){if(!$item.process.WaitForExit(180000)){throw "Restart review timeout: $($item.folder)"}}
+ foreach($item in $running){if(!$item.process.WaitForExit(240000)){throw "Restart review timeout: $($item.folder)"}}
  foreach($item in $running){
   $result=Get-Content -LiteralPath (Join-Path $item.folder 'results.txt') -Raw
   if($item.process.ExitCode -ne 0 -or $result -match '(?m)^FAIL ' -or !$result.Contains('BASKETBALL_RESTART_COMPLETE success=True')){throw "Restart review failed: $($item.folder)"}

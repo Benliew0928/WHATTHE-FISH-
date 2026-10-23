@@ -11,6 +11,7 @@ Shader "WhatTheFish/CharacterIdentity" {
   Pass {
    Name "ForwardLit" Tags {"LightMode"="UniversalForward"}
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma target 3.0
    #pragma vertex IdentityVertex
    #pragma fragment IdentityFragment
@@ -26,6 +27,7 @@ Shader "WhatTheFish/CharacterIdentity" {
   Pass {
    Name "ShadowCaster" Tags {"LightMode"="ShadowCaster"} ZWrite On ColorMask 0
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma target 3.0
    #pragma vertex ShadowVertex
    #pragma fragment ShadowFragment
@@ -49,6 +51,7 @@ Shader "WhatTheFish/CharacterIdentity" {
   Pass {
    Name "DepthOnly" Tags {"LightMode"="DepthOnly"} ZWrite On ColorMask R
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma vertex IdentityVertex
    #pragma fragment DepthFragment
    #include "CharacterIdentityInput.hlsl"
@@ -58,6 +61,7 @@ Shader "WhatTheFish/CharacterIdentity" {
   Pass {
    Name "DepthNormals" Tags {"LightMode"="DepthNormals"} ZWrite On
    HLSLPROGRAM
+   #pragma multi_compile_instancing
    #pragma vertex IdentityVertex
    #pragma fragment NormalFragment
    #include "CharacterIdentityInput.hlsl"

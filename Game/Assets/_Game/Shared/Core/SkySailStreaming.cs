@@ -8,6 +8,7 @@ namespace WhatTheFish {
   public bool enabledForWorld;
   public bool Busy {get;private set;}
   public string Error {get;private set;}
+  public string Stage {get;private set;}="Preparing island…";
   SportEnvironmentController environment;
   void Awake(){environment=GetComponent<SportEnvironmentController>();}
   public static string SceneName(SportId id)=>"SkySail_"+id;
@@ -22,7 +23,7 @@ namespace WhatTheFish {
    throw new InvalidOperationException("Prepare the island asynchronously before activation: "+id);
   }
   public IEnumerator Prepare(SportId id){
-   while(Busy)yield return null;Error=null;Busy=true;
+   while(Busy)yield return null;Error=null;Busy=true;Stage="Loading island scenery…";
    if(Loaded(id)){yield return PrepareGrass(id);Busy=false;yield break;}
    AsyncOperation operation=null;
    try{operation=SceneManager.LoadSceneAsync(SceneName(id),LoadSceneMode.Additive);}catch(Exception e){Error=e.Message;}
@@ -30,9 +31,10 @@ namespace WhatTheFish {
     yield return operation;try{Bind(id);}catch(Exception e){Error=e.Message;}
     if(Error==null)yield return PrepareGrass(id);
    }
-   Busy=false;
+   if(operation==null&&Error==null)Error="Island scene is unavailable.";Busy=false;
   }
   IEnumerator PrepareGrass(SportId id){
+   Stage="Preparing the landscape…";
    var grass=environment.roots[(int)id].GetComponentInChildren<MobileIslandGrass>(true);
    if(grass){yield return grass.Prepare();if(grass.Error!=null)Error=grass.Error;}
   }

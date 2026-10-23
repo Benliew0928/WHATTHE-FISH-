@@ -190,13 +190,13 @@ namespace WhatTheFish {
     }
     var setup=frame.GetComponentsInChildren<RectTransform>(true).First(t=>t.name=="Fishing match setup");var setupButtons=setup.GetComponentsInChildren<UnityEngine.UI.Button>(true);var modePanels=setupButtons.Where(b=>b.name.StartsWith("Mode ")).Select(b=>b.targetGraphic as FishingStickerGraphic).ToArray();
     Check(setupButtons.Length==6&&setupButtons.All(b=>b.name!="Fishing favourites")&&setupButtons.All(b=>{var skin=b.targetGraphic as FishingStickerGraphic;var caption=b.GetComponentsInChildren<UnityEngine.UI.Text>(true).FirstOrDefault();return b.enabled&&skin&&skin.SolidPanel&&skin.raycastTarget&&caption&&caption.enabled&&!caption.raycastTarget&&caption.fontStyle==FontStyle.Normal&&!string.IsNullOrWhiteSpace(caption.text)&&(!b.gameObject.activeInHierarchy||RenderedTextInside(caption,caption.rectTransform));})&&modePanels.Length==3&&modePanels.Count(g=>g&&g.tint==LocalProfile.Hex("4CDED6"))==1&&modePanels.Count(g=>g&&g.tint==LocalProfile.Hex("FFF3D7"))==2,"SETUP_NATIVE_CAPTIONS_AND_SELECTED_MODE_USE_SOLID_TINTED_BUTTONS_"+view);
-   var close=frame.GetComponentsInChildren<FishingStickerGraphic>(true).First(g=>g.name=="Fishing cancel X");
-   var cancelButton=close.GetComponentInParent<UnityEngine.UI.Button>(true);var cancelPanel=cancelButton.GetComponent<FishingStickerGraphic>();
+   var cancelSource=frame.GetComponentsInChildren<ControlDesignSource>(true).First(s=>s.Sport==SportId.Fishing&&s.Id=="cancel");
+   var cancelButton=cancelSource.GetComponent<UnityEngine.UI.Button>();var cancelPanel=cancelButton.targetGraphic as UnityEngine.UI.Image;
    var nativeJump=frame.GetComponentsInChildren<JumpButton>(true).FirstOrDefault(j=>j.enabled&&j.illustrated);
    var cameraButton=frame.GetComponentsInChildren<UnityEngine.UI.Button>(true).FirstOrDefault(b=>b.name=="Camera");
    Check(!cameraButton||!cameraButton.gameObject.activeInHierarchy,"CAMERA_MOVED_INTO_SETTINGS_"+view);
-   Check(ui.IslandMenu&&ui.IslandMenu.GearRect.GetComponent<BasketballPlate>()&&nativeJump&&nativeJump.button&&nativeJump.button.GetComponent<BasketballPlate>()&&nativeJump.label.enabled,"COURTS_SETTINGS_AND_JUMP_USE_SHARED_ART_AND_CONTROLS_"+view);
-   Check(cancelButton.enabled&&cancelPanel.SolidPanel&&cancelPanel.tint==LocalProfile.Hex("F7656A")&&cancelButton.targetGraphic==cancelPanel,"SOLID_RED_CANCEL_BUTTON_HAS_NATIVE_X_"+view);
+   Check(ui.IslandMenu&&ui.IslandMenu.GearRect.GetComponent<BasketballPlate>()&&nativeJump&&nativeJump.button&&nativeJump.button.targetGraphic is UnityEngine.UI.Image jumpFace&&jumpFace.sprite==ControlArt.Get("TileGold")&&nativeJump.label.enabled,"COURTS_SETTINGS_AND_JUMP_USE_SHARED_ART_AND_CONTROLS_"+view);
+   Check(cancelButton.enabled&&cancelPanel&&cancelPanel.sprite==ControlArt.Get("Cancel")&&cancelSource.View.Art.sprite==ControlArt.Get("Close")&&cancelSource.View.Label.text=="CANCEL","GLOSSY_RED_CANCEL_BUTTON_HAS_SHARED_X_AND_CAPTION_"+view);
    foreach(var button in new[]{nativeJump.button,cancelButton}){
     var rect=(RectTransform)button.transform;var pointer=new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center))};var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);
     if(!button.gameObject.activeInHierarchy)Check(!hits.Any(h=>h.gameObject.GetComponentInParent<UnityEngine.UI.Button>()==button),"IRRELEVANT_HIDDEN_UTILITY_HAS_NO_POINTER_TARGET_"+button.name+"_"+view);

@@ -40,7 +40,7 @@ namespace WhatTheFish {
    }
    yield return Sync("blocked-landing");GameObject obstacle=null;uint blockedSeq=RoomTeleport.Instance.State.sequence;var blockedSource=app.SelectedSport;var blockedPositions=RoomTeleport.Players().Select(n=>n.transform.position).ToArray();
    if(app.rooms.Host){obstacle=GameObject.CreatePrimitive(PrimitiveType.Cube);obstacle.name="Room teleport obstruction fixture";obstacle.transform.position=TeleportDestinations.Nominal(SportId.Fishing,TeleportDestination.Game,0).position+Vector3.up;obstacle.transform.localScale=new Vector3(1.4f,2,1.4f);Physics.SyncTransforms();Check(RoomTeleport.Instance.Request(SportId.Fishing,TeleportDestination.Game),"blocked landing begins preparation");}
-   yield return Until(()=>RoomTeleport.Instance.State.sequence>blockedSeq&&RoomTeleport.Instance.State.phase==RoomTeleportPhase.Cancelled&&!TeleportSequence.Busy,"blocked landing cancels entire room");Check(Restored()&&app.SelectedSport==blockedSource&&RoomTeleport.Players().Select((n,i)=>Vector3.Distance(n.transform.position,blockedPositions[i])<.35f).All(x=>x),"blocked landing preserves every source pose");if(obstacle)Destroy(obstacle);yield return null;
+   yield return Until(()=>RoomTeleport.Instance.State.sequence>blockedSeq&&RoomTeleport.Instance.State.phase==RoomTeleportPhase.Cancelled&&!TeleportSequence.Busy,"blocked landing cancels entire room");Check(Restored()&&app.SelectedSport==blockedSource&&RoomTeleport.Players().Select((n,i)=>Vector3.Distance(n.transform.position,blockedPositions[i])<.35f).All(x=>x),"blocked landing preserves every source pose");if(obstacle)Destroy(obstacle);yield return new WaitForSecondsRealtime(.4f);Check(RoomTeleportStatus.Visible&&!GameObject.Find("Skyrail journey UI").GetComponent<Canvas>().enabled,"failure notice hides station controls");yield return Capture("travel-failure-restored");
    // Rollback at each meaningful boundary keeps the shared room and all actors.
    foreach(var phase in new[]{TeleportPhase.Preparing,TeleportPhase.Absorbing,TeleportPhase.Arriving}){
     yield return Idle();yield return Sync("cancel-"+phase);var before=RoomTeleport.Players().Select(n=>n.transform.position).ToArray();var source=app.SelectedSport;uint seq=RoomTeleport.Instance.State.sequence;
@@ -61,9 +61,10 @@ namespace WhatTheFish {
    if(app.rooms.Host){Click("Choose "+sport);Click(destination==TeleportDestination.Game?"Choose game location":"Choose station");yield return null;yield return Capture(tag+"-choice");Click("Teleport everyone");}
    else {Check(!RoomTeleport.Instance.Request(sport,destination),"guest cannot choose destination");Check(!PostMatchFlow.Instance.PlayAgain(),"guest cannot start match");}
    yield return Until(()=>RoomTeleport.Instance.State.sequence>seq,"shared teleport published");
-   bool charge=false,absorb=false,travel=false,arrival=false,hitch=false;float deadline=Time.realtimeSinceStartup+100;
+   bool charge=false,absorb=false,travel=false,arrival=false,hitch=false,preparation=false;float deadline=Time.realtimeSinceStartup+100;
    while((RoomTeleport.Busy||TeleportSequence.Busy)&&Time.realtimeSinceStartup<deadline){
     var s=TeleportSequence.Instance;if(s){
+     if(s.Phase==TeleportPhase.Preparing&&!preparation){preparation=true;yield return Capture(tag+"-preparing");}
      if(s.Phase==TeleportPhase.Charging&&!charge){charge=true;Check(RoomTeleport.Players().All(n=>n.GetComponent<Athlete>().inTransit&&!n.GetComponent<NetworkTransform>().enabled),"all actors locked before disappearing");if(app.rooms.Host){Check(!RoomTeleport.Instance.Request(sport,destination)&&!PostMatchFlow.Instance.PlayAgain(),"overlapping travel and match restart rejected");var n=RoomTeleport.Players().First(n=>n.IsOwner);var ack=n.TeleportReady.Value;n.TeleportReadyRpc(seq,3,false);Check(n.TeleportReady.Value.Equals(ack),"stale acknowledgement rejected");n.TeleportReadyRpc(RoomTeleport.Instance.State.sequence,3,false);Check(n.TeleportReady.Value.Equals(ack),"arrival acknowledgement rejected before arrival phase");}}
      absorb|=s.Phase==TeleportPhase.Absorbing;if(!app.rooms.Host&&sport==SportId.Golf&&destination==TeleportDestination.Game&&s.Phase==TeleportPhase.Travelling&&s.PhaseProgress>.2f&&!hitch){hitch=true;System.Threading.Thread.Sleep(650);}
      if(s.Phase==TeleportPhase.Travelling&&!travel&&s.PhaseProgress>.4f){travel=true;Check(RoomTeleport.Players().All(n=>n.GetComponent<Athlete>().visual.GetComponentsInChildren<Renderer>().All(r=>r.forceRenderingOff)),"all characters absorbed during visible world flight");yield return Capture(tag+"-flight");}
@@ -85,10 +86,11 @@ namespace WhatTheFish {
      case SportId.Football:var f=FootballMatch.Instance;Check(f.StartMatch(),"start football fixture");f.State.TeamsConfirmed(f.Now);f.State.Advance(f.Now+10);f.State.Advance(f.Now+10000);Publish(f);break;
      case SportId.Basketball:var b=BasketballMatch.Instance;Check(BasketballBots.Instance.FillRoom(2),"fill basketball room to four");Check(b.StartMatch(),"start basketball fixture");b.State.Confirm(b.Now,0);b.State.Advance(b.Now);b.State.Advance(b.Now+10000);b.State.Advance(b.Now+20000);Publish(b,"Synchronize");break;
      case SportId.Golf:var g=GolfMatchManager.Instance;Check(g.StartMatch(),"start golf fixture");foreach(var p in g.State.Players)for(int hole=1;hole<=5;hole++){g.State.RecordSwing(p.PlayerId,g.Now);g.State.EnterHole(p.PlayerId,hole,g.Now);}Publish(g);break;
-     case SportId.Fishing:var fish=FishingGame.Instance;foreach(var n in RoomTeleport.Players()){var a=n.GetComponent<Athlete>();var p=fish.Player(a).Value;fish.Execute(a,FishingAction.Ready,fish.State.Match.round,p.sequence);}Check(fish.StartMatch(),"start fishing fixture");fish.State.Advance(fish.State.Match.deadline+1,0);Publish(fish);break;
+     case SportId.Fishing:var fish=FishingGame.Instance;foreach(var n in RoomTeleport.Players()){var a=n.GetComponent<Athlete>();var p=fish.Player(a).Value;fish.Execute(a,FishingAction.Ready,fish.State.Match.round,p.sequence);}Check(fish.StartMatch(),"start fishing fixture");fish.State.Advance(fish.State.Match.draftUntil+1,0);fish.State.Advance(fish.State.Match.deadline+1,0);Check(fish.State.Match.phase==FishingRoundPhase.Ended,"fishing fixture completes draft, countdown and round");Publish(fish);break;
     }
    }
-   yield return new WaitForSeconds(2);PostMatchFlow.CloseResults();yield return Until(()=>PostMatchFlow.Instance.Visible,sport+" postmatch panel opens");Check(app.rooms.Connected&&app.Exploring,"results keep player in shared world");yield return Capture(sport+"-postmatch");
+   yield return new WaitForSeconds(2);PostMatchFlow.CloseResults();yield return Until(()=>app.rooms.Host?PostMatchFlow.Instance.Visible:PostMatchFlow.Instance.WaitingVisible,sport+" appropriate postmatch view opens");
+   if(!app.rooms.Host){Check(!PostMatchFlow.Instance.Visible&&!app.view.InputBlocked,"guest waits without blocking exploration");yield return Capture(sport+"-guest-waiting");Click("Open next adventure");Check(PostMatchFlow.Instance.Visible,"guest can expand waiting details");}Check(app.rooms.Connected&&app.Exploring,"results keep player in shared world");yield return Capture(sport+"-postmatch");
    if(sport==SportId.Football){Screen.SetResolution(960,540,false);yield return new WaitForSeconds(.7f);yield return Capture("postmatch-compact");Screen.SetResolution(1280,720,false);yield return new WaitForSeconds(.7f);}
    Click("Keep exploring");Check(!PostMatchFlow.Instance.Visible&&!app.view.InputBlocked,"keep exploring closes only panel");yield return null;Click("Open next adventure");Check(PostMatchFlow.Instance.Visible,"next adventure can reopen");
    if(!app.rooms.Host&&sport==SportId.Fishing)Click("Ready for fishing");yield return Sync(sport+"-rematch");yield return new WaitForSeconds(.5f);
@@ -98,13 +100,13 @@ namespace WhatTheFish {
   }
   IEnumerator Cabin(SportId sport){
    var world=SkySailWorld.Instance;var camera=Camera.main;bool view=app.view.enabled;world.reviewCamera=true;app.view.enabled=false;
-   foreach(var c in FindObjectsByType<Canvas>(FindObjectsSortMode.None))c.enabled=false;
+   var canvasStates=FindObjectsByType<Canvas>(FindObjectsSortMode.None).Select(c=>(canvas:c,enabled:c.enabled)).ToArray();foreach(var c in canvasStates)c.canvas.enabled=false;
    camera.transform.SetPositionAndRotation(world.cabin.TransformPoint(new Vector3(0,1.7f,-2.9f)),world.cabin.rotation*Quaternion.Euler(0,16,0));camera.fieldOfView=60;yield return Capture(sport+"-cabin-interior",false);
    var lighting=world.cabin.GetComponent<SkySailCabinLighting>();Check(lighting&&lighting.InteriorView(camera),"interior shading recognizes cabin view");
    var lamps=world.cabin.GetComponentsInChildren<Renderer>().Where(r=>r.sharedMaterials.Any(m=>m&&m.name=="SS_Lamp")).ToArray();Check(lamps.Length>0&&lamps.All(r=>r.sharedMaterials.All(m=>m.shader.name=="Universal Render Pipeline/Unlit"&&m.renderQueue>2500&&m.IsKeywordEnabled("_SURFACE_TYPE_TRANSPARENT"))&&!r.receiveShadows),"bulbs glow after the opaque ambient-shading pass");
    if(lamps.Length>0){var center=lamps[0].bounds.center+world.cabin.right*2.2f;camera.transform.position=center+world.cabin.TransformDirection(new Vector3(0,-.25f,-1.4f));camera.transform.LookAt(center);camera.fieldOfView=55;yield return Capture(sport+"-cabin-bulbs",false);}
    camera.transform.position=world.cabin.TransformPoint(new Vector3(12,9,-19));camera.transform.LookAt(world.cabin.position+Vector3.up*2);Check(!lighting.InteriorView(camera),"outside views retain contact shading");yield return Capture(sport+"-cabin-exterior",false);
-   foreach(var c in FindObjectsByType<Canvas>(FindObjectsSortMode.None))c.enabled=true;app.view.enabled=view;world.reviewCamera=false;
+   foreach(var c in canvasStates)if(c.canvas)c.canvas.enabled=c.enabled;app.view.enabled=view;world.reviewCamera=false;
   }
   void Finish(){DevelopmentProbe.TurnCommandActive=false;File.AppendAllText(Path.Combine(folder,"results.txt"),"ROOM_TELEPORT_REVIEW_COMPLETE success="+!failed+" checks="+checks+"\n");Application.Quit(failed?1:0);}
  }

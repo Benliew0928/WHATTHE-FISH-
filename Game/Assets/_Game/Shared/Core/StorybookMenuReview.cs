@@ -59,6 +59,7 @@ namespace WhatTheFish {
    if(role!="offline"){yield return Network();Finish();yield break;}
    clipboard=GUIUtility.systemCopyBuffer;football=LocalProfile.Stadium;basketball=LocalProfile.Basketball;master=MenuPreferences.MasterVolume;ui=MenuPreferences.UIVolume;motion=MenuPreferences.ReducedMotion;cameraMode=app.view.mode;
    MenuPreferences.SetMotion(false);app.Show("home");yield return Settled();Layout();yield return Capture("01-home");
+   yield return RequestBadges();
    Check(app.Menu.Content.GetComponentsInChildren<Image>().Any(i=>i.name=="Official logo"&&i.sprite==Resources.Load<Sprite>("Menu/WhatTheFishLogo")),"home uses the official brand logo");
    Check(Button("Create room")&&Button("Join room")&&Button("Customize venue")&&Button("How to play"),"home exposes shared rooms and global utilities");
    Check(Button("Customize venue").GetComponent<CovePlate>().canvasRenderer.GetColor()==Color.white,"first home buttons restore full colour after the welcome gate");
@@ -97,7 +98,7 @@ namespace WhatTheFish {
    foreach(var sport in new[]{SportId.Football,SportId.Basketball,SportId.Golf,SportId.Fishing}){
     app.Show("home");yield return Settled();Click("Island - "+sport);yield return Settled();
     Check(app.Menu.Page=="sport"&&app.SelectedSport==sport,"home card opens "+sport);Layout();yield return Capture("sport-"+sport);
-    Check(Button("Play vs AI").IsInteractable()==(sport==SportId.Football||sport==SportId.Basketball),"bot availability matches supported sports: "+sport);
+    Check(Button("Play vs AI").IsInteractable(),"bot opponents available on every supported island: "+sport);
     Click("Back");yield return Settled();Check(app.Menu.Page=="home","sport returns to main menu: "+sport);
     Click("How to play");yield return Settled();Click("Guide - "+sport);yield return Settled();Check(app.Menu.Content.GetComponentsInChildren<MenuSportIcon>().Count(i=>i.selected)==1&&app.Menu.Content.GetComponentsInChildren<MenuSportIcon>().First(i=>i.selected).sport==sport,"only the selected sport icon is colourful: "+sport);Layout();yield return Capture("09-help-"+sport);
     if(sport==SportId.Football||sport==SportId.Basketball){
@@ -120,7 +121,7 @@ namespace WhatTheFish {
     Screen.SetResolution(resolution.x,resolution.y,false);yield return new WaitForSecondsRealtime(.6f);Canvas.ForceUpdateCanvases();Layout();yield return Capture("10-home-"+Screen.width+"x"+Screen.height+"-requested-"+resolution.x);
    }
    Click("Island - Football");yield return Settled();Click("Explore offline");Check(app.Menu.IsTransitioning,"island arrival fades and gates gameplay input");yield return new WaitForSecondsRealtime(.6f);Check(app.Exploring&&app.view.active&&!app.Menu.Content.gameObject.activeInHierarchy,"offline launch hands control to gameplay");
-   Check(FindObjectsByType<Button>(FindObjectsSortMode.None).Where(b=>b.gameObject.activeInHierarchy).All(b=>b.GetComponent<CoveFeedback>()||b.GetComponent<BasketballButtonFeedback>()),"gameplay buttons have their current press feedback");
+   Check(FindObjectsByType<Button>(FindObjectsSortMode.None).Where(b=>b.gameObject.activeInHierarchy&&b.IsInteractable()).All(b=>b.GetComponent<CoveFeedback>()||b.GetComponent<BasketballButtonFeedback>()),"gameplay buttons have their current press feedback");
    Finish();
   }
   IEnumerator Network(){
@@ -143,22 +144,73 @@ namespace WhatTheFish {
    Click("Keep playing");yield return null;Click(role=="host"?"Player seat 03":"Player seat 04");
    yield return Wait(()=>RoomTeleport.Players().All(n=>!n.IsSpectator),"players return from spectator places");yield return new WaitForSecondsRealtime(.4f);
    Check(app.Menu.Content==stablePage,"repeated position switches never rebuild room page");
+   yield return LobbySpots();
    if(role=="host"){
     Check(MenuMatchRules.SetMinutes(5),"host can set conditions");
+    Check(!RoomService.LobbyReady,"unready guest blocks authoritative departure");
+    var blocked=app.rooms.SetExploring(true);yield return Wait(()=>blocked.IsCompleted,"unready departure attempt completes");
+    Check(!NetworkAthlete.HostPlayer.Exploring.Value,"host cannot bypass guest readiness");
+    Check(RoomFeedback.Explain(app.rooms.Error)==app.rooms.Error&&app.rooms.Error.Contains("ready"),"unready departure explains readiness instead of connection failure");app.rooms.DismissError();
     yield return new WaitForSecondsRealtime(2);Layout();yield return Capture("04-lobby-host");
-    Check(!Button("Travel together").IsInteractable(),"host cannot start with unready crew");Click("Ready toggle");
-    yield return Wait(()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).All(n=>n.Ready.Value),"both players acknowledge setup");
+    Check(!app.Menu.Content.GetComponentsInChildren<Text>().Any(t=>t.text.Contains("connection could not finish")||t.text.StartsWith("Wait until")),"dismissed readiness error clears from lobby");
+    Check(!Button("Ready toggle"),"host does not need a ready button");
+    yield return Wait(()=>RoomService.LobbyReady,"guest acknowledges setup without host ready flag");
+    Check(!own.Ready.Value,"host is eligible while its ready flag remains false");
     Check(MenuMatchRules.SetMinutes(10),"host updates conditions");Check(FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).All(n=>!n.Ready.Value),"changing conditions resets every ready flag");
-    yield return new WaitForSecondsRealtime(2);Click("Ready toggle");yield return Wait(()=>FindObjectsByType<NetworkAthlete>(FindObjectsSortMode.None).All(n=>n.Ready.Value),"crew readies again");yield return new WaitForSecondsRealtime(.3f);
+    yield return new WaitForSecondsRealtime(2);yield return Wait(()=>RoomService.LobbyReady,"guest readies again without host toggle");yield return new WaitForSecondsRealtime(.3f);
     Check(Button("Travel together").IsInteractable(),"all-ready enables departure");Click("Travel together");yield return Wait(()=>app.Exploring,"host enters gameplay");
     yield return Wait(()=>!RoomTeleport.Busy&&!TeleportSequence.Busy,"crew arrival completes before returning to lobby",60);_=app.rooms.SetExploring(false);yield return Wait(()=>!app.Exploring&&app.Menu.Page=="room","host returns entire crew to lobby");yield return new WaitForSecondsRealtime(3);
    }else{
     yield return Wait(()=>MenuMatchRules.CurrentMinutes==5,"guest receives five-minute rule");Check(!MenuMatchRules.SetMinutes(10)&&MenuMatchRules.CurrentMinutes==5,"guest cannot alter room conditions");
-    app.Show("custom");yield return Settled();Check(app.Menu.Page=="room","guest cannot open host venue editor");Layout();yield return Capture("04-lobby-guest");
+    app.Show("custom");yield return Settled();Check(app.Menu.Page=="venues"&&!app.Menu.CanEdit,"guest can inspect venue without editing host settings");app.Show("room");yield return Settled();Layout();yield return Capture("04-lobby-guest");
     Click("Ready toggle");yield return Wait(()=>MenuMatchRules.CurrentMinutes==10,"guest receives changed condition");Check(!own.Ready.Value,"guest is unready after rule change");yield return new WaitForSecondsRealtime(.5f);Click("Ready toggle");
     yield return Wait(()=>app.Exploring,"guest follows host into gameplay");Check(MenuMatchRules.RegulationSeconds(180)==600,"replicated rule supplies ten-minute clock");
     yield return Wait(()=>!app.Exploring&&app.Menu.Page=="room","guest follows host back to lobby",80);
    }
+  }
+  IEnumerator LobbySpots(){
+   string shared=Path.GetDirectoryName(folder),code=app.rooms.Code;var ids=RoomTeleport.Players().Select(n=>n.NetworkObjectId).ToArray();
+   Check(!Button("Spectator seat 01")&&Button("Player seat 01"),"only players are visible on initial roster");
+   Click("Show spectators");yield return null;Check(Button("Spectator seat 10")&&!Button("Player seat 01"),"spectator button reveals just the spectator roster");Layout();yield return Capture("room-spectators-"+role);
+   Click("Show players");yield return null;
+   if(role=="client"){
+    Check(!app.rooms.TrySetLobbySport(SportId.Golf,out _)&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football,"guest cannot change authoritative spot");
+    File.WriteAllText(Path.Combine(shared,"guest-spot-ready"),"ready");
+   }else yield return Wait(()=>File.Exists(Path.Combine(shared,"guest-spot-ready")),"guest ready for spot changes");
+   foreach(var sport in new[]{SportId.Basketball,SportId.Fishing,SportId.Golf,SportId.Football}){
+    if(role=="host"){
+     var guest=RoomTeleport.Players().First(n=>n!=NetworkAthlete.HostPlayer);guest.Ready.Value=true;
+     Click("Change room spot");yield return null;Layout();yield return Capture("spot-picker-"+sport);
+     Click("Room spot "+sport);Check(!guest.Ready.Value,"changing spot resets guest readiness: "+sport);
+    }
+    yield return Wait(()=>app.SelectedSport==sport&&!app.PendingSelection.HasValue&&app.Menu.Page=="room","shared spot loaded: "+sport,60);yield return Settled();
+    Check(NetworkAthlete.HostPlayer.WorldSport.Value==sport&&!app.Exploring&&app.rooms.Code==code&&RoomTeleport.Players().Select(n=>n.NetworkObjectId).SequenceEqual(ids),"switch keeps same room, crew and invitation: "+sport);
+    Check(RoomTeleport.Players().All(n=>n.RoomSeat.Value<TeleportDestinations.Capacity(sport)),"player places fit destination: "+sport);
+    Check(Button("Change room spot").IsInteractable()==(role=="host"),"only host can open picker: "+sport);
+    Check(app.Menu.Content.GetComponentsInChildren<CoveButton>().Count(b=>b.name.StartsWith("Player seat "))==TeleportDestinations.Capacity(sport),"visible places match sport capacity: "+sport);
+    Layout();yield return Capture("room-"+sport+"-"+role);
+    if(role=="client")File.WriteAllText(Path.Combine(shared,"guest-saw-"+sport),"ready");
+    else yield return Wait(()=>File.Exists(Path.Combine(shared,"guest-saw-"+sport)),"guest saw spot: "+sport);
+   }
+   if(role=="host"){
+    foreach(var size in new[]{new Vector2Int(1200,900),new Vector2Int(1920,824),new Vector2Int(1600,900)}){
+     Screen.SetResolution(size.x,size.y,false);yield return new WaitForSecondsRealtime(.7f);Canvas.ForceUpdateCanvases();Layout();yield return Capture("room-"+size.x+"x"+size.y);
+    }
+   }
+  }
+  IEnumerator RequestBadges(){
+   var flags=System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic;var type=typeof(PlayerProfiles);
+   var scope=type.GetField("friendsScope",flags);var poll=type.GetField("friendsPollAt",flags);var requests=(HashSet<string>)type.GetField("incomingRequests",flags).GetValue(null);
+   string previousScope=(string)scope.GetValue(null);float previousPoll=(float)poll.GetValue(null);var previous=requests.ToArray();
+   scope.SetValue(null,PlayerIdentity.ProfileStorageKey);poll.SetValue(null,float.MaxValue);
+   try{
+    foreach(int count in new[]{3,150,0}){
+     requests.Clear();for(int i=0;i<count;i++)requests.Add("fixture-"+i);yield return null;
+     var badge=Button("Friends icon").GetComponentInChildren<FriendRequestBadge>();var circle=badge.transform.Find("Request count circle");
+     Check(circle.gameObject.activeSelf==(count>0),"request badge visibility for "+count);
+     if(count>0){var text=circle.GetComponentInChildren<Text>();Check(text.text==count.ToString()&&text.preferredWidth<=text.rectTransform.rect.width,"request badge displays exact count "+count);yield return Capture("friend-badge-"+count);}
+    }
+   }finally{requests.Clear();foreach(var id in previous)requests.Add(id);scope.SetValue(null,previousScope);poll.SetValue(null,previousPoll);}
   }
   void Finish(){
    if(role=="offline"&&app){LocalProfile.Stadium=football;LocalProfile.Basketball=basketball;MenuPreferences.SetMaster(master);MenuPreferences.SetUI(ui);MenuPreferences.SetMotion(motion);app.view.mode=cameraMode;PlayerPrefs.SetInt("camera",cameraMode);MenuPreferences.Save();GUIUtility.systemCopyBuffer=clipboard;}

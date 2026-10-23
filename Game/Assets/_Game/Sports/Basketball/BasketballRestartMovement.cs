@@ -6,7 +6,7 @@ using UnityEngine;
 namespace WhatTheFish {
  public sealed partial class BasketballMatch {
   sealed class RestartMove {
-   public Athlete actor;public Vector3 destination,approach,detour;public bool inbound,approaching,avoiding,passingPlayers;
+   public Athlete actor;public Vector3 destination,approach,detour;public bool inbound,clearance,approaching,avoiding,passingPlayers;
    public double avoidUntil,progressAt;public float bestDistance;
    public readonly List<Collider> ignoredPlayers=new();
   }
@@ -18,7 +18,7 @@ namespace WhatTheFish {
   FixedList128Bytes<ulong> AutomaticPlayers(){var ids=new FixedList128Bytes<ulong>();foreach(var id in automaticMoves.Keys)ids.Add(id);return ids;}
   public bool AutomaticMovement(Athlete actor)=>Context&&Active&&actor&&(Authority?automaticMoves.ContainsKey(PlayerId(actor)):Snapshot.IsAutomatic(PlayerId(actor)));
   public bool RetrievingInbound(Athlete actor)=>AutomaticMovement(actor)&&PlayerId(actor)==Snapshot.inbounder;
-  public string MovementHint(Athlete actor)=>!AutomaticMovement(actor)?"":RetrievingInbound(actor)?"AUTO-MOVING TO INBOUND\nPicking up the ball outside the court":"AUTO-MOVING TO YOUR HALF\nControls return when you reach your half";
+  public string MovementHint(Athlete actor)=>!AutomaticMovement(actor)?"":RetrievingInbound(actor)?"AUTO-MOVING TO INBOUND\nPicking up the ball outside the court":Snapshot.phase==BasketballMatchPhase.Restart&&Snapshot.restart!=BasketballRestart.Basket?"GIVING INBOUND SPACE\nMoving outside the protected passing area":"AUTO-MOVING TO YOUR HALF\nControls return when you reach your half";
   void UpdateAutomaticInput(){
    if(!Authority&&automaticMoves.Count>0)ResetRestartMovement();
    bool current=AppRoot.Instance&&AutomaticMovement(AppRoot.Instance.LocalAthlete);
@@ -29,19 +29,20 @@ namespace WhatTheFish {
    move.ignoredPlayers.Clear();
   }
   void ResetRestartMovement(){foreach(var move in automaticMoves.Values){RestoreRestartCollisions(move);if(move.actor)move.actor.ResetLocomotion();}automaticMoves.Clear();inbounder=ulong.MaxValue;}
-  void StartAutomaticMove(Athlete actor,Vector3 destination,bool inbound){
+  void StartAutomaticMove(Athlete actor,Vector3 destination,bool inbound,bool clearance=false){
    actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();
    if(PlayerView.Instance&&PlayerView.Instance.target==actor)PlayerView.Instance.ClearMatchInput();
    var approach=destination;
    if(inbound){var local=ball.transform.parent.InverseTransformPoint(destination);var limit=BasketballBall.PaintedCourtLimits;local.x=Mathf.Clamp(local.x,-limit.x+1.2f,limit.x-1.2f);local.z=Mathf.Clamp(local.z,-limit.y+1.2f,limit.y-1.2f);approach=ball.transform.parent.TransformPoint(local);}
-   automaticMoves.Add(PlayerId(actor),new RestartMove{actor=actor,destination=destination,approach=approach,inbound=inbound,approaching=inbound,progressAt=Now,bestDistance=Vector3.ProjectOnPlane(approach-actor.transform.position,Vector3.up).magnitude});
+   automaticMoves.Add(PlayerId(actor),new RestartMove{actor=actor,destination=destination,approach=approach,inbound=inbound,clearance=clearance,approaching=inbound,progressAt=Now,bestDistance=Vector3.ProjectOnPlane(approach-actor.transform.position,Vector3.up).magnitude});
   }
   void StepRestartMovement(){
    foreach(var pair in automaticMoves.ToArray()){
     var move=pair.Value;var actor=move.actor;if(!actor){RestoreRestartCollisions(move);automaticMoves.Remove(pair.Key);continue;}
     if(move.approaching&&Vector3.ProjectOnPlane(move.approach-actor.transform.position,Vector3.up).magnitude<.22f){move.approaching=false;move.bestDistance=float.PositiveInfinity;move.progressAt=Now;}
     bool arrived=Vector3.ProjectOnPlane(move.destination-actor.transform.position,Vector3.up).magnitude<.12f;
-    if(!move.inbound){float home=TeamOf(actor)==FootballTeam.A?-1:1;arrived=ball.transform.parent.InverseTransformPoint(actor.transform.position).z*home>=actor.capsule.radius+actor.capsule.skinWidth+.15f;}
+    if(move.clearance)arrived=!TryInboundClearance(out var center)||Vector3.ProjectOnPlane(actor.transform.position-center,Vector3.up).magnitude>=DefenderClearance(actor)+.08f;
+    else if(!move.inbound){float home=TeamOf(actor)==FootballTeam.A?-1:1;arrived=ball.transform.parent.InverseTransformPoint(actor.transform.position).z*home>=actor.capsule.radius+actor.capsule.skinWidth+.15f;}
     if(!arrived)continue;
     if(move.inbound&&!ball.BeginInbound(actor,inboundExit,false))continue;
     RestoreRestartCollisions(move);actor.ResetLocomotion();actor.GetComponent<NetworkAthlete>()?.ClearMatchInput();automaticMoves.Remove(pair.Key);
@@ -52,6 +53,7 @@ namespace WhatTheFish {
    ResetRestartMovement();inboundTurns[FootballTeam.A]=state.inboundTurnA;inboundTurns[FootballTeam.B]=state.inboundTurnB;inbounder=state.inbounder;inboundExit=state.inboundExit;
    if(!State.Active)return;
    foreach(var actor in participants.Values.Where(a=>state.IsAutomatic(PlayerId(a))&&PlayerId(a)!=inbounder)){
+    if(state.phase==BasketballMatchPhase.Restart&&state.restart!=BasketballRestart.Basket)continue; // Recomputed from the restored inbound below.
     var local=ball.transform.parent.InverseTransformPoint(actor.transform.position);local.z=TeamOf(actor)==FootballTeam.A?-2:2;
     if(Ground(local,out var destination))StartAutomaticMove(actor,destination,false);
    }
@@ -64,21 +66,21 @@ namespace WhatTheFish {
     if(!ball.TryInboundSpot(inbound,inboundExit,out var spot,out _)){Cancel();return;}
     ball.Place(ball.transform.parent.InverseTransformPoint(spot)+Vector3.up*(BasketballBall.Radius+.02f),Quaternion.identity,Vector3.zero,Vector3.zero);StartAutomaticMove(inbound,spot,true);
    }
-   Publish();
+   EnsureInboundClearance();Publish();
   }
   // Replace all player/bot commands on the authority, so delayed RPCs and
   // held inputs cannot steer or interrupt these short individual runs.
   public bool AutomaticCommand(Athlete actor,out PlayerCommand command){
    command=default;if(!Authority||!AutomaticMovement(actor)||!automaticMoves.TryGetValue(PlayerId(actor),out var move))return false;
    var delta=Vector3.ProjectOnPlane((move.approaching?move.approach:move.destination)-actor.transform.position,Vector3.up);
-   if(move.inbound){
+   if(move.inbound||move.clearance){
     // Measure progress toward the actual waypoint, not distance travelled:
     // a detour can keep circling a player standing on the approach itself.
     if(delta.magnitude<move.bestDistance-.2f){move.bestDistance=delta.magnitude;move.progressAt=Now;}
     if(Now-move.progressAt>=InboundStallSeconds)move.passingPlayers=true;
     if(move.passingPlayers){
      move.avoiding=false;
-     // Only this automatic collector may pass through athlete bodies. Keep
+     // Only this stalled automatic runner may pass through athlete bodies. Keep
      // ground, stands, hoop supports and every other collision unchanged.
      // Refresh for newly spawned/re-enabled bodies; preserve existing ignores.
      foreach(var other in Athlete.Active){

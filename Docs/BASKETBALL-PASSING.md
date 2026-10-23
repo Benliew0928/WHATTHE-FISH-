@@ -1,5 +1,21 @@
 # Basketball passing
 
+Current controls use [single-tap predictive teammate passing](TEAMMATE-PASSING.md).
+The hold/charge/loft/bounce gesture is removed from the gameplay UI. Tap Pass
+or press Q to pass to the teammate closest to the camera heading; double-tap
+an individual teammate for an explicit receiver. Shot controls are unchanged.
+The shared path stays visible during the pass. Anyone in the lane can intercept.
+
+Match inbounds have [opponent clearance](BASKETBALL-INBOUND-CLEARANCE.md) with
+a radius of one quarter of the court length. Teammates can approach the passer;
+opponents must remain outside until the ball is released.
+
+The following records describe the historical charge implementation and its
+old development fixtures, not current player controls. The physical trajectory
+helpers remain for existing scripted checks and authored motion.
+
+## Historical implementation
+
 ## Camera teammate lock — 14 October 2026
 
 Camera heading selects the nearest eligible teammate along the passer's forward

@@ -78,7 +78,7 @@ namespace WhatTheFish {
    if(kind==SportsProp.Portal){if(!InOwnHalf(actor))return "RETURN TO YOUR OWN HALF";if(Holder==actor)return "YOU ALREADY HAVE THE BALL";if(PortalBusy)return "BALL IN TRANSIT";if(Authority&&Physics.CheckSphere(actor.transform.TransformPoint(new Vector3(.1f,.97f,.39f)),Radius+.015f,1<<8,QueryTriggerInteraction.Ignore))return "MOVE AWAY FROM OBSTACLES";}
    return "";
   }
-  public void RequestProp(Athlete actor){if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();var slot=PropSlot(actor);if(net&&net.IsSpawned)net.UseBasketballPropRpc(slot.revision);else if(!TryUseProp(actor,slot.revision))BasketballAudio.PlayMenu(BasketballSound.UIError);}
+  public void RequestProp(Athlete actor){if(!TutorialSession.Allows("ability"))return;if(!actor)return;var net=actor.GetComponent<NetworkAthlete>();var slot=PropSlot(actor);if(net&&net.IsSpawned)net.UseBasketballPropRpc(slot.revision);else if(!TryUseProp(actor,slot.revision))BasketballAudio.PlayMenu(BasketballSound.UIError);}
   public bool TryUseProp(Athlete actor,uint revision){
    if(!Authority||!Eligible(actor)||PropSlot(actor).revision!=revision||PropUnavailable(actor)!="")return false;
    var kind=PropSlot(actor).kind;

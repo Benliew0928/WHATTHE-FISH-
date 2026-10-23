@@ -6,7 +6,7 @@ namespace WhatTheFish {
  // Pointer-down matches Space; holding a finger cannot queue repeated jumps.
  public sealed class JumpButton:MonoBehaviour,IPointerDownHandler {
   public Button button;public Text label;public bool illustrated;
-  void Update(){var view=PlayerView.Instance;button.interactable=view&&view.active&&!view.InputBlocked&&!view.GolfAimRequested&&view.target&&view.target.CanRequestJump;bool defense=view&&view.BasketballRole==BasketballRole.Defense;if(defense)button.interactable=button.interactable&&BasketballBall.Active.CanBlock(view.target);if(illustrated){label.text=defense?"Jump\nBlock":"Jump";label.fontSize=defense?20:26;return;}label.text=FishingGame.Instance&&FishingGame.Instance.Context?"JUMP":defense?(Application.isMobilePlatform?"Jump Block":"Jump block\nSpace"):(Application.isMobilePlatform?"Jump":"Jump\nSpace");}
+  void Update(){var view=PlayerView.Instance;button.interactable=view&&view.active&&!view.InputBlocked&&!view.GolfAimRequested&&view.target&&view.target.CanRequestJump;bool defense=view&&view.BasketballRole==BasketballRole.Defense;if(defense)button.interactable=button.interactable&&BasketballBall.Active.CanBlock(view.target);if(illustrated){ControlDesigns.Caption(label,defense?"Jump\nBlock":"Jump",defense?20f/26:1);return;}label.text=FishingGame.Instance&&FishingGame.Instance.Context?"JUMP":defense?"Jump Block":"Jump";}
   public void OnPointerDown(PointerEventData data){if(data.button==PointerEventData.InputButton.Left&&button.interactable)PlayerView.Instance.RequestJump();}
  }
 }

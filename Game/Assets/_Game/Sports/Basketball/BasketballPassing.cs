@@ -22,6 +22,10 @@ namespace WhatTheFish {
  }
  public sealed partial class BasketballBall {
   BasketballPassAim passAim;float pendingPassPower;bool directPass;
+  readonly PredictivePass assistedPass=new();
+  public PassFlightSnapshot PassFlight=>Authority?assistedPass.Snapshot(Body):haveTarget?target.passFlight:default;
+  public bool PassFollowing=>assistedPass.Following;
+  public Vector3 OriginalPassDestination=>assistedPass.OriginalDestination;
   public bool ValidDirectReceiver(Athlete passer,Athlete receiver){
    if(!PassTeammate(passer,receiver)||receiver.IsSpectator)return false;
    var delta=Vector3.ProjectOnPlane(receiver.transform.position-passer.transform.position,Vector3.up);
@@ -33,12 +37,16 @@ namespace WhatTheFish {
    float heading=Mathf.Atan2(delta.x,delta.z)*Mathf.Rad2Deg;
    if(!TryAction(actor,heading,BasketballAction.Pass))return false;
    pendingPassPower=Mathf.Clamp01((delta.magnitude-6)/9);directPass=true;
-   passAim=new BasketballPassAim{locked=true,receiver=TeammatePassing.Id(receiver),destination=receiver.transform.position+Vector3.up*.9f,heading=heading,phase=2,play=play,owner=PlayerId(actor),power=pendingPassPower,started=BasketballMotion.Clock};sendAt=0;return true;
+   passAim=new BasketballPassAim{locked=true,receiver=TeammatePassing.Id(receiver),destination=receiver.transform.position+Vector3.up*.9f,heading=heading,phase=2,play=play,owner=PlayerId(actor),power=pendingPassPower,started=BasketballMotion.Clock};passAim.destination=PassDestination(receiver,actor.transform.position+Quaternion.Euler(0,heading,0)*BasketballMotion.PassReleasePoint(0));sendAt=0;return true;
   }
   Vector3 PassDestination(Athlete receiver,Vector3 origin){
    var centre=receiver.transform.position+Vector3.up*.9f;var destination=centre;
-   for(int i=0;i<4;i++){var path=BasketballPassPath.ToReceiver(origin,destination,pendingPassPower,passAim.bend,PassFloor(origin));destination=centre+TeammatePassing.Lead(receiver,path.duration);}
-   return OutsidePaint(CourtPoint(destination))||Physics.Linecast(centre,destination,1<<8,QueryTriggerInteraction.Ignore)?centre:destination;
+   for(int i=0;i<12;i++){
+    var path=BasketballPassPath.ToReceiver(origin,destination,pendingPassPower,passAim.bend,PassFloor(origin));destination=centre+TeammatePassing.Lead(receiver,path.duration);
+    var local=CourtPoint(destination);local.x=Mathf.Clamp(local.x,-PaintedCourtLimits.x+.5f,PaintedCourtLimits.x-.5f);local.z=Mathf.Clamp(local.z,-PaintedCourtLimits.y+.5f,PaintedCourtLimits.y-.5f);
+    destination=transform.parent?transform.parent.TransformPoint(local):local;
+   }
+   return Physics.Linecast(centre,destination,1<<8,QueryTriggerInteraction.Ignore)?centre:destination;
   }
   public Athlete PassReceiver {get {var aim=PassAim;if(!aim.locked)return null;foreach(var actor in Athlete.Active)if(BasketballMatch.PlayerId(actor)==aim.receiver)return actor;return null;}}
   // The participant dictionary lives only on the authority. Replicas use the
@@ -47,16 +55,7 @@ namespace WhatTheFish {
   public static float PassLockRadius(Athlete candidate)=>candidate&&candidate.capsule?candidate.capsule.radius*4*Mathf.Max(candidate.transform.lossyScale.x,candidate.transform.lossyScale.z):1.2f;
   public Athlete SelectPassReceiver(Athlete passer,float cameraHeading,Athlete retained=null){
    if(!passer||!float.IsFinite(cameraHeading))return null;
-   var forward=Quaternion.Euler(0,cameraHeading,0)*Vector3.forward;
-   bool InLane(Athlete candidate,out float distance){
-    distance=float.PositiveInfinity;if(!PassTeammate(passer,candidate))return false;
-    var delta=Vector3.ProjectOnPlane(candidate.transform.position-passer.transform.position,Vector3.up);float along=Vector3.Dot(delta,forward);distance=delta.sqrMagnitude;
-    return along>.5f&&along<30&&(delta-forward*along).sqrMagnitude<=PassLockRadius(candidate)*PassLockRadius(candidate)&&!OutsidePaint(CourtPoint(candidate.transform.position))&&!Physics.Linecast(passer.transform.position+Vector3.up,candidate.transform.position+Vector3.up,1<<8,QueryTriggerInteraction.Ignore);
-   }
-   if(InLane(retained,out _))return retained;
-   Athlete best=null;float nearest=float.PositiveInfinity;
-   foreach(var candidate in Athlete.Active)if(InLane(candidate,out float distance)&&(distance<nearest-.001f||Mathf.Abs(distance-nearest)<.001f&&best&&BasketballMatch.PlayerId(candidate)<BasketballMatch.PlayerId(best))){best=candidate;nearest=distance;}
-   return best;
+   return TeammatePassing.ClosestAngle(passer,cameraHeading,candidate=>ValidDirectReceiver(passer,candidate));
   }
   void SetPassReceiver(Athlete actor,float heading){
    var receiver=SelectPassReceiver(actor,heading,PassReceiver);passAim.locked=receiver;passAim.receiver=receiver?BasketballMatch.PlayerId(receiver):ulong.MaxValue;

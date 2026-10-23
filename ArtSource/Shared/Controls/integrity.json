@@ -1,0 +1,29 @@
+{
+  "base": "repository root",
+  "sources": [
+    {
+      "file": "ArtSource/Shared/Controls/Frames.png",
+      "sha256": "a6f977dd66a289055dfcbe7f47c07351b22e99ccca86b2ab7562bc03ce8dadec",
+      "width": 1254,
+      "height": 1254,
+      "rgba": true,
+      "metadataKeys": []
+    },
+    {
+      "file": "ArtSource/Shared/Controls/CourtIcons.png",
+      "sha256": "e01ec3214312b7c387fb2c8a4d9108e3a74d84fcd211b45e9c31e997b483943a",
+      "width": 1261,
+      "height": 1247,
+      "rgba": true,
+      "metadataKeys": []
+    },
+    {
+      "file": "ArtSource/Shared/Controls/FishingIcons.png",
+      "sha256": "c9a8484648551130423b8bda5f325330e5bdd1c8b840f5110f7f28ab302ed03a",
+      "width": 1536,
+      "height": 1024,
+      "rgba": true,
+      "metadataKeys": []
+    }
+  ]
+}
