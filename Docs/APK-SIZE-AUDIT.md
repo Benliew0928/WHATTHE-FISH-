@@ -1,5 +1,38 @@
 # APK size audit — measured release records
 
+## Top-three Golf awards and merged tutorial update - 24 October 2026
+
+Golf awards now show at most three finished players in the existing stroke/time
+ranking; DNF is excluded. Exact alpha-trimmed gold/silver/bronze artwork comes
+from the retained user master in `ArtSource/GolfAwards`. Three 256px delivery
+textures use the existing importer; no scene geometry or scoring rule changed.
+The development-only `-golfAwardsPreview` command displays three render-only
+actors without changing a match; F10 replays the ceremony.
+
+Complete 328-file WindowsFinal built at **22:59:22 Malaysia time** and the
+three-actor rendered preview inspected (centre first, screen-left second,
+screen-right third). The merged source includes upstream `7274043` tutorials
+and local `0da78d8` Golf changes. Official AndroidSubmission passed its budget
+gate, ZIP CRC, matching bundle catalogue hashes and APK v2 signature checks.
+APK **115,888,100 -> 115,956,082 bytes (+67,982)**; strict decimal-GB headroom
+**884,043,918 bytes**. SHA-256:
+**BC7F51C09FEB7733D2D96A1561208DEF76E22D050565AF71CDAD03BE911D990D**.
+The preceding merged build was 397,974 bytes above the prior 115,490,126-byte
+Golf release. Current largest compressed entries are the island bundle
+45,385,111, IL2CPP 12,820,493 and Unity 9,808,570 bytes. The three medal payloads
+add about 66 KB compressed; no unexpected large growth was found in
+`Builds/SizeAudit/latest/`.
+
+Evidence: `Builds/GolfAwardsDelivery/` (build logs, rendered captures, package
+and bundle integrity, source restoration, signature and portable generator
+check). The generator reproduced identical sprites and metadata from a path
+with spaces and an unrelated working directory. Superseded complete delivery:
+`Legacy/20261024-225906-177-golf-awards`; earlier merge archive:
+`Legacy/20261024-224006-503-golf-publish-merge`. The two accidental draft
+archives were deleted manually by the user; current evidence is retained.
+No new real multiplayer finish/DNF session or phone FPS measurement was run.
+Build-generated prefab IDs/material provenance were reviewed and restored.
+
 ## Crab target priority and cart paving support - 24 October 2026
 
 Crab push immunity is **5 seconds per ball shared across all crabs**. A crab
@@ -276,6 +309,73 @@ and packaging do not establish those results. No phone FPS/quality claim.
 Superseded full player: `Legacy/20261023-234644-549-golf-cart-hud-player/`;
 superseded local APK: `Legacy/20261023-235534-218-golf-cart-hud-apk/`.
 No staging, commit or push.
+
+## Shared illustrated island rules - 24 October 2026
+
+Football, Basketball and Golf now share Fishing's four-page rules shell,
+animations, native control examples, first-visit flow and Settings/How to Play
+reference. See [Illustrated island rules](ISLAND-RULES.md). The new decorative
+art is compressed for delivery; full-resolution masters, generation prompts
+and AI asset disclosure remain in `ArtSource/SportsTutorial/`.
+
+Official AndroidSubmission: **113,332,706 -> 113,711,916 bytes
+(+379,210)**. Headroom below the strict 1,000,000,000-byte boundary:
+**886,288,084 bytes**. SHA-256:
+**7C5478B3B053A49410A221DCCD4239107FA81D9C9E2BC951DDFC30E529954109**.
+
+The build/budget gate, ZIP CRC, APK v2 signature and five-scene bundle size/hash
+passed. Both shared rules types and all three tutorial sprites are present;
+the development review fixture is absent from release metadata. All
+**620** frozen `_Game` C# source hashes still match.
+The complete **327-file** Windows player passed **125** focused entry,
+navigation, input-gating, replay, landscape-bounds and nonblank-render checks.
+Its sixteen page captures were retained; representative pages were visually
+reviewed. Every promoted payload hash matches. This is UI verification, not a
+full gameplay regression or a phone/WAN test.
+
+Largest compressed APK entries: islands **45,386,017**,
+IL2CPP **12,777,349**, Unity
+**9,809,038**, metadata
+**2,817,658** bytes. The retained entry inventory records
+all contributors; serialized Unity reports and PNG source sizes measure
+different things. No world art was downscaled for this tutorial change.
+
+Evidence: `Builds/IslandRules/Task-20261024-003827/`, including
+`RuntimeReview-Final-Golf/`, `apk-after.json`, `apk-signature.txt`,
+`release-content-check.json`, `AndroidAudit/` and `windows-promotion.json`.
+Recovery: `Legacy/20261024-011113-440-island-rules-delivery/` (previous APK/player)
+and `Legacy/20261024-012403-721-island-rules-final-player/` (superseded UI revision).
+Source base: `a653bd1` plus the reviewed local tutorial changes. Android physical
+touch input, appearance/FPS and live WAN behavior remain unverified.
+
+## Local rebuild after pulling main — 23 October 2026
+
+Source: `a653bd1`, pulled from `main` with Git LFS. Official AndroidSubmission:
+**111,342,842 -> 113,332,706 bytes (+1,989,864)**. Strict-cap headroom:
+**886,667,294 bytes**. SHA-256:
+**8B53DDB80FBCE35BCE8A00ED3DEA7F48A521CCC18CB6CFA59E03AB875E9CA0D5**.
+The APK budget gate, ZIP CRC, APK v2 signature and five-scene catalog/bundle
+size and SHA-256 passed; **617** frozen `_Game` C# source hashes still match.
+
+Largest compressed entries: scene bundle **45,392,945**, IL2CPP **12,770,545**,
+Unity **9,809,038**, metadata **2,816,268** bytes. Compared with the actual
+previous local APK, new serialized data entries include **556,175**, **396,716**
+and **382,641** bytes; the bundle grew **162,156** and IL2CPP **124,346** bytes.
+Serialized data identifiers can change between builds, so a new entry is not
+automatically a newly added asset. The retained entry inventory records the
+exact compressed/uncompressed sizes. No unexpected dominant contributor or
+additional art conversion was introduced by this rebuild.
+
+Evidence: `Builds/LocalRebuild/Task-20261023-220613/apk-after.json`,
+`apk-entry-growth.json`, `apk-signature.txt` and `AndroidAudit/` in that task
+folder. Previous APK recovery:
+`Legacy/20261023-220904-653-local-rebuild-previous-apk/`.
+This task uses a focused build/integrity check; earlier feature-test totals
+below are historical evidence, not tests rerun for this local rebuild.
+The complete **327-file** Windows player also passed a brief offline Golf
+startup smoke and normal exit; all promoted payload hashes match. Its recovery
+batch is `Legacy/20261023-224919-836-local-rebuild-windows-player/`.
+Physical Android and WAN multiplayer behavior remain unverified.
 
 ## Open type labels and activity cameras — 23 October 2026
 

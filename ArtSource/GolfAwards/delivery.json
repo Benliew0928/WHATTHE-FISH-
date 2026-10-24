@@ -1,0 +1,47 @@
+[
+  {
+    "rank": 1,
+    "sourceCellAlphaBounds": [
+      66,
+      7,
+      722,
+      694
+    ],
+    "output": "Game/Assets/_Game/Resources/GolfUI/Awards/Place1.png",
+    "size": [
+      656,
+      687
+    ],
+    "sha256": "2621e05f2413e0c718430ad7350923d114696a9028b3273f6af6c7b803524d9c"
+  },
+  {
+    "rank": 2,
+    "sourceCellAlphaBounds": [
+      33,
+      10,
+      692,
+      694
+    ],
+    "output": "Game/Assets/_Game/Resources/GolfUI/Awards/Place2.png",
+    "size": [
+      659,
+      684
+    ],
+    "sha256": "7bd60a56d8cffeda158574c60a8fa27b9a57d4a1ef190f4ac7d17ee29fa576d3"
+  },
+  {
+    "rank": 3,
+    "sourceCellAlphaBounds": [
+      9,
+      8,
+      678,
+      694
+    ],
+    "output": "Game/Assets/_Game/Resources/GolfUI/Awards/Place3.png",
+    "size": [
+      669,
+      686
+    ],
+    "sha256": "dd3958eb690f84b3c7ad750ca23786cb9810622fea99725c7935e5047e6401ef"
+  }
+]

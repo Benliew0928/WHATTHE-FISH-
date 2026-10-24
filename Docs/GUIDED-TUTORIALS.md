@@ -1,5 +1,9 @@
 # Guided sport tutorials
 
+For the matching four-page first-visit rules cards and How to Play reference,
+see [Illustrated island rules](ISLAND-RULES.md). They reuse Fishing's shared
+navigation and animated examples without replacing these hands-on courses.
+
 The main menu has a **Tutorials** entry with separate Football, Basketball,
 Golf and Fishing courses. Each course loads its existing island and live HUD
 in private offline practice. A room must be left before starting a tutorial.

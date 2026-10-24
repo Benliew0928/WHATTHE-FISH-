@@ -29,14 +29,23 @@ namespace WhatTheFish {
   }
   public bool BeginGolf(GolfMatchManager source,Action onComplete){
    if(!source||source.State.Phase!=GolfMatchPhase.Ended)return false;
-   var results=source.State.Results().Where(r=>r.player.IsFinished&&!r.player.IsDNF).ToArray();
+   var results=source.State.Results().Where(r=>r.player.IsFinished&&!r.player.IsDNF).Take(3).ToArray();
    if(results.Length==0){onComplete?.Invoke();return true;}
    var winners=results.Where(r=>r.rank==1).ToArray();string heading=winners.Length>1?"SHARED HONOURS!":winners.Length==1?winners[0].player.PlayerName.ToUpperInvariant()+" WINS!":"ROUND COMPLETE!";
    var ordered=results.Select(r=>(r.player.PlayerId,r.player.PlayerName)).ToArray();uint round=source.Round;
    var tee=source.Course.holes.First(h=>h.number==1).tee;
    return BeginAwards(source.transform,tee.position+tee.right*4,Quaternion.Euler(0,tee.eulerAngles.y+180,0),ordered,heading,"ISLAND GOLF RESULTS",()=>source&&source.Context&&source.Round==round&&source.State.Phase==GolfMatchPhase.Ended,onComplete,results.ToDictionary(r=>r.player.PlayerId,r=>r.rank));
   }
-  bool BeginAwards(Transform source,Vector3 spot,Quaternion facing,(ulong id,string name)[] records,string heading,string subtitle,Func<bool> stillValid,Action onComplete,IReadOnlyDictionary<ulong,int> golfRanks=null){
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+  // Render-only preview: no synthetic scores, match completion or network writes.
+  public bool BeginGolfPreview(GolfMatchManager source){
+   if(!source||!source.Context||!AppRoot.Instance.LocalAthlete)return false;
+   var tee=source.Course.holes.First(h=>h.number==1).tee;
+   var records=new (ulong id,string name)[]{(1,"Winner preview"),(2,"Runner-up preview"),(3,"Third-place preview")};
+   return BeginAwards(source.transform,tee.position+tee.right*4,Quaternion.Euler(0,tee.eulerAngles.y+180,0),records,"GOLF PODIUM PREVIEW","TOP THREE FINISHERS",()=>source&&source.Context,null,new Dictionary<ulong,int>{{1,1},{2,2},{3,3}},AppRoot.Instance.LocalAthlete);
+  }
+#endif
+  bool BeginAwards(Transform source,Vector3 spot,Quaternion facing,(ulong id,string name)[] records,string heading,string subtitle,Func<bool> stillValid,Action onComplete,IReadOnlyDictionary<ulong,int> golfRanks=null,Athlete previewActor=null){
    if(running||Presenting||records.Length==0||TeleportSequence.Busy||RoomTeleport.Busy)return false;
    camera=Camera.main;if(!camera||!AppRoot.Instance.LocalAthlete)return false;
    rankedGolf=golfRanks!=null;rankBadges.Clear();valid=stillValid;complete=onComplete;Instance=this;PostMatchFlow.Instance?.Close();
@@ -64,7 +73,7 @@ namespace WhatTheFish {
    if(Physics.Raycast(spot+Vector3.up*15,Vector3.down,out var floor,30,1<<8,QueryTriggerInteraction.Ignore))spot.y=floor.point.y+.015f;else spot=AppRoot.Instance.LocalAthlete.transform.position;
    stage.SetPositionAndRotation(spot,facing);takes=BasketballCelebrationPoses.Defaults();
    foreach(var record in records){
-    var actor=Athlete.Active.FirstOrDefault(a=>a&&a.visual&&(AppRoot.Instance.SelectedSport==SportId.Golf?GolfCartWorld.Key(a):FishingGame.Key(a))==record.id);if(!actor)continue;
+    var actor=previewActor?previewActor:Athlete.Active.FirstOrDefault(a=>a&&a.visual&&(AppRoot.Instance.SelectedSport==SportId.Golf?GolfCartWorld.Key(a):FishingGame.Key(a))==record.id);if(!actor)continue;
     var net=actor.GetComponent<NetworkAthlete>();var visual=new FootballCelebrationActor(actor,new FootballPlayerRecord{id=record.id,name=record.name,number=(byte)(net&&net.IsSpawned?net.RoomSeat.Value+1:CharacterIdentity.Ensure(actor).Number),team=FootballTeam.None},stage);
     if(!visual.Ready){Destroy(visual.Root.gameObject);continue;}int i=cast.Count;float side=i%2==1?-1:1;
     // The awards camera looks back along stage Z: positive local X is screen-left.
@@ -78,21 +87,19 @@ namespace WhatTheFish {
   }
   public void Skip(){if(running&&skipAt<0)skipAt=Time.unscaledTime;}
   RectTransform RankBadge(int rank,string name){
-   Color metal=rank==1?CoveUI.Hex("FFD469"):rank==2?CoveUI.Hex("DCEAF4"):rank==3?CoveUI.Hex("E9B183"):CoveUI.Cream;
-   var badge=BasketballUIStyle.Plate(content,"Golf place "+rank,0,0,204,76,metal,24,3).rectTransform;
-   badge.anchorMin=badge.anchorMax=badge.pivot=Vector2.one*.5f;
-   var rim=BasketballUIStyle.Plate(badge,"Medal rim",8,9,55,55,CoveUI.Cream,28,2);
-   CoveUI.Icon(rim.transform,CoveSymbol.Star,3,3,49,metal);
-   BasketballUIStyle.Text(rim.transform,rank.ToString(),4,7,47,40,27,true,TextAnchor.MiddleCenter,CoveUI.Ink);
-   string ordinal=rank==1?"1st":rank==2?"2nd":rank==3?"3rd":rank+"th";
-   BasketballUIStyle.Text(badge,ordinal+" PLACE",69,6,127,32,22,true,TextAnchor.MiddleCenter,CoveUI.Ink);
-   var caption=BasketballUIStyle.Text(badge,name,69,39,126,27,16,true,TextAnchor.MiddleCenter,CoveUI.Ink);caption.resizeTextForBestFit=true;caption.resizeTextMinSize=11;caption.resizeTextMaxSize=16;
+   var badge=new GameObject("Golf place "+rank,typeof(RectTransform)).GetComponent<RectTransform>();badge.SetParent(content,false);
+   badge.anchorMin=badge.anchorMax=new Vector2(.5f,.5f);badge.pivot=new Vector2(.5f,0);badge.sizeDelta=new Vector2(204,142);
+   var medal=new GameObject("Original rank medal",typeof(RectTransform),typeof(Image)).GetComponent<Image>();medal.transform.SetParent(badge,false);
+   medal.sprite=Resources.Load<Sprite>("GolfUI/Awards/Place"+rank);medal.color=Color.white;medal.preserveAspect=true;medal.raycastTarget=false;
+   medal.rectTransform.anchorMin=medal.rectTransform.anchorMax=new Vector2(.5f,1);medal.rectTransform.pivot=new Vector2(.5f,1);medal.rectTransform.anchoredPosition=Vector2.zero;medal.rectTransform.sizeDelta=new Vector2(108,114);
+   var caption=BasketballUIStyle.Text(badge,name,2,114,200,28,18,true,TextAnchor.MiddleCenter,CoveUI.Cream);caption.resizeTextForBestFit=true;caption.resizeTextMinSize=11;caption.resizeTextMaxSize=18;
+   caption.gameObject.AddComponent<Outline>().effectColor=CoveUI.Ink;
    badge.gameObject.SetActive(false);return badge;
   }
   void PositionRanks(){
    float scale=Mathf.Min(1,Mathf.Max(.5f,(content.rect.width-80)/Mathf.Max(1,cast.Count+2)/205));
    for(int i=0;i<rankBadges.Count;i++){
-    var point=camera.WorldToScreenPoint(cast[i].Root.position+Vector3.up*2.35f);
+    var point=camera.WorldToScreenPoint(cast[i].Root.position+Vector3.up*2.0f);
     var badge=rankBadges[i];bool visible=point.z>0;badge.gameObject.SetActive(visible);if(!visible)continue;
     RectTransformUtility.ScreenPointToLocalPointInRectangle(content,point,null,out var at);
     badge.anchoredPosition=at;badge.localScale=Vector3.one*scale;

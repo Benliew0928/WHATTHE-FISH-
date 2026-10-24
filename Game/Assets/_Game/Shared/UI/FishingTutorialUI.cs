@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 namespace WhatTheFish {
  // The entry popup and How to Play instantiate this exact view and content.
- public sealed class FishingTutorialUI:MonoBehaviour {
+ public sealed class FishingTutorialUI:IslandTutorialUI {
   public static readonly string[] Titles={"PICK 1 OF 3","CAST & CATCH","USE YOUR SKILL","PLAY TO WIN"};
   public static readonly string[] Copy={
    "The host starts the round. Everyone sees the same three skills.\nPick one for this round.\nYour skill can be reused after its cooldown.",
@@ -12,39 +12,23 @@ namespace WhatTheFish {
    "Small 2  /  Medium 5  /  Large 10 points.\nWanted fish: +3 once per minute.\nMost points after 3 minutes wins.\nThe host can start another round."
   };
   public const string SeenKey="fishing.tutorial.round-skill.v1";
-  RectTransform frame,overlay,card;Text title,body,count;Image picture;Button next,back;Text nextLabel;Action closed;int step;bool embedded,entryObserved;
-  readonly RectTransform[] examples=new RectTransform[4];FishingStickerGraphic demoLeft,demoRight,demoCatch,demoTension;FishingSkillGraphic demoCooldown;FishingFightGuide demoGuide;Text demoRightLabel;
-  public bool Visible=>overlay&&overlay.gameObject.activeInHierarchy;
-  public int Step=>step;
-  public string Body=>body?body.text:"";
+  bool entryObserved;
+  FishingStickerGraphic demoLeft,demoRight,demoCatch,demoTension;FishingSkillGraphic demoCooldown;FishingFightGuide demoGuide;Text demoRightLabel;
+  public override SportId Sport=>SportId.Fishing;
+  protected override string[] PageTitles=>Titles;
+  protected override string[] PageCopy=>Copy;
+  protected override string SeenPreference=>SeenKey;
+  protected override string FinishCaption=>"LET'S FISH!";
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   internal bool ReviewEntry;
 #endif
-  public static FishingTutorialUI Create(RectTransform parent,bool embedded=false,Action closed=null){var node=GolfHUDStyle.Rect("Fishing illustrated tutorial",parent,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);node.anchorMin=Vector2.zero;node.anchorMax=Vector2.one;node.offsetMin=node.offsetMax=Vector2.zero;var ui=node.gameObject.AddComponent<FishingTutorialUI>();ui.frame=parent;ui.embedded=embedded;ui.closed=closed;ui.Build();if(embedded)ui.Open();return ui;}
-  RectTransform Rect(string name,Transform parent,Vector2 pos,Vector2 size)=>GolfHUDStyle.Rect(name,parent,new Vector2(.5f,.5f),pos,size);
-  Text Text(string name,Transform parent,string value,Vector2 pos,Vector2 size,int points){var t=Rect(name,parent,pos,size).gameObject.AddComponent<Text>();t.font=points<=23?SportsUIStyle.TextFont:SportsUIStyle.DisplayFont;t.text=value;t.fontSize=points;t.color=GolfHUDStyle.Ink;t.alignment=TextAnchor.MiddleCenter;t.raycastTarget=false;t.resizeTextForBestFit=true;t.resizeTextMinSize=Mathf.Min(points,points<=23?20:24);t.resizeTextMaxSize=points;return t;}
-  Button Button(string name,Vector2 pos,Vector2 size,string caption,Action action,out Text label){var r=Rect(name,card,pos,size);var graphic=r.gameObject.AddComponent<FishingStickerGraphic>();graphic.kind=FishingStickerGraphic.Kind.Panel;graphic.tint=GolfHUDStyle.Cream;graphic.UseSolidPanel();graphic.raycastTarget=true;var b=r.gameObject.AddComponent<Button>();b.targetGraphic=graphic;b.transition=Selectable.Transition.None;label=Text(name+" caption",r,caption,Vector2.zero,size-new Vector2(12,8),24);b.onClick.AddListener(()=>{GolfFishingAudio.PlayMenu("ui-select");action();});r.gameObject.AddComponent<BasketballButtonFeedback>();r.gameObject.AddComponent<GolfFishingButtonSound>();return b;}
-  void Build(){
-   overlay=Rect("Fishing tutorial overlay",transform,Vector2.zero,Vector2.zero);overlay.anchorMin=Vector2.zero;overlay.anchorMax=Vector2.one;overlay.offsetMin=overlay.offsetMax=Vector2.zero;var shade=overlay.gameObject.AddComponent<Image>();shade.color=embedded?Color.clear:new Color(.025f,.11f,.15f,.6f);shade.raycastTarget=!embedded;
-   card=Rect("Fishing tutorial card",overlay,new Vector2(0,embedded?-75:0),new Vector2(860,452));var panel=card.gameObject.AddComponent<FishingStickerGraphic>();panel.kind=FishingStickerGraphic.Kind.Panel;panel.tint=GolfHUDStyle.Cream;panel.cornerRadius=28;panel.UseSolidPanel();panel.raycastTarget=true;
-   title=Text("Fishing tutorial title",card,Titles[0],new Vector2(0,175),new Vector2(780,46),32);
-   picture=Rect("Fishing tutorial illustration",card,new Vector2(-216,69),new Vector2(350,142)).gameObject.AddComponent<Image>();picture.preserveAspect=true;picture.raycastTarget=false;
-   BuildExamples();
-   body=Text("Fishing tutorial instructions",card,Copy[0],new Vector2(198,7),new Vector2(380,246),23);body.alignment=TextAnchor.MiddleLeft;
-   count=Text("Fishing tutorial step",card,"1 / 4",new Vector2(-74,-175),new Vector2(90,42),24);
-   Button("Fishing tutorial skip",new Vector2(-312,-175),new Vector2(180,48),embedded?"DONE":"SKIP",Close,out _);
-   back=Button("Fishing tutorial back",new Vector2(76,-175),new Vector2(136,48),"BACK",()=>Show(step-1),out _);
-   next=Button("Fishing tutorial next",new Vector2(272,-175),new Vector2(212,48),"NEXT",()=>{if(step<3)Show(step+1);else Close();},out nextLabel);next.GetComponent<FishingStickerGraphic>().Refresh(1,GolfHUDStyle.Gold);
-   overlay.gameObject.SetActive(false);
-  }
-  public void Open(){if(!overlay)return;Show(0);overlay.gameObject.SetActive(true);transform.SetAsLastSibling();Layout();}
-  void Show(int value){step=Mathf.Clamp(value,0,3);title.text=Titles[step];body.text=Copy[step];count.text=(step+1)+" / 4";picture.sprite=FishingGearArt.Tutorial(step);picture.enabled=step==1||step==3;for(int i=0;i<examples.Length;i++)examples[i].gameObject.SetActive(i==step);back.interactable=step>0;nextLabel.text=step<3?"NEXT":"LET'S FISH!";}
-  Image Icon(Transform parent,string name,Sprite sprite,Vector2 position,Vector2 size){var image=Rect(name,parent,position,size).gameObject.AddComponent<Image>();image.sprite=sprite;image.preserveAspect=true;image.raycastTarget=false;return image;}
+  public static FishingTutorialUI Create(RectTransform parent,bool embedded=false,Action closed=null){var node=GolfHUDStyle.Rect("Fishing illustrated tutorial",parent,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);CoveUI.Stretch(node);var ui=node.gameObject.AddComponent<FishingTutorialUI>();ui.Initialize(parent,embedded,closed);return ui;}
+  protected override Sprite Illustration(int page)=>page==1||page==3?FishingGearArt.Tutorial(page):null;
   FishingStickerGraphic Graphic(Transform parent,string name,Vector2 position,Vector2 size,FishingStickerGraphic.Kind kind){var g=Rect(name,parent,position,size).gameObject.AddComponent<FishingStickerGraphic>();g.kind=kind;g.raycastTarget=false;return g;}
-  void BuildExamples(){
+  protected override void BuildExamples(){
    // These are the same sprites and mesh widgets used in the live HUD. Read-only
    // examples never send gameplay inputs or create a separate set of controls.
-   for(int i=0;i<examples.Length;i++)examples[i]=Rect("Tutorial gameplay example "+i,card,new Vector2(-216,-71),new Vector2(376,132));
+   for(int i=0;i<examples.Length;i++)examples[i]=Rect("Tutorial gameplay example "+i,content,new Vector2(-216,-71),new Vector2(376,132));
    examples[0].anchoredPosition=new Vector2(-216,12);examples[0].sizeDelta=new Vector2(376,260);
    var sample=new[]{FishingAbility.SteelWire,FishingAbility.Sonar,FishingAbility.FishingBuddy};
    for(int i=0;i<3;i++){var a=sample[i];var r=Rect("Tutorial skill choice "+i,examples[0],new Vector2((i-1)*122,0),new Vector2(110,178));var plate=r.gameObject.AddComponent<BasketballPlate>();plate.color=i==0?CoveUI.Sky:CoveUI.Cream;plate.radius=Vector2.one*16;plate.border=i==0?3:2;plate.raycastTarget=false;var icon=Rect("Actual skill icon",r,new Vector2(0,36),Vector2.one*66);FishingSkillGraphic.Icon(icon,a);Text("Actual skill name",r,FishingAbilityRules.Name(a),new Vector2(0,-26),new Vector2(104,46),16);if(i==0)Icon(r,"Selected skill",SportsUIStyle.Check,new Vector2(33,68),Vector2.one*20);}
@@ -57,20 +41,19 @@ namespace WhatTheFish {
    for(int i=0;i<3;i++){var r=Rect("Tutorial round skill state "+i,examples[2],new Vector2((i-1)*122,0),new Vector2(98,100));var plate=r.gameObject.AddComponent<BasketballPlate>();plate.color=i==2?CoveUI.Sky:CoveUI.Cream;plate.radius=Vector2.one*32;plate.border=3;plate.raycastTarget=false;var icon=Rect("Actual skill icon",r,new Vector2(0,10),Vector2.one*60);FishingSkillGraphic.Icon(icon,FishingAbility.SteelWire);var ring=Rect("Actual cooldown border",r,Vector2.zero,Vector2.one*98).gameObject.AddComponent<FishingSkillGraphic>();ring.ring=true;ring.raycastTarget=false;ring.Tick(i==0?.35f:1,i==2?CoveUI.Sky:CoveUI.Gold);if(i==0){demoCooldown=ring;var alpha=r.gameObject.AddComponent<CanvasGroup>();alpha.alpha=.42f;}Text("Actual skill state",r,i==0?"6s":i==1?"USE":"ACTIVE",new Vector2(0,-30),new Vector2(86,23),15);Text("Skill state explanation",examples[2],i==0?"COOLDOWN":i==1?"READY":"IN USE",new Vector2((i-1)*122,-75),new Vector2(116,30),15);}
    for(int i=0;i<3;i++){var fish=Graphic(examples[3],"Actual fish points "+i,new Vector2((i-1)*112,23),new Vector2(46+i*8,42+i*7),FishingStickerGraphic.Kind.Fish);fish.Decorate();Text("Fish points "+i,examples[3],new[]{"2 POINTS","5 POINTS","10 POINTS"}[i],new Vector2((i-1)*112,-24),new Vector2(106,32),18);}
   }
-  void AnimateExamples(){if(!Visible)return;float phase=MenuPreferences.ReducedMotion?.7f:Mathf.Repeat(Time.unscaledTime*.18f,1);float tension=.28f+.42f*Mathf.Sin(phase*Mathf.PI);demoCatch.Refresh(.3f+phase*.65f,LocalProfile.Hex("4CDED6"));demoTension.Refresh(tension,Color.Lerp(GolfHUDStyle.Gold,LocalProfile.Hex("FF7659"),Mathf.InverseLerp(.4f,.8f,tension)));demoCooldown.Tick(phase,CoveUI.Gold);double now=Mathf.Repeat(Time.unscaledTime,(float)FishingState.TimingPeriod*6);var p=new FishingPlayerRecord{phase=FishingPhase.Reeling,owner=1,fish=0,phaseAt=0,held=true};bool left=FishingState.CounterSide(p,now)<0;p.steer=(sbyte)(left?-1:1);p.tension=tension;demoGuide.Tick(p,now);demoLeft.gameObject.SetActive(true);demoLeft.UseIllustration(left?"SteerLit":"SteerIdle");demoRight.UseIllustration(left?"SteerIdle":"SteerLit",false,true);demoRightLabel.text="RIGHT";}
+  protected override void AnimateExamples(){if(!Visible)return;float phase=MenuPreferences.ReducedMotion?.7f:Mathf.Repeat(Time.unscaledTime*.18f,1);float tension=.28f+.42f*Mathf.Sin(phase*Mathf.PI);demoCatch.Refresh(.3f+phase*.65f,LocalProfile.Hex("4CDED6"));demoTension.Refresh(tension,Color.Lerp(GolfHUDStyle.Gold,LocalProfile.Hex("FF7659"),Mathf.InverseLerp(.4f,.8f,tension)));demoCooldown.Tick(phase,CoveUI.Gold);double now=MenuPreferences.ReducedMotion?0:Mathf.Repeat(Time.unscaledTime,(float)FishingState.TimingPeriod*6);var p=new FishingPlayerRecord{phase=FishingPhase.Reeling,owner=1,fish=0,phaseAt=0,held=true};bool left=FishingState.CounterSide(p,now)<0;p.steer=(sbyte)(left?-1:1);p.tension=tension;demoGuide.Tick(p,now);demoLeft.gameObject.SetActive(true);demoLeft.UseIllustration(left?"SteerLit":"SteerIdle");demoRight.UseIllustration(left?"SteerIdle":"SteerLit",false,true);demoRightLabel.text="RIGHT";}
 
 
-  public void Close(){if(overlay)overlay.gameObject.SetActive(false);if(!embedded){PlayerPrefs.SetInt(SeenKey,1);PlayerPrefs.Save();}closed?.Invoke();}
-  void Layout(){if(!frame||!card)return;float scale=Mathf.Min(embedded?1.15f:1.35f,frame.rect.width*.88f/860,frame.rect.height*(embedded?.68f:.88f)/452);card.localScale=Vector3.one*Mathf.Max(.1f,scale);}
-  void LateUpdate(){if(TutorialSession.Is(SportId.Fishing)){if(overlay)overlay.gameObject.SetActive(false);return;}Layout();AnimateExamples();if(embedded)return;var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;bool context=game&&game.Context&&view&&view.active&&p.HasValue;
+  protected override void LateUpdate(){if(TutorialSession.Is(SportId.Fishing)){if(overlay)overlay.gameObject.SetActive(false);return;}base.LateUpdate();if(embedded)return;var game=FishingGame.Instance;var view=PlayerView.Instance;var p=game&&view?game.Player(view.target):null;bool context=game&&game.Context&&view&&view.active&&p.HasValue;
    if(!context){if(overlay)overlay.gameObject.SetActive(false);entryObserved=false;return;}
+   if(StartupWelcome.Blocking||TeleportSequence.Busy||RoomTeleport.Busy||RoomMatchStart.Travelling||FishingCeremony.Presenting){HideUnread();entryObserved=false;return;}
    if(FishingHUD.Instance&&FishingHUD.Instance.IslandMenu&&FishingHUD.Instance.IslandMenu.Visible)return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    if(DevelopmentProbe.TurnCommandActive&&!ReviewEntry)return;
 #endif
+   if(!Visible&&view.InputBlocked)return;
    if(!entryObserved&&game.State.Match.phase==FishingRoundPhase.Practice&&!p.Value.Busy&&!p.Value.ready){entryObserved=true;if(PlayerPrefs.GetInt(SeenKey,0)==0)Open();}
    if(p.Value.Busy&&overlay)overlay.gameObject.SetActive(false);
   }
-  public bool FitsSafeFrame(){if(!Visible)return true;var corners=new Vector3[4];card.GetWorldCorners(corners);var bounds=frame.rect;foreach(var c in corners){var p=frame.InverseTransformPoint(c);if(p.x<bounds.xMin-1||p.x>bounds.xMax+1||p.y<bounds.yMin-1||p.y>bounds.yMax+1)return false;}return true;}
  }
 }
