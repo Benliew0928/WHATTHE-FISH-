@@ -10,7 +10,7 @@ namespace WhatTheFish {
   readonly List<Lane> lanes=new();readonly List<Carry> carries=new();readonly Dictionary<ulong,double> bumped=new();
   GolfMatchManager match;uint round;bool built;public int TornadoTosses {get;private set;}public int CrabBumps {get;private set;}
   public IReadOnlyList<Lane> Lanes=>match&&match.Events.Snapshot.kind==GolfEventKind.Tornado?tornadoes:lanes;
-  void Awake(){match=GetComponent<GolfMatchManager>();if(!GetComponent<GolfTornadoVision>())gameObject.AddComponent<GolfTornadoVision>();}
+  void Awake(){match=GetComponent<GolfMatchManager>();GolfTornadoAudio.Prepare();if(!GetComponent<GolfTornadoVision>())gameObject.AddComponent<GolfTornadoVision>();}
   bool Ground(Vector3 p,out Vector3 ground){
    ground=p;if(!match.Course.SafeDryPosition(p,1)||!Physics.Raycast(p+Vector3.up*25,Vector3.down,out var hit,60,1<<8,QueryTriggerInteraction.Ignore)||hit.normal.y<.55f)return false;
    ground=hit.point;return !match.OutsideCourse(ground);

@@ -8,8 +8,9 @@ the medals. `delivery.json` records the crop bounds and delivery hashes.
 
 The ceremony shows at most three finishers using the existing stroke/time
 ranking, including existing ties; DNF players never join the cast. First place
-is centred, second is screen-left and third is screen-right. Player names are
-separate live text below the artwork. Other sports keep their current awards.
+is centred, second is screen-left and third is screen-right. Each medal follows
+the animated head with a small clearance. There is no extra caption below the
+artwork. Other sports keep their current awards.
 
 ## Development preview
 

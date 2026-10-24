@@ -14,7 +14,7 @@ namespace WhatTheFish {
   Camera camera;Vector3 savedPosition;Quaternion savedRotation;float savedFov,savedNear,opened,skipAt=-1;bool running,blockedBefore;
   Transform stage;RectTransform screen,content;Image curtain;Text title;FootballTake[] takes;Func<bool> valid;Action complete;
   readonly List<(CanvasGroup group,float alpha,bool raycasts,bool interactable)> hiddenUI=new();bool revealed;
-  readonly List<RectTransform> rankBadges=new();bool rankedGolf;
+  readonly List<RectTransform> rankBadges=new();readonly List<Transform> rankHeads=new();bool rankedGolf;
   public int CastCount=>cast.Count;
   public bool Begin(FishingGame source,FishingPlayerRecord[] records,Action onComplete){
    if(running||Presenting||!source||records.Length==0||source.State.Match.outcome==FishingOutcome.Abandoned||TeleportSequence.Busy||RoomTeleport.Busy)return false;
@@ -48,7 +48,7 @@ namespace WhatTheFish {
   bool BeginAwards(Transform source,Vector3 spot,Quaternion facing,(ulong id,string name)[] records,string heading,string subtitle,Func<bool> stillValid,Action onComplete,IReadOnlyDictionary<ulong,int> golfRanks=null,Athlete previewActor=null){
    if(running||Presenting||records.Length==0||TeleportSequence.Busy||RoomTeleport.Busy)return false;
    camera=Camera.main;if(!camera||!AppRoot.Instance.LocalAthlete)return false;
-   rankedGolf=golfRanks!=null;rankBadges.Clear();valid=stillValid;complete=onComplete;Instance=this;PostMatchFlow.Instance?.Close();
+   rankedGolf=golfRanks!=null;rankBadges.Clear();rankHeads.Clear();valid=stillValid;complete=onComplete;Instance=this;PostMatchFlow.Instance?.Close();
    savedPosition=camera.transform.position;savedRotation=camera.transform.rotation;savedFov=camera.fieldOfView;savedNear=camera.nearClipPlane;
    running=true;
    try {
@@ -79,27 +79,28 @@ namespace WhatTheFish {
     // The awards camera looks back along stage Z: positive local X is screen-left.
     if(rankedGolf)side=-side;
     visual.Root.localPosition=new Vector3(i==0?0:((i+1)/2)*side*1.7f,0,i==0?0:.5f);visual.Root.gameObject.SetActive(false);cast.Add(visual);
-    if(rankedGolf)rankBadges.Add(RankBadge(golfRanks[record.id],record.name));
+    if(rankedGolf){rankBadges.Add(RankBadge(golfRanks[record.id]));rankHeads.Add(visual.Root.GetComponentsInChildren<Transform>().FirstOrDefault(t=>t.name=="mixamorig:Head"));}
    }
    if(cast.Count==0){End(false);return false;}
    revealed=false;opened=Time.unscaledTime;skipAt=-1;return true;
    }catch(Exception error){Debug.LogWarning("Island awards unavailable: "+error);End(false);return false;}
   }
   public void Skip(){if(running&&skipAt<0)skipAt=Time.unscaledTime;}
-  RectTransform RankBadge(int rank,string name){
+  RectTransform RankBadge(int rank){
    var badge=new GameObject("Golf place "+rank,typeof(RectTransform)).GetComponent<RectTransform>();badge.SetParent(content,false);
-   badge.anchorMin=badge.anchorMax=new Vector2(.5f,.5f);badge.pivot=new Vector2(.5f,0);badge.sizeDelta=new Vector2(204,142);
+   badge.anchorMin=badge.anchorMax=new Vector2(.5f,.5f);badge.pivot=new Vector2(.5f,0);badge.sizeDelta=new Vector2(204,114);
    var medal=new GameObject("Original rank medal",typeof(RectTransform),typeof(Image)).GetComponent<Image>();medal.transform.SetParent(badge,false);
    medal.sprite=Resources.Load<Sprite>("GolfUI/Awards/Place"+rank);medal.color=Color.white;medal.preserveAspect=true;medal.raycastTarget=false;
    medal.rectTransform.anchorMin=medal.rectTransform.anchorMax=new Vector2(.5f,1);medal.rectTransform.pivot=new Vector2(.5f,1);medal.rectTransform.anchoredPosition=Vector2.zero;medal.rectTransform.sizeDelta=new Vector2(108,114);
-   var caption=BasketballUIStyle.Text(badge,name,2,114,200,28,18,true,TextAnchor.MiddleCenter,CoveUI.Cream);caption.resizeTextForBestFit=true;caption.resizeTextMinSize=11;caption.resizeTextMaxSize=18;
-   caption.gameObject.AddComponent<Outline>().effectColor=CoveUI.Ink;
    badge.gameObject.SetActive(false);return badge;
   }
   void PositionRanks(){
    float scale=Mathf.Min(1,Mathf.Max(.5f,(content.rect.width-80)/Mathf.Max(1,cast.Count+2)/205));
    for(int i=0;i<rankBadges.Count;i++){
-    var point=camera.WorldToScreenPoint(cast[i].Root.position+Vector3.up*2.0f);
+    // Keep the medal just above the animated head, rather than a fixed tall
+    // offset above the feet. No extra rank/name caption sits below the art.
+    var anchor=rankHeads[i]?rankHeads[i].position+Vector3.up*.66f:cast[i].Root.position+Vector3.up*1.94f;
+    var point=camera.WorldToScreenPoint(anchor);
     var badge=rankBadges[i];bool visible=point.z>0;badge.gameObject.SetActive(visible);if(!visible)continue;
     RectTransformUtility.ScreenPointToLocalPointInRectangle(content,point,null,out var at);
     badge.anchoredPosition=at;badge.localScale=Vector3.one*scale;
@@ -127,7 +128,7 @@ namespace WhatTheFish {
   }
   public void Cancel()=>End(false);
   void End(bool showResults){
-   if(!running)return;running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();rankBadges.Clear();
+   if(!running)return;running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();rankBadges.Clear();rankHeads.Clear();
    if(stage){stage.gameObject.SetActive(false);Destroy(stage.gameObject);}if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
    if(camera){camera.transform.SetPositionAndRotation(savedPosition,savedRotation);camera.fieldOfView=savedFov;camera.nearClipPlane=savedNear;}
    foreach(var entry in hiddenUI)if(entry.group){entry.group.alpha=entry.alpha;entry.group.blocksRaycasts=entry.raycasts;entry.group.interactable=entry.interactable;}hiddenUI.Clear();if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=blockedBefore;}

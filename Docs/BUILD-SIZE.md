@@ -1,5 +1,55 @@
 # Build size — measured release records
 
+## Golf medals raised another 12cm - 25 October 2026
+
+Raised the animated head anchor from 0.54m to 0.66m (+0.12m), and the
+feet-based fallback from 1.82m to 1.94m. No new art, sound or scoring changes.
+Pending earlier Golf changes are preserved. Full WindowsFinal and official
+AndroidSubmission updated. APK **115,960,030 -> 115,954,062 bytes
+(-5,968)**; decimal GB headroom **884,045,938 bytes**.
+SHA-256: **371D7CE61858102EE27DFCC0BB3309B4797FF81A288BF1949B62B29CB0B9660B**.
+ZIP CRC and both scene-bundle catalogue hashes passed; current audit is in
+`Builds/SizeAudit/latest/`. Evidence: `Builds/GolfMedalRaiseAgain/`.
+Previous complete player/APK/audit: `Legacy/20261025-001700-967-golf-medal-raise-again`.
+No phone FPS measurement. No staging, commit or push in this task.
+
+## Golf tornado audio and raised medals - 24 October 2026
+
+Raised the head-tracking Golf medals by 0.12m, retaining the original artwork
+and removing captions as requested. Added one shared procedural six-second,
+22,050Hz mono wind loop (529,200 PCM bytes at runtime), prepared during scene
+loading. Each visible tornado has one spatial voice with growth-linked volume
+and pitch, linear 4-42m attenuation and existing SFX/master controls. Warning
+stages remain silent; hiding, event end, disable, pause and focus loss stop the
+voice. No new imported audio or texture assets were added.
+
+Full WindowsFinal and official AndroidSubmission updated. APK **115,954,850
+-> 115,960,030 bytes (+5,180)**, decimal GB headroom
+**884,039,970 bytes**. SHA-256:
+**BF5D599DE46BB03783D39EA09F3FD3548C29EAC7740C6315EC8E397D0B756232**. ZIP CRCs and both scene catalogue hashes passed. Current audit:
+`Builds/SizeAudit/latest/`; evidence: `Builds/GolfTornadoSound/`.
+Superseded APK/audit: `Legacy/20261024-235527-419-golf-tornado-audio-apk`; complete previous player:
+`Legacy/20261025-000034-408-golf-tornado-audio-windows`.
+No new phone FPS measurement or real multiplayer audio listening session.
+Pending earlier medal changes are preserved; nothing staged, committed or
+pushed for this task.
+
+## Golf medal caption removal and head placement - 24 October 2026
+
+Removed the extra text beneath Golf award medals. Medals now follow the
+animated head with a small clearance, rather than a fixed offset above the
+feet. Original medal artwork, top-three finisher selection, DNF exclusion and
+scoring are unchanged. Full WindowsFinal updated; official AndroidSubmission
+passed the strict decimal GB gate. APK **115,956,082 -> 115,954,850 bytes
+(-1,232)**, headroom **884,045,150 bytes**. SHA-256:
+**DA0AE6D2ED48A09AE36A363C079CC232DD4DCD69AA1E53C444819761BCE538EB**.
+
+ZIP CRCs and Windows/Android scene-bundle catalogue hashes passed. Current
+size audit remains in `Builds/SizeAudit/latest/`; no new artwork was added.
+Evidence: `Builds/GolfMedalPosition/`. Superseded complete delivery and audit:
+`Legacy/20261024-233050-868-golf-medal-position`. No phone performance claim. Changes remain uncommitted and
+unpublished.
+
 ## Top-three Golf awards and merged tutorial update - 24 October 2026
 
 Golf awards now show at most three finished players in the existing stroke/time
