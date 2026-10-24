@@ -1,16 +1,15 @@
 # Golf random events — current rules
 
-Matching multiplayer protocol **77** is required for every player.
+Matching multiplayer protocol **85** is required for every player.
 Scoring, hole progress, ball ownership and ranking rules are unchanged.
 
 ## Schedule
 
-The Host draws one of three events every 90 seconds, with a ten-second warning
-and no immediate repeat. The authority seeds each match from independent OS
-random bytes instead of truncated clock ticks. The first draw gives each of the
-three events equal probability; the first event can still legitimately repeat
-between matches. Explicit seeds remain available to reproducible development
-fixtures. Clients display the Host snapshot rather than drawing their own event.
+The Host draws from five events every 60 seconds, with a ten-second warning.
+A seeded shuffle bag covers all five before repeating and avoids a repeat at bag
+boundaries. Each match is seeded from independent OS random bytes. Clients
+receive the Host snapshot rather than drawing their own event. See
+[hazard rules](GOLF-HAZARDS.md) for ball-centred tornado roaming and crab pursuit.
 Events affect newly accepted shots; each shot retains
 its captured conditions through flight and bounces, then clears them at rest or
 recovery. Aim uses the exact same conditions and trajectory calculation.
@@ -26,6 +25,8 @@ finish and lasts 30 seconds. Subsequent finishers do not retrigger it. The exist
 | Tropical Wind | 45 seconds | Random horizontal airborne acceleration of 2.6 m/s², four times the previous 0.65. Putt has no wind acceleration. Higher flights accumulate more drift. |
 | Sticky Green | 45 seconds | Swing stops at the first supported ground touchdown, with zero linear and angular velocity. Putt is identical to ordinary Putt. |
 | Bounce Party | 45 seconds | Swing landing retains 80% incoming normal speed and 75% tangential speed, above the existing minimum bounce threshold. Putt is unchanged. |
+| Tornado | 45 seconds | Host-owned random roaming within 28 m of each live unfinished ball; growth scales speed, 3.5 m pickup radius and one toss per ball/event. |
+| Crab Crossing | 45 seconds | 5 m/s chase, additive 6.5 m/s horizontal + 3.5 m/s upward push, shared per-ball 5-second cooldown and persistent target priority. |
 | Island Rush | 30 seconds | Player movement multiplier 2.10 (+110%); cart target forward/reverse speed multiplier 1.90 (+90%). |
 
 Moon Golf is removed from the enum, random pool, gravity modifier and F2 shortcut.
@@ -97,10 +98,12 @@ See [cup and aiming presentation](GOLF-CUP-AND-EVENT-POLISH.md) for the current
 physical entry behaviour and editable presentation asset.
 
 The supplied warning artwork is retained unmodified as `WarningSheet.png`.
-The Host selects at 80 seconds; live 10..01 seconds occupy the top-left badge
-position before the actual event appears at 90 seconds. New-round resets and
+The Host selects at 50 seconds; live 10..01 seconds occupy the top-left badge
+position before the actual event appears at 60 seconds. New-round resets and
 first-finisher cancellation rules apply to this warning too.
 
-Current random pool: Tropical Wind, Sticky Green and Bounce Party. Island Rush
-retains its first-finisher trigger. The 90-second cycle and 10-second warning
-remain unchanged. Matching protocol 77 players are required.
+Current random pool: Tropical Wind, Sticky Green, Bounce Party, Tornado and Crab
+Crossing. Island Rush retains its first-finisher trigger. The cycle is 60 seconds
+with a 10-second warning. Matching protocol 85 players are required.
+
+Current HUD, car impacts and hazard camera behaviour: [Golf polish](GOLF-CART-HUD-POLISH.md).

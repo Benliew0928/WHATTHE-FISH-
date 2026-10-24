@@ -17,12 +17,15 @@ namespace WhatTheFish {
   // The body sweep delegates authored pond rims to wheel support below.
   // Rocks, other carts and the sea retain their existing collision rules.
   public static bool PondBank(Collider collider)=>collider&&collider.name=="Pond bank"&&collider.GetComponentInParent<GolfCourse>();
+  // Only the authored thin paving ribbons are drivable support. Border stones,
+  // pavilion walls, rocks and bridge rails remain ordinary solid obstacles.
+  public static bool Walkway(Collider collider){if(!collider||collider.gameObject.layer!=8)return false;string name=collider.name;return name.EndsWith("_Paving")&&(name.Contains("Path_")||name.Contains("Approach_"));}
   public static float Heading(Quaternion rotation)=>
    (Quaternion.Inverse(Quaternion.FromToRotation(Vector3.up,rotation*Vector3.up))*rotation).eulerAngles.y;
   public static bool Floor(Vector3 at,out RaycastHit floor) {
    floor=default;float best=float.MaxValue;
    int count=Physics.RaycastNonAlloc(at+Vector3.up*12,Vector3.down,casts,30,1<<8,QueryTriggerInteraction.Ignore);
-   for(int i=0;i<count;i++)if(Terrain(casts[i].collider)&&casts[i].distance<best){floor=casts[i];best=floor.distance;}
+   for(int i=0;i<count;i++)if((Terrain(casts[i].collider)||Walkway(casts[i].collider))&&casts[i].normal.y>.80f&&casts[i].distance<best){floor=casts[i];best=floor.distance;}
    var island=RefinedIslandEnvironment.Active;
    return best<float.MaxValue&&floor.normal.y>.80f&&(!island||floor.point.y>island.layout.sea_level+.12f);
   }
@@ -30,7 +33,7 @@ namespace WhatTheFish {
    point=normal=default;pond=false;float terrainDistance=float.MaxValue,bankHeight=float.NegativeInfinity;RaycastHit ground=default,bank=default;
    int count=Physics.RaycastNonAlloc(at+Vector3.up*12,Vector3.down,casts,30,1<<8,QueryTriggerInteraction.Ignore);
    for(int i=0;i<count;i++){
-    var hit=casts[i];if(Terrain(hit.collider)&&hit.distance<terrainDistance){ground=hit;terrainDistance=hit.distance;}
+    var hit=casts[i];if((Terrain(hit.collider)||Walkway(hit.collider))&&hit.normal.y>.80f&&hit.distance<terrainDistance){ground=hit;terrainDistance=hit.distance;}
     if(PondBank(hit.collider)&&hit.point.y>bankHeight){bank=hit;bankHeight=hit.point.y;}
    }
    var island=RefinedIslandEnvironment.Active;
@@ -70,12 +73,13 @@ namespace WhatTheFish {
    var center=position+rotation*new Vector3(0,.66f,0);
    int count=Physics.OverlapBoxNonAlloc(center,HalfBody,overlaps,rotation,Obstacles,QueryTriggerInteraction.Ignore);
    for(int i=0;i<count;i++){
-    var collider=overlaps[i];if(Terrain(collider)||PondBank(collider)||self&&collider.transform.IsChildOf(self.transform)||ignored&&collider.transform.IsChildOf(ignored.transform))continue;
+    var collider=overlaps[i];if(Terrain(collider)||Walkway(collider)||PondBank(collider)||self&&collider.transform.IsChildOf(self.transform)||ignored&&collider.transform.IsChildOf(ignored.transform))continue;
     return false;
    }
    return count<overlaps.Length;
   }
-  static float Distance(GolfCart self,Vector3 position,Quaternion rotation,Vector3 delta) {
+  static float Distance(GolfCart self,Vector3 position,Quaternion rotation,Vector3 delta,out GolfCart other,out Vector3 normal,out Athlete pedestrian) {
+   other=null;normal=Vector3.zero;pedestrian=null;
    if(delta.sqrMagnitude<.0000001f)return 0;
    float distance=delta.magnitude,allowed=distance;
    int count=Physics.BoxCastNonAlloc(position+rotation*new Vector3(0,.66f,0),HalfBody,delta/distance,casts,rotation,distance+.04f,Obstacles,QueryTriggerInteraction.Ignore);
@@ -83,8 +87,9 @@ namespace WhatTheFish {
     // Wheel support below validates terrain height, slope and shore clearance.
     // A level body sweep can start inside an uphill terrain triangle; PhysX
     // reports that overlap with a horizontal normal, falsely making it a wall.
-    var hit=casts[i];if(Terrain(hit.collider)||PondBank(hit.collider)||self&&hit.collider.transform.IsChildOf(self.transform)||hit.normal.y>.55f)continue;
-    allowed=Mathf.Min(allowed,Mathf.Max(0,hit.distance-.04f));
+    var hit=casts[i];if(Terrain(hit.collider)||Walkway(hit.collider)||PondBank(hit.collider)||self&&hit.collider.transform.IsChildOf(self.transform)||hit.normal.y>.55f)continue;
+    float next=Mathf.Max(0,hit.distance-.04f);
+    if(next<=allowed){allowed=next;other=hit.collider.GetComponentInParent<GolfCart>();normal=hit.normal;pedestrian=hit.collider.GetComponentInParent<Athlete>();}
    }
    return count==casts.Length?0:allowed;
   }
@@ -105,19 +110,33 @@ namespace WhatTheFish {
     float yaw=Heading(state.rotation);
     if(Mathf.Abs(state.speed)>.08f)yaw+=input.x*Steering*Mathf.Clamp01(Mathf.Abs(state.speed)/2)*Mathf.Sign(state.speed)*step;
     var facing=Quaternion.Euler(0,yaw,0);var delta=facing*Vector3.forward*(state.speed*step);
-    float travel=Distance(cart,state.position,facing,delta);
-     if(travel+.0001f<delta.magnitude){if(cart)cart.AudioBump(Mathf.Abs(state.speed));state.speed=0;}
+    float travel=Distance(cart,state.position,facing,delta,out var other,out var hitNormal,out var pedestrian);
+    if(travel+.0001f<delta.magnitude){if(cart){if(other)GolfCartWorld.Impact(cart,other,hitNormal);else if(pedestrian&&pedestrian.HitByGolfCart(delta.normalized,Mathf.Abs(state.speed))){GolfFeedback.Emit(GolfFeedbackCue.CartPlayer,pedestrian.transform.position+Vector3.up*.65f,delta.normalized,Mathf.Clamp01(Mathf.Abs(state.speed)/20),cart.Owner,GolfCartWorld.Key(pedestrian));}else if(!pedestrian)cart.AudioBump(Mathf.Abs(state.speed));}state.speed=0;}
     var candidate=state.position+(delta.sqrMagnitude>.000001f?delta.normalized*travel:Vector3.zero);
     if(Surface(candidate,yaw,out var supported,out var rotation)&&Mathf.Abs(supported.y-state.position.y)<.38f&&Clear(supported,rotation,cart)){
      state.position=supported;state.rotation=rotation;
     }else state.speed=0;
    }
   }
+  // Recoil uses the same bounded sweep and support checks as ordinary driving.
+  // It cannot push a cart through rocks, a second cart or off the island.
+  public static bool Recoil(GolfCart cart,ref GolfCartState state,Vector3 delta){
+   float yaw=Heading(state.rotation);int steps=Mathf.Max(1,Mathf.CeilToInt(delta.magnitude/.10f));
+   var part=delta/steps;bool moved=false;
+   for(int i=0;i<steps;i++){
+    float travel=Distance(cart,state.position,state.rotation,part,out _,out _,out _);
+    if(travel<.0001f)break;
+    var candidate=state.position+part.normalized*travel;
+    if(!Surface(candidate,yaw,out var at,out var rotation)||Mathf.Abs(at.y-state.position.y)>=.38f||!Clear(at,rotation,cart))break;
+    state.position=at;state.rotation=rotation;moved=true;
+   }
+   return moved;
+  }
   public static bool ExitClear(Vector3 position,Athlete athlete,GolfCart cart) {
    float radius=athlete.capsule?athlete.capsule.radius:.35f;
    float height=athlete.capsule?athlete.capsule.height:1.8f;
    int count=Physics.OverlapCapsuleNonAlloc(position+Vector3.up*(radius+.07f),position+Vector3.up*(height-radius+.07f),radius,overlaps,Obstacles,QueryTriggerInteraction.Ignore);
-   for(int i=0;i<count;i++)if(!Terrain(overlaps[i])&&!overlaps[i].transform.IsChildOf(athlete.transform))return false;
+   for(int i=0;i<count;i++)if(!Terrain(overlaps[i])&&!Walkway(overlaps[i])&&!overlaps[i].transform.IsChildOf(athlete.transform))return false;
    return count<overlaps.Length;
   }
  }

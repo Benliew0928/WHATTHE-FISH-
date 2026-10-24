@@ -14,6 +14,7 @@ namespace WhatTheFish {
   Camera camera;Vector3 savedPosition;Quaternion savedRotation;float savedFov,savedNear,opened,skipAt=-1;bool running,blockedBefore;
   Transform stage;RectTransform screen,content;Image curtain;Text title;FootballTake[] takes;Func<bool> valid;Action complete;
   readonly List<(CanvasGroup group,float alpha,bool raycasts,bool interactable)> hiddenUI=new();bool revealed;
+  readonly List<RectTransform> rankBadges=new();bool rankedGolf;
   public int CastCount=>cast.Count;
   public bool Begin(FishingGame source,FishingPlayerRecord[] records,Action onComplete){
    if(running||Presenting||!source||records.Length==0||source.State.Match.outcome==FishingOutcome.Abandoned||TeleportSequence.Busy||RoomTeleport.Busy)return false;
@@ -28,16 +29,17 @@ namespace WhatTheFish {
   }
   public bool BeginGolf(GolfMatchManager source,Action onComplete){
    if(!source||source.State.Phase!=GolfMatchPhase.Ended)return false;
-   var results=source.State.Results();if(results.Length==0)return false;
+   var results=source.State.Results().Where(r=>r.player.IsFinished&&!r.player.IsDNF).ToArray();
+   if(results.Length==0){onComplete?.Invoke();return true;}
    var winners=results.Where(r=>r.rank==1).ToArray();string heading=winners.Length>1?"SHARED HONOURS!":winners.Length==1?winners[0].player.PlayerName.ToUpperInvariant()+" WINS!":"ROUND COMPLETE!";
    var ordered=results.Select(r=>(r.player.PlayerId,r.player.PlayerName)).ToArray();uint round=source.Round;
    var tee=source.Course.holes.First(h=>h.number==1).tee;
-   return BeginAwards(source.transform,tee.position+tee.right*4,Quaternion.Euler(0,tee.eulerAngles.y+180,0),ordered,heading,"ISLAND GOLF RESULTS",()=>source&&source.Context&&source.Round==round&&source.State.Phase==GolfMatchPhase.Ended,onComplete);
+   return BeginAwards(source.transform,tee.position+tee.right*4,Quaternion.Euler(0,tee.eulerAngles.y+180,0),ordered,heading,"ISLAND GOLF RESULTS",()=>source&&source.Context&&source.Round==round&&source.State.Phase==GolfMatchPhase.Ended,onComplete,results.ToDictionary(r=>r.player.PlayerId,r=>r.rank));
   }
-  bool BeginAwards(Transform source,Vector3 spot,Quaternion facing,(ulong id,string name)[] records,string heading,string subtitle,Func<bool> stillValid,Action onComplete){
+  bool BeginAwards(Transform source,Vector3 spot,Quaternion facing,(ulong id,string name)[] records,string heading,string subtitle,Func<bool> stillValid,Action onComplete,IReadOnlyDictionary<ulong,int> golfRanks=null){
    if(running||Presenting||records.Length==0||TeleportSequence.Busy||RoomTeleport.Busy)return false;
    camera=Camera.main;if(!camera||!AppRoot.Instance.LocalAthlete)return false;
-   valid=stillValid;complete=onComplete;Instance=this;PostMatchFlow.Instance?.Close();
+   rankedGolf=golfRanks!=null;rankBadges.Clear();valid=stillValid;complete=onComplete;Instance=this;PostMatchFlow.Instance?.Close();
    savedPosition=camera.transform.position;savedRotation=camera.transform.rotation;savedFov=camera.fieldOfView;savedNear=camera.nearClipPlane;
    running=true;
    try {
@@ -64,13 +66,38 @@ namespace WhatTheFish {
    foreach(var record in records){
     var actor=Athlete.Active.FirstOrDefault(a=>a&&a.visual&&(AppRoot.Instance.SelectedSport==SportId.Golf?GolfCartWorld.Key(a):FishingGame.Key(a))==record.id);if(!actor)continue;
     var net=actor.GetComponent<NetworkAthlete>();var visual=new FootballCelebrationActor(actor,new FootballPlayerRecord{id=record.id,name=record.name,number=(byte)(net&&net.IsSpawned?net.RoomSeat.Value+1:CharacterIdentity.Ensure(actor).Number),team=FootballTeam.None},stage);
-    if(!visual.Ready){Destroy(visual.Root.gameObject);continue;}int i=cast.Count;visual.Root.localPosition=new Vector3(i==0?0:((i+1)/2)*(i%2==1?-1.7f:1.7f),0,i==0?0:.5f);visual.Root.gameObject.SetActive(false);cast.Add(visual);
+    if(!visual.Ready){Destroy(visual.Root.gameObject);continue;}int i=cast.Count;float side=i%2==1?-1:1;
+    // The awards camera looks back along stage Z: positive local X is screen-left.
+    if(rankedGolf)side=-side;
+    visual.Root.localPosition=new Vector3(i==0?0:((i+1)/2)*side*1.7f,0,i==0?0:.5f);visual.Root.gameObject.SetActive(false);cast.Add(visual);
+    if(rankedGolf)rankBadges.Add(RankBadge(golfRanks[record.id],record.name));
    }
    if(cast.Count==0){End(false);return false;}
    revealed=false;opened=Time.unscaledTime;skipAt=-1;return true;
    }catch(Exception error){Debug.LogWarning("Island awards unavailable: "+error);End(false);return false;}
   }
   public void Skip(){if(running&&skipAt<0)skipAt=Time.unscaledTime;}
+  RectTransform RankBadge(int rank,string name){
+   Color metal=rank==1?CoveUI.Hex("FFD469"):rank==2?CoveUI.Hex("DCEAF4"):rank==3?CoveUI.Hex("E9B183"):CoveUI.Cream;
+   var badge=BasketballUIStyle.Plate(content,"Golf place "+rank,0,0,204,76,metal,24,3).rectTransform;
+   badge.anchorMin=badge.anchorMax=badge.pivot=Vector2.one*.5f;
+   var rim=BasketballUIStyle.Plate(badge,"Medal rim",8,9,55,55,CoveUI.Cream,28,2);
+   CoveUI.Icon(rim.transform,CoveSymbol.Star,3,3,49,metal);
+   BasketballUIStyle.Text(rim.transform,rank.ToString(),4,7,47,40,27,true,TextAnchor.MiddleCenter,CoveUI.Ink);
+   string ordinal=rank==1?"1st":rank==2?"2nd":rank==3?"3rd":rank+"th";
+   BasketballUIStyle.Text(badge,ordinal+" PLACE",69,6,127,32,22,true,TextAnchor.MiddleCenter,CoveUI.Ink);
+   var caption=BasketballUIStyle.Text(badge,name,69,39,126,27,16,true,TextAnchor.MiddleCenter,CoveUI.Ink);caption.resizeTextForBestFit=true;caption.resizeTextMinSize=11;caption.resizeTextMaxSize=16;
+   badge.gameObject.SetActive(false);return badge;
+  }
+  void PositionRanks(){
+   float scale=Mathf.Min(1,Mathf.Max(.5f,(content.rect.width-80)/Mathf.Max(1,cast.Count+2)/205));
+   for(int i=0;i<rankBadges.Count;i++){
+    var point=camera.WorldToScreenPoint(cast[i].Root.position+Vector3.up*2.35f);
+    var badge=rankBadges[i];bool visible=point.z>0;badge.gameObject.SetActive(visible);if(!visible)continue;
+    RectTransformUtility.ScreenPointToLocalPointInRectangle(content,point,null,out var at);
+    badge.anchoredPosition=at;badge.localScale=Vector3.one*scale;
+   }
+  }
   void LayoutAwards(){if(!content)return;var safe=Screen.safeArea;content.anchorMin=new Vector2(safe.x/Mathf.Max(1,Screen.width),safe.y/Mathf.Max(1,Screen.height));content.anchorMax=new Vector2(safe.xMax/Mathf.Max(1,Screen.width),safe.yMax/Mathf.Max(1,Screen.height));content.offsetMin=content.offsetMax=Vector2.zero;}
   void LateUpdate(){
    if(!running)return;LayoutAwards();if(valid==null||!valid()||TeleportSequence.Busy||RoomTeleport.Busy){End(false);return;}
@@ -85,13 +112,15 @@ namespace WhatTheFish {
     bool singleWinner=title.text.EndsWith(" WINS!");
     for(int i=0;i<cast.Count;i++){cast[i].Root.gameObject.SetActive(true);var take=takes[i%3];var pose=take.Sample(Mathf.Max(0,age-.45f+i*.45f)/take.duration);if(singleWinner&&i==0&&age>7){var solo=takes[3];pose=FootballPose.Lerp(pose,solo.Sample((age-7)/solo.duration),Mathf.SmoothStep(0,1,(age-7)/1.5f));}cast[i].Pose(pose);}
     float turn=MenuPreferences.ReducedMotion?0:Mathf.Sin(Mathf.Clamp01((age-.45f)/9)*Mathf.PI)*.16f;float spotlight=MenuPreferences.ReducedMotion||!singleWinner?0:Mathf.SmoothStep(0,1,(age-7)/3);float distance=Mathf.Lerp(cast.Count>3?10:8,4.8f,spotlight);
+    if(rankedGolf){spotlight=cast.Count==1?spotlight:0;float extent=(cast.Count/2)*1.7f+1.7f;distance=Mathf.Max(8,extent/(Mathf.Tan(22.5f*Mathf.Deg2Rad)*Mathf.Max(.35f,camera.aspect)));}
     var position=stage.TransformPoint(new Vector3(turn*distance,2.9f,distance));var focus=stage.TransformPoint(new Vector3(0,1.1f,0));camera.transform.SetPositionAndRotation(position,Quaternion.LookRotation(focus-position));camera.fieldOfView=Mathf.Lerp(45,36,spotlight);camera.nearClipPlane=.12f;
+    if(rankedGolf)PositionRanks();
    }
    if(skipAt>=0&&Time.unscaledTime-skipAt>=.45f)End(true);
   }
   public void Cancel()=>End(false);
   void End(bool showResults){
-   if(!running)return;running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();
+   if(!running)return;running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();rankBadges.Clear();
    if(stage){stage.gameObject.SetActive(false);Destroy(stage.gameObject);}if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
    if(camera){camera.transform.SetPositionAndRotation(savedPosition,savedRotation);camera.fieldOfView=savedFov;camera.nearClipPlane=savedNear;}
    foreach(var entry in hiddenUI)if(entry.group){entry.group.alpha=entry.alpha;entry.group.blocksRaycasts=entry.raycasts;entry.group.interactable=entry.interactable;}hiddenUI.Clear();if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=blockedBefore;}

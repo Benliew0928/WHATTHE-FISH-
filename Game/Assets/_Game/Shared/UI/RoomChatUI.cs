@@ -20,7 +20,7 @@ namespace WhatTheFish {
   public static Sprite Sticker(string id){int index=Array.IndexOf(RoomChatService.Stickers,id);if(index<0)return null;if(!sprites[index])sprites[index]=Resources.Load<Sprite>("RoomChat/"+id);return sprites[index];}
   static readonly Sprite[] sprites=new Sprite[8];
   AppRoot app;RoomChatService chat;Canvas canvas;RectTransform safe,root,launchers,panel,quickPanel,content,viewport,optionsPanel,fishingBoard;
-  InputField input;Text title,note,unreadText;Button send;ScrollRect scroll;CanvasGroup layer;
+  InputField input;Text title,note,unreadText;Button send;ScrollRect scroll;CanvasGroup layer,launcherOpacity;
   bool open,quick,options,dirty=true,lobby,focused;int unread,page;float nextRebuild;string draft="",status="";Vector2 previousSize;
   static readonly Color Cream=CoveUI.Hex("FFF8E8"),Ink=CoveUI.Hex("173C47"),Mint=CoveUI.Hex("9EE3D3"),PanelColor=CoveUI.Hex("102B38"),Muted=CoveUI.Hex("BDD0D7");
   public static void Create(AppRoot app){if(Instance)return;var ui=new GameObject("Room chat",typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).AddComponent<RoomChatUI>();ui.app=app;ui.chat=RoomChatService.Ensure(app.rooms);ui.Build();}
@@ -36,16 +36,18 @@ namespace WhatTheFish {
   bool Allowed=>app&&app.rooms.Connected&&(app.ScreenName=="room"||app.ScreenName=="stadium")&&!StartupWelcome.Blocking&&!RoomService.Paused&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!app.PendingSelection.HasValue&&!SocialPanel.Visible&&!AccountPanel.Visible&&!TutorialSession.Active&&!ControlLayoutEditor.Active&&!FootballMVP.Presenting&&!BasketballMVP.Presenting&&!FootballReplay.Presenting&&!FishingCeremony.Presenting&&!(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen)&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(GolfHUD.Instance&&GolfHUD.Instance.IslandMenu&&GolfHUD.Instance.IslandMenu.Visible)&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay);
   void Update(){
    if(!app||!root)return;
-   bool allowed=Allowed;
+   bool allowed=Allowed&&!(app.Exploring&&app.SelectedSport==SportId.Golf&&golfBoard&&golfBoard.Expanded);
    if(!allowed&&root.gameObject.activeSelf){ReleaseInput();quick=false;}
    root.gameObject.SetActive(allowed);UpdateSafeArea();
    if(!app.rooms.Connected){if(open||unread>0){open=quick=options=false;draft="";unread=page=0;dirty=true;}ClearBubbles();}
    if(lobby!=!app.Exploring||previousSize!=safe.rect.size){lobby=!app.Exploring;previousSize=safe.rect.size;Rebuild();}
    if(!allowed)return;
+   bool golfAim=app.Exploring&&app.SelectedSport==SportId.Golf&&GolfHUD.Instance&&GolfHUD.Instance.AimFocused;
+   if(launcherOpacity){launcherOpacity.alpha=app.Exploring&&app.SelectedSport==SportId.Golf&&GolfHUD.Instance?GolfHUD.Instance.AuxiliaryOpacity:1;launcherOpacity.interactable=launcherOpacity.blocksRaycasts=!golfAim;}
    bool isFocused=input&&input.isFocused;
    if(isFocused&&!focused){app.view.ClearMatchInput();PlayerView.LookDelta=Vector2.zero;}focused=isFocused;
    if(Input.GetKeyDown(KeyCode.Escape)&&(open||quick)){Close();return;}
-   if(!isFocused&&!open&&!quick&&Input.GetKeyDown(KeyCode.Return)){SetOpen(true);input.ActivateInputField();}
+   if(!golfAim&&!isFocused&&!open&&!quick&&Input.GetKeyDown(KeyCode.Return)){SetOpen(true);input.ActivateInputField();}
    else if(isFocused&&(Input.GetKeyDown(KeyCode.Return)||Input.GetKeyDown(KeyCode.KeypadEnter))&&string.IsNullOrEmpty(UnityEngine.Input.compositionString))SendText();
    if(open&&dirty&&Time.unscaledTime>=nextRebuild){dirty=false;nextRebuild=Time.unscaledTime+.1f;RenderHistory();}
    if(unreadText)unreadText.text=unread>0?"Chat  "+(unread>99?"99+":unread.ToString()):"Chat";
@@ -66,7 +68,7 @@ namespace WhatTheFish {
    foreach(Transform child in root){child.gameObject.SetActive(false);Destroy(child.gameObject);}
    input=null;panel=null;optionsPanel=null;quickPanel=null;scroll=null;note=null;title=null;
    float w=lobby?520:380,h=lobby?600:332;
-   launchers=CoveUI.Rect(root,"Chat buttons",0,0,210,58);
+   launchers=CoveUI.Rect(root,"Chat buttons",0,0,210,58);launcherOpacity=launchers.gameObject.AddComponent<CanvasGroup>();
    var chatButton=Button(launchers,"Open room chat","Chat",0,0,130,58,Cream,()=>SetOpen(!open),23);unreadText=chatButton.GetComponentInChildren<Text>();
    var stickerButton=Button(launchers,"Quick stickers","",140,0,60,58,Cream,()=>{quick=!quick;options=false;ReleaseInput();Rebuild();});CoveUI.Image(stickerButton.transform,"Stickers",Sticker("laugh"),8,6,44,44);
    panel=CoveUI.Plate(root,"Room chat history",0,0,w,h,PanelColor,18,1).rectTransform;panel.GetComponent<CovePlate>().borderColor=CoveUI.Hex("52747C");panel.GetComponent<CovePlate>().raycastTarget=true;
@@ -96,22 +98,31 @@ namespace WhatTheFish {
     Button(optionsPanel,"Close preferences","Done",12,185,w-24,45,Mint,()=>{options=false;Rebuild();});}
    PlacePanel();dirty=true;if(open)RenderHistory();
   }
+  GolfLeaderboardUI golfBoard;
   void PlacePanel(){
    if(!panel)return;float sw=safe.rect.width,sh=safe.rect.height;
    float dock=38;
+   float launchTop=214;
+   if(!lobby&&app.SelectedSport==SportId.Golf){
+    if(!golfBoard&&app.HudFrame)golfBoard=app.HudFrame.GetComponentInChildren<GolfLeaderboardUI>(true);
+    if(golfBoard&&golfBoard.BoardRect.gameObject.activeInHierarchy){var board=Bounds(golfBoard.BoardRect);dock=Mathf.Max(12,board.xMin);launchTop=sh-board.yMin+12;}
+    else {dock=24;launchTop=20;}
+    launchTop=Mathf.Clamp(launchTop,12,Mathf.Max(12,sh-76));
+    launchers.gameObject.SetActive(!golfBoard||!golfBoard.Expanded);
+   }else launchers.gameObject.SetActive(true);
    if(!lobby&&app.SelectedSport==SportId.Fishing){
     if(!fishingBoard&&app.HudFrame)fishingBoard=app.HudFrame.GetComponentsInChildren<RectTransform>().FirstOrDefault(r=>r.name=="Lagoon sticker leaderboard");
     dock=fishingBoard?Bounds(fishingBoard).xMax+18:404;
     dock=Mathf.Clamp(dock,38,sw-panel.rect.width-12);
    }
-   float px=lobby?Mathf.Max(12,sw-panel.rect.width-42):dock,py=lobby?Mathf.Min(184,Mathf.Max(12,sh-panel.rect.height-100)):287;
+   float px=lobby?Mathf.Max(12,sw-panel.rect.width-42):dock,py=lobby?Mathf.Min(184,Mathf.Max(12,sh-panel.rect.height-100)):launchTop+73;
    // The native keyboard supplies the actual occluded pixels. Input remains
    // reachable even on split-screen devices and phones with a large IME.
    float keyboard=TouchScreenKeyboard.visible?(TouchScreenKeyboard.area.height>0?TouchScreenKeyboard.area.height:Screen.height*.45f)/canvas.scaleFactor:0;
    py=Mathf.Clamp(py,8,Mathf.Max(8,sh-keyboard-panel.rect.height-8));
    panel.anchoredPosition=new Vector2(px,-py);
-   launchers.anchoredPosition=lobby?new Vector2(Mathf.Min(650,sw-230),-Mathf.Max(8,sh-90-keyboard)):new Vector2(dock,-214);
-   if(quickPanel)quickPanel.anchoredPosition=open?new Vector2(px,-py):lobby?new Vector2(Mathf.Min(650,sw-quickPanel.rect.width-12),-Mathf.Max(8,sh-quickPanel.rect.height-110-keyboard)):new Vector2(dock,-287);
+   launchers.anchoredPosition=lobby?new Vector2(Mathf.Min(650,sw-230),-Mathf.Max(8,sh-90-keyboard)):new Vector2(dock,-launchTop);
+   if(quickPanel)quickPanel.anchoredPosition=open?new Vector2(px,-py):lobby?new Vector2(Mathf.Min(650,sw-quickPanel.rect.width-12),-Mathf.Max(8,sh-quickPanel.rect.height-110-keyboard)):new Vector2(dock,-Mathf.Min(launchTop+73,Mathf.Max(12,sh-quickPanel.rect.height-12)));
    if(optionsPanel)optionsPanel.anchoredPosition=new Vector2(px,-py);
   }
   void RenderHistory(){

@@ -52,7 +52,8 @@ namespace WhatTheFish {
    finishedCard=CoveUI.Rect(page,"Golf finished waiting",0,0,620,88);finishedCard.anchorMin=finishedCard.anchorMax=new Vector2(.5f,0);finishedCard.pivot=new Vector2(.5f,0);finishedCard.anchoredPosition=new Vector2(0,118);
    WorldUI.Card(finishedCard,"Finish surface",0,0,620,88);finishedText=WorldUI.Label(finishedCard,"",20,8,580,72,24,true,null,TextAnchor.MiddleCenter);finishedCard.gameObject.SetActive(false);layout=Resources.Load<GolfHUDLayout>("GolfUILayout");if(!layout)layout=ScriptableObject.CreateInstance<GolfHUDLayout>();
    var shade=Rect("Golf ranking backdrop",page,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);Stretch(shade);backdrop=Touch(shade);shade.GetComponent<Image>().color=new Color(.025f,.16f,.2f,.54f);backdrop.onClick.AddListener(()=>SetExpanded(false));shade.gameObject.SetActive(false);
-   board=Rect("Golf leaderboard",page,Vector2.one,Vector2.zero,Vector2.zero);board.pivot=Vector2.one;
+   board=Rect("Golf leaderboard",page,new Vector2(0,1),Vector2.zero,Vector2.zero);board.pivot=new Vector2(0,1);
+   var wholeCard=Touch(board);wholeCard.onClick.AddListener(()=>{if(!expanded)SetExpanded(true);});
    CharacterIdentityBadges.ReserveHUD(board);
    board.gameObject.AddComponent<GolfRankingHover>().owner=this;
    frame=Rect("Golf leaderboard frame",board,new Vector2(0,1),Vector2.zero,Vector2.zero);frame.pivot=new Vector2(0,1);frameArt=Art(frame,"Frame",true);frameArt.raycastTarget=true;
@@ -106,7 +107,7 @@ namespace WhatTheFish {
    float body=count==0?36:expanded?Mathf.Min(Mathf.Max(renderedRowHeight,count*renderedRowHeight),available):count*renderedRowHeight;
    float rowTop=header+columns+4,height=rowTop+body+toggleHeight+padding;
    if(aimSummary){width=Mathf.Min(layout.boardWidth,490);inner=width-padding*2;height=layout.boardAimSummaryHeight;}
-   board.anchoredPosition=layout.boardPosition;board.sizeDelta=new Vector2(width,height);
+   board.anchoredPosition=new Vector2(Mathf.Abs(layout.boardPosition.x),layout.boardPosition.y);board.sizeDelta=new Vector2(width,height);
    // Preserve row, badge and header proportions. A crowded preview scales as
    // one card instead of squeezing only its rows/column artwork vertically.
    float hoverTarget=expanded&&pointerInside&&!MenuPreferences.ReducedMotion?layout.boardHoverScale:1;

@@ -6,7 +6,7 @@ using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- public enum GolfFeedbackCue:byte {Whoosh,Swing,Putt,Turf,Sand,Cup,Finish,Ready,Stone,Wood,Ball,Water,Recovery,CartBump}
+ public enum GolfFeedbackCue:byte {Whoosh,Swing,Putt,Turf,Sand,Cup,Finish,Ready,Stone,Wood,Ball,Water,Recovery,CartBump,CartPlayer}
  public struct GolfFeedbackEvent:INetworkSerializable {
   public uint sequence,round;public double time;public ulong actor,owner;
   public GolfFeedbackCue cue;public Vector3 point,normal;public float strength;
@@ -28,7 +28,7 @@ namespace WhatTheFish {
   GolfChargeGraphic ring,edge;RectTransform uiRoot,powerMeter;Text success;CanvasGroup successOpacity;
   float chargeGain,shakeUntil,shakeStrength,successAt=-100;
   bool focused=true,paused,isQuiet=true;uint serial,received,receivedRound,observedRound;
-  readonly int[] counts=new int[14];
+  readonly int[] counts=new int[15];
   public float Charge {get;private set;}
   public float EdgeOpacity {get;private set;}
   public float LastCameraKick {get;private set;}
@@ -107,7 +107,7 @@ namespace WhatTheFish {
   }
   void Receive(ulong sender,FastBufferReader reader){var network=NetworkManager.Singleton;if(!network||network.IsServer||sender!=NetworkManager.ServerClientId||!reader.TryBeginRead(61))return;reader.ReadNetworkSerializable(out GolfFeedbackEvent e);Accept(e);}
   internal bool Accept(GolfFeedbackEvent e){
-   if(!Context||e.round!=match.Round||!double.IsFinite(e.time)||!float.IsFinite(e.point.sqrMagnitude)||!float.IsFinite(e.normal.sqrMagnitude)||!float.IsFinite(e.strength)||e.strength<0||e.strength>1||((int)e.cue>=14||e.cue==GolfFeedbackCue.Ready))return false;
+   if(!Context||e.round!=match.Round||!double.IsFinite(e.time)||!float.IsFinite(e.point.sqrMagnitude)||!float.IsFinite(e.normal.sqrMagnitude)||!float.IsFinite(e.strength)||e.strength<0||e.strength>1||((int)e.cue>=15||e.cue==GolfFeedbackCue.Ready))return false;
    double age=match.Now-e.time;if(age<-.25||age>1.2)return false;
    if(receivedRound!=e.round){receivedRound=e.round;received=0;}if(e.sequence<=received)return false;received=e.sequence;Present(e);return true;
   }
@@ -124,28 +124,33 @@ namespace WhatTheFish {
    }
    Play(e.cue,e.point,gain,(e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)&&e.owner==LocalOwner);
    if(e.cue==GolfFeedbackCue.Swing&&local&&e.strength>=.65f){shakeUntil=Time.unscaledTime+Settings.shakeSeconds;shakeStrength=e.strength;}
-   if(e.cue!=GolfFeedbackCue.Whoosh&&e.cue< GolfFeedbackCue.Ready)Burst(e);
+   if(e.cue!=GolfFeedbackCue.Whoosh&&e.cue< GolfFeedbackCue.Ready||e.cue==GolfFeedbackCue.CartBump||e.cue==GolfFeedbackCue.CartPlayer)Burst(e);
+   if(e.cue==GolfFeedbackCue.CartPlayer)Play(GolfFeedbackCue.Whoosh,e.point,.3f);
    if(e.cue==GolfFeedbackCue.Finish)GolfFishingAudio.Golf?.Play("golf-cup",e.point,Settings.cupVolume);
    if(e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)GolfCupCelebration.Play(transform,e.point);
    if(e.cue==GolfFeedbackCue.Cup&&e.owner==LocalOwner)GolfFishingAudio.Golf?.Play("golf-hole",e.point,.7f,true);
    if((e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)&&e.owner==LocalOwner){EnsureUI();successAt=Time.unscaledTime;if(success)success.text=e.cue==GolfFeedbackCue.Finish?"ALL 5 HOLES COMPLETE!":"HOLE COMPLETE!";}
   }
   void Play(GolfFeedbackCue cue,Vector3 point,float gain,bool flat=false){
-   int index=voiceIndex++%voices.Length;voiceGains[index]=gain;var source=voices[index];source.Stop();source.transform.position=point;source.spatialBlend=flat?0:.65f;source.clip=sounds.Choose(cue);source.volume=gain*MenuPreferences.SFXVolume;source.pitch=1;source.Play();
+   int index=voiceIndex++%voices.Length;voiceGains[index]=gain;var source=voices[index];source.Stop();source.transform.position=point;source.spatialBlend=flat?0:.65f;source.clip=sounds.Choose(cue);source.volume=gain*MenuPreferences.SFXVolume;source.pitch=cue==GolfFeedbackCue.CartPlayer?.8f:1;source.Play();
   }
   float Range(float low,float high)=>Mathf.Lerp(low,high,(float)random.NextDouble());
+  static Vector3 RandomDirection(int i,int count){float y=1-2*(i+.5f)/count;float radius=Mathf.Sqrt(1-y*y);float a=i*2.39996323f;return new Vector3(Mathf.Cos(a)*radius,y,Mathf.Sin(a)*radius);}
   void Burst(GolfFeedbackEvent e){
+   bool cart=e.cue==GolfFeedbackCue.CartBump,body=e.cue==GolfFeedbackCue.CartPlayer;
    bool cup=e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish;
    bool landing=e.cue==GolfFeedbackCue.Turf||e.cue==GolfFeedbackCue.Sand;
-   int count=cup?Settings.cupParticles*(e.cue==GolfFeedbackCue.Finish?2:1):landing?Settings.landingParticles:e.cue==GolfFeedbackCue.Putt?Settings.puttSparks:Settings.swingSparks;
+   int count=cart?64:body?32:cup?Settings.cupParticles*(e.cue==GolfFeedbackCue.Finish?2:1):landing?Settings.landingParticles:e.cue==GolfFeedbackCue.Putt?Settings.puttSparks:Settings.swingSparks;
    if(landing)count=Mathf.RoundToInt(count*Mathf.Lerp(.3f,1,e.strength));
    var ps=bursts[burstIndex++%bursts.Length];ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);ps.Play();
    var normal=e.normal.sqrMagnitude>.01f?e.normal.normalized:Vector3.up;
    for(int i=0;i<count;i++){
     var velocity=new Vector3(Range(-1,1),Range(.2f,1),Range(-1,1));velocity=Vector3.ProjectOnPlane(velocity,normal)+normal*Range(.15f,cup?1.6f:.65f);
-    float scale=cup?1:landing?.45f:.35f;
-    var color=cup?new Color(1,.83f,.18f):landing?e.cue==GolfFeedbackCue.Sand?new Color(.94f,.8f,.5f,.65f):new Color(.63f,.73f,.38f,.7f):new Color(1,.96f,.7f);
-    var p=new ParticleSystem.EmitParams{position=e.point+normal*.025f,velocity=velocity*scale,startColor=color,startSize=cup?Range(.04f,.09f):Range(.025f,.06f),startLifetime=cup?Range(.45f,.85f):landing?Range(.2f,.4f):Range(.08f,.18f)};ps.Emit(p,1);
+    // Unit directions and bounded speed keep the spark cloud around 1.5-2 m.
+    if(cart||body)velocity=Vector3.Slerp(RandomDirection(i,count),normal,.15f).normalized;
+    float scale=cart?Range(2.8f,3.1f):body?Range(1.2f,2.5f):cup?1:landing?.45f:.35f;
+    var color=body?(i%2==0?new Color(.45f,1,1):new Color(1,.85f,.25f)):cup?new Color(1,.83f,.18f):landing?e.cue==GolfFeedbackCue.Sand?new Color(.94f,.8f,.5f,.65f):new Color(.63f,.73f,.38f,.7f):new Color(1,.96f,.7f);
+    var p=new ParticleSystem.EmitParams{position=e.point+normal*.025f,velocity=velocity*scale,startColor=color,startSize=cart?Range(.08f,.18f):body?Range(.08f,.16f):cup?Range(.04f,.09f):Range(.025f,.06f),startLifetime=cart?Range(.45f,.65f):body?Range(.3f,.5f):cup?Range(.45f,.85f):landing?Range(.2f,.4f):Range(.08f,.18f)};ps.Emit(p,1);
    }
   }
   void Quiet(){if(isQuiet)return;isQuiet=true;Charge=EdgeOpacity=chargeGain=0;shakeUntil=0;charging.Stop();foreach(var source in voices)if(source)source.Stop();foreach(var burst in bursts)if(burst)burst.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);if(ring)ring.enabled=false;if(powerMeter)powerMeter.gameObject.SetActive(false);if(edge)edge.enabled=false;if(successOpacity)successOpacity.alpha=0;successAt=-100;}

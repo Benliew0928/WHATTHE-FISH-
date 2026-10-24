@@ -58,7 +58,7 @@ public static class CoastalIslandBuilder {
   var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(rendererPath);
   if(!renderer){renderer=ScriptableObject.CreateInstance<UniversalRendererData>();AssetDatabase.CreateAsset(renderer,rendererPath);}
   var rendererSettings=new SerializedObject(renderer);
-  rendererSettings.FindProperty("postProcessData").objectReferenceValue=null;
+  renderer.postProcessData=AssetDatabase.LoadAssetAtPath<PostProcessData>("Packages/com.unity.render-pipelines.universal/Runtime/Data/PostProcessData.asset");
   rendererSettings.ApplyModifiedPropertiesWithoutUndo();
   var feature=renderer.rendererFeatures.OfType<ScreenSpaceAmbientOcclusion>().FirstOrDefault();
   if(!feature){feature=ScriptableObject.CreateInstance<ScreenSpaceAmbientOcclusion>();feature.name="Soft contact shading";AssetDatabase.AddObjectToAsset(feature,renderer);renderer.rendererFeatures.Add(feature);}

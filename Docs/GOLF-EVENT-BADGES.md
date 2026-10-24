@@ -11,13 +11,12 @@ The baked seconds are replaced with a sampled empty gradient and the game's
 outlined live font. This permits every countdown value without baking new images.
 The source sheet is retained at its original resolution on both build targets.
 
-Badges appear at the top left, 12 HUD units beyond the actual right edge of
-the Settings button (converted between their independently scaled UI spaces).
-The event warning, active weather and Rush share this placement; width is
-clamped to the available page space on resize. Concurrent weather and Rush occupy separate rows;
-the finishing clock docks below the visible stack after its existing central
-intro. Finishing numeral size stays 50 by 50 reference UI units, with proportional
-seconds suffix. The separate wind-direction arrow is removed. Random Swap has been removed in the current event revision. Timers use the existing host deadlines;
+Badges appear at the top right, 12 HUD units to the left of the actual Settings
+button. Tropical Wind's compass sits inline at the left of its badge. Concurrent
+weather and Rush occupy separate rows, each at 75% of the previous badge size.
+The finishing clock docks at bottom centre after its existing central intro, at
+70% of the previous corner size (numerals now 35 by 35 reference UI units,
+with proportional seconds suffix). Wind direction uses the inline compass. Random Swap has been removed in the current event revision. Timers use the existing host deadlines;
 the badge implementation itself does not change scoring, ranking or ownership.
 Current event physics and protocol are documented in [event rules](GOLF-RANDOM-EVENTS.md).
 
@@ -71,5 +70,5 @@ WindowsFinal updated; fresh APK is 98,087,150 bytes. See current
 [verification records](VERIFICATION.md) for audit and recoverable archives.
 
 Moon Golf is no longer a playable or selectable event. Its unused source-image
-region remains inside the shared atlas. Current event pool and protocol 76 are
+region remains inside the shared atlas. Current event pool and protocol 85 are
 documented in [event rules](GOLF-RANDOM-EVENTS.md).

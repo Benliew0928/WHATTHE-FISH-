@@ -1,0 +1,20 @@
+{
+  "source": "Exact user-supplied PNG references, 24 October 2026",
+  "runtimeDependency": false,
+  "files": [
+    {
+      "file": "tornado-growth-reference.png",
+      "bytes": 1644795,
+      "width": 2048,
+      "height": 768,
+      "sha256": "bf1ff9722d92d1cc403dfce936ec3d0ea59ab2ef32d5d6ebf16d0db686d9e7bb"
+    },
+    {
+      "file": "tornado-shapes-reference.png",
+      "bytes": 2065757,
+      "width": 1536,
+      "height": 1024,
+      "sha256": "43f73516fed3c7ff116855edfad859cceda8c1628b74cc5fcfccd7243c387e88"
+    }
+  ]
+}

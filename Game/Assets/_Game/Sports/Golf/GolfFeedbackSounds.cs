@@ -5,7 +5,7 @@ namespace WhatTheFish {
  // Imported approved clips; ownership remains with Unity's shared Resources bank.
  public sealed class GolfFeedbackSounds:IDisposable {
   public const int Rate=32000;
-  static readonly string[] Keys={"golf-swish","golf-swing","golf-putt","golf-turf","golf-sand","golf-cup","golf-finish","golf-hole","golf-stone","golf-wood","golf-ball-hit","water-entry","recovery","cart-bump"};
+  static readonly string[] Keys={"golf-swish","golf-swing","golf-putt","golf-turf","golf-sand","golf-cup","golf-finish","golf-hole","golf-stone","golf-wood","golf-ball-hit","water-entry","recovery","cart-bump","cart-bump"};
   public readonly AudioClip[] cues=Array.ConvertAll(Keys,k=>GolfFishingAudio.Choose(k,0));
   public readonly AudioClip charge=GolfFishingAudio.Choose("golf-charge",0);
   public AudioClip Choose(GolfFeedbackCue cue)=>GolfFishingAudio.Choose(Keys[(int)cue]);

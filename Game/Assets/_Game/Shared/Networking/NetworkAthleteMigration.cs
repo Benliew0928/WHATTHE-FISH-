@@ -14,7 +14,7 @@ namespace WhatTheFish {
   [Rpc(SendTo.Server,InvokePermission=RpcInvokePermission.Owner)] void RecoveryAcknowledgedRpc(){RecoveryAcknowledged.Value=true;}
   public ulong StableId=>ParticipantId.Value;
   NetworkVariableBase[] MigrationFields(bool world)=>world?new NetworkVariableBase[]{
-   NextParticipantId,Exploring,FootballMinutes,BasketballMinutes,BasketballMatch,WorldSport,WorldTravel,WorldTeleport,WorldAppearance,AllowSpectators,Basketball,Ball,Match,FootballPlayers,BasketballPlayers,GolfMatch,GolfPlayers,FishingMatch,FishingPlayers,FishingFish
+   NextParticipantId,Exploring,FootballMinutes,BasketballMinutes,BasketballMatch,WorldSport,WorldTravel,WorldTeleport,WorldAppearance,AllowSpectators,Basketball,Ball,Match,FootballPlayers,BasketballPlayers,GolfMatch,GolfPlayers,GolfTornadoes,GolfCrabs,GolfCrabCooldowns,FishingMatch,FishingPlayers,FishingFish
   }:new NetworkVariableBase[]{
    MemberId,ParticipantId,Ready,Nickname,ProfileId,ProfileCode,ProfileAvatarVersion,ProfileAvatarIndex,ProfileHasPhoto,RoomSeat,IdentityNumber,AppearanceData,BasketballTeam,Team,Motion,Jump,Football,Effort,BasketballProp,FootballProp,BasketballPose,BasketballFreeRoam,FootballPose,Cart,GolfBall,GolfPose,GolfAim
   };

@@ -12,12 +12,13 @@ namespace WhatTheFish {
   public RectTransform Card=>card;
   public bool WindVisible=>windArrow&&windArrow.gameObject.activeInHierarchy;
   public float StackHeight {get;private set;}
+  public float DockRight {get;private set;}=100;
   public static GolfEventHUD Instance {get;private set;}
   public static GolfEventHUD Create(RectTransform page){var ui=page.gameObject.AddComponent<GolfEventHUD>();ui.Build(page);return ui;}
   void Build(RectTransform parent){
    Instance=this;page=parent;sheet=Resources.Load<Texture2D>("GolfUI/Events/BadgeSheet");warningSheet=Resources.Load<Texture2D>("GolfUI/Events/WarningSheet");tornadoSheet=Resources.Load<Texture2D>("GolfUI/Events/TornadoBadge");crabSheet=Resources.Load<Texture2D>("GolfUI/Events/CrabBadge");
    var border=GolfHUDStyle.Rect("Wind arrival screen edges",page,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);border.anchorMin=Vector2.zero;border.anchorMax=Vector2.one;border.offsetMin=border.offsetMax=Vector2.zero;border.SetAsFirstSibling();edge=border.gameObject.AddComponent<GolfWindEdgeGraphic>();edge.raycastTarget=false;edge.Strength(0);
-   card=GolfHUDStyle.Rect("Golf event notices",page,new Vector2(0,1),new Vector2(20,-20),new Vector2(410,230));card.pivot=new Vector2(0,1);
+   card=GolfHUDStyle.Rect("Golf event notices",page,Vector2.one,new Vector2(-100,-20),new Vector2(410,230));card.pivot=Vector2.one;
    var group=card.gameObject.AddComponent<CanvasGroup>();group.blocksRaycasts=false;group.interactable=false;
    weather=BuildRow("Golf weather badge");rushRow=BuildRow("Golf rush badge");
    windCompass=GolfHUDStyle.Rect("Wind compass in badge",weather.root,new Vector2(.5f,.5f),Vector2.zero,new Vector2(32,32));var face=GolfHUDStyle.Panel(windCompass,GolfHUDStyle.Cream,true);face.cornerRadius=100;
@@ -60,22 +61,21 @@ namespace WhatTheFish {
    float windTarget=active==GolfEventKind.TropicalWind?Mathf.Max(config.windSustainOpacity*breath,Mathf.Sin(Mathf.Clamp01(age)*Mathf.PI)*config.windEdgeOpacity):active is GolfEventKind.StickyGreen or GolfEventKind.BounceParty?config.weatherEdgeOpacity*breath:0;
    windEdgeLevel=MenuPreferences.ReducedMotion?0:Mathf.MoveTowards(windEdgeLevel,windTarget,Time.unscaledDeltaTime*.6f);
    edge.Strength(windEdgeLevel,active==GolfEventKind.StickyGreen?config.stickyColor:active==GolfEventKind.BounceParty?config.bounceColor:new Color(.58f,.68f,.77f));
-   bool visible=rush||warn||active!=GolfEventKind.None;card.gameObject.SetActive(visible);if(!visible)return;
    // The island menu scales independently of this HUD. Convert its actual
-   // button edge into our page space so all notice types clear it on resize.
-   float left=20;var menu=GolfHUD.Instance?GolfHUD.Instance.IslandMenu:null;
+   // button edge into our page space; notices sit beside its left edge.
+   float right=20;var menu=GolfHUD.Instance?GolfHUD.Instance.IslandMenu:null;
    if(menu&&menu.GearRect&&menu.GearRect.gameObject.activeInHierarchy){
     menu.GearRect.GetWorldCorners(gearCorners);
-    for(int i=0;i<gearCorners.Length;i++)left=Mathf.Max(left,page.InverseTransformPoint(gearCorners[i]).x-page.rect.xMin+12);
+    for(int i=0;i<gearCorners.Length;i++)right=Mathf.Max(right,page.rect.xMax-page.InverseTransformPoint(gearCorners[i]).x+12);
    }
-   card.anchoredPosition=new Vector2(left,-20);
-   float width=Mathf.Min(410,Mathf.Min(page.rect.width*.43f-24,page.rect.width-left-20)),y=0;weather.root.gameObject.SetActive(warn||active!=GolfEventKind.None);rushRow.root.gameObject.SetActive(rush);
+   DockRight=right;card.anchoredPosition=new Vector2(-right,-20);
+   bool visible=rush||warn||active!=GolfEventKind.None;card.gameObject.SetActive(visible);if(!visible)return;
+   float width=Mathf.Min(410,Mathf.Min(page.rect.width*.40f-24,page.rect.width-right-config.windCompassSize-40))*.75f,y=0;weather.root.gameObject.SetActive(warn||active!=GolfEventKind.None);rushRow.root.gameObject.SetActive(rush);
    if(warn||active!=GolfEventKind.None){int index=warn?5:BadgeIndex(state.kind);int seconds=(int)Math.Ceiling(warn?state.start-now:state.end-now);y+=ShowRow(weather,index,seconds,y,width)+8;}
-   if(active==GolfEventKind.TropicalWind&&!warn)y+=config.windCompassSize+16;
    if(rush)y+=ShowRow(rushRow,4,(int)Math.Ceiling(state.rushAt+GolfEventSchedule.RushDuration-now),y,width)+8;
    Pulse(weather,weatherAt);Pulse(rushRow,rushAt);
    windCompass.gameObject.SetActive(active==GolfEventKind.TropicalWind&&!warn);
-   if(WindVisible){float size=config.windCompassSize;windCompass.anchorMin=windCompass.anchorMax=new Vector2(0,0);windCompass.anchoredPosition=new Vector2(size*.5f+4,-size*.5f-8);windCompass.sizeDelta=Vector2.one*size;windCompass.localScale=Vector3.one*(MenuPreferences.ReducedMotion?1:1+.04f*Mathf.Sin(Time.unscaledTime*2));windArrow.sizeDelta=new Vector2(size*.58f,size*.7f);var camera=Camera.main;if(camera){var drift=state.wind;float x=Vector3.Dot(camera.transform.right,drift),yDirection=Vector3.Dot(Vector3.ProjectOnPlane(camera.transform.forward,Vector3.up).normalized,drift);windArrow.localRotation=Quaternion.Euler(0,0,-Mathf.Atan2(x,yDirection)*Mathf.Rad2Deg);}}
+   if(WindVisible){float size=config.windCompassSize*.75f;windCompass.anchorMin=windCompass.anchorMax=new Vector2(0,.5f);windCompass.anchoredPosition=new Vector2(-size*.5f-12,0);windCompass.sizeDelta=Vector2.one*size;windCompass.localScale=Vector3.one*(MenuPreferences.ReducedMotion?1:1+.04f*Mathf.Sin(Time.unscaledTime*2));windArrow.sizeDelta=new Vector2(size*.58f,size*.7f);var camera=Camera.main;if(camera){var drift=state.wind;float x=Vector3.Dot(camera.transform.right,drift),yDirection=Vector3.Dot(Vector3.ProjectOnPlane(camera.transform.forward,Vector3.up).normalized,drift);windArrow.localRotation=Quaternion.Euler(0,0,-Mathf.Atan2(x,yDirection)*Mathf.Rad2Deg);}}
    StackHeight=y;card.sizeDelta=new Vector2(width,y);
   }
   static void Pulse(Row row,float at){float age=Time.unscaledTime-at;float scale=MenuPreferences.ReducedMotion||age>=.45f?1:1+.035f*Mathf.Sin(Mathf.Clamp01(age/.45f)*Mathf.PI);row.root.localScale=Vector3.one*scale;}

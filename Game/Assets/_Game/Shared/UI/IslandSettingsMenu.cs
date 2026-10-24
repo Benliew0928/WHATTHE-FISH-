@@ -25,7 +25,7 @@ namespace WhatTheFish {
   void Initialize(RectTransform parent,RectTransform node,SportId id){page=parent;root=node;sport=id;Build();Layout();}
   void Build(){
    gear=BasketballUIStyle.Button(root,sport+" settings","",0,0,48,48,Toggle);
-   var anchor=new Vector2(Fishing?1:0,1);GearRect.anchorMin=GearRect.anchorMax=GearRect.pivot=anchor;GearRect.anchoredPosition=new Vector2(Fishing?-18:18,-15);
+   var anchor=Vector2.one;GearRect.anchorMin=GearRect.anchorMax=GearRect.pivot=anchor;GearRect.anchoredPosition=new Vector2(-18,-16);
    gear.GetComponent<BasketballPlate>().radius=Vector2.one*17;BasketballUIStyle.Art(gear.transform,BasketballIcon.Gear,9.5f,9.5f,29,29);
    var shade=BasketballUIStyle.Plate(root,sport+" menu overlay",0,0,800,450,new Color(.07f,.25f,.31f,.46f),0,0);overlay=shade.rectTransform;CoveUI.Stretch(overlay);shade.raycastTarget=true;
    // Golf's finish clock has its own sorting canvas. The complete modal must

@@ -25,6 +25,7 @@ namespace WhatTheFish {
    if(!ball){observedHazardBall=null;return;}
    if(observedHazardBall!=ball||observedHazardRound!=match.Round){observedHazardBall=ball;observedHazardRound=match.Round;observedHazardLaunch=ball.HazardLaunch;return;}
    if(observedHazardLaunch==ball.HazardLaunch)return;observedHazardLaunch=ball.HazardLaunch;
+   if(!ball.HazardReplay){if(followedGolfBall==ball)ReturnFromGolfShot();return;}
    if(InputBlocked||!active||!match.State.Running)return;
    followedGolfBall=ball;golfCameraActor=target;golfCameraRound=match.Round;golfCameraReset=ball.ResetSequence;
    golfCameraPhase=GolfCameraPhase.Flight;golfCameraAt=Time.time;golfCameraStill=0;

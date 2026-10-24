@@ -19,6 +19,14 @@ namespace WhatTheFish {
   public bool SafeDryPosition(Vector3 world,float margin=1){
    var p=transform.InverseTransformPoint(world);foreach(var water in waterPatches)if(water.Contains(p.x,p.z,margin))return false;return true;
   }
+  // Match visible bunker/green/tee overrides without mistaking rough for sand.
+  public float SandAmount(Vector3 world){
+   var p=transform.InverseTransformPoint(world);float amount=MobileIslandGrass.GolfSand(p.x,p.z);
+   foreach(var sand in sandPatches)if(sand.Contains(p.x,p.z))amount=1;
+   foreach(var green in greens){float d=Vector2.Distance(new Vector2(p.x,p.z),new Vector2(green.centre.x,green.centre.z));amount*=Mathf.SmoothStep(0,1,Mathf.InverseLerp(green.radius,green.radius+2,d));}
+   foreach(var site in teeSites){int surface=site.Surface(p.x,p.z);if(surface>0)amount=surface==2?1:0;if(site.GroundWeight(p.x,p.z)>.95f)amount=0;}
+   return Mathf.Clamp01(amount);
+  }
   public float RollingResistance(Vector3 world,GolfBallPhysicsSettings settings){
    var p=transform.InverseTransformPoint(world);
    float fairway=24*Mathf.Sin((p.z+135)/55)-5;

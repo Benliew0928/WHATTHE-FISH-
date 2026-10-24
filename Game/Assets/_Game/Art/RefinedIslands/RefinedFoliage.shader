@@ -11,7 +11,8 @@ Shader "WhatTheFish/RefinedFoliage" {
  SubShader {Tags {"RenderPipeline"="UniversalPipeline" "RenderType"="Opaque"} Cull Off
  HLSLINCLUDE
  #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
- float4 _GolfWind,_GolfWindArea;
+ float4 _GolfWind,_GolfWindArea,_GolfTornado0,_GolfTornado1;
+ float2 TornadoPull(float2 world,float4 storm){float2 d=storm.xy-world;float f=saturate(1-dot(d,d)/max(.01,storm.z*storm.z))*storm.w;float2 n=d*rsqrt(max(.04,dot(d,d)));return (n*.7+float2(-n.y,n.x)*.45)*f*f;}
  struct WindInput {float4 p:POSITION;float3 n:NORMAL;float4 tangent:TANGENT;float2 uv:TEXCOORD0;float2 bend:TEXCOORD1;UNITY_VERTEX_INPUT_INSTANCE_ID};
  float3 IslandWind(float3 p,float2 uv,float2 bend){
   float3 world=TransformObjectToWorld(p);float event=saturate(_GolfWind.z)*step(distance(world.xz,_GolfWindArea.xy),_GolfWindArea.z);
@@ -21,6 +22,7 @@ Shader "WhatTheFish/RefinedFoliage" {
   float phase=dot(world.xz,_GolfWind.xy)*.65-t*2.4;float gust=.78+.22*sin(phase);
   float2 across=float2(-_GolfWind.y,_GolfWind.x);
   world.xz+=event*flex*flex*(lerp(.42,.24,grass)*gust*_GolfWind.xy+across*sin(phase*2.3)*.045);
+  world.xz+=(TornadoPull(world.xz,_GolfTornado0)+TornadoPull(world.xz,_GolfTornado1))*flex*flex*lerp(.55,.35,grass);
   return TransformWorldToObject(world);
  }
 

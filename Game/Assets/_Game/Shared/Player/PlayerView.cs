@@ -69,7 +69,7 @@ namespace WhatTheFish {
   void OnEnable(){Instance=this;}
   void OnApplicationFocus(bool focus){if(!focus)CancelInput();}
   void OnApplicationPause(bool paused){if(paused)CancelInput();}
-  public void RequestJump(){if(!TutorialSession.Allows("jump"))return;if(BasketballRole==WhatTheFish.BasketballRole.Defense){RequestBlock(true);return;}if(active&&!GolfAimRequested&&target&&target.CanRequestJump)pendingJump=true;}
+  public void RequestJump(){if(!TutorialSession.Allows("jump"))return;if(BasketballRole==WhatTheFish.BasketballRole.Defense){RequestBlock(true);return;}if(active&&!GolfAimRequested&&target&&target.CanRequestJump){ReturnFromGolfShot();pendingJump=true;}}
   bool pendingShotBegin,pendingShotCancel;int shotSource;double shotPhase,shotSampled,pendingShotReleasedAt;Transform shotHoop;
   public bool ShotCharging {get;private set;}
   public Transform SelectedShotHoop=>shotHoop;
@@ -165,6 +165,7 @@ namespace WhatTheFish {
    if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
    if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingCeremony.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
+   if(!InputBlocked&&!GolfAimRequested&&((stick&&stick.value.sqrMagnitude>.0064f)||Mathf.Abs(Input.GetAxisRaw("Horizontal"))>.08f||Mathf.Abs(Input.GetAxisRaw("Vertical"))>.08f))ReturnFromGolfShot();
    if(!active||!target){ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();ResetActivityStadiumCamera();HideKickAim();return;}
    bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;
    if(!InputBlocked&&!fishingModal&&Input.GetKeyDown(KeyCode.C))Switch();

@@ -1,5 +1,282 @@
 # Build size — measured release records
 
+## Crab target priority and cart paving support - 24 October 2026
+
+Crab push immunity is **5 seconds per ball shared across all crabs**. A crab
+pushes only its selected ball, drops the target, retreats for 0.5 seconds toward
+a checked point up to 2.5 m away, then seeks an eligible non-cooling ball. An
+existing valid target keeps priority when another ball becomes ready. Without
+an eligible target it resumes patrol and can reacquire a recovered ball within
+the existing 16 m lane range. Chase speed and push impulse remain unchanged.
+Host-owned crab motion, target/retreat state and shared cooldowns replicate at
+10 Hz and survive host recovery. All peers require **protocol 85**.
+
+Golf carts now use the authored thin Path/Approach paving ribbons as wheel and
+floor support; the same ribbons no longer block the cart body sweep/overlap
+checks. Paving seams stay drivable instead of trapping the body while wheels
+sample the lower terrain. Border stones, rocks, columns, railings and walls keep
+their collisions. No authored map, mesh, material or water rule was modified.
+
+Complete **328-file WindowsFinal** built at **21:05:34 Malaysia time**; official
+AndroidSubmission at **21:09:15**. APK **115,486,810 -> 115,490,126 bytes (+3,316)**;
+strict decimal-GB headroom **884,509,874 bytes**. SHA-256:
+**70B005F051BD58A39C701D46113813396CFC20D1D1F38AA69236E2980986DF6A**.
+Budget gate, ZIP CRCs, matching scene-bundle catalogue hashes, compiled-code
+presence and APK v2 signature passed. Largest compressed entries: island bundle
+45,380,802; IL2CPP 12,806,470; Unity 9,808,570; metadata 2,818,632 bytes.
+No unexpected large contributors or new art assets.
+
+Source hashes match after restoring reviewed generated prefab-ID/material
+provenance/newline noise. Existing unrelated pending work is preserved. Evidence:
+ignored `Builds/GolfCrabTargetsPath/` (task diff, source hashes, package/signature
+checks, build/audit logs and readiness report). No new gameplay, multiplayer or
+physical-phone tests were run; driving/target behaviour needs in-game confirmation.
+Previous complete player/APK: `Legacy/20261024-210033-592-golf-crab-targets-path/`.
+An interrupted intermediate build log is retained in
+`Legacy/20261024-210203-933-crab-target-build-draft/`.
+No Git staging, commit or push.
+
+## Tornado proximity transition, 28 m roaming and crab cooldown - 24 October 2026
+
+Tornado roaming now uses **28 m** for spawn/waypoint sampling, movement bounds
+and fade relocation. Body/haze visibility stays **50% / 40%**. Crab push immunity
+is now **4 seconds per ball shared by all crabs**; the host's existing common
+cooldown dictionary gates every crab before a push. Chase speed and push impulse
+are unchanged. Wire protocol remains **84**.
+
+Proximity presentation now uses a critically damped 0.6-second response, capped
+per-frame integration and the rendered funnel's relocation opacity. The local
+post path warms within 28 m, outside the visible 14 m tint zone, then stays
+prepared for that event. Colour values and Gaussian CoC/radius animate from
+neutral with full volume weight, avoiding the non-interpolating Gaussian mode
+switch at tiny volume weights. A previously disabled camera's unrelated scene
+tone mapping is suppressed while this neutral-to-haze path is prepared; existing
+grading stays enabled on already-graded cameras. Camera options restore on exit.
+UI stays sharp; no phone FPS or visual-playthrough result is claimed.
+
+Complete **328-file WindowsFinal** built at **20:21:44 Malaysia time**; official
+AndroidSubmission at **20:25:19**. APK **115,485,634 -> 115,486,810 bytes (+1,176)**;
+strict decimal-GB headroom **884,513,190 bytes**. SHA-256:
+**22DB85E318CED071F7187939AD027F8282F349F5B25E79DD328060E11EBA6147**.
+Budget gate, ZIP CRCs, matching bundle-catalogue SHA-256 and APK v2 signature
+passed. Largest compressed entries: island bundle 45,383,935; IL2CPP 12,800,680;
+Unity 9,808,570; metadata 2,818,047 bytes. No unexpected asset growth.
+
+Four game source files changed for this task. Source hashes match after restoring
+reviewed generator-only prefab IDs/material provenance/newline noise; authored
+maps and unrelated assets remain unchanged. Evidence: ignored
+`Builds/GolfHazardSmooth28/` (task diff, source hashes, build/audit logs, package
+checks and readiness report). No new gameplay, multiplayer, visual-playthrough
+or physical-phone tests were run; smoothness in actual play remains unverified.
+Previous complete player/APK archived in
+`Legacy/20261024-201805-345-golf-hazard-smooth28/`.
+No Git staging, commit or push; existing pending work is preserved.
+
+## Tornado opacity and 35 m roaming - 24 October 2026
+
+Tornado body visibility is now **50%**, evolving ground haze at most **40%**.
+Random spawn/waypoint sampling, movement bounds and distant-ball relocation all
+use the shared **35 m** radius. Body/debris animation, speed/growth, sand effects,
+catch/throw rules and protocol **84** are unchanged. The body opacity changes
+from 0.4 to 0.5; the fog changes from 0.2 to 0.4; other layer opacity stays 0.4.
+
+Complete 328-file WindowsFinal built at **19:58:35 Malaysia time**; official
+AndroidSubmission at **20:01:54**. APK **115,486,074 -> 115,485,634 bytes (-440)**;
+strict decimal-GB headroom **884,514,366 bytes**. SHA-256:
+**6CBB41BBEA8556AD134099D29F1648AE198A87A02B88762639DD8B01BCC2EA50**.
+Budget gate, ZIP CRCs, matching scene-bundle catalogue hashes and APK v2 signature
+passed. Largest entries: island bundle 45,379,627; IL2CPP 12,803,997; Unity
+9,808,570; metadata 2,817,863 compressed bytes. No unexpected size growth.
+
+Only three game source files changed for this tuning. Full source hashes match
+after restoring reviewed generator-only prefab/material provenance noise; maps
+and unrelated assets remain unchanged. Evidence: ignored
+`Builds/GolfTornadoVisibility35/` (task diff, hashes, build logs, package/signature
+checks and readiness report). No new gameplay, multiplayer, visual-playthrough
+or physical-phone tests were run; mobile performance is unverified.
+Superseded complete player/APK archived in
+`Legacy/20261024-195447-572-golf-tornado-visibility35/`.
+No Git staging, commit or push; earlier pending work is preserved.
+
+## Tornado atmosphere and ball-centred roaming - 24 October 2026
+
+Tornado body/debris now use 40% visible opacity and the evolving ground haze
+at most 20%. Inward ground spirals, entrained foliage and sand rise progressively;
+leaving sand clears from bottom to top. Rooted foliage bends inward. Camera
+proximity smoothly adds grey/desaturation and Gaussian depth blur while overlay
+UI stays sharp; previous camera settings restore on exit. Actual runtime geometry,
+materials and postprocess were inspected through editor authoring renders.
+These renders do not establish gameplay, multiplayer or physical-phone results.
+
+The host now selects random dry, cup-safe points within 20 m of each unfinished
+player's live ball. Positions/velocity/waypoints and sand-source history are
+replicated at 10 Hz and included in host recovery. Small funnels move slowly;
+eight-second growth permits component caps of 6 m/s sideways and 5 m/s forward
+only at full size. Distant shots/resets use a fade relocation. Catch/throw rules,
+crab parameters, ownership and scores are unchanged. All peers require protocol
+**84**. See [hazard details](GOLF-HAZARDS.md).
+
+Complete **328-file WindowsFinal** built at **19:21:19 Malaysia time** and official
+AndroidSubmission at **19:26:14**. APK **113,331,282 -> 115,486,074 bytes
+(+2,154,792)**; remaining strict decimal-GB headroom **884,513,926 bytes**.
+SHA-256: **5895EA3158627887B0F8E8A3639ECA18A5072E9C0A00AE3BA346DCAA4C98AF85**.
+Budget gate, ZIP CRC integrity and APK v2 signature passed. The roughly 2.15 MB
+increase is primarily URP postprocess shader/resource data; the island bundle
+is 45,380,035 compressed bytes (3,412 fewer after rebuilding). No new raster textures or changed maps.
+
+Source a653bd1 plus preserved earlier/current uncommitted changes. Expected
+source hashes match after restoring reviewed prefab-ID/provenance/newline build
+noise. Evidence: ignored `Builds/GolfTornadoAtmosphere/` (authoring renders,
+source hashes, logs, package manifests, signature and readiness report).
+No new gameplay, multiplayer or physical-device tests were run; phone FPS and
+in-game network recovery remain unverified. Previous complete player/APK and
+first draft render log are archived in
+`Legacy/20261024-191731-265-golf-tornado-atmosphere/`. The incomplete space-exhausted
+backup is archived in `Legacy/20261024-185758-490-tornado-incomplete-backup/`.
+No Git staging, commit or push.
+
+## Reference tornado model and entry growth - 24 October 2026
+
+Tornado sideways peak is now **6 m/s** (0.75 rad/s with the original 8 m
+amplitude); forward/backward peak remains 5 m/s. Other hazard physics and crab
+parameters are unchanged. [Tornado presentation](GOLF-HAZARDS.md) now uses an
+editable grey-blue hollow rolled funnel with cloud folds, white wind ribbons,
+16 leaves, 12 stones and 13 dust puffs. Four profiles blend continuously; the
+shared event age grows the visual from 18% to 100% over eight seconds. Catch
+radius and gameplay do not scale with the cosmetic growth. Reduced Motion
+freezes orbit/profile cycling. Existing 70 m culling remains. Three shared
+mesh/material layers, retained buffers and cached shape samples are used.
+
+Exact [supplied PNG references](../ArtSource/GolfEvents/References/README.md)
+are retained outside Unity with byte hashes; they are not packaged runtime
+textures. This is a native 3D interpretation, **not a pixel-identical copy of the
+2D reference sheets**. Actual runtime meshes/materials were inspected through
+editor-rendered growth, four silhouettes and a close view; images and render
+log are under ignored `Builds/GolfTornadoArt/Preview/` and `preview.log`.
+These authoring renders do not establish in-game multiplayer or phone quality.
+
+Complete 328-file WindowsFinal built at **18:03:06 Malaysia time**;
+official AndroidSubmission at **18:08:04**. Actual APK:
+**113,320,318 -> 113,331,282 bytes (+10,964)**; strict decimal-GB headroom
+**886,668,718 bytes**. SHA-256:
+**9B7A55B6DAB5A1F087E439CFEE2804097676C452AEFED0478B07D9E691BD6064**.
+Both builds, budget gate, 1,238 ZIP entry CRCs and APK v2 signature passed.
+Largest compressed contributors: islands 45,383,447; IL2CPP 12,780,941; Unity
+9,808,570; metadata 2,817,263; warning art 2,343,698; event atlas 1,692,260 bytes.
+Growth is small shader/code/bundle rebuilding; no unexpected large contributor.
+All peers should use the updated build; wire protocol remains 83.
+
+Source `a653bd1` plus preserved earlier and current uncommitted changes. Expected
+source hashes match after restoring only reviewed prefab-ID/provenance/newline
+build noise; authored maps and unrelated art remain unchanged. Evidence is under
+ignored `Builds/GolfTornadoArt/`, including source integrity, package manifests,
+AndroidAudit, signature and final build/render logs. **No new gameplay,
+multiplayer or physical-device tests were run; phone FPS is unverified.**
+Old complete Windows player, APK and reviewed earlier preview drafts are archived
+in `Legacy/20261024-175949-250-golf-tornado-art/`. No Git staging, commit or push.
+
+## Crab pursuit and tornado patrol tuning - 24 October 2026
+
+Only the requested [hazard parameters](GOLF-HAZARDS.md) changed: crab chase
+5.0 m/s; additive ball velocity 6.5 m/s horizontal and 3.5 m/s upward; per-ball
+cooldown shared by every crab 2.5 seconds. Tornado component peak speeds are
+9 m/s sideways and 5 m/s forward/backward, retaining 8 m / 2 m amplitudes and
+all other hazard rules. Protocol remains 83; use the updated build on all peers.
+
+Complete 328-file Windows player built at **16:13:57 Malaysia time**, then
+promoted to `Builds/WindowsFinal/` after both games closed. All candidate file
+hashes and the source snapshot matched before promotion. The superseded full
+player is archived in `Legacy/20261024-163328-314-golf-hazard-tuning-player/`.
+Official AndroidSubmission completed at **16:18:05**. Actual APK:
+**113,325,786 -> 113,320,318 bytes (-5,468)**; strict-cap headroom:
+**886,679,682 bytes**. SHA-256:
+**105503DD1443720BB9B59AB8BFAE912B4FF5B7FAB5A252C43C78F73B9350E6E5**.
+Build/budget gate, 1,238 ZIP entry CRCs and APK v2 signature passed. Largest
+compressed entries: islands 45,373,230; IL2CPP 12,777,355; Unity 9,809,039;
+metadata 2,816,664; warning art 2,343,698; event atlas 1,692,260 bytes.
+No image/audio assets were added, and there is no unexpected large contributor.
+
+Source base `a653bd1` plus preserved existing and current uncommitted work.
+Source hashes match after restoring reviewed prefab local-ID, provenance and
+newline generation noise; authored maps/assets remain unchanged. Evidence is
+under ignored `Builds/GolfHazardTuning/`, including final build logs,
+`AndroidAudit/`, source integrity, package entry sizes/signature and Windows
+candidate manifest. No gameplay, multiplayer or device tests were run; phone
+performance remains unverified. No Git staging, commit or push.
+Superseded APK archive: `Legacy/20261024-161433-404-golf-hazard-tuning-apk/`.
+
+## Cart pedestrian impacts and compact event layout - 24 October 2026
+
+Updated [Golf impacts and HUD](GOLF-CART-HUD-POLISH.md): 64 car/car sparks
+(0.08-0.18 m, 0.45-0.65 s), approximately 1-3 m recoil per cart with held-throttle
+protection; Host-authoritative pedestrian launch with Aim/input cancellation,
+existing jump pose/network movement and pooled impact audio/particles. Chat and
+sticker launchers share the Aim fade. Event badges retain their art at 75% scale;
+final countdown retains its central introduction and docks at bottom centre at
+70% of the previous corner size (35 x 35 numerals). All peers need protocol 83.
+
+Complete 328-file Windows player built at **01:02:49 Malaysia time**; official
+AndroidSubmission at **01:05:55**. Actual APK **113,325,590 -> 113,325,786 bytes
+(+196)**; strict decimal-GB headroom **886,674,214 bytes**. SHA-256:
+**BACA422F6D6AE76EE67723E983EF4A7160703060E6861007D9889DB9AFB3ED7F**.
+Build/budget gate, all 1,238 ZIP entry CRCs and APK v2 signature passed. Largest
+compressed entries: islands 45,379,025; IL2CPP 12,777,030; Unity 9,809,039;
+metadata 2,816,664; warning artwork 2,343,698; event atlas 1,692,260 bytes.
+No new bitmap/audio assets; no unexpected large contributor. New hit methods/RPC
+are present in the resulting APK metadata and absent from the superseded APK.
+
+Base source `a653bd1` plus existing and current uncommitted changes. Source hashes
+match the expected snapshot after restoring reviewed prefab local-ID/provenance/
+newline generation changes. Authored maps/assets were preserved. Evidence:
+ignored `Builds/GolfImpactLayout/`, including final logs, source integrity record,
+Windows manifest, AndroidAudit, package sizes/entries, code presence and signature.
+Compilation and packaging passed; **no new gameplay, multiplayer or device tests
+were run**, and phone FPS/quality are unverified. No staging, commit or push.
+
+Superseded complete player/APK archived in
+`Legacy/20261024-005046-827-golf-impact-layout/`; intermediate player archived in
+`Legacy/20261024-005919-401-golf-impact-intermediate/`. Build evidence was retained.
+The first Android attempt was interrupted to include the recoil throttle guard;
+the final Android build completed successfully.
+
+## Golf cart impacts, HUD and finisher honours - 24 October 2026
+
+Implemented [cart/HUD polish](GOLF-CART-HUD-POLISH.md): Host-authoritative recoil
+for both colliding carts with existing swept/support movement checks; broadcast
+CartBump sparks/audio; full-card leaderboard opening; leaderboard top-left with
+chat/stickers below; Settings top-right matching Football; event notices on its
+left with the wind compass to the left of the badge. Finishing clock docks below
+the right event stack. The in-game Players profile launcher is retired globally.
+Movement and Jump return the Golf shot camera; crab nudges no longer initiate
+ball replay. A separate replicated hazard-replay flag retains tornado playback
+and stale-shot invalidation; matching **protocol 82** is required on every peer.
+Golf honours show only completed players, preserving score/tie ranks, centre/left/
+right staging and gold/silver/bronze rank/name badges. Fishing's awards roster and
+staging retain their existing behaviour. No map or image assets were changed.
+
+Final full Windows build succeeded at **23:54:30 Malaysia time, 23 October**.
+Official AndroidSubmission succeeded at **00:00:57 Malaysia time, 24 October**.
+Actual local APK **110,542,380 -> 113,325,590 bytes (+2,783,210)**; strict decimal-GB
+headroom **886,674,410 bytes**. Build/budget gate, ZIP CRC and independent APK v2
+signature passed. SHA-256:
+**331B7F6E57C448A688A535531E0B51C528DAEA5A8F5C795E0840CFA8F2169847**.
+Largest compressed entries: islands **45,378,945**, IL2CPP **12,776,984**, Unity
+**9,809,039**, metadata **2,816,597**, warning art **2,343,698**, event atlas
+**1,692,260** bytes. The old local APK predates the latest pulled source; major
+added entries are already-merged ControlArt Frames/CourtIcons/FishingIcons and
+StormPuff assets. This task adds no bitmap assets; no unexpected large contributor.
+
+Builds use base `a653bd1` plus the uncommitted task changes. Source hashes were
+checked after restoring only reviewed prefab-ID/provenance/newline generation
+noise; authored maps/assets match the pre-build snapshot. Evidence is under
+ignored `Builds/GolfCartHudPolish/`, including both Windows logs, the final source
+hash snapshot, `AndroidAudit/`, APK entry deltas, signature and package manifest.
+No new gameplay, multiplayer or device tests were run; successful compilation
+and packaging do not establish those results. No phone FPS/quality claim.
+Superseded full player: `Legacy/20261023-234644-549-golf-cart-hud-player/`;
+superseded local APK: `Legacy/20261023-235534-218-golf-cart-hud-apk/`.
+No staging, commit or push.
+
 ## Open type labels and activity cameras — 23 October 2026
 
 The [approved second label design](PLAYER-IDENTITY-CAMERAS.md) is now shared

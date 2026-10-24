@@ -8,7 +8,7 @@ namespace WhatTheFish {
   public const ulong OfflineOwner=ulong.MaxValue-1;
   public const float DriveDistance=3.35f;
   public static GolfCartWorld Instance {get;private set;}
-  sealed class Record {public Athlete owner;public GolfCartState state;public GolfCart view;}
+  sealed class Record {public Athlete owner;public GolfCartState state;public GolfCart view;public Vector3 recoil;public float impactAt=-10;}
   readonly Dictionary<ulong,Record> records=new();GolfCart prefab;
   static AppRoot App=>AppRoot.Instance;
   public static bool Authority=>App&&(!App.rooms.Connected||App.rooms.Host);
@@ -56,14 +56,14 @@ namespace WhatTheFish {
     if(GolfCartMotor.Surface(proposed,owner.transform.eulerAngles.y,out position,out rotation)&&Mathf.Abs(position.y-owner.transform.position.y)<1.8f&&GolfCartMotor.Clear(position,rotation,null,owner)){placed=true;break;}
    }
    if(!placed)return false;
-   var record=existing??new Record();record.owner=owner;
+   var record=existing??new Record();record.owner=owner;record.recoil=Vector3.zero;record.impactAt=-10;
    record.state=new GolfCartState{summoned=true,position=position,rotation=rotation,driver=GolfCartState.NoDriver,revision=record.state.revision+1};
    records[key]=record;CreateView(key,record);record.view.Apply(record.state,true);return true;
   }
   bool Recall(Athlete owner,ulong key){
    if(!records.TryGetValue(key,out var record)||record.owner!=owner||!record.state.summoned)return false;
    var driver=Actor(record.state.driver);if(driver)Exit(driver,key,true);
-   record.state.summoned=false;record.state.driver=GolfCartState.NoDriver;record.state.speed=0;record.state.revision++;
+   record.state.summoned=false;record.state.driver=GolfCartState.NoDriver;record.state.speed=0;record.recoil=Vector3.zero;record.state.revision++;
    if(record.view){record.view.gameObject.SetActive(false);Destroy(record.view.gameObject);}record.view=null;return true;
   }
   bool Enter(Athlete actor,ulong key){
@@ -101,8 +101,36 @@ namespace WhatTheFish {
   public static bool Simulate(Athlete actor,PlayerCommand command,float dt){
    var cart=Driving(actor);if(!cart)return false;
    if(!Authority||!Allowed||actor.inTransit)return true;
-   var record=Instance.records[cart.Owner];GolfCartMotor.Step(cart,ref record.state,command.move,dt);
+   var record=Instance.records[cart.Owner];
+   // Do not let held throttle immediately cancel the collision separation.
+   // Release driving once nearly all of the bounded recoil has been travelled.
+   if(record.recoil.sqrMagnitude>.04f){record.state.speed=0;record.state.steering=command.move.x*GolfCartMotor.WheelSteeringAngle;}
+   else GolfCartMotor.Step(cart,ref record.state,command.move,dt);
    cart.Apply(record.state,true);cart.PlaceDriver(actor);actor.speed=0;return true;
+  }
+  public static void Impact(GolfCart cart,GolfCart other,Vector3 normal){
+   if(!Authority||!Allowed||!cart||!other||cart==other||!Instance||!Instance.records.TryGetValue(cart.Owner,out var a)||!Instance.records.TryGetValue(other.Owner,out var b))return;
+   if(!a.state.summoned||!b.state.summoned||Time.fixedTime-a.impactAt<.35f||Time.fixedTime-b.impactAt<.35f)return;
+   normal=Vector3.ProjectOnPlane(normal,Vector3.up);
+   if(normal.sqrMagnitude<.01f)normal=Vector3.ProjectOnPlane(a.state.position-b.state.position,Vector3.up);
+   if(normal.sqrMagnitude<.01f)return;normal.Normalize();
+   var av=a.state.rotation*Vector3.forward*a.state.speed+a.recoil;var bv=b.state.rotation*Vector3.forward*b.state.speed+b.recoil;
+   float closing=-Vector3.Dot(av-bv,normal);if(closing<.8f)return;
+   // Exact exponential integration gives 1-3 m per cart on unobstructed ground.
+   float impulse=5*Mathf.Lerp(1,3,Mathf.InverseLerp(.8f,20,closing));
+   a.recoil=normal*impulse;b.recoil=-normal*impulse;
+   a.state.speed*=.2f;b.state.speed*=.2f;a.impactAt=b.impactAt=Time.fixedTime;
+   GolfFeedback.Emit(GolfFeedbackCue.CartBump,(a.state.position+b.state.position)*.5f+Vector3.up*.65f,normal,Mathf.Clamp01(closing/15),cart.Owner,other.Owner);
+  }
+  void FixedUpdate(){
+   if(!Authority)return;
+   foreach(var record in records.Values){
+    if(!Allowed||!record.state.summoned||!record.view){record.recoil=Vector3.zero;continue;}
+    if(record.recoil.sqrMagnitude<.0025f){record.recoil=Vector3.zero;continue;}
+    if(!GolfCartMotor.Recoil(record.view,ref record.state,record.recoil*((1-Mathf.Exp(-5*Time.fixedDeltaTime))/5)))record.recoil=Vector3.zero;
+    else record.recoil*=Mathf.Exp(-5*Time.fixedDeltaTime);
+    record.view.Apply(record.state,true);var driver=Actor(record.state.driver);if(driver)record.view.PlaceDriver(driver);
+   }
   }
   static Athlete Actor(ulong key)=>key==GolfCartState.NoDriver?null:Athlete.Active.FirstOrDefault(a=>Key(a)==key);
   public static Athlete ActorFor(ulong key)=>Actor(key);

@@ -75,6 +75,7 @@ public static partial class ProjectBuilder {
   }
   var rainbowMaterial=RainbowMaterial();
   var renderer=AssetDatabase.LoadAssetAtPath<UniversalRendererData>(Root+"Settings/MobileRenderer.asset");if(!renderer){renderer=ScriptableObject.CreateInstance<UniversalRendererData>();AssetDatabase.CreateAsset(renderer,Root+"Settings/MobileRenderer.asset");}
+  renderer.postProcessData=AssetDatabase.LoadAssetAtPath<PostProcessData>("Packages/com.unity.render-pipelines.universal/Runtime/Data/PostProcessData.asset");EditorUtility.SetDirty(renderer);
   var pipeline=AssetDatabase.LoadAssetAtPath<UniversalRenderPipelineAsset>(Root+"Settings/MobileURP.asset");if(!pipeline){pipeline=UniversalRenderPipelineAsset.Create(renderer);AssetDatabase.CreateAsset(pipeline,Root+"Settings/MobileURP.asset");}
   pipeline.renderScale=.9f;pipeline.msaaSampleCount=2;pipeline.shadowDistance=65;pipeline.mainLightShadowmapResolution=2048;pipeline.supportsHDR=false;pipeline.supportsCameraDepthTexture=false;pipeline.supportsCameraOpaqueTexture=false;
   GraphicsSettings.defaultRenderPipeline=pipeline;QualitySettings.renderPipeline=pipeline;QualitySettings.vSyncCount=0;QualitySettings.antiAliasing=0;QualitySettings.shadows=UnityEngine.ShadowQuality.All;QualitySettings.shadowResolution=UnityEngine.ShadowResolution.Medium;

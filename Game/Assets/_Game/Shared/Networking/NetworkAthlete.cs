@@ -66,6 +66,7 @@ namespace WhatTheFish {
   public NetworkList<BasketballPlayerRecord> BasketballPlayers=new();
   public NetworkVariable<FootballTeam> Team=new(FootballTeam.None);
   public void ClearMatchInput(){command=default;lastInput=0;}
+  [Rpc(SendTo.Owner,InvokePermission=RpcInvokePermission.Server)] public void GolfCartHitRpc(){if(IsOwner&&AppRoot.Instance&&AppRoot.Instance.view&&AppRoot.Instance.view.target==athlete)AppRoot.Instance.view.ClearMatchInput();}
   uint MatchRevision=>HostPlayer?HostPlayer.WorldSport.Value==SportId.Basketball?HostPlayer.BasketballMatch.Value.revision:HostPlayer.Match.Value.revision:0;
   bool AcceptRound(uint round){if(IsSpectator||RoomTeleport.Busy||athlete&&athlete.inTransit)return false;if(WhatTheFish.BasketballMatch.Instance&&WhatTheFish.BasketballMatch.Instance.Context)return !WhatTheFish.BasketballMatch.BlocksMovement&&round==MatchRevision;return !FootballMatch.Instance||!FootballMatch.Instance.Context||(!FootballMatch.BlocksMovement||FootballMatch.CanAimKickoff(athlete))&&round==MatchRevision;}
   bool AcceptBasketball(uint round)=>AcceptRound(round)&&!WhatTheFish.BasketballMatch.BlocksActions&&!(WhatTheFish.BasketballMatch.Instance&&WhatTheFish.BasketballMatch.Instance.AutomaticMovement(athlete));
@@ -75,6 +76,9 @@ namespace WhatTheFish {
   public NetworkVariable<GolfCartState> Cart=new();
   public NetworkVariable<GolfMatchSnapshot> GolfMatch=new();
   public NetworkList<GolfPlayerRecord> GolfPlayers=new();
+  public NetworkList<GolfTornadoSnapshot> GolfTornadoes=new();
+   public NetworkList<GolfCrabSnapshot> GolfCrabs=new();
+   public NetworkList<GolfCrabCooldown> GolfCrabCooldowns=new();
   public NetworkVariable<GolfBallSnapshot> GolfBall=new();
   public NetworkVariable<GolfClubState> GolfPose=new();
   public NetworkVariable<FishingMatchSnapshot> FishingMatch=new();
