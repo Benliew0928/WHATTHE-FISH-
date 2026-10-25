@@ -26,7 +26,8 @@ namespace WhatTheFish {
   IEnumerator Acquire(Athlete who){ball.ReviewFootballBall(ball.FootPosition(who),Vector3.zero);Physics.SyncTransforms();ball.RefreshControl(who);yield return null;Check(ball.CurrentController==who,"fixture attaches football");}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);shared=Directory.GetParent(folder).FullName;File.WriteAllText(Path.Combine(folder,"results.txt"),"");float end=Time.realtimeSinceStartup+95;
-   while((!(app=AppRoot.Instance)||!app.Exploring||!FootballBall.Instance||!app.LocalAthlete||app.LocalAthlete.inTransit||RoomTeleport.Busy||TeleportSequence.Busy)&&Time.realtimeSinceStartup<end)yield return null;
+   while(!DevelopmentProbe.ReadyToReviewSport&&Time.realtimeSinceStartup<end)yield return null;
+   app=AppRoot.Instance;if(!DevelopmentProbe.ReadyToReviewSport||app.SelectedSport!=SportId.Football){Check(false,"football room and sport initialized");Finish();yield break;}
    ball=FootballBall.Instance;actor=app?app.LocalAthlete:null;match=FootballMatch.Instance;if(!ball||!actor||!match){Check(false,"football initialized");Finish();yield break;}
    originalCamera=app.view.mode;app.view.mode=2;DevelopmentProbe.Driving=false;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    if(!ball.HasAuthority){yield return Guest();Finish();yield break;}
@@ -106,6 +107,8 @@ namespace WhatTheFish {
    Check(!ball.TryUseProp(actor,ball.PropSlot(actor).revision,match.Snapshot.revision-1,Heading()),"old round activation rejected");
   }
   void PickupSensitivityChecks(){
+   // Cross the deadline by 1ms: (now + 10) - 10 can leave a positive double
+   // rounding remainder. Spawn and pickup still run in one synchronous step.
    var step=typeof(FootballBall).GetMethod("StepFootballPickup",BindingFlags.Instance|BindingFlags.NonPublic);
    var prepare=typeof(FootballBall).GetMethod("StepFootballProps",BindingFlags.Instance|BindingFlags.NonPublic);
    Vector3 Schedule(){ball.ResetFootballProps();prepare.Invoke(ball,null);return ball.PropAnchor(ball.Props.pickup.anchor);}
@@ -113,13 +116,13 @@ namespace WhatTheFish {
     var point=Schedule();var radial=i<0?Vector3.zero:Quaternion.Euler(0,i*45,0)*Vector3.forward*1.1f;
     PlaceAt(actor,point+radial);actor.transform.rotation=Quaternion.Euler(0,137,0);Physics.SyncTransforms();
     step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"waiting player cannot collect before spawn at angle "+i);
-    ball.ReviewAdvanceFootballSpawn(10);step.Invoke(ball,null);
+    ball.ReviewAdvanceFootballSpawn(10.001);step.Invoke(ball,null);
     var slot=ball.PropSlot(actor);Check(slot.kind!=SportsProp.None&&ball.Props.pickup.kind==SportsProp.None,"same-tick spawn pickup from centre or 1.1m at angle "+i);
     step.Invoke(ball,null);Check(ball.PropSlot(actor).Equals(slot)&&ball.Props.pickup.respawn-FootballBall.PropClock>9.9,"pickup grants once and starts full cooldown at angle "+i);
    }
-   var centre=Schedule();PlaceAt(actor,centre+Vector3.right*1.3f);ball.ReviewAdvanceFootballSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None&&ball.Props.pickup.kind!=SportsProp.None,"1.3m remains outside widened pickup area");
-   centre=Schedule();PlaceAt(actor,centre+Vector3.right*1.1f);var barrier=GameObject.CreatePrimitive(PrimitiveType.Cube);barrier.layer=8;barrier.transform.position=centre+new Vector3(.55f,.5f,0);barrier.transform.localScale=new Vector3(.06f,1.2f,.8f);Physics.SyncTransforms();ball.ReviewAdvanceFootballSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"widened pickup cannot cross a wall");barrier.SetActive(false);Destroy(barrier);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind!=SportsProp.None,"clearing obstruction immediately permits pickup");
-   centre=Schedule();PlaceAt(actor,centre+Vector3.up);ball.ReviewAdvanceFootballSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"airborne height cannot collect ground prop");
+   var centre=Schedule();PlaceAt(actor,centre+Vector3.right*1.3f);ball.ReviewAdvanceFootballSpawn(10.001);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None&&ball.Props.pickup.kind!=SportsProp.None,"1.3m remains outside widened pickup area");
+   centre=Schedule();PlaceAt(actor,centre+Vector3.right*1.1f);var barrier=GameObject.CreatePrimitive(PrimitiveType.Cube);barrier.layer=8;barrier.transform.position=centre+new Vector3(.55f,.5f,0);barrier.transform.localScale=new Vector3(.06f,1.2f,.8f);Physics.SyncTransforms();ball.ReviewAdvanceFootballSpawn(10.001);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"widened pickup cannot cross a wall");barrier.SetActive(false);Destroy(barrier);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind!=SportsProp.None,"clearing obstruction immediately permits pickup");
+   centre=Schedule();PlaceAt(actor,centre+Vector3.up);ball.ReviewAdvanceFootballSpawn(10.001);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"airborne height cannot collect ground prop");
    Place(actor,0,-8);ball.ResetFootballProps();
   }
   IEnumerator TurboChecks(){
@@ -225,7 +228,7 @@ namespace WhatTheFish {
   }
   IEnumerator Gallery(){
    Place(actor,0,-8);var models=new GameObject[3];int i=0;foreach(var name in new[]{"Turbo","Portal","Wall"}){models[i]=Instantiate(Resources.Load<GameObject>("FootballProps/"+name));models[i].transform.SetPositionAndRotation(Point(-2+i*2,-4,.95f),Quaternion.Euler(0,Heading(15),0));i++;}
-   yield return new WaitForEndOfFrame();Capture("prop-gallery",Point(1,-10,3.4f),Point(0,-4,.8f));ball.ReviewGiveFootballProp(actor,SportsProp.Wall);yield return null;CaptureHud("stadium-hud");foreach(var m in models)Destroy(m);FootballHUD.Instance.OpenGuide();FootballHUD.Instance.SelectGuide(3);yield return null;CaptureHud("ability-guide");FootballHUD.Instance.CloseMenu();
+   yield return new WaitForEndOfFrame();Capture("prop-gallery",Point(1,-10,3.4f),Point(0,-4,.8f));ball.ReviewGiveFootballProp(actor,SportsProp.Wall);yield return null;CaptureHud("stadium-hud");foreach(var m in models)Destroy(m);FootballHUD.Instance.OpenGuide();FootballHUD.Instance.SelectGuide(3);yield return null;CaptureHud("ability-guide");FootballHUD.Instance.CloseMenu();while(IslandTutorialUI.DismissTop()){}
   }
   void Capture(string name,Vector3 position,Vector3 target){if(SystemInfo.graphicsDeviceType==UnityEngine.Rendering.GraphicsDeviceType.Null)return;if(!reviewCamera){reviewCamera=new GameObject("Football prop review camera").AddComponent<Camera>();reviewCamera.CopyFrom(Camera.main);reviewCamera.enabled=false;}reviewCamera.transform.position=position;reviewCamera.transform.LookAt(target);reviewCamera.fieldOfView=48;SaveCamera(reviewCamera,name,1280,720);}
   void SaveCamera(Camera camera,string name,int width,int height){var rt=RenderTexture.GetTemporary(width,height,24);var previous=RenderTexture.active;var target=camera.targetTexture;camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;var image=new Texture2D(width,height,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,width,height),0,0);image.Apply();File.WriteAllBytes(Path.Combine(folder,name+".png"),image.EncodeToPNG());Destroy(image);camera.targetTexture=target;RenderTexture.active=previous;RenderTexture.ReleaseTemporary(rt);}

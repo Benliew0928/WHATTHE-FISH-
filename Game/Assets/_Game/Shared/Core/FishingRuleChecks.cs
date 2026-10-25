@@ -105,8 +105,8 @@ namespace WhatTheFish {
    for(int i=0;i<1500&&P(s).phase==FishingPhase.Reeling;i++){Act(s,FishingAction.ReelTap,now);now+=.02;s.Advance(now,.02f);}
    check(P(s).score==0&&P(s).result!=FishingResult.Landed,"RETIRED_TAP_SPAM_NEVER_REELS");
    s.Begin(new ulong[]{0},5,0,false);now=0;Hook(s,ref now,0);s.Advance(now+30,.02f);check(P(s).result==FishingResult.TimedOut&&P(s).score==0&&P(s).timeouts==1,"NO_REEL_TIMEOUT");
-   s.Begin(new ulong[]{0,1},6,0,false);Act(s,FishingAction.Ready,0);check(!s.Start(new ulong[]{0,1},7,0,FishingMode.Round),"EVERYONE_MUST_READY");
-   Act(s,FishingAction.Ready,0,1);check(s.Start(new ulong[]{0,1},7,0,FishingMode.Round)&&s.Match.phase==FishingRoundPhase.Drafting&&!Act(s,FishingAction.Cast,2,0,0),"THREE_SECOND_COUNTDOWN_BLOCKS_CAST");
+   s.Begin(new ulong[]{0,1},6,0,false);check(!s.AllReady&&s.Start(new ulong[]{0,1},7,0,FishingMode.Round),"HOST_START_DOES_NOT_REQUIRE_RETIRED_READY_CONTROL");
+   check(s.Match.phase==FishingRoundPhase.Drafting&&!s.Start(new ulong[]{0,1},8,0,FishingMode.Round)&&!Act(s,FishingAction.Cast,2,0,0),"SKILL_DRAFT_BLOCKS_RESTART_AND_CAST");
    FishingAbilityChecks.CompleteDraft(s,0);s.Advance(3,0);check(s.Match.phase==FishingRoundPhase.Playing&&s.Match.deadline-s.Match.started==180,"SHARED_THREE_MINUTE_ROUND");
    now=3;Land(s,ref now,0);check(P(s).score==5&&P(s).lastBonus==3,"FIRST_WANTED_SMALL_BONUS");
    s.Advance(now+=7.1,0);Land(s,ref now,0);check(P(s).score==7&&P(s).lastBonus==0,"NO_REPEAT_WINDOW_BONUS");

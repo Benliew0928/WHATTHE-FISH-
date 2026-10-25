@@ -1,5 +1,8 @@
 # Basketball props
 
+Shared activation cameras, Lock-on warning effects and held-prop name icons:
+[prop awareness](PROP-ACTIVATION-FOCUS.md).
+
 Basketball uses one held prop slot per player. Walk into a floating courtside
 pickup to equip it; a new pickup replaces the unused item. Every pickup grants
 one use. Tap the illustrated ability button or press **G** to activate it.

@@ -1,6 +1,7 @@
 import { AuthError } from './auth.mjs';
 import { createPlayerVerifier } from './player-auth.mjs';
 import { Profiles } from './profiles.mjs';
+import { RoomInvites } from './room-invites.mjs';
 const verifiers=new WeakMap();
 const send=(status,data)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function json(request) {
@@ -24,6 +25,10 @@ export async function profileApi(request,env,verifyOverride) {
     if(!limiter)throw new AuthError(503,'profiles_not_configured');
     if(!(await limiter.limit({key:id})).success)throw new AuthError(429,'rate_limited');
     const store=new Profiles(env.PROFILES_DB);
+    if(path==='/v1/invites'&&method==='GET')return send(200,await new RoomInvites(store).list(id));
+    if(path==='/v1/invites'&&method==='POST')return send(200,await new RoomInvites(store).send(id,await json(request)));
+    if(path==='/v1/invites/respond'&&method==='POST')return send(200,await new RoomInvites(store).respond(id,await json(request)));
+    if(path==='/v1/invites/resolve'&&method==='POST'){const b=await json(request);return send(200,await new RoomInvites(store).resolve(id,b.id));}
     if(path==='/v1/me'&&method==='GET')return send(200,await store.require(id));
     if(path==='/v1/me'&&method==='PUT')return send(200,await store.save(id,await json(request)));
     if(path==='/v1/me'&&method==='DELETE'){

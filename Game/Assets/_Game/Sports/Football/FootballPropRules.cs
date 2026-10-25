@@ -11,13 +11,13 @@ namespace WhatTheFish {
   public Vector3 Centre=>position+Vector3.up*(FootballPropRules.WallHeight*.5f);
  }
  public struct FootballPropsState:INetworkSerializable,IEquatable<FootballPropsState> {
-  public SportsPropSpawn pickup;public double turboA,turboB,portalAt;public FootballWallState wallA,wallB;
+  public SportsPropSpawn pickup;public SportsPropActivation activation;public double turboA,turboB,portalAt;public FootballWallState wallA,wallB;
   public bool live,transferring;public ulong receiver;public uint portalSequence;public Vector3 source,destination;public byte portalOutcome;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {
-   s.SerializeValue(ref live);s.SerializeValue(ref pickup);s.SerializeValue(ref turboA);s.SerializeValue(ref turboB);s.SerializeValue(ref wallA);s.SerializeValue(ref wallB);
+   s.SerializeValue(ref activation);s.SerializeValue(ref live);s.SerializeValue(ref pickup);s.SerializeValue(ref turboA);s.SerializeValue(ref turboB);s.SerializeValue(ref wallA);s.SerializeValue(ref wallB);
    s.SerializeValue(ref transferring);s.SerializeValue(ref receiver);s.SerializeValue(ref portalAt);s.SerializeValue(ref portalSequence);s.SerializeValue(ref source);s.SerializeValue(ref destination);s.SerializeValue(ref portalOutcome);
   }
-  public bool Equals(FootballPropsState b)=>live==b.live&&pickup.Equals(b.pickup)&&turboA==b.turboA&&turboB==b.turboB&&wallA.Equals(b.wallA)&&wallB.Equals(b.wallB)&&transferring==b.transferring&&receiver==b.receiver&&portalAt==b.portalAt&&portalSequence==b.portalSequence&&source==b.source&&destination==b.destination&&portalOutcome==b.portalOutcome;
+  public bool Equals(FootballPropsState b)=>activation.Equals(b.activation)&&live==b.live&&pickup.Equals(b.pickup)&&turboA==b.turboA&&turboB==b.turboB&&wallA.Equals(b.wallA)&&wallB.Equals(b.wallB)&&transferring==b.transferring&&receiver==b.receiver&&portalAt==b.portalAt&&portalSequence==b.portalSequence&&source==b.source&&destination==b.destination&&portalOutcome==b.portalOutcome;
  }
  public static class FootballPropRules {
   public const float WallWidth=6,WallHeight=5.25f,WallThickness=.3f,WallSeconds=15,PlacementDistance=2;

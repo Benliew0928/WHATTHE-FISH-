@@ -112,6 +112,7 @@ namespace WhatTheFish {
     footballProps.transferring=true;footballProps.receiver=PropPlayerId(actor);footballProps.portalAt=PropClock;footballProps.portalSequence=++transferRevision;footballProps.portalOutcome=0;footballProps.source=source;footballProps.destination=FootPosition(actor);
     SetPhysicsMode(false);Body.detectCollisions=false;Body.position=source;transform.position=source;abilitySweepReady=false;sequence++;FootballMatch.Instance.ResetAbilityGoalTracking();
    }else return false;
+   footballProps.activation=new SportsPropActivation{kind=kind,actor=PropPlayerId(actor),sequence=++slotRevision,started=PropClock};
    FootballAudio.Emit(kind==SportsProp.Turbo?FootballSound.TurboStart:kind==SportsProp.Wall?FootballSound.WallPlace:FootballSound.PortalOpen,kind==SportsProp.Portal?footballProps.source:actor.transform.position);SyncFootballWalls();GiveFootballProp(actor,SportsProp.None);publishTimer=0;return true;
   }
   public void ResetFootballProps(bool clearInventory=true){

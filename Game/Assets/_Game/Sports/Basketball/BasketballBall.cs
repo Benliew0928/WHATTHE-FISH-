@@ -49,6 +49,7 @@ namespace WhatTheFish {
   static bool Finite(Vector3 v)=>float.IsFinite(v.x)&&float.IsFinite(v.y)&&float.IsFinite(v.z);
   static bool Finite(Quaternion q)=>float.IsFinite(q.x)&&float.IsFinite(q.y)&&float.IsFinite(q.z)&&float.IsFinite(q.w)&&q.x*q.x+q.y*q.y+q.z*q.z+q.w*q.w>.01f;
   void FixedUpdate(){
+   if(RoomService.Paused)return;
    var app=AppRoot.Instance;bool connected=NetworkManager.Singleton&&NetworkManager.Singleton.IsListening;
    bool authority=Authority;var host=NetworkAthlete.HostPlayer;
    bool playing=Playing;

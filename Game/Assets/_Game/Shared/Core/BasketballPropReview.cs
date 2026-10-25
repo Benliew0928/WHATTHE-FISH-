@@ -24,7 +24,8 @@ namespace WhatTheFish {
   bool Use(SportsProp kind){ball.ReviewGiveProp(actor,kind);return ball.TryUseProp(actor,ball.PropSlot(actor).revision);}
   IEnumerator Start(){
    Directory.CreateDirectory(folder);shared=Directory.GetParent(folder).FullName;File.WriteAllText(Path.Combine(folder,"results.txt"),"");
-   float end=Time.realtimeSinceStartup+80;while((!(app=AppRoot.Instance)||!app.Exploring||app.SelectedSport!=SportId.Basketball||!app.LocalAthlete||app.LocalAthlete.inTransit||RoomTeleport.Busy||TeleportSequence.Busy)&&Time.realtimeSinceStartup<end)yield return null;
+   float end=Time.realtimeSinceStartup+80;while(!DevelopmentProbe.ReadyToReviewSport&&Time.realtimeSinceStartup<end)yield return null;
+   app=AppRoot.Instance;if(!DevelopmentProbe.ReadyToReviewSport||app.SelectedSport!=SportId.Basketball){Check(false,"basketball room and sport initialized");Finish();yield break;}
    ball=BasketballBall.Active;actor=app?app.LocalAthlete:null;if(!ball||!actor){Check(false,"initialized");Finish();yield break;}
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;yield return new WaitForSeconds(.6f);
    if(!ball.Authority){yield return Guest();Finish();yield break;}
@@ -190,19 +191,21 @@ namespace WhatTheFish {
    ball.ReviewAdvanceSpawn(10);yield return new WaitForFixedUpdate();yield return null;Place(actor,BasketballPropRules.Anchor(ball.Props.pickup.anchor));yield return new WaitForSeconds(.2f);
   }
   void PickupSensitivityChecks(){
+   // Cross the deadline by 1ms: (now + 10) - 10 can leave a positive double
+   // rounding remainder. Spawn and pickup still run in one synchronous step.
    var step=typeof(BasketballBall).GetMethod("StepPickup",BindingFlags.Instance|BindingFlags.NonPublic);
    Vector3 Schedule(){ball.ReviewResetProps();return BasketballPropRules.Anchor(ball.Props.pickup.anchor);}
    for(int i=-1;i<8;i++){
     var point=Schedule();var radial=i<0?Vector3.zero:Quaternion.Euler(0,i*45,0)*Vector3.forward*1.1f;
     Place(actor,point+radial);actor.transform.rotation=Quaternion.Euler(0,137,0);Physics.SyncTransforms();
     step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"waiting player cannot collect before spawn at angle "+i);
-    ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);
+    ball.ReviewAdvanceSpawn(10.001);step.Invoke(ball,null);
     var slot=ball.PropSlot(actor);Check(slot.kind!=SportsProp.None&&ball.Props.pickup.kind==SportsProp.None,"same-tick spawn pickup from centre or 1.1m at angle "+i);
     step.Invoke(ball,null);Check(ball.PropSlot(actor).Equals(slot)&&ball.Props.pickup.respawn-BasketballMotion.Clock>9.9,"pickup grants once and starts full cooldown at angle "+i);
    }
-   var centre=Schedule();Place(actor,centre+Vector3.right*1.3f);ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None&&ball.Props.pickup.kind!=SportsProp.None,"1.3m remains outside widened pickup area");
-   centre=Schedule();Place(actor,centre+Vector3.right*1.1f);var barrier=GameObject.CreatePrimitive(PrimitiveType.Cube);barrier.layer=8;barrier.transform.SetPositionAndRotation(ball.transform.parent.TransformPoint(centre+new Vector3(.55f,.5f,0)),ball.transform.parent.rotation);barrier.transform.localScale=new Vector3(.06f,1.2f,.8f);Physics.SyncTransforms();ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"widened pickup cannot cross a wall");barrier.SetActive(false);Destroy(barrier);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind!=SportsProp.None,"clearing obstruction immediately permits pickup");
-   centre=Schedule();Place(actor,centre+Vector3.up);ball.ReviewAdvanceSpawn(10);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"airborne height cannot collect ground prop");
+   var centre=Schedule();Place(actor,centre+Vector3.right*1.3f);ball.ReviewAdvanceSpawn(10.001);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None&&ball.Props.pickup.kind!=SportsProp.None,"1.3m remains outside widened pickup area");
+   centre=Schedule();Place(actor,centre+Vector3.right*1.1f);var barrier=GameObject.CreatePrimitive(PrimitiveType.Cube);barrier.layer=8;barrier.transform.SetPositionAndRotation(ball.transform.parent.TransformPoint(centre+new Vector3(.55f,.5f,0)),ball.transform.parent.rotation);barrier.transform.localScale=new Vector3(.06f,1.2f,.8f);Physics.SyncTransforms();ball.ReviewAdvanceSpawn(10.001);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"widened pickup cannot cross a wall");barrier.SetActive(false);Destroy(barrier);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind!=SportsProp.None,"clearing obstruction immediately permits pickup");
+   centre=Schedule();Place(actor,centre+Vector3.up);ball.ReviewAdvanceSpawn(10.001);step.Invoke(ball,null);Check(ball.PropSlot(actor).kind==SportsProp.None,"airborne height cannot collect ground prop");
    Place(actor,new Vector3(0,.08f,-8));ball.ReviewResetProps();
   }
   IEnumerator Gallery(){

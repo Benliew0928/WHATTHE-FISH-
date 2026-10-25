@@ -18,6 +18,6 @@ namespace WhatTheFish {
    picker.Refresh();
   }
   void OnEnable()=>Refresh();
-  void Refresh(){for(int i=0;i<labels.Length;i++)if(labels[i]){bool selected=BasketballTrailStyle.Selected==i;labels[i].text=(selected?"✓ ":"")+BasketballTrailStyle.Names[i];plates[i].color=selected?CoveUI.Mint:CoveUI.Cream;plates[i].border=selected?2:1;plates[i].Refresh();}}
+  void Refresh(){for(int i=0;i<labels.Length;i++)if(labels[i]){bool selected=BasketballTrailStyle.Selected==i;labels[i].text=(selected?"✓ ":"")+BasketballTrailStyle.Names[i];MenuDesigns.Selected(plates[i].GetComponent<Button>(),selected);plates[i].color=selected?CoveUI.Mint:CoveUI.Cream;plates[i].border=selected?2:1;plates[i].Refresh();}}
  }
 }

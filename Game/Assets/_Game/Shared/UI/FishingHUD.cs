@@ -74,7 +74,7 @@ namespace WhatTheFish {
   Button Button(RectTransform node,string value,Color tint,out Text label){
    var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.UseSolidPanel();g.raycastTarget=true;var b=node.gameObject.AddComponent<Button>();b.targetGraphic=g;
    b.transition=Selectable.Transition.None;label=Text(node,value,Vector2.zero,node.sizeDelta-new Vector2(16,6),25);
-   node.gameObject.AddComponent<BasketballButtonFeedback>();node.gameObject.AddComponent<GolfFishingButtonSound>();return b;
+   node.gameObject.AddComponent<BasketballButtonFeedback>();node.gameObject.AddComponent<GolfFishingButtonSound>();MenuDesigns.Apply(b);return b;
   }
   Button DesignButton(RectTransform node,string id,out Text label){var design=ControlDesigns.Build(node,SportId.Fishing,id);label=design.Label;var button=ControlDesigns.BindButton(design);node.gameObject.AddComponent<GolfFishingButtonSound>();return button;}
   void Build(){
@@ -86,7 +86,7 @@ namespace WhatTheFish {
    action.GetComponent<BasketballButtonFeedback>().FixedFishingLabels=true;left.GetComponent<BasketballButtonFeedback>().FixedFishingLabels=true;
    cancel=DesignButton(Rect("Fishing cancel",page,Vector2.zero,layout.cancelSize),"cancel",out _);cancel.onClick.AddListener(()=>PlayerView.Instance?.CancelFishing());
    board=Rect("Lagoon sticker leaderboard",page,new Vector2(20,-20),new Vector2(365,370),new Vector2(0,1));board.pivot=new Vector2(0,1);Graphic(board,FishingStickerGraphic.Kind.Panel,Cream);
-   CharacterIdentityBadges.ReserveHUD(board);
+   MenuDesigns.Surface(board.GetComponent<FishingStickerGraphic>(),MenuSurface.Dialog);CharacterIdentityBadges.ReserveHUD(board);
    var header=Text(board,"LAGOON CUP",new Vector2(13,0),new Vector2(295,45),30,Ink);header.rectTransform.anchorMin=header.rectTransform.anchorMax=new Vector2(.5f,1);header.rectTransform.anchoredPosition=new Vector2(14,-31);
    Graphic(Rect("Header fish",board,new Vector2(30,-32),new Vector2(49,42),new Vector2(0,1)),FishingStickerGraphic.Kind.Fish,Teal);
    var tutorial=Button(Rect("Fishing tutorial help",board,new Vector2(331,-31),new Vector2(38,38),new Vector2(0,1)),"?",Teal,out var question);question.font=SportsUIStyle.TextFont;question.fontSize=22;question.rectTransform.sizeDelta=new Vector2(30,34);tutorial.onClick.AddListener(()=>{var g=FishingGame.Instance;var v=PlayerView.Instance;if(g&&v&&g.Player(v.target) is FishingPlayerRecord p&&!p.Busy&&!BlocksGameplay)Tutorial?.Open();});

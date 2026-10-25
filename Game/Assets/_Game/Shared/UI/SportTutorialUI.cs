@@ -72,7 +72,7 @@ namespace WhatTheFish {
     examples[1].anchoredPosition=new Vector2(-216,8);examples[1].sizeDelta=new Vector2(376,260);
     action=Preview(1,"shoot",new Vector2(0,50),Vector2.one*125);
     meter=Rect("Actual shot timing example",examples[1],new Vector2(0,-55),new Vector2(326,34)).gameObject.AddComponent<TutorialMeterGraphic>();meter.raycastTarget=false;meter.timing=sport==SportId.Basketball;
-    Caption(examples[1],sport==SportId.Basketball?"RELEASE IN GREEN":"HOLD  Ã¢â€ â€™  RELEASE",new Vector2(0,-103),new Vector2(350,32),21);
+    Caption(examples[1],sport==SportId.Basketball?"RELEASE IN GREEN":"HOLD  →  RELEASE",new Vector2(0,-103),new Vector2(350,32),21);
     examples[2].anchoredPosition=new Vector2(-216,8);examples[2].sizeDelta=new Vector2(376,260);
     Preview(2,"shoot",new Vector2(-88,66),Vector2.one*100);Preview(2,sport==SportId.Football?"tackle":"pass",new Vector2(92,66),Vector2.one*100);
     foreach(var source in examples[2].GetComponentsInChildren<ControlDesignSource>())if(source.Id=="shoot"){source.View.Art.sprite=ControlArt.Get(sport==SportId.Football?"Pressure":"Guard");ControlDesigns.Caption(source.View.Label,sport==SportId.Football?"PRESSURE":"GUARD",.72f);if(source.View.Hint)source.View.Hint.text="HOLD";}else if(sport==SportId.Basketball){source.View.Art.sprite=ControlArt.Get("Steal");ControlDesigns.Caption(source.View.Label,"STEAL");}
@@ -81,7 +81,7 @@ namespace WhatTheFish {
    }
    var win=examples[3];Icon(win,"Winning score",sport==SportId.Football?FootballUIStyle.Icon(FootballIcon.Ball):BasketballUIStyle.Icon(sport==SportId.Golf?BasketballIcon.Points:BasketballIcon.Ball),new Vector2(-121,6),Vector2.one*62);
    Caption(win,sport==SportId.Golf?"FEWEST STROKES":sport==SportId.Football?"1 GOAL = 1":"2  OR  3 POINTS",new Vector2(46,14),new Vector2(240,42),23);
-   Caption(win,sport==SportId.Golf?"5 HOLES  Ã‚Â·  ONE SHARED ROUTE":"TEAM SCORE WINS",new Vector2(28,-31),new Vector2(298,30),18);
+   Caption(win,sport==SportId.Golf?"5 HOLES  ·  ONE SHARED ROUTE":"TEAM SCORE WINS",new Vector2(28,-31),new Vector2(298,30),18);
   }
   protected override void AnimateExamples(){
    float t=MenuPreferences.ReducedMotion?.55f:Mathf.PingPong(Time.unscaledTime*.34f,1);

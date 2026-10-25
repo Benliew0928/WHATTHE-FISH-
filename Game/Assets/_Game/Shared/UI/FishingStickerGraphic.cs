@@ -5,6 +5,7 @@ namespace WhatTheFish {
  // Small shared-material UI meshes: no full-screen image, imported atlas or effects package.
  public sealed class FishingStickerGraphic:MaskableGraphic {
   public enum Kind {Panel,Gauge,Fish,Avatar,Flame,Crown,Warning=7,Shine,Aim,Camera,Jump,Close}
+  public MenuSurface menuSurface;public bool menuSelected,menuDisabled;public float menuHover;
   public Kind kind;public Color tint=LocalProfile.Hex("FFF3D8"),accent=LocalProfile.Hex("38DBD7");
   public float value=1;public bool hot;
   [Min(0)]public float cornerRadius=24;
@@ -36,6 +37,7 @@ namespace WhatTheFish {
    if(artwork&&artwork.type==Image.Type.Sliced)artwork.enabled=!solid;SetVerticesDirty();
   }
   protected override void OnPopulateMesh(VertexHelper vh){
+   if(menuSurface!=MenuSurface.None){MenuDesigns.Draw(vh,rectTransform.rect,tint,cornerRadius,menuSurface,pressure,menuSelected,menuDisabled,menuHover);return;}
    vh.Clear();var r=rectTransform.rect;float w=r.width,h=r.height;if(fullArtwork&&artwork){Rounded(vh,Inset(r,12),Mathf.Min(w,h)*.45f,new Color(0,0,0,.001f));return;}
    switch(kind){
     case Kind.Aim:

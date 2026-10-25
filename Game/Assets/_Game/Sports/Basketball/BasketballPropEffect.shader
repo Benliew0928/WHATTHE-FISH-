@@ -13,6 +13,17 @@ Shader "WhatTheFish/Basketball Prop Effect" {
  V vert(A v){V o;o.p=TransformObjectToHClip(v.p.xyz);o.uv=v.uv;o.normal=TransformObjectToWorldNormal(v.normal);o.world=TransformObjectToWorld(v.p.xyz);return o;}
  half4 frag(V i):SV_Target {
   float2 p=(i.uv-.5)*2;float r=length(p),a=atan2(p.y,p.x);float edge=1-smoothstep(.88,1,r);
+  if(_Mode>8.5){
+   float ring=exp(-pow((r-.77)*27,2));float inner=exp(-pow((r-.60)*36,2))*.35;
+   float arcs=pow(saturate(cos(a*3-_Time.y*4)),6);float ticks=step(.82,cos(a*12+_Time.y*2))*(smoothstep(.82,.86,r)-smoothstep(.92,.97,r));
+   return half4(lerp(_Tint.rgb,float3(1,1,1),arcs*.3),(ring*(.6+arcs*.4)+inner+ticks*.65)*_Tint.a);
+  }
+  if(_Mode>7.5){
+   // A hollow silhouette aura: keep the actor and surrounding play readable.
+   float border=exp(-pow((r-.79)*17,2));float rise=pow(saturate(sin(a*5-r*9+_Time.y*5)),8);
+   float beam=exp(-pow((abs(p.x)-.62)*18,2))*(1-smoothstep(.65,1,abs(p.y)));
+   return half4(_Tint.rgb,(border*(.28+rise*.38)+beam*.24)*_Tint.a);
+  }
   if(_Mode>6.5){
    float hex=max(abs(p.x)*.866025+abs(p.y)*.5,abs(p.y));float rim=exp(-pow((hex-.76)*24,2));
    float swirl=pow(saturate(sin(a*3+r*22-_Time.y*6)),12)*smoothstep(.15,.80,r);

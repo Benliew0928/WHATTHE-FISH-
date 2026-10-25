@@ -323,6 +323,7 @@ namespace WhatTheFish {
    long start=System.Diagnostics.Stopwatch.GetTimestamp(),allocated=GC.GetAllocatedBytesForCurrentThread();
 #endif
    ApplyFrame();
+   if(Active&&applied&&State.gesture==FootballGesture.None)SportsPropPresentation.Gesture(athlete,arms[1].upper,arms[1].lower);
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    LastPoseMilliseconds=(System.Diagnostics.Stopwatch.GetTimestamp()-start)*1000.0/System.Diagnostics.Stopwatch.Frequency;LastPoseAllocatedBytes=GC.GetAllocatedBytesForCurrentThread()-allocated;
 #endif

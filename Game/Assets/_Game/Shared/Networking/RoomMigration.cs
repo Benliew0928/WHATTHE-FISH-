@@ -15,7 +15,7 @@ namespace WhatTheFish {
  // online election; the elected owner creates a new Relay allocation for NGO.
  public sealed partial class RoomService {
   public bool Recovering {get;private set;}
-  public static bool Paused=>AppRoot.Instance&&AppRoot.Instance.rooms&&AppRoot.Instance.rooms.Recovering;
+  public static bool Paused=>AppRoot.Instance&&AppRoot.Instance.rooms&&(AppRoot.Instance.rooms.Recovering||AppRoot.Instance.rooms.GuestRecovering);
   public string RecoveryMessage {get;private set;}
   public string MemberId=>memberId;
   string memberId;ushort localPort;float nextCheckpoint,recoveryStarted,nextRefresh,previousTimeScale=1;
@@ -32,18 +32,20 @@ namespace WhatTheFish {
    public readonly Dictionary<string,MemberCheckpoint> members=new();
   }
   internal sealed class MemberCheckpoint {
-   public string member,name;public byte seat;public ulong id;public Vector3 position;public Quaternion rotation;public byte[] fields;
+   public string member,name,rejoinDigest;public byte seat;public ulong id;public Vector3 position;public Quaternion rotation;public byte[] fields;
   }
   void PrepareIdentity(string id){RoomChatService.Ensure(this).ResetRoom();memberId=id;checkpoint=null;excludedMembers.Clear();departedMembers.Clear();connectedMembers.Clear();observedHeartbeat=-1;SetPayload();}
-  void SetPayload(){NetworkManager.Singleton.NetworkConfig.ConnectionData=Encoding.UTF8.GetBytes(memberId??"");}
+  void SetPayload(){NetworkManager.Singleton.NetworkConfig.ConnectionData=Encoding.UTF8.GetBytes((memberId??"")+"|"+rejoinSecret);}
   bool ApproveReturning(NetworkManager.ConnectionApprovalRequest request,NetworkManager.ConnectionApprovalResponse response){
-   string member=Encoding.UTF8.GetString(request.Payload??Array.Empty<byte>());
-   if(string.IsNullOrEmpty(member)||member.Length>100||RoomTeleport.Players().Any(p=>p.MemberId.Value.ToString()==member)){
+   var parts=Encoding.UTF8.GetString(request.Payload??Array.Empty<byte>()).Split('|');string member=parts[0],key=parts.Length==2?parts[1]:"";
+   if(parts.Length>2||string.IsNullOrEmpty(member)||member.Length>100||approvedMembers.Values.Contains(member)||RoomTeleport.Players().Any(p=>p.MemberId.Value.ToString()==member)){
     response.Approved=false;response.Reason="Invalid or duplicate room identity.";return true;
    }
    approvedMembers[request.ClientNetworkId]=member;
+   if(ApproveGuest(member,key,request.ClientNetworkId,response))return true;
+   if(guestHolding){response.Approved=false;response.Reason="The crew is reconnecting. Please try again shortly.";return true;}
    if(!Recovering)return false;
-   if(checkpoint!=null&&checkpoint.members.TryGetValue(member,out var saved)&&!excludedMembers.Contains(member)){
+   if(checkpoint!=null&&checkpoint.members.TryGetValue(member,out var saved)&&!excludedMembers.Contains(member)&&key.Length==64&&RejoinHash(key)==saved.rejoinDigest){
     approvedSeats[request.ClientNetworkId]=saved.seat;response.Approved=true;response.CreatePlayerObject=true;response.Position=saved.position;response.Rotation=saved.rotation;
    }else{response.Approved=false;response.Reason="The room is reconnecting. Please try again shortly.";}
    return true;
@@ -52,18 +54,20 @@ namespace WhatTheFish {
    string id=approvedMembers.Remove(actor.OwnerClientId,out var approved)?approved:memberId;
    connectedMembers[actor.OwnerClientId]=id;
    actor.MemberId.Value=id;
+   if(RestoreGuest(actor,id))return true;
    if(Recovering&&checkpoint!=null&&checkpoint.members.TryGetValue(id,out var saved)){
     actor.RestoreFields(saved.fields,false);actor.RestorePosition(saved.position,saved.rotation);
     if(actor.IsOwner){actor.RestoreFields(checkpoint.world,true);actor.MigrationReady.Value=false;SetServerClock(checkpoint.clock);}
-    return true;
+    IssueRejoinKey(actor);return true;
    }
    // Preserve the high-water mark even if the highest numbered participant left
    // before this host migration. Their statistics may still reference that ID.
-   actor.ParticipantId.Value=NetworkAthlete.HostPlayer.NextParticipantId.Value++;return false;
+   actor.ParticipantId.Value=NetworkAthlete.HostPlayer.NextParticipantId.Value++;IssueRejoinKey(actor);return false;
   }
   void LateUpdate(){
    var n=NetworkManager.Singleton;var host=NetworkAthlete.HostPlayer;
    if(leaving||!n)return;
+   if(!Recovering&&TickGuestRecovery())return;
    if(!Recovering&&n.IsServer&&Session?.IsHost==true&&departedMembers.Count>0&&!pruning&&Time.realtimeSinceStartup>=nextPrune)_=PruneDepartedMembers();
    if(Recovering){
     if(n.IsServer&&host){
@@ -71,7 +75,7 @@ namespace WhatTheFish {
      var connected=RoomTeleport.Players().Where(p=>p.RecoveryAcknowledged.Value).Select(p=>p.MemberId.Value.ToString()).ToHashSet();
      var expected=checkpoint.members.Keys.Where(id=>!excludedMembers.Contains(id));
      if(expected.All(connected.Contains)||Time.realtimeSinceStartup-recoveryStarted>65){
-      RestoreGames();host.MigrationReady.Value=true;host.RoomHeartbeat.Value=checkpoint.clock+.001;EndRecovery();
+      RestoreGames();CancelIncompleteGames(checkpoint,checkpoint.host);host.MigrationReady.Value=true;host.RoomHeartbeat.Value=checkpoint.clock+.001;EndRecovery();
      }
     }else if(host&&host.IsSpawned&&RoomTeleport.Players().Any(p=>p.IsOwner)&&host.MigrationReady.Value&&host.MemberId.Value.ToString()!=checkpoint?.host){EndRecovery();}
     if(Recovering&&!LocalTest&&Session!=null&&Time.realtimeSinceStartup>nextRefresh){nextRefresh=Time.realtimeSinceStartup+4;_=RefreshElection();}
@@ -84,12 +88,12 @@ namespace WhatTheFish {
    if(host.RoomHeartbeat.Value==observedHeartbeat)return;
    observedHeartbeat=host.RoomHeartbeat.Value;
    var saved=new RoomCheckpoint{host=host.MemberId.Value.ToString(),clock=observedHeartbeat,sport=host.WorldSport.Value,world=host.CaptureFields(true)};
-   foreach(var actor in RoomTeleport.Players())if(actor.MemberId.Value.Length>0)saved.members[actor.MemberId.Value.ToString()]=new MemberCheckpoint{member=actor.MemberId.Value.ToString(),name=actor.Nickname.Value.ToString(),seat=actor.RoomSeat.Value,id=actor.StableId,position=actor.transform.position,rotation=actor.transform.rotation,fields=actor.CaptureFields(false)};
+   foreach(var actor in RoomTeleport.Players())if(actor.MemberId.Value.Length>0)saved.members[actor.MemberId.Value.ToString()]=SaveMember(actor);
    if(saved.members.ContainsKey(memberId))checkpoint=saved;
   }
-  internal void HostDespawned(){if(!leaving&&!Recovering&&checkpoint!=null)BeginRecovery();}
+  internal void HostDespawned(){if(!leaving&&!Recovering&&checkpoint!=null&&!BeginGuestRetry())BeginRecovery();}
   void MemberDisconnected(ulong client){
-   if(connectedMembers.Remove(client,out var id)&&!leaving&&!Recovering&&NetworkManager.Singleton.IsServer&&id!=memberId)departedMembers.Add(id);
+   if(connectedMembers.Remove(client,out var id)&&!leaving&&!Recovering&&NetworkManager.Singleton.IsServer&&id!=memberId&&!missingGuests.ContainsKey(id))departedMembers.Add(id);
   }
   async Task PruneDepartedMembers(){
    pruning=true;var session=Session;
@@ -104,6 +108,7 @@ namespace WhatTheFish {
   }
   void BeginRecovery(){
    if(leaving||Recovering||checkpoint==null)return;
+   ClearGuestRecovery();
    Recovering=true;recoveryStarted=Time.realtimeSinceStartup;recoveryVersion++;excludedMembers.Clear();excludedMembers.Add(checkpoint.host);
    Sport=checkpoint.sport;previousTimeScale=Time.timeScale;Time.timeScale=0;
    if(TeleportSequence.Busy)TeleportSequence.Instance.Cancel();

@@ -33,7 +33,7 @@ and [rate-limit semantics](https://developers.cloudflare.com/workers/runtime-api
 ## Profile API
 
 All `/v1/me`, `/v1/players`, `/v1/photos`, `/v1/search`, `/v1/friends`,
-`/v1/blocks`, `/v1/reports` and `/v1/room-proof` endpoints require the caller's
+`/v1/blocks`, `/v1/reports`, `/v1/invites` and `/v1/room-proof` endpoints require the caller's
 Unity access token in the Bearer header. The verifier checks signature, issuer,
 project, environment and lifetime; it never accepts a player ID as authentication.
 Public profile responses contain no email, provider ID or credentials.
@@ -49,6 +49,15 @@ Public profile responses contain no email, provider ID or credentials.
   target plus action `request`, `accept`, `decline`, `cancel` or `remove`.
 - Blocks use GET/POST/DELETE; reports use POST with target and reason
   `name`, `photo` or `behaviour`. Reports need operator handling.
+- `GET/POST /v1/invites`: list received room invitations or send one to an
+  accepted friend. Invitations expire after 120 seconds, allow one pending
+  invitation per pair and enforce a 30-second resend cooldown and 20-entry
+  inbox/outbox limits. The inbox does not disclose the room code.
+- `POST /v1/invites/resolve`: the recipient resolves a still-valid invitation
+  immediately before joining. `POST /v1/invites/respond` accepts `declined`
+  or `joined` from its recipient, or `cancelled` from its sender. Removing
+  a friend or blocking them revokes their invitations. Room admission still
+  checks the actual host's capacity, gameplay state and protocol version.
 - POST room-proof issues a one-use 90-second token bound to room/challenge;
   POST room-proof/verify consumes it and returns the authenticated profile.
 - `DELETE /v1/me`, body `{"confirm":"delete-profile"}`, removes the caller's
@@ -60,7 +69,8 @@ There are 150 combined friends/pending requests, 200 blocks and 200 retained
 reports per reporter. The service uses prepared SQL, transactional index
 triggers and optimistic profile revisions. A block does not eject room players.
 
-Migrations `0001_profiles.sql` and `0002_profile_limits.sql` were applied via the
+Migrations `0001_profiles.sql`, `0002_profile_limits.sql` and
+`0003_room_invites.sql` were applied via the
 Cloudflare dashboard. They must be applied in order to a new database before
 binding/deploying it. The current dashboard-applied database does not have
 Wrangler migration-history records; do not blindly reapply the initial migration.
@@ -72,6 +82,13 @@ test: it creates two anonymous Unity identities and temporary cloud profiles,
 checks ownership/photo/search/friend/proof behavior, and deletes its own profile
 records in `finally`. UGS anonymous identities may remain; credentials are
 memory-only. See [game behavior and capacity](../../Docs/PLAYER-PROFILES-PLAN.md).
+
+`node invitation-smoke.mjs` is a separate opt-in live invitation test. It
+creates three temporary anonymous players, exercises friend access, recipient
+isolation, expiry metadata, cooldowns and block revocation, then deletes its
+own profiles in `finally`. It never messages an existing player's friends.
+The invitation release passed 44 local tests and 13 live assertions on
+24 October 2026; service version `af0271d6-ee24-45b1-9361-1c9b854ecf51`.
 
 ## Reproduce and deploy
 

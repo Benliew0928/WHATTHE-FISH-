@@ -99,7 +99,7 @@ namespace WhatTheFish {
    screen=which;
    if(which=="stadium"&&!pendingSelection.HasValue&&SelectionError==null){if(Menu)Menu.Hide();Clear();HUD();
     // Illustrated island HUDs own their skins and safe-area layout frames.
-    if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf){foreach(var button in page.GetComponentsInChildren<Button>(true))if(!button.GetComponent<CoveFeedback>()&&!(button.targetGraphic is BasketballPlate))button.gameObject.AddComponent<CoveFeedback>();}
+    if(SelectedSport==SportId.Fishing||SelectedSport==SportId.Golf){foreach(var button in page.GetComponentsInChildren<Button>(true))if(!button.GetComponent<CoveFeedback>()&&!button.GetComponent<MenuButtonState>()&&!(button.targetGraphic is BasketballPlate))button.gameObject.AddComponent<CoveFeedback>();}
     else if(SelectedSport!=SportId.Basketball&&SelectedSport!=SportId.Football)GameButtonStyle.Apply(page);
     if(Menu)Menu.ArriveInWorld(page);
     return;
@@ -166,7 +166,7 @@ namespace WhatTheFish {
    Button(rooms.Host?"Return to room":"Leave room",new Vector2(1400,818),Return,cream,new Vector2(270,62));
    Button spectatorStart=null;if(rooms.Host)spectatorStart=Button("Start match",new Vector2(800,818),()=>{switch(SelectedSport){case SportId.Football:FootballMatch.Instance?.StartMatch();break;case SportId.Basketball:BasketballMatch.Instance?.StartMatch();break;case SportId.Golf:GolfMatchManager.Instance?.StartMatch();break;case SportId.Fishing:FishingGame.Instance?.StartMatch();break;}},mint,new Vector2(230,62));
    Label(page,"Walk around the stands · Drag right to look",0,new Vector2(530,72),new Vector2(570,40),23,Color.white);
-   page.gameObject.AddComponent<SpectatorHUD>().startButton=spectatorStart;
+   MenuDesigns.Buttons(page);page.gameObject.AddComponent<SpectatorHUD>().startButton=spectatorStart;
   }
   void Pill(string s,Vector2 p,Vector2 size){var r=Panel(page,p,size,cream);var t=Label(r,s,0,Vector2.zero,size,23,ink);t.alignment=TextAnchor.MiddleCenter;var rt=t.rectTransform;rt.anchorMin=rt.anchorMax=new Vector2(.5f,.5f);rt.pivot=new Vector2(.5f,.5f);}
   public RectTransform Panel(Transform parent,Vector2 p,Vector2 size,Color c){var o=new GameObject("Card",typeof(RectTransform),typeof(Image));var r=o.GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=Vector2.zero;r.sizeDelta=size;r.anchoredPosition=p;AnchorHud(r,p);var im=o.GetComponent<Image>();im.sprite=rounded;im.type=Image.Type.Sliced;im.color=c;return r;}

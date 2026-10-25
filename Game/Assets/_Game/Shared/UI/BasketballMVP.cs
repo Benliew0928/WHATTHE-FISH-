@@ -50,7 +50,7 @@ namespace WhatTheFish {
   }
   void Show(BasketballMatch match){
    if(Visible)Dismiss();var winner=match.MVP;var teamColor=winner.team==FootballTeam.A?new Color32(42,113,203,255):new Color32(207,67,60,255);teamStripe.color=teamBadge.color=teamColor;teamTitle.text=CharacterIdentity.TeamName(winner.team).ToUpperInvariant()+" / COURT MVP";opened=Time.unscaledTime;panel.gameObject.SetActive(true);hero.SetActive(true);stats.SetActive(false);
-   priorBlocked=PlayerView.Instance&&PlayerView.Instance.InputBlocked;if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=true;}
+   priorBlocked=PlayerView.Instance&&PlayerView.Instance.ExplicitInputBlocked;if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=true;}
    stadiumCamera=Camera.main;if(stadiumCamera){savedPosition=stadiumCamera.transform.position;savedRotation=stadiumCamera.transform.rotation;savedFov=stadiumCamera.fieldOfView;savedNear=stadiumCamera.nearClipPlane;savedOrtho=stadiumCamera.orthographic;}
    var s=match.Snapshot;result.text=(s.result==FootballMatchResult.Draw?"DRAW":s.result==FootballMatchResult.TeamA?"BLUE WINS":"RED WINS")+"  "+s.scoreA+" : "+s.scoreB;
    nameText.text="#"+winner.number+"  "+winner.name+"  /  "+CharacterIdentity.TeamName(winner.team).ToUpperInvariant();

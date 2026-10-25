@@ -19,7 +19,7 @@ namespace WhatTheFish {
   struct PendingContact {public Athlete actor;public GolfBall ball;public uint round,sequence,reset,hazardLaunch;public double at;public GolfShotPlan shot;}
   GameObject ballTemplate;float publishAt;bool wasContext;
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
-  public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.FixedTime:Time.fixedTimeAsDouble;
+  public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?RoomService.GameClock(NetworkManager.Singleton.ServerTime.FixedTime):Time.fixedTimeAsDouble;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Golf&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Golf);
   public bool CanStart=>Authority&&Context&&!RoomMatchStart.Travelling&&!State.Running&&Course.holes!=null&&Course.holes.Length==GolfPlayerState.HoleCount&&Eligible().Any();
   public double Remaining=>State.Remaining(Now);
@@ -181,6 +181,7 @@ namespace WhatTheFish {
    }
   }
   void FixedUpdate(){
+   if(RoomService.Paused)return;
    if(!Authority){if(Context)Receive();return;}
    if(!Context){if(wasContext||State.Phase!=GolfMatchPhase.Idle)ClearMatch();wasContext=false;return;}wasContext=true;
    ValidateAims();var phase=State.Phase;State.Advance(Now);UpdateEvents();AssignTees();ApplyLive();if(phase!=State.Phase)ClearInputs();

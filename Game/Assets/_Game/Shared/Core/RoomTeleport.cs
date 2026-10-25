@@ -23,7 +23,7 @@ namespace WhatTheFish {
   public bool Active=>State.phase is RoomTeleportPhase.Preparing or RoomTeleportPhase.Departing or RoomTeleportPhase.Arriving;
   public RoomTeleportState State=>NetworkAthlete.HostPlayer?NetworkAthlete.HostPlayer.WorldTeleport.Value:default;
   public string Message {get;private set;}="";
-  public static double Clock=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.unscaledTimeAsDouble;
+  public static double Clock=>RoomService.GameClock(NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.unscaledTimeAsDouble);
   uint seen;byte ack;bool launched;RoomTeleportPhase observed;AppRoot app;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){if(!Instance)new GameObject("Shared room teleport").AddComponent<RoomTeleport>();}
   void Awake(){Instance=this;}

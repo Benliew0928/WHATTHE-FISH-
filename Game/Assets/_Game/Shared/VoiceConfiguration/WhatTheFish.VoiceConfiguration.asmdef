@@ -1,0 +1,5 @@
+{
+  "name": "WhatTheFish.VoiceConfiguration",
+  "references": ["Unity.Services.Core", "Unity.Services.Core.Internal"],
+  "autoReferenced": true
+}

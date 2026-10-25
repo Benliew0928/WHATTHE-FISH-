@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace WhatTheFish {
  // Validate the entire relocation before a controller commits its new round.
  public static class RoomMatchStart {
-  public static bool Travelling=>RoomTeleport.Busy||TeleportSequence.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling;
+  public static bool Travelling=>RoomService.Paused||RoomTeleport.Busy||TeleportSequence.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling;
   public static string Message {get;private set;}="";
   public static float MessageUntil {get;private set;}
   public sealed class Placement {

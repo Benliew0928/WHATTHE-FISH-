@@ -59,12 +59,12 @@ namespace WhatTheFish {
   Button MakeButton(string name,Transform parent,string value,Color color,Action clicked,out Text caption){
    var rect=Rect(name,parent,Vector2.zero,layout.readySize);var plate=GolfHUDStyle.Panel(rect,color,true);plate.raycastTarget=true;plate.cornerRadius=28;
    var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=plate;button.transition=Selectable.Transition.None;caption=Label(name+" label",rect,value,layout.rowFontSize);Stretch(caption.rectTransform);caption.rectTransform.offsetMin=new Vector2(12,4);caption.rectTransform.offsetMax=new Vector2(-12,-4);
-   button.onClick.AddListener(()=>clicked());button.gameObject.AddComponent<GolfFishingButtonSound>();return button;
+   button.onClick.AddListener(()=>clicked());button.gameObject.AddComponent<GolfFishingButtonSound>();MenuDesigns.Apply(button);return button;
   }
   void Build(){
    reopenButton=MakeButton("Fishing reopen results",transform,"RESULTS",GolfHUDStyle.Cream,Open,out _);reopen=(RectTransform)reopenButton.transform;reopen.gameObject.SetActive(false);
    modal=Rect("Fishing results modal",transform,Vector2.zero,Vector2.zero);Stretch(modal);var shade=modal.gameObject.AddComponent<Image>();shade.color=new Color(.025f,.11f,.15f,.62f);shade.raycastTarget=true;
-   card=Rect("Fishing results card",modal,Vector2.zero,Vector2.zero);GolfHUDStyle.Panel(card,GolfHUDStyle.Cream).raycastTarget=true;
+   card=Rect("Fishing results card",modal,Vector2.zero,Vector2.zero);MenuDesigns.Dialog(GolfHUDStyle.Panel(card,GolfHUDStyle.Cream)).raycastTarget=true;
    var badge=Rect("Fishing results fish badge",card,Vector2.zero,new Vector2(62,62));var fish=badge.gameObject.AddComponent<FishingStickerGraphic>();fish.kind=FishingStickerGraphic.Kind.Fish;fish.tint=GolfHUDStyle.Teal;fish.raycastTarget=false;fish.Decorate();
    title=Label("Fishing result title",card,"ROUND RESULTS",layout.titleFontSize,TextAnchor.MiddleLeft);
    subtitle=Label("Fishing result subtitle",card,"",layout.labelFontSize,TextAnchor.MiddleLeft);

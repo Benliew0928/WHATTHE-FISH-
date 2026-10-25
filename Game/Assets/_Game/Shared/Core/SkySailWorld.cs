@@ -25,7 +25,7 @@ namespace WhatTheFish {
   Text heading,caption,wayfinding;Button previous,next;Image progressFill;Canvas ui;float uiTimer,noticeUntil;
   AudioSource motor;
   bool Authority=>!app.rooms.Connected||app.rooms.Host;
-  double Clock=>app.rooms.Connected?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
+  double Clock=>app.rooms.Connected?RoomService.GameClock(NetworkManager.Singleton.ServerTime.Time):Time.timeAsDouble;
   void Awake(){Instance=this;hanger=cabin.Find("CabinHanger");trolley=cabin.Find("CabinTrolley");doorLeft=leftDoor.localPosition;doorRight=rightDoor.localPosition;foreach(var lod in cabin.GetComponentsInChildren<LODGroup>())lod.ForceLOD(0);if(!cabin.GetComponent<SkySailCabinLighting>())cabin.gameObject.AddComponent<SkySailCabinLighting>();}
   IEnumerator Start(){while(!AppRoot.Instance||!AppRoot.Instance.environments.View)yield return null;app=AppRoot.Instance;streaming=app.environments.GetComponent<SkySailStreaming>();SetIsland(app.SelectedSport);BuildUI();BuildAudio();if(Environment.GetCommandLineArgs().Contains("-skyStation")&&!app.rooms.Connected){app.EnterOffline();app.LocalAthlete.capsule.enabled=false;app.LocalAthlete.transform.position=SkySailMap.Exit(app.SelectedSport,0);app.LocalAthlete.capsule.enabled=true;app.view.yaw=SkySailMap.Facing(app.SelectedSport).eulerAngles.y;}}
   void OnDestroy(){if(Instance==this)Instance=null;}
@@ -39,6 +39,7 @@ namespace WhatTheFish {
    if(!Travelling){cabin.localPosition=SkySailMap.Berth(id);cabin.localRotation=SkySailMap.Facing(id);}
   }
   public bool CanTravel(SportId target,out string reason){
+   if(RoomService.Paused){reason="Wait for your crew to reconnect.";return false;}
    if(TeleportSequence.Busy||RoomTeleport.Busy){reason="Wait for the teleport to finish.";return false;}
    reason="";if(!app||!app.Exploring){reason="Enter an island first.";return false;}
    if(!Authority){reason="Your host chooses the destination.";return false;}

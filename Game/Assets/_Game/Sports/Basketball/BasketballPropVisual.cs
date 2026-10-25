@@ -11,6 +11,7 @@ namespace WhatTheFish {
   readonly Dictionary<Athlete,TrailRenderer> turboTrails=new();readonly List<Athlete> removedActors=new();
   readonly Dictionary<Athlete,MeshRenderer> guardLights=new();
   void Start(){
+   if(!GetComponent<SportsPropPresentation>())gameObject.AddComponent<SportsPropPresentation>();
    ball=GetComponent<BasketballBall>();block=new MaterialPropertyBlock();models=new[]{Resources.Load<GameObject>("BasketballProps/LockOn"),Resources.Load<GameObject>("BasketballProps/Turbo"),Resources.Load<GameObject>("BasketballProps/Portal")};
    effect=Resources.Load<Material>("BasketballProps/PropEffect");
    quad=new Mesh{name="Shared ability effect quad"};quad.vertices=new[]{new Vector3(-.5f,-.5f,0),new Vector3(.5f,-.5f,0),new Vector3(.5f,.5f,0),new Vector3(-.5f,.5f,0)};quad.uv=new[]{Vector2.zero,Vector2.right,Vector2.one,Vector2.up};quad.triangles=new[]{0,2,1,0,3,2};quad.RecalculateBounds();quad.RecalculateNormals();

@@ -18,7 +18,7 @@ namespace WhatTheFish {
   FootballMatchPhase publishedPhase;
   public const double GoalFollowThroughSeconds=ReplayCaptureSeconds;
   double goalFollowThroughUntil;
-  public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.FixedTime:Time.fixedTimeAsDouble;
+  public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?RoomService.GameClock(NetworkManager.Singleton.ServerTime.FixedTime):Time.fixedTimeAsDouble;
   public bool Authority=>ball&&ball.HasAuthority;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Football&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
   public FootballMatchSnapshot Snapshot=>Authority?Capture():NetworkAthlete.HostPlayer?NetworkAthlete.HostPlayer.Match.Value:default;
@@ -138,7 +138,7 @@ namespace WhatTheFish {
   void ResetDetection(){if(goals!=null)foreach(var goal in goals)goal.Reset(ball.Pitch.InverseTransformPoint(ball.Body.position),Now);}
   public void ResetAbilityGoalTracking(){if(Authority)ResetDetection();}
   public void ResolvePendingGoals(){
-   if(!Authority||!Context)return;if(State.Active&&!RosterValid()){CancelMatch();return;}ball.ResolveAbilityBallStep();double now=Now;
+   if(RoomService.Paused||!Authority||!Context)return;if(State.Active&&!RosterValid()){CancelMatch();return;}ball.ResolveAbilityBallStep();double now=Now;
    if(State.Running&&goals!=null&&!ball.PortalBusy){
     var point=ball.Pitch.InverseTransformPoint(ball.Body.position);var scale=ball.Pitch.lossyScale;float radius=ball.WorldRadius;
     var r=new Vector3(radius/Mathf.Abs(scale.x),radius/Mathf.Abs(scale.y),radius/Mathf.Abs(scale.z));
@@ -149,6 +149,7 @@ namespace WhatTheFish {
    }
   }
   void FixedUpdate(){
+   if(RoomService.Paused)return;
    if(!Authority){if(Snapshot.revision!=presentedRevision){presentedRevision=Snapshot.revision;if(BlocksActions)PlayerView.Instance?.ClearMatchInput();}return;}
    if(!Context){if(wasContext||State.Phase!=FootballMatchPhase.Idle)ClearMatch();wasContext=false;return;}wasContext=true;
    if(State.Phase==FootballMatchPhase.Idle)return;

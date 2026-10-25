@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public struct BasketballPropsState:INetworkSerializable,IEquatable<BasketballPropsState> {
-  public SportsPropSpawn pickup;public double turboA,turboB,aimUntil,portalAt;
+  public SportsPropSpawn pickup;public SportsPropActivation activation;public double turboA,turboB,aimUntil,portalAt;
   public bool aiming,transferring,guided;public ulong aimer,receiver;public uint portalSequence;
   public Vector3 source,destination;public byte portalOutcome;
   public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {
-   s.SerializeValue(ref guided);s.SerializeValue(ref pickup);s.SerializeValue(ref turboA);s.SerializeValue(ref turboB);
+   s.SerializeValue(ref activation);s.SerializeValue(ref guided);s.SerializeValue(ref pickup);s.SerializeValue(ref turboA);s.SerializeValue(ref turboB);
    s.SerializeValue(ref aimUntil);s.SerializeValue(ref aiming);s.SerializeValue(ref aimer);s.SerializeValue(ref transferring);
    s.SerializeValue(ref receiver);s.SerializeValue(ref portalAt);s.SerializeValue(ref portalSequence);s.SerializeValue(ref source);s.SerializeValue(ref destination);s.SerializeValue(ref portalOutcome);
   }
-  public bool Equals(BasketballPropsState b)=>guided==b.guided&&pickup.Equals(b.pickup)&&turboA==b.turboA&&turboB==b.turboB&&aimUntil==b.aimUntil&&aiming==b.aiming&&aimer==b.aimer&&transferring==b.transferring&&receiver==b.receiver&&portalAt==b.portalAt&&portalSequence==b.portalSequence&&source==b.source&&destination==b.destination&&portalOutcome==b.portalOutcome;
+  public bool Equals(BasketballPropsState b)=>activation.Equals(b.activation)&&guided==b.guided&&pickup.Equals(b.pickup)&&turboA==b.turboA&&turboB==b.turboB&&aimUntil==b.aimUntil&&aiming==b.aiming&&aimer==b.aimer&&transferring==b.transferring&&receiver==b.receiver&&portalAt==b.portalAt&&portalSequence==b.portalSequence&&source==b.source&&destination==b.destination&&portalOutcome==b.portalOutcome;
  }
  public static class BasketballPropRules {
   public const float AimSeconds=1,TurboSeconds=SportsAbilityRules.TurboSeconds,TurboMultiplier=SportsAbilityRules.TurboMultiplier,PortalSeconds=SportsAbilityRules.PortalSeconds,RespawnSeconds=SportsAbilityRules.RespawnSeconds,CountdownSeconds=SportsAbilityRules.CountdownSeconds,PickupRadius=SportsAbilityRules.PickupRadius;
@@ -102,6 +102,7 @@ namespace WhatTheFish {
     Body.isKinematic=true;Body.detectCollisions=false;SetPortalBall(source);reset++;
     audioPortalIn=audioPortalOut=false;BasketballAudio.Emit(BasketballSound.PortalOpen,source,.8f);BasketballAudio.Emit(BasketballSound.PortalOpen,propState.destination,.65f);
    }else return false;
+   propState.activation=new SportsPropActivation{kind=kind,actor=PlayerId(actor),sequence=++propRevision,started=BasketballMotion.Clock};
    GiveProp(actor,SportsProp.None);sendAt=0;return true;
   }
   void SetPortalBall(Vector3 point){Body.position=point;transform.position=point;}

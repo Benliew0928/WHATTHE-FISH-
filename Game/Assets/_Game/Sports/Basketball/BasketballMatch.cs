@@ -69,6 +69,7 @@ namespace WhatTheFish {
   bool RosterValid()=>participants.All(p=>p.Value&&p.Value.isActiveAndEnabled&&!p.Value.inTransit&&(!Room||p.Value.GetComponent<NetworkAthlete>() is NetworkAthlete n&&n.IsSpawned&&NetworkManager.Singleton.ConnectedClients.ContainsKey(n.OwnerClientId)));
   public void Cancel(){if(!Authority||!State.Active)return;State.Cancel();Synchronize();}
   void FixedUpdate(){
+   if(RoomService.Paused)return;
    UpdateAutomaticInput();
    if(!Authority){if(observed!=Snapshot.revision){observed=Snapshot.revision;if(BlocksActions)PlayerView.Instance?.ClearMatchInput();}return;}
    if(!Context){if(wasContext||State.Phase!=BasketballMatchPhase.Idle)Clear();wasContext=false;return;}wasContext=true;
@@ -77,7 +78,7 @@ namespace WhatTheFish {
    StepRestartMovement();EnsureInboundClearance();
    if(State.Phase==BasketballMatchPhase.TeamSelection&&!SoloTeamSelection&&Now>=State.Deadline)ConfirmTeams();
   }
-  public void AfterBallStep(){if(!Authority||!Context)return;State.Advance(Now);Synchronize();}
+  public void AfterBallStep(){if(RoomService.Paused||!Authority||!Context)return;State.Advance(Now);Synchronize();}
   void Synchronize(){
    if(observed!=State.Revision){
     bool continuous=presented==BasketballMatchPhase.Regulation&&State.Phase==BasketballMatchPhase.Overtime||presented==BasketballMatchPhase.Restart&&State.Running||State.Phase==BasketballMatchPhase.Restart;

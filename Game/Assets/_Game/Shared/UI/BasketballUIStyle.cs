@@ -19,15 +19,16 @@ namespace WhatTheFish {
   public static BasketballPlate Plate(Transform p,string name,float x,float y,float w,float h,Color color,float radius=16,float border=2,bool shadow=false){var r=CoveUI.Rect(p,name,x,y,w,h);var g=r.gameObject.AddComponent<BasketballPlate>();g.color=color;g.radius=Vector2.one*radius;g.border=border;g.shadow=shadow?3:0;g.raycastTarget=false;return g;}
   public static Button Button(Transform p,string name,string caption,float x,float y,float w,float h,Action action,Color? fill=null,int size=14){
    var g=Plate(p,name,x,y,w,h,fill??CoveUI.Cream,13,2,true);g.raycastTarget=true;var b=g.gameObject.AddComponent<Button>();b.targetGraphic=g;b.transition=Selectable.Transition.None;b.navigation=new Navigation{mode=Navigation.Mode.None};b.onClick.AddListener(()=>{if(!BasketballButtonFeedback.UsesPressSound(g.gameObject))BasketballAudio.PlayMenu(BasketballAudio.ButtonCue(name));action?.Invoke();});
-   Text(g.transform,caption,8,0,w-16,h,size,true,TextAnchor.MiddleCenter);b.gameObject.AddComponent<BasketballButtonFeedback>();return b;
+   Text(g.transform,caption,8,0,w-16,h,size,true,TextAnchor.MiddleCenter);b.gameObject.AddComponent<BasketballButtonFeedback>();MenuDesigns.Apply(b,h>=75?MenuSurface.Card:MenuSurface.Button);return b;
   }
  }
  // Geometry matches the proposal's elliptical CSS corners and inset cream rim.
  // Frames, shadows, paths and meters share the default UI material; no baked panels.
  public sealed class BasketballPlate:MaskableGraphic {
+  public MenuSurface menuSurface;public bool menuSelected,menuDisabled;public float menuHover;
   public Vector2 radius=new(16,16);public float border=2,inset,shadow,pressure;public Color edge=CoveUI.Ink,insetColor=CoveUI.Cream;public bool dashed;
   public void Refresh()=>SetVerticesDirty();
-  protected override void OnPopulateMesh(VertexHelper v){Draw(v,rectTransform.rect,color,radius,border,inset,shadow,pressure,edge,insetColor,dashed);}
+  protected override void OnPopulateMesh(VertexHelper v){if(menuSurface!=MenuSurface.None){MenuDesigns.Draw(v,rectTransform.rect,color,radius.x,menuSurface,pressure,menuSelected,menuDisabled,menuHover);return;}Draw(v,rectTransform.rect,color,radius,border,inset,shadow,pressure,edge,insetColor,dashed);}
   public static void Draw(VertexHelper v,Rect r,Color color,Vector2 radius,float border=2,float inset=0,float shadow=3,float pressure=0,Color? borderColor=null,Color? rimColor=null,bool dashed=false){
    Color edge=borderColor??CoveUI.Ink,insetColor=rimColor??CoveUI.Cream;
    v.Clear();if(shadow>0){var s=r;s.y-=shadow;Round(v,s,radius,edge);}r=Inset(r,r.width*.02f*pressure);r.y-=3*pressure;

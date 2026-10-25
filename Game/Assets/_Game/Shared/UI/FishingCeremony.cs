@@ -52,7 +52,7 @@ namespace WhatTheFish {
    savedPosition=camera.transform.position;savedRotation=camera.transform.rotation;savedFov=camera.fieldOfView;savedNear=camera.nearClipPlane;
    running=true;
    try {
-   var view=PlayerView.Instance;blockedBefore=view&&view.InputBlocked;if(view){view.ClearMatchInput();view.InputBlocked=true;}
+   var view=PlayerView.Instance;blockedBefore=view&&view.ExplicitInputBlocked;if(view){view.ClearMatchInput();view.InputBlocked=true;}
    // Responsive widgets can live beside their HUD, and modal groups may ignore
    // parents. Cover the active UI roots and their groups, then restore exactly.
    foreach(var uiCanvas in FindObjectsByType<Canvas>(FindObjectsSortMode.None).Where(c=>c.isRootCanvas)){

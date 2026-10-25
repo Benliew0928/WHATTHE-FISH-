@@ -62,17 +62,17 @@ namespace WhatTheFish {
     BasketballUIStyle.Text(guide,"The host starts the room's game. Everyone travels together. Settings affect only you; the game and its timers keep running.",24,289,602,45,13);
     BasketballUIStyle.Button(guide,"Back to settings","Back to settings",20,333,220,31,Back,CoveUI.Mint,13);
    }
-   overlay.gameObject.SetActive(false);
+   MenuDesigns.Sliders(overlay);overlay.gameObject.SetActive(false);
   }
   RectTransform Panel(string title,float width,float height,BasketballIcon icon){
-   var plate=BasketballUIStyle.Plate(overlay,title,0,0,width,height,CoveUI.Cream,25,3,true);var r=plate.rectTransform;r.anchorMin=r.anchorMax=r.pivot=Vector2.one*.5f;r.anchoredPosition=Vector2.zero;plate.raycastTarget=true;
+   var plate=BasketballUIStyle.Plate(overlay,title,0,0,width,height,CoveUI.Cream,25,3,true);MenuDesigns.Dialog(plate);var r=plate.rectTransform;r.anchorMin=r.anchorMax=r.pivot=Vector2.one*.5f;r.anchoredPosition=Vector2.zero;plate.raycastTarget=true;
    BasketballUIStyle.Art(r,icon,18,15,30,30);BasketballUIStyle.Text(r,title,59,8,width-125,44,24,true);var close=BasketballUIStyle.Button(r,"Close "+title,"",width-58,9,40,40,Close);BasketballUIStyle.Art(close.transform,BasketballIcon.Close,10,10,20,20);BasketballUIStyle.Plate(r,"Header rule",18,58,width-36,1,CoveUI.Hex("CCD0BB"),0,0);return r;
   }
   public void OpenLayout(){if(!Visible)Open();if(Visible)page.GetComponent<ControlLayoutEditor>()?.Open(()=>overlay.gameObject);}
   public void Toggle(){if(Visible)Back();else Open();}
   public void Open(){
    if(Visible||!Context||TeleportSequence.Busy||RoomTeleport.Busy||PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible||Fishing&&FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)return;
-   blockedView=PlayerView.Instance;blockedBefore=blockedView&&blockedView.InputBlocked;
+   blockedView=PlayerView.Instance;blockedBefore=blockedView&&blockedView.ExplicitInputBlocked;
    if(blockedView){blockedView.ClearMatchInput();blockedView.InputBlocked=true;}foreach(var swing in page.GetComponentsInChildren<GolfSwingButton>(true))swing.CancelGesture();ResetPads();ShowSettings();overlay.gameObject.SetActive(true);root.SetAsLastSibling();Refresh();
   }
   void ResetPads(){PlayerView.LookDelta=Vector2.zero;foreach(var pad in page.GetComponentsInChildren<TouchPad>(true))pad.ResetInput();}
@@ -81,7 +81,7 @@ namespace WhatTheFish {
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);if(!Fishing){PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();}Refresh();}
   void OpenGuide(){Close();if(Fishing)FishingHUD.Instance?.Tutorial?.Open();else SportTutorialUI.Find(SportId.Golf)?.Open();}
   void Refresh(){
-   var view=PlayerView.Instance;for(int i=0;i<3;i++){bool chosen=view&&view.mode==i;var p=cameras[i].GetComponent<BasketballPlate>();p.color=chosen?CoveUI.Sky:BasketballUIStyle.Paper;p.border=chosen?3:2;p.Refresh();cameras[i].transform.Find("Selected camera").gameObject.SetActive(chosen);}
+   var view=PlayerView.Instance;for(int i=0;i<3;i++){bool chosen=view&&view.mode==i;MenuDesigns.Selected(cameras[i],chosen);var p=cameras[i].GetComponent<BasketballPlate>();p.color=chosen?CoveUI.Sky:BasketballUIStyle.Paper;p.border=chosen?3:2;p.Refresh();cameras[i].transform.Find("Selected camera").gameObject.SetActive(chosen);}
    note.text=view&&view.mode==0?"See from your player's eyes. Drag to look around.":view&&view.mode==1?"Stay behind your player. Drag to look around.":Fishing?"Frame your cast and hooked fish. Drag to look before casting.":"See your shot and landing area, then follow the ball.";
    for(int i=0;i<4;i++){float value=i==0?MenuPreferences.MasterVolume:i==1?MenuPreferences.SFXVolume:i==2?MenuPreferences.UIVolume:MenuPreferences.AmbienceVolume;volumes[i].SetValueWithoutNotify(value);captions[i].text=AudioNames[i]+" "+Mathf.RoundToInt(value*100)+"%";}
    playNote.text=AppRoot.Instance.rooms.Connected?"Room play continues while settings are open.":"Play continues while settings are open.";RefreshLeave();

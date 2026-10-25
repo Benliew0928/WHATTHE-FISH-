@@ -59,7 +59,7 @@ namespace WhatTheFish {
   public void Open(){
    app=AppRoot.Instance;if(!app||!app.Exploring||RoomService.Paused||RoomMatchStart.Travelling||MatchActive)return;
    CloseResults();if(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen)FootballHUD.Instance.CloseMenu();if(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)BasketballHUD.Instance.CloseMenu();GolfHUD.Instance?.IslandMenu?.Close();FishingHUD.Instance?.IslandMenu?.Close();selected=app.SelectedSport;destination=TeleportDestination.Station;actionMessage="";
-   if(!Visible){wasBlocked=app.view.InputBlocked;app.view.ClearMatchInput();app.view.InputBlocked=true;}panel.gameObject.SetActive(true);dock.gameObject.SetActive(false);Refresh();
+   if(!Visible){wasBlocked=app.view.ExplicitInputBlocked;app.view.ClearMatchInput();app.view.InputBlocked=true;}panel.gameObject.SetActive(true);dock.gameObject.SetActive(false);Refresh();
   }
   public void Close(){if(!Visible)return;panel.gameObject.SetActive(false);if(app&&app.view)app.view.InputBlocked=wasBlocked;}
   public bool PlayAgain(){

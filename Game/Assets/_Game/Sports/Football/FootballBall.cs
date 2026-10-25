@@ -166,6 +166,7 @@ namespace WhatTheFish {
   }
   public void ResetBall(bool preserveInventory=false){if(!HasAuthority)return;GetComponent<FootballTrail>()?.Clear();FootballMatch.Instance?.Statistics.ResetPlay();ResetFootballProps(!preserveInventory);sequence++;impulsePending=false;enteredGoal=-1;ReleaseControl();mustApproach.Clear();SnapPose(origin,originRotation);if(!Body.isKinematic){Body.linearVelocity=Vector3.zero;Body.angularVelocity=Vector3.zero;}Body.Sleep();}
   void FixedUpdate(){
+   if(RoomService.Paused)return;
    authority=HasAuthority;
    bool active=FootballTackle.EnvironmentAllowed&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!Online||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Football);
    bool followThrough=FootballMatch.GoalFollowThrough;

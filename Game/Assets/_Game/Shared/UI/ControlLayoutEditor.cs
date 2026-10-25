@@ -170,11 +170,11 @@ namespace WhatTheFish {
     var outline=new GameObject("Selection outline",typeof(RectTransform),typeof(ControlLayoutOutline)).GetComponent<ControlLayoutOutline>();outline.transform.SetParent(c.proxy,false);CoveUI.Stretch(outline.rectTransform);outline.raycastTarget=false;c.outline=outline;
     var drag=hit.gameObject.AddComponent<ControlLayoutDrag>();drag.owner=this;drag.index=controls.IndexOf(c);
     float density=frame.rect.height/450;
-    var handle=BasketballUIStyle.Plate(c.proxy,"Resize "+c.id,0,0,24,24,accent,8,1);var hr=handle.rectTransform;hr.localScale=Vector3.one*density;hr.anchorMin=hr.anchorMax=hr.pivot=new Vector2(1,0);hr.anchoredPosition=Vector2.zero;handle.raycastTarget=true;c.handle=handle.gameObject;
+    var handle=BasketballUIStyle.Plate(c.proxy,"Resize "+c.id,0,0,24,24,accent,8,1);var hr=handle.rectTransform;hr.localScale=Vector3.one*density;hr.anchorMin=hr.anchorMax=hr.pivot=new Vector2(1,0);hr.anchoredPosition=Vector2.zero;MenuDesigns.Surface(handle,MenuSurface.Thumb);handle.raycastTarget=true;c.handle=handle.gameObject;
     var hd=handle.gameObject.AddComponent<ControlLayoutDrag>();hd.owner=this;hd.index=drag.index;hd.resize=true;
     var mark=new GameObject("Resize mark",typeof(RectTransform),typeof(ControlLayoutResizeMark)).GetComponent<ControlLayoutResizeMark>();mark.transform.SetParent(hr,false);CoveUI.Stretch(mark.rectTransform);mark.color=CoveUI.Ink;mark.raycastTarget=false;
    }
-   var toolbar=BasketballUIStyle.Plate(editor,"Layout tools",0,0,490,88,paper,14,1,true);dock=toolbar.rectTransform;dock.anchorMin=dock.anchorMax=dock.pivot=new Vector2(.5f,1);toolbar.raycastTarget=true;
+   var toolbar=BasketballUIStyle.Plate(editor,"Layout tools",0,0,490,88,paper,14,1,true);MenuDesigns.Dialog(toolbar);dock=toolbar.rectTransform;dock.anchorMin=dock.anchorMax=dock.pivot=new Vector2(.5f,1);toolbar.raycastTarget=true;
    Button(dock,"Cancel layout","X",8,8,34,32,Cancel,false);
    var title=Label(dock,Sport+" layout",54,8,210,32,17);
    if(dark)title.font=Resources.Load<Font>("SportyMenu/BarlowDisplay")??title.font;
@@ -186,7 +186,7 @@ namespace WhatTheFish {
    sizeSlider=track.gameObject.AddComponent<Slider>();sizeSlider.minValue=ControlLayouts.MinSize;sizeSlider.maxValue=ControlLayouts.MaxSize;
    var area=CoveUI.Rect(track.transform,"Size handle area",12,10,187,0);
    var knob=BasketballUIStyle.Plate(area,"Size handle",0,0,24,24,accent,12,1);knob.raycastTarget=true;knob.rectTransform.pivot=Vector2.one*.5f;sizeSlider.handleRect=knob.rectTransform;sizeSlider.targetGraphic=knob;
-   sizeSlider.onValueChanged.AddListener(ResizeSelected);
+   MenuDesigns.Slider(sizeSlider);sizeSlider.onValueChanged.AddListener(ResizeSelected);
    percentage=Label(dock,"",430,48,52,30,13);
    choices=BasketballUIStyle.Plate(dock,"Control list",12,94,218,controls.Count*34+8,paper,12,1,true).rectTransform;choices.GetComponent<Graphic>().raycastTarget=true;
    for(int i=0;i<controls.Count;i++){int index=i;Button(choices,"Choose "+controls[i].id,controls[i].label,4,4+i*34,210,32,()=>Select(index),false);}

@@ -26,8 +26,8 @@ namespace WhatTheFish {
    get {
     var network=NetworkManager.Singleton;if(!network||!network.IsListening)return Time.timeAsDouble;
     if(Time.inFixedTimeStep&&network==sampledNetwork&&Math.Abs(network.ServerTime.Time-sampledServerTime)<.5)
-     return sampledServerTime+Time.fixedUnscaledTimeAsDouble-sampledUnityTime;
-    return network.ServerTime.Time;
+     return RoomService.GameClock(sampledServerTime+Time.fixedUnscaledTimeAsDouble-sampledUnityTime);
+    return RoomService.GameClock(network.ServerTime.Time);
    }
   }
   static void SampleClock(){var network=NetworkManager.Singleton;if(network&&network.IsListening){sampledNetwork=network;sampledServerTime=network.ServerTime.Time;sampledUnityTime=Time.unscaledTimeAsDouble;}else sampledNetwork=null;}
@@ -184,7 +184,7 @@ namespace WhatTheFish {
    }
    possessionBlend=Damp(possessionBlend,held?1:0,20);
    float arms=held?possessionBlend*weight:actionBlend*weight;
-   if(arms<.001f||!held&&!acting)return;
+   if(arms<.001f||!held&&!acting){if(!held&&!acting)SportsPropPresentation.Gesture(athlete,left.upper,left.lower);return;}
    Quaternion facing=acting?PoseFacing:transform.rotation;
    Vector3 forward=facing*Vector3.forward,side=facing*Vector3.right;
    Vector3 center=held?ball.CarryPosition(athlete):transform.position+Facing*BallOffset(ReleaseTime(State.action));

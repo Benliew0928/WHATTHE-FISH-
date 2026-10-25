@@ -38,7 +38,7 @@ namespace WhatTheFish {
    // The match stamp is authoritative, but presentation uses the render-frame
    // clock so a 50 Hz physics tick cannot introduce steps into the camera.
    var network=Unity.Netcode.NetworkManager.Singleton;
-   double now=network&&network.IsListening?network.ServerTime.Time:Time.timeAsDouble;
+   double now=network&&network.IsListening?RoomService.GameClock(network.ServerTime.Time):Time.timeAsDouble;
    return Mathf.Max(0,(float)(now-start));
   }
   sealed class Board {

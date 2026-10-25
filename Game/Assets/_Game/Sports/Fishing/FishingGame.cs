@@ -17,7 +17,7 @@ namespace WhatTheFish {
   public bool ReviewSnapshot;
 #endif
   public bool Authority=>!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkManager.Singleton.IsServer;
-  public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
+  public double Now=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?RoomService.GameClock(NetworkManager.Singleton.ServerTime.Time):Time.timeAsDouble;
   public bool Context=>AppRoot.Instance&&AppRoot.Instance.Exploring&&AppRoot.Instance.SelectedSport==SportId.Fishing&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)&&(!NetworkManager.Singleton||!NetworkManager.Singleton.IsListening||NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.Exploring.Value&&NetworkAthlete.HostPlayer.WorldSport.Value==SportId.Fishing);
   public static ulong Key(Athlete actor){var n=actor?actor.GetComponent<NetworkAthlete>():null;return n&&n.IsSpawned?n.StableId:IslandBots.IsBot(actor)?IslandBots.Id(actor):0;}
   public string PlayerName(ulong id){var actor=Athlete.Active.FirstOrDefault(a=>a&&Key(a)==id);if(IslandBots.IsBot(actor))return IslandBots.Name(actor);var net=actor?actor.GetComponent<NetworkAthlete>():null;string name=net&&net.Nickname.Value.Length>0?net.Nickname.Value.ToString():!AppRoot.Instance.rooms.Connected&&id==0?PlayerIdentity.DisplayName:id==0?"HOST":"FRIEND "+id;return name.Length>0?name:"Guest";}
@@ -117,6 +117,7 @@ namespace WhatTheFish {
   }
   public void Input(Athlete actor,PlayerCommand command){if(command.fishingAction!=FishingAction.None)Execute(actor,command.fishingAction,command.fishingRound,command.fishingSequence,command.fishingFish,command.fishingPressedAt);}
   void FixedUpdate(){
+   if(RoomService.Paused)return;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    if(ReviewSnapshot)return;
 #endif

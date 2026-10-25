@@ -61,8 +61,10 @@ namespace WhatTheFish {
  }
 
  public sealed class CovePlate : MaskableGraphic {
+  public MenuSurface menuSurface;public bool menuSelected,menuDisabled;public float menuHover;
   public float radius=24,border=2,pressure; public bool shadow,focus;public Color borderColor=CoveUI.Ink;
   protected override void OnPopulateMesh(VertexHelper vh) {
+   if(menuSurface!=MenuSurface.None){MenuDesigns.Draw(vh,rectTransform.rect,color,radius,menuSurface,pressure,menuSelected,menuDisabled,menuHover);return;}
    vh.Clear();var r=rectTransform.rect;
    if(shadow){var s=r;s.y-=5*(1-pressure);Round(vh,s,radius,new Color(.03f,.24f,.28f,.18f));}
    if(focus){var s=r;s.xMin-=5;s.xMax+=5;s.yMin-=5;s.yMax+=5;Round(vh,s,radius+5,CoveUI.Gold);}

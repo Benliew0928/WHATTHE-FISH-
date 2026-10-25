@@ -64,7 +64,7 @@ namespace WhatTheFish {
    v.Label=GlossLabel(v.Visual,"CANCEL",new(root.rect.width*.63f,h*.65f),new(root.rect.width*.1f,0),h*.32f);return v;
   }
   public static void SkinWallCancel(Button button){
-   var root=(RectTransform)button.transform;var old=button.GetComponent<BasketballPlate>();if(old){old.enabled=false;old.raycastTarget=false;}
+   var menu=button.GetComponent<MenuButtonState>();if(menu)menu.enabled=false;var root=(RectTransform)button.transform;var old=button.GetComponent<BasketballPlate>();if(old){old.enabled=false;old.raycastTarget=false;}
    foreach(var label in button.GetComponentsInChildren<Text>())label.gameObject.SetActive(false);
    var v=CancelDesign(root);button.targetGraphic=v.Face;v.Face.raycastTarget=true;
   }

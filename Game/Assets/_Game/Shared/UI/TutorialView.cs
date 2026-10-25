@@ -44,13 +44,15 @@ namespace WhatTheFish {
    focus=Rect(transform,"Current control highlight",0,0,0,0).gameObject.AddComponent<ControlLayoutOutline>();focus.color=accent;focus.selected=true;focus.raycastTarget=false;
    marker=Text(transform,"↓",0,0,50,58,44,true,accent,TextAnchor.MiddleCenter);
    chapters=Rect(design,"Lesson list",0,0,1600,900);var shade=chapters.gameObject.AddComponent<Image>();shade.color=new Color(.025f,.06f,.1f,.88f);shade.raycastTarget=true;
+   MenuDesigns.Dialog(Plate(chapters,"Lesson list card",170,20,1260,860,MenuDesigns.Navy,26,0,true));
    Text(chapters,lesson.Sport+" lessons",210,80,1180,60,40,true,Cream);
    Text(chapters,"Choose a lesson to practise. Completed steps are saved to your profile.",210,146,1180,44,24,false,Cream);
    for(int i=0;i<lesson.Steps.Length;i++){int ix=i;Button(chapters,"Lesson "+lesson.Steps[i].id,(i+1)+"  "+lesson.Steps[i].title,210+(i%2)*610,212+(i/2)*63,580,52,Cream,()=>lesson.Begin(ix),size:22);}
    Button(chapters,"Close lessons","Back",210,804,220,60,accent,()=>{CloseChapters();lesson.Pause(false);},CoveSymbol.Back,24);
    Button(chapters,"Quit from lessons","Quit tutorial",1130,804,260,60,Cream,()=>lesson.Quit(),size:24);
-   chapters.gameObject.SetActive(false);Refresh();
+   foreach(var surface in new[]{card.GetComponent<CovePlate>(),dock.GetComponent<CovePlate>()})if(surface)MenuDesigns.Dialog(surface);chapters.gameObject.SetActive(false);Refresh();
   }
+  static CoveButton Button(Transform parent,string id,string label,float x,float y,float w,float h,Color color,System.Action action,CoveSymbol icon=CoveSymbol.None,int size=28){var b=CoveUI.Button(parent,id,label,x,y,w,h,color,action,icon,size);MenuDesigns.Apply(b);return b;}
   public void Bind(RectTransform root,ControlLayoutEditor controls){hud=root;layout=controls;scanAt=0;}
   public void Refresh(){
    if(!lesson)return;bool ready=lesson.Ready,success=lesson.Succeeded&&!lesson.Finished;

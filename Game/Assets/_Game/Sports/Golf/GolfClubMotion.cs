@@ -16,7 +16,7 @@ namespace WhatTheFish {
  [DefaultExecutionOrder(120)]
  public sealed class GolfClubMotion:MonoBehaviour {
   public const float ContactTime=.10f,Duration=.74f,SwingReach=1.1f;
-  public static double Clock=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?NetworkManager.Singleton.ServerTime.Time:Time.timeAsDouble;
+  public static double Clock=>NetworkManager.Singleton&&NetworkManager.Singleton.IsListening?RoomService.GameClock(NetworkManager.Singleton.ServerTime.Time):Time.timeAsDouble;
   public GolfClubState State {get;private set;}
   public GolfClubModel Club {get;private set;}
   public bool RigReady {get;private set;}

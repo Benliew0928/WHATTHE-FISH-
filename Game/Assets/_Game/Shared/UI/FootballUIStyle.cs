@@ -23,7 +23,7 @@ namespace WhatTheFish {
   public static Button Button(Transform p,string name,string caption,float x,float y,float w,float h,Action action,Color? fill=null,int size=14){
    var g=BasketballUIStyle.Plate(p,name,x,y,w,h,fill??CoveUI.Cream,13,1.5f,true);g.raycastTarget=true;
    var b=g.gameObject.AddComponent<Button>();b.targetGraphic=g;b.transition=Selectable.Transition.None;b.navigation=new Navigation{mode=Navigation.Mode.None};b.onClick.AddListener(()=>{if(!BasketballButtonFeedback.UsesPressSound(b.gameObject))FootballAudio.PlayMenu(FootballAudio.ButtonCue(name));action?.Invoke();});
-   BasketballUIStyle.Text(g.transform,caption,8,0,w-16,h,size,true,TextAnchor.MiddleCenter);b.gameObject.AddComponent<BasketballButtonFeedback>();return b;
+   BasketballUIStyle.Text(g.transform,caption,8,0,w-16,h,size,true,TextAnchor.MiddleCenter);b.gameObject.AddComponent<BasketballButtonFeedback>();MenuDesigns.Apply(b,h>=75?MenuSurface.Card:MenuSurface.Button);return b;
   }
  }
  public sealed class FootballJoystickFace:MaskableGraphic {protected override void OnPopulateMesh(VertexHelper v){v.Clear();BasketballUIMesh.Dot(v,Vector2.zero,52.5f,new Color(1,.976f,.914f,.16f));BasketballUIMesh.Arc(v,52.5f,0,360,new Color(1,.976f,.914f,.6f),3);}}

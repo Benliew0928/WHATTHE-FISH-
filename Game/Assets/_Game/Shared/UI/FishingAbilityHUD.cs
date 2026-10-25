@@ -22,12 +22,12 @@ namespace WhatTheFish {
    skillRect=BasketballUIStyle.Center(frame,"Fishing round skill",ControlDesigns.Size(SportId.Fishing,"ability"),Vector2.zero,Vector2.one*.5f);var design=ControlDesigns.Build(skillRect,SportId.Fishing,"ability");skill=ControlDesigns.BindButton(design);skill.onClick.AddListener(()=>{BasketballAudio.PlayMenu();Use();});skillAlpha=skill.gameObject.AddComponent<CanvasGroup>();
    iconRect=design.IconRoot;skillLabel=design.Label;clockRing=design.Ring;
    var shade=BasketballUIStyle.Plate(frame,"Fishing skill draft overlay",0,0,100,100,new Color(.025f,.05f,.04f,.34f),0,0);panel=shade.rectTransform;CoveUI.Stretch(panel);shade.raycastTarget=true;
-   var card=BasketballUIStyle.Plate(panel,"Shared three-card draft",0,0,692,366,CoveUI.Cream,26,3,true);sheet=card.rectTransform;sheet.anchorMin=sheet.anchorMax=sheet.pivot=Vector2.one*.5f;sheet.anchoredPosition=Vector2.zero;
+   var card=BasketballUIStyle.Plate(panel,"Shared three-card draft",0,0,692,366,CoveUI.Cream,26,3,true);MenuDesigns.Dialog(card);sheet=card.rectTransform;sheet.anchorMin=sheet.anchorMax=sheet.pivot=Vector2.one*.5f;sheet.anchoredPosition=Vector2.zero;
    title=BasketballUIStyle.Text(sheet,"CHOOSE 1 SKILL",18,12,656,43,28,true,TextAnchor.MiddleCenter);
    for(int i=0;i<3;i++){int index=i;var b=cards[i]=BasketballUIStyle.Button(sheet,"Fishing skill choice "+i,"",18+i*220,92,204,218,()=>Choose(index),BasketballUIStyle.Paper);
-    icons[i]=BasketballUIStyle.Center((RectTransform)b.transform,"Draft skill icon",Vector2.one*72,new Vector2(0,65),Vector2.one*.5f);
-    names[i]=BasketballUIStyle.Text(b.transform,"",8,88,188,30,18,true,TextAnchor.MiddleCenter);
-    descriptions[i]=BasketballUIStyle.Text(b.transform,"",13,123,178,55,14,false,TextAnchor.MiddleCenter);
+    icons[i]=BasketballUIStyle.Center((RectTransform)b.transform,"Draft skill icon",Vector2.one*84,new Vector2(0,61),Vector2.one*.5f);
+    names[i]=BasketballUIStyle.Text(b.transform,"",8,100,188,30,18,true,TextAnchor.MiddleCenter);
+    descriptions[i]=BasketballUIStyle.Text(b.transform,"",16,140,172,58,14,false,TextAnchor.MiddleCenter);
    }
    selectionSummary=BasketballUIStyle.Text(sheet,"",24,66,644,62,22,true,TextAnchor.MiddleCenter);selectionSummary.gameObject.SetActive(false);
    footer=BasketballUIStyle.Text(sheet,"",18,323,656,28,15,true,TextAnchor.MiddleCenter);panel.gameObject.SetActive(false);skillRect.gameObject.SetActive(false);

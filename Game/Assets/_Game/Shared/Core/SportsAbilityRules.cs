@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public enum SportsProp:byte { None,LockOn,Turbo,Portal,Wall }
+ // Host-authored presentation event. Gameplay starts immediately; this never
+ // gates simulation, possession, input or ability deadlines.
+ public struct SportsPropActivation:INetworkSerializable,IEquatable<SportsPropActivation> {
+  public SportsProp kind;public ulong actor;public uint sequence;public double started;
+  public const float Duration=2.6f;
+  public void NetworkSerialize<T>(BufferSerializer<T> s) where T:IReaderWriter {s.SerializeValue(ref kind);s.SerializeValue(ref actor);s.SerializeValue(ref sequence);s.SerializeValue(ref started);}
+  public bool Equals(SportsPropActivation b)=>kind==b.kind&&actor==b.actor&&sequence==b.sequence&&started==b.started;
+ }
  // An owner sends the observed revision, never an inventory type or recipient.
  public struct SportsPropSlot:INetworkSerializable,IEquatable<SportsPropSlot> {
   public SportsProp kind;public uint revision;

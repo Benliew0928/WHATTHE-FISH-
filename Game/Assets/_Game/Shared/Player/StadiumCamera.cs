@@ -21,7 +21,7 @@ namespace WhatTheFish {
   // Screen-relative movement remains independent of shot/pass aim.
   Vector2 StadiumMovement(Vector2 input){
    if(!StadiumField(out _,out _,out _))return input;
-   var forward=Vector3.ProjectOnPlane(transform.forward,Vector3.up).normalized;
+   var forward=Vector3.ProjectOnPlane(PropMovementForward,Vector3.up).normalized;
    var right=Vector3.Cross(Vector3.up,forward);
    var relative=Quaternion.Euler(0,-yaw,0)*(right*input.x+forward*input.y);
    return new Vector2(relative.x,relative.z);

@@ -12,6 +12,7 @@ namespace WhatTheFish {
   public int CountdownNumber=>countdown;
   public MeshRenderer Hologram=>hologram;
   void Start(){
+   if(!GetComponent<SportsPropPresentation>())gameObject.AddComponent<SportsPropPresentation>();
    ball=GetComponent<FootballBall>();if(!ball.Pitch){enabled=false;return;}
    var pieces=GetComponentsInChildren<MeshRenderer>();ballParts=new Transform[pieces.Length];ballScales=new Vector3[pieces.Length];for(int i=0;i<pieces.Length;i++){ballParts[i]=pieces[i].transform;ballScales[i]=pieces[i].transform.localScale;}
    root=new GameObject("Football ability presentation").transform;root.SetParent(ball.Pitch,true);block=new MaterialPropertyBlock();effect=Resources.Load<Material>("BasketballProps/PropEffect");trailMaterial=Resources.Load<Material>("BasketballProps/PropTrail");

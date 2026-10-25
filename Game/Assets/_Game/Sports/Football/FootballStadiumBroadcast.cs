@@ -109,7 +109,7 @@ namespace WhatTheFish {
    // Retain an inward sightline at the near touchline. Looking almost straight
    // down would let a change of end angle spin the shot around the ball.
    var aim=new Vector3(Mathf.Clamp(p.x+Mathf.Clamp(v.x*.16f,-3,3),bounds.min.x+2,bounds.max.x-7),ground+1.4f+Mathf.Clamp((p.y-ground)*.55f,0,12),Mathf.Clamp(p.z+Mathf.Clamp(v.z*.16f,-3,3),bounds.min.z+3,bounds.max.z-3));
-   var network=Unity.Netcode.NetworkManager.Singleton;double now=network&&network.IsListening?network.ServerTime.Time:Time.timeAsDouble;
+   var network=Unity.Netcode.NetworkManager.Singleton;double now=network&&network.IsListening?RoomService.GameClock(network.ServerTime.Time):Time.timeAsDouble;
    double cycle=now/14;LiveAngle=(int)(cycle%Angles.Length);float blend=Mathf.SmoothStep(0,1,Mathf.Clamp01((float)(cycle-Math.Floor(cycle))*14/2.8f));
    var offset=Vector3.Lerp(Angles[(LiveAngle+Angles.Length-1)%Angles.Length],Angles[LiveAngle],blend);
    offset.y+=8*(1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(0,12,bounds.max.x-p.x)));

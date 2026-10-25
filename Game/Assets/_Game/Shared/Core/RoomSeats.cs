@@ -20,6 +20,7 @@ namespace WhatTheFish {
   }
   public static bool Choose(NetworkAthlete actor,byte seat,out string reason){
    reason="";var host=NetworkAthlete.HostPlayer;
+   if(RoomService.Paused){reason="Wait for your crew to reconnect.";return false;}
    if(!actor||!actor.IsServer||!actor.IsPlayerObject||!host)return false;
    if(host.Exploring.Value||RoomTeleport.Busy){reason="Choose your place in the waiting room before travelling.";return false;}
    bool spectator=Watching(seat);

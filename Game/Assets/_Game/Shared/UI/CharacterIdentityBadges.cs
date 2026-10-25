@@ -9,7 +9,7 @@ namespace WhatTheFish {
  public sealed class CharacterIdentityBadges:MonoBehaviour {
   sealed class Badge {
    public Athlete actor;public CharacterIdentity identity;public RectTransform root;
-   public Image hit,leader;public BasketballPlate chip;public Text number,name;public Button button;
+   public Image hit,leader,prop;public BasketballPlate chip;public Text number,name;public Button button;public SportsProp held;
    public string profileId;public FootballTeam team;public Vector2 anchor,offset;public float compactUntil;
   }
   static CharacterIdentityBadges instance;Canvas canvas;
@@ -21,6 +21,11 @@ namespace WhatTheFish {
   static readonly Vector2[] slots={Vector2.zero,new Vector2(0,-18),new Vector2(-12,-9),new Vector2(12,-9)};
   public static void ReserveHUD(RectTransform bounds){if(bounds&&!hud.Contains(bounds))hud.Add(bounds);}
   public static bool TryGetScreenRect(Athlete actor,out Rect rect){rect=default;return instance&&instance.locations.TryGetValue(actor,out rect);}
+  public static bool TryGetHeldProp(Athlete actor,out SportsProp prop,out Rect rect){
+   prop=SportsProp.None;rect=default;
+   if(!instance||!instance.locations.TryGetValue(actor,out var bounds)||!instance.views.TryGetValue(actor,out var badge)||!badge.prop.gameObject.activeSelf)return false;
+   prop=badge.held;var r=badge.prop.rectTransform;rect=new Rect(bounds.x+r.anchoredPosition.x,bounds.y-r.anchoredPosition.y,r.rect.width,r.rect.height);return true;
+  }
   public static bool TryGetPresentation(Athlete actor,out string number,out string name,out FootballTeam team,out Color plate,out Color accent){
    number=name="";team=FootballTeam.None;plate=accent=default;
    if(!instance||!instance.locations.ContainsKey(actor)||!instance.views.TryGetValue(actor,out var badge))return false;
@@ -40,7 +45,9 @@ namespace WhatTheFish {
    number.raycastTarget=name.raycastTarget=false;number.horizontalOverflow=name.horizontalOverflow=HorizontalWrapMode.Overflow;
    var outline=name.gameObject.AddComponent<Outline>();outline.effectColor=new Color(.015f,.06f,.09f,.95f);outline.effectDistance=new Vector2(1,-1);outline.useGraphicAlpha=false;
    var shadow=name.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(.015f,.06f,.09f,.65f);shadow.effectDistance=new Vector2(0,-2);
-   var view=new Badge{actor=actor,identity=identity,root=root,hit=hit,leader=leader,chip=chip,number=number,name=name};
+   var prop=CoveUI.Rect(root,"Held prop",0,1,23,23).gameObject.AddComponent<Image>();prop.preserveAspect=true;prop.raycastTarget=false;prop.gameObject.SetActive(false);
+   var propShadow=prop.gameObject.AddComponent<Shadow>();propShadow.effectColor=new Color(.01f,.03f,.06f,.9f);propShadow.effectDistance=new Vector2(1,-1);
+   var view=new Badge{actor=actor,identity=identity,root=root,hit=hit,leader=leader,chip=chip,number=number,name=name,prop=prop};
    view.button=root.gameObject.AddComponent<Button>();view.button.targetGraphic=hit;view.button.transition=Selectable.Transition.None;view.button.navigation=new Navigation{mode=Navigation.Mode.None};
    view.button.onClick.AddListener(()=>{if(!string.IsNullOrEmpty(view.profileId))SocialPanel.OpenPlayer(view.profileId);});
    views.Add(actor,view);return view;
@@ -84,7 +91,7 @@ namespace WhatTheFish {
    foreach(var actor in Athlete.Active){
     if(!actor||!actor.isActiveAndEnabled||actor.inTransit)continue;
     var identity=actor.GetComponent<CharacterIdentity>();if(!identity||identity.Number==0)continue;
-    if(actor==app.LocalAthlete&&app.view.mode==0&&!app.view.GolfShotCameraActive)continue;
+    if(actor==app.LocalAthlete&&app.view.mode==0&&!app.view.GolfShotCameraActive&&!app.view.PropFocusActive)continue;
     var world=identity.LabelAnchor;var point=camera.WorldToScreenPoint(world);
     if(point.z<=camera.nearClipPlane||!area.Contains(point))continue;
     var delta=world-camera.transform.position;if(Physics.Raycast(camera.transform.position,delta.normalized,delta.magnitude-.15f,1<<8,QueryTriggerInteraction.Ignore))continue;
@@ -98,10 +105,14 @@ namespace WhatTheFish {
     // Truncate on grapheme boundaries, including emoji/surrogate pairs.
     float limit=112*scale;if(view.name.preferredWidth>limit){var starts=StringInfo.ParseCombiningCharacters(fullName);int count=starts.Length;do{count--;view.name.text=fullName.Substring(0,starts[count])+"…";}while(count>0&&view.name.preferredWidth>limit);}
     float nameWidth=Mathf.Ceil(view.name.preferredWidth)+4*scale;
+    view.held=SportsPropPresentation.Held(view.actor);bool hasProp=view.held!=SportsProp.None;
+    view.prop.gameObject.SetActive(hasProp);if(hasProp)view.prop.sprite=ControlArt.Prop(view.held);
+    float propWidth=hasProp?27*scale:0;
     float width=local?nameWidth:33*scale+nameWidth,height=25*scale;bool compact=!local&&Time.unscaledTime<view.compactUntil;
     if(compact)width=27*scale;
+    width+=propWidth;
     bool placed=Position(view,width,height,scale,safe,out var rect,local||compact);
-    if(!placed&&!local&&!compact){compact=true;width=27*scale;placed=Position(view,width,height,scale,safe,out rect);view.compactUntil=Time.unscaledTime+.8f;}
+    if(!placed&&!local&&!compact){compact=true;width=27*scale+propWidth;placed=Position(view,width,height,scale,safe,out rect);view.compactUntil=Time.unscaledTime+.8f;}
     if(!placed){view.root.gameObject.SetActive(false);continue;}
     view.root.gameObject.SetActive(true);Place(view.root,rect.x,rect.y,rect.width,rect.height);
     view.number.text=view.identity.Number.ToString("00");view.number.fontSize=Mathf.RoundToInt(12*scale);
@@ -109,6 +120,7 @@ namespace WhatTheFish {
     view.chip.gameObject.SetActive(!local);view.number.gameObject.SetActive(!local);view.name.gameObject.SetActive(!compact);
     view.number.color=view.team==FootballTeam.None?CoveUI.Ink:Color.white;view.name.color=local?new Color(1,.91f,.55f):Color.white;
     Place(view.chip.rectTransform,0,scale,27*scale,23*scale);Place(view.number.rectTransform,0,scale,27*scale,23*scale);Place(view.name.rectTransform,local?0:33*scale,0,nameWidth,height);
+    if(hasProp)Place(view.prop.rectTransform,width-23*scale,scale,23*scale,23*scale);
     var net=view.actor.GetComponent<NetworkAthlete>();view.profileId=net?net.ProfileId.Value.ToString():"";
     bool tappable=!local&&!string.IsNullOrEmpty(view.profileId);view.root.name=tappable?"View character profile "+view.profileId:"Player identity";view.hit.raycastTarget=view.button.interactable=tappable;
     var start=new Vector2(rect.width*.5f,-rect.height);var end=new Vector2(view.anchor.x-rect.x,-(view.anchor.y-rect.y));var line=end-start;

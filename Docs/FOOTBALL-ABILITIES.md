@@ -1,5 +1,8 @@
 # Football abilities
 
+Shared activation cameras and held-prop name icons:
+[prop awareness](PROP-ACTIVATION-FOCUS.md).
+
 Implemented from the approved football prototype, 12 October 2026.
 Artwork masters and regeneration: [football props](../ArtSource/Football/Props/README.md).
 

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using static WhatTheFish.PlayerHubStyle;
 
 namespace WhatTheFish {
- public sealed class SocialPanel:MonoBehaviour {
+ public sealed partial class SocialPanel:MonoBehaviour {
   static SocialPanel instance;
   static int closedFrame=-1;
   RectTransform design,body,list,rail;Text feedback,title,subtitle,heroName,heroCode,portraitKind;
@@ -18,6 +18,7 @@ namespace WhatTheFish {
   public static bool BlocksBack=>Visible||Time.frameCount==closedFrame;
   public static void OpenOwn()=>Open("edit");
   public static void OpenFriends()=>Open("friends");
+  public static void OpenInvitations()=>Open("invites");
   public static void OpenRoom()=>Open("room");
   public static void OpenPlayer(string id){if(string.IsNullOrEmpty(id))return;Open(id==PlayerProfiles.Current.id?"edit":"player",id);}
   static void Open(string page,string id=""){
@@ -42,25 +43,27 @@ namespace WhatTheFish {
    Label(rail,"YOUR CREW",16,4,220,35,22,true,Cyan);
    Nav("My profile tab","My profile","edit",60,CoveSymbol.People);
    Nav("Friends tab","Friends","friends",150,CoveSymbol.People);
-   Nav("Find players tab","Find players","search",240,CoveSymbol.Join);
-   Nav("Room players tab","In this room","room",330,CoveSymbol.People);
-   Card(rail,"Navigation divider",16,455,208,2,Line,0);
-   Label(rail,"PLAY TOGETHER",16,477,220,35,22,true);
-   Label(rail,"Find your friends.\nBuild your crew.",16,522,212,74,21,false,Muted);
+   Nav("Room invitations tab","Invitations","invites",240,CoveSymbol.Join);
+   Nav("Find players tab","Find players","search",330,CoveSymbol.Join);
+   Nav("Room players tab","In this room","room",420,CoveSymbol.People);
+   Card(rail,"Navigation divider",16,520,208,2,Line,0);
+   Label(rail,"YOUR NEXT ADVENTURE",16,547,220,60,21,true,Cyan);
   }
   void Nav(string id,string label,string destination,float y,CoveSymbol icon){
    bool active=page==destination||destination=="friends"&&(page=="incoming"||page=="outgoing"||page=="blocks"||page=="player");
    var button=Action(rail,id,label,0,y,240,72,active?Lime:Panel,()=>Show(destination),icon,26);
-   if(destination=="friends")FriendRequestBadge.Add(button.transform,190,18);
+   if(destination=="friends")FriendRequestBadge.Add(button.transform,190,18,includeInvitations:false);
+   if(destination=="invites")InvitationBadge.Add(button.transform,190,18);
   }
   void Show(string next,string id=""){
-   if(working)return;generation++;page=next;selectedId=id;searching=false;pollAt=Time.unscaledTime+25;feedback.text="";
+   if(working)return;DismissInvitationConfirmation();generation++;page=next;selectedId=id;searching=false;pollAt=Time.unscaledTime+25;feedback.text="";
    if(body){body.gameObject.SetActive(false);Destroy(body.gameObject);}body=CoveUI.Rect(design,"Social "+page,310,170,1250,630);
    if(draftTexture){Destroy(draftTexture);draftTexture=null;}avatarButtons=null;Navigation();
    title.text=page=="edit"?"YOUR PROFILE":page=="player"?"PLAYER PROFILE":page=="room"?"IN THIS ROOM":page=="search"?"FIND YOUR CREW":"YOUR FRIENDS";
    subtitle.text=page=="edit"?"Make it yours. Every game starts with you.":page=="search"?"Search a name, meet a teammate.":page=="room"?"The players sharing your adventure.":"";
    subtitle.gameObject.SetActive(!string.IsNullOrEmpty(subtitle.text));
    if(page=="edit"){Edit();return;}
+   if(page=="invites"){Invitations();return;}
    if(page=="player"){liveKey=LiveKey(id);_ = ViewPlayer(id,generation);return;}
    if(page=="search"){
     search=Entry(body,"Search player names","Name or #player code",query,0,0,1010,64);
@@ -72,7 +75,7 @@ namespace WhatTheFish {
    if(page=="room"){ListArea(0,630);liveKey=RoomKey();Room();return;}
    Action(body,"Friends list","Friends",0,0,295,64,page=="friends"?Lime:Panel,()=>Show("friends"),size:25);
    var requests=Action(body,"Incoming requests","Requests",315,0,295,64,page=="incoming"?Lime:Panel,()=>Show("incoming"),size:25);
-   FriendRequestBadge.Add(requests.transform,231,14);
+   FriendRequestBadge.Add(requests.transform,231,14,includeInvitations:false);
    Action(body,"Sent requests","Sent",630,0,295,64,page=="outgoing"?Lime:Panel,()=>Show("outgoing"),size:25);
    Action(body,"Blocked players","Blocked",945,0,305,64,page=="blocks"?Lime:Panel,()=>Show("blocks"),size:25);
    ListArea(88,542);_ = LoadList(generation);
@@ -99,7 +102,10 @@ namespace WhatTheFish {
    Label(row.transform,"#"+p.code,124,57,650,31,20,false,Muted);
    string state=blocked?"Blocked":p.relationship=="incoming"?"Request received":p.relationship=="outgoing"?"Request sent":p.relationship=="friends"?"Friend":p.match=="similar"?"Similar name":"View profile";
    if(blocked)Action(row.transform,"Unblock "+p.code,"Unblock",997,22,230,60,Raised,()=>Run("Removing block…",async()=>{await PlayerProfiles.Unblock(p.id);ShowAfter("blocks");}),size:24);
-   else{Label(row.transform,state,813,29,340,45,23,false,p.relationship=="friends"?Cyan:Muted,TextAnchor.MiddleRight);CoveUI.Icon(row.transform,CoveSymbol.Join,1182,36,30,Cyan);}
+   else if(p.relationship=="friends"){
+    var invite=Action(row.transform,"Invite friend "+p.code,"Invite",997,22,230,60,Lime,()=>SendInvitation(p),CoveSymbol.Join,24);
+    invite.interactable=RoomInvitations.CanInvite(out _);Label(row.transform,"Friend",790,29,175,45,23,false,Cyan,TextAnchor.MiddleRight);
+   }else{Label(row.transform,state,813,29,340,45,23,false,Muted,TextAnchor.MiddleRight);CoveUI.Icon(row.transform,CoveSymbol.Join,1182,36,30,Cyan);}
    list.sizeDelta=new Vector2(1250,(index+1)*118);
   }
   async Task LoadList(int version){
@@ -110,7 +116,7 @@ namespace WhatTheFish {
     else{var result=await PlayerProfiles.Friends();rows=page=="incoming"?result.incoming:page=="outgoing"?result.outgoing:result.friends;}
     if(!this||version!=generation)return;ClearList();for(int i=0;i<rows.Length;i++)Row(rows[i],i,page=="blocks");
     if(rows.Length==0)Empty(page=="incoming"?"ALL CAUGHT UP":page=="outgoing"?"NO REQUESTS SENT":page=="blocks"?"NO BLOCKED PLAYERS":"BUILD YOUR CREW",page=="incoming"?"New friend requests will appear here.":page=="blocks"?"Players you block will appear here.":"Find a player by name, or add someone from your room.");
-    feedback.text=rows.Length==0?"":rows.Length+" player"+(rows.Length==1?"":"s")+" · updates every 25 seconds";
+    feedback.text=rows.Length==0?"":page=="friends"&&!RoomInvitations.CanInvite(out var inviteReason)?inviteReason:rows.Length+" player"+(rows.Length==1?"":"s")+" · updates every 25 seconds";
    }catch(Exception e){if(this&&version==generation)feedback.text=PlayerProfiles.Explain(e);}
   }
   async void StartSearch(int start){
@@ -201,7 +207,10 @@ namespace WhatTheFish {
     if(p.relationship=="incoming"){
      Action(body,"Accept friend request","Accept request",388,427,480,68,Lime,()=>FriendAction(id,"accept"),CoveSymbol.Check,28);
      Action(body,"Decline friend request","Decline",888,427,328,68,Raised,()=>FriendAction(id,"decline"),size:27);
-    }else Action(body,"Player friendship action",p.relationship=="friends"?"Remove friend":p.relationship=="outgoing"?"Cancel request":"Add friend",388,427,828,68,p.relationship=="friends"||p.relationship=="outgoing"?Raised:Lime,()=>FriendAction(id,p.relationship=="friends"?"remove":p.relationship=="outgoing"?"cancel":"request"),CoveSymbol.People,28);
+    }else if(p.relationship=="friends"){
+     var invite=Action(body,"Invite viewed friend","Invite to room",388,427,440,68,Lime,()=>SendInvitation(p),CoveSymbol.Join,28);invite.interactable=RoomInvitations.CanInvite(out _);
+     Action(body,"Player friendship action","Remove friend",848,427,368,68,Raised,()=>FriendAction(id,"remove"),CoveSymbol.People,26);
+    }else Action(body,"Player friendship action",p.relationship=="outgoing"?"Cancel request":"Add friend",388,427,828,68,p.relationship=="outgoing"?Raised:Lime,()=>FriendAction(id,p.relationship=="outgoing"?"cancel":"request"),CoveSymbol.People,28);
     Action(body,"Block player","Block player",388,545,260,56,Background,()=>ConfirmBlock(id),size:23);
     Action(body,"Report player name","Report name",670,545,260,56,Background,()=>Report(id,"name"),size:23);
     Action(body,"Report player photo","Report picture",952,545,264,56,Background,()=>Report(id,"photo"),size:23);
@@ -227,11 +236,12 @@ namespace WhatTheFish {
   static string RoomKey()=>string.Join("|",RoomTeleport.Players().OrderBy(p=>p.OwnerClientId).Select(p=>p.ProfileId.Value+":"+p.Nickname.Value+":"+p.ProfileAvatarVersion.Value));
   void Update(){
    Layout();if(AccountPanel.Visible)return;
-   if(!working&&Input.GetKeyDown(KeyCode.Escape))Close();
+   if(Input.GetKeyDown(KeyCode.Escape)&&!InvitationBack()&&!working)Close();
    if(searching&&Time.unscaledTime>=searchAt)StartSearch(0);
    if(!working&&page=="player"&&Time.unscaledTime>=liveAt){liveAt=Time.unscaledTime+.4f;if(liveKey!=LiveKey(selectedId))Show("player",selectedId);}
    if(!working&&page=="room"&&Time.unscaledTime>=liveAt){liveAt=Time.unscaledTime+.4f;string key=RoomKey();if(liveKey!=key){liveKey=key;Room();}}
    if(!working&&Time.unscaledTime>=pollAt){pollAt=Time.unscaledTime+25;if(page=="room")Room();else if(page=="friends"||page=="incoming"||page=="outgoing")_ = LoadList(generation);}
+   UpdateInvitations();
   }
   void Close(){if(working)return;closedFrame=Time.frameCount;Destroy(gameObject);}
   void OnDestroy(){generation++;if(draftTexture)Destroy(draftTexture);if(instance==this)instance=null;}

@@ -11,7 +11,8 @@ namespace WhatTheFish {
   public static RoomChatUI Instance {get;private set;}
   static int closedFrame=-1;
   public static bool Typing=>Instance&&Instance.input&&Instance.input.isFocused||Time.frameCount==closedFrame;
-  public static bool BlocksBack=>Instance&&(Instance.open||Instance.quick)||Time.frameCount==closedFrame;
+  public static bool BlocksInput=>Typing||Instance&&Instance.voiceOpen;
+  public static bool BlocksBack=>Instance&&(Instance.open||Instance.quick||Instance.voiceOpen)||Time.frameCount==closedFrame;
   public bool Open=>open;
   public InputField MessageInput=>input;
   public RectTransform Panel=>panel;
@@ -33,31 +34,31 @@ namespace WhatTheFish {
   void OnDestroy(){if(chat){chat.Received-=OnMessage;chat.Changed-=Changed;}if(Instance==this)Instance=null;}
   void Changed(){dirty=true;}
   void OnMessage(RoomChatMessage m,bool live){if(!live||chat.IsMuted(m.member))return;if(!open&&m.member!=app.rooms.MemberId)unread++;ShowBubble(m);}
-  bool Allowed=>app&&app.rooms.Connected&&(app.ScreenName=="room"||app.ScreenName=="stadium")&&!StartupWelcome.Blocking&&!RoomService.Paused&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!app.PendingSelection.HasValue&&!SocialPanel.Visible&&!AccountPanel.Visible&&!TutorialSession.Active&&!ControlLayoutEditor.Active&&!FootballMVP.Presenting&&!BasketballMVP.Presenting&&!FootballReplay.Presenting&&!FishingCeremony.Presenting&&!(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen)&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(GolfHUD.Instance&&GolfHUD.Instance.IslandMenu&&GolfHUD.Instance.IslandMenu.Visible)&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay);
+  bool Allowed=>app&&app.rooms.Connected&&(app.ScreenName=="room"||app.ScreenName=="stadium")&&!StartupWelcome.Blocking&&!RoomService.Paused&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!app.PendingSelection.HasValue&&!SocialPanel.Visible&&!AccountPanel.Visible&&!IslandTutorialUI.ModalOpen&&!TutorialSession.Active&&!ControlLayoutEditor.Active&&!FootballMVP.Presenting&&!BasketballMVP.Presenting&&!FootballReplay.Presenting&&!FishingCeremony.Presenting&&!(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible)&&!(FootballHUD.Instance&&FootballHUD.Instance.MenuOpen)&&!(BasketballHUD.Instance&&BasketballHUD.Instance.MenuOpen)&&!(GolfHUD.Instance&&GolfHUD.Instance.IslandMenu&&GolfHUD.Instance.IslandMenu.Visible)&&!(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay);
   void Update(){
    if(!app||!root)return;
    bool allowed=Allowed&&!(app.Exploring&&app.SelectedSport==SportId.Golf&&golfBoard&&golfBoard.Expanded);
-   if(!allowed&&root.gameObject.activeSelf){ReleaseInput();quick=false;}
-   root.gameObject.SetActive(allowed);UpdateSafeArea();
+   if(!allowed&&root.gameObject.activeSelf){ReleaseInput();quick=false;voiceOpen=false;if(voicePanel)voicePanel.gameObject.SetActive(false);}
+   bool golfAim=app.Exploring&&app.SelectedSport==SportId.Golf&&GolfHUD.Instance&&GolfHUD.Instance.AimFocused;
+   root.gameObject.SetActive(allowed);UpdateSafeArea();RefreshVoiceFallback(allowed&&!golfAim);
    if(!app.rooms.Connected){if(open||unread>0){open=quick=options=false;draft="";unread=page=0;dirty=true;}ClearBubbles();}
    if(lobby!=!app.Exploring||previousSize!=safe.rect.size){lobby=!app.Exploring;previousSize=safe.rect.size;Rebuild();}
    if(!allowed)return;
-   bool golfAim=app.Exploring&&app.SelectedSport==SportId.Golf&&GolfHUD.Instance&&GolfHUD.Instance.AimFocused;
    if(launcherOpacity){launcherOpacity.alpha=app.Exploring&&app.SelectedSport==SportId.Golf&&GolfHUD.Instance?GolfHUD.Instance.AuxiliaryOpacity:1;launcherOpacity.interactable=launcherOpacity.blocksRaycasts=!golfAim;}
    bool isFocused=input&&input.isFocused;
    if(isFocused&&!focused){app.view.ClearMatchInput();PlayerView.LookDelta=Vector2.zero;}focused=isFocused;
-   if(Input.GetKeyDown(KeyCode.Escape)&&(open||quick)){Close();return;}
-   if(!golfAim&&!isFocused&&!open&&!quick&&Input.GetKeyDown(KeyCode.Return)){SetOpen(true);input.ActivateInputField();}
+   if(Input.GetKeyDown(KeyCode.Escape)&&(open||quick||voiceOpen)){Close();return;}
+   if(!golfAim&&!isFocused&&!open&&!quick&&!voiceOpen&&Input.GetKeyDown(KeyCode.Return)){SetOpen(true);input.ActivateInputField();}
    else if(isFocused&&(Input.GetKeyDown(KeyCode.Return)||Input.GetKeyDown(KeyCode.KeypadEnter))&&string.IsNullOrEmpty(UnityEngine.Input.compositionString))SendText();
    if(open&&dirty&&Time.unscaledTime>=nextRebuild){dirty=false;nextRebuild=Time.unscaledTime+.1f;RenderHistory();}
    if(unreadText)unreadText.text=unread>0?"Chat  "+(unread>99?"99+":unread.ToString()):"Chat";
    if(note){string next=chat.Cooldown>0?"Give your crew a moment…":chat.Status;if(status!=next){status=next;note.text=next;}}
    if(send)send.interactable=chat.Ready&&chat.Cooldown<=0&&!string.IsNullOrWhiteSpace(input.text);
-   PlacePanel();
+   PlacePanel();RefreshVoice();
   }
   void UpdateSafeArea(){var a=Screen.safeArea;safe.anchorMin=new Vector2(a.x/Screen.width,a.y/Screen.height);safe.anchorMax=new Vector2(a.xMax/Screen.width,a.yMax/Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;}
-  public void SetOpen(bool value){open=value;quick=options=false;if(open){unread=page=0;}else ReleaseInput();Rebuild();}
-  public void Close(){open=quick=options=false;ReleaseInput();closedFrame=Time.frameCount;Rebuild();}
+  public void SetOpen(bool value){open=value;quick=options=voiceOpen=false;if(open){unread=page=0;}else ReleaseInput();Rebuild();}
+  public void Close(){open=quick=options=voiceOpen=false;ReleaseInput();closedFrame=Time.frameCount;Rebuild();}
   void ReleaseInput(){if(input){draft=input.text;input.DeactivateInputField();if(EventSystem.current&&EventSystem.current.currentSelectedGameObject==input.gameObject)EventSystem.current.SetSelectedGameObject(null);}focused=false;app?.view?.ClearMatchInput();}
   void SendText(){if(!input)return;if(chat.SendText(input.text)){draft="";input.text="";ReleaseInput();page=0;dirty=true;closedFrame=Time.frameCount;}}
   public void SendSticker(string id){if(chat.SendSticker(id)){quick=false;if(quickPanel)quickPanel.gameObject.SetActive(false);if(panel)panel.gameObject.SetActive(open);page=0;dirty=true;ReleaseInput();}}
@@ -68,9 +69,10 @@ namespace WhatTheFish {
    foreach(Transform child in root){child.gameObject.SetActive(false);Destroy(child.gameObject);}
    input=null;panel=null;optionsPanel=null;quickPanel=null;scroll=null;note=null;title=null;
    float w=lobby?520:380,h=lobby?600:332;
-   launchers=CoveUI.Rect(root,"Chat buttons",0,0,210,58);launcherOpacity=launchers.gameObject.AddComponent<CanvasGroup>();
+   launchers=CoveUI.Rect(root,"Chat buttons",0,0,350,58);launcherOpacity=launchers.gameObject.AddComponent<CanvasGroup>();
    var chatButton=Button(launchers,"Open room chat","Chat",0,0,130,58,Cream,()=>SetOpen(!open),23);unreadText=chatButton.GetComponentInChildren<Text>();
-   var stickerButton=Button(launchers,"Quick stickers","",140,0,60,58,Cream,()=>{quick=!quick;options=false;ReleaseInput();Rebuild();});CoveUI.Image(stickerButton.transform,"Stickers",Sticker("laugh"),8,6,44,44);
+   var stickerButton=Button(launchers,"Quick stickers","",140,0,60,58,Cream,()=>{quick=!quick;options=voiceOpen=false;ReleaseInput();Rebuild();});CoveUI.Image(stickerButton.transform,"Stickers",Sticker("laugh"),8,6,44,44);
+   BuildVoicePanel(w);
    panel=CoveUI.Plate(root,"Room chat history",0,0,w,h,PanelColor,18,1).rectTransform;panel.GetComponent<CovePlate>().borderColor=CoveUI.Hex("52747C");panel.GetComponent<CovePlate>().raycastTarget=true;
    title=Label(panel,"ROOM CHAT",16,5,w-136,36,22,Mint);Label(panel,"One crew · every island",16,39,w-130,22,15,Muted);
    Button(panel,"Chat options","•••",w-116,7,48,48,PlayerHubStyle.Raised,()=>{options=!options;quick=false;Rebuild();});
@@ -121,9 +123,10 @@ namespace WhatTheFish {
    float keyboard=TouchScreenKeyboard.visible?(TouchScreenKeyboard.area.height>0?TouchScreenKeyboard.area.height:Screen.height*.45f)/canvas.scaleFactor:0;
    py=Mathf.Clamp(py,8,Mathf.Max(8,sh-keyboard-panel.rect.height-8));
    panel.anchoredPosition=new Vector2(px,-py);
-   launchers.anchoredPosition=lobby?new Vector2(Mathf.Min(650,sw-230),-Mathf.Max(8,sh-90-keyboard)):new Vector2(dock,-launchTop);
+   launchers.anchoredPosition=lobby?new Vector2(Mathf.Min(650,sw-360),-Mathf.Max(8,sh-90-keyboard)):new Vector2(dock,-launchTop);
    if(quickPanel)quickPanel.anchoredPosition=open?new Vector2(px,-py):lobby?new Vector2(Mathf.Min(650,sw-quickPanel.rect.width-12),-Mathf.Max(8,sh-quickPanel.rect.height-110-keyboard)):new Vector2(dock,-Mathf.Min(launchTop+73,Mathf.Max(12,sh-quickPanel.rect.height-12)));
    if(optionsPanel)optionsPanel.anchoredPosition=new Vector2(px,-py);
+   if(voicePanel)voicePanel.anchoredPosition=new Vector2(Mathf.Clamp(px,8,Mathf.Max(8,sw-voicePanel.rect.width-8)),-Mathf.Clamp(py,8,Mathf.Max(8,sh-voicePanel.rect.height-8)));
   }
   void RenderHistory(){
    if(!content||!scroll)return;

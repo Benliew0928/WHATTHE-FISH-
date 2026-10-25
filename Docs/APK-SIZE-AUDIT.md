@@ -1,5 +1,225 @@
 # APK size audit — measured release records
 
+## Integrated room voice and teammate merge — 25 October 2026
+
+Completed live Vivox room voice and merged the three teammate commits through
+`1b7322e`, preserving the pending crew recovery/invitations, menus, cinematics
+and prop presentation work. Protocol **86** combines the recovery clock with
+Golf tornado/crab snapshots. One channel follows each online room across all
+four islands. Phone microphone permission, opt-in join, initially muted capture,
+voice controls and accessible mute during travel/aim/rules are included.
+Travel/settings/results no longer retain a closed voice panel's temporary input lock.
+
+Complete **342-file WindowsFinal** matches the tested candidate. **493 Windows**
+and **354 Android** compiled source documents match the workspace, together
+with the separate configuration bridge. Verification: **340 voice UI assertions**,
+**38 state checks** plus **38 portable-path repeats**, **198 text-chat/history
+checks**, final **63 chat UI checks**, **23 Golf reconnect/host-loss checks** and
+**44 account/invitation tests**. Two authenticated native clients received synthetic
+speech both ways in one channel, with hardware capture silent and mic input muted.
+Representative Football, Golf and Fishing renders were visually reviewed.
+
+Official AndroidSubmission: **124,646,916 -> 126,880,470 bytes (+2,233,554)**;
+strict decimal-GB headroom **873,119,530 bytes**. SHA-256:
+**1BB034646EA0C1FE1FCEEE7597E78AD05B9B5EAF2DA536B13E4E17A0804316FF**. Size gate, v2 signature, ZIP CRC, exact entry audit and five-scene
+bundle integrity passed. Vivox public connection fields are present; Test Mode
+is off and the signing key is empty. The manifest has runtime microphone/audio/
+Bluetooth permissions and optional microphone hardware.
+
+Evidence: `Builds/VoiceQA/Merge-20261025/`, current `Builds/SizeAudit/latest/`,
+[voice implementation and test paths](ROOM-VOICE.md). Current archives:
+`Legacy/20261025-095325-407-voice-merge-android/`,
+`Legacy/20261025-095442-713-voice-merge-windows/` and
+`Legacy/20261025-095518-400-voice-merge-qa-cleanup/`.
+Phone microphone, Bluetooth, echo, touch/FPS and mobile network handoff remain
+unverified at the user's request. The broader legacy cart suite is not passing:
+pre-merge and merged candidates reproduce the same 45 offline failures; network
+fixture failures also remain. These are recorded, not counted as successful checks.
+
+Largest compressed entries in this APK:
+
+- `assets/PackagedContent/islands.bundle`: **45,414,068 bytes** (+1,718 against the pre-merge APK).
+- `lib/arm64-v8a/libil2cpp.so`: **13,119,620 bytes** (+39,440 against the pre-merge APK).
+- `lib/arm64-v8a/libvivox-sdk.so`: **10,240,163 bytes** (+0 against the pre-merge APK).
+- `lib/arm64-v8a/libunity.so`: **9,809,092 bytes** (+262 against the pre-merge APK).
+- `assets/bin/Data/Managed/Metadata/global-metadata.dat`: **2,896,263 bytes** (+3,770 against the pre-merge APK).
+
+The increase includes teammate rendering/award content and compiled code; it is
+not solely voice. No unexpected large asset payload was found.
+
+## Live room voice activation — 25 October 2026
+
+Official AndroidSubmission: **124,656,400 -> 124,646,916 bytes (-9,484)**.
+Strict-cap headroom: **875,353,084 bytes**. SHA-256:
+**47CD77DD73442F56E03DEE43147573D8D848EAD10784B2436A6ADC9820C62F19**.
+
+The size gate, v2 signature, ZIP CRC, 1,243 entry sizes, five-scene bundle hash/size,
+ARM64 voice plugins and final microphone/audio/Bluetooth manifest passed. Public
+Vivox fields are present, Test Mode is off and the signing key is empty. All 348
+main compiled Android sources match the workspace; development fixtures are absent.
+
+Compressed leaders: islands **45,412,350 (-8,051)**, IL2CPP **13,080,180 (-1,581)**,
+Vivox SDK **10,240,163 (unchanged)**, Unity **9,808,830 (unchanged)** and metadata
+**2,892,493 (-149)**. No world-art changes or unexpected growth were found.
+Native two-way synthetic audio now passes after fixing asynchronous participant
+mute reconciliation. Phone capture, Bluetooth, echo, touch/FPS and mobile network
+handoff remain unverified; the user requested proceeding without a phone.
+
+Evidence: `Builds/VoiceQA/Setup-20261025/` and `Builds/SizeAudit/latest/`.
+Recovery: `Legacy/20261025-003216-741-voice-setup-android/`.
+See [room voice](ROOM-VOICE.md) for test scope and Windows delivery.
+
+## Room voice implementation — 24 October 2026
+
+Official AndroidSubmission: **113,823,708 -> 124,656,400 bytes (+10,832,692)**
+from the immediate pre-voice delivery. Task-entry size was **113,758,996 bytes**
+(+10,897,404). Strict-cap headroom: **875,343,600 bytes**. SHA-256:
+**1B899D6FB95467550A75544355941C0CD4380F51404C2532FBDD7DEC486AC083**.
+
+The gate, v2 signature, ZIP CRC, all **1,243** entry sizes and five-scene bundle
+size/hash passed. Both ARM64 Vivox native libraries are packaged. The final
+manifest explicitly overrides the SDK's microphone hardware requirement to
+optional, includes recording/audio/Bluetooth permissions and preserves runtime
+permission control. All **348** main Android source documents plus the separate
+configuration bridge match current source. Development fixtures and token-signing
+credentials are excluded; native scanning/account bridges remain present.
+
+Compressed leaders: islands **45,420,401 (+13,032)**, IL2CPP **13,081,761
+(+230,354)**, new Vivox SDK **10,240,163**, Unity **9,808,830 (-211)** and metadata
+**2,892,642 (+62,709)** bytes. Native voice accounts for the dominant increase;
+no texture expansion or lossy world-art conversion was introduced.
+
+The linked Vivox connection settings are absent, so live voice is unavailable
+until service setup and a rebuild. Packaging checks do not establish phone audio,
+Bluetooth, echo quality, FPS/touch or WAN behavior. See [room voice](ROOM-VOICE.md)
+for the exact tested scope and outstanding setup. The complete Windows player
+includes current protocol-83 recovery/invitation/cinematic work.
+
+Evidence: `Builds/VoiceQA/apk-verification.json`, `apk-manifest-check.txt`,
+`apk-signature.txt`, `apk-entry-delta.csv`, `android-sources.json`,
+`android-configuration-source.json`, `AndroidAudit/`, and `Builds/SizeAudit/latest/`.
+Recovery: `Legacy/20261024-210250-511-room-voice-android/`; the initial manifest
+correction audit is in `Legacy/20261024-211009-700-room-voice-manifest-correction/`.
+
+## Crew reconnection and friend invitations — 24 October 2026
+
+Official AndroidSubmission: **113,758,996 -> 113,823,708 bytes (+64,712)**
+from the task-entry APK, and **+34,316 bytes** over the intervening cinematics
+delivery. Strict-cap headroom: **886,176,292 bytes**. SHA-256:
+**8F238DB7323689E891C4E82682F2C029189AE662A7EE7C6E32A66EADE5404806**.
+
+The gate, APK v2 signature, ZIP CRC, all **1,243** audited entries and
+five-scene bundle size/hash passed. All **343** compiled Android runtime
+source documents match the isolated snapshot. Reconnect, invitation and
+cinematic runtime types are present; development review fixtures are excluded.
+Existing native scanning and account bridges remain present.
+
+Largest compressed contributors, with deltas from the intervening APK:
+islands **45,407,369 (-13,529)**, IL2CPP **12,851,407 (+38,012)**, Unity
+**9,809,041 (+1)** and metadata **2,829,933 (+7,984)** bytes. No unexpected
+dominant growth or lossy art conversion was found. Shared fonts, character
+art and procedural UI graphics supply the new presentation.
+
+The official script ran from `Builds/CrewConnectionsQA/Snapshot/`. Protocol
+**83** includes current cinematic work and excludes the concurrently unfinished
+voice integration. All other compiled runtime source documents match the
+primary workspace; the two voice-hook exclusions are recorded in
+`Builds/CrewConnectionsQA/android-sources.json`. This is a build measurement,
+not evidence of physical Android quality/FPS or mobile network handoff.
+
+Evidence: `Builds/CrewConnectionsQA/apk-verification.json`,
+`apk-signature.txt`, `apk-entry-delta.csv`, `android-sources.json`, and
+`Builds/SizeAudit/latest/`. Functional evidence and live-network limitations:
+[crew connections](CREW-CONNECTIONS.md). Previous delivery recovery:
+`Legacy/20261024-203229-182-crew-connections-delivery/`.
+
+## Four-island activation cinematics — 24 October 2026
+
+Official AndroidSubmission: **113,758,996 -> 113,789,392 bytes (+30,396)**.
+Strict-cap headroom: **886,210,608 bytes**. SHA-256:
+**93BE231E589A644E5AA2B2DF33E3F8050609BB1042E8BE8B0ED7A212A1D50806**.
+
+The gate, APK v2 signature, ZIP CRC, all **1,243** entry sizes and five-scene
+bundle size/hash passed. All **338** Android runtime source documents match
+the isolated snapshot. Cinematic types are present; development fixtures are
+excluded. Existing native scanning and account bridge classes remain present.
+
+Largest compressed contributors: islands **45,420,898 (+15,674)**, IL2CPP
+**12,813,395 (+11,365)**, Unity **9,809,040 (-1)**, and metadata
+**2,821,949 (+1,618)** bytes. Two new serialized entries total **1,216** bytes.
+No unexpected dominant growth was found. Existing icons and procedural meshes
+support all presentations; no texture atlas or lossy art conversion was added.
+
+This release uses the validated protocol 82 snapshot, excluding concurrent
+unfinished voice/reconnect/invitation changes. It was built with the official
+script inside `Builds/ActivityCinematicsQA/Snapshot/`. That copy includes the
+repository's unchanged Android helper sources. Physical Android quality/FPS,
+touch and live WAN behavior are unverified.
+
+Evidence: `Builds/ActivityCinematicsQA/apk-verification.json`,
+`apk-signature.txt`, `apk-entry-delta.csv`, `android-sources.json`, `AndroidAudit/`
+and `Builds/SizeAudit/latest/`. See [activation presentation](PROP-ACTIVATION-FOCUS.md)
+for functional checks and videos. Previous APK recovery:
+`Legacy/20261024-194730-823-activity-cinematics-android/`.
+
+## Shared menu design - 24 October 2026
+
+Official AndroidSubmission: **113,344,522 -> 113,758,996 bytes (+414,474)**
+from the task-entry local APK. An intervening prop delivery measured
+**113,756,604 bytes**; this final refresh adds **2,392 bytes**. Strict-cap
+headroom: **886,241,004 bytes**. SHA-256:
+**9AD5963361AF930ACF8111113C0E792DEAD26994E7BB88418F9BB054C749E110**.
+
+The size gate, APK v2 signature, ZIP CRC, all **1,241** entry sizes and the
+five-scene catalog/bundle integrity passed. All **336** compiled Android runtime
+source documents match. Shared menu and sports prop types are included;
+development review fixtures are excluded. Native scanning and account bridge
+classes remain present. The APK combines teammate merge `7274043`, shared menus
+and concurrent prop work, so its delta cannot be attributed solely to menus.
+
+Largest compressed entries: islands **45,405,224**, IL2CPP **12,802,030**, Unity
+**9,809,041**, metadata **2,820,331** bytes. Changes from the intervening delivery:
+islands **+1,489**, IL2CPP **+941**, metadata **-42** bytes. No unexpected dominant
+growth was found. Procedural menu surfaces reuse existing fonts and icons;
+no new texture atlas, world-art reduction or lossy conversion was introduced.
+
+Evidence: `Builds/MenuDesignQA/apk-verification.json`, `apk-signature.txt`,
+`apk-entry-delta.csv`, `android-sources.json`, `AndroidAudit/`, and
+`Builds/SizeAudit/latest/`. See [Menu design](MENU-DESIGN.md) for Windows coverage.
+Android physical touch, quality/FPS and live WAN behavior remain unverified.
+Previous APK recovery: `Legacy/20261024-143909-542-shared-menu-android/`.
+
+## Sports prop activation and awareness - 24 October 2026
+
+Official AndroidSubmission: **113,344,522 -> 113,756,604 bytes (+412,082)**,
+measured from the opening local APK and the newly built artifact. Strict-cap
+headroom: **886,243,396 bytes**. SHA-256:
+**C74BD20BAA679BD9C683016CD44A1F4A64DBA9D1F4FEC455B9982BA87335A191**.
+The build/budget gate, APK v2 signature, ZIP CRC, all **1,241** entry sizes and
+five-scene catalog/bundle integrity passed. Native scanning and account bridge
+classes remain present. Prop runtime types are included; development review
+fixtures and trailer types are absent from release metadata.
+
+Largest compressed entries: islands **45,403,735**, IL2CPP **12,801,089**, Unity
+**9,809,041**, metadata **2,820,373** bytes. The largest increases are three
+serialized data entries (**147,366**, **118,855**, **110,949** bytes) and IL2CPP
+(**33,361** bytes); islands decreased **4,484** bytes. Serialized entry names
+can change between builds. No unexpected dominant contributor was found.
+This combined build includes concurrent UI/tutorial work. The prop feature
+reuses the existing material and icon atlas, with no new art or lossy conversion.
+
+Evidence: `Builds/PropFocusQA/apk-verification.json`, `apk-signature.txt`,
+`apk-entry-delta.csv`, `android-sources.json`, and the audit inventory at
+`Builds/SizeAudit/latest/`. Compiled verification covers **336** Android runtime
+source documents; the prop runtime matches. The one later source mismatch is
+concurrent tutorial caption punctuation, outside this built snapshot.
+
+The complete Windows player passed **1,477** recorded assertions across prop
+presentation, ability counterplay, identity/camera and tutorial integration;
+see [feature behavior and verification](PROP-ACTIVATION-FOCUS.md). Physical
+Android quality/FPS/touch and live WAN behavior remain unverified.
+Previous local APK recovery: `Legacy/20261024-141036-440-prop-focus-android/`.
+
 ## Golf medals raised another 12cm - 25 October 2026
 
 Raised the animated head anchor from 0.54m to 0.66m (+0.12m), and the
