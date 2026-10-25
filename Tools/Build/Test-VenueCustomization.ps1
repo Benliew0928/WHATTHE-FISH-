@@ -14,13 +14,13 @@ function Invoke-VenueReview([string]$sport,[string[]]$roles){
   foreach($taskRole in $roles){
    $taskFolder=Join-Path $taskOutput "$sport-$taskRole"
    New-Item -ItemType Directory -Force -Path $taskFolder | Out-Null
-   $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -skipWelcome -sport $sport -venueReview `"$taskFolder`" -logFile `"$taskFolder/player.log`""
+   $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -skipWelcome -guestProfile venue-review-$taskRole -sport $sport -venueReview `"$taskFolder`" -logFile `"$taskFolder/player.log`""
    if($taskRole -eq 'host'){$taskArgs+=' -localHost -port 7988'}
    if($taskRole -eq 'guest'){$taskArgs+=' -localClient -port 7988'}
    $taskProcesses+=Start-Process -FilePath $PlayerPath -ArgumentList $taskArgs -WorkingDirectory $env:TEMP -WindowStyle Hidden -PassThru
    if($taskRole -eq 'host'){Start-Sleep -Seconds 5}
   }
-  $taskDeadline=(Get-Date).AddSeconds(230)
+  $taskDeadline=(Get-Date).AddSeconds(420)
   do {
    $taskDone=@($roles | Where-Object {$taskResult=Join-Path $taskOutput "$sport-$_/results.txt";(Test-Path -LiteralPath $taskResult) -and (Select-String -LiteralPath $taskResult -Pattern 'VENUE_REVIEW_COMPLETE' -Quiet)})
    if($taskDone.Count -eq $roles.Count){break}
@@ -35,5 +35,5 @@ function Invoke-VenueReview([string]$sport,[string[]]$roles){
  }finally{foreach($taskProcess in $taskProcesses){if(!$taskProcess.HasExited){Stop-Process -Id $taskProcess.Id -ErrorAction SilentlyContinue}}}
 }
 if($Mode -ne 'Network'){Invoke-VenueReview 'Football' @('offline')}
-if($Mode -ne 'Offline'){foreach($taskSport in @('Golf','Fishing')){Invoke-VenueReview $taskSport @('host','guest')}}
+if($Mode -ne 'Offline'){foreach($taskSport in @('Football','Basketball','Golf','Fishing')){Invoke-VenueReview $taskSport @('host','guest')}}
 "VENUE_CUSTOMIZATION_SUITE_PASS $taskOutput"

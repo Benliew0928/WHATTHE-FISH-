@@ -1,5 +1,72 @@
 # Build size — measured release records
 
+## Integrated teammate and scoreboard release — 26 October 2026
+
+Official AndroidSubmission: **126,926,250 -> 166,897,340 bytes
+(+39,971,090)**. Headroom below the strict 1,000,000,000-byte limit:
+**833,102,660 bytes**. SHA-256:
+**E4D0A676E8E2BF5E45D49C295EEEBC2BFDD7E6C7D367B8ADFF8B48BE80C6C68B**.
+
+This combines teammate revision `213700d` with the approved scoreboards,
+80% background opacity, live statistics and venue previews. The increase over
+the previous local release includes the teammate's multilingual fonts, artwork
+and presentation assets. It is **88,552 bytes above** the teammate's recorded
+166,808,788-byte release. No art-quality reductions were introduced.
+
+The size gate, v2 signature, ZIP CRC, **1,405** audit entries and five-scene
+bundle integrity passed. All **373 Android** and **520 Windows** compiled source
+documents match the integrated source. Runtime types and native voice/scan
+support are present; development scoreboard probes are excluded from Android.
+The complete **342-file WindowsFinal** was promoted and hash-verified.
+Physical-phone appearance, touch and FPS remain unverified.
+
+Evidence: `Builds/TeamSyncQA/` and `Builds/SizeAudit/latest/`.
+See [integration and cleanup report](TEAM-SYNC-20261026.md) and
+[scoreboard tests](SCOREBOARDS.md).
+
+## Stronger scoreboard backgrounds — 25 October 2026
+
+Official AndroidSubmission: **126,953,970 -> 126,926,250 bytes (-27,720)**.
+Headroom below the strict 1,000,000,000-byte limit: **873,073,750 bytes**.
+SHA-256: **B577AF44EBB6C24D763CD7EA152AD201B765049D1821D33EF7082B78962C0889**.
+HUD, expanded statistics and scoring-banner backgrounds now use **80% opacity**,
+up from 50%, with no new assets or art-quality reductions. Text remains opaque.
+
+The size gate, v2 signature, CRC, **1,250** audit entries and five-scene bundle
+integrity passed. All **361 Android** and **502 Windows** compiled source
+documents match. The complete **342-file WindowsFinal** is updated; **293**
+runtime assertions and **35** score-state checks passed. Phone touch and FPS
+remain unverified. Evidence: `Builds/ScoreboardOpacityQA/` and
+[scoreboard validation](SCOREBOARDS.md).
+
+Recovery: `Legacy/20261025-233127-118-scoreboard-opacity-android/` and
+`Legacy/20261025-233203-816-scoreboard-opacity-windows/`.
+
+## Translucent expandable scoreboards — 25 October 2026
+
+Official AndroidSubmission: **126,913,482 -> 126,953,970 bytes (+40,488)**.
+Headroom below the strict 1,000,000,000-byte limit: **873,046,030 bytes**.
+SHA-256: **379BAC9A59C10C72E5E7577718F164D3007665AC29D3AAC46775A46F6AAFE00B**.
+The size gate, v2 signature, ZIP CRC, all **1,250** audit entries and five-scene
+bundle integrity passed. All **361 Android** compiled source documents and the
+voice configuration bridge match the tested source.
+
+Basketball adds Rally Ledger and football Club Roster, with full-rectangle
+clicking, 50% background alpha, live player statistics and smooth expansion.
+The +2, +3 and goal effects remain synchronized with venue scores. Generated
+geometry and existing fonts add no raster delivery assets or art reductions.
+
+The complete **342-file WindowsFinal** passed **597** expansion assertions,
+**185** scoring/display assertions and **35** score-state checks. All **502**
+compiled Windows source documents and the configuration bridge match; the
+delivered files were hash-verified. Protocol **87**, the compact communication
+dock and venue customization remain included. Evidence and captures:
+`Builds/ScoreboardDetailsQA/`; [scoreboard validation](SCOREBOARDS.md).
+Physical-phone touch, appearance and FPS remain unverified.
+
+Recovery: `Legacy/20261025-231730-555-scoreboard-details-android/` and
+`Legacy/20261025-232011-253-scoreboard-details-windows/`.
+
 ## Publication integration with communication updates — 25 October 2026
 
 Integrated pending local Golf events, localization, results, awards, welcome/privacy and account changes with upstream communication controls (`2ddef7d`) and compact docks (`25efada`). Both sides' measured release records are retained. The voice roster preserves raw player names and translates only the self suffix; eleven missing communication captions/templates were added to the shared catalog.
@@ -432,6 +499,30 @@ touch, keyboard, microphone/Bluetooth and FPS remain unverified.
 Recovery: `Legacy/20261025-223324-406-comms-dock-android/` and
 `Legacy/20261025-223605-172-comms-dock-windows/`.
 
+## Selected sports scoreboards — 25 October 2026
+
+Final combined AndroidSubmission: **126,914,878 bytes**, with **873,085,122
+bytes** of headroom below the strict 1,000,000,000-byte limit. Task entry was
+**126,880,470 bytes**; the immediate preceding communication APK was
+**126,917,874 bytes**. The final change is **+34,408 bytes** from task entry and
+**-2,996 bytes** from that immediate predecessor. Concurrent venue/communication
+work is included, so these are combined-release deltas.
+
+Basketball uses Rally Heat and football Touchline Live, with shared live HUD and
+venue scores, eased score pulses and +2/+3/goal banners. Three-pointers have a
+dedicated 1.8-second treatment. Existing fonts and generated geometry add no
+delivery textures or external art dependencies. No art quality was reduced.
+
+The complete **342-file WindowsFinal** passed **185** scoreboard assertions on
+the combined player; **35** model checks and the earlier **38** football replay
+checks also passed. All **500 Windows** and **360 Android** compiled source
+documents match the validated source. The final APK's v2 signature, CRC,
+**1,250-entry** audit and five-scene bundle hash/size passed. SHA-256:
+**E4D0D105F065B6AE50041453EE86433407C8D08DF122C3DB0B8C1D7137755FF1**.
+
+Evidence and recovery batches: [scoreboard validation](SCOREBOARDS.md).
+Physical phone appearance, touch and FPS remain unverified.
+
 ## Communication controls and audience tabs — 25 October 2026
 
 Official AndroidSubmission: **126,891,150 -> 126,914,878 bytes (+23,728)**.
@@ -461,6 +552,33 @@ and [room voice](ROOM-VOICE.md). Physical phone capture, Bluetooth routing,
 speaker echo and touch/FPS remain unverified without a connected phone.
 Previous Android recovery: `Legacy/20261025-164956-773-comms-redesign-android/`.
 Windows recovery: `Legacy/20261025-214153-693-comms-redesign-windows/`.
+
+## Venue customization preview correction — 25 October 2026
+
+Football's editable screen is visible outside broadcast coverage and while
+customizing. Preview controls now frame the changed logo, sign, banner, colours
+or equipment across all four sports. No art quality reductions were made.
+
+Official AndroidSubmission: **126,880,470 -> 126,891,150 bytes (+10,680)**.
+Headroom below the strict 1,000,000,000-byte limit: **873,108,850 bytes**.
+SHA-256: **85D456E1006E637D65115E4F9199CF6A3E1B8148301BE6D08EC32B00DE40DF52**.
+The size gate, v2 signature, ZIP CRC, all **1,252** audit entries and five-scene
+bundle hash/size passed. The complete **342-file WindowsFinal** includes the
+validated player and existing launchers; **334 candidate files** were hash-verified.
+
+Verification: **1,116** offline venue assertions, **452** host/guest assertions
+across all four sports, **38** broadcast/replay checks, **26** teardown checks and
+**1,116** portable-path repeats. All **493 Windows** and **354 Android** compiled
+source documents match the retained tested snapshot: `dc0be409` plus these preview
+fixes. The concurrently unfinished scoreboard redesign is excluded from this
+release; its edits remain in the main workspace. Existing voice, crew invitations
+and protocol 86 are retained. Physical phone appearance, touch and FPS are unverified.
+
+Evidence: `Builds/VenuePreviewQA/`, `Builds/SizeAudit/latest/` and
+[venue validation](VENUE-CUSTOMIZATION.md#validation). Recovery batches:
+`Legacy/20261025-161338-555-venue-preview-windows/`,
+`Legacy/20261025-162457-880-venue-preview-android/` and
+`Legacy/20261025-161654-559-venue-preview-generated/`.
 
 ## Integrated room voice and teammate merge — 25 October 2026
 

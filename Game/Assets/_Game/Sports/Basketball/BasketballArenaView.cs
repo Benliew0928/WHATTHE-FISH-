@@ -4,6 +4,7 @@ namespace WhatTheFish {
   public GameObject[] logoCatalog;
   public bool modularRally;
   MaterialPropertyBlock accents;
+  void Awake(){VenueScoreboards.AttachBasketball(this);}
   public static readonly string[] LogoNames={"Rally crest","Star","Lightning bolt","Shield"};
   public override void Apply(StadiumAppearance appearance){
    appearance.Clamp();

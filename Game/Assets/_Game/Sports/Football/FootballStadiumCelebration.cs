@@ -12,7 +12,7 @@ namespace WhatTheFish {
   public static FootballStadiumCelebration Instance {get;private set;}
   public const float TeamSeconds=15,MvpSeconds=10;
   const int ScreenLayer=30,FeedLayer=31;
-  FootballMatch match;FootballBall ball;Transform root,studio;FootballCelebrationActor performer;
+  FootballMatch match;FootballBall ball;Transform root,studio,venueScreen;FootballCelebrationActor performer;
   FootballTake take;Camera feedCamera;RenderTexture feed;FootballStadiumFireworks fireworks;
   Board[] boards;uint round=uint.MaxValue;bool finished;float nextFeed;
   public bool BroadcastActive=>finished&&Age<25;
@@ -42,6 +42,7 @@ namespace WhatTheFish {
    return Mathf.Max(0,(float)(now-start));
   }
   sealed class Board {
+   public SportsScoreboard scoreboard;
    public Transform root;public RectTransform mvp,live,replay,wipe;
    public Text headline,score,name,goals,assists,detail,phase,liveScore,liveStatus,replayTime,goalScore,goalCaption;
    public RawImage video,liveVideo,replayVideo;
@@ -49,7 +50,7 @@ namespace WhatTheFish {
   void Awake(){Instance=this;match=GetComponent<FootballMatch>();ball=GetComponent<FootballBall>();}
   void Build(){
    root=new GameObject("Stadium live broadcast displays").transform;root.SetParent(ball.Pitch,false);
-   var old=ball.Pitch.Find("Stadium screen");if(old)old.gameObject.SetActive(false);
+   venueScreen=ball.Pitch.Find("Stadium screen");
    boards=new[]{BuildBoard(-1),BuildBoard(1)};
    fireworks=new FootballStadiumFireworks(ball.Pitch,Resources.Load<Material>("FootballStadiumFireworks"));
   }
@@ -108,7 +109,12 @@ namespace WhatTheFish {
   }
   void LateUpdate(){
    if(!ball||!ball.Pitch)return;if(!root)Build();
-   bool context=match&&match.Context;root.gameObject.SetActive(context);fireworks.SetVisible(context);
+   var app=AppRoot.Instance;
+   bool customizing=app&&app.Menu&&app.Menu.Page=="venues"&&app.Menu.Content.gameObject.activeInHierarchy;
+   bool context=match&&match.Context&&!customizing;root.gameObject.SetActive(context);fireworks.SetVisible(context);
+   // The editable sign owns the screen outside match coverage. Do this only
+   // during normal presentation, never in teardown callbacks during unload.
+   if(venueScreen&&venueScreen.gameObject.activeSelf==context)venueScreen.gameObject.SetActive(!context);
    if(!context){finished=false;ReleaseFeed();fireworks.Present(-1,0,null);return;}
    bool result=context&&match.Snapshot.phase==FootballMatchPhase.Finished&&!match.GoalSequence&&match.PlayerRecords.Any();
    if(!result){if(finished){finished=false;ReleaseFeed();}fireworks.Present(-1,0,Camera.main);PresentMatch();return;}

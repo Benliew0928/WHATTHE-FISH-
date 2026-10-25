@@ -17282,6 +17282,171 @@
       "en": "Loading messages…",
       "zh": "正在载入消息…",
       "ms": "Memuatkan mesej…"
+    },
+    {
+      "en": "SUNVALE / MATCH CENTRE",
+      "zh": "SUNVALE / 比赛中心",
+      "ms": "SUNVALE / PUSAT PERLAWANAN"
+    },
+    {
+      "en": "RALLY COURT / MATCH CENTRE",
+      "zh": "RALLY COURT / 比赛中心",
+      "ms": "RALLY COURT / PUSAT PERLAWANAN"
+    },
+    {
+      "en": "ON THE PITCH",
+      "zh": "场上球员",
+      "ms": "DI PADANG"
+    },
+    {
+      "en": "LIVE BOX SCORE",
+      "zh": "实时技术统计",
+      "ms": "STATISTIK LANGSUNG"
+    },
+    {
+      "en": "PASSES",
+      "zh": "传球",
+      "ms": "HANTARAN"
+    },
+    {
+      "en": "INTERCEPTS",
+      "zh": "抢断",
+      "ms": "PINTASAN"
+    },
+    {
+      "en": "BLUE TEAM",
+      "zh": "蓝队",
+      "ms": "PASUKAN BIRU"
+    },
+    {
+      "en": "RED TEAM",
+      "zh": "红队",
+      "ms": "PASUKAN MERAH"
+    },
+    {
+      "en": "Player statistics appear when a match starts.",
+      "zh": "比赛开始后显示球员统计。",
+      "ms": "Statistik pemain muncul apabila perlawanan bermula."
+    },
+    {
+      "en": "Match continues · Tap score to close",
+      "zh": "比赛继续 · 点按比分关闭",
+      "ms": "Perlawanan diteruskan · Ketik skor untuk tutup"
+    },
+    {
+      "en": "Back to pitch",
+      "zh": "返回球场",
+      "ms": "Kembali ke padang"
+    },
+    {
+      "en": "SHARED PRACTICE",
+      "zh": "共同练习",
+      "ms": "LATIHAN BERSAMA"
+    },
+    {
+      "en": "{0} points · {1} / {2} baskets",
+      "zh": "{0} 分 · 投进 {1} / {2} 球",
+      "ms": "{0} mata · {1} / {2} jaringan"
+    },
+    {
+      "en": "Individual match stats start with a team match.",
+      "zh": "组队比赛开始后显示个人统计。",
+      "ms": "Statistik individu bermula dalam perlawanan pasukan."
+    },
+    {
+      "en": "Shared court totals · Tap score to close",
+      "zh": "全场总计 · 点按比分关闭",
+      "ms": "Jumlah gelanggang · Ketik skor untuk tutup"
+    },
+    {
+      "en": "Match continues · Scroll player lists",
+      "zh": "比赛继续 · 滚动球员列表",
+      "ms": "Perlawanan diteruskan · Tatal senarai pemain"
+    },
+    {
+      "en": "SHOT",
+      "zh": "进攻",
+      "ms": "TEMBAK"
+    },
+    {
+      "en": "PLAYER STATS  +",
+      "zh": "球员统计  +",
+      "ms": "STATISTIK PEMAIN  +"
+    },
+    {
+      "en": "PLAYER STATS  −",
+      "zh": "球员统计  −",
+      "ms": "STATISTIK PEMAIN  −"
+    },
+    {
+      "en": "SHARED COURT",
+      "zh": "共享球场",
+      "ms": "GELANGGANG BERSAMA"
+    },
+    {
+      "en": "SHARED POINTS",
+      "zh": "共同得分",
+      "ms": "MATA BERSAMA"
+    },
+    {
+      "en": "FT",
+      "zh": "终场",
+      "ms": "FT"
+    },
+    {
+      "en": "BLUE BALL",
+      "zh": "蓝队球权",
+      "ms": "BOLA BIRU"
+    },
+    {
+      "en": "RED BALL",
+      "zh": "红队球权",
+      "ms": "BOLA MERAH"
+    },
+    {
+      "en": "BLUE INBOUND",
+      "zh": "蓝队发球",
+      "ms": "BIRU MASUK"
+    },
+    {
+      "en": "RED INBOUND",
+      "zh": "红队发球",
+      "ms": "MERAH MASUK"
+    },
+    {
+      "en": "THREE POINTER",
+      "zh": "三分球",
+      "ms": "TIGA MATA"
+    },
+    {
+      "en": "GOAL!",
+      "zh": "进球！",
+      "ms": "GOL!"
+    },
+    {
+      "en": "BUCKET!",
+      "zh": "投进！",
+      "ms": "MASUK!"
+    },
+    {
+      "en": "G",
+      "zh": "球",
+      "ms": "G"
+    },
+    {
+      "en": "Seats & trim",
+      "zh": "座椅与饰边",
+      "ms": "Tempat duduk & kemasan"
+    },
+    {
+      "en": "BLUE · YOU",
+      "zh": "蓝队 · 你",
+      "ms": "BIRU · ANDA"
+    },
+    {
+      "en": "RED · YOU",
+      "zh": "红队 · 你",
+      "ms": "MERAH · ANDA"
     }
   ]
 }
