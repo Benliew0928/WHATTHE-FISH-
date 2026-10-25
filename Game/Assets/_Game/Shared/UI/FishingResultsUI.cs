@@ -15,6 +15,7 @@ namespace WhatTheFish {
   FishingResultsLayout layout;Font fallback;
   Text title,subtitle,scoreHeading,cupHeading,cupCatchHeading,summaryTitle,notesLine,detailLine,crewScore,crewNeed;
   Text[] statLabels,crewSizeLabels;CoveIcon[] crewChecks;FishingStickerGraphic[] crewFish;
+  RectTransform nextAdventure;
   Button closeButton,walkingButton,reopenButton;Standing[] standings;
   FishingGame boundGame;Athlete actor;uint observedRound;bool observed,hasResult;FishingCeremony ceremony;
   FishingMatchSnapshot frozenMatch;FishingPlayerRecord[] frozenPlayers=Array.Empty<FishingPlayerRecord>();string[] frozenNames=Array.Empty<string>();ulong frozenLocal;
@@ -66,6 +67,7 @@ namespace WhatTheFish {
   void Build(){
    reopenButton=MakeButton("Fishing reopen results",transform,"RESULTS",GolfHUDStyle.Cream,Open,out _);reopen=(RectTransform)reopenButton.transform;reopen.gameObject.SetActive(false);
    modal=Rect("Fishing results modal",transform,Vector2.zero,Vector2.zero);Stretch(modal);var modalCanvas=modal.gameObject.AddComponent<Canvas>();modalCanvas.overrideSorting=true;modalCanvas.sortingOrder=300;modal.gameObject.AddComponent<GraphicRaycaster>();var shade=modal.gameObject.AddComponent<Image>();shade.color=new Color(.025f,.11f,.15f,.62f);shade.raycastTarget=true;
+   nextAdventure=PostMatchFlow.EndingButton(modal,"Fishing results next adventure");
    card=Rect("Fishing results card",modal,Vector2.zero,Vector2.zero);MenuDesigns.Dialog(GolfHUDStyle.Panel(card,GolfHUDStyle.Cream)).raycastTarget=true;
    var badge=Rect("Fishing results fish badge",card,Vector2.zero,new Vector2(62,62));var fish=badge.gameObject.AddComponent<FishingStickerGraphic>();fish.kind=FishingStickerGraphic.Kind.Fish;fish.tint=GolfHUDStyle.Teal;fish.raycastTarget=false;fish.Decorate();
    title=Label("Fishing result title",card,"ROUND RESULTS",layout.titleFontSize,TextAnchor.MiddleLeft);
@@ -185,6 +187,7 @@ namespace WhatTheFish {
   public void Open(){if(!hasResult||!CanPresent(boundGame)||!boundGame.Context||boundGame.State.Match.phase!=FishingRoundPhase.Ended||boundGame.State.Match.round!=frozenMatch.round)return;PostMatchFlow.Instance?.Close();modal.gameObject.SetActive(true);reopen.gameObject.SetActive(false);FocusCard();Layout();}
   public void ClearContext(){ceremony?.Cancel();ClearCardFocus();if(modal)modal.gameObject.SetActive(false);if(reopen)reopen.gameObject.SetActive(false);if(crewStrip)crewStrip.gameObject.SetActive(false);boundGame=null;actor=null;hasResult=observed=false;frozenPlayers=Array.Empty<FishingPlayerRecord>();frozenNames=Array.Empty<string>();}
   void Layout(){
+   PostMatchFlow.LayoutEndingButton(nextAdventure);nextAdventure.SetAsLastSibling();
    if(!page||!card)return;float width=Mathf.Max(400,layout.cardWidth),pad=layout.padding,gap=layout.gap,inner=width-pad*2;
    float titleHeight=LineHeight(title,layout.titleFontSize),subtitleHeight=subtitle.gameObject.activeSelf?LineHeight(subtitle,layout.labelFontSize):0,headerHeight=subtitleHeight>0?Mathf.Max(layout.headerHeight,titleHeight+subtitleHeight):Mathf.Max(66,titleHeight);
    float columnHeight=Mathf.Max(layout.columnHeight,LineHeight(scoreHeading,layout.labelFontSize)),rowHeight=Mathf.Max(layout.rowHeight,LineHeight(standings[0].name,layout.rowFontSize)+5);

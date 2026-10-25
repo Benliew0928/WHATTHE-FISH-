@@ -37,7 +37,6 @@ namespace WhatTheFish {
    string[] columns={"PLAYER","PTS","AST","PASS","INT"};float[] left={0,320,390,460,540};float[] widths={310,62,62,72,72};
    for(int c=0;c<5;c++){Label(stats.transform,columns[c],left[c],70,widths[c],33,20,Gold,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);for(int row=0;row<10;row++){var t=Label(stats.transform,"",left[c],110+row*40,widths[c],38,22,Cream,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);t.resizeTextForBestFit=true;t.resizeTextMinSize=14;t.resizeTextMaxSize=22;rows[row,c]=t;}}stats.SetActive(false);
    BasketballUIStyle.Button(content,"Toggle match stats","Box score",835,735,270,52,()=>{bool show=!stats.activeSelf;stats.SetActive(show);hero.SetActive(!show);},CoveUI.Sky,23);
-   BasketballUIStyle.Button(content,"Close MVP","Next adventure",1128,735,325,52,Dismiss,CoveUI.Cream,23);
    BuildCelebration();
    panel.gameObject.SetActive(false);
   }

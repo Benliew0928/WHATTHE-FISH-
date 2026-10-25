@@ -125,6 +125,7 @@ public static class RefinedIslandBuilder {
    foreach(var renderer in c.GetComponentsInChildren<Renderer>()){renderer.sharedMaterial=clouds;renderer.shadowCastingMode=ShadowCastingMode.Off;renderer.gameObject.layer=10;}
   }
   if(sport=="Fishing")LagoonPresentationBuilder.Attach(root);
+  VenueCollisionBuild.Apply(root);
   AssetDatabase.SaveAssets();Debug.Log("REFINED_ISLAND_BUILT "+sport+" modules="+data.instances.Length+" routes="+data.routes.Length);return root;
  }
 }

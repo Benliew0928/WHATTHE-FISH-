@@ -43,6 +43,14 @@ namespace WhatTheFish {
    reopen=WorldUI.Button(dock,"Open next adventure","Details",568,20,210,60,Open);
    panel.gameObject.SetActive(false);dock.gameObject.SetActive(false);
   }
+  public static RectTransform EndingButton(Transform parent,string name){
+   var button=BasketballUIStyle.Button(parent,name,"Next adventure",0,0,230,54,()=>Instance?.Open(),CoveUI.Cream,20);
+   var rect=(RectTransform)button.transform;rect.anchorMin=rect.anchorMax=rect.pivot=Vector2.zero;LayoutEndingButton(rect);return rect;
+  }
+  public static void LayoutEndingButton(RectTransform rect){
+   if(!rect)return;var canvas=rect.GetComponentInParent<Canvas>().rootCanvas;var root=(RectTransform)canvas.transform;var safe=Screen.safeArea;
+   rect.anchoredPosition=new Vector2(safe.xMin/Screen.width*root.rect.width+35,safe.yMin/Screen.height*root.rect.height+28);
+  }
   public static void CloseResults(){FishingCeremony.Instance?.Cancel();FootballMVP.Instance?.Dismiss();BasketballMVP.Instance?.Dismiss();FishingHUD.Instance?.Results?.Close();FindFirstObjectByType<GolfLeaderboardUI>()?.CloseResults();}
   bool Abandoned=>app&&app.SelectedSport==SportId.Fishing&&FishingGame.Instance&&FishingGame.Instance.State.Match.outcome==FishingOutcome.Abandoned;
   bool Voided=>app&&(app.SelectedSport==SportId.Football&&FootballMatch.Instance&&FootballMatch.Instance.Snapshot.phase==FootballMatchPhase.Cancelled||app.SelectedSport==SportId.Basketball&&BasketballMatch.Instance&&BasketballMatch.Instance.Snapshot.phase==BasketballMatchPhase.Cancelled);

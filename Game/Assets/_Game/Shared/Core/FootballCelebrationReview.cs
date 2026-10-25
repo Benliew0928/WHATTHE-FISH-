@@ -54,7 +54,18 @@ namespace WhatTheFish {
     Screen.SetResolution(resolution.x,resolution.y,FullScreenMode.Windowed);yield return new WaitForSeconds(.5f);yield return Capture("results-"+resolution.x+"x"+resolution.y);
     var star=mvp.CelebrationStage.Find("Honours #"+match.MVP.number+" "+match.MVP.name);var point=Camera.main.WorldToViewportPoint(star.position+Vector3.up*.9f);Check(point.x>.1f&&point.x<.40f&&point.y>.3f&&point.y<.7f,"MVP inside left column "+resolution+" "+point);
    }
-   mvp.Dismiss();yield return null;Check(!FootballMVP.Presenting&&PostMatchFlow.Instance.Visible,"dismiss hands off to next adventure");PostMatchFlow.Instance.Close();Check(!app.view.InputBlocked,"closing next adventure restores input");Check(!Athlete.Active.SelectMany(a=>a.visual.GetComponentsInChildren<Renderer>()).Any(r=>r.forceRenderingOff),"dismiss restores renderers");yield return new WaitForSeconds(.2f);Check(!FootballMVP.Presenting,"dismissed revision stays dismissed");
+   var nextButton=mvp.GetComponentsInChildren<Button>().First(b=>b.name=="Close MVP");
+   var originalLanguage=GameLocalization.Current;
+   foreach(var language in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
+    GameLocalization.Select(language,false);yield return new WaitForSeconds(.15f);yield return new WaitForEndOfFrame();Canvas.ForceUpdateCanvases();
+    var rect=(RectTransform)nextButton.transform;var center=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center));
+    Check(center.x/Screen.width<.3f&&center.y/Screen.height<.15f,"next adventure remains bottom-left: "+language);
+    Check(nextButton.GetComponentInChildren<Text>() is LocalizedText caption&&caption.HasUnclippedText(),"next adventure translation fits: "+language);
+    var events=UnityEngine.EventSystems.EventSystem.current;var pointer=new UnityEngine.EventSystems.PointerEventData(events){position=center};var hits=new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();events.RaycastAll(pointer,hits);
+    Check(hits.Count>0&&(hits[0].gameObject.transform==rect||hits[0].gameObject.transform.IsChildOf(rect)),"next adventure is pointer-reachable: "+language);
+    yield return Capture("next-adventure-"+language);
+   }
+   GameLocalization.Select(originalLanguage,false);nextButton.onClick.Invoke();yield return null;Check(!FootballMVP.Presenting&&PostMatchFlow.Instance.Visible,"next adventure button exits ceremony and opens island selection");PostMatchFlow.Instance.Close();Check(!app.view.InputBlocked,"closing next adventure restores input");Check(!Athlete.Active.SelectMany(a=>a.visual.GetComponentsInChildren<Renderer>()).Any(r=>r.forceRenderingOff),"dismiss restores renderers");yield return new WaitForSeconds(.2f);Check(!FootballMVP.Presenting,"dismissed revision stays dismissed");
    Screen.SetResolution(1600,900,FullScreenMode.Windowed);
    yield return Fixture(2,FootballMatchResult.TeamB);yield return new WaitForSeconds(2);mvp.SkipCelebration();yield return new WaitForSeconds(1.5f);Check(mvp.ResultsReady,"skip eases into results");yield return Capture("red-skipped");mvp.Dismiss();yield return null;PostMatchFlow.Instance.Close();Check(broadcast.BroadcastActive&&broadcast.FireworksActive,"local skip and dismissal preserve stadium broadcast");
    yield return Fixture(5,FootballMatchResult.Draw);Check(mvp.CelebrationCastCount==10,"draw celebrates both teams");yield return new WaitForSeconds(3);yield return Capture("draw-team");match.ClearMatch();yield return null;yield return null;Check(!mvp.Visible&&!app.view.InputBlocked,"new round cancels ceremony cleanly");

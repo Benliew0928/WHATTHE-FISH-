@@ -84,8 +84,8 @@ namespace WhatTheFish {
     Drum(1);Drum(2);Drum(3);
     for(int s=0;s<3;s++)Box(new Vector3(0,.43f+s*.13f,2.05f-s*.28f),new Vector3(2.02f,.17f,1.02f),fishing?Wood:Stone);
     if(fishing){
-     for(int i=0;i<30;i++){float z=4.1f+i*.33f;Box(new Vector3(0,.30f,z),new Vector3(1.9f,.16f,.315f),i%3==0?"D08A49":"BD783E");for(int side=-1;side<=1;side+=2)Lathe(new Vector3(side*.82f,.386f,z),.025f,.015f,"687575",8);}
-     for(int i=0;i<5;i++){float z=4.35f+i*2;Post(new Vector3(-1.1f,-.35f,z),false);Post(new Vector3(1.1f,-.35f,z),false);}
+     for(int i=0;i<100;i++){float z=4.1f+i*.33f;Box(new Vector3(0,.30f,z),new Vector3(1.9f,.16f,.315f),i%3==0?"D08A49":"BD783E");for(int side=-1;side<=1;side+=2)Lathe(new Vector3(side*.82f,.386f,z),.025f,.015f,"687575",8);}
+     for(int i=0;i<17;i++){float z=4.35f+i*2;Post(new Vector3(-1.1f,-.35f,z),false);Post(new Vector3(1.1f,-.35f,z),false);}
     }else{
      for(int i=0;i<4;i++){float z=4.9f-i*.43f;Box(new Vector3(0,.14f+i*.16f,z),new Vector3(2.8f,.22f,.70f),i%2==0?"EFD1A3":"E5BC89");}
      foreach(int s in new[]{-1,1}){Tube(new List<Vector3>{new(s*1.5f,.32f,5.1f),new(s*1.5f,.9f,3.15f)},.13f,Blue);for(int i=0;i<6;i++)Blob(new Vector3(s*(2.25f+i*.38f),.5f,3.2f-i*.45f),new Vector3(.46f,.42f,.4f),i%2==0?"6EAE32":"3C9634");}

@@ -66,6 +66,7 @@ public static class CoastalStadiumBuilder {
    if(f.name.Contains("Seats")||f.name.Contains("Canopy"))continue;
    if(!f.GetComponent<Collider>())f.gameObject.AddComponent<MeshCollider>().sharedMesh=f.sharedMesh;
   }
+  VenueCollisionBuild.Apply(venue);
   var routes=venue.AddComponent<CoastalVenueRoutes>();routes.sport=sport;
   routes.entries=layout.routes.Select(r=>FromSource(r.entry)).ToArray();routes.inside=layout.routes.Select(r=>FromSource(r.inside)).ToArray();
   routes.stairBottom=layout.routes.Select(r=>FromSource(r.stair_bottom)).ToArray();routes.stairTop=layout.routes.Select(r=>FromSource(r.stair_top)).ToArray();routes.concourse=layout.routes.Select(r=>FromSource(r.concourse)).ToArray();

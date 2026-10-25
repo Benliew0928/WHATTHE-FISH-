@@ -24,6 +24,20 @@ namespace WhatTheFish {
    ceremony.ReviewTime(golf?2.5f:5);yield return new WaitForEndOfFrame();var entryActors=stageRoot.transform.Cast<Transform>().Where(t=>t.name.StartsWith("Honours #")).ToArray();
    Check(entryActors[0].gameObject.activeSelf&&!entryActors[1].gameObject.activeSelf,"both sports start single-file with the winner first");
    float walkAt=golf?1.5f:4.8f;
+   Check(!GameObject.Find("Soft lagoon reveal mist"),"fishing rise has no grey mist overlay");
+   var next=FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None).FirstOrDefault(b=>b.name==(golf?"Golf":"Fishing")+" next adventure");
+   Check(next&&next.interactable,"bottom-left next adventure is available in awards");
+   if(!golf){
+    var podium=stageRoot.transform.GetChild(0);ceremony.ReviewTime(1.8f);yield return new WaitForEndOfFrame();float below=podium.localPosition.y;
+    ceremony.ReviewTime(3.9f);yield return new WaitForEndOfFrame();Check(below<-2&&Mathf.Abs(podium.localPosition.y)<.001f,"podium still rises from below the water");
+    Check(podium.GetComponentsInChildren<MeshFilter>().Any(m=>m.sharedMesh.bounds.max.z>36),"matching timber bridge extends beyond the entrance camera");
+   }
+   var previousCamera=Vector3.zero;bool forwardOnly=true;
+   for(int i=0;i<=30;i++){
+    ceremony.ReviewTime(walkAt+i*7.1f/30);yield return new WaitForEndOfFrame();var at=camera.transform.position;
+    if(i>0)forwardOnly&=Vector3.Dot(at-previousCamera,camera.transform.forward)>=-.0001f;previousCamera=at;
+   }
+   Check(forwardOnly,"entrance camera only advances; no backward correction as winners appear");
    ceremony.ReviewTime(walkAt+5.5f);yield return new WaitForEndOfFrame();
    Check(entryActors.All(t=>t.gameObject.activeSelf&&Mathf.Abs(t.localPosition.x)<.001f),"all winners share one entrance lane");
    for(int i=1;i<entryActors.Length;i++)Check(Vector3.Distance(entryActors[i-1].position,entryActors[i].position)>1.8f,"queue keeps at least 1.8 metres between players");

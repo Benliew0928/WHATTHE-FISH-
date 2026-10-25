@@ -4,9 +4,7 @@ using UnityEngine;
 
 namespace WhatTheFish {
  public sealed partial class FishingCeremony {
-  readonly List<int> castRanks=new();Transform podium;Mesh mistMesh;MeshRenderer mistRenderer;
-  readonly List<Vector3> mistVertices=new();readonly List<Color> mistColors=new();readonly List<Vector3> mistUV=new();readonly List<int> mistIndices=new();
-  static readonly Vector2[] MistCorners={new(0,0),new(1,0),new(1,1),new(0,1)};
+  readonly List<int> castRanks=new();Transform podium;
   const float WalkSpeed=.82f,QueueGap=1.85f,StrideLength=.92f;
   const float EntryDelay=QueueGap/WalkSpeed;
   readonly Dictionary<Font,Material> numberMaterials=new();
@@ -30,10 +28,8 @@ namespace WhatTheFish {
     bool fish=!rankedGolf&&renderer.GetComponentsInParent<Transform>().Any(t=>t.name.StartsWith("Swimming fish "));
     if(intrudes||fish){hidden[renderer]=renderer.forceRenderingOff;renderer.forceRenderingOff=true;}
    }
-   if(!rankedGolf){
-    var smoke=new GameObject("Soft lagoon reveal mist");smoke.transform.SetParent(stage,false);mistMesh=new Mesh{name="Animated ceremony mist"};mistMesh.MarkDynamic();smoke.AddComponent<MeshFilter>().sharedMesh=mistMesh;mistRenderer=smoke.AddComponent<MeshRenderer>();mistRenderer.sharedMaterial=Resources.Load<Material>("GolfCelebration");mistRenderer.shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;mistRenderer.receiveShadows=false;
-   }
   }
+
   void RefreshPodiumNumbers(){
    // Localization may replace a TextMesh font/material. Rebind its current atlas
    // after localization, but keep depth testing so nearby actors occlude digits.
@@ -57,7 +53,6 @@ namespace WhatTheFish {
    float walkAt=WalkAt,settleAt=SettleAt;RefreshPodiumNumbers();
    PodiumSettled=age>=settleAt;podium.gameObject.SetActive(rankedGolf||reduced||age>=1.7f);
    podium.localPosition=rankedGolf||reduced?Vector3.zero:Vector3.down*(2.7f*(1-Mathf.SmoothStep(0,1,(age-1.7f)/2.1f)));
-   if(mistMesh)Mist(age,reduced);
    for(int i=0;i<cast.Count;i++){
     var actor=cast[i];bool show=PodiumSettled||age>=walkAt+i*EntryDelay;actor.Root.gameObject.SetActive(show);if(!show)continue;
     var seat=ActorSeat(i);
@@ -80,26 +75,28 @@ namespace WhatTheFish {
     position=new Vector3(Mathf.Sin(angle)*radius,5.8f,Mathf.Cos(angle)*radius);focus=new Vector3(0,2.05f,.3f);
    }else if(age<walkAt){
     float approach=Ease5(age/walkAt);position=Vector3.Lerp(new Vector3(0,8.2f,21),new Vector3(1.4f,7.5f,18.5f),approach);focus=new Vector3(0,1.1f,1);
+    if(rankedGolf){focus=new Vector3(0,1.3f,5.8f);var end=FrameEntrance(new Vector3(7.2f,4.9f,15.8f),focus);position=end+(end-focus).normalized*(2.2f+1.2f*(1-approach));}
    }else{
     float progress=Ease5((age-walkAt)/(settleAt-walkAt));
-    // Track alongside the single-file entrance before the ellipsis to the seats.
-    position=Vector3.Lerp(new Vector3(8.5f,5.4f,19.5f),new Vector3(7.2f,4.9f,15.8f),progress);
-    focus=Vector3.Lerp(new Vector3(0,1.2f,8.4f),new Vector3(0,1.35f,5.4f),progress);
-    position=FrameEntrance(position,focus,age);
+    // Fix the complete entrance envelope before the shot starts. The camera
+    // travels only forward; new arrivals never force a reactive pullback.
+    focus=new Vector3(0,1.3f,5.8f);
+    var end=FrameEntrance(new Vector3(7.2f,4.9f,15.8f),focus);
+    position=end+(end-focus).normalized*(2.2f*(1-progress));
    }
    position=stage.TransformPoint(position);focus=stage.TransformPoint(focus);camera.transform.SetPositionAndRotation(position,Quaternion.LookRotation(focus-position));camera.fieldOfView=42;camera.nearClipPlane=.12f;
    // A brief dissolve hides the time ellipsis; no full bridge traversal required.
    if(!reduced){float cut=Mathf.Max(0,1-Mathf.Abs(age-settleAt)/.3f);if(cut>curtain.color.a)curtain.color=new Color(.025f,.07f,.11f,cut);}
   }
-  Vector3 FrameEntrance(Vector3 position,Vector3 focus,float age){
+  Vector3 FrameEntrance(Vector3 position,Vector3 focus){
    // Fit the whole queue above the result buttons and below the title. Include
    // waiting actors at their spawn so each entrance cannot pop the camera back.
    var rotation=Quaternion.LookRotation(focus-position);var inverse=Quaternion.Inverse(rotation);float back=0;
    float vertical=Mathf.Tan(21*Mathf.Deg2Rad),horizontal=vertical*Mathf.Max(.65f,camera.aspect);
    void Include(Vector3 point){var p=inverse*(point-position);back=Mathf.Max(back,Mathf.Abs(p.x)/(horizontal*.88f)-p.z,Mathf.Abs(p.y)/(vertical*.55f)-p.z);}
    foreach(int side in new[]{-1,1}){Include(new Vector3(side*5,.2f,0));Include(new Vector3(side*1.7f,2.5f,-2));}
-   for(int i=0;i<cast.Count;i++){
-    float z=(rankedGolf?11.8f:13.1f)-Mathf.Max(0,age-WalkAt-i*EntryDelay)*WalkSpeed;
+   float spawn=rankedGolf?11.8f:13.1f;
+   foreach(float z in new[]{spawn,spawn-(SettleAt-WalkAt)*WalkSpeed}){
     Include(new Vector3(-.4f,0,z));Include(new Vector3(.4f,2.1f,z));
    }
    return position-rotation*Vector3.forward*Mathf.Max(0,back);
@@ -118,16 +115,6 @@ namespace WhatTheFish {
    pose.body=new Vector3(3,0,s*1.3f);pose.pelvis=new Vector3(0,-.02f+Mathf.Abs(s)*.014f,0);pose.head=new Vector3(-2,-s*2,0);
    pose.leftFoot=WalkingFoot(phase);pose.rightFoot=WalkingFoot(phase+.5f);
    pose.leftHand=new Vector3(-.24f,.66f,.07f-c*.12f);pose.rightHand=new Vector3(.24f,.66f,.07f+c*.12f);return pose;
-  }
-  void Mist(float age,bool reduced){
-   float opacity=reduced?0:Mathf.SmoothStep(0,1,(age-.6f)/1.65f)*(1-Mathf.SmoothStep(0,1,(age-3.3f)/2.1f));mistRenderer.enabled=opacity>.005f;if(!mistRenderer.enabled)return;
-   mistVertices.Clear();mistColors.Clear();mistUV.Clear();mistIndices.Clear();var right=stage.InverseTransformDirection(camera.transform.right);var up=stage.InverseTransformDirection(camera.transform.up);
-   for(int i=0;i<42;i++){
-    float a=i*2.39996f+age*.1f,r=Mathf.Sqrt((i+.5f)/42)*4.8f;var p=new Vector3(Mathf.Cos(a)*r,.55f+(i%5)*.38f+age*.12f,Mathf.Sin(a)*r*.65f);float size=1.4f+Mathf.Sin(i*2.7f+age*.55f)*.35f;int start=mistVertices.Count;
-    foreach(var uv in MistCorners){mistVertices.Add(p+right*(uv.x-.5f)*size*2+up*(uv.y-.5f)*size*1.6f);mistUV.Add(new Vector3(uv.x,uv.y,1));float shade=.67f+(i%3)*.035f;mistColors.Add(new Color(shade,shade+.015f,shade+.025f,opacity*.62f));}
-    mistIndices.Add(start);mistIndices.Add(start+1);mistIndices.Add(start+2);mistIndices.Add(start);mistIndices.Add(start+2);mistIndices.Add(start+3);
-   }
-   mistMesh.Clear();mistMesh.SetVertices(mistVertices);mistMesh.SetColors(mistColors);mistMesh.SetUVs(0,mistUV);mistMesh.SetTriangles(mistIndices,0);mistMesh.RecalculateBounds();
   }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   float? reviewAge;

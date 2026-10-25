@@ -25,7 +25,7 @@ namespace WhatTheFish {
    Finish();
   }
   IEnumerator Clip(string name,Action activate,Action activeCheck=null,Action endedCheck=null){
-   string dir=Path.Combine(folder,name);if(film)Directory.CreateDirectory(dir);var start=camera.transform.rotation;float heading=view.yaw,clock=Time.time;bool moved=false,fadeOut=false,fadeIn=false;Vector3 stickyAt=default;Quaternion stickyRotation=default;Vector3 rushLook=default;
+   string dir=Path.Combine(folder,name);if(film)Directory.CreateDirectory(dir);var start=camera.transform.rotation;float heading=view.yaw,clock=Time.time;bool moved=false,fadeOut=false,fadeIn=false;Vector3 stickyAt=default;Quaternion stickyRotation=default;Vector3 rushLook=default;Transform runningLeg=null;Quaternion earlierLeg=default;
    for(int i=0;i<150;i++){
     if(i==24)activate();
     yield return new WaitForEndOfFrame();
@@ -39,7 +39,13 @@ namespace WhatTheFish {
      bool grounded=demo&&GolfCartMotor.Surface(demo.transform.position,GolfCartMotor.Heading(demo.transform.rotation),out var support,out var slope)&&Mathf.Abs(demo.transform.position.y-support.y-.025f)<.06f&&Quaternion.Angle(demo.transform.rotation,slope)<3;
      Check(grounded,"rush cart follows four-wheel ground support and slope");
     }
-    if(name=="Golf-FinalRush"&&i==100)Check(Vector3.Angle(rushLook,camera.transform.forward)>120,"rush camera turns through the close pass to follow the pursuit");
+    if(name=="Golf-FinalRush"&&i==90){runningLeg=GameObject.Find("Rush chasing runner 1").GetComponentsInChildren<Transform>().First(t=>t.name=="mixamorig:LeftUpLeg");earlierLeg=runningLeg.localRotation;}
+    if(name=="Golf-FinalRush"&&i==100){
+     Check(runningLeg&&Quaternion.Angle(earlierLeg,runningLeg.localRotation)>3,"actual gameplay run clip animates the cloned leg bones");
+     Check(Vector3.Angle(rushLook,camera.transform.forward)>120,"rush camera turns through the close pass to follow the pursuit");
+     var trails=GameObject.Find("Island Rush demonstration (visual only)").GetComponentsInChildren<GolfRushTrail>();
+     Check(trails.Length==3&&trails.All(t=>t.Emitting&&t.VisibleVertices>0&&t.FrontVertexCount==0),"all preview runners use the live Rush trail, wholly behind their facing plane");
+    }
     if(i==135)endedCheck?.Invoke();
     if(i==148&&name.StartsWith("Golf-"))Check(view.GetComponent<GolfCinematicHUD>().Opacity>.99f,name+" all HUD opacity restored");
     if(film)Capture(Path.Combine(dir,i.ToString("D5")+".jpg"));else if(i==40||i==64||i==84||i==105)Capture(Path.Combine(folder,name+"-"+i+".jpg"));
@@ -82,6 +88,13 @@ namespace WhatTheFish {
   }
   IEnumerator Golf(){
    Check(Mathf.Approximately(GolfEventShowcase.Radius,GolfBall.Radius),"event example radius matches gameplay ball");
+   float landing=GolfEventShowcase.WindLanding;var physics=Resources.Load<GolfBallPhysicsSettings>("GolfBallPhysics");
+   Check(Mathf.Abs(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing).y-GolfBall.Radius)<.0001f&&GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing+.3f).y>GolfBall.Radius+.4f,"wind ball contacts turf and rebounds naturally");
+   float bounceTime=(landing-.4f)*physics.turfRestitution;
+   Check(Mathf.Abs(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing+bounceTime).y-GolfBall.Radius)<.001f,"wind rebound duration uses gameplay turf restitution");
+   var incoming=(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing)-GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing-.001f))/.001f;
+   var outgoing=(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing+.001f)-GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing))/.001f;
+   Check(Mathf.Abs(outgoing.x/incoming.x-physics.landingSpeedRetention)<.003f,"wind landing keeps the gameplay horizontal damping");
    Check(Mathf.Abs(GolfEventShowcase.Sample(GolfEventKind.StickyGreen,.35f).y-GolfBall.Radius-8)<.001f&&Mathf.Abs(GolfEventShowcase.Sample(GolfEventKind.BounceParty,.35f).y-GolfBall.Radius-8)<.001f,"both falling examples start eight metres above contact");
    Check(GolfRushShowcase.CartTravel(2.5f)-GolfRushShowcase.CartTravel(2)>GolfRushShowcase.CartTravel(1)-GolfRushShowcase.CartTravel(.5f),"rush cart visibly accelerates");
    Check(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,2.2f).z>GolfEventShowcase.Sample(GolfEventKind.TropicalWind,1.3f).z*2,"wind bends the airborne path progressively");

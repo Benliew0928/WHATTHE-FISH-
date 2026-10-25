@@ -30,7 +30,6 @@ namespace WhatTheFish {
    string[] columns={"PLAYER","G","A","PASS","INT"};float[] left={0,388,465,542,655};float[] widths={375,70,70,105,105};
    for(int c=0;c<5;c++){Label(stats.transform,columns[c],left[c],80,widths[c],33,23,Gold,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);for(int r=0;r<10;r++)rows[r,c]=Label(stats.transform,"",left[c],123+r*43,widths[c],40,24,null,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);}stats.SetActive(false);
    FootballUIStyle.Button(content,"Toggle match stats","Match stats",675,746,350,58,()=>{bool show=!stats.activeSelf;stats.SetActive(show);hero.SetActive(!show);},CoveUI.Mint,24);
-   FootballUIStyle.Button(content,"Close MVP","Next adventure",1050,746,385,58,Dismiss,CoveUI.Cream,24);
    BuildCelebration();panel.gameObject.SetActive(false);
   }
   Text Stat(Transform p,string label,float x,float y,float w,int size){Label(p,label,x,y,w,34,25,Gold);return Label(p,"0",x,y+37,w,size+14,size);}

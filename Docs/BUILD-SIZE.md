@@ -1,5 +1,27 @@
 # Build size — measured release records
 
+## Venue collision repair — 26 October 2026
+
+Official AndroidSubmission: **166,808,788 -> 167,993,556 bytes (+1,184,768)** from the task-start APK; **832,006,444 bytes** remain below the strict 1,000,000,000-byte limit. The immediately preceding shared release was 167,987,124 bytes (+6,432 in this final build). SHA-256: **8EE1178E78BE6CCC4BBF46C7D55821D5C8D7EAA68F2EACD32684E010FA16EA1A**.
+
+The five shipping scenes now contain **840 dedicated solid collision proxies** for stadium seats, columns, railings, boards, furniture, coast rocks/trunks and station structures. Existing route ramps remain; basketball balcony column caps are lowered 0.2 m with matching visible geometry/collision. Bent Golf/Fishing palms replace their old straight support boxes. Render meshes are reused; 32 compact bark subsets and 24 cap copies preserve original materials, UVs and bevels. No ball-force/speed tuning or new UI wording is introduced. Concurrent awards/event changes are preserved.
+
+The final complete desktop player passes **6,288 checks**: Football 1,891, Basketball 2,226, Golf 1,597 and Fishing 574. These include 5,369 surface rays, 144 actual sprint contacts, 144 camera sweeps from clear player approaches, jump/slide contacts, LOD persistence, entrances, stairs, aisles, bridges, island routes and station aprons. Desktop renders were reviewed. All **514 Windows / 368 Android** compiled source documents match; the final Windows rebuild leaves the Android scene/generated-mesh source snapshot unchanged. All 335 candidate files were hash-verified on promotion; two retained preview launchers bring the complete delivery to **337 files**. The 3,456-entry three-language catalog and artwork checks pass.
+
+APK v2 signature, ZIP CRC, all **1,405 audited entries**, and the five-scene bundle hash/size pass. Largest compressed entries: island bundle **45,946,547 bytes**, IL2CPP **13,221,451**, Vivox **10,240,163**, Unity **9,827,858**. Entry growth was reviewed: +585,135 bytes in the shared scene bundle, plus the concurrent Fishing bridge mesh changes (+440,374 / +57,630 / +32,766 among the largest entries). No unexpected large texture growth or lossy art changes were introduced. Serialized source/report totals are not APK bytes.
+
+Evidence: `Builds/VenueCollisionQA/Final-*/`, `Builds/VenueCollisionQA/apk-verification.json`, source comparisons and entry deltas, plus `Builds/SizeAudit/latest/`. Delivery: `Builds/WindowsFinal/`. [Collision maintenance and archive record](VENUE-COLLISIONS.md). Physical-phone quality/touch/FPS and live cloud multiplayer remain unverified. No Git publishing actions were performed by this task.
+
+## Awards/event polish with concurrent venue repair — 25 October 2026
+
+AndroidSubmission: **166,808,788 → 167,993,556 bytes (+1,184,768)**; remaining headroom **832,006,444 bytes** below 1,000,000,000. SHA-256: **8EE1178E78BE6CCC4BBF46C7D55821D5C8D7EAA68F2EACD32684E010FA16EA1A**.
+
+Fishing's mist-free rising podium and extended matching bridge, Golf's forward-only entrance camera, all-game bottom-left Next adventure navigation, natural Tropical Wind demonstration rebounds and gameplay-matched Rush animation/trails are included. Concurrent venue collision work is preserved in the same snapshot. All **514 Windows / 368 Android** source documents matched at validation; a later unrelated Windows-only venue review helper changed, while the awards/event runtime sources still match. Final shared-candidate checks passed **30 Golf awards, 38 Fishing awards and 181 Golf event** assertions. Additional three-language island/court navigation checks and the 3,456-entry catalog/artwork checks passed.
+
+The complete **337-file** Windows delivery is in `Builds/WindowsFinal/`. APK v2 signature, ZIP CRC, **1,405 audited entries** and five-scene bundle integrity pass. Largest compressed entries: island bundle **45,946,547**, IL2CPP **13,221,451**, Vivox **10,240,163**, Unity **9,827,858** bytes. Main growth is the shared island bundle (+585,135) and extended bridge rope/nail/timber meshes (+440,374 / +57,630 / +32,766); existing materials are reused, with no texture or lossy-quality changes.
+
+Details, source-snapshot limits, evidence and archive locations: [awards/event polish report](AWARDS-EVENT-POLISH.md). Actual Android hardware rendering/touch/FPS and live network acceptance remain unverified.
+
 ## Publication integration with communication updates — 25 October 2026
 
 Integrated pending local Golf events, localization, results, awards, welcome/privacy and account changes with upstream communication controls (`2ddef7d`) and compact docks (`25efada`). Both sides' measured release records are retained. The voice roster preserves raw player names and translates only the self suffix; eleven missing communication captions/templates were added to the shared catalog.

@@ -19,6 +19,6 @@ namespace WhatTheFish.Editor {
    }
    AssetDatabase.SaveAssets();AssetDatabase.Refresh();Debug.Log("ISLAND_AWARDS_ASSETS_READY");
   }
-  public static void Windows(){Prepare();ProjectBuilder.BuildWindowsPlayer("../Builds/IslandAwardsMotionQA/Player/WhatTheFish.exe");}
+  public static void Windows(){Prepare();ProjectBuilder.BuildWindowsPlayer("../Builds/AwardsEventPolishQA/PlayerV2/WhatTheFish.exe");}
  }
 }

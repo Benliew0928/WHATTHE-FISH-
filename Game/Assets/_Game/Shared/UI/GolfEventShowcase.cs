@@ -8,18 +8,37 @@ namespace WhatTheFish {
   public const float Radius=GolfBall.Radius;
   Transform root,ball;TrailRenderer trail;LineRenderer ring;
   readonly LineRenderer[] accents=new LineRenderer[8];
-  Vector3 ground,normal,along,wind;float scale;int contact;GolfEventKind kind;
+  Vector3 ground,normal,along,wind;float scale;int contact;bool launched;GolfEventKind kind;
+  static GolfBallPhysicsSettings turf;
+  public const float WindLanding=2f;
   public bool Visible=>root&&root.gameObject.activeSelf;
   public Vector3 BallPosition=>ball?ball.position:Vector3.zero;
   public static bool Supports(GolfEventKind value)=>value is GolfEventKind.TropicalWind or GolfEventKind.BounceParty or GolfEventKind.StickyGreen;
 
   // Continuous, clock-sampled paths also let late/future packets share the cue age.
   public static Vector3 Sample(GolfEventKind value,float age){
-   if(value==GolfEventKind.TropicalWind){float u=Mathf.InverseLerp(.4f,2.8f,age);return new Vector3(-3+6*u,Radius+12*u*(1-u),6*u*u);}
+   if(value==GolfEventKind.TropicalWind)return WindSample(age,out _,out _);
    if(value==GolfEventKind.StickyGreen){float u=Mathf.InverseLerp(.35f,1.35f,age);return new Vector3(-.65f*(1-u),Radius+8*(1-u*u),0);}
    if(age<1.15f){float u=Mathf.InverseLerp(.35f,1.15f,age);return new Vector3(-.7f*(1-u),Radius+8*(1-u*u),0);}
    if(age<2.25f){float u=Mathf.InverseLerp(1.15f,2.25f,age);return new Vector3(.7f*u,Radius+9.6f*u*(1-u),0);}
    float v=Mathf.InverseLerp(2.25f,2.95f,age);return new Vector3(.7f+.45f*v,Radius+2.8f*v*(1-v),0);
+  }
+  static Vector3 WindSample(float age,out int contacts,out float lastImpact){
+   contacts=0;lastImpact=WindLanding;float gravity=Mathf.Abs(Physics.gravity.y),flight=WindLanding-.4f;
+   float t=Mathf.Clamp(age-.4f,0,flight),u=t/flight;
+   if(age<WindLanding)return new Vector3(-3+6*u,Radius+gravity*t*(flight-t)*.5f,6*u*u);
+   if(!turf)turf=Resources.Load<GolfBallPhysicsSettings>("GolfBallPhysics");
+   var point=new Vector3(3,Radius,6);var velocity=new Vector3(6/flight,-gravity*flight*.5f,12/flight);float remaining=age-WindLanding;
+   // Use the actual turf response, including first-contact tangential loss.
+   // No live ball or match state is changed by this render-only trajectory.
+   for(int bounce=0;bounce<12;bounce++){
+    contacts++;velocity=turf.LandingVelocity(velocity,Vector3.up,bounce==0);
+    if(velocity.y<=0){float speed=velocity.magnitude,stop=speed/turf.fairwayResistance;float roll=Mathf.Min(remaining,stop);return point+velocity.normalized*(speed*roll-.5f*turf.fairwayResistance*roll*roll);}
+    float duration=2*velocity.y/gravity;
+    if(remaining<=duration)return point+velocity*remaining-Vector3.up*(gravity*remaining*remaining*.5f);
+    point+=Vector3.ProjectOnPlane(velocity,Vector3.up)*duration;remaining-=duration;lastImpact+=duration;velocity.y=-velocity.y;
+   }
+   return point;
   }
   LineRenderer Line(string name,int points,bool loop=false){
    var go=new GameObject(name);go.layer=2;go.transform.SetParent(root,false);var line=go.AddComponent<LineRenderer>();
@@ -58,18 +77,19 @@ namespace WhatTheFish {
    trail=ball.gameObject.AddComponent<TrailRenderer>();trail.sharedMaterial=Resources.Load<Material>("GolfBallTrail");trail.time=value==GolfEventKind.TropicalWind?1.1f:.72f;trail.minVertexDistance=.025f;trail.widthMultiplier=.065f;
    trail.widthCurve=AnimationCurve.Linear(0,1,1,0);trail.numCornerVertices=4;trail.shadowCastingMode=ShadowCastingMode.Off;trail.receiveShadows=false;trail.emitting=false;
    ring=Line("Event landing ripple",48,true);for(int i=0;i<accents.Length;i++)accents[i]=Line("Event motion accent",20);
-   contact=0;return true;
+   contact=0;launched=false;return true;
   }
   Vector3 World(Vector3 point)=>ground+along*point.x+normal*point.y+wind*point.z;
   public bool Present(GolfEventKind value,float age,Athlete owner,GolfMatchManager match){
    if(!Visible&&!Create(value,owner,match))return false;
-   var p=Sample(value,age);ball.position=World(p);float spinAge=Mathf.Min(age,value==GolfEventKind.StickyGreen?1.35f:value==GolfEventKind.TropicalWind?2.8f:2.95f);ball.rotation=Quaternion.AngleAxis(spinAge*240,wind);
-   if(value==GolfEventKind.TropicalWind&&age>=.4f&&contact==0){contact=1;GolfFishingAudio.Current?.Play("golf-swish",ball.position,.7f,true);}
+   var p=Sample(value,age);ball.position=World(p);float spinAge=Mathf.Min(age,value==GolfEventKind.StickyGreen?1.35f:value==GolfEventKind.TropicalWind?3.5f:2.95f);ball.rotation=Quaternion.AngleAxis(spinAge*240,wind);
+   if(value==GolfEventKind.TropicalWind&&age>=.4f&&!launched){launched=true;GolfFishingAudio.Current?.Play("golf-swish",ball.position,.7f,true);}
    float fade=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(2.95f,3.5f,age));
    var config=GolfPresentationSettings.Current;Color color=value==GolfEventKind.TropicalWind?config.windColor:value==GolfEventKind.BounceParty?config.bounceColor:config.stickyColor;
    trail.emitting=age>.4f&&age<2.95f&&(value!=GolfEventKind.StickyGreen||age<1.35f);trail.startColor=new Color(color.r,color.g,color.b,fade);trail.endColor=new Color(color.r,color.g,color.b,0);
    float impact=value==GolfEventKind.StickyGreen?1.35f:value==GolfEventKind.BounceParty?(age>=2.95f?2.95f:age>=2.25f?2.25f:1.15f):2.8f;
    float since=age-impact;int next=value==GolfEventKind.StickyGreen?(since>=0?1:0):value==GolfEventKind.BounceParty?(age>=2.95f?3:age>=2.25f?2:age>=1.15f?1:0):0;
+   if(value==GolfEventKind.TropicalWind){WindSample(age,out next,out impact);since=age-impact;}
    if(next>contact){contact=next;GolfFishingAudio.Current?.Play("golf-turf",ball.position,value==GolfEventKind.StickyGreen?.55f:.8f,true);}
    ball.localScale=Vector3.one*scale;
    ring.enabled=since>=0;float radius=value==GolfEventKind.StickyGreen?Mathf.Lerp(.85f,.28f,Mathf.Clamp01(since/.4f)):.25f+Mathf.Clamp01(since/.6f)*1.1f;

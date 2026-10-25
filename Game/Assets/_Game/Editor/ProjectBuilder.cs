@@ -248,6 +248,7 @@ public static partial class ProjectBuilder {
  public static void BuildAndroidSubmission(){BuildAndroidRelease();BuildSizeAudit.CheckApk(ResolveBuildOutputPath("../Builds/Android/WhatTheFish-release.apk"),true);}
  static void Build(BuildTarget target,string path,BuildOptions options=BuildOptions.Development|BuildOptions.CompressWithLz4HC){
   path=ResolveBuildOutputPath(path);
+  VenueCollisionBuild.Prepare();
   FootballPropBuild.Prepare();
   CharacterIdentityBuild.Prepare();
   JumpAnimationBuilder.Prepare();

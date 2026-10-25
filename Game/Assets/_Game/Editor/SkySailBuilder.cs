@@ -51,6 +51,7 @@ public static class SkySailBuilder {
   EditorSceneManager.MarkSceneDirty(world.gameObject.scene);EditorSceneManager.SaveScene(world.gameObject.scene);AssetDatabase.SaveAssets();
  }
  static void StationDeck(GameObject station){
+  VenueCollisionBuild.Apply(station);
   foreach(var c in station.GetComponentsInChildren<BoxCollider>(true).Where(c=>c.name.StartsWith("Deck collision")||c.name.StartsWith("Berth guard")).ToArray())UnityEngine.Object.DestroyImmediate(c.gameObject);
   Box(station,"Deck collision boarding apron",new Vector3(0,.55f,-5.075f),new Vector3(11.8f,.37f,4.85f));
   foreach(float side in new[]{-1f,1f}){
@@ -137,6 +138,7 @@ public static class SkySailBuilder {
   Clouds(world.scenery);
   env.roots=new GameObject[4];var streaming=env.GetComponent<SkySailStreaming>();if(!streaming)streaming=env.gameObject.AddComponent<SkySailStreaming>();streaming.enabledForWorld=true;
   UnityEngine.Object.FindFirstObjectByType<NetworkManager>().NetworkConfig.ProtocolVersion=RoomService.ProtocolVersion;
+  VenueCollisionBuild.Apply(world.gameObject);
   world.scenery.localPosition=-SkySailMap.Center(SportId.Football);
   EditorSceneManager.MarkSceneDirty(bootstrap);EditorSceneManager.SaveScene(bootstrap);
   foreach(var island in full)EditorSceneManager.CloseScene(island.scene,true);

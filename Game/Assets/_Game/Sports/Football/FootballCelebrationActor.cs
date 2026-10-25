@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Animations;
+using UnityEngine.Playables;
 namespace WhatTheFish {
- // A render-only cast member: no Athlete, network object, collider, Animator,
- // or gameplay script is cloned. Shared meshes/materials preserve identity.
+ // Render-only cast: no Athlete, network object, collider or gameplay script.
+ // Running optionally uses a manually evaluated animation graph on cloned bones.
  internal sealed class FootballCelebrationActor {
   public readonly Transform Root;
   public readonly ulong Id;
@@ -13,6 +15,7 @@ namespace WhatTheFish {
   public float ReachError {get;private set;}
   public float BoneError {get;private set;}
   readonly Dictionary<Transform,Transform> map=new();
+  AnimationClip runClip;GameObject runTarget;Avatar runAvatar;CelebrationRunSampler runSampler;
   Transform[] bones;Vector3[] positions;Quaternion[] rotations;
   Transform hips,spine,chest,head;Vector3 hip;Limb[] legs,arms;float soleOffset;
   sealed class Limb {
@@ -24,6 +27,10 @@ namespace WhatTheFish {
    foreach(var t in source.visual.GetComponentsInChildren<Transform>(true)){
     var copy=new GameObject(t.name).transform;map[t]=copy;copy.SetParent(t==source.visual?Root:map[t.parent],false);
     copy.gameObject.layer=t.gameObject.layer;copy.localPosition=t==source.visual?Vector3.zero:t.localPosition;copy.localRotation=t.localRotation;copy.localScale=t==source.visual?t.lossyScale:t.localScale;
+   }
+   var sourceAnimator=source.GetComponentInChildren<Animator>();
+   if(sourceAnimator&&sourceAnimator.runtimeAnimatorController&&map.TryGetValue(sourceAnimator.transform,out var target)){
+    runClip=sourceAnimator.runtimeAnimatorController.animationClips.FirstOrDefault(c=>c.name=="Running");runTarget=target.gameObject;runAvatar=sourceAnimator.avatar;
    }
    source.FootballMotion.CopyReferencePose(map);
    var block=new MaterialPropertyBlock();var renderers=new Dictionary<Renderer,Renderer>();
@@ -63,6 +70,14 @@ namespace WhatTheFish {
    foreach(var skin in Root.GetComponentsInChildren<SkinnedMeshRenderer>()){skin.BakeMesh(mesh);foreach(var vertex in mesh.vertices)floor=Mathf.Min(floor,Root.InverseTransformPoint(skin.transform.TransformPoint(vertex)).y);}
    UnityEngine.Object.Destroy(mesh);soleOffset=float.IsFinite(floor)?Mathf.Clamp(floor,0,.25f):0;
   }
+  public bool HasRunningClip=>runClip&&runTarget;
+  public void Run(float seconds){
+   if(!Ready||!HasRunningClip)return;
+   var t=runTarget.transform;var position=t.localPosition;var rotation=t.localRotation;var scale=t.localScale;
+   if(!runSampler){runSampler=runTarget.AddComponent<CelebrationRunSampler>();runSampler.Bind(runAvatar,runClip);}
+   runSampler.Sample(Mathf.Repeat(seconds,runClip.length));
+   t.SetLocalPositionAndRotation(position,rotation);t.localScale=scale;
+  }
   public void Pose(FootballPose pose){
    if(!Ready)return;ReachError=BoneError=0;
    for(int i=0;i<bones.Length;i++){bones[i].localPosition=positions[i];bones[i].localRotation=rotations[i];}
@@ -88,5 +103,18 @@ namespace WhatTheFish {
    float along=(l.a*l.a-l.b*l.b+length*length)/(2*length);var joint=start+axis*along+bend*Mathf.Sqrt(Mathf.Max(0,l.a*l.a-along*along));var normal=Vector3.Cross(bend,axis).normalized;
    l.upper.rotation=Quaternion.LookRotation(joint-start,normal)*l.upperBasis;l.lower.rotation=Quaternion.LookRotation(start+axis*length-joint,normal)*l.lowerBasis;ReachError=Mathf.Max(ReachError,Mathf.Abs(distance-length));
   }
+ }
+ // Imported Generic clips require an Animator binding in the player. Manual
+ // evaluation keeps this local cast synchronized to the cinematic clock without
+ // copying movement/network components or advancing the live player's Animator.
+ internal sealed class CelebrationRunSampler:MonoBehaviour {
+  PlayableGraph graph;AnimationClipPlayable clip;
+  public void Bind(Avatar avatar,AnimationClip source){
+   var animator=gameObject.AddComponent<Animator>();animator.avatar=avatar;animator.applyRootMotion=false;animator.cullingMode=AnimatorCullingMode.AlwaysAnimate;
+   graph=PlayableGraph.Create("Golf showcase gameplay run");graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
+   clip=AnimationClipPlayable.Create(graph,source);clip.SetApplyFootIK(false);var output=AnimationPlayableOutput.Create(graph,"Run",animator);output.SetSourcePlayable(clip);graph.Play();
+  }
+  public void Sample(float time){clip.SetTime(time);graph.Evaluate(0);}
+  void OnDestroy(){if(graph.IsValid())graph.Destroy();}
  }
 }

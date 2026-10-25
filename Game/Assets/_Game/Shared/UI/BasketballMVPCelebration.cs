@@ -8,6 +8,7 @@ namespace WhatTheFish {
   bool castRevealed,alternateMvp;
   Transform stage;readonly List<FootballCelebrationActor> cast=new();FootballCelebrationActor star;
   FootballTake[] performances;CanvasGroup cardGroup,captionGroup,skipGroup;Image curtain,topBar,bottomBar;Text ceremonyTitle,ceremonyDetail;
+  RectTransform nextAdventure;
   float skipAt=-1,nextHideAt;Vector3 skipPosition;Quaternion skipRotation;float skipFov;
   public bool ResultsReady=>Visible&&cardGroup&&cardGroup.interactable;
   public float CelebrationAge=>Time.unscaledTime-opened;
@@ -27,6 +28,7 @@ namespace WhatTheFish {
    ceremonyTitle=Label(captions,"",0,0,1000,58,43,Cream,TextAnchor.MiddleCenter);ceremonyDetail=Label(captions,"",0,62,1000,35,24,Cream,TextAnchor.MiddleCenter);ceremonyDetail.supportRichText=false;
    var skip=CoveUI.Rect(panel,"Skip ceremony",0,0,230,50);skip.anchorMin=skip.anchorMax=new(1,0);skip.pivot=new(1,0);skip.anchoredPosition=new(-35,28);skipGroup=skip.gameObject.AddComponent<CanvasGroup>();
    BasketballUIStyle.Button(skip,"Skip celebration","Show results",0,0,230,50,SkipCelebration,CoveUI.Cream,21);
+   nextAdventure=PostMatchFlow.EndingButton(panel,"Close MVP");
    curtain=ScreenImage("Final buzzer dissolve",Vector2.zero,Vector2.one);
   }
   void BeginCelebration(BasketballMatch match,BasketballPlayerRecord winner,BasketballPlayerRecord[] records){
@@ -69,6 +71,7 @@ namespace WhatTheFish {
    foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=true;
   }
   void PresentCelebration(){
+   PostMatchFlow.LayoutEndingButton(nextAdventure);
    float age=CelebrationAge;float reveal=Ease((age-.65f)/.85f),solo=Ease((age-TeamEnds)/(SoloStarts-TeamEnds));
    float card=skipAt>=0?Ease((age-skipAt-.25f)/1.10f):Ease((age-CardStarts)/(CardReady-CardStarts));
    bool skip=skipAt>=0;

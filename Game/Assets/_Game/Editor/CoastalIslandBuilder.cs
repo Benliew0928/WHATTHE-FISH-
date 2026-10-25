@@ -128,6 +128,7 @@ public static class CoastalIslandBuilder {
    foreach(var r in c.GetComponentsInChildren<Renderer>()){r.sharedMaterial=materials["Coast_Cloud"];r.shadowCastingMode=ShadowCastingMode.Off;r.gameObject.layer=10;}
    if(i==0)Debug.Log("CLOUD_IMPORT_BOUNDS "+c.GetComponentInChildren<Renderer>().bounds);
   }
+  VenueCollisionBuild.Apply(root);
   AssetDatabase.SaveAssets();
   Debug.Log("COASTAL_ISLAND_ATTACHED "+sport+" meshes="+spec.meshes+" triangles="+spec.triangles+" walkable coastal terrain, dock and bridge");
  }

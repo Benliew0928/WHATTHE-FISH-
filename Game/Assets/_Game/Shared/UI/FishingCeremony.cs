@@ -71,7 +71,7 @@ namespace WhatTheFish {
    title=BasketballUIStyle.Text(band.transform,heading,22,5,1056,62,43,true,TextAnchor.MiddleCenter,CoveUI.Cream);title.resizeTextForBestFit=true;title.resizeTextMinSize=40;title.resizeTextMaxSize=86;
    BasketballUIStyle.Text(band.transform,subtitle,22,76,1056,35,24,true,TextAnchor.MiddleCenter,CoveUI.Gold);
    var skip=BasketballUIStyle.Button(content,"Show island results","Show results",0,0,230,54,Skip,CoveUI.Cream,20);var sr=(RectTransform)skip.transform;sr.anchorMin=sr.anchorMax=sr.pivot=new Vector2(1,0);sr.anchoredPosition=new Vector2(-40,35);sr.localScale=Vector3.one*2;
-   if(rankedGolf){var next=BasketballUIStyle.Button(content,"Golf next adventure","Next adventure",0,0,230,54,()=>PostMatchFlow.Instance?.Open(),CoveUI.Cream,20);var nr=(RectTransform)next.transform;nr.anchorMin=nr.anchorMax=nr.pivot=new Vector2(0,0);nr.anchoredPosition=new Vector2(40,35);nr.localScale=Vector3.one*2;}
+   {var next=BasketballUIStyle.Button(content,rankedGolf?"Golf next adventure":"Fishing next adventure","Next adventure",0,0,230,54,()=>PostMatchFlow.Instance?.Open(),CoveUI.Cream,20);var nr=(RectTransform)next.transform;nr.anchorMin=nr.anchorMax=nr.pivot=new Vector2(0,0);nr.anchoredPosition=new Vector2(40,35);nr.localScale=Vector3.one*2;}
    curtain=new GameObject("Awards dissolve",typeof(RectTransform),typeof(Image)).GetComponent<Image>();curtain.transform.SetParent(screen,false);CoveUI.Stretch(curtain.rectTransform);curtain.raycastTarget=false;curtain.color=new Color(.025f,.07f,.11f,0);
    stage=new GameObject("Island honours - render-only cast").transform;stage.SetParent(source,false);
    if(rankedGolf){if(Physics.Raycast(spot+Vector3.up*15,Vector3.down,out var floor,30,1<<8,QueryTriggerInteraction.Ignore))spot.y=floor.point.y+.015f;else spot=AppRoot.Instance.LocalAthlete.transform.position;}
@@ -120,7 +120,7 @@ namespace WhatTheFish {
   public void Cancel()=>End(false);
   void End(bool showResults){
    if(!running)return;if(rankedGolf)FindFirstObjectByType<GolfLeaderboardUI>()?.CloseResults();running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();ReleasePodiumMaterials();
-   if(stage){stage.gameObject.SetActive(false);Destroy(stage.gameObject);}if(mistMesh){Destroy(mistMesh);mistMesh=null;}if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
+   if(stage){stage.gameObject.SetActive(false);Destroy(stage.gameObject);}if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
    if(camera){camera.transform.SetPositionAndRotation(savedPosition,savedRotation);camera.fieldOfView=savedFov;camera.nearClipPlane=savedNear;}
    foreach(var entry in hiddenUI)if(entry.group){entry.group.alpha=entry.alpha;entry.group.blocksRaycasts=entry.raycasts;entry.group.interactable=entry.interactable;}hiddenUI.Clear();if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=blockedBefore;}
    var done=complete;complete=null;valid=null;if(Instance==this)Instance=null;if(showResults)done?.Invoke();
