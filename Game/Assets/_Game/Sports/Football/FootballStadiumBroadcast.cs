@@ -13,7 +13,7 @@ namespace WhatTheFish {
   public FootballStadiumFeedMode Mode {get;private set;}
   public bool TransitionActive {get;private set;}
   public Camera BroadcastCamera=>feedCamera;
-  public string ScoreHeader=>boards!=null?boards[0].liveScore.text:"";
+  public string ScoreHeader=>boards!=null?boards[0].scoreboard.ScoreA.text+"  :  "+boards[0].scoreboard.ScoreB.text:"";
   public int LiveAngle {get;private set;}
   public float LiveHeaderFraction=>boards==null?0:1-boards[0].liveVideo.rectTransform.rect.height/600;
   bool cameraReady;Vector3 broadcastFocus;
@@ -23,16 +23,8 @@ namespace WhatTheFish {
   void BuildLiveBoard(Board b,RectTransform parent){
    b.live=CoveUI.Rect(parent,"Match broadcast",0,0,1280,600);b.live.gameObject.AddComponent<RectMask2D>();
    b.liveVideo=CoveUI.Rect(b.live,"Live coverage — lower 70 percent",0,180,1280,420).gameObject.AddComponent<RawImage>();b.liveVideo.raycastTarget=false;
-   CoveUI.Plate(b.live,"Score header — upper 30 percent",0,0,1280,180,CoveUI.Ink,0,0);
-   CoveUI.Plate(b.live,"Blue team stripe",0,0,350,8,CharacterIdentity.Blue,0,0);
-   CoveUI.Plate(b.live,"Red team stripe",930,0,350,8,CharacterIdentity.Red,0,0);
-   CoveUI.Text(b.live,"SUNVALE  /  LIVE",30,18,420,34,25,true,CoveUI.Mint);
-   CoveUI.Text(b.live,"FOOTBALL",900,18,350,34,25,true,CoveUI.Mint,TextAnchor.MiddleRight);
-   CoveUI.Text(b.live,"BLUE",70,53,360,74,57,true,new Color(.44f,.72f,1),TextAnchor.MiddleCenter);
-   CoveUI.Text(b.live,"RED",850,53,360,74,57,true,new Color(1,.51f,.49f),TextAnchor.MiddleCenter);
-   b.liveScore=CoveUI.Text(b.live,"0  :  0",430,43,420,90,78,true,CoveUI.Cream,TextAnchor.MiddleCenter);
-   b.liveStatus=CoveUI.Text(b.live,"",30,140,1220,30,23,true,CoveUI.Gold,TextAnchor.MiddleCenter);
-   CoveUI.Plate(b.live,"Coverage divider",0,177,1280,3,CoveUI.Gold,0,0);
+   b.scoreboard=SportsScoreboard.Create(b.live,SportId.Football,400,true);b.scoreboard.transform.localScale=Vector3.one*3.2f;
+   CoveUI.Plate(b.live,"Coverage divider",0,177,1280,3,SportsScoreboard.Lime,0,0);
    b.replay=CoveUI.Rect(b.live,"Full-screen recorded goal replay",0,0,1280,600);
    b.replayVideo=CoveUI.Rect(b.replay,"Recorded footage",0,0,1280,600).gameObject.AddComponent<RawImage>();b.replayVideo.raycastTarget=false;
    CoveUI.Plate(b.replay,"Replay bug",26,22,208,48,CoveUI.Ink,4,0);
@@ -86,7 +78,6 @@ namespace WhatTheFish {
    bool missing=replay&&!available&&!TransitionActive;
    foreach(var b in boards){
     b.mvp.gameObject.SetActive(false);b.live.gameObject.SetActive(true);
-    b.liveScore.text=state.scoreA+"  :  "+state.scoreB;b.liveStatus.text=MatchStatus(state);
     b.replay.gameObject.SetActive(replay);b.replayTime.text=Mathf.Clamp((float)(age-FootballMatch.ReplayStartOffset),0,5).ToString("0.0")+" / 5.0";
     b.wipe.gameObject.SetActive(TransitionActive||missing);b.wipe.anchoredPosition=Vector2.right*(missing?0:shift*1280);
     b.goalScore.text="BLUE   "+state.scoreA+"  :  "+state.scoreB+"   RED";

@@ -4,19 +4,13 @@ using UnityEngine.UI;
 
 namespace WhatTheFish {
  public sealed class BasketballMatchHUD:MonoBehaviour {
-  Text a,b,clock,phase,shot,startText,chooseAText,chooseBText,hint,team;
+  Text startText,chooseAText,chooseBText,hint;SportsScoreboard presentation;
   Button start,chooseA,chooseB,confirmTeam;GameObject board,selection;
   RectTransform botSizes;Button botsButton;Text botsText;readonly Button[] sizeButtons=new Button[4];
   GameObject movementNotice;Text movementText;
   public static void Create(Transform parent){var r=CoveUI.Rect(parent,"Basketball match HUD",0,0,304,56);r.anchorMin=r.anchorMax=r.pivot=new Vector2(.5f,1);r.anchoredPosition=new Vector2(0,-16);r.gameObject.AddComponent<BasketballMatchHUD>().Build();}
   void Build(){
-   board=BasketballUIStyle.Plate(transform,"Team scoreboard",0,0,304,78,CoveUI.Cream,20,2,true).gameObject;
-   MenuDesigns.Surface(board.GetComponent<BasketballPlate>(),MenuSurface.Card);CharacterIdentityBadges.ReserveHUD((RectTransform)board.transform);
-   BasketballUIStyle.Text(board.transform,"BLUE",7,4,64,18,11,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(board.transform,"RED",233,4,64,18,11,true,TextAnchor.MiddleCenter);
-   a=BasketballUIStyle.Text(board.transform,"0",8,20,62,32,26,true,TextAnchor.MiddleCenter);b=BasketballUIStyle.Text(board.transform,"0",234,20,62,32,26,true,TextAnchor.MiddleCenter);
-   clock=BasketballUIStyle.Text(board.transform,"03:00",78,2,148,30,23,true,TextAnchor.MiddleCenter);phase=BasketballUIStyle.Text(board.transform,"WARM-UP",72,34,160,18,10,true,TextAnchor.MiddleCenter);
-   shot=BasketballUIStyle.Text(board.transform,"",105,55,192,18,11,true,TextAnchor.MiddleCenter);
-   team=BasketballUIStyle.Text(board.transform,"",7,55,98,18,11,true,TextAnchor.MiddleCenter);
+   presentation=SportsScoreboard.Create(transform,SportId.Basketball);board=presentation.gameObject;
    movementNotice=BasketballUIStyle.Plate(board.transform,"Automatic basketball movement",0,86,304,42,CoveUI.Cream,16,1.5f).gameObject;
    CharacterIdentityBadges.ReserveHUD((RectTransform)movementNotice.transform);
    movementText=BasketballUIStyle.Text(movementNotice.transform,"",8,3,288,36,11,true,TextAnchor.MiddleCenter);
@@ -34,23 +28,16 @@ namespace WhatTheFish {
   }
   void Update(){
    var m=BasketballMatch.Instance;bool show=m&&(m.Room||m.Competitive);board.SetActive(show);if(!show)return;
-   var s=m.Snapshot;var own=m.TeamOf(AppRoot.Instance.LocalAthlete);a.text=s.scoreA.ToString();b.text=s.scoreB.ToString();
-   movementText.text=m.MovementHint(AppRoot.Instance.LocalAthlete);movementNotice.SetActive(movementText.text.Length>0);
-   clock.text=TimeSpan.FromSeconds(Math.Max(0,Math.Ceiling(m.Remaining))).ToString(@"mm\:ss");
-   phase.text=s.phase switch{BasketballMatchPhase.Idle=>"WARM-UP",BasketballMatchPhase.TeamSelection=>"CHOOSE TEAMS",BasketballMatchPhase.Countdown=>"TIP-OFF",BasketballMatchPhase.Regulation=>"MATCH",BasketballMatchPhase.Overtime=>"GOLDEN BASKET",BasketballMatchPhase.Buzzer=>"LAST SHOT",BasketballMatchPhase.Restart=>s.restart==BasketballRestart.Basket?"BASKET":s.restart==BasketballRestart.ShotClock?"SHOT CLOCK":"OUT OF BOUNDS",BasketballMatchPhase.Cancelled=>"PLAYER LEFT - MATCH VOID",_=>s.result==FootballMatchResult.Draw?"DRAW":s.result==FootballMatchResult.TeamA?"BLUE WINS":"RED WINS"};
-   if(s.phase==BasketballMatchPhase.Idle)clock.text="READY";
-   if(s.phase==BasketballMatchPhase.TeamSelection||s.phase==BasketballMatchPhase.Countdown)clock.text=Math.Ceiling(Math.Max(0,s.deadline-m.Now)).ToString();
-   if(s.phase==BasketballMatchPhase.Buzzer)clock.text="00:00";
-   if(s.phase==BasketballMatchPhase.Cancelled)clock.text="VOID";
-   shot.text=s.phase==BasketballMatchPhase.Restart?CharacterIdentity.TeamName(s.possession).ToUpperInvariant()+(m.RestartReady?" · PASS TO OPEN":BasketballBall.Active.InboundPending&&!m.InboundSpaceClear?" · CLEARING SPACE":" · COLLECTING BALL"):m.Running&&s.possession!=FootballTeam.None?"SHOT CLOCK  "+Math.Ceiling(Math.Max(0,s.shotDeadline-m.Now)):"";
-   team.text=own==FootballTeam.None?"":"YOU: "+CharacterIdentity.TeamName(own).ToUpperInvariant();
-   bool canOffer=m.Authority&&m.MatchMode&&!m.Active;start.gameObject.SetActive(canOffer);start.interactable=m.CanStart;startText.text=!m.CanStart?"Even teams: 4-10 players":s.phase==BasketballMatchPhase.Idle?"Start match":"New match";
+   var s=m.Snapshot;var own=m.TeamOf(AppRoot.Instance.LocalAthlete);
+   movementText.text=m.MovementHint(AppRoot.Instance.LocalAthlete);movementNotice.SetActive(movementText.text.Length>0&&!presentation.DetailsExpanded);
+   ((RectTransform)movementNotice.transform).anchoredPosition=new Vector2(0,presentation.Animating?-152:-100);
+   bool canOffer=m.Authority&&m.MatchMode&&!m.Active&&!presentation.DetailsExpanded;start.gameObject.SetActive(canOffer);start.interactable=m.CanStart;startText.text=!m.CanStart?"Even teams: 4-10 players":s.phase==BasketballMatchPhase.Idle?"Start match":"New match";
+   float celebrationOffset=presentation.Animating?40:0;((RectTransform)start.transform).anchoredPosition=new Vector2(42,-112-celebrationOffset);botSizes.anchoredPosition=new Vector2(42,-154-celebrationOffset);((RectTransform)botsButton.transform).anchoredPosition=new Vector2(42,-190-celebrationOffset);
    var bots=BasketballBots.Instance;bool offer=canOffer&&m.Room&&bots;botSizes.gameObject.SetActive(offer);botsButton.gameObject.SetActive(offer);
    botsButton.interactable=bots&&(bots.Count>0||bots.CanFillSize(BasketballBots.PreferredTeamSize));botsText.text=bots&&bots.Count>0?"Remove bots":$"Fill {BasketballBots.PreferredTeamSize}v{BasketballBots.PreferredTeamSize} with bots";
    for(int i=0;i<4;i++){MenuDesigns.Selected(sizeButtons[i],BasketballBots.PreferredTeamSize==i+2);sizeButtons[i].interactable=bots&&bots.CanFillSize(i+2);sizeButtons[i].GetComponent<BasketballPlate>().color=BasketballBots.PreferredTeamSize==i+2?CoveUI.Sky:CoveUI.Cream;}
    bool selecting=s.phase==BasketballMatchPhase.TeamSelection;selection.SetActive(selecting);
    bool solo=m.SoloTeamSelection;((RectTransform)selection.transform).sizeDelta=new Vector2(500,solo?306:246);confirmTeam.gameObject.SetActive(selecting&&solo);confirmTeam.interactable=m.CanConfirmSoloTeam;
-   if(selecting&&solo)clock.text="READY";
    chooseAText.text=solo?(own==FootballTeam.A?"Blue  ✓":"Blue"):"Blue\n"+s.teamA+" / "+s.capacity+(s.teamA>=s.capacity?" · Full":"");chooseBText.text=solo?(own==FootballTeam.B?"Red  ✓":"Red"):"Red\n"+s.teamB+" / "+s.capacity+(s.teamB>=s.capacity?" · Full":"");
    MenuDesigns.Selected(chooseA,own==FootballTeam.A);MenuDesigns.Selected(chooseB,own==FootballTeam.B);
    chooseA.interactable=selecting&&(own==FootballTeam.A||s.teamA<s.capacity);chooseB.interactable=selecting&&(own==FootballTeam.B||s.teamB<s.capacity);

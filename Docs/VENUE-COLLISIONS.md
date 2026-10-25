@@ -93,3 +93,13 @@ Reviewed superseded outputs were archived with `Archive-LocalArtifacts.ps1`:
 The current validation evidence remains in ignored `Builds/VenueCollisionQA/`.
 Phone hardware rendering/touch/FPS and live cloud multiplayer need separate
 acceptance testing; local Windows collision checks do not establish those results.
+
+## Publication merge — 26 October 2026
+
+Collision/awards/event revision `a15d4ff` was merged with scoreboard/venue-preview
+revision `dd64297`. Four-venue collision regression still passes all 6,288 checks;
+the incoming scoreboard/details suite passes 1,173 checks in each of the three
+languages. The final shared player has 521 matching Windows source documents;
+Android has 373. See the newest [measured release](BUILD-SIZE.md) for the merged
+168,036,092-byte APK and evidence. Both sets of code, art and documentation are
+preserved. The merged complete Windows player is in `Builds/WindowsFinal/`.

@@ -8,7 +8,7 @@ namespace WhatTheFish {
   public bool MenuOpen=>overlay&&overlay.gameObject.activeSelf;
   public BasketballGestureGuide ShotGuide=>shoot.guide;
   public BasketballGestureGuide PassGuide=>pass.guide;
-  RectTransform root,parent;CanvasGroup controls;Text points,baskets,notice;BasketballPlate noticePlate;GameObject practiceScore;
+  RectTransform root,parent;CanvasGroup controls;Text notice;BasketballPlate noticePlate;GameObject practiceScore;SportsScoreboard practiceBoard;
   BasketballShootButton shoot,pass;JumpButton jump;BasketballStealButton steal;BasketballPropHUD props;
   BasketballPlate passMarker;Athlete previewReceiver;
   Image shootArt,passArt;Text hold;Graphic shootPlate,passPlate;Vector2 parentSize;Rect lastSafe;
@@ -38,7 +38,7 @@ namespace WhatTheFish {
    var control=b.gameObject.AddComponent<BasketballShootButton>();control.pass=isPass;control.button=b;control.illustrated=true;control.label=design.Label;
    if(!isPass){var r=BasketballUIStyle.Center(p,text+" drag guide",Vector2.one,point,new Vector2(1,0));var guide=r.gameObject.AddComponent<BasketballGestureGuide>();control.guide=guide;guide.Build(control);r.SetSiblingIndex(b.transform.GetSiblingIndex());}return control;
   }
-  void BuildScore(Transform p){var score=BasketballUIStyle.Plate(p,"Shared practice score",0,0,230,46,CoveUI.Cream,20,2,true);practiceScore=score.gameObject;var r=score.rectTransform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(.5f,1);r.anchoredPosition=new Vector2(0,-16);BasketballUIStyle.Art(r,BasketballIcon.Ball,9,8,30,30);points=BasketballUIStyle.Text(r,"0",48,0,48,46,28,true,TextAnchor.MiddleCenter);BasketballUIStyle.Text(r,"SHARED\nPOINTS",99,6,54,34,11);BasketballUIStyle.Plate(r,"Score divider",156,9,1,28,CoveUI.Hex("B6C2B7"),0,0);baskets=BasketballUIStyle.Text(r,"0 / 0",169,3,53,22,15,true);BasketballUIStyle.Text(r,"baskets",169,24,54,18,12);}
+  void BuildScore(Transform p){practiceBoard=SportsScoreboard.Create(p,SportId.Basketball);practiceScore=practiceBoard.gameObject;var r=(RectTransform)practiceScore.transform;r.anchorMin=r.anchorMax=r.pivot=new Vector2(.5f,1);r.anchoredPosition=new Vector2(0,-16);}
   void Layout(){if(!parent)return;parentSize=parent.rect.size;lastSafe=Screen.safeArea;float scale=Mathf.Min(2,parentSize.x/700,parentSize.y/395);root.localScale=Vector3.one*scale;root.sizeDelta=parentSize/scale;if(shoot){shoot.CancelGesture();pass.CancelGesture();}if(overlay)LayoutMenus();}
   void LateUpdate(){
    var honours=root.GetComponent<CanvasGroup>();if(!honours)honours=root.gameObject.AddComponent<CanvasGroup>();honours.alpha=BasketballMVP.Presenting?0:1;honours.blocksRaycasts=!BasketballMVP.Presenting;
@@ -55,9 +55,10 @@ namespace WhatTheFish {
    SetShown(jump.gameObject,!charging&&!view.GuardHeld);
    if(view.ShotCharging){if(!shoot.guide.gameObject.activeSelf)shoot.guide.Begin();shoot.guide.Refresh();}else shoot.guide.End();
    UpdatePassMarker(view,ball);
-   var score=ball.Score;points.text=score.points.ToString();baskets.text=score.made+" / "+score.attempts;string message="";bool fresh=BasketballMotion.Clock-score.changed<2.5;
+   var score=ball.Score;string message="";bool fresh=BasketballMotion.Clock-score.changed<2.5;
    if(!MenuOpen&&ball.IsInbound(view.target))message="Out of bounds Â· pass to re-enter";
-   else if(!charging&&!MenuOpen){if(ball.Defense.blocks>0&&BasketballMotion.Clock-ball.Defense.time<1.4)message="Blocked Â· ball live";else if(fresh&&score.result==BasketballResult.Scored)message="Basket! +"+score.lastPoints;else if(fresh&&score.result==BasketballResult.Missed)message="Missed Â· get the rebound";else if(view.target&&view.target.BasketballFreeRoam)message="Free roam Â· play from Settings";}
+   else if(!charging&&!MenuOpen){if(ball.Defense.blocks>0&&BasketballMotion.Clock-ball.Defense.time<1.4)message="Blocked Â· ball live";else if(fresh&&score.result==BasketballResult.Missed)message="Missed Â· get the rebound";else if(view.target&&view.target.BasketballFreeRoam)message="Free roam Â· play from Settings";}
+   noticePlate.rectTransform.anchoredPosition=new Vector2(0,practiceBoard.Animating?-150:-100);
    notice.text=message;noticePlate.gameObject.SetActive(message.Length>0&&!MenuOpen&&!room);if(MenuOpen)RefreshMenu();
   }
   void UpdatePassMarker(PlayerView view,BasketballBall ball){
