@@ -56,9 +56,9 @@ namespace WhatTheFish {
     Check(chat.History.Count==before,"invalid sticker, malformed JSON and oversized length rejected");Check(chat.Ready,"malformed messages keep connection alive");
    }
    else if(action=="dedup"){
-    int before=chat.History.Count;string json="{\"request\":\""+Guid.NewGuid().ToString("N")+"\",\"text\":\"deduplicated\",\"member\":\"imposter\",\"name\":\"imposter\"}";
+    int before=chat.History.Count;string json="{\"request\":\""+Guid.NewGuid().ToString("N")+"\",\"text\":\"deduplicated\",\"member\":\"imposter\",\"name\":\"imposter\",\"spectator\":true}";
     Raw(json);yield return new WaitForSecondsRealtime(.35f);Raw(json);yield return new WaitForSecondsRealtime(.35f);
-    Check(chat.History.Count==before+1,"duplicate request adds one message");var message=chat.History.Last();Check(message.member==app.rooms.MemberId&&message.name==own.Nickname.Value.ToString(),"server supplies authoritative sender identity");
+    Check(chat.History.Count==before+1,"duplicate request adds one message");var message=chat.History.Last();Check(message.member==app.rooms.MemberId&&message.name==own.Nickname.Value.ToString()&&message.spectator==own.IsSpectator,"server supplies authoritative sender identity and role");
    }
    else if(action.StartsWith("mute:")){string member=chat.History.First(m=>m.text==action.Substring(5)).member;chat.ToggleMute(member);Check(chat.IsMuted(member),"sender muted");chat.ToggleMute(member);Check(!chat.IsMuted(member),"sender unmuted");}
    else if(action=="burst-history"){
@@ -66,7 +66,7 @@ namespace WhatTheFish {
    }
    else if(action.StartsWith("capture:")){ui.SetOpen(true);yield return new WaitForSecondsRealtime(.4f);yield return Capture(action.Substring(8));}
    else if(action=="tray"){
-    ui.SetOpen(true);yield return null;ui.GetComponentsInChildren<Button>().First(b=>b.name=="Quick stickers").onClick.Invoke();yield return null;
+    ui.SetChatAudience(chat.LocalSpectator);ui.SetOpen(true);yield return null;ui.GetComponentsInChildren<Button>().First(b=>b.name=="Compose sticker").onClick.Invoke();yield return null;
     Check(RoomChatService.Stickers.All(id=>ui.GetComponentsInChildren<Button>().Any(b=>b.name=="Send "+id)),"all eight sticker choices visible");Check(!ui.Panel.gameObject.activeSelf,"sticker picker replaces history without overlapping composer");yield return Capture("sticker-picker");
     int before=chat.History.Count;ui.GetComponentsInChildren<Button>().First(b=>b.name=="Send laugh").onClick.Invoke();yield return new WaitForSecondsRealtime(.5f);Check(chat.History.Count==before+1&&chat.History.Last().sticker=="laugh","picker sends selected sticker");
    }
@@ -74,8 +74,18 @@ namespace WhatTheFish {
     foreach(var size in new[]{new Vector2Int(1600,900),new Vector2Int(1920,864),new Vector2Int(1024,768)}){Screen.SetResolution(size.x,size.y,false);yield return new WaitForSecondsRealtime(.5f);ui.SetOpen(true);yield return null;
      var corners=new Vector3[4];ui.Panel.GetWorldCorners(corners);Check(corners.All(p=>p.x>=-1&&p.x<=Screen.width+1&&p.y>=-1&&p.y<=Screen.height+1),"chat fits "+size);
      if(app.Exploring&&app.SelectedSport==SportId.Fishing){var board=app.HudFrame.GetComponentsInChildren<RectTransform>().First(t=>t.name=="Lagoon sticker leaderboard");var boardCorners=new Vector3[4];board.GetWorldCorners(boardCorners);var dockCorners=new Vector3[4];ui.Launchers.GetWorldCorners(dockCorners);Check(dockCorners[0].x>=boardCorners[2].x&&corners[0].x>=boardCorners[2].x,"fishing chat clears scoreboard and start controls "+size);}
-     Check(ui.GetComponentsInChildren<Text>().All(t=>!t.supportRichText),"all chat labels are literal "+size);Canvas.ForceUpdateCanvases();Check(ui.GetComponentsInChildren<Text>().First(t=>t.text=="ROOM CHAT").cachedTextGenerator.characterCountVisible>0,"chat heading renders "+size);yield return Capture("chat-"+app.SelectedSport+"-"+size.x+"x"+size.y);}
+     Check(ui.GetComponentsInChildren<Text>().All(t=>!t.supportRichText),"all chat labels are literal "+size);Canvas.ForceUpdateCanvases();Check(ui.GetComponentsInChildren<Text>().First(t=>t.text=="CHAT").cachedTextGenerator.characterCountVisible>0,"chat heading renders "+size);Check(ui.Launchers.GetComponentsInChildren<Button>().Length==2,"only chat and microphone launcher buttons");yield return Capture("chat-"+app.SelectedSport+"-"+size.x+"x"+size.y);}
     Screen.SetResolution(1600,900,false);
+   }
+   else if(action=="role-tabs"){
+    ui.SetOpen(true);ui.SetChatAudience(true);yield return new WaitForSecondsRealtime(.3f);
+    Check(ui.SpectatorChat&&ui.MessageInput.interactable==chat.LocalSpectator,"spectator tab composer follows own authoritative role");
+    Check(ui.GetComponentsInChildren<Text>().Any(t=>t.text=="Spectators can chat too"),"spectator history is visible in its tab");
+    yield return Capture("spectator-chat");ui.SetChatAudience(false);yield return new WaitForSecondsRealtime(.3f);
+    Check(!ui.GetComponentsInChildren<Text>().Any(t=>t.text=="Spectators can chat too"),"player history excludes spectator messages");
+    Check(ui.MessageInput.interactable!=chat.LocalSpectator,"player tab composer follows own authoritative role");
+    Check(chat.HistoryFor(true).All(m=>m.spectator)&&chat.HistoryFor(false).All(m=>!m.spectator),"role timelines are disjoint");
+    ui.SetChatAudience(chat.LocalSpectator);ui.Close();
    }
    else if(action=="bubbles"){
     float deadline=Time.realtimeSinceStartup+90;while((!ui.Visible||RoomTeleport.Busy||TeleportSequence.Busy)&&Time.realtimeSinceStartup<deadline)yield return null;

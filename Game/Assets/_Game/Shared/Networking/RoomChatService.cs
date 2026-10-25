@@ -11,6 +11,7 @@ namespace WhatTheFish {
  [Serializable] public sealed class RoomChatMessage {
   public string id,member,name,text,sticker,context;
   public long time,order;
+  public bool spectator;
  }
  // Lives with the room, not a scene or player object. Every peer retains accepted
  // messages across NGO restarts; the elected host serves its retained timeline.
@@ -27,6 +28,8 @@ namespace WhatTheFish {
    public RoomChatMessage[] messages;
   }
   public IReadOnlyList<RoomChatMessage> History=>history;
+  public bool LocalSpectator=>RoomTeleport.Players().Any(p=>p.IsOwner&&p.IsSpectator);
+  public IEnumerable<RoomChatMessage> HistoryFor(bool spectator)=>history.Where(m=>m.spectator==spectator);
   public event Action<RoomChatMessage,bool> Received;
   public event Action Changed;
   public string Status {get;private set;}="Connecting chat…";
@@ -69,7 +72,7 @@ namespace WhatTheFish {
    if(n.IsServer){if(RoomId.Length==0)RoomId=Guid.NewGuid().ToString("N");Synced=true;}
    else if(!Synced&&Time.realtimeSinceStartup>=nextSync){nextSync=Time.realtimeSinceStartup+1;Send(Fetch,NetworkManager.ServerClientId,new Packet{cursor=cursor});}
    if(pending!=null&&Time.realtimeSinceStartup>pendingDeadline){pending=null;Status="Message not confirmed. Try sending again.";Changed?.Invoke();}
-   if(Synced&&pending==null&&(Status=="Connecting chat…"||Status=="Reconnecting room…"))Status=HistoryInterrupted?"Reconnected · history may be incomplete":"One room · all islands";
+   if(Synced&&pending==null&&(Status=="Connecting chat…"||Status=="Reconnecting room…"||Cooldown<=0&&Status=="Please wait…"))Status=HistoryInterrupted?"Reconnected · history may be incomplete":"";
   }
   void OnDestroy(){Unbind();}
   void Unbind(){if(bound==null)return;bound.UnregisterNamedMessageHandler(Submit);bound.UnregisterNamedMessageHandler(Fetch);bound.UnregisterNamedMessageHandler(Deliver);bound=null;Synced=false;}
@@ -87,7 +90,7 @@ namespace WhatTheFish {
   public bool SendSticker(string sticker)=>Array.IndexOf(Stickers,sticker)>=0&&SubmitLocal("",sticker);
   bool SubmitLocal(string text,string sticker){
    if(!Ready){Status="Wait for the room to reconnect.";Changed?.Invoke();return false;}
-   if(Cooldown>0||pending!=null){Status="Give your crew a moment…";Changed?.Invoke();return false;}
+   if(Cooldown>0||pending!=null){Status="Please wait…";Changed?.Invoke();return false;}
    if(text.Length==0&&sticker.Length==0)return false;
    pending=Guid.NewGuid().ToString("N");pendingDeadline=Time.realtimeSinceStartup+8;nextSend=Time.realtimeSinceStartup+SendInterval;
    var packet=new Packet{request=pending,text=text,sticker=sticker};
@@ -101,13 +104,13 @@ namespace WhatTheFish {
    string member=actor.MemberId.Value.ToString(),id=member+":"+p.request;
    if(byId.TryGetValue(id,out var duplicate)){Reply(sender,new Packet{room=RoomId,request=p.request,messages=new[]{duplicate}});return;}
    float now=Time.realtimeSinceStartup;
-   if(lastSend.TryGetValue(sender,out var last)&&now-last<SendInterval-.03f){Reply(sender,new Packet{request=p.request,error="Give your crew a moment…"});return;}
+   if(lastSend.TryGetValue(sender,out var last)&&now-last<SendInterval-.03f){Reply(sender,new Packet{request=p.request,error="Please wait…"});return;}
    string text=CleanText(p.text),sticker=p.sticker??"";
    if(sticker.Length>0&&(Array.IndexOf(Stickers,sticker)<0||text.Length>0)||sticker.Length==0&&text.Length==0){Reply(sender,new Packet{request=p.request,error="Choose a sticker or type a message."});return;}
    lastSend[sender]=now;
    var host=NetworkAthlete.HostPlayer;
    long timestamp=Math.Max(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),history.Count>0?history[history.Count-1].time+1:0);
-   var message=new RoomChatMessage{id=id,member=member,name=actor.Nickname.Value.ToString(),text=text,sticker=sticker,time=timestamp,order=++order,context=SkySailWorld.Instance&&SkySailWorld.Instance.Travelling?"Travelling":host&&host.Exploring.Value?host.WorldSport.Value.ToString():"Room"};
+   var message=new RoomChatMessage{id=id,member=member,name=actor.Nickname.Value.ToString(),spectator=actor.IsSpectator,text=text,sticker=sticker,time=timestamp,order=++order,context=SkySailWorld.Instance&&SkySailWorld.Instance.Travelling?"Travelling":host&&host.Exploring.Value?host.WorldSport.Value.ToString():"Room"};
    Add(message,true);var packet=new Packet{room=RoomId,request=p.request,messages=new[]{message}};
    foreach(ulong client in NetworkManager.Singleton.ConnectedClientsIds)Reply(client,packet);
   }
@@ -121,7 +124,7 @@ namespace WhatTheFish {
   void OnDeliver(ulong sender,FastBufferReader reader){if(sender!=NetworkManager.ServerClientId||NetworkManager.Singleton.IsServer)return;var p=Read(reader,32768);if(p!=null)Receive(p);}
   void Reply(ulong client,Packet p){if(client==NetworkManager.Singleton.LocalClientId)Receive(p);else Send(Deliver,client,p);}
   void Receive(Packet p){
-   if(p.request==pending){pending=null;Status=!string.IsNullOrEmpty(p.error)?p.error:(HistoryInterrupted?"Reconnected · history may be incomplete":"One room · all islands");}
+   if(p.request==pending){pending=null;Status=!string.IsNullOrEmpty(p.error)?p.error:(HistoryInterrupted?"Reconnected · history may be incomplete":"");}
    if(!string.IsNullOrEmpty(p.room)){
     if(RoomId.Length>0&&RoomId!=p.room){history.Clear();byId.Clear();cursor=0;HistoryInterrupted=true;}
     RoomId=p.room;

@@ -1,16 +1,23 @@
 # Room chat and fish stickers
 
-The implementation follows the [approved visual prototype](ChatPrototype/README.md).
+The fish art follows the [approved visual prototype](ChatPrototype/README.md);
+the 25 October redesign simplifies the launcher and separates audience tabs.
 The same room conversation follows the crew through the lobby, island selection,
 gameplay and return to the lobby. Players and spectators can send text or any of
 the eight free stickers: GGWP, Laugh, Cry, Angry, Thanks, Oops, Wow and Let's go.
 
 ## Player experience
 
-- Chat and a quick sticker button sit below the gameplay minimap; Fishing docks
+- Chat and microphone icon buttons sit below the gameplay minimap; Fishing docks
   them beside its taller scoreboard so Ready and Start remain accessible. The lobby has
   its own chat button and a larger history panel on the right. There is no dimmed
   backdrop and opening history does not pause an online game.
+- Players and Spectators have separate history tabs, with independent unread
+  counts. Both roles can read either tab and send to their own role's history.
+  Sending in the other tab is disabled with a short composer hint. Each message
+  keeps the sender's role at send time, even if they later change seats.
+- Stickers open from the composer inside chat; there is no third launcher button.
+  Decorative subtitles and per-message location captions have been removed.
 - Enter opens the composer on desktop. Typing captures gameplay input. Send or
   close releases it; Escape closes chat before opening another game menu.
 - Text appears above its sender for four seconds, and a sticker for three,
@@ -31,9 +38,9 @@ the eight free stickers: GGWP, Laugh, Cry, Angry, Thanks, Oops, Wow and Let's go
 ## Room lifetime and networking
 
 `RoomChatService` belongs to the persistent `RoomService`; UI pages, sports and
-network avatar objects do not own its history. Protocol **80** requires matching
+network avatar objects do not own its history. Protocol **87** requires matching
 players. Named NGO messages use reliable fragmented delivery on the existing
-room connection. The server supplies sender identity, nickname, timestamp and
+room connection. The server supplies sender identity, nickname, role at send time, timestamp and
 location context, and validates membership, content, sticker IDs and rate limits.
 Request IDs prevent replayed requests from adding duplicate history entries.
 
@@ -48,6 +55,14 @@ starts empty. This is room-session history, not a cloud archive across app resta
 
 ## Artwork and builds
 
+The 25 October redesign passed **226** host/guest/spectator history and transport
+assertions plus **69** UI checks. They verify authoritative message roles,
+separate tabs, seat changes, paging and host recovery, as well as literal text,
+stickers, typing and layouts. The voice suite additionally verifies the two-button
+launcher across all four sports, including the active Golf standings layout.
+Evidence: `Builds/RoomChatQA/Run-20261025-164512-7995/`,
+`Run-20261025-165029-7996/` and [room voice validation](ROOM-VOICE.md).
+
 The original transparent 1254×1254 approved images and generation provenance
 remain in [ChatPrototype/stickers](ChatPrototype/stickers) and
 [generation-prompts.json](ChatPrototype/generation-prompts.json). Byte-identical
@@ -55,6 +70,9 @@ source copies live in `Game/Assets/_Game/Resources/RoomChat/`, relative to the
 repository root. Unity imports 256×256 sprites with no mipmaps or readable CPU
 copy; Android uses ASTC 4×4. `RoomChatTextureImport` preserves these settings on
 fresh imports. PNG sources use the repository's Git LFS rules.
+
+Chat/microphone/speaker icons are vector UI geometry in `RoomCommsIcon`, so the
+redesign adds no raster textures or external font/icon dependency.
 
 The development-only `RoomChatReview` probe and
 `Tools/Build/Test-RoomChat.ps1` exercise real host, guest and spectator processes,

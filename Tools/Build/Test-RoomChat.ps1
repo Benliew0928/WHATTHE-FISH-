@@ -53,6 +53,12 @@ try {
  Launch spectator;[void](Await spectator {param($s)$s.ready -and $s.count -gt 32} 'late join receives multiple history pages' 240)
  Command spectator 'nick:Reef';Command spectator 'seat:10';[void](Await spectator {param($s)$s.spectator} 'spectator seat')
  Command spectator 'text:Spectators can chat too';Has host 'Spectators can chat too';Has guest 'Spectators can chat too'
+ [void](Await host {param($s)@($s.messages | Where-Object {$_.text -eq 'Spectators can chat too' -and $_.spectator}).Count -eq 1} 'server stamps spectator messages')
+ Command guest 'role-tabs';Command spectator 'role-tabs'
+ Command spectator 'seat:2';[void](Await spectator {param($s)!$s.spectator} 'spectator becomes a player')
+ Start-Sleep -Milliseconds 1300;Command spectator 'text:Now playing';Has host 'Now playing'
+ [void](Await host {param($s)@($s.messages | Where-Object {$_.text -eq 'Now playing' -and !$_.spectator}).Count -eq 1 -and @($s.messages | Where-Object {$_.text -eq 'Spectators can chat too' -and $_.spectator}).Count -eq 1} 'role change does not rewrite historical audience')
+ Command spectator 'seat:10';[void](Await spectator {param($s)$s.spectator} 'returns to spectator group')
  Command guest 'ui-review';Command guest 'capture:lobby-history'
  $before=State host;$originalRoom=$before.room
  foreach($sport in @('Basketball','Golf','Fishing','Football')){Command host "sport:$sport";[void](Await guest {param($s)$s.sport -eq $sport -and $s.ready -and $s.room -eq $originalRoom -and $s.count -eq $before.count} "shared timeline survives $sport selection" 180)}
@@ -63,6 +69,7 @@ try {
  Stop-Process -Id $peers.host.Id
  [void](Await guest {param($s)$s.host -and $s.ready -and !$s.recovering -and $s.count -eq $count -and $s.room -eq $originalRoom} 'host migration retains room and full history' 180)
  [void](Await spectator {param($s)$s.ready -and !$s.recovering -and $s.count -eq $count -and $s.room -eq $originalRoom} 'survivor reconnect retains history' 180)
+ [void](Await spectator {param($s)@($s.messages | Where-Object {$_.text -eq 'Spectators can chat too' -and $_.spectator}).Count -eq 1 -and @($s.messages | Where-Object {$_.text -eq 'Now playing' -and !$_.spectator}).Count -eq 1} 'host recovery retains message audience')
  Command guest 'text:Still the same crew';Has spectator 'Still the same crew';Command spectator 'text:And all our messages';Has guest 'And all our messages'
  Command spectator 'capture:after-host-recovery';Command spectator 'quit';Start-Sleep -Seconds 2
  Command guest 'leave-new-room';Command guest 'quit';Start-Sleep -Seconds 2

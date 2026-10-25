@@ -1,5 +1,35 @@
 # APK size audit — measured release records
 
+## Communication controls and audience tabs — 25 October 2026
+
+Official AndroidSubmission: **126,891,150 -> 126,914,878 bytes (+23,728)**.
+Strict-cap headroom: **873,085,122 bytes**. SHA-256:
+**E4D0D105F065B6AE50041453EE86433407C8D08DF122C3DB0B8C1D7137755FF1**.
+The size gate, v2 signature, ZIP CRC, all **1,250** entry sizes and five-scene
+bundle hash/size passed. All **360 Android** compiled source documents and the
+configuration bridge match the tested runtime. The new vector icon/gesture
+types, native ARM64 voice libraries and runtime microphone permissions are
+present; development probes and token-signing credentials are excluded.
+
+| Largest compressed entry | Bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 45,417,725 | +664 |
+| `lib/arm64-v8a/libil2cpp.so` | 13,145,639 | +19,975 |
+| `lib/arm64-v8a/libvivox-sdk.so` | 10,240,163 | 0 |
+| `lib/arm64-v8a/libunity.so` | 9,808,858 | -3 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,900,790 | +4,235 |
+
+The small growth comes from code and rebuilt content, including the current
+scoreboard work. There are no added raster icons or lossy art changes. Protocol
+**87** separates player/spectator chat history while voice remains one channel
+per room. The app uses native phone microphone capture; physical microphone,
+Bluetooth, echo, touch and FPS acceptance still needs a connected phone.
+
+Evidence under `Builds/CommsRedesign/`: `apk-verification.json`,
+`apk-entry-delta.csv`, `AndroidDelivery/SizeAudit/`, `android-sources.json` and
+`apk-signature.txt`.
+Recovery: `Legacy/20261025-164956-773-comms-redesign-android/`.
+
 ## Integrated room voice and teammate merge — 25 October 2026
 
 Completed live Vivox room voice and merged the three teammate commits through

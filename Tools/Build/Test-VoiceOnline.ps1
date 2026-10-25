@@ -26,7 +26,7 @@ try{
    $result=Join-Path $player.folder 'results.txt';if(Test-Path -LiteralPath $result){$text=Get-Content -LiteralPath $result -Raw;if($text.StartsWith('FAIL')){throw "Online voice failed: $($player.folder); $text"}}
    $file=Join-Path $player.folder 'state.json';if(Test-Path -LiteralPath $file){try{$states+=Get-Content -LiteralPath $file -Raw | ConvertFrom-Json}catch{}}
   }
-  if($states.Count -eq 2 -and @($states | Where-Object {$_.connected -and $_.peers -eq 2 -and $_.maxRemoteEnergy -gt 0 -and !$_.micEnabled -and $_.inputMuted -and !$_.outputMuted -and $_.remoteMuted -eq 0 -and $_.transmittingChannels -eq 1}).Count -eq 2){
+  if($states.Count -eq 2 -and @($states | Where-Object {$_.connected -and $_.participantControls -and $_.peers -eq 2 -and $_.maxRemoteEnergy -gt 0 -and !$_.micEnabled -and $_.inputMuted -and !$_.outputMuted -and $_.remoteMuted -eq 0 -and $_.transmittingChannels -eq 1}).Count -eq 2){
    if($states[0].channel -ne $states[1].channel){throw 'Peers joined different channels'}
    $passed=$true;break
   }

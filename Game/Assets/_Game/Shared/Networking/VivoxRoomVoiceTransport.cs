@@ -107,5 +107,11 @@ namespace WhatTheFish {
    // The SDK itself skips native requests when its state already matches.
    if(muted)peer.MutePlayerLocally();else peer.UnmutePlayerLocally();
   }
+  public void PeerVolume(string id,float volume){
+   if(!Connected)return;
+   var peer=sdk.ActiveChannels[Channel].FirstOrDefault(p=>p.PlayerId==id&&!p.IsSelf);if(peer==null)return;
+   int db=Mathf.Clamp(Mathf.RoundToInt(20*Mathf.Log10(Mathf.Max(.0032f,volume))),-50,0);
+   if(peer.LocalVolume!=db)peer.SetLocalVolume(db);
+  }
  }
 }

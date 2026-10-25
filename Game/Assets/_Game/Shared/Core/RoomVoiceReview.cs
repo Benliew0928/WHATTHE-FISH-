@@ -4,6 +4,7 @@ using System.Collections;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
@@ -18,8 +19,8 @@ namespace WhatTheFish {
    Check(!stateChecks.IsFaulted,"connection state regression");foreach(string result in stateChecks.Result){File.AppendAllText(Path.Combine(folder,"results.txt"),result+"\n");checks++;}
    ui.OpenVoice();yield return new WaitForSecondsRealtime(.3f);
    Check(!service.Available,"local transport does not masquerade as live voice");Check(!Button("Toggle microphone").interactable,"unavailable microphone stays disabled");
-   var fake=new RoomVoiceChecks.Fake();fake.People.Add(new RoomVoicePeer{Id="self",Name="You",IsSelf=true});
-   for(int i=1;i<20;i++)fake.People.Add(new RoomVoicePeer{Id="crew"+i,Name="Crew member "+i.ToString("00"),Speaking=i==1});
+   var fake=new RoomVoiceChecks.Fake();fake.People.Add(new RoomVoicePeer{Id="self",Name="Harbor",IsSelf=true});
+   for(int i=1;i<20;i++)fake.People.Add(new RoomVoicePeer{Id="crew"+i,Name=(i>=14?"Reef ":"Coral ")+i.ToString("00"),Speaking=i==1,Spectator=i>=14});
    var voice=new RoomVoiceSession(fake,()=>Time.realtimeSinceStartupAsDouble);voice.SetRoom("voice-ui-review","You");service.ReviewUseSession(voice);voice.Join();
    yield return new WaitForSecondsRealtime(.4f);Check(voice.Ready&&!voice.MicEnabled,"UI joins listening with mic off");
    Check(ui.VoiceOpen&&RoomChatUI.BlocksInput&&RoomChatUI.BlocksBack&&app.view.InputBlocked,"voice panel blocks gameplay and consumes back");
@@ -27,10 +28,30 @@ namespace WhatTheFish {
    Button("Toggle microphone").onClick.Invoke();Check(!fake.Mic,"mic action immediately silences transport");
    Button("Toggle voice speakers").onClick.Invoke();Check(!fake.Sound,"speaker action mutes playback");Button("Toggle voice speakers").onClick.Invoke();Check(fake.Sound,"speaker action restores playback");
    var slider=ui.GetComponentsInChildren<Slider>().Single(s=>s.name=="Voice volume slider");slider.value=.4f;Check(Mathf.Abs(fake.Volume-.4f)<.001f,"volume slider reaches audio layer");
-   Check(ui.GetComponentsInChildren<Button>().Count(b=>b.name.StartsWith("Voice member "))==20,"full twenty-player roster is scrollable");
-   Button("Voice member 1").onClick.Invoke();Check(voice.IsMuted("crew1"),"roster action mutes chosen member");Button("Voice member 1").onClick.Invoke();Check(!voice.IsMuted("crew1"),"roster action unmutes chosen member");
+   Check(ui.GetComponentsInChildren<Button>().Count(b=>b.name.StartsWith("Voice member "))==14,"players tab contains only its fourteen members");
+   Check(ui.GetComponentsInChildren<Text>().Any(t=>t.text=="Harbor (You)")&&ui.GetComponentsInChildren<Text>().Any(t=>t.text=="Coral 01"),"roster uses in-game names including self");
+   Button("Mute voice member 1").onClick.Invoke();Check(voice.IsMuted("crew1"),"speaker icon mutes chosen member");Button("Mute voice member 1").onClick.Invoke();Check(!voice.IsMuted("crew1"),"speaker icon unmutes chosen member");
+   Button("Voice member 1").onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);
+   ui.GetComponentsInChildren<Slider>().Single(s=>s.name=="Member volume slider").value=.25f;Check(Mathf.Abs(fake.PeerVolumes["crew1"]-.25f)<.001f,"member slider controls only chosen participant");
+   yield return Capture("member-volume");ui.SetVoiceAudience(true);yield return new WaitForSecondsRealtime(.3f);
+   Check(ui.GetComponentsInChildren<Button>().Count(b=>b.name.StartsWith("Voice member "))==6,"spectator tab contains only its six members");
+   Button("Mute voice member 0").onClick.Invoke();Button("Mute all spectators").onClick.Invoke();yield return new WaitForSecondsRealtime(.3f);
+   Check(voice.SpectatorsMuted&&fake.People.Where(p=>p.Spectator).All(p=>fake.Muted[p.Id])&&!fake.Muted["crew1"],"spectator bulk mute leaves players audible");
+   Check(!Button("Mute voice member 1").interactable,"individual actions cannot override spectator bulk mute");yield return Capture("spectators-muted");
+   Button("Mute all spectators").onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);Check(fake.Muted["crew14"]&&!fake.Muted["crew15"],"bulk unmute preserves earlier individual mute");
+   Button("Voice member 1").onClick.Invoke();yield return new WaitForSecondsRealtime(.2f);ui.GetComponentsInChildren<Slider>().Single(s=>s.name=="Member volume slider").value=.6f;yield return Capture("spectator-volume");
+   ui.SetVoiceAudience(false);yield return new WaitForSecondsRealtime(.2f);
+   Check(!ui.GetComponentsInChildren<Text>().Any(t=>t.text.Contains("every island")||t.text.Contains("SPEAKING LIGHTS UP")||t.text.Contains("starts off")),"decorative subtitles removed");
    yield return new WaitForSecondsRealtime(.2f);Check(ui.GetComponentsInChildren<Text>().Any(t=>t.text=="● Speaking"),"speaking indicator follows live state");
    yield return Views("lobby");
+   ui.Close();yield return new WaitForSecondsRealtime(.2f);Check(ui.Launchers.GetComponentsInChildren<Button>().Length==2,"launcher contains only chat and mic icons");
+   yield return Capture("launcher-muted");yield return Gesture(false,false);Check(voice.MicEnabled&&!ui.VoiceOpen,"short tap unmutes without opening settings");yield return Capture("launcher-live");
+   yield return Gesture(false,false);Check(!voice.MicEnabled&&!ui.VoiceOpen,"second short tap mutes without opening settings");
+   yield return Gesture(false,true);Check(!voice.MicEnabled&&!ui.VoiceOpen,"dragging off cancels mic action");
+   yield return Gesture(true,false);Check(ui.VoiceOpen&&!voice.MicEnabled,"long press opens settings without unmuting");
+   service.Leave();yield return new WaitForSecondsRealtime(.2f);ui.Close();yield return Gesture(false,false);Check(voice.Ready&&voice.MicEnabled,"mic tap joins and speaks after explicit consent");
+   service.Leave();yield return new WaitForSecondsRealtime(.2f);_=service.Join(true);service.SendMessage("OnApplicationPause",true);yield return new WaitForSecondsRealtime(.2f);Check(!service.PendingMicrophone&&!voice.MicEnabled,"background cancels pending mic intent");
+   service.SendMessage("OnApplicationPause",false);yield return new WaitForSecondsRealtime(.3f);Check(voice.Ready&&!voice.MicEnabled,"resume never restores cancelled mic intent");
    ui.Close();yield return null;yield return null;Check(!RoomChatUI.BlocksInput&&!ui.VoiceOpen,"closing releases gameplay input");
    ui.SetOpen(true);Check(!ui.VoiceOpen&&ui.Open,"text chat remains available");ui.OpenVoice();Check(ui.VoiceOpen&&!ui.Open,"voice and text panels are mutually exclusive");ui.Close();
    ui.OpenVoice();Check(app.view.InputBlocked&&!app.view.ExplicitInputBlocked,"voice uses a transient input block");
@@ -41,8 +62,18 @@ namespace WhatTheFish {
    end=Time.realtimeSinceStartup+90;while((!app.Exploring||RoomTeleport.Busy||TeleportSequence.Busy||RoomMatchStart.Travelling||!app.view.active||!app.view.target||app.view.target.inTransit)&&Time.realtimeSinceStartup<end)yield return null;
    yield return new WaitForSecondsRealtime(.3f);
    IslandTutorialUI tutorial=app.SelectedSport==SportId.Fishing?FishingHUD.Instance.Tutorial:SportTutorialUI.Find(app.SelectedSport);
-   Check(tutorial,"island rules exist for the fresh review profile");tutorial.Open();yield return new WaitForSecondsRealtime(.5f);voice.SetMicrophone(true);yield return new WaitForSecondsRealtime(.3f);
-   Check(!ui.Visible&&travelMute.gameObject.activeInHierarchy,$"island rules hide chat and keep microphone mute accessible (rules={tutorial.Visible}, chat={ui.Visible}, mic={voice.MicEnabled}, mute={travelMute.gameObject.activeInHierarchy})");
+   Check(tutorial,"island rules exist for the fresh review profile");
+   // Room exploration can acknowledge before its final travel coroutine starts.
+   // Observe a stable visible tutorial instead of opening it into that transition.
+   end=Time.realtimeSinceStartup+30;float rulesShownAt=-1;
+   while(Time.realtimeSinceStartup<end){
+    bool settled=app.Exploring&&!RoomTeleport.Busy&&!TeleportSequence.Busy&&!RoomMatchStart.Travelling&&app.view.active&&app.view.target&&!app.view.target.inTransit;
+    if(settled&&!tutorial.Visible){rulesShownAt=-1;tutorial.Open();}
+    else if(settled&&tutorial.Visible){if(rulesShownAt<0)rulesShownAt=Time.realtimeSinceStartup;if(Time.realtimeSinceStartup-rulesShownAt>.8f)break;}else rulesShownAt=-1;
+    yield return null;
+   }
+   voice.SetMicrophone(true);yield return new WaitForSecondsRealtime(.3f);
+   Check(tutorial.Visible&&!ui.Visible&&travelMute.gameObject.activeInHierarchy,$"island rules hide chat and keep microphone mute accessible (rules={tutorial.Visible}, chat={ui.Visible}, mic={voice.MicEnabled}, mute={travelMute.gameObject.activeInHierarchy}, active={app.view.active}, transit={app.view.target.inTransit}, roomTravel={RoomTeleport.Busy}, sequence={TeleportSequence.Busy}, matchTravel={RoomMatchStart.Travelling})");
    travelMute.onClick.Invoke();Check(!voice.MicEnabled,"island rules fallback mutes voice");tutorial.Close();yield return new WaitForSecondsRealtime(.3f);
    Check(ui.Visible&&app.Exploring,"gameplay voice controls are visible");Check(voice.Ready&&voice.Channel==channel,"lobby-to-island travel preserves channel");
    Check(!ui.VoiceOpen&&!app.view.InputBlocked,"travel restores movement after closing voice");
@@ -53,6 +84,17 @@ namespace WhatTheFish {
    File.AppendAllText(Path.Combine(folder,"results.txt"),"VOICE_UI_PASS "+checks+" assertions\n");Application.Quit();
   }
   Button Button(string name)=>ui.GetComponentsInChildren<Button>().First(b=>b.name==name);
+  IEnumerator Gesture(bool hold,bool cancel){
+   var target=Button("Open room voice").gameObject;Canvas.ForceUpdateCanvases();var rect=target.GetComponent<RectTransform>();
+   var e=new PointerEventData(EventSystem.current){pointerId=7,button=PointerEventData.InputButton.Left,position=RectTransformUtility.WorldToScreenPoint(null,rect.TransformPoint(rect.rect.center))};
+   ExecuteEvents.Execute(target,e,ExecuteEvents.pointerDownHandler);
+   if(cancel)ExecuteEvents.Execute(target,e,ExecuteEvents.pointerExitHandler);
+   // A short synthetic press releases in the same frame, so a slow build/CI
+   // frame cannot accidentally turn the requested tap into a real long press.
+   if(hold)yield return new WaitForSecondsRealtime(.65f);
+   if(target){ExecuteEvents.Execute(target,e,ExecuteEvents.pointerUpHandler);ExecuteEvents.Execute(target,e,ExecuteEvents.pointerClickHandler);}
+   yield return new WaitForSecondsRealtime(.2f);
+  }
   IEnumerator GolfIntegration(RoomVoiceSession voice,Button fallback){
    Check(GolfMatchManager.Instance.StartMatch(),"Golf match starts with combined network schema");
    float end=Time.realtimeSinceStartup+30;
@@ -88,6 +130,7 @@ namespace WhatTheFish {
    foreach(var size in new[]{new Vector2Int(1600,900),new Vector2Int(1920,864),new Vector2Int(1024,768)}){
     Screen.SetResolution(size.x,size.y,false);yield return new WaitForSecondsRealtime(.6f);if(!ui.VoiceOpen)ui.OpenVoice();yield return new WaitForSecondsRealtime(.2f);
     var corners=new Vector3[4];ui.VoicePanel.GetWorldCorners(corners);Check(corners.All(p=>p.x>=-1&&p.x<=Screen.width+1&&p.y>=-1&&p.y<=Screen.height+1),context+" panel fits "+size);
+    var launcherCorners=new Vector3[4];ui.Launchers.GetWorldCorners(launcherCorners);var panelRect=Rect.MinMaxRect(corners[0].x,corners[0].y,corners[2].x,corners[2].y);var launchRect=Rect.MinMaxRect(launcherCorners[0].x,launcherCorners[0].y,launcherCorners[2].x,launcherCorners[2].y);Check(!panelRect.Overlaps(launchRect),"voice settings do not overlap launcher "+context+size);
     Check(ui.GetComponentsInChildren<Text>().All(t=>!t.supportRichText),"voice names render literally "+context+size);
     if(context=="gameplay"&&app.SelectedSport==SportId.Fishing){var board=app.HudFrame.GetComponentsInChildren<RectTransform>().First(t=>t.name=="Lagoon sticker leaderboard");var boardCorners=new Vector3[4];board.GetWorldCorners(boardCorners);Check(corners[0].x>=boardCorners[2].x,"Fishing voice clears leaderboard "+size);}
     yield return Capture(context+"-"+size.x+"x"+size.y);

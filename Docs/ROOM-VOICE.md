@@ -21,16 +21,36 @@ Network errors retry with backoff, stopping after five failed attempts until the
 player retries. Room departure immediately mutes capture and playback, including
 while an SDK operation is pending. A new room starts with voice disconnected.
 
-The Voice button sits beside text chat and stickers. Join voice requests device
-permission and connects with the microphone muted. Mic, speaker, output volume,
-individual mute and speaking indicators are available in the voice panel. Up to
-20 participants fit in its scrolling roster. Voice and text panels are mutually
-exclusive; opening voice captures gameplay input without pausing the room.
-Speaker/volume preferences persist on the device; individual mutes belong to the
-current room. Microphone enablement never persists into a new room or reconnect.
-A compact mute button remains reachable during travel, Golf aim mode, expanded
+The launcher has two vector icon buttons: chat and microphone. A short mic tap
+toggles capture; from a disconnected state it requests permission and joins with
+the explicit intent to speak. A second tap cancels a pending unmute. Holding for
+half a second opens voice settings without changing capture; right-click also
+opens settings. Dragging off, losing focus or backgrounding cancels the gesture.
+The microphone icon is slashed/coral when off and mint when transmitting.
+
+Voice settings use Players and Spectators tabs. The room join/leave action has a
+speaker icon and an explicit label. Joining through this action starts muted.
+The scrollable roster shows in-game names, including the local player's name,
+and room members who have not joined voice. Tap a member's name for their volume
+slider; the adjacent speaker/slashed-speaker button mutes or unmutes them locally.
+Volume ranges from 0–100%, independently for each member. Zero volume is silent.
+The Spectators tab has a bulk mute that includes late arrivals and role changes;
+unmuting the group preserves each member's previous volume and individual mute.
+Unknown roles stay silent while group mute is enabled until the game confirms
+their seat. Last known roles survive transient avatar respawns/host recovery.
+
+Both roles share the same native channel. Group and individual controls affect
+only the listener using them, not other members' settings. Voice/text panels are
+mutually exclusive; opening voice captures gameplay input without pausing the
+room. Speaker/output-volume preferences persist on the device; individual
+volumes, group mute and individual mutes belong to the current room. Microphone
+enablement never persists into a new room or reconnect. Protocol **87** includes
+the authoritative player/spectator role on each chat message.
+A compact microphone icon remains reachable during travel, Golf aim mode, expanded
 Golf standings or other full-screen overlays when the mic is on. Voice volume affects voice playback independently
 of the game's sound effects.
+When Golf's active standings leave too little space below the launcher, voice
+settings move beside the standings so the two buttons remain reachable.
 
 Travel, settings and result overlays save only the explicit gameplay input lock.
 Voice, chat and tutorial blockers are evaluated live, so dismissing one cannot
@@ -39,7 +59,7 @@ chat controls while retaining the microphone mute shortcut.
 
 ## Phone audio
 
-Android requests `RECORD_AUDIO` when the player joins voice. Android 12 and newer
+Android requests `RECORD_AUDIO` when the player joins voice or taps the mic. Android 12 and newer
 also request `BLUETOOTH_CONNECT`. The permission handler allows continuing when
 microphone access is granted and Bluetooth is denied; actual routing still needs
 physical-device validation. Permanent microphone denial offers a device settings action.
@@ -53,7 +73,57 @@ leaves voice and immediately silences capture; returning reconnects with mic off
 Changing audio devices or losing mobile app focus also turns the mic off. Permission
 revocation is checked before continuing capture. No recording feature is enabled.
 
-## Verification and delivery — 25 October 2026
+## UI redesign verification — 25 October 2026
+
+The complete **342-file Windows player** in `Builds/WindowsFinal/` contains the
+redesign. All **500 Windows** compiled game source documents and the separate
+voice configuration bridge match the retained tested source. Comparison with
+the newer scoreboard delivery confirms its **487 non-communication source
+documents** are preserved; only the communication code differs. The delivery
+snapshot includes concurrent venue/scoreboard work, which is outside this task's
+communication-only publishing scope.
+
+The final four-sport suite passed **480 assertions**: Football 116, Basketball
+116, Golf 129 and Fishing 119. It checks tap/hold/cancel behavior, two launchers,
+separate member lists, individual volume, group mute, prior mute preservation,
+travel, rules, Golf aim/standings, pause/resume and exit. Layouts fit 1600x900,
+1920x864 and 1024x768; representative renders were visually reviewed. Golf's
+active-round standings exposed an overlap, corrected by placing settings beside
+the standings when necessary. The review waits for stable arrival before testing
+rules and releases synthetic short taps within one frame to avoid build-load
+timing artifacts. The state suite passed **52 checks**, with **52** repeated from
+a path containing spaces and an unrelated working directory.
+
+Two authenticated native clients received synthetic speech both ways through
+one channel, with maximum remote energy **0.6749178 / 0.6354777**. The native
+participant checks confirmed 25% gain at -12 dB, spectator mute, restored gain
+and unmute. Hardware capture stayed forced silent and microphone input muted.
+Text/history checks passed **226 assertions**, followed by **69** UI checks;
+message roles survived seat changes, paging and host recovery.
+
+Current evidence under `Builds/VoiceQA/`:
+
+- `UI-20261025-213953-176/Football/`, `UI-20261025-213953-188/Basketball/`,
+  `UI-20261025-213953-208/Golf/` and `UI-20261025-213953-223/Fishing/`.
+- `Online-20261025-164916-031/`: native gain/mute and two-way synthetic audio.
+
+Text evidence: `Builds/RoomChatQA/Run-20261025-164512-7995/` and
+`Run-20261025-165029-7996/`. Source proofs, portable checks, package audit and
+recovery records are in `Builds/CommsRedesign/`. The tested source ZIP retains
+the complete compiled source snapshot. Physical phone microphone, Bluetooth,
+echo, touch/FPS and mobile network handoff remain unverified without a connected
+phone. See [the measured release record](BUILD-SIZE.md).
+
+Final AndroidSubmission: **126,891,150 -> 126,914,878 bytes (+23,728)**;
+**873,085,122 bytes** of strict-cap headroom. Its signature, ZIP CRC, all **1,250**
+audit entries and five-scene bundle integrity passed. All **360 Android** compiled
+source documents and the configuration bridge match the final runtime, including
+the Golf placement fix. Superseded Windows output is recoverable under
+`Legacy/20261025-214153-693-comms-redesign-windows/`; superseded UI evidence is in
+`Legacy/20261025-214316-348-comms-redesign-qa/`. Additional draft and APK archive
+batch paths are retained in `Builds/CommsRedesign/*-archive.txt`.
+
+## Previous delivery before the UI redesign — 25 October 2026
 
 Vivox is enabled for the linked Unity project. Public server/domain/issuer
 settings are included in fresh-clone builds, Test Mode is off and the signing
@@ -137,9 +207,10 @@ requires an account agreement or billing choice, the project owner must complete
 that step. A failed voice connection leaves the game room usable.
 
 For a phone acceptance check, install the current APK and put two devices in the
-same online room. On each, open **Voice**, choose **Join voice**, grant the device
-permissions and explicitly unmute. Check both speech directions, speaker echo,
-headset routing, per-person mute and output volume. Travel together between
+same online room. On each, hold the mic icon, choose **Join room voice**, grant
+device permissions and explicitly unmute. Also test a short mic tap from the
+disconnected state. Check both speech directions, speaker echo, headset routing,
+per-person mute/volume, spectator group mute and output volume. Travel together between
 islands and check that the channel stays connected. Background one phone, return,
 and check that it reconnects muted. Deny/revoke microphone permission and confirm
 that capture cannot be enabled until permission is restored. Leave the room and

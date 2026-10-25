@@ -1,5 +1,35 @@
 # Build size — measured release records
 
+## Communication controls and audience tabs — 25 October 2026
+
+Official AndroidSubmission: **126,891,150 -> 126,914,878 bytes (+23,728)**.
+Headroom below the strict 1,000,000,000-byte limit: **873,085,122 bytes**.
+SHA-256: **E4D0D105F065B6AE50041453EE86433407C8D08DF122C3DB0B8C1D7137755FF1**.
+The size gate, v2 signature, ZIP CRC, all **1,250** audit entries and five-scene
+bundle hash/size passed. All **360 Android** compiled source documents and the
+voice configuration bridge match the tested runtime source.
+
+The complete **342-file WindowsFinal** preserves the latest scoreboard delivery
+and includes the corrected Golf settings placement. All **500 Windows** source
+documents match its tested snapshot. Verification: **480** four-sport voice UI
+and state assertions, **52** standalone state checks plus **52** portable repeats,
+**226** chat/history checks, **69** chat UI checks and native two-client audio with
+individual gain and spectator group mute. Phone acceptance remains separate.
+
+This release adds the two-icon chat/microphone launcher, tap-to-toggle and
+hold-for-settings, individual voice volume, Players/Spectators tabs, retained
+chat-message roles and local spectator group mute. Protocol **87** requires
+matching clients; there is still one native voice channel per room. Vector
+icons add no raster textures. The delivered source snapshot also includes
+concurrent venue-preview and scoreboard code; this task's publishing scope is
+the communication changes.
+
+Evidence: `Builds/CommsRedesign/`, `Builds/VoiceQA/Online-20261025-164916-031/`
+and [room voice](ROOM-VOICE.md). Physical phone capture, Bluetooth routing,
+speaker echo and touch/FPS remain unverified without a connected phone.
+Previous Android recovery: `Legacy/20261025-164956-773-comms-redesign-android/`.
+Windows recovery: `Legacy/20261025-214153-693-comms-redesign-windows/`.
+
 ## Integrated room voice and teammate merge — 25 October 2026
 
 Completed live Vivox room voice and merged the three teammate commits through

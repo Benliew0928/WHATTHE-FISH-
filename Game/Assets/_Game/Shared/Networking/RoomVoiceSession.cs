@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace WhatTheFish {
  public sealed class RoomVoicePeer {
   public string Id,Name;
-  public bool Speaking,IsSelf,MicrophoneMuted;
+  public bool Speaking,IsSelf,MicrophoneMuted,Spectator,Connected=true;
   public float AudioEnergy;
  }
 
@@ -21,6 +21,7 @@ namespace WhatTheFish {
   void Microphone(bool enabled);
   void Output(bool enabled,float volume);
   void MutePeer(string id,bool muted);
+  void PeerVolume(string id,float volume);
  }
 
  // Serializes SDK operations. A delayed join is never allowed to unmute a left
@@ -29,6 +30,8 @@ namespace WhatTheFish {
   readonly IRoomVoiceTransport transport;
   readonly HashSet<string> muted=new(StringComparer.Ordinal);
   readonly HashSet<string> allowedMembers=new(StringComparer.Ordinal);
+  readonly Dictionary<string,bool> roles=new(StringComparer.Ordinal);
+  readonly Dictionary<string,float> peerVolumes=new(StringComparer.Ordinal);
   readonly Func<double> clock;
   string room="",displayName="Player";
   int generation,failures;
@@ -37,6 +40,7 @@ namespace WhatTheFish {
   public bool Enabled {get;private set;}
   public bool MicEnabled {get;private set;}
   public bool SpeakersEnabled {get;private set;}=true;
+  public bool SpectatorsMuted {get;private set;}
   public float Volume {get;private set;}=1;
   public string Error {get;private set;}="";
   public bool Busy=>busy;
@@ -55,7 +59,7 @@ namespace WhatTheFish {
   public void SetRoom(string id,string name){
    displayName=string.IsNullOrWhiteSpace(name)?"Player":name;
    id=id??"";if(room==id)return;
-   generation++;room=id;Enabled=false;MicEnabled=false;muted.Clear();allowedMembers.Clear();failures=0;nextAttempt=0;Error="";
+   generation++;room=id;Enabled=false;MicEnabled=false;muted.Clear();allowedMembers.Clear();roles.Clear();peerVolumes.Clear();SpectatorsMuted=false;failures=0;nextAttempt=0;Error="";
    transport.Microphone(false);transport.Output(false,Volume);
   }
   public void Join(){if(disposed||room.Length==0)return;Enabled=true;MicEnabled=false;failures=0;nextAttempt=0;Error="";}
@@ -65,11 +69,21 @@ namespace WhatTheFish {
   public void SetSpeakers(bool value){SpeakersEnabled=value;transport.Output(Ready&&value,Volume);}
   public void SetVolume(float value){if(float.IsNaN(value)||float.IsInfinity(value))return;Volume=Math.Max(0,Math.Min(1,value));transport.Output(Ready&&SpeakersEnabled,Volume);}
   public bool IsMuted(string id)=>id!=null&&muted.Contains(id);
+  public bool IsSpectator(string id)=>id!=null&&roles.TryGetValue(id,out bool spectator)&&spectator;
+  public float VolumeOf(string id)=>id!=null&&peerVolumes.TryGetValue(id,out float value)?value:1;
+  public bool PlaybackMuted(string id)=>!IsRoomMember(id)||IsMuted(id)||VolumeOf(id)<=0||SpectatorsMuted&&(!roles.ContainsKey(id)||IsSpectator(id));
   public bool IsRoomMember(string id)=>id!=null&&allowedMembers.Contains(id);
-  public void ToggleMute(string id){if(string.IsNullOrEmpty(id)||!allowedMembers.Contains(id))return;if(!muted.Add(id))muted.Remove(id);transport.MutePeer(id,muted.Contains(id));}
-  public void ApplyMembership(ISet<string> members){
+  public void ToggleMute(string id){if(string.IsNullOrEmpty(id)||!allowedMembers.Contains(id))return;if(!muted.Add(id))muted.Remove(id);ApplyPeer(id);}
+  public void SetPeerVolume(string id,float volume){if(!IsRoomMember(id)||float.IsNaN(volume)||float.IsInfinity(volume))return;peerVolumes[id]=Math.Max(0,Math.Min(1,volume));ApplyPeer(id);}
+  public void MuteSpectators(bool value){SpectatorsMuted=value;foreach(var peer in transport.Peers)if(!peer.IsSelf)ApplyPeer(peer.Id);}
+  void ApplyPeer(string id){transport.PeerVolume(id,VolumeOf(id));transport.MutePeer(id,PlaybackMuted(id));}
+  public void ApplyMembership(ISet<string> members,IDictionary<string,bool> knownRoles=null){
+   foreach(string id in new List<string>(roles.Keys))if(!members.Contains(id))roles.Remove(id);
    allowedMembers.Clear();allowedMembers.UnionWith(members);
-   foreach(var peer in transport.Peers)if(!peer.IsSelf)transport.MutePeer(peer.Id,!members.Contains(peer.Id)||muted.Contains(peer.Id));
+   // Retain the last authoritative role through NGO respawns and host recovery.
+   // Unknown roles stay silent while spectator mute is active, until classified.
+   if(knownRoles!=null)foreach(var pair in knownRoles)if(members.Contains(pair.Key))roles[pair.Key]=pair.Value;
+   foreach(var peer in transport.Peers)if(!peer.IsSelf)ApplyPeer(peer.Id);
   }
   public void Tick(){
    bool ready=Ready;
