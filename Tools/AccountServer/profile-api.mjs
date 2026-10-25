@@ -2,6 +2,7 @@ import { AuthError } from './auth.mjs';
 import { createPlayerVerifier } from './player-auth.mjs';
 import { Profiles } from './profiles.mjs';
 import { RoomInvites } from './room-invites.mjs';
+import { Economy } from './economy.mjs';
 import { deletionPending, deleteProfileForAccount } from './account-deletion.mjs';
 const verifiers=new WeakMap();
 const send=(status,data)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -33,12 +34,31 @@ export async function profileApi(request,env,verifyOverride) {
       return send(200,await deleteProfileForAccount(store,id));
     }
     if(await deletionPending(store,id))throw new AuthError(409,'account_deletion_pending');
+    if(path.startsWith('/v1/economy/')){
+      const economy=new Economy(store);
+      if(path==='/v1/economy/wallet'&&method==='GET')return send(200,await economy.wallet(id));
+      if(method==='POST'){
+        const body=await json(request);
+        if(path==='/v1/economy/daily')return send(200,await economy.daily(id));
+        if(path==='/v1/economy/equip')return send(200,await economy.equip(id,body));
+        if(path==='/v1/economy/purchase')return send(200,await economy.purchase(id,body));
+        if(path==='/v1/economy/matches/start')return send(200,await economy.start(id,body));
+        if(path==='/v1/economy/matches/lookup')return send(200,await economy.lookup(id,body));
+        if(path==='/v1/economy/matches/join')return send(200,await economy.join(id,body));
+        if(path==='/v1/economy/matches/finish')return send(200,await economy.finish(id,body));
+      }
+      return send(404,{code:'not_found'});
+    }
     if(path==='/v1/invites'&&method==='GET')return send(200,await new RoomInvites(store).list(id));
     if(path==='/v1/invites'&&method==='POST')return send(200,await new RoomInvites(store).send(id,await json(request)));
     if(path==='/v1/invites/respond'&&method==='POST')return send(200,await new RoomInvites(store).respond(id,await json(request)));
     if(path==='/v1/invites/resolve'&&method==='POST'){const b=await json(request);return send(200,await new RoomInvites(store).resolve(id,b.id));}
     if(path==='/v1/me'&&method==='GET')return send(200,await store.require(id));
-    if(path==='/v1/me'&&method==='PUT')return send(200,await store.save(id,await json(request)));
+    if(path==='/v1/me'&&method==='PUT'){
+      const body=await json(request);
+      if(Number.isInteger(body.avatar)&&body.avatar>=2&&body.avatar<10&&!await store.one('SELECT 1 FROM cosmetic_inventory WHERE player_id=? AND item_id=?',id,'profile.avatar.'+body.avatar))throw new AuthError(403,'cosmetic_not_owned');
+      return send(200,await store.save(id,body));
+    }
     if(path==='/v1/me'&&method==='DELETE'){
       const body=await json(request);
       if(body.confirm!=='delete-profile')throw new AuthError(400,'confirmation_required');

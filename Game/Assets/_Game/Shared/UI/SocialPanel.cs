@@ -162,6 +162,7 @@ namespace WhatTheFish {
     ProfileAvatar.Add(b.transform,new PublicProfile{avatar=i},34,3,92);
     Label(b.transform,(i+1).ToString("00"),12,95,136,28,20,true,Muted,TextAnchor.MiddleRight);
    }
+   for(int i=0;i<avatarButtons.Length;i++){int value=i;CosmeticLock.Bind(avatarButtons[i],"profileAvatar",i,()=>{avatar=value;photo="";Dirty();Preview();});}
    Action(body,"Save player profile","Save profile",354,568,310,62,Lime,()=>Run("Saving your profile…",async()=>{string message=await PlayerProfiles.Save(nameField.text,avatar,photo);edited=false;HeroCode();feedback.text=message;}),CoveSymbol.Check,28);
    Action(body,"Reload player profile","Reload cloud",682,568,260,62,Raised,()=>Run("Loading your cloud profile…",async()=>{await PlayerProfiles.EnsureCloud(true);ShowAfter("edit");}),size:25);
    Action(body,"Manage account","Sign-in options",960,568,290,62,Raised,()=>AccountPanel.Open(()=>{Show("edit");}),size:25);
@@ -170,6 +171,9 @@ namespace WhatTheFish {
   void HeroCode(){if(heroCode)heroCode.text=string.IsNullOrEmpty(PlayerProfiles.Current.code)?"Player code syncs online":"#"+PlayerProfiles.Current.code;}
   void Dirty(){edited=true;feedback.text="Unsaved changes · tap Save profile when you're ready.";}
   async Task LoadEdit(int version){
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(PlayerEconomy.ReviewTransport!=null)return;
+#endif
    try{await PlayerProfiles.EnsureCloud();if(!this||generation!=version||edited||working)return;
     var p=PlayerProfiles.Current;nameField.SetTextWithoutNotify(p.name);heroName.text=p.name;avatar=p.avatar;photo=PlayerProfiles.CurrentPhoto;Preview();feedback.text=PlayerProfiles.Status;
    }catch(Exception e){if(this&&version==generation&&!edited)feedback.text="Device profile ready. "+PlayerProfiles.Explain(e);}

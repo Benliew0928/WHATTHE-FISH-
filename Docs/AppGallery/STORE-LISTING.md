@@ -32,13 +32,24 @@ until verified on the signed candidate.
 
 ## Console fields to complete
 
-- Publisher/legal name: pending.
-- Support email and website: pending.
+- Publisher type: personal/individual, confirmed 26 October 2026. Publisher name:
+  LIEW KAIY BIN, supplied by the owner to match the Huawei developer account.
+- Support/privacy email: benliew28262826@gmail.com. Website: pending.
+- Support, reports and deletion exceptions: handled by the owner; procedures pending.
+- Huawei developer verification: owner reports completed; app ownership and final
+  delivery certificate still need confirmation before release.
 - Privacy policy URL: pending.
-- Distribution countries: Malaysia, confirmed by owner. Languages: pending.
-- Advertising: none. In-app purchases: none. Download price: free (owner confirmed).
-- Intended audience proposal: ages 13 and above, subject to owner confirmation;
-  this is not an official content rating or a legal determination.
+- Distribution countries: Malaysia, confirmed by owner. Prepare listing content
+  in English, Simplified Chinese and Bahasa Melayu; console availability and
+  localized text/screenshots remain to be checked. English is the preparation
+  discussion language, not a reduction of the game's supported languages.
+- Advertising: none. Real-money in-app purchases: none. Download price: free (owner confirmed).
+- Intended audience: all ages, confirmed by owner on 26 October 2026, replacing
+  the earlier 13+ proposal. Child/guardian controls and suitability need review;
+  this is not an official content rating or a legal determination. Do not add
+  an unverified "suitable for all ages" claim to the public description.
+- Google login: retain if compatible with AppGallery acceptance; verify final
+  configuration, supported-device behavior and no-GMS Huawei/guest access.
 - Content rating: complete the console questionnaire accurately, including
   communication and user-generated names/profile images. Do not invent a rating.
 - Copyright/asset rights: retain music, art, font and SDK license evidence;

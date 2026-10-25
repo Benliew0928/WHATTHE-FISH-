@@ -1,0 +1,410 @@
+{
+  "items": [
+    {
+      "id": "football.trail.electric",
+      "slot": "footballTrail",
+      "index": 0,
+      "price": 0,
+      "name": "Electric Bolt"
+    },
+    {
+      "id": "football.trail.ocean",
+      "slot": "footballTrail",
+      "index": 1,
+      "price": 0,
+      "name": "Ocean Blue"
+    },
+    {
+      "id": "football.trail.rose",
+      "slot": "footballTrail",
+      "index": 2,
+      "price": 1000,
+      "name": "Rose Sparkle"
+    },
+    {
+      "id": "football.trail.solar",
+      "slot": "footballTrail",
+      "index": 3,
+      "price": 1000,
+      "name": "Solar Flame"
+    },
+    {
+      "id": "football.trail.aurora",
+      "slot": "footballTrail",
+      "index": 4,
+      "price": 1000,
+      "name": "Aurora"
+    },
+    {
+      "id": "basketball.trail.solar",
+      "slot": "basketballTrail",
+      "index": 0,
+      "price": 0,
+      "name": "Solar Drive"
+    },
+    {
+      "id": "basketball.trail.lightning",
+      "slot": "basketballTrail",
+      "index": 1,
+      "price": 0,
+      "name": "Court Lightning"
+    },
+    {
+      "id": "basketball.trail.glacier",
+      "slot": "basketballTrail",
+      "index": 2,
+      "price": 1000,
+      "name": "Glacier"
+    },
+    {
+      "id": "basketball.trail.rose",
+      "slot": "basketballTrail",
+      "index": 3,
+      "price": 1000,
+      "name": "Rose Comet"
+    },
+    {
+      "id": "basketball.trail.aurora",
+      "slot": "basketballTrail",
+      "index": 4,
+      "price": 1000,
+      "name": "Aurora Rush"
+    },
+    {
+      "id": "basketball.trail.championship",
+      "slot": "basketballTrail",
+      "index": 5,
+      "price": 1000,
+      "name": "Championship"
+    },
+    {
+      "id": "profile.avatar.0",
+      "slot": "profileAvatar",
+      "index": 0,
+      "price": 0,
+      "name": "Character 01"
+    },
+    {
+      "id": "profile.avatar.1",
+      "slot": "profileAvatar",
+      "index": 1,
+      "price": 0,
+      "name": "Character 02"
+    },
+    {
+      "id": "profile.avatar.2",
+      "slot": "profileAvatar",
+      "index": 2,
+      "price": 1000,
+      "name": "Character 03"
+    },
+    {
+      "id": "profile.avatar.3",
+      "slot": "profileAvatar",
+      "index": 3,
+      "price": 1000,
+      "name": "Character 04"
+    },
+    {
+      "id": "profile.avatar.4",
+      "slot": "profileAvatar",
+      "index": 4,
+      "price": 1000,
+      "name": "Character 05"
+    },
+    {
+      "id": "profile.avatar.5",
+      "slot": "profileAvatar",
+      "index": 5,
+      "price": 1000,
+      "name": "Character 06"
+    },
+    {
+      "id": "profile.avatar.6",
+      "slot": "profileAvatar",
+      "index": 6,
+      "price": 1000,
+      "name": "Character 07"
+    },
+    {
+      "id": "profile.avatar.7",
+      "slot": "profileAvatar",
+      "index": 7,
+      "price": 1000,
+      "name": "Character 08"
+    },
+    {
+      "id": "profile.avatar.8",
+      "slot": "profileAvatar",
+      "index": 8,
+      "price": 1000,
+      "name": "Character 09"
+    },
+    {
+      "id": "profile.avatar.9",
+      "slot": "profileAvatar",
+      "index": 9,
+      "price": 1000,
+      "name": "Character 10"
+    },
+    {
+      "id": "football.palette.0",
+      "slot": "footballPalette",
+      "index": 0,
+      "price": 0,
+      "name": "Mint"
+    },
+    {
+      "id": "football.palette.1",
+      "slot": "footballPalette",
+      "index": 1,
+      "price": 0,
+      "name": "Rose"
+    },
+    {
+      "id": "football.palette.2",
+      "slot": "footballPalette",
+      "index": 2,
+      "price": 1000,
+      "name": "Lilac"
+    },
+    {
+      "id": "football.palette.3",
+      "slot": "footballPalette",
+      "index": 3,
+      "price": 1000,
+      "name": "Gold"
+    },
+    {
+      "id": "basketball.palette.0",
+      "slot": "basketballPalette",
+      "index": 0,
+      "price": 0,
+      "name": "Mint"
+    },
+    {
+      "id": "basketball.palette.1",
+      "slot": "basketballPalette",
+      "index": 1,
+      "price": 0,
+      "name": "Rose"
+    },
+    {
+      "id": "basketball.palette.2",
+      "slot": "basketballPalette",
+      "index": 2,
+      "price": 1000,
+      "name": "Lilac"
+    },
+    {
+      "id": "basketball.palette.3",
+      "slot": "basketballPalette",
+      "index": 3,
+      "price": 1000,
+      "name": "Gold"
+    },
+    {
+      "id": "golf.palette.0",
+      "slot": "golfPalette",
+      "index": 0,
+      "price": 0,
+      "name": "Mint"
+    },
+    {
+      "id": "golf.palette.1",
+      "slot": "golfPalette",
+      "index": 1,
+      "price": 0,
+      "name": "Rose"
+    },
+    {
+      "id": "golf.palette.2",
+      "slot": "golfPalette",
+      "index": 2,
+      "price": 1000,
+      "name": "Lilac"
+    },
+    {
+      "id": "golf.palette.3",
+      "slot": "golfPalette",
+      "index": 3,
+      "price": 1000,
+      "name": "Gold"
+    },
+    {
+      "id": "fishing.palette.0",
+      "slot": "fishingPalette",
+      "index": 0,
+      "price": 0,
+      "name": "Mint"
+    },
+    {
+      "id": "fishing.palette.1",
+      "slot": "fishingPalette",
+      "index": 1,
+      "price": 0,
+      "name": "Rose"
+    },
+    {
+      "id": "fishing.palette.2",
+      "slot": "fishingPalette",
+      "index": 2,
+      "price": 1000,
+      "name": "Lilac"
+    },
+    {
+      "id": "fishing.palette.3",
+      "slot": "fishingPalette",
+      "index": 3,
+      "price": 1000,
+      "name": "Gold"
+    },
+    {
+      "id": "basketball.logo.0",
+      "slot": "basketballLogo",
+      "index": 0,
+      "price": 0,
+      "name": "Rally crest"
+    },
+    {
+      "id": "basketball.logo.1",
+      "slot": "basketballLogo",
+      "index": 1,
+      "price": 0,
+      "name": "Star"
+    },
+    {
+      "id": "basketball.logo.2",
+      "slot": "basketballLogo",
+      "index": 2,
+      "price": 1000,
+      "name": "Lightning"
+    },
+    {
+      "id": "basketball.logo.3",
+      "slot": "basketballLogo",
+      "index": 3,
+      "price": 1000,
+      "name": "Shield"
+    },
+    {
+      "id": "football.message.0",
+      "slot": "footballMessage",
+      "index": 0,
+      "price": 0,
+      "name": "Sunny days"
+    },
+    {
+      "id": "football.message.1",
+      "slot": "footballMessage",
+      "index": 1,
+      "price": 0,
+      "name": "Good energy"
+    },
+    {
+      "id": "football.message.2",
+      "slot": "footballMessage",
+      "index": 2,
+      "price": 1000,
+      "name": "Move & play"
+    },
+    {
+      "id": "golf.finish.0",
+      "slot": "golfFinish",
+      "index": 0,
+      "price": 0,
+      "name": "Original"
+    },
+    {
+      "id": "golf.finish.1",
+      "slot": "golfFinish",
+      "index": 1,
+      "price": 0,
+      "name": "Sea glass"
+    },
+    {
+      "id": "golf.finish.2",
+      "slot": "golfFinish",
+      "index": 2,
+      "price": 1000,
+      "name": "Copper"
+    },
+    {
+      "id": "fishing.finish.0",
+      "slot": "fishingFinish",
+      "index": 0,
+      "price": 0,
+      "name": "Original"
+    },
+    {
+      "id": "fishing.finish.1",
+      "slot": "fishingFinish",
+      "index": 1,
+      "price": 0,
+      "name": "Sea glass"
+    },
+    {
+      "id": "fishing.finish.2",
+      "slot": "fishingFinish",
+      "index": 2,
+      "price": 1000,
+      "name": "Copper"
+    },
+    {
+      "id": "football.screen.0",
+      "slot": "footballScreen",
+      "index": 0,
+      "price": 0,
+      "name": "Venue name"
+    },
+    {
+      "id": "football.screen.1",
+      "slot": "footballScreen",
+      "index": 1,
+      "price": 0,
+      "name": "Team welcome"
+    },
+    {
+      "id": "golf.screen.0",
+      "slot": "golfScreen",
+      "index": 0,
+      "price": 0,
+      "name": "Venue name"
+    },
+    {
+      "id": "golf.screen.1",
+      "slot": "golfScreen",
+      "index": 1,
+      "price": 0,
+      "name": "Team welcome"
+    },
+    {
+      "id": "fishing.screen.0",
+      "slot": "fishingScreen",
+      "index": 0,
+      "price": 0,
+      "name": "Venue name"
+    },
+    {
+      "id": "fishing.screen.1",
+      "slot": "fishingScreen",
+      "index": 1,
+      "price": 0,
+      "name": "Team welcome"
+    },
+    {
+      "id": "football.flags.0",
+      "slot": "footballFlags",
+      "index": 0,
+      "price": 0,
+      "name": "Off"
+    },
+    {
+      "id": "football.flags.1",
+      "slot": "footballFlags",
+      "index": 1,
+      "price": 0,
+      "name": "On"
+    }
+  ]
+}

@@ -15,9 +15,11 @@ namespace WhatTheFish {
     picker.labels[i]=BasketballUIStyle.Text(b.transform,"",pad,previewHeight+pad+4,tile-pad*2,compact?25:40,compact?14:26,true,TextAnchor.MiddleCenter);
     if(!compact)BasketballUIStyle.Text(b.transform,BasketballTrailStyle.Descriptions[i],pad,previewHeight+pad+47,tile-pad*2,35,21,false,TextAnchor.MiddleCenter);
    }
+   for(int i=0;i<BasketballTrailStyle.Count;i++){int style=i;CosmeticLock.Bind(picker.plates[i].GetComponent<Button>(),"basketballTrail",i,()=>{BasketballTrailStyle.Select(style);picker.Refresh();});}
    picker.Refresh();
   }
-  void OnEnable()=>Refresh();
+  void OnEnable(){PlayerEconomy.Changed+=Refresh;Refresh();}
+  void OnDisable()=>PlayerEconomy.Changed-=Refresh;
   void Refresh(){for(int i=0;i<labels.Length;i++)if(labels[i]){bool selected=BasketballTrailStyle.Selected==i;labels[i].text=(selected?"✓ ":"")+BasketballTrailStyle.Names[i];MenuDesigns.Selected(plates[i].GetComponent<Button>(),selected);plates[i].color=selected?CoveUI.Mint:CoveUI.Cream;plates[i].border=selected?2:1;plates[i].Refresh();}}
  }
 }

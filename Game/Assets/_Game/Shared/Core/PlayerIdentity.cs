@@ -21,6 +21,9 @@ namespace WhatTheFish {
   internal static string DeletionStorageKey=>Prefix+"player.deletion.pending.v1";
   internal static void ForgetDeletedIdentity(string id,string scope) {
    if(!string.IsNullOrEmpty(id))PlayerPrefs.DeleteKey(Prefix+"player.account."+id+".name");
+   if(!string.IsNullOrEmpty(id)){PlayerPrefs.DeleteKey("economy.wallet."+id);PlayerPrefs.DeleteKey("economy.outbox."+id);}
+   foreach(SportId sport in Enum.GetValues(typeof(SportId)))PlayerPrefs.DeleteKey("economy.venue."+scope+"."+sport);
+   foreach(string slot in new[]{"footballTrail","basketballTrail"}){string key="economy.trail."+scope+"."+slot;PlayerPrefs.DeleteKey(key);PlayerPrefs.DeleteKey(key+".pending");}
    foreach(SportId sport in Enum.GetValues(typeof(SportId)))PlayerPrefs.DeleteKey(ControlLayouts.Key(scope,sport));
    PlayerPrefs.Save();
   }

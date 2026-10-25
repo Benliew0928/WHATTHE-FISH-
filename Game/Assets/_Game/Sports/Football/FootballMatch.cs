@@ -50,7 +50,7 @@ namespace WhatTheFish {
    }
    return new FootballMatchSnapshot{phase=State.Phase,result=State.Result,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,goalAt=goalAt,goalId=goalId,kickoffTeam=kickoffTeam,kickoffPlayer=kickoffPlayer,remaining=State.Running||State.Phase==FootballMatchPhase.Kickoff||State.Phase==FootballMatchPhase.TeamSelection?0:State.Remaining(Now),revision=publishedRevision,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),teamCapacity=Selection.Capacity};
   }
-  void Publish(){PublishStatistics();if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.Match.Value=Capture();}
+  void Publish(){PublishStatistics();MatchRewards.Football(this);if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.Match.Value=Capture();}
   public FootballTeam TeamOf(Athlete actor){if(TutorialSession.Is(SportId.Football)&&TutorialSession.Owns(actor))return TutorialSession.Team(actor);if(!actor)return FootballTeam.None;var net=actor.GetComponent<NetworkAthlete>();return net&&net.IsSpawned?net.Team.Value:Selection.TeamOf(PlayerId(actor));}
   void SyncTeams(){foreach(var pair in participants){if(!pair.Value)continue;var net=pair.Value.GetComponent<NetworkAthlete>();if(net&&net.IsSpawned)net.Team.Value=Selection.TeamOf(pair.Key);}RefreshStatisticsRoster();}
   public bool StartMatch()=>BeginMatch(false);

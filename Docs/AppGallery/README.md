@@ -1,26 +1,57 @@
 # AppGallery release preparation
 
-Prepared 25 October 2026 against source commit `dc0be40`. This is a preparation
-pack, not evidence of store acceptance or a production-signed release.
-Existing concurrent welcome/menu edits are outside this preparation.
+Technical preparation was first validated on 25 October 2026 against source
+commit `dc0be40`; see [historical validation](VALIDATION.md) for its exact scope.
+Owner decisions were updated on 26 October 2026. This remains preparation only,
+not evidence of store acceptance, production activation or a production-signed
+release. Current build measurements are in [build size](../BUILD-SIZE.md).
 
-## Owner information still required
+## Owner decisions and remaining information
 
 | Item | Status |
 | --- | --- |
-| Legal publisher/team name and public support email | Awaiting owner |
-| Launch countries, intended audience and minimum age | Malaysia confirmed; 13+ product audience proposed, not yet confirmed or an official store rating |
-| Free/paid, advertising and purchases | Free download, no ads, no in-app purchases confirmed |
+| Publisher | LIEW KAIY BIN; personal/individual publisher, name supplied by owner to match the Huawei developer account |
+| Public support and privacy contact | benliew28262826@gmail.com, supplied by owner |
+| Launch countries and intended audience | Malaysia; all ages, including children, as the owner's intended audience. Replaces the earlier 13+ proposal; official content rating and suitability remain unverified |
+| Free/paid, advertising and purchases | Free download, no ads, no real-money in-app purchases confirmed |
 | Public privacy-policy host/domain | Owner has no website/domain; prepare a static page, choose hosting later |
-| Verified Huawei developer account | Owner is unsure; historical app registration exists but verification must be checked in console |
+| Verified Huawei developer account | Owner reports verification completed; intended app ownership and final signing configuration still need checking before release |
 | Existing production keystore and backup | None; helper prepared for private local creation later |
 | Huawei Android device model and availability | No Huawei test phone available; device checks remain pending |
-| Data retention periods and person handling support/reports | Awaiting owner |
+| Support, reports and deletion exceptions | Owner will handle these; operating procedure and response targets remain to be defined |
+| Data retention periods | Pending service/configuration inventory and owner-approved operational rules |
+| Google login | Retain if compatible with AppGallery acceptance; production configuration and physical-device checks remain pending |
+| Preparation language | English discussion and internal documents; retain English, Simplified Chinese and Bahasa Melayu for player-facing content |
 
-Publisher identity and support email may be completed later. They block final
-policy publication and store submission, not source inspection, signing workflow
-preparation or deletion implementation. A custom paid domain is not inherently
-needed for a public HTTPS policy page; hosting choice and URL remain pending.
+Policy hosting and retention rules remain needed for the final policy. They do
+not block offline preparation. A custom paid domain
+is not inherently needed for a public HTTPS policy page; hosting and URL remain
+pending. The supplied email is the intended public contact, not a verified
+mailbox-deliverability result.
+
+## Preparation priorities after owner decisions
+
+1. Use LIEW KAIY BIN and the confirmed contact/operator details in the policy and
+   store drafts. Prepare player-facing materials in all three supported languages
+   before delivery.
+2. Review the all-ages audience against text/voice chat, profile photos, discovery,
+   invitations, reporting and blocking. Record what child/guardian controls,
+   consent and operator procedures are needed for the intended market and SDKs.
+   Do not claim an official all-ages rating or silently impose a 13+ restriction.
+3. Retain Google as a conditional release option. Huawei documents Google as an
+   authentication provider and notes its Android Google-SDK dependency on GMS;
+   this is not approval of this game's AppGallery submission. The current bridge
+   checks GMS availability. Verify Huawei/guest access without GMS and Google
+   success/cancel/recovery where supported, using the final signing certificate.
+4. Prepare retention, deletion-support, signing, device-test and backend rollout
+   procedures locally. Public hosting, deployment, console changes and app
+   submission are outside this preparation task.
+
+References: [Huawei authentication providers](https://developer.huawei.com/consumer/en/doc/AppGallery-connect-Guides/agc-auth-introduction-0000001053732605)
+and [Vivox privacy, including children's privacy](https://docs.unity.com/en-us/vivox/privacy/privacy-overview).
+Vivox requires verified parental consent before submitting children's data where
+applicable law requires it; the project's controls and provider settings still
+need review. No child-safety implementation is certified by this document update.
 
 ## Verified foundation
 
@@ -39,22 +70,25 @@ needed for a public HTTPS policy page; hosting choice and URL remain pending.
 1. **Production signing:** helper implemented outside Unity to avoid initialization
    resetting custom signing. Private owner key creation and final signing remain
    pending. See the technical handoff; do not commit keys or passwords.
-2. **Account deletion:** client and additive backend implementation are prepared.
-   Activation is pending Cloudflare authentication/deployment; no live users have
-   been deleted. Native linked-account verification still requires a phone.
+2. **Account deletion:** the additive backend was activated with the account coin
+   release on 26 October; see [deployment evidence](../COIN-ECONOMY.md). Native
+   linked-account verification and complete device deletion still require a phone.
 3. **Privacy entry point:** implemented in settings and account choices. Public
-   policy URL/contact/retention remain pending; no placeholder link is advertised.
+   contact and publisher name are supplied; policy URL and retention remain
+   pending. No placeholder link is advertised.
 4. **Device acceptance:** real Huawei login/link/recovery and no-GMS behavior,
    camera, microphone/Bluetooth, touch and performance remain to be verified.
-5. **Service readiness:** Google OAuth is recorded as Testing; decide whether to
-   complete production setup or disable its public release entry. Confirm provider
-   production signatures, service quotas, support and moderation responsibilities.
-6. **Current release:** the newer integrated AndroidSubmission APK is
-   160,144,610 bytes and contains this preparation's source. It is non-debuggable
-   but still signed with Android Debug, so it is not production-signed. See
-   [validation](VALIDATION.md) and [size evidence](../BUILD-SIZE.md).
-7. **Known regressions:** latest build notes record legacy cart checks failing.
-   Triage and verify real player impact before claiming release acceptance.
+5. **Service readiness:** retain Google conditionally per the owner. OAuth is
+   recorded as Testing; check production configuration, final signing fingerprints,
+   service quotas and provider behavior. The owner handles support/moderation;
+   response procedures and the all-ages safety review remain pending.
+6. **Current release:** use [current size evidence](../BUILD-SIZE.md). The
+   160,144,610-byte APK in [validation](VALIDATION.md) is historical. Inspection
+   on 26 October found the 166,897,340-byte APK non-debuggable but signed with
+   Android Debug; it is not production-signed or store-certified.
+7. **Regression acceptance:** historical preparation notes recorded legacy cart
+   test failures. Reconcile them with current tests and player impact before
+   claiming release acceptance; do not assume either a fix or a current failure.
 
 ## Preparation contents
 

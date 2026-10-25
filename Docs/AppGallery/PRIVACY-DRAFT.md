@@ -1,14 +1,37 @@
 # Privacy preparation — not for publication yet
 
-This working draft records implementation facts. Publisher identity, contact,
-audience, service regions, retention and deletion operations remain unresolved.
-Do not upload it as the public privacy policy until those facts are completed.
+This working draft records implementation facts and owner decisions. Processing
+regions, retention, child/guardian arrangements and deletion operations remain
+unresolved. Do not upload it as the public privacy
+policy until those facts are completed.
 
 Owner confirmed Malaysia as the initial market, free download, no advertising and
-no in-app purchases. There is currently no policy website or domain. Publisher and public
-support email can be supplied later. A 13+ audience is a proposal, not an approved
-age restriction or platform rating. Do not add an age claim to the public policy
-until the audience and corresponding controls are agreed.
+no real-money in-app purchases. On 26 October 2026 the owner confirmed a personal/individual
+publisher named LIEW KAIY BIN, public support/privacy email
+benliew28262826@gmail.com, an all-ages
+intended audience and personal responsibility for support, reports and deletion
+exceptions. There is no policy website or domain yet. All ages replaces the
+earlier 13+ proposal; it is not an official
+rating or evidence that current communication/data controls are suitable for
+children. Retain Google login if compatible with AppGallery acceptance.
+
+## All-ages preparation
+
+- Inventory children's possible access to accounts, names/photos, player search,
+  friendships, invitations, room text chat and optional voice. Assess the needed
+  child/guardian controls and reporting workflow before making public claims.
+- Determine applicable consent requirements for the intended Malaysian market
+  and actual providers; do not invent an age threshold or claim that choosing
+  an all-ages audience satisfies these requirements.
+- [Vivox's privacy overview](https://docs.unity.com/en-us/vivox/privacy/privacy-overview)
+  requires verified parental consent before submitting children's data where
+  applicable law requires it. Review how access and any required consent would
+  be handled before service initialization/data transmission.
+- The owner is the designated operator; handling procedures, response targets,
+  escalation and retention periods still need to be documented. Reporting and
+  blocking features alone do not prove operational coverage.
+- No age gate, parental-consent flow or communication restriction is added or
+  certified by this documentation-only preparation.
 
 ## Data inventory
 
@@ -23,12 +46,14 @@ until the audience and corresponding controls are agreed.
 | Camera / chosen QR image | Scan a room invitation using Huawei Scan Kit | Camera permission on demand; document picker grants access only to the selected image; no broad storage permission |
 | Optional profile image selection | Profile thumbnail | Verify native picker and permission behavior in the final manifest/device |
 | Local settings, identity caches and session credentials | Remember preferences and account session | UGS session persistence uses its normal PlayerPrefs-backed storage; do not claim Keystore encryption |
-| Deletion progress and revocation markers | Resume deletion and prevent stale clients recreating profiles | Local journal: account ID/scope/stage without tokens. New backend: SHA-256 identity marker and request time; production deployment and retention policy pending |
+| Coins and cosmetic selections | Remember account balance, daily streak, match rewards and owned/equipped cosmetics | Cloud wallet and transaction ledger plus local display/retry cache; account deletion removes owned records. Earned-coin cosmetic purchases are enabled; no real-money payments are offered. Retention policy still needs owner confirmation |
+| Deletion progress and revocation markers | Resume deletion and prevent stale clients recreating profiles | Local journal: account ID/scope/stage without tokens. Backend: SHA-256 identity marker and request time; activated 26 October, retention policy pending |
 | IP/network and SDK technical data | Connectivity, authentication, rate limiting and service operation | Verify vendor disclosures, hosting regions and retention; application logging being disabled does not mean providers process no metadata |
 
 ## Public policy structure to finish
 
-1. **Who operates the game:** legal publisher, public contact, effective date.
+1. **Who operates the game:** individual publisher LIEW KAIY BIN, public
+   contact benliew28262826@gmail.com, and a future effective date.
 2. **Information used:** the categories above, optional versus necessary features.
 3. **Why information is used:** gameplay, accounts, communication, support and safety.
 4. **Who receives it:** actual providers and other players, with current vendor links.
@@ -38,10 +63,11 @@ until the audience and corresponding controls are agreed.
    by profiles, social data, reports, chat, voice and authentication. Owner to set
    these after checking provider settings; no invented immediate-deletion promise.
 7. **Access, correction and deletion:** explain the implemented process and support
-   channel. The prepared client/backend workflow still requires deployment,
-   native-account verification and provider retention confirmation.
-8. **Children and audience:** owner-approved audience and applicable regional policy;
-   do not default to an invented age gate or market the social game to children.
+   channel. The backend is activated; the client workflow still requires native
+   account verification on a phone and provider retention confirmation.
+8. **Children and audience:** all ages is the owner's intended audience; complete
+   the child/guardian and regional-policy review above before describing actual
+   protections or suitability. Official content rating remains pending.
 9. **International processing/security:** confirmed hosting locations, actual
    safeguards and provider roles; avoid unsupported guarantees.
 10. **Changes and contact:** version date, notice mechanism and contact address.

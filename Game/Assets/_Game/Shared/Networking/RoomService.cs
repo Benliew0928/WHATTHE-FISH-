@@ -13,8 +13,8 @@ using UnityEngine;
 namespace WhatTheFish {
  public interface IRoomService { Task Create(SportId sport=SportId.Football); Task Join(string code); Task Leave(); }
  public sealed partial class RoomService:MonoBehaviour,IRoomService {
-  // Combined recovery-clock and Golf hazard schemas require a new wire version.
-  public const ushort ProtocolVersion=87;
+  // The account reward ticket is replicated with the host's room state.
+  public const ushort ProtocolVersion=88;
   public ISession Session {get;private set;} public bool busy; public bool LocalTest;public SportId Sport {get;private set;}=SportId.Football; public string Error {get;private set;} public event Action Changed;
   public bool Connected=>!leaving&&!cancelConnection&&(Recovering||GuestRecovering||NetworkManager.Singleton&&NetworkManager.Singleton.IsListening);
   public bool Host=>Connected&&!Recovering&&NetworkManager.Singleton.IsHost;

@@ -2,6 +2,23 @@
 
 All unchecked items are pending, not implied to pass by successful compilation.
 
+## Owner decisions recorded on 26 October 2026
+
+- [x] Personal/individual publisher: LIEW KAIY BIN, supplied by owner.
+- [x] Public support/privacy email: benliew28262826@gmail.com.
+- [x] Owner will handle support, reports and deletion exceptions.
+- [x] Owner reports Huawei developer verification completed; not independently
+      reverified in the console by this task.
+- [x] Malaysia, free download, no advertising and no real-money in-app purchases confirmed.
+- [x] All-ages intended audience selected; this is not an official rating.
+- [x] Retain Google login conditionally on AppGallery acceptance and compatibility.
+- [ ] Complete the children's privacy, communication and guardian-control review.
+- [ ] Define support/report procedures, retention periods and deletion escalation.
+- [ ] Confirm intended app/account ownership and matching publisher details.
+
+These decisions authorize preparation only; they do not authorize deployment,
+public policy hosting, production signing or store submission.
+
 ## Signing handoff
 
 - [x] Owner confirmed there is no existing production keystore.
@@ -44,6 +61,7 @@ Record build hash, device/OS, network, result, steps and evidence for each row.
 | Multiplayer | Host/join, four-island travel, each sport, reconnect/host loss | Pending |
 | Voice | Two physical devices, denied permission, mute, headset/Bluetooth, background | Pending |
 | Social safety | Name/photo reports, blocks, invitations, operator response | Pending |
+| All-ages suitability | Validate the agreed child/guardian and communication controls; no assumed official rating | Pending |
 | Account deletion | All service data, retry/partial failure, relaunch, no stale recreation | Pending |
 | Golf | Cart on paved paths, events, completion/ranking, existing failed-suite triage | Pending |
 | Performance | Frame pacing, memory, thermals, battery and touch on target phones | Pending |
@@ -52,7 +70,8 @@ Record build hash, device/OS, network, result, steps and evidence for each row.
 
 ## Console submission
 
-- [ ] Publisher verification, regions, category and content rating confirmed.
+- [ ] Confirm verified individual account owns the intended app; complete category
+      and official content rating. Malaysia is the confirmed initial region.
 - [ ] Final listing/screenshots/support/privacy fields complete.
 - [ ] Asset rights and licenses reviewed; no placeholder UI or sample personal data.
 - [ ] Google production audience resolved if Google sign-in remains available.

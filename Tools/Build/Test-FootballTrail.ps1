@@ -4,7 +4,7 @@ $trailRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $trailPlayer=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $trailRoot 'Builds/FootballTrailQA/Player/WhatTheFish.exe'}
 $trailRun=Join-Path $trailRoot ('Builds/FootballTrailQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 New-Item -ItemType Directory -Force -Path $trailRun | Out-Null
-$trailArgs=@('-batchmode','-force-d3d11','-screen-width',"$Width",'-screen-height',"$Height",'-screen-fullscreen','0','-job-worker-count','2','-probe','-sport','Football','-offline','-footballTrailReview',('"'+$trailRun+'"'),'-report',('"'+(Join-Path $trailRun 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $trailRun 'player.log')+'"'))
+$trailArgs=@('-batchmode','-force-d3d11','-screen-width',"$Width",'-screen-height',"$Height",'-screen-fullscreen','0','-job-worker-count','2','-guestProfile','store-football-trails','-probe','-sport','Football','-offline','-footballTrailReview',('"'+$trailRun+'"'),'-report',('"'+(Join-Path $trailRun 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $trailRun 'player.log')+'"'))
 $trailProcess=Start-Process -FilePath $trailPlayer -ArgumentList $trailArgs -WindowStyle Hidden -PassThru
 try {
  if(!$trailProcess.WaitForExit(150000)){throw 'Football trail review timed out.'}

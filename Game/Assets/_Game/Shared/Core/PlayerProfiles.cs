@@ -138,16 +138,23 @@ namespace WhatTheFish {
    catch(ProfileException e)when(e.Status==404){ }
    if(key!=Scope)throw new OperationCanceledException();
    if(remote==null) {
-    remote=await Json<PublicProfile>("/v1/me","PUT",new SaveRequest{name=PlayerIdentity.DisplayName,avatar=local.profile.avatar,photo=local.photo,revision=0});
+    remote=await SaveRemote(new SaveRequest{name=PlayerIdentity.DisplayName,avatar=local.profile.avatar,photo=local.photo,revision=0});
    }else if(local.dirty&&!discardPending&&(local.profile.id==id||string.IsNullOrEmpty(local.profile.id))) {
-    remote=await Json<PublicProfile>("/v1/me","PUT",new SaveRequest{name=local.profile.name,avatar=local.profile.avatar,photo=local.photo,revision=local.profile.revision>0?local.profile.revision:remote.revision});
+    remote=await SaveRemote(new SaveRequest{name=local.profile.name,avatar=local.profile.avatar,photo=local.photo,revision=local.profile.revision>0?local.profile.revision:remote.revision});
    }
    if(key!=Scope)throw new OperationCanceledException();
    string photo=remote.hasPhoto>0?Convert.ToBase64String(await Request("/v1/photos/"+id+"/"+remote.avatarVersion)):"";
    saved=new Saved{profile=remote,photo=photo};loadedId=id;Persist();
    PlayerIdentity.SaveName(remote.name,out _);Changed?.Invoke();return remote;
   }
+  static async Task<PublicProfile> SaveRemote(SaveRequest request){
+   // Ask the server before replacing a pending offline avatar. The wallet cache
+   // may not have loaded yet during account recovery.
+   try{return await Json<PublicProfile>("/v1/me","PUT",request);}
+   catch(ProfileException e)when(e.Code=="cosmetic_not_owned"){request.avatar=0;return await Json<PublicProfile>("/v1/me","PUT",request);}
+  }
   public static async Task<string> Save(string name,int avatar,string photo) {
+   if(!CosmeticStore.Owned("profileAvatar",avatar))throw new InvalidOperationException("Unlock this cosmetic before using it.");
    if(!PlayerIdentity.ValidateName(name,out name,out var error))throw new InvalidOperationException(error);
    if(!string.IsNullOrEmpty(photo)&&(photo.Length!=65536||Convert.FromBase64String(photo).Length!=PhotoBytes))throw new InvalidOperationException("Choose a valid profile picture.");
    if(string.IsNullOrEmpty(PlayerIdentity.GuestId))PlayerIdentity.SaveName(PlayerIdentity.DisplayName,out _);

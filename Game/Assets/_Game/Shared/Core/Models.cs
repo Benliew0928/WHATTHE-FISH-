@@ -13,14 +13,17 @@ namespace WhatTheFish {
  public sealed class HuaweiServicesPlaceholder:IPlatformGameServices { public bool Available=>false; public void ReportResult(string resultId,int score){ Debug.Log("Huawei integration is not configured."); } }
  public static class LocalProfile {
   public static CharacterAppearance Character {get { var v=JsonUtility.FromJson<CharacterAppearance>(PlayerPrefs.GetString("character","{}"));v.Clamp();return v;} set{value.Clamp();PlayerPrefs.SetString("character",JsonUtility.ToJson(value));PlayerPrefs.Save();}}
-  public static StadiumAppearance Stadium {get{var v=JsonUtility.FromJson<StadiumAppearance>(PlayerPrefs.GetString("stadium",JsonUtility.ToJson(StadiumAppearance.Default)));v.Clamp();return v;}set{value.Clamp();PlayerPrefs.SetString("stadium",JsonUtility.ToJson(value));PlayerPrefs.Save();}}
-  public static StadiumAppearance Basketball {get{var v=JsonUtility.FromJson<StadiumAppearance>(PlayerPrefs.GetString("basketball",JsonUtility.ToJson(new StadiumAppearance{title="COURTSIDE CLUB",flags=true})));v.Clamp();return v;}set{value.Clamp();PlayerPrefs.SetString("basketball",JsonUtility.ToJson(value));PlayerPrefs.Save();}}
-  public static StadiumAppearance Golf=>LoadIsland(SportId.Golf);
-  public static StadiumAppearance Fishing=>LoadIsland(SportId.Fishing);
+  public static StadiumAppearance Stadium {get=>ForSport(SportId.Football);set=>SaveSport(SportId.Football,value);}
+  public static StadiumAppearance Basketball {get=>ForSport(SportId.Basketball);set=>SaveSport(SportId.Basketball,value);}
+  public static StadiumAppearance Golf=>ForSport(SportId.Golf);
+  public static StadiumAppearance Fishing=>ForSport(SportId.Fishing);
   public static StadiumAppearance DefaultVenue(SportId sport)=>new StadiumAppearance{title=sport switch{SportId.Football=>"SUNNY PARK",SportId.Basketball=>"COURTSIDE CLUB",SportId.Golf=>"ISLAND GREENS",_=>"LAGOON ISLAND"},flags=true};
-  static StadiumAppearance LoadIsland(SportId sport){var v=JsonUtility.FromJson<StadiumAppearance>(PlayerPrefs.GetString("venue."+sport,JsonUtility.ToJson(DefaultVenue(sport))));v.Clamp();return v;}
-  public static StadiumAppearance ForSport(SportId sport)=>sport switch{SportId.Football=>Stadium,SportId.Basketball=>Basketball,SportId.Golf=>Golf,SportId.Fishing=>Fishing,_=>throw new ArgumentOutOfRangeException(nameof(sport))};
-  public static void SaveSport(SportId sport,StadiumAppearance value){switch(sport){case SportId.Football:Stadium=value;break;case SportId.Basketball:Basketball=value;break;case SportId.Golf:case SportId.Fishing:value.Clamp();PlayerPrefs.SetString("venue."+sport,JsonUtility.ToJson(value));PlayerPrefs.Save();break;default:throw new ArgumentOutOfRangeException(nameof(sport));}}
+  public static StadiumAppearance ForSport(SportId sport){
+   string legacy=sport==SportId.Football?"stadium":sport==SportId.Basketball?"basketball":"venue."+sport;
+   string json=PlayerPrefs.GetString(CosmeticStore.VenueKey(sport),PlayerPrefs.GetString(legacy,JsonUtility.ToJson(DefaultVenue(sport))));
+   return CosmeticStore.Allowed(sport,JsonUtility.FromJson<StadiumAppearance>(json));
+  }
+  public static void SaveSport(SportId sport,StadiumAppearance value){value=CosmeticStore.Allowed(sport,value);PlayerPrefs.SetString(CosmeticStore.VenueKey(sport),JsonUtility.ToJson(value));PlayerPrefs.Save();}
   public static readonly Color[] Teams={Hex("24B6AE"),Hex("EE8FAD"),Hex("7A84D6"),Hex("F0B956")};
   public static Color Hex(string s){ColorUtility.TryParseHtmlString("#"+s,out var c);return c;}
  }

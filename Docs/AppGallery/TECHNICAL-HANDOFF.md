@@ -27,42 +27,22 @@
   automatic sign-in recovery may fail: support must resolve that case; do not
   promise every network failure is automatically recoverable.
 
-## Backend activation is pending
+## Backend activation — 26 October 2026
 
-Wrangler on this computer reports `loggedIn:false`. No production database or
-Worker has been changed. The client checks server capability before deleting
-anything; the old server returns a clear unavailable message. Local implementation
-does not mean live account deletion is enabled.
+The approved account coin implementation required the existing profile API's
+deletion table. Migrations **0004 and 0005** were applied after inspecting the
+live schema and recording a recovery bookmark. The reviewed Worker is deployed;
+see [coin deployment evidence](../COIN-ECONOMY.md) for its version and smoke checks.
+This establishes backend activation, not complete native account deletion or
+second-device recovery on a phone.
 
-Once the owner is ready, authenticate locally in a terminal from
-`Tools/AccountServer`:
-
-```powershell
-npx wrangler login
-npx wrangler whoami
-```
-
-Review the selected Cloudflare account and existing database binding before writes.
-Inspect whether the new table already exists:
-
-```powershell
-npx wrangler d1 execute whatthefish-profiles --remote --command "SELECT name FROM sqlite_master WHERE type='table' AND name='account_deletions';"
-```
-
-If absent, apply **only** the new additive migration, then deploy the reviewed
-Worker. Do not reapply migrations 0001–0003: historical setup used the dashboard
-and did not register Wrangler migration history.
-
-```powershell
-npx wrangler d1 execute whatthefish-profiles --remote --file migrations/0004_account_deletions.sql
-npm run deploy
-```
-
-Migration must precede deployment because profile APIs query the new table. The
-new table does not remove existing data by itself. Keep the previous Worker version
-for rollback; do not drop the table or its revocation markers during rollback.
-Afterward use disposable test identities for capability, deletion, retry and
-cross-client recreation checks. Never test deletion against a real player's data.
+Existing Wrangler authorization supported Worker deployment but lacked D1 access.
+The already authenticated Cloudflare dashboard applied the additive schema; no
+new access grant was made. The database has no Wrangler migration-history records.
+**Do not reapply migrations 0001–0005 blindly.** Inspect the schema first. Keep
+revocation markers during rollback and use only disposable identities for future
+deletion acceptance tests. The coin release's live smoke removed only its own
+synthetic profiles, without deleting a real player's account.
 
 Retention for pseudonymous revocation markers, provider security records and
 backups needs an explicit operator policy. Markers currently retain hash/time,
@@ -117,13 +97,21 @@ Production key creation/signing remains pending private owner password entry.
 
 ## Still dependent on owner or external access
 
-- Publisher/legal name, public support email, policy hosting, age/audience choice,
-  retention and moderation operator details.
-- AppGallery developer identity verification and final certificate registration.
-- Cloudflare local authentication and production backend activation.
+- Policy hosting, retention periods and operational support/report/deletion
+  procedures. Personal publisher LIEW KAIY BIN supplied public support/privacy
+  email benliew28262826@gmail.com and will handle these requests.
+- All-ages audience suitability, child/guardian controls and official rating;
+  all ages replaces the earlier 13+ proposal without certifying those controls.
+- Intended app/account ownership and final certificate registration. The owner
+  reports Huawei developer identity verification completed on 26 October 2026.
+- Native end-to-end deletion acceptance following the recorded backend activation.
 - Huawei Android device testing, including no-GMS login/QR, microphone/Bluetooth,
   same-provider deletion verification and second-device account recovery.
-- Google OAuth production audience if Google login remains public.
+- Google OAuth production configuration and no-GMS compatibility: the owner wants
+  Google retained if compatible with AppGallery acceptance; approval is unverified.
 - Final store materials, device screenshots and submission.
 
-Malaysia, free download, no advertising and no in-app purchases are confirmed.
+Malaysia, free download, no advertising and no real-money in-app purchases are confirmed.
+English is the requested preparation/discussion language; player-visible text
+continues to require English, Simplified Chinese and Bahasa Melayu. These owner
+decisions alone do not authorize further production changes or store submission.

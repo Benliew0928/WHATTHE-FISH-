@@ -54,8 +54,8 @@ namespace WhatTheFish {
     }
     Click("Palette Lilac");yield return Settled();var before=PreviewPixels();Click("Palette Rose");yield return Settled();ChangedPixels(before,PreviewPixels(),"basketball palette changes preview",500);yield return Capture("Basketball-palette");
    }else if(sport==SportId.Football){
-    Click("Board design");yield return Settled();VisibleTarget(app.stadium.subtitle.gameObject,"football board message");yield return Capture("Football-message");
-    Click("Screen design");yield return Settled();Check(!Button("Board design").IsInteractable(),"welcome screen disables board message");VisibleTarget(app.stadium.subtitle.gameObject,"football team welcome");yield return Capture("Football-welcome");
+    Click("Board design 1");yield return Settled();VisibleTarget(app.stadium.subtitle.gameObject,"football board message");yield return Capture("Football-message");
+    Click("Screen design");yield return Settled();Check(!Button("Board design 1").IsInteractable(),"welcome screen disables board message");VisibleTarget(app.stadium.subtitle.gameObject,"football team welcome");yield return Capture("Football-welcome");
     Click("Decorative flags");yield return Settled();var before=PreviewPixels();yield return Capture("Football-flags-off");
     Click("Decorative flags");yield return Settled();ChangedPixels(before,PreviewPixels(),"football flags toggle in preview");VisibleTarget(((SunvaleStadiumView)app.stadium).flagModules[0],"football decorative banners");yield return Capture("Football-flags-on");
    }else{
@@ -101,6 +101,7 @@ namespace WhatTheFish {
    canvas.renderMode=mode;canvas.worldCamera=oldCamera;canvas.planeDistance=distance;
   }
   IEnumerator Start(){
+   EconomyRenderReview.UnlockAll();
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    yield return Wait(()=>AppRoot.Instance&&AppRoot.Instance.Menu,"app ready");app=AppRoot.Instance;if(!app){Finish();yield break;}
    yield return Wait(()=>!StartupWelcome.Blocking,"welcome dismissed");
@@ -129,7 +130,7 @@ namespace WhatTheFish {
      Click("Preview detail");yield return Settled();Layout();yield return Capture(sport+"-equipment");
      Click("Preview sign");yield return Settled();yield return Capture(sport+"-sign");
     }else if(sport==SportId.Basketball){Click("Logo Star");yield return Settled();Check(((BasketballArenaView)app.stadium).logoCatalog[1].activeSelf,"court logo updates");}
-    else {Click("Board design");yield return Settled();Check(app.stadium.subtitle.text.Contains("GOOD ENERGY"),"football message updates");}
+    else {Click("Board design 1");yield return Settled();Check(app.stadium.subtitle.text.Contains("GOOD ENERGY"),"football message updates");}
     Click("Preview overview");yield return Settled();yield return Capture(sport+"-overview");
     yield return PreviewChoices(sport);
     Name("VENUE "+sport.ToString().ToUpperInvariant());Click("Save venue");yield return Settled();
@@ -153,7 +154,7 @@ namespace WhatTheFish {
    app.Show("venues");yield return Settled();
    if(role=="host"){
     yield return new WaitForSecondsRealtime(4);Click("Reset venue");yield return Settled();Name("SHARED ISLAND");Click("Palette Lilac");yield return Settled();
-    Click(app.SelectedSport==SportId.Basketball?"Logo Lightning":app.SelectedSport==SportId.Football?"Board design":"Equipment Sea glass");yield return Settled();Click("Save venue");yield return Settled();
+    Click(app.SelectedSport==SportId.Basketball?"Logo Lightning":app.SelectedSport==SportId.Football?"Board design 1":"Equipment Sea glass");yield return Settled();Click("Save venue");yield return Settled();
     Check(NetworkAthlete.HostPlayer.WorldAppearance.Value.ToString().Contains("SHARED ISLAND"),"host publishes saved appearance");
     yield return new WaitForSecondsRealtime(8);LocalProfile.SaveSport(app.SelectedSport,original[app.SelectedSport]);
    }else{

@@ -38,7 +38,7 @@ export function createWorker(factory = createAuthenticator) {
     async fetch(request, env) {
       try {
         const url = new URL(request.url);
-        if (/^\/v1\/(?:me|account-deletion|search|friends|blocks|reports|room-proof|players|photos|invites)(?:\/|$)/.test(url.pathname))
+        if (/^\/v1\/(?:me|economy|account-deletion|search|friends|blocks|reports|room-proof|players|photos|invites)(?:\/|$)/.test(url.pathname))
           return profileApi(request,env);
         if (url.search) return send(404, { code: 'not_found' });
         if (request.method === 'GET' && url.pathname === '/health') {

@@ -1,5 +1,69 @@
 # Build size — measured release records
 
+## Cosmetic store with remote integration — 26 October 2026
+
+Official AndroidSubmission: **166,942,348 -> 168,106,738 bytes (+1,164,390)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,893,262 bytes**.
+SHA-256: **DEE080621B4F514CBF85B70684477BE24B0B679F30C36D85C86F37AE2752933B**.
+
+This delivery combines the account coin system and permanent cosmetic purchases
+with the remote collision/awards integration at `a97fb31`. The 58-item shared
+catalog grants two free choices per category (30 total); the other 28 choices
+cost 1,000 coins each. Locked selectors, purchase confirmation and debit history
+are localized in English, Simplified Chinese and Bahasa Melayu.
+
+The baseline above is the APK actually present at the start of this task. Most
+growth comes from bringing in the remote collision/awards release; compared with
+that separately measured 168,036,092-byte release, this APK is **70,646 bytes**
+larger. No raster assets or quality reductions were introduced. Generated golf
+prefab IDs/order and character-source provenance were refreshed by the build.
+
+Validation passed: **71 backend tests**, **14 deployed-service checks**,
+**2,202 client assertions** across the store and all four sports, **3,543**
+complete localization entries, all five font faces and **16** artwork checks.
+The APK passes the size gate, v2 signature, ZIP CRC, **1,406** exact audit entries
+and five-scene bundle integrity. All **378 Android / 527 Windows** compiled
+source documents match the working source. Development review code is excluded
+from Android. Network protocol remains **88**.
+The complete **342-file WindowsFinal** player was promoted and hash-verified;
+**115 trail regression assertions** pass on its final compiled scripts.
+
+Evidence: `Builds/StoreQA/`, `Builds/SizeAudit/latest/` and
+[store implementation notes](COSMETIC-STORE.md). The prior APK and audit are
+recoverable in `Legacy/20261026-022225-637-cosmetic-store-android/`.
+Superseded full Windows players are in
+`Legacy/20261026-022843-708-cosmetic-store-windows/`.
+Physical-phone appearance, touch/FPS and linked recovery on a second physical
+device remain unverified; no Android device was connected.
+
+## Account coin system — 26 October 2026
+
+Official AndroidSubmission: **166,897,340 -> 166,942,348 bytes (+45,008)**.
+Headroom below the strict 1,000,000,000-byte limit: **833,057,652 bytes**.
+SHA-256: **CBB9B3CD2B0EE46B6F352E774F3CFC9415C6364EBF83A774CD15853C7681AD82**.
+
+Adds persistent account coins, a seven-day daily streak, online match rewards,
+three-language wallet/results UI and account-saved free trail selections. No
+cosmetic prices or purchasing flow were added. Protocol **88** is required.
+
+The size gate, v2 signature, ZIP CRC, **1,405** audit entries and five-scene
+bundle integrity passed. All **376 Android** and **524 Windows** compiled source
+documents match. The complete **342-file WindowsFinal** was promoted and
+hash-verified. Development economy fixtures are absent from Android. No art
+quality reductions or new raster assets were introduced. The build regenerated
+golf prefab internal object IDs with the same meshes, materials and scale.
+
+Validation: 65 backend tests, eight live-service checks, 1,111 initial client
+assertions across all four sports, 643 final UI/network assertions, 308 lifecycle
+assertions covering per-account local cleanup, and 115
+trail regression assertions. Physical-phone appearance, touch/FPS and native
+second-device linked-account recovery remain unverified.
+
+Evidence: `Builds/CoinQA/`, `Builds/SizeAudit/latest/` and
+[coin implementation notes](COIN-ECONOMY.md).
+Recovery: `Legacy/20261026-011603-316-coin-system-android/` and
+`Legacy/20261026-012617-736-coin-system-windows/`.
+
 ## Venue and scoreboard publication merge — 26 October 2026
 
 Merged collision/awards/event commit `a15d4ff` with scoreboard/venue-preview

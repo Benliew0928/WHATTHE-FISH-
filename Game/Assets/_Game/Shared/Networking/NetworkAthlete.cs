@@ -14,6 +14,9 @@ namespace WhatTheFish {
   SportId initialBotSport;
   public void ConfigureBot(byte slot,SportId sport=SportId.Football){if(!IsSpawned){initialBotSlot=slot;initialBotSport=sport;}}
   public NetworkVariable<FixedString64Bytes> Nickname=new();
+  public NetworkVariable<FixedString64Bytes> CoinMatch=new();
+  // 0: no match, 1: pending, 2: credited, 3: ineligible/cancelled.
+  public NetworkVariable<byte> CoinState=new();
   public NetworkVariable<bool> Exploring=new(false);
   public NetworkVariable<int> FootballMinutes=new(0);
   public NetworkVariable<int> BasketballMinutes=new(3);

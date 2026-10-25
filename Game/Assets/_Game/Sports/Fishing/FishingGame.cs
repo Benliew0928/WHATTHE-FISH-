@@ -149,7 +149,7 @@ namespace WhatTheFish {
   }
   public void ReturnToPractice(){if(!Authority||!Context||State.Match.phase==FishingRoundPhase.Playing||State.Preparing)return;BeginPractice();}
   public void ResetOfflinePractice(){if(Authority&&Context&&!AppRoot.Instance.rooms.Connected)BeginPractice();}
-  void Publish(){var host=NetworkAthlete.HostPlayer;if(!Authority||!host||!host.IsSpawned)return;host.FishingMatch.Value=State.Match;Sync(host.FishingPlayers,State.Players);Sync(host.FishingFish,State.Fish);}
+  void Publish(){MatchRewards.Fishing(this);var host=NetworkAthlete.HostPlayer;if(!Authority||!host||!host.IsSpawned)return;host.FishingMatch.Value=State.Match;Sync(host.FishingPlayers,State.Players);Sync(host.FishingFish,State.Fish);}
   static void Sync<T>(NetworkList<T> target,List<T> source)where T:unmanaged,IEquatable<T>{while(target.Count>source.Count)target.RemoveAt(target.Count-1);for(int i=0;i<source.Count;i++){if(i>=target.Count)target.Add(source[i]);else if(!target[i].Equals(source[i]))target[i]=source[i];}}
  }
 }

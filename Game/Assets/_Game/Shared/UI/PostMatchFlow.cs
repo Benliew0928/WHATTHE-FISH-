@@ -16,7 +16,9 @@ namespace WhatTheFish {
   void Build(){
    panel=CoveUI.Rect(transform,"Next adventure overlay",0,0,1600,900);CoveUI.Stretch(panel);panel.gameObject.AddComponent<Image>().color=new Color(.025f,.045f,.04f,.34f);
    content=CoveUI.Rect(panel,"Safe adventure card",0,0,1180,626);WorldUI.Card(content,"Adventure card",0,0,1180,626);
-   title=WorldUI.Label(content,"NEXT ADVENTURE",30,22,700,32,21,true,WorldUI.Muted);
+   title=WorldUI.Label(content,"NEXT ADVENTURE",30,22,570,32,21,true,WorldUI.Muted);
+   var rewards=WorldUI.Button(content,"View match coins",CoinWalletUI.ResultSummary,610,8,540,36,CoinWalletUI.Open,size:20);
+   rewards.GetComponentInChildren<Text>().gameObject.AddComponent<CoinBalanceLabel>().Result=true;
    WorldUI.Label(content,"Where to next?",28,56,750,64,44,true);
    subtitle=WorldUI.Label(content,"",30,126,1120,42,23,false,WorldUI.Muted);
    hostControls=CoveUI.Rect(content,"Host choices",0,0,1180,626).gameObject;
@@ -84,6 +86,7 @@ namespace WhatTheFish {
   void ReadyFishing(){var f=FishingGame.Instance;var a=app?app.LocalAthlete:null;var p=f&&a?f.Player(a):null;if(!p.HasValue||p.Value.ready)return;var n=a.GetComponent<NetworkAthlete>();if(n&&n.IsSpawned&&!n.IsServer)n.FishingRpc(FishingAction.Ready,f.State.Match.round,p.Value.sequence);else f.Execute(a,FishingAction.Ready,f.State.Match.round,p.Value.sequence);}
   void Travel(){if(RoomTeleport.Instance.Request(selected,destination))Close();else actionMessage=RoomTeleport.Instance.Message;}
   void Update(){
+   if(CoinWalletUI.Visible||CosmeticPurchaseUI.Visible)return;
    app=AppRoot.Instance;if(!app)return;current=FinishedKey();
    if(!app.Exploring||RoomService.Paused||RoomMatchStart.Travelling||MatchActive){Close();dock.gameObject.SetActive(false);if(MatchActive||!app.Exploring)shown="";return;}
    bool result=(app.SelectedSport==SportId.Golf&&FindFirstObjectByType<GolfLeaderboardUI>() is GolfLeaderboardUI ranking&&ranking.Expanded)||FishingCeremony.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingHUD.Instance&&FishingHUD.Instance.Results&&FishingHUD.Instance.Results.Visible;

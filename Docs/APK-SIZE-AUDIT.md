@@ -1,5 +1,81 @@
 # APK size audit — measured release records
 
+## Cosmetic store with remote integration — 26 October 2026
+
+Official AndroidSubmission: **166,942,348 -> 168,106,738 bytes (+1,164,390)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,893,262 bytes**.
+SHA-256: **DEE080621B4F514CBF85B70684477BE24B0B679F30C36D85C86F37AE2752933B**.
+
+This delivery combines the account coin system and permanent cosmetic purchases
+with the remote collision/awards integration at `a97fb31`. The 58-item shared
+catalog grants two free choices per category (30 total); the other 28 choices
+cost 1,000 coins each. Locked selectors, purchase confirmation and debit history
+are localized in English, Simplified Chinese and Bahasa Melayu.
+
+The baseline above is the APK actually present at the start of this task. Most
+growth comes from bringing in the remote collision/awards release; compared with
+that separately measured 168,036,092-byte release, this APK is **70,646 bytes**
+larger. No raster assets or quality reductions were introduced. Generated golf
+prefab IDs/order and character-source provenance were refreshed by the build.
+
+Validation passed: **71 backend tests**, **14 deployed-service checks**,
+**2,202 client assertions** across the store and all four sports, **3,543**
+complete localization entries, all five font faces and **16** artwork checks.
+The APK passes the size gate, v2 signature, ZIP CRC, **1,406** exact audit entries
+and five-scene bundle integrity. All **378 Android / 527 Windows** compiled
+source documents match the working source. Development review code is excluded
+from Android. Network protocol remains **88**.
+The complete **342-file WindowsFinal** player was promoted and hash-verified;
+**115 trail regression assertions** pass on its final compiled scripts.
+
+Evidence: `Builds/StoreQA/`, `Builds/SizeAudit/latest/` and
+[store implementation notes](COSMETIC-STORE.md). The prior APK and audit are
+recoverable in `Legacy/20261026-022225-637-cosmetic-store-android/`.
+Superseded full Windows players are in
+`Legacy/20261026-022843-708-cosmetic-store-windows/`.
+Physical-phone appearance, touch/FPS and linked recovery on a second physical
+device remain unverified; no Android device was connected.
+
+| Largest compressed contributor | Bytes | Change from local baseline |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 45,960,965 | +542,313 |
+| `lib/arm64-v8a/libil2cpp.so` | 13,302,688 | +23,648 |
+| `lib/arm64-v8a/libvivox-sdk.so` | 10,240,163 | +0 |
+| `lib/arm64-v8a/libunity.so` | 9,828,173 | +20,126 |
+| `assets/bin/Data/6353d0eb8b2209c438668e5b5973c13e` | 7,000,675 | +0 |
+
+The scene bundle and serialized resources account for most growth. The font and
+native voice entries are unchanged. APK bytes, compressed entries and source
+folder sizes are distinct measurements.
+
+## Account coin system — 26 October 2026
+
+Official AndroidSubmission: **166,897,340 -> 166,942,348 bytes (+45,008)**.
+Headroom below the strict 1,000,000,000-byte limit: **833,057,652 bytes**.
+SHA-256: **CBB9B3CD2B0EE46B6F352E774F3CFC9415C6364EBF83A774CD15853C7681AD82**.
+
+| Largest compressed contributor | Bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 45,418,652 | +4,349 |
+| `lib/arm64-v8a/libil2cpp.so` | 13,279,040 | +32,068 |
+| `lib/arm64-v8a/libvivox-sdk.so` | 10,240,163 | 0 |
+| `lib/arm64-v8a/libunity.so` | 9,808,047 | 0 |
+| Largest multilingual font entry | 7,000,675 | 0 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,918,648 | +5,344 |
+
+Growth is concentrated in compiled economy code and metadata; no new raster
+assets or texture-quality reductions were introduced. All five multilingual
+font entries are unchanged. The five-scene bundle hash and size match its
+catalog, and every one of the **1,405** ZIP entries matches the audit. ZIP CRC,
+v2 signing, native account/scan/voice support and production voice configuration
+passed. Economy review code is excluded from Android; runtime wallet, ledger
+models and settlement integration are present.
+
+Compiled-source proof matches **376 Android** and **524 Windows** documents.
+The complete **342-file WindowsFinal** was promoted and hash-verified.
+See [coin validation and limits](COIN-ECONOMY.md), `Builds/CoinQA/` and
+`Builds/SizeAudit/latest/`. Physical-phone quality and FPS are unverified.
+
 ## Venue and scoreboard publication merge — 26 October 2026
 
 Merged collision/awards/event commit `a15d4ff` with scoreboard/venue-preview

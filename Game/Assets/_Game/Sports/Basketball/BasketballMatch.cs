@@ -45,7 +45,7 @@ namespace WhatTheFish {
   void OnEnable(){Instance=this;}
   void OnDisable(){ResetRestartMovement();if(Authority)Clear();if(Instance==this)Instance=null;}
   BasketballMatchSnapshot Capture()=>new BasketballMatchSnapshot{phase=State.Phase,result=State.Result,possession=State.Possession,restart=State.RestartReason,scoreA=State.ScoreA,scoreB=State.ScoreB,deadline=State.Deadline,remaining=State.Remaining(Now),shotDeadline=State.ShotDeadline,revision=published,teamA=Selection.Count(FootballTeam.A),teamB=Selection.Count(FootballTeam.B),capacity=Selection.Capacity,inbounder=inbounder,automaticPlayers=AutomaticPlayers(),inboundExit=inboundExit,inboundTurnA=InboundTurn(FootballTeam.A),inboundTurnB=InboundTurn(FootballTeam.B)};
-  void Publish(){PublishStatistics();if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.BasketballMatch.Value=Capture();}
+  void Publish(){PublishStatistics();MatchRewards.Basketball(this);if(Authority&&NetworkAthlete.HostPlayer&&NetworkAthlete.HostPlayer.IsSpawned)NetworkAthlete.HostPlayer.BasketballMatch.Value=Capture();}
   public bool StartMatch(){if(!CanStart)return false;return Begin(Roster().OrderBy(PlayerId).ToArray(),MenuMatchRules.BasketballSeconds,10);}
   bool Begin(Athlete[] roster,double seconds,double selection){
    if(!Authority||!Context||RoomMatchStart.Travelling||Active||roster.Length<4)return false;

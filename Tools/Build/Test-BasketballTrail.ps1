@@ -8,7 +8,7 @@ $trailProcesses=@();$trailFolders=@()
 try {
  foreach($role in $(if($Mode -eq 'Local'){@('host','guest')}else{@('offline')})){
   $folder=Join-Path $trailRun $role;New-Item -ItemType Directory -Path $folder | Out-Null;$trailFolders+=$folder
-  $arguments=@('-batchmode','-force-d3d11','-screen-width',"$Width",'-screen-height',"$Height",'-screen-fullscreen','0','-job-worker-count','2','-probe','-sport','Basketball','-basketballTrailReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'),'-exitAfter','160')
+  $arguments=@('-batchmode','-force-d3d11','-screen-width',"$Width",'-screen-height',"$Height",'-screen-fullscreen','0','-job-worker-count','2','-guestProfile',('store-basketball-'+$role),'-probe','-sport','Basketball','-basketballTrailReview',('"'+$folder+'"'),'-report',('"'+(Join-Path $folder 'probe.txt')+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'),'-exitAfter','160')
   if($role -eq 'offline'){$arguments+='-offline'}else{$arguments+=@($(if($role -eq 'host'){'-localHost'}else{'-localClient'}),'-port',$Port,'-expected','2','-startAt','12','-returnAt','150')}
   $trailProcesses+=Start-Process -FilePath $trailPlayer -ArgumentList $arguments -WindowStyle Hidden -PassThru
   if($role -eq 'host'){Start-Sleep -Seconds 3}

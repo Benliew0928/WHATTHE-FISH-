@@ -12,6 +12,7 @@ namespace WhatTheFish {
   void Check(bool value,string name){checks++;failed|=!value;File.AppendAllText(Path.Combine(folder,"results.txt"),(value?"PASS ":"FAIL ")+name+"\n");}
   void Place(Vector3 position){var actor=app.LocalAthlete;actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(position,Quaternion.identity);actor.ResetLocomotion();actor.capsule.enabled=true;Physics.SyncTransforms();}
   IEnumerator Start(){
+   EconomyRenderReview.UnlockAll();
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    float until=Time.realtimeSinceStartup+80;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!FootballBall.Instance||!AppRoot.Instance.LocalAthlete)&&Time.realtimeSinceStartup<until)yield return null;
    app=AppRoot.Instance;ball=FootballBall.Instance;Check(app&&ball&&app.LocalAthlete,"football ready");if(!app||!ball){Finish();yield break;}

@@ -221,7 +221,7 @@ namespace WhatTheFish {
    Heading("Make the ball your own","Your trail, all game. Only you see your choice, whoever has the ball.");
    var panel=Plate(content,basketball?"Personal basketball style":"Personal football style",63,178,1476,609,Cream,32,2,true);
    Text(panel.transform,"Choose a trail",30,16,1000,46,32,true);
-   Text(panel.transform,"Saved automatically on this device",30,62,1000,35,23,false,Muted);
+   Text(panel.transform,"Two free choices. More trails cost 1,000 coins each.",30,62,1000,35,23,false,Muted);
    var cards=Rect(panel.transform,"Trail choices",30,112,1416,467);if(basketball)BasketballTrailPicker.Create(cards,1416,467,false);else FootballTrailPicker.Create(cards,1416,467,false);
    if(CanEdit)ActionButton("Customize shared venue","Venue design",63,809,310,65,Cream,()=>Go("custom"),CoveSymbol.Paint,26);
    ActionButton("Done customization","Done",1260,809,279,65,Mint,Back,CoveSymbol.Check,27);

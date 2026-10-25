@@ -165,6 +165,7 @@ namespace WhatTheFish {
   void ClearInputs(){PlayerView.Instance?.ClearMatchInput();foreach(var a in actors.Values)if(a)a.GetComponent<NetworkAthlete>()?.ClearMatchInput();}
   void ApplyLive(){foreach(var item in balls){var p=State.Player(item.Key);item.Value.SetLive(Context&&State.Running&&p!=null&&!p.IsFinished&&!p.IsDNF&&actors.TryGetValue(item.Key,out var actor)&&actor&&actor.isActiveAndEnabled&&(teeReservations==null||!teeReservations.Waiting(item.Key)));}}
   void Publish(){
+   MatchRewards.Golf(this);
    if(!Authority)return;var host=NetworkAthlete.HostPlayer;if(!host||!host.IsSpawned||!host.IsServer)return;
    host.GolfMatch.Value=Snapshot;
    var roster=State.Players.ToArray();while(host.GolfPlayers.Count>roster.Length)host.GolfPlayers.RemoveAt(host.GolfPlayers.Count-1);

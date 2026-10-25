@@ -17447,6 +17447,276 @@
       "en": "RED · YOU",
       "zh": "红队 · 你",
       "ms": "MERAH · ANDA"
+    },
+    {
+      "en": "Your coins",
+      "zh": "你的金币",
+      "ms": "Syiling anda"
+    },
+    {
+      "en": "Coins: —",
+      "zh": "金币：—",
+      "ms": "Syiling: —"
+    },
+    {
+      "en": "Coins: {0}",
+      "zh": "金币：{0}",
+      "ms": "Syiling: {0}"
+    },
+    {
+      "en": "Reward: +{0} coins",
+      "zh": "奖励：+{0} 金币",
+      "ms": "Ganjaran: +{0} syiling"
+    },
+    {
+      "en": "Online matches earn coins.",
+      "zh": "完成在线比赛可获得金币。",
+      "ms": "Perlawanan dalam talian memberi syiling."
+    },
+    {
+      "en": "Return each day. Play together. Make your island style your own.",
+      "zh": "每天回来，一起游玩，打造你的专属海岛风格。",
+      "ms": "Kembali setiap hari. Main bersama. Cipta gaya pulau anda."
+    },
+    {
+      "en": "Day {0}",
+      "zh": "第 {0} 天",
+      "ms": "Hari {0}"
+    },
+    {
+      "en": "Received",
+      "zh": "已领取",
+      "ms": "Diterima"
+    },
+    {
+      "en": "Today",
+      "zh": "今天",
+      "ms": "Hari ini"
+    },
+    {
+      "en": "Next",
+      "zh": "下一个",
+      "ms": "Seterusnya"
+    },
+    {
+      "en": "Daily rewards reset at midnight, Malaysia time.",
+      "zh": "每日奖励于马来西亚时间午夜重置。",
+      "ms": "Ganjaran harian ditetapkan semula pada tengah malam waktu Malaysia."
+    },
+    {
+      "en": "Next daily reward in {0} · Malaysia time",
+      "zh": "距离下一次每日奖励还有 {0} · 马来西亚时间",
+      "ms": "Ganjaran harian seterusnya dalam {0} · Waktu Malaysia"
+    },
+    {
+      "en": "Miss a day to restart at Day 1. After Day 7, a new cycle begins. Your coins stay.",
+      "zh": "中断一天将从第 1 天重新开始。第 7 天后开启新一轮，已有金币不会减少。",
+      "ms": "Terlepas sehari, mula semula pada Hari 1. Selepas Hari 7, kitaran baharu bermula. Syiling anda kekal."
+    },
+    {
+      "en": "Existing trails stay free. Future cosmetic purchases are not open yet.",
+      "zh": "现有拖尾保持免费，外观购买功能暂未开放。",
+      "ms": "Jejak sedia ada kekal percuma. Pembelian kosmetik belum dibuka."
+    },
+    {
+      "en": "Sync coins",
+      "zh": "同步金币",
+      "ms": "Segerakkan syiling"
+    },
+    {
+      "en": "Connect to sync your coins.",
+      "zh": "连接网络以同步金币。",
+      "ms": "Sambung ke internet untuk menyegerakkan syiling."
+    },
+    {
+      "en": "Saved to your account.",
+      "zh": "已保存至你的账号。",
+      "ms": "Disimpan ke akaun anda."
+    },
+    {
+      "en": "Coin sync unavailable. Please retry online.",
+      "zh": "金币同步暂不可用，请联网后重试。",
+      "ms": "Syiling tidak dapat disegerakkan. Cuba lagi dalam talian."
+    },
+    {
+      "en": "Link an account to recover your coins on another device.",
+      "zh": "绑定账号，即可在其他设备上恢复金币。",
+      "ms": "Pautkan akaun untuk memulihkan syiling pada peranti lain."
+    },
+    {
+      "en": "Daily reward",
+      "zh": "每日奖励",
+      "ms": "Ganjaran harian"
+    },
+    {
+      "en": "Your recent coin rewards appear here.",
+      "zh": "最近获得的金币奖励会显示在这里。",
+      "ms": "Ganjaran syiling terkini anda akan dipaparkan di sini."
+    },
+    {
+      "en": "Coins require an online match with human players.",
+      "zh": "金币奖励需要与真人玩家进行在线比赛。",
+      "ms": "Ganjaran syiling memerlukan perlawanan dalam talian dengan pemain manusia."
+    },
+    {
+      "en": "Match rewards pending.",
+      "zh": "比赛奖励待同步。",
+      "ms": "Ganjaran perlawanan belum disegerakkan."
+    },
+    {
+      "en": "Match rewards saved.",
+      "zh": "比赛奖励已保存。",
+      "ms": "Ganjaran perlawanan disimpan."
+    },
+    {
+      "en": "This match has no coin reward.",
+      "zh": "本场比赛没有金币奖励。",
+      "ms": "Tiada ganjaran syiling untuk perlawanan ini."
+    },
+    {
+      "en": "Only you see this trail. Syncs to your account online.",
+      "zh": "此拖尾仅你可见，联网后会同步至账号。",
+      "ms": "Hanya anda melihat jejak ini. Disegerakkan ke akaun dalam talian."
+    },
+    {
+      "en": "Two free choices per category. Unlock more for 1,000 coins each.",
+      "zh": "每类有两个免费选项。其余每个需 1,000 金币解锁。",
+      "ms": "Dua pilihan percuma bagi setiap kategori. Buka yang lain dengan 1,000 syiling setiap satu."
+    },
+    {
+      "en": "Two free choices. More trails cost 1,000 coins each.",
+      "zh": "两个免费选项。其余拖尾每个需 1,000 金币。",
+      "ms": "Dua pilihan percuma. Jejak lain berharga 1,000 syiling setiap satu."
+    },
+    {
+      "en": "Unlock cosmetic",
+      "zh": "解锁外观",
+      "ms": "Buka kosmetik"
+    },
+    {
+      "en": "Permanent unlock for this account.",
+      "zh": "此账号可永久使用。",
+      "ms": "Dibuka secara kekal untuk akaun ini."
+    },
+    {
+      "en": "Price: 1,000 coins",
+      "zh": "价格：1,000 金币",
+      "ms": "Harga: 1,000 syiling"
+    },
+    {
+      "en": "Buy for 1,000 coins",
+      "zh": "花 1,000 金币购买",
+      "ms": "Beli dengan 1,000 syiling"
+    },
+    {
+      "en": "Choose Buy to unlock this item.",
+      "zh": "选择购买以解锁此物品。",
+      "ms": "Pilih Beli untuk membuka item ini."
+    },
+    {
+      "en": "Not enough coins. Earn more by signing in and playing matches.",
+      "zh": "金币不足。每日签到和参加比赛可获得更多金币。",
+      "ms": "Syiling tidak mencukupi. Daftar masuk setiap hari dan main perlawanan untuk mendapat lebih banyak."
+    },
+    {
+      "en": "Saving your purchase…",
+      "zh": "正在保存购买记录…",
+      "ms": "Menyimpan pembelian anda…"
+    },
+    {
+      "en": "Unlocked. Saved to your account.",
+      "zh": "已解锁并保存至账号。",
+      "ms": "Dibuka dan disimpan dalam akaun anda."
+    },
+    {
+      "en": "Purchase unavailable. Please retry online.",
+      "zh": "暂时无法购买。请联网后重试。",
+      "ms": "Pembelian tidak tersedia. Cuba semula dalam talian."
+    },
+    {
+      "en": "Account changed. Open the item again.",
+      "zh": "账号已更改。请重新打开物品。",
+      "ms": "Akaun telah berubah. Buka item semula."
+    },
+    {
+      "en": "This item is unavailable.",
+      "zh": "此物品暂不可用。",
+      "ms": "Item ini tidak tersedia."
+    },
+    {
+      "en": "Unlock this cosmetic before using it.",
+      "zh": "请先解锁此外观再使用。",
+      "ms": "Buka kosmetik ini sebelum menggunakannya."
+    },
+    {
+      "en": "Cosmetic purchase",
+      "zh": "外观购买",
+      "ms": "Pembelian kosmetik"
+    },
+    {
+      "en": "Message",
+      "zh": "信息",
+      "ms": "Mesej"
+    },
+    {
+      "en": "Character 01",
+      "zh": "角色 01",
+      "ms": "Watak 01"
+    },
+    {
+      "en": "Character 02",
+      "zh": "角色 02",
+      "ms": "Watak 02"
+    },
+    {
+      "en": "Character 03",
+      "zh": "角色 03",
+      "ms": "Watak 03"
+    },
+    {
+      "en": "Character 04",
+      "zh": "角色 04",
+      "ms": "Watak 04"
+    },
+    {
+      "en": "Character 05",
+      "zh": "角色 05",
+      "ms": "Watak 05"
+    },
+    {
+      "en": "Character 06",
+      "zh": "角色 06",
+      "ms": "Watak 06"
+    },
+    {
+      "en": "Character 07",
+      "zh": "角色 07",
+      "ms": "Watak 07"
+    },
+    {
+      "en": "Character 08",
+      "zh": "角色 08",
+      "ms": "Watak 08"
+    },
+    {
+      "en": "Character 09",
+      "zh": "角色 09",
+      "ms": "Watak 09"
+    },
+    {
+      "en": "Character 10",
+      "zh": "角色 10",
+      "ms": "Watak 10"
+    },
+    {
+      "en": "Rally crest",
+      "zh": "集结徽章",
+      "ms": "Lambang Rali"
+    },
+    {
+      "en": "Venue name",
+      "zh": "场地名称",
+      "ms": "Nama venue"
     }
   ]
 }

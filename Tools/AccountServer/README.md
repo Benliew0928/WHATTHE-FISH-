@@ -1,6 +1,30 @@
 # Identity, player profiles and friends
 
-## Prepared account deletion — 25 October 2026
+## Account coins and deployment — 26 October 2026
+
+Worker `13c03113-5f15-43ea-8df5-01f2774eda13` now serves the account wallet,
+daily streak, match settlement and cosmetic purchase/ownership APIs. Apply all six
+migrations in order only to a new database. On the existing database, migrations
+0004–0006 were applied after confirming 0001–0003 already existed. Its
+dashboard-managed schema has no Wrangler migration-history records.
+
+Authenticated economy routes are `GET /v1/economy/wallet` and POST routes
+`daily`, `equip`, `purchase`, `matches/start`, `matches/lookup`, `matches/join` and
+`matches/finish` under `/v1/economy/`. The account comes from the verified bearer
+token. Clients cannot submit a balance or arbitrary credit amount. The reward
+ledger, daily update and whole-match settlement are atomic and retry-safe.
+The shared catalog grants two starters per category; each remaining item costs
+1,000 earned coins. A unique purchase receipt atomically debits and grants it.
+See [store rules and upgrade behavior](../../Docs/COSMETIC-STORE.md) and
+[coin rules and trust boundary](../../Docs/COIN-ECONOMY.md).
+
+The local backend suite passes 71 tests. The deployed economy smoke passed fourteen
+checks with real UGS tokens; synthetic profiles were removed afterward. Run
+`node economy-smoke.mjs` only for an intentional live check. Local client testing
+uses `economy-fixture.mjs` on loopback with fake identities; it is not deployable
+authentication. No service permissions or paid plans were changed.
+
+## Account deletion — activated 26 October 2026
 
 New source adds authenticated `GET/DELETE /v1/account-deletion`. GET advertises
 contract version 1; DELETE requires `{"confirm":"delete-game-account"}` and
@@ -9,12 +33,12 @@ profile plus FK-owned social data. Regular profile API access is then rejected;
 profile creation also checks the marker inside its SQL statement to close a
 concurrent-write race. The client deletes Unity Authentication afterward.
 
-This change is **not deployed**: local Wrangler is unauthenticated. Apply only
-`0004_account_deletions.sql` to the existing database before deploying the new
-Worker. Do not blindly run all migrations against the dashboard-created database.
-Until deployment, clients refuse to start deletion when capability is unavailable.
+The schema and route are now deployed as prerequisites of the economy release.
+This activation does not establish physical-device completion of the full native
+Unity account-deletion flow. Do not blindly run all migrations against the
+dashboard-created database. Clients refuse to start deletion when capability is unavailable.
 See [activation, retention and failure limits](../../Docs/AppGallery/TECHNICAL-HANDOFF.md).
-Local suites pass 48 tests, including deletion ownership/confirmation, stale-client
+The deletion preparation passed 48 tests, including ownership/confirmation, stale-client
 recreation, idempotency, invitation cleanup and transaction failure behavior.
 
 This service verifies Huawei Account Kit ID tokens and exchanges the verified
@@ -22,7 +46,7 @@ identity through Unity Authentication Custom ID. The Android application contain
 only public configuration; Unity service credentials belong exclusively in the
 Worker's encrypted secrets.
 
-## Current deployment — 20 October 2026
+## Hosting configuration — established 20 October 2026
 
 - Cloudflare Worker: `whatthefish-huawei-auth`, Workers Free.
 - Public endpoint: `https://whatthefish-huawei-auth.benliew28262826.workers.dev/v1/huawei`.
@@ -189,9 +213,9 @@ public production service.
 
 ## Verification and remaining limits
 
-`npm test` currently passes 25 tests across signature/claims validation, linking,
-recovery, conflicting accounts, upstream redirection, redaction, body bounds and
-the actual Worker HTTP boundary. No real account is created by these tests.
+`npm test` passes 71 tests across authentication, profiles/social data, deletion,
+economy rules, transaction handling and the actual Worker HTTP boundary.
+No real account is created by these tests.
 
 From the repository root, a deployed smoke check can be run with:
 

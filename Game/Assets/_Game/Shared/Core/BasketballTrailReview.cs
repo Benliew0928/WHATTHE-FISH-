@@ -14,6 +14,7 @@ namespace WhatTheFish {
   bool Has(string name)=>File.Exists(Path.Combine(shared,name));
   IEnumerator Await(string name){float end=Time.realtimeSinceStartup+15;while(!Has(name)&&Time.realtimeSinceStartup<end)yield return null;Check(Has(name),"peer "+name);}
   IEnumerator Start(){
+   EconomyRenderReview.UnlockAll();
    Directory.CreateDirectory(folder);shared=Directory.GetParent(folder).FullName;File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    float end=Time.realtimeSinceStartup+80;while((!DevelopmentProbe.ReadyToReviewSport||!AppRoot.Instance||!AppRoot.Instance.LocalAthlete||!BasketballBall.Active)&&Time.realtimeSinceStartup<end)yield return null;
    app=AppRoot.Instance;ball=BasketballBall.Active;actor=app?app.LocalAthlete:null;Check(app&&ball&&actor,"basketball initialized");if(!app||!ball||!actor){Finish();yield break;}
