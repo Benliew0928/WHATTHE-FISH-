@@ -12,7 +12,7 @@ namespace WhatTheFish {
    if(accents==null)accents=new MaterialPropertyBlock();
    accents.SetColor("_BaseColor",Color.Lerp(Color.white,LocalProfile.Teams[appearance.palette],.35f));
    foreach(var renderer in accentRenderers)if(renderer)renderer.SetPropertyBlock(accents);
-   if(title)title.text=appearance.title.ToUpperInvariant();
+   if(title){GameLocalization.UserContent(title,!string.Equals(appearance.title,LocalProfile.DefaultVenue(SportId.Football).title,System.StringComparison.OrdinalIgnoreCase));title.text=appearance.title.ToUpperInvariant();}
    if(subtitle){
     subtitle.text=appearance.screen==0?new[]{"PLAY TOGETHER  •  SUNNY DAYS","ONE TEAM  /  GOOD ENERGY","MOVE • PLAY • REPEAT"}[appearance.design]:"WELCOME, TEAM "+new[]{"MINT","ROSE","LILAC","GOLD"}[appearance.palette];
     subtitle.color=LocalProfile.Teams[appearance.palette];

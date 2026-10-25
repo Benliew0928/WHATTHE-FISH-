@@ -155,11 +155,11 @@ namespace WhatTheFish {
    if(history.Count==0){Label(content,chat.Synced?"No messages yet":"Loading messages…",3,12,width-6,46,18,Muted);y=64;}
    for(int i=start;i<end;i++){
     var m=history[i];bool mute=chat.IsMuted(m.member);string member=m.member;
-    var name=Button(content,"Sender "+i,(m.name.Length>20?m.name.Substring(0,20)+"…":m.name)+(mute?" · muted":""),0,y,width-95,36,PanelColor,()=>{chat.ToggleMute(member);RenderHistory();},16);name.GetComponentInChildren<Text>().alignment=TextAnchor.MiddleLeft;
+    var name=Button(content,"Sender "+i,(m.name.Length>20?m.name.Substring(0,20)+"…":m.name)+(mute?GameLocalization.Translate(" · muted"):""),0,y,width-95,36,PanelColor,()=>{chat.ToggleMute(member);RenderHistory();},16);GameLocalization.UserContent(name.GetComponentInChildren<Text>());name.GetComponentInChildren<Text>().alignment=TextAnchor.MiddleLeft;
     Label(content,DateTimeOffset.FromUnixTimeMilliseconds(m.time).ToLocalTime().ToString("HH:mm"),width-62,y,62,36,13,Muted).alignment=TextAnchor.MiddleRight;y+=35;
     if(mute){Label(content,"Message hidden",12,y,width-24,28,17,Muted);y+=36;}
     else if(!string.IsNullOrEmpty(m.sticker)){CoveUI.Image(content,m.sticker,Sticker(m.sticker),10,y,76,76);y+=82;}
-    else{var text=Label(content,m.text,12,y,width-24,40,19);text.verticalOverflow=VerticalWrapMode.Overflow;float height=Mathf.Max(27,text.preferredHeight);text.rectTransform.sizeDelta=new Vector2(width-24,height);y+=height+10;}
+    else{var text=Label(content,m.text,12,y,width-24,40,19);GameLocalization.UserContent(text);text.verticalOverflow=VerticalWrapMode.Overflow;float height=Mathf.Max(27,text.preferredHeight);text.rectTransform.sizeDelta=new Vector2(width-24,height);y+=height+10;}
     y+=8;
    }
    if(page>0){Button(content,"Newer messages","↓ Newer messages",0,y,width,46,Mint,()=>{page--;RenderHistory();scroll.verticalNormalizedPosition=1;},17);y+=54;}

@@ -22,7 +22,7 @@ namespace WhatTheFish {
    var node=BasketballUIStyle.Center(page,sport+" island menus",new Vector2(800,450),Vector2.zero,Vector2.one*.5f);
    var ui=node.gameObject.AddComponent<T>();ui.Initialize(page,node,sport);return ui;
   }
-  void Initialize(RectTransform parent,RectTransform node,SportId id){page=parent;root=node;sport=id;Build();Layout();}
+  void Initialize(RectTransform parent,RectTransform node,SportId id){page=parent;root=node;sport=id;if(id==SportId.Golf){root.gameObject.AddComponent<CanvasGroup>().ignoreParentGroups=true;var controls=root.gameObject.AddComponent<Canvas>();controls.overrideSorting=true;controls.sortingOrder=150;root.gameObject.AddComponent<GraphicRaycaster>();}Build();Layout();}
   void Build(){
    gear=BasketballUIStyle.Button(root,sport+" settings","",0,0,48,48,Toggle);
    var anchor=Vector2.one;GearRect.anchorMin=GearRect.anchorMax=GearRect.pivot=anchor;GearRect.anchoredPosition=new Vector2(-18,-16);
@@ -32,7 +32,7 @@ namespace WhatTheFish {
    // cover that clock and the ranking card, including their pointer targets.
    var modalCanvas=overlay.gameObject.AddComponent<Canvas>();modalCanvas.overrideSorting=true;modalCanvas.sortingOrder=200;overlay.gameObject.AddComponent<GraphicRaycaster>();
    settings=Panel("Island settings",650,422,BasketballIcon.Gear);
-   BasketballUIStyle.Text(settings,"Camera angle",20,70,590,20,15,true);
+   BasketballUIStyle.Text(settings,"Camera angle",20,70,350,20,15,true);LanguageSettings.Add(settings,468,66,162,27,14);
    cameras=new Button[3];string[] names={"Eye level","Follow",Fishing?"Lagoon":"Course"};BasketballIcon[] icons={BasketballIcon.Eye,BasketballIcon.Follow,BasketballIcon.Court};
    for(int i=0;i<3;i++){int mode=i;cameras[i]=BasketballUIStyle.Button(settings,names[i],"",20+i*207,98,196,86,()=>SelectCamera(mode),BasketballUIStyle.Paper);BasketballUIStyle.Art(cameras[i].transform,icons[i],70,5,56,42);BasketballUIStyle.Text(cameras[i].transform,names[i],4,51,188,28,16,true,TextAnchor.MiddleCenter);CoveUI.Image(cameras[i].transform,"Selected camera",SportsUIStyle.Check,166,2,23,22).color=CoveUI.Ink;}
    note=BasketballUIStyle.Text(settings,"",20,191,610,26,12);
@@ -81,7 +81,7 @@ namespace WhatTheFish {
   public void SelectCamera(int mode){var view=PlayerView.Instance;if(!view)return;view.mode=Mathf.Clamp(mode,0,2);if(!Fishing){PlayerPrefs.SetInt("camera",view.mode);PlayerPrefs.Save();}Refresh();}
   void OpenGuide(){Close();if(Fishing)FishingHUD.Instance?.Tutorial?.Open();else SportTutorialUI.Find(SportId.Golf)?.Open();}
   void Refresh(){
-   var view=PlayerView.Instance;for(int i=0;i<3;i++){bool chosen=view&&view.mode==i;MenuDesigns.Selected(cameras[i],chosen);var p=cameras[i].GetComponent<BasketballPlate>();p.color=chosen?CoveUI.Sky:BasketballUIStyle.Paper;p.border=chosen?3:2;p.Refresh();cameras[i].transform.Find("Selected camera").gameObject.SetActive(chosen);}
+   var view=PlayerView.Instance;for(int i=0;i<3;i++){bool chosen=view&&view.mode==i;MenuDesigns.Selected(cameras[i],chosen);MenuDesigns.Surface(cameras[i].targetGraphic,MenuSurface.Button);var p=cameras[i].GetComponent<BasketballPlate>();p.color=chosen?CoveUI.Sky:BasketballUIStyle.Paper;p.border=chosen?3:2;p.Refresh();cameras[i].transform.Find("Selected camera").gameObject.SetActive(chosen);}
    note.text=view&&view.mode==0?"See from your player's eyes. Drag to look around.":view&&view.mode==1?"Stay behind your player. Drag to look around.":Fishing?"Frame your cast and hooked fish. Drag to look before casting.":"See your shot and landing area, then follow the ball.";
    for(int i=0;i<4;i++){float value=i==0?MenuPreferences.MasterVolume:i==1?MenuPreferences.SFXVolume:i==2?MenuPreferences.UIVolume:MenuPreferences.AmbienceVolume;volumes[i].SetValueWithoutNotify(value);captions[i].text=AudioNames[i]+" "+Mathf.RoundToInt(value*100)+"%";}
    playNote.text=AppRoot.Instance.rooms.Connected?"Room play continues while settings are open.":"Play continues while settings are open.";RefreshLeave();

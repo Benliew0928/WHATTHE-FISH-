@@ -2,22 +2,26 @@
 
 ## Fishing skills and golf events
 
-Fishing uses a personal 2.6-second presentation for each accepted skill. A
-named card slides in with the existing skill icon and a short explanation.
-Steel Wire frames the reinforced line, Power Reel brings the rod closer,
-Fishing Buddy frames the helper and spotlights the active skill UI, Bubble
-Guard turns toward the protected fish, Sonar widens over the water, and School
-Call looks toward the gathering fish. The camera eases back to its normal mode.
-Other fishers keep their own cameras and gameplay continues.
+Fishing retains its personal 2.6-second skill camera and Fishing Buddy's skill
+spotlight. The central black activation card has been removed. Steel Wire
+frames the line, Power Reel the rod, Fishing Buddy the helper, Bubble Guard the
+protected fish, Sonar the water and School Call the gathering fish. Other
+fishers keep their cameras; gameplay and accepted skill deadlines continue.
 
-Golf announces Tropical Wind, Sticky Green, Bounce Party, Tornado, Crab Crossing
-and Final Rush with animated emblems, event names and a brief gameplay cue.
-Walking players get a short fairway/hazard view. Aiming, charging, shot-follow
-and spectator cameras retain control; the announcement remains visible.
-Reduced motion retains the notices without camera travel. Changing camera mode,
-opening a modal, leaving the island or ending the relevant action clears the
-camera presentation. Gameplay durations, physics and network snapshots are
-unchanged; existing host timestamps avoid replaying stale events.
+Golf's Tornado and Crab Crossing views last at most **3.5 seconds** from the
+accepted event timestamp. All screen HUD fades out together over 0.4 seconds
+and returns together over 0.4 seconds after the view finishes. The top-right
+Settings control stays fully visible and clickable. Opening Settings releases
+the event camera and restores HUD visibility; existing modal input rules apply.
+Island Rush / Final Rush, Tropical Wind, Sticky Green and Bounce Party retain
+the original camera and HUD continuously. Central black Golf announcements are
+removed; the existing illustrated event badges remain.
+
+Aiming, charging, shot-follow, cart-driving and spectator cameras retain their
+priority. Reduced motion suppresses camera travel and HUD fading. Changing
+camera mode, opening a modal, leaving the island or ending the relevant action
+clears the camera presentation. Gameplay durations, physics and network
+snapshots are unchanged; host timestamps avoid replaying stale events.
 
 `Tools/Build/Build-ActivityCinematicReview.ps1` builds a complete review player.
 `Tools/Build/Test-ActivityCinematic.ps1 -Sport Fishing -Film` (or Golf, Football,
@@ -37,8 +41,8 @@ feature code. Fishing checks include delayed future-timestamp activation and
 stale-packet suppression; golf checks cover all five events, Final Rush, camera
 modes, reduced motion, aiming priority, expiry and exit cleanup.
 
-The [video gallery](../Builds/ActivityCinematicsQA/Videos/index.html) contains
-18 individual five-second clips. The football and basketball reels each last
+The historical video review recorded 18 individual five-second clips.
+The football and basketball reels each last
 15 seconds; Fishing and Golf each last 30 seconds. All decoded frame counts
 and durations were checked. Captures show the actual game camera and HUD,
 including pre-use nameplate icons, smooth camera turns, post-focus direction,
@@ -168,3 +172,30 @@ Previous local delivery recovery batches:
 `Legacy/20261024-142638-674-prop-focus-windows/`. Superseded review runs are in
 `Legacy/20261024-143255-034-prop-focus-qa/`; the archive records sizes, hashes and
 recovery paths. The current successful runs remain under `Builds/`.
+
+
+## Event/results verification — 25 October 2026
+
+`Builds/EventPresentationQA/Rendered-Golf` passed 87 assertions and
+`Rendered-Fishing` passed 1,107. The review exercises every random Golf event,
+Island Rush, all six Fishing skills, partial fade-out/fade-in, a view beyond
+2.6 seconds with release by 3.5 seconds, three camera modes, reduced motion,
+aiming priority, unchanged gameplay deadlines, Settings pointer routing and
+the real awards Show results callback. Targeted rendered frames confirm the
+Settings gear stays visible while other screen HUD disappears. Hidden player
+backbuffers were black; those superseded direct captures were archived. The
+final render helper changes only root canvases to a capture camera, preserving
+nested Settings canvas sorting and opacity. No simulation effects are changed
+by the capture helper.
+
+`Final960`, `Final1600` and `FinalTablet` passed 3,258 / 3,256 / 3,255 layout
+assertions with no recorded glyph overflow, truncation or sibling overlap.
+All three languages include uniform compact/expanded leaderboard headings,
+all five tee signs and Fishing result-modal pointer blocking/restoration.
+The 960 run preceded concurrent welcome-loading edits and a capture-helper
+refresh; the final two runs use the complete delivered source snapshot.
+The full shared Windows player was reused after all 505 compiled source
+hashes matched, and verified against WindowsFinal without replacing its newer
+concurrent delivery. All 362 Android release sources match the same snapshot.
+See [release bytes, hashes and archives](BUILD-SIZE.md). Physical phone
+rendering, touch and FPS remain unverified; Git publishing was not performed.

@@ -98,7 +98,7 @@ namespace WhatTheFish {
   void Row(PublicProfile p,int index,bool blocked=false){
    float y=index*118;var row=Action(list,"View player "+p.code,"",0,y,1250,104,Panel,()=>OpenPlayer(p.id));
    Card(row.transform,"Avatar frame",14,10,84,84,Raised,10);ProfileAvatar.Add(row.transform,p,16,12,80);
-   Label(row.transform,p.name,122,10,650,44,32,true);
+   GameLocalization.UserContent(Label(row.transform,p.name,122,10,650,44,32,true));
    Label(row.transform,"#"+p.code,124,57,650,31,20,false,Muted);
    string state=blocked?"Blocked":p.relationship=="incoming"?"Request received":p.relationship=="outgoing"?"Request sent":p.relationship=="friends"?"Friend":p.match=="similar"?"Similar name":"View profile";
    if(blocked)Action(row.transform,"Unblock "+p.code,"Unblock",997,22,230,60,Raised,()=>Run("Removing block…",async()=>{await PlayerProfiles.Unblock(p.id);ShowAfter("blocks");}),size:24);
@@ -144,7 +144,7 @@ namespace WhatTheFish {
    var hero=Card(body,"Your character card",0,0,330,630);
    portraitKind=Label(hero.transform,"YOUR CHARACTER",20,14,290,34,22,true,Cyan,TextAnchor.MiddleCenter);
    preview=CoveUI.Rect(hero.transform,"Profile picture preview",20,48,290,435).gameObject.AddComponent<RawImage>();preview.raycastTarget=false;
-   heroName=Label(hero.transform,p.name,20,483,290,48,33,true,null,TextAnchor.MiddleCenter);heroName.resizeTextForBestFit=true;heroName.resizeTextMinSize=22;heroName.resizeTextMaxSize=33;
+   heroName=Label(hero.transform,p.name,20,483,290,48,33,true,null,TextAnchor.MiddleCenter);GameLocalization.UserContent(heroName);heroName.resizeTextForBestFit=true;heroName.resizeTextMinSize=22;heroName.resizeTextMaxSize=33;
    heroCode=Label(hero.transform,"",16,533,298,32,19,false,Muted,TextAnchor.MiddleCenter);
    Action(hero.transform,"Copy player code","Copy code",65,576,200,40,Raised,()=>{GUIUtility.systemCopyBuffer=PlayerProfiles.Current.code;feedback.text=string.IsNullOrEmpty(PlayerProfiles.Current.code)?"Connect to sync your player code.":"Player code copied.";},size:21);
    Card(body,"Edit profile card",354,0,896,548);
@@ -198,7 +198,7 @@ namespace WhatTheFish {
     Label(hero.transform,p.hasPhoto>0?"CUSTOM PICTURE":"CHARACTER "+(p.avatar+1).ToString("00"),20,536,290,40,23,true,Muted,TextAnchor.MiddleCenter);
     Card(body,"Player details",354,0,896,630);
     Label(body,p.relationship=="friends"?"IN YOUR CREW":p.relationship=="incoming"?"FRIEND REQUEST":p.relationship=="outgoing"?"REQUEST SENT":"MEET THE PLAYER",388,27,824,38,24,true,Cyan);
-    var name=Label(body,p.name,386,83,822,80,57,true);name.resizeTextForBestFit=true;name.resizeTextMinSize=30;name.resizeTextMaxSize=57;
+    var name=Label(body,p.name,386,83,822,80,57,true);GameLocalization.UserContent(name);name.resizeTextForBestFit=true;name.resizeTextMinSize=30;name.resizeTextMaxSize=57;
     Label(body,"#"+p.code,390,176,824,35,24,false,Muted);
     Action(body,"Copy viewed player code","Copy player code",388,234,310,54,Raised,()=>{GUIUtility.systemCopyBuffer=p.code;feedback.text="Player code copied.";},CoveSymbol.Copy,23);
     Card(body,"Player details divider",388,317,828,2,Line,0);

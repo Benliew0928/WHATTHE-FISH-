@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace WhatTheFish.Editor {
  public static class StartupWelcomeBuild {
+  public static void LoadingUtilities()=>ProjectBuilder.BuildWindowsPlayer("../Builds/WelcomeLoadingQA/Player/WhatTheFish.exe");
   public const string Background="Assets/_Game/Resources/StartupWelcome/Background.png";
   public const string BlankSign="Assets/_Game/Resources/StartupWelcome/BlankSign.png";
   public static void Windows(){

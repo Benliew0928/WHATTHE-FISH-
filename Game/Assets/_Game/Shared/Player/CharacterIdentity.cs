@@ -16,7 +16,7 @@ namespace WhatTheFish {
   static readonly Material[,] bodies=new Material[10,3];
   static readonly Material[] hairs=new Material[10];
   static readonly Material[] scalps=new Material[10];
-  Athlete actor;SkinnedMeshRenderer[] body;MeshRenderer near,far,nearScalp,farScalp;Transform head;bool hidden,bound;
+  Athlete actor;SkinnedMeshRenderer[] body;MeshRenderer near,far,nearScalp,farScalp;Transform head;bool hidden,bound,preserveHiddenShadow;
   int applied=-1,appliedTeam=-1;byte number;ulong offlineKey;
   public byte Number=>number;
   public Vector3 LabelAnchor=>head?head.position+Vector3.up*.34f:transform.position+Vector3.up*1.86f;
@@ -43,15 +43,15 @@ namespace WhatTheFish {
   void OnDisable(){offline.Release(offlineKey);if(!GetComponent<NetworkAthlete>())number=0;}
   void OnDestroy()=>offline.Release(offlineKey);
   public void SetNumber(byte value){if(value<1||value>10)return;number=value;Refresh();}
-  public void SetHidden(bool value){hidden=value;bool show=!hidden&&Preset!=0;if(near)near.enabled=show;if(far)far.enabled=show;if(nearScalp)nearScalp.enabled=show;if(farScalp)farScalp.enabled=show;}
+  public void SetHidden(bool value,bool preserveShadow=false){hidden=value;preserveHiddenShadow=preserveShadow;foreach(var renderer in AddedRenderers)if(renderer){renderer.enabled=Preset!=0&&(!hidden||preserveShadow);renderer.shadowCastingMode=hidden&&preserveShadow?UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly:UnityEngine.Rendering.ShadowCastingMode.On;}}
   void LateUpdate(){
    if(!bound){var a=GetComponent<Athlete>();if(a)Bind(a);if(!bound)return;}
    var net=GetComponent<NetworkAthlete>();
    if(net&&net.IsSpawned){offline.Release(offlineKey);if(net.IdentityNumber.Value!=0)number=net.IdentityNumber.Value;}
    else if(!(NetworkManager.Singleton&&NetworkManager.Singleton.IsListening)&&number==0){number=offline.Reserve(offlineKey,actor==AppRoot.Instance?.LocalAthlete?LocalProfile.Character.preset:0);}
    if(number>0)Refresh();
-   // Fishing scales the head out of the first-person view; attachment transforms follow it.
-   SetHidden(hidden);
+   // Keep first-person accessories shadow-only without deforming the head skeleton.
+   SetHidden(hidden,preserveHiddenShadow);
   }
   public static FootballTeam ResolveTeam(Athlete actor){
    var app=AppRoot.Instance;if(!actor||actor.IsSpectator||!app||!app.Exploring||actor.inTransit)return FootballTeam.None;
@@ -93,7 +93,7 @@ namespace WhatTheFish {
     if(!scalps[preset]){scalps[preset]=new Material(library.hairMaterial){name="Identity scalp "+number};scalps[preset].SetColor("_BaseColor",LocalProfile.Hex(Skin[preset]));scalps[preset].SetFloat("_Smoothness",.2f);}
     nearScalp.sharedMaterial=farScalp.sharedMaterial=scalps[preset];
    }else foreach(var renderer in AddedRenderers)renderer.GetComponent<MeshFilter>().sharedMesh=null;
-   actor.visual.GetComponent<LODGroup>()?.RecalculateBounds();SetHidden(hidden);
+   actor.visual.GetComponent<LODGroup>()?.RecalculateBounds();SetHidden(hidden,preserveHiddenShadow);
   }
  }
 }

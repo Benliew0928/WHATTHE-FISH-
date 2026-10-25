@@ -11,7 +11,7 @@ namespace WhatTheFish {
   }
   static RectTransform Stretch(Transform parent,string name){var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;return r;}
   static Text Label(Transform parent,string value,Vector2 anchor,Vector2 size,Vector2 offset,int fontSize,TextAnchor align=TextAnchor.MiddleCenter){
-   var go=new GameObject(value,typeof(RectTransform),typeof(Text));var r=go.GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=anchor;r.sizeDelta=size;r.anchoredPosition=offset;
+   var go=new GameObject(value,typeof(RectTransform),typeof(LocalizedText));var r=go.GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=anchor;r.sizeDelta=size;r.anchoredPosition=offset;
    var t=go.GetComponent<Text>();t.text=value;t.font=SportsUIStyle.DisplayFont;t.fontSize=fontSize;t.color=Cream;t.alignment=align;t.raycastTarget=false;t.horizontalOverflow=HorizontalWrapMode.Overflow;t.verticalOverflow=VerticalWrapMode.Overflow;return t;
   }
   void Build(){

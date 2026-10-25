@@ -2,7 +2,7 @@ Shader "WhatTheFish/TeleportCharacter" {
  Properties {
   _BaseMap("Color",2D)="white" {} _BumpMap("Normal",2D)="bump" {} _MetallicGlossMap("Metal",2D)="white" {} _Numbers("Digits",2D)="black" {}
   _BaseColor("Base",Color)=(1,1,1,1) _JerseyColor("Uniform",Color)=(.1,.4,.8,1) _SkinTint("Skin",Color)=(1,.745,.54,1) _AccentColor("Accent",Color)=(.2,.6,.7,1) _HairColor("Hair",Color)=(.1,.1,.1,1)
-  _BumpScale("Normal strength",Float)=.6 _Metallic("Metallic",Float)=0 _Smoothness("Smoothness",Float)=.3 _IdentityNumber("Number",Float)=1 _ShowOriginalHair("Original hair",Float)=1 _Team("Team",Float)=0
+  _BumpScale("Normal strength",Float)=.6 _Metallic("Metallic",Float)=0 _Smoothness("Smoothness",Float)=.3 _HideFirstPersonHead("Local first-person head mask",Float)=0 _IdentityNumber("Number",Float)=1 _ShowOriginalHair("Original hair",Float)=1 _Team("Team",Float)=0
   _Identity("Identity material",Float)=0 _Head("Head material",Float)=0 _DetailColor("Accessory trim",Color)=(.85,.63,.28,1) _Amount("Absorption",Float)=0 _BaseY("Feet",Float)=0 _Height("Height",Float)=2 _Glow("Glow",Float)=0
  }
  SubShader {

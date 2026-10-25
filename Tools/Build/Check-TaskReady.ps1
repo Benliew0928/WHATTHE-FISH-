@@ -26,7 +26,7 @@ foreach ($path in $files) { [void]$fileSet.Add($path) }
 foreach ($path in @(Invoke-RepoGit @('ls-files','--cached','--ignored','--exclude-standard'))) {
     if ($fileSet.Contains($path)) { $problems.Add("Already tracked despite ignore rule: $path") }
 }
-$artifactPattern = '(^|/)(Builds|Legacy|__pycache__)/|^Tools/Downloads/|^Game/(Library|Temp|obj|Logs|UserSettings)/|\.(apk|aab|log|tmp|bak|pyc|pyo|keystore|jks)$|\.blend[0-9]+$|(^|/)\.env($|\.)'
+$artifactPattern = '(^|/)(Builds|Legacy|__pycache__)/|^Tools/Downloads/|^Game/(Library|Temp|obj|Logs|UserSettings)/|\.(apk|aab|log|tmp|bak|pyc|pyo|keystore|jks|p12|pfx)$|\.blend[0-9]+$|(^|/)\.env($|\.)'
 foreach ($path in $files) {
     if ($path -match $artifactPattern) { $problems.Add("Local artifact or credential file would be published: $path") }
     if ($path.StartsWith('Game/Assets/')) {

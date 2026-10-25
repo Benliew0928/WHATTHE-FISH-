@@ -14,7 +14,7 @@ namespace WhatTheFish {
    }
    for(int i=0;i<logoCatalog.Length;i++)logoCatalog[i].SetActive(i==appearance.logo);
    foreach(var sign in GetComponentsInChildren<StadiumSign>(true))sign.Apply(appearance);
-   if(title)title.text=appearance.title.ToUpperInvariant();
+   if(title){GameLocalization.UserContent(title,!string.Equals(appearance.title,LocalProfile.DefaultVenue(SportId.Basketball).title,System.StringComparison.OrdinalIgnoreCase));title.text=appearance.title.ToUpperInvariant();}
   }
   void ApplyRallyPalette(int palette){
    if(accents==null)accents=new MaterialPropertyBlock();

@@ -6,7 +6,7 @@ namespace WhatTheFish {
  [DefaultExecutionOrder(130)]
  public sealed class FishingRodMotion:MonoBehaviour {
   Athlete actor;FishingPresentation presentation;Transform upper,lower,hand,socket,leftUpper,leftLower,leftHand,spine,chest;Transform[] bones;Quaternion[] saved;bool applied;
-  GameObject rod;LineRenderer line,floatRing;Vector3 tipOffset,gripOffset;Transform head;Vector3 headScale;bool hiddenHead,closedGrip;float shownSteer,shownPull;SkinnedMeshRenderer[] skins;
+  GameObject rod;LineRenderer line,floatRing;Vector3 tipOffset,gripOffset;bool closedGrip;float shownSteer,shownPull;SkinnedMeshRenderer[] skins;
   public Transform HeldRod=>rod?rod.transform:null;
   public bool Equipped=>rod&&rod.activeSelf;
   public float GripError {get;private set;}
@@ -18,10 +18,10 @@ namespace WhatTheFish {
   public void Bind(Athlete owner,FishingPresentation source){
    actor=owner;presentation=source;if(bones!=null)return;bones=owner.visual.GetComponentsInChildren<Transform>(true);
    Transform Bone(string n)=>Array.Find(bones,t=>t.name=="mixamorig:"+n);
-   upper=Bone("RightArm");lower=Bone("RightForeArm");hand=Bone("RightHand");head=Bone("Head");socket=hand?hand.Find("Golf grip socket"):null;saved=new Quaternion[bones.Length];skins=owner.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>s.sharedMesh&&s.sharedMesh.GetBlendShapeIndex("GolfRightGrip")>=0).ToArray();
+   upper=Bone("RightArm");lower=Bone("RightForeArm");hand=Bone("RightHand");socket=hand?hand.Find("Golf grip socket"):null;saved=new Quaternion[bones.Length];skins=owner.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>s.sharedMesh&&s.sharedMesh.GetBlendShapeIndex("GolfRightGrip")>=0).ToArray();
    spine=Bone("Spine");chest=Bone("Spine2");leftUpper=Bone("LeftArm");leftLower=Bone("LeftForeArm");leftHand=Bone("LeftHand");
   }
-  void Restore(){if(hiddenHead&&head){head.localScale=headScale;hiddenHead=false;}if(!applied)return;for(int i=0;i<bones.Length;i++)if(bones[i])bones[i].localRotation=saved[i];applied=false;}
+  void Restore(){if(!applied)return;for(int i=0;i<bones.Length;i++)if(bones[i])bones[i].localRotation=saved[i];applied=false;}
   void Update(){Restore();}
   public void Stow(){
    Restore();
@@ -66,7 +66,6 @@ namespace WhatTheFish {
     float cycle=p.held?(float)game.Now*(p.active==FishingAbility.PowerReel&&game.Now<p.activeUntil?24:16):0;var wrist=palm-facing*Vector3.right*.12f+facing*Vector3.forward*.03f+facing*Vector3.up*(-.10f+Mathf.Sin(cycle)*.045f);
     Arm(leftUpper,leftLower,leftHand,wrist,-transform.right-Vector3.up*.6f);leftHand.rotation=Quaternion.LookRotation(direction,-(facing*Vector3.right));
    }
-   if(head&&PlayerView.Instance&&PlayerView.Instance.active&&PlayerView.Instance.target==actor&&PlayerView.Instance.mode==0&&!PlayerView.Instance.FishingFightCameraActive){headScale=head.localScale;head.localScale=Vector3.one*.001f;hiddenHead=true;}
    bool show=p.Busy||p.phase==FishingPhase.Caught&&elapsed<1.4f;line.enabled=floatRing.enabled=show;if(!show)return;
    var endpoint=presentation.HookPoint(p);
    if(p.phase==FishingPhase.Casting){float t=Mathf.Clamp01(elapsed/.65f);endpoint=Vector3.Lerp(Tip,endpoint,t)+Vector3.up*Mathf.Sin(t*Mathf.PI)*2;}

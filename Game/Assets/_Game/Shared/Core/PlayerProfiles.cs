@@ -72,6 +72,7 @@ namespace WhatTheFish {
   public static bool PendingSync=>Data.dirty;
   public static string Status=>Data.dirty?"Saved on this device · waiting to sync":string.IsNullOrEmpty(Current.code)?"Device profile":"Saved to cloud";
   public static void SaveLocalName(string name){
+   if(PlayerAccount.DeletionPending||PlayerAccount.Deleting)return;
    if(!PlayerIdentity.ValidateName(name,out name,out _))return;
    Data.profile.name=name;Data.dirty=true;Persist();Changed?.Invoke();
   }
@@ -84,6 +85,13 @@ namespace WhatTheFish {
     string oldFile=FileFor(oldKey);if(File.Exists(oldFile)){Directory.CreateDirectory(Path.GetDirectoryName(FileFor(newKey)));File.Copy(oldFile,FileFor(newKey));}
    }
    saved=null;scope="";loadedId="";loading=null;friendsVersion++;friendsScope="";incomingRequests.Clear();friendsLoading=null;friendsPollAt=0;Changed?.Invoke();
+  }
+  internal static void ForgetDeletedIdentity(string key,string id) {
+   if(string.IsNullOrEmpty(key))throw new InvalidOperationException("Missing deletion profile scope.");
+   string file=FileFor(key);if(File.Exists(file))File.Delete(file);if(File.Exists(file+".tmp"))File.Delete(file+".tmp");
+   foreach(var texture in photos.Values)if(texture)UnityEngine.Object.Destroy(texture);
+   photos.Clear();photoOrder.Clear();fetching.Clear();
+   IdentityChanging(key,"",false);
   }
   public static string Explain(Exception e) {
    if(e is OperationCanceledException)return "Cancelled. Your profile is unchanged.";

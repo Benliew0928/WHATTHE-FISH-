@@ -1,5 +1,11 @@
 # Instructions for every task in this repository
 
+## Localization for every task
+
+- Every new or changed player-visible text/string must ship in all three supported languages: **English, Simplified Chinese (简体中文), and Bahasa Melayu**. Update the shared localization catalog and any text embedded in artwork in the same task; do not leave English-only additions or untranslated fallback labels.
+- Preserve placeholders, user-entered names/chat, room codes and protocol identifiers. Translate game-authored wording, not player content or internal identifiers.
+- Check all three languages in the affected menus and gameplay: text must remain inside its intended bounds without overlapping other labels/icons. Preserve the English version's button shape, icon, colors and typography treatment. Run the localization checks and visually review affected layouts before delivery.
+
 ## APK delivery
 
 - The self-contained hackathon APK must be **strictly below 1,000,000,000 bytes** (1 decimal GB, not 1 GiB; updated by the user on 17 October 2026). Never call an oversized build submission-ready.

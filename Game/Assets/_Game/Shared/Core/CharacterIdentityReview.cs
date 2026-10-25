@@ -64,7 +64,7 @@ namespace WhatTheFish {
     Check(skins.Length==2&&skins.All(s=>s.sharedMesh.GetBlendShapeIndex("GolfRightGrip")>=0),"both LOD hand grips retained "+identity.Number);
     Check(skins.All(s=>s.sharedMaterial.shader.isSupported&&s.sharedMaterial.GetFloat("_IdentityNumber")==identity.Number),"supported numbered material "+identity.Number);
     Check(skins.All(s=>s.sharedMaterial.GetTexture("_BaseMap")==actor.identityLibrary.bodyMaterial.GetTexture("_BaseMap")),"original color texture shared "+identity.Number);
-    actor.HideHead(true);Check(identity.AddedRenderers.All(r=>!r.enabled),"first-person attachment hidden "+identity.Number);actor.HideHead(false);
+    actor.HideHead(true);Check(identity.AddedRenderers.All(r=>!r.enabled||r.shadowCastingMode==UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly),"first-person attachment hidden with shadow preserved "+identity.Number);actor.HideHead(false);
     if(!identity.OriginalHair)Check(identity.AddedRenderers.All(r=>r.GetComponent<MeshFilter>().sharedMesh&&r.sharedMaterial),"both silhouette LODs present "+identity.Number);
     else Check(identity.AddedRenderers.All(r=>!r.GetComponent<MeshFilter>().sharedMesh),"original preset has no accessory geometry in replay copies");
    }

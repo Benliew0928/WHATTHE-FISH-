@@ -9,10 +9,10 @@ TEXTURE2D(_Numbers); SAMPLER(sampler_Numbers);
 CBUFFER_START(UnityPerMaterial)
 float4 _BaseMap_ST;
 half4 _BaseColor,_JerseyColor,_SkinTint,_AccentColor,_HairColor;
-half _BumpScale,_Metallic,_Smoothness,_IdentityNumber,_ShowOriginalHair,_Team;
+half _BumpScale,_Metallic,_Smoothness,_IdentityNumber,_ShowOriginalHair,_Team,_HideFirstPersonHead;
 CBUFFER_END
 struct IdentityAttributes {float4 positionOS:POSITION;float3 normalOS:NORMAL;float4 tangentOS:TANGENT;float2 uv:TEXCOORD0;float4 number:TEXCOORD2;half4 regions:COLOR;UNITY_VERTEX_INPUT_INSTANCE_ID};
-struct IdentityVaryings {float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float3 positionWS:TEXCOORD1;half3 normalWS:TEXCOORD2;half4 tangentWS:TEXCOORD3;float4 number:TEXCOORD4;half4 regions:COLOR;half fog:TEXCOORD5;half3 vertexLighting:TEXCOORD6;UNITY_VERTEX_OUTPUT_STEREO};
+struct IdentityVaryings {float4 positionCS:SV_POSITION;float2 uv:TEXCOORD0;float3 positionWS:TEXCOORD1;half3 normalWS:TEXCOORD2;half4 tangentWS:TEXCOORD3;float4 number:TEXCOORD4;half4 regions:COLOR;half fog:TEXCOORD5;half3 vertexLighting:TEXCOORD6;half firstPersonHead:TEXCOORD7;UNITY_VERTEX_OUTPUT_STEREO};
 void IdentityClip(half hair,float2 uv,half sideHead){
  clip(_ShowOriginalHair+.49h-hair);
  // Color boundaries on the fused source mesh cross triangles around the ears.
@@ -22,7 +22,7 @@ void IdentityClip(half hair,float2 uv,half sideHead){
 IdentityVaryings IdentityVertex(IdentityAttributes v){
  IdentityVaryings o=(IdentityVaryings)0;UNITY_SETUP_INSTANCE_ID(v);UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
  VertexPositionInputs p=GetVertexPositionInputs(v.positionOS.xyz);VertexNormalInputs n=GetVertexNormalInputs(v.normalOS,v.tangentOS);
- o.positionCS=p.positionCS;o.positionWS=p.positionWS;o.normalWS=n.normalWS;o.tangentWS=half4(n.tangentWS,v.tangentOS.w*GetOddNegativeScale());o.uv=v.uv;o.number=v.number;o.number.w=step(v.number.z,-.5);o.regions=v.regions;o.fog=ComputeFogFactor(p.positionCS.z);o.vertexLighting=VertexLighting(p.positionWS,n.normalWS);return o;
+ o.positionCS=p.positionCS;o.positionWS=p.positionWS;o.normalWS=n.normalWS;o.tangentWS=half4(n.tangentWS,v.tangentOS.w*GetOddNegativeScale());o.uv=v.uv;o.firstPersonHead=v.number.w;o.number=v.number;o.number.w=step(v.number.z,-.5);o.regions=v.regions;o.fog=ComputeFogFactor(p.positionCS.z);o.vertexLighting=VertexLighting(p.positionWS,n.normalWS);return o;
 }
 half NumberInk(float4 coordinates){
  float2 uv=coordinates.xy;if(coordinates.z<.5||any(uv<0)||any(uv>1))return 0;
@@ -30,7 +30,9 @@ half NumberInk(float4 coordinates){
  float2 digitUV=float2((digit+frac(uv.x*2))*.1,uv.y);
  return SAMPLE_TEXTURE2D(_Numbers,sampler_Numbers,digitUV).r;
 }
+void FirstPersonHeadClip(IdentityVaryings i){clip(.5h-_HideFirstPersonHead*i.firstPersonHead);}
 half4 IdentityFragment(IdentityVaryings i):SV_Target {
+ FirstPersonHeadClip(i);
  IdentityClip(i.regions.g,i.uv,i.number.w);
  half4 base=SAMPLE_TEXTURE2D(_BaseMap,sampler_BaseMap,i.uv)*_BaseColor;
  half luminance=dot(base.rgb,half3(.2126,.7152,.0722));

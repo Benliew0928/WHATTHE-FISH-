@@ -7,14 +7,14 @@ using UnityEngine;
 // Derive compact region/number coordinates without changing topology, UV0,
 // skin weights, normals, bone paths or the GolfRightGrip blend shape.
 public sealed class CharacterIdentityImport:AssetPostprocessor {
- public override uint GetVersion()=>13;
+ public override uint GetVersion()=>15;
  public override int GetPostprocessOrder()=>100;
  void OnPostprocessModel(GameObject root){
   if(assetPath!="Assets/_Game/Art/RainbowSprinter.fbx")return;
   var texture=new Texture2D(2,2,TextureFormat.RGB24,false);texture.LoadImage(File.ReadAllBytes("Assets/_Game/Art/RainbowSprinter/albedo.png"));
   foreach(var renderer in root.GetComponentsInChildren<SkinnedMeshRenderer>(true)){
    var mesh=renderer.sharedMesh;var vertices=mesh.vertices;var uv=mesh.uv;var normals=mesh.normals;
-   var colors=new Color32[vertices.Length];var numbers=new List<Vector3>(vertices.Length);var headRegion=new bool[vertices.Length];int hairCount=0,clothCount=0;
+   var colors=new Color32[vertices.Length];var numbers=new List<Vector4>(vertices.Length);var headRegion=new bool[vertices.Length];int hairCount=0,clothCount=0;
    for(int i=0;i<vertices.Length;i++){
     Vector3 p=renderer.transform.TransformPoint(vertices[i]),n=renderer.transform.TransformDirection(normals[i]);var c=texture.GetPixelBilinear(uv[i].x,uv[i].y);
     bool skin=c.r>c.g*1.10f&&c.g>c.b*1.15f&&c.g>.12f&&c.r-c.b>.15f;
@@ -33,12 +33,15 @@ public sealed class CharacterIdentityImport:AssetPostprocessor {
     float numberU=(front?-p.x:p.x)/width+.5f,numberV=(p.y-.665f)/height;
     bool sideHead=Mathf.Abs(p.x)>.21f&&p.y>1.015f&&p.y<1.235f&&p.z<.23f;
     // Heads cannot carry a jersey number, so the unused negative facing value
-    // carries the ear mask without a fourth coordinate on every body vertex.
+    // carries the ear mask; the fourth coordinate is the local first-person mask.
     // The head's horizontal number coordinate and facing are never sampled.
     // Canonical zeros compress much better than thousands of unused values;
     // retain its vertical coordinate because the fringe shader uses height.
     headRegion[i]=p.y>1.015f;if(headRegion[i])numberU=0;
-    numbers.Add(new Vector3(Mathf.Round(numberU*1024)/1024,Mathf.Round(numberV*1024)/1024,sideHead?-1:p.y>1.015f?0:Mathf.Abs(n.z)>.55f?1:0));
+    // A dedicated rest-pose mask excludes the fused head/fringe/hair in the
+    // local first-person color/depth passes, without changing skinning or shadows.
+    // Include the grey underside of the oversized hair below the old face region.
+    numbers.Add(new Vector4(Mathf.Round(numberU*1024)/1024,Mathf.Round(numberV*1024)/1024,sideHead?-1:p.y>1.015f?0:Mathf.Abs(n.z)>.55f?1:0,p.y>.94f?1:0));
     if(hair)hairCount++;if(cloth)clothCount++;
    }
    // Preserve height on every triangle that can interpolate into the fringe

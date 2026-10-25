@@ -5,10 +5,16 @@ import { readFileSync } from 'node:fs';
 import { Profiles } from './profiles.mjs';
 import { RoomInvites } from './room-invites.mjs';
 import { profileApi } from './profile-api.mjs';
+import { deleteProfileForAccount } from './account-deletion.mjs';
 const A='invite_player_A_123',B='invite_player_B_123',C='invite_player_C_123';
+test('account deletion cascades room invitations while preserving other players',async()=>{
+ const {p,service,sql}=await fixture();await service.send(A,{target:B,roomCode:'ABC123',sport:0,protocol:86});
+ await deleteProfileForAccount(p,A);
+ assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM room_invites').get().n,0);assert.ok(await p.mine(B));
+});
 async function fixture(){
  const sql=new DatabaseSync(':memory:');sql.exec('PRAGMA foreign_keys=ON');
- for(const name of ['0001_profiles','0002_profile_limits','0003_room_invites'])sql.exec(readFileSync(new URL(`./migrations/${name}.sql`,import.meta.url),'utf8'));
+ for(const name of ['0001_profiles','0002_profile_limits','0003_room_invites','0004_account_deletions'])sql.exec(readFileSync(new URL(`./migrations/${name}.sql`,import.meta.url),'utf8'));
  const db={prepare(text){return {bind(...args){const st=sql.prepare(text),values=args.map(a=>Array.isArray(a)?new Uint8Array(a):a);return {first:async()=>st.get(...values)||null,all:async()=>({results:st.all(...values)}),run:async()=>({meta:st.run(...values)}),_run:()=>st.run(...values)};}};},async batch(items){sql.exec('BEGIN');try{const r=items.map(i=>i._run());sql.exec('COMMIT');return r;}catch(e){sql.exec('ROLLBACK');throw e;}}};
  const p=new Profiles(db);for(const [id,name] of [[A,'Amber'],[B,'Blue'],[C,'Coral']])await p.save(id,{name,revision:0,avatar:0});
  await p.friend(A,B,'request');await p.friend(B,A,'accept');

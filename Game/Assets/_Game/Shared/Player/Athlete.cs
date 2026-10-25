@@ -206,6 +206,8 @@ namespace WhatTheFish {
    var network=GetComponent<NetworkAthlete>();
    if(network&&network.IsSpawned&&network.IdentityNumber.Value>0)identity.SetNumber(network.IdentityNumber.Value);
   }
-  public void HideHead(bool hidden){if(bodyRenderers==null)Setup();bool golfBody=hidden&&(GolfClubMotion&&GolfClubMotion.ShowBodyInFirstPerson||GetComponent<FishingRodMotion>()&&GetComponent<FishingRodMotion>().Equipped)&&PlayerView.Instance&&PlayerView.Instance.mode==0;foreach(var renderer in bodyRenderers)renderer.enabled=!hidden||golfBody;GetComponent<CharacterIdentity>()?.SetHidden(hidden);}
+  MaterialPropertyBlock firstPersonBodyBlock;
+  static readonly int FirstPersonHeadMask=Shader.PropertyToID("_HideFirstPersonHead");
+  public void HideHead(bool hidden){if(bodyRenderers==null)Setup();bool golfBody=hidden&&(GolfClubMotion&&GolfClubMotion.ShowBodyInFirstPerson||GetComponent<FishingRodMotion>()&&GetComponent<FishingRodMotion>().Equipped)&&PlayerView.Instance&&PlayerView.Instance.mode==0;foreach(var renderer in bodyRenderers){renderer.enabled=!hidden||golfBody;if(golfBody||firstPersonBodyBlock!=null){firstPersonBodyBlock??=new MaterialPropertyBlock();renderer.GetPropertyBlock(firstPersonBodyBlock);firstPersonBodyBlock.SetFloat(FirstPersonHeadMask,golfBody?1:0);renderer.SetPropertyBlock(firstPersonBodyBlock);}}GetComponent<CharacterIdentity>()?.SetHidden(hidden,golfBody);}
  }
 }

@@ -21,7 +21,7 @@ namespace WhatTheFish {
    if(sticker){rect=CoveUI.Image(bubbleRoot,"Reaction",Sticker(message.sticker),0,0,88,88).rectTransform;}
    else{
     var plate=CoveUI.Plate(bubbleRoot,"Speech",0,0,264,78,Cream,16,2,true);plate.borderColor=Ink;rect=plate.rectTransform;
-    var label=Label(rect,message.text,12,8,240,60,22,Ink);label.alignment=TextAnchor.MiddleCenter;label.verticalOverflow=VerticalWrapMode.Truncate;
+    var label=Label(rect,message.text,12,8,240,60,22,Ink);GameLocalization.UserContent(label);label.alignment=TextAnchor.MiddleCenter;label.verticalOverflow=VerticalWrapMode.Truncate;
     var tail=CoveUI.Plate(rect,"Speech tail",125,69,14,14,Cream,2,0);tail.rectTransform.localRotation=Quaternion.Euler(0,0,45);
    }
    rect.pivot=new Vector2(.5f,0);rect.anchorMin=rect.anchorMax=Vector2.zero;

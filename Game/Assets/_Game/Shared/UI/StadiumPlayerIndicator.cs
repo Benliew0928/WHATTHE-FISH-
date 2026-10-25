@@ -13,7 +13,7 @@ namespace WhatTheFish {
    var r=new GameObject("Your player edge marker",typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(page,false);
    r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.sizeDelta=new Vector2(104,76);
    var marker=r.gameObject.AddComponent<StadiumPlayerIndicator>();marker.page=page;marker.raycastTarget=false;
-   var text=new GameObject("YOU and distance",typeof(RectTransform)).AddComponent<Text>();text.transform.SetParent(r,false);
+   var text=new GameObject("YOU and distance",typeof(RectTransform)).AddComponent<LocalizedText>();text.transform.SetParent(r,false);
    text.rectTransform.anchorMin=Vector2.zero;text.rectTransform.anchorMax=Vector2.one;text.rectTransform.offsetMin=text.rectTransform.offsetMax=Vector2.zero;
    text.font=font;text.fontSize=18;text.fontStyle=FontStyle.Normal;text.alignment=TextAnchor.MiddleCenter;text.color=Color.white;text.raycastTarget=false;
    marker.label=text;marker.SetShown(false);

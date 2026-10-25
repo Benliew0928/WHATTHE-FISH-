@@ -43,7 +43,7 @@ namespace WhatTheFish {
    reopen=WorldUI.Button(dock,"Open next adventure","Details",568,20,210,60,Open);
    panel.gameObject.SetActive(false);dock.gameObject.SetActive(false);
   }
-  public static void CloseResults(){FishingCeremony.Instance?.Cancel();FootballMVP.Instance?.Dismiss();BasketballMVP.Instance?.Dismiss();FishingHUD.Instance?.Results?.Close();}
+  public static void CloseResults(){FishingCeremony.Instance?.Cancel();FootballMVP.Instance?.Dismiss();BasketballMVP.Instance?.Dismiss();FishingHUD.Instance?.Results?.Close();FindFirstObjectByType<GolfLeaderboardUI>()?.CloseResults();}
   bool Abandoned=>app&&app.SelectedSport==SportId.Fishing&&FishingGame.Instance&&FishingGame.Instance.State.Match.outcome==FishingOutcome.Abandoned;
   bool Voided=>app&&(app.SelectedSport==SportId.Football&&FootballMatch.Instance&&FootballMatch.Instance.Snapshot.phase==FootballMatchPhase.Cancelled||app.SelectedSport==SportId.Basketball&&BasketballMatch.Instance&&BasketballMatch.Instance.Snapshot.phase==BasketballMatchPhase.Cancelled);
   string FinishedKey(){
@@ -78,7 +78,7 @@ namespace WhatTheFish {
   void Update(){
    app=AppRoot.Instance;if(!app)return;current=FinishedKey();
    if(!app.Exploring||RoomService.Paused||RoomMatchStart.Travelling||MatchActive){Close();dock.gameObject.SetActive(false);if(MatchActive||!app.Exploring)shown="";return;}
-   bool result=FishingCeremony.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingHUD.Instance&&FishingHUD.Instance.Results&&FishingHUD.Instance.Results.Visible;
+   bool result=(app.SelectedSport==SportId.Golf&&FindFirstObjectByType<GolfLeaderboardUI>() is GolfLeaderboardUI ranking&&ranking.Expanded)||FishingCeremony.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingHUD.Instance&&FishingHUD.Instance.Results&&FishingHUD.Instance.Results.Visible;
    bool host=!app.rooms.Connected||app.rooms.Host;
    if(current.Length>0&&shown!=current&&!result&&!app.view.InputBlocked&&!SocialPanel.Visible&&!AccountPanel.Visible){shown=current;if(host)Open();}
    bool other=app.view.InputBlocked||SocialPanel.Visible||AccountPanel.Visible;

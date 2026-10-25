@@ -61,15 +61,13 @@ namespace WhatTheFish {
   Text Text(Transform parent,string value,Vector2 pos,Vector2 size,int points,Color? color=null){
    // Both Cove faces contain their intended weight; a second bold style and
    // overlapping shadow/outline copies close the counters in small labels.
-   var t=Rect(value,parent,pos,size).gameObject.AddComponent<Text>();t.font=points<=23?SportsUIStyle.TextFont??font:font;t.fontSize=points;t.text=value;t.fontStyle=FontStyle.Normal;t.color=color??Ink;t.alignment=TextAnchor.MiddleCenter;
+   var t=Rect(value,parent,pos,size).gameObject.AddComponent<LocalizedText>();t.font=points<=23?SportsUIStyle.TextFont??font:font;t.fontSize=points;t.text=value;t.fontStyle=FontStyle.Normal;t.color=color??Ink;t.alignment=TextAnchor.MiddleCenter;
    t.raycastTarget=false;t.supportRichText=false;t.horizontalOverflow=HorizontalWrapMode.Wrap;t.verticalOverflow=VerticalWrapMode.Truncate;
    return t;
   }
   void InkOutline(Text text,float width=1){var outline=text.GetComponent<Outline>()??text.gameObject.AddComponent<Outline>();outline.effectColor=Ink;outline.effectDistance=new Vector2(width,-width);}
   void SingleLine(Text label,string value,int maxSize){
-   label.text=value;var settings=label.GetGenerationSettings(label.rectTransform.rect.size);settings.fontSize=maxSize;settings.resizeTextForBestFit=false;
-   float available=label.rectTransform.rect.width-4,preferred=label.cachedTextGeneratorForLayout.GetPreferredWidth(value,settings)/label.pixelsPerUnit;
-   label.fontSize=Mathf.Clamp(Mathf.FloorToInt(maxSize*available/Mathf.Max(available,preferred)),18,maxSize);
+   ((LocalizedText)label).FitSingleLine(value,maxSize);
   }
   Button Button(RectTransform node,string value,Color tint,out Text label){
    var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.UseSolidPanel();g.raycastTarget=true;var b=node.gameObject.AddComponent<Button>();b.targetGraphic=g;
@@ -173,7 +171,7 @@ namespace WhatTheFish {
     row.pulse=Mathf.MoveTowards(row.pulse,0,Time.unscaledDeltaTime*1.7f);row.rect.localScale=Vector3.one*(1+.055f*Mathf.Sin(row.pulse*Mathf.PI));row.popAge+=Time.unscaledDeltaTime;row.popRect.gameObject.SetActive(row.popAge<1.4f);row.popRect.anchoredPosition=new Vector2(54,4+row.popAge*11);row.popRect.localScale=Vector3.one*(1+.15f*Mathf.Exp(-row.popAge*5));
     row.pop.text="+"+(p.lastBonus>0&&row.popAge>.65f?p.lastBonus:p.lastAward-p.lastBonus);var popGroup=row.popRect.GetComponent<CanvasGroup>()??row.popRect.gameObject.AddComponent<CanvasGroup>();popGroup.alpha=1-Mathf.InverseLerp(1,1.4f,row.popAge);
     row.displayed=Mathf.MoveTowards(row.displayed,p.score,Time.unscaledDeltaTime*Mathf.Max(12,Mathf.Abs(p.score-row.displayed)*10));row.points.text=match.cupFinished?p.cupPoints.ToString():Mathf.RoundToInt(row.displayed).ToString();
-    bool local=p.owner==FishingGame.Key(view.target);string name=game.PlayerName(p.owner);if(local&&(name=="HOST"||name.StartsWith("FRIEND")))name="YOU";row.name.text=name.Length>10?name.Substring(0,9)+"…":name;
+    bool local=p.owner==FishingGame.Key(view.target);string name=game.PlayerName(p.owner);if(local&&(name=="HOST"||name.StartsWith("FRIEND")))name="YOU";GameLocalization.UserContent(row.name);if(name=="YOU")name=GameLocalization.Translate(name);row.name.text=name.Length>10?name.Substring(0,9)+"…":name;
     row.rank.text=team?(p.catches>0?"✓":"•"):(match.cupFinished?game.State.CupRank(p.owner):game.State.Rank(p.owner)).ToString();
     bool heat=p.score>=18&&p.score<20||row.milestoneAge<1.4f;row.flame.gameObject.SetActive(heat);row.flame.rectTransform.localScale=Vector3.one*(1+.12f*Mathf.Sin(Time.unscaledTime*9));
     row.crown.gameObject.SetActive(!team&&row.rank.text=="1");row.panel.UseSolidPanel();row.panel.Refresh(1,local?LocalBlue:heat?Gold:LocalProfile.Hex("C0EFF1"));var cg=row.rect.GetComponent<CanvasGroup>()??row.rect.gameObject.AddComponent<CanvasGroup>();cg.alpha=p.connected?1:.45f;row.score=p.score;
@@ -236,7 +234,7 @@ namespace WhatTheFish {
    clock.text=drafting?"CHOOSE A SKILL":countdown?Math.Max(1,Math.Ceiling(match.started-game.Now)).ToString():live?GolfLeaderboardUI.FinishTime(Math.Ceiling(remaining)):match.phase==FishingRoundPhase.Ended?"RESULTS":"FREE FISHING";
    int window=game.State.Window(game.Now),wantedSize=game.State.Wanted(game.Now);bool claimed=p.HasValue&&(p.Value.wantedMask&(1<<window))!=0,next=live&&window<2&&60-(game.Now-match.started)%60<8;
    SingleLine(wanted,live||countdown?(next?"NEXT UP ":"WANTED ")+FishingState.SizeName(next?(wantedSize+1)%3:wantedSize):match.phase==FishingRoundPhase.Ended?"ROUND COMPLETE":game.Authority?"START WHEN READY":"WAITING FOR HOST",layout.wantedFontSize);
-   bonus.text=live||countdown?claimed&&!next?"OK":"+3":"GO";bonus.color=claimed&&!next?Teal:Gold;wantedPlate.Refresh(1,next?LocalProfile.Hex("FFF0BC"):Cream);timerPlate.Refresh(1,urgent?LocalProfile.Hex("703F40"):Ink);
+   SingleLine(bonus,live||countdown?claimed&&!next?"OK":"+3":"GO",layout.wantedBonusFontSize);bonus.color=claimed&&!next?Teal:Gold;wantedPlate.Refresh(1,next?LocalProfile.Hex("FFF0BC"):Cream);timerPlate.Refresh(1,urgent?LocalProfile.Hex("703F40"):Ink);
    float beat=Mathf.Exp(-Mathf.Repeat(Time.unscaledTime,1)*7);clockBadge.localScale=Vector3.one*(1+(countdown?.08f:urgent?.065f:.018f)*beat);clockBadge.localRotation=Quaternion.Euler(0,0,urgent?Mathf.Sin(Time.unscaledTime*12)*4:0);wantedBadge.localScale=Vector3.one*((.86f+wantedSize*.07f)+(next?.04f*Mathf.Sin(Time.unscaledTime*10):0));
    for(int i=0;i<clockShines.Length;i++)clockShines[i].rectTransform.localScale=Vector3.one*(.7f+.25f*Mathf.Sin(Time.unscaledTime*3+i));clock.color=urgent?LocalProfile.Hex("FFD65C"):Color.white;
    bool team=match.mode==FishingMode.Crew&&!setup;float extra=team&&Results?Results.CrewExtraHeight:0;clockCard.sizeDelta=layout.clockSize+new Vector2(0,extra);float topShift=extra*.5f;clockBadge.anchoredPosition=layout.clockBadgePosition+Vector2.up*topShift;clock.rectTransform.anchoredPosition=layout.clockTextPosition+Vector2.up*topShift;((RectTransform)wanted.transform.parent).anchoredPosition=layout.wantedCardPosition+Vector2.up*topShift;

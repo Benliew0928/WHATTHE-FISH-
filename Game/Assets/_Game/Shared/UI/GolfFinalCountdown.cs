@@ -18,7 +18,7 @@ namespace WhatTheFish {
   }
   void Build(RectTransform parent){
    page=parent;root=GolfHUDStyle.Rect("Golf finish in badge",parent,new Vector2(.5f,.5f),Vector2.zero,new Vector2(760,323));
-   blank=Resources.Load<Sprite>("GolfUI/FinalCountdown/Plate");reference=Resources.Load<Sprite>("GolfUI/FinalCountdown/Reference");plate=root.gameObject.AddComponent<Image>();plate.sprite=blank;plate.raycastTarget=false;plate.preserveAspect=true;
+   blank=Resources.Load<Sprite>("GolfUI/FinalCountdown/Plate");reference=Resources.Load<Sprite>("GolfUI/FinalCountdown/Reference");plate=root.gameObject.AddComponent<Image>();plate.sprite=blank;plate.raycastTarget=false;plate.preserveAspect=true;LocalizedArtwork.Add(plate,new Rect(.48f,.54f,.37f,.24f),"FINISH IN",42,GolfHUDStyle.Gold,GolfHUDStyle.Ink);
    for(int i=0;i<glyphs.Length;i++)glyphs[i]=Resources.Load<Sprite>("GolfUI/FinalCountdown/Glyph"+i);
    for(int i=0;i<3;i++){var r=GolfHUDStyle.Rect("Golf remaining digit "+i,root,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);digits[i]=r.gameObject.AddComponent<Image>();digits[i].raycastTarget=false;digits[i].preserveAspect=true;}
    // The original clock face pixels sit over the identically positioned face

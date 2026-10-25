@@ -66,7 +66,10 @@ namespace WhatTheFish {
     Icon(examples[1],"Release check",SportsUIStyle.Check,new Vector2(84,-59),Vector2.one*40);
     examples[2].anchoredPosition=new Vector2(-216,8);examples[2].sizeDelta=new Vector2(376,260);
     string[] assets={"BadgeSheet","BadgeSheet","BadgeSheet","TornadoBadge","CrabBadge"};int[] indices={0,1,2,6,7};
-    for(int i=0;i<5;i++){var sheet=Resources.Load<Texture2D>("GolfUI/Events/"+assets[i]);var crop=GolfEventBadgeGraphic.Crop(indices[i]);float width=i==0?300:176;var at=i==0?new Vector2(0,72):new Vector2((i-1)%2==0?-92:92,i<3?-24:-99);var r=Rect("Actual event badge "+i,examples[2],at,new Vector2(width,width*crop.height/crop.width));var badge=r.gameObject.AddComponent<GolfEventBadgeGraphic>();badge.Sheet=sheet;badge.Badge=indices[i];badge.raycastTarget=false;eventBadges.Add((badge,i));}
+    for(int i=0;i<5;i++){var sheet=Resources.Load<Texture2D>("GolfUI/Events/"+assets[i]);var crop=GolfEventBadgeGraphic.Crop(indices[i]);float width=i==0?300:176;var at=i==0?new Vector2(0,72):new Vector2((i-1)%2==0?-92:92,i<3?-24:-99);var r=Rect("Actual event badge "+i,examples[2],at,new Vector2(width,width*crop.height/crop.width));var badge=r.gameObject.AddComponent<GolfEventBadgeGraphic>();badge.Sheet=sheet;badge.Badge=indices[i];badge.raycastTarget=false;eventBadges.Add((badge,i));
+     string[] captions={"TROPICAL WIND","Moon Golf","STICKY GREEN","TORNADO","CRAB CROSSING"};
+     var area=indices[i] switch{1=>new UnityEngine.Rect(.27f,.23f,.44f,.55f),2=>new UnityEngine.Rect(.26f,.23f,.46f,.56f),6=>new UnityEngine.Rect(.265f,.15f,.465f,.44f),7=>new UnityEngine.Rect(.32f,.14f,.40f,.63f),_=>new UnityEngine.Rect(.40f,.23f,.32f,.55f)};
+     LocalizedArtwork.Add(badge,area,captions[i],24,Color.clear,i>=3?GolfHUDStyle.Gold:Color.white);}
    }else{
     stick=Preview(0,"move",new Vector2(-95,0),Vector2.one*100);Preview(0,"pass",new Vector2(100,0),Vector2.one*100);
     examples[1].anchoredPosition=new Vector2(-216,8);examples[1].sizeDelta=new Vector2(376,260);

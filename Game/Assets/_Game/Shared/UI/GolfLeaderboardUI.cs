@@ -8,8 +8,9 @@ using UnityEngine.UI;
 namespace WhatTheFish {
  // Presentation only: Results() remains the sole source of ordering and scores.
  public sealed class GolfLeaderboardUI:MonoBehaviour {
+  readonly List<LocalizedArtwork> headings=new();float headingWidth=-1,headingHeight=-1;string headingLanguage;
   sealed class ScoreRow {
-   public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];
+   public LocalizedArtwork statusCaption;public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];
   }
   GolfFinalCountdown finalCountdown;RectTransform finishedCard;Text finishedText;
   Text footer,timer,notice;Image titleArt,frameArt,columnArt;RectTransform page,board,frame,columnBand,viewport,content,countdownCard,noticeCard;
@@ -18,6 +19,7 @@ namespace WhatTheFish {
   readonly Dictionary<string,Sprite> sprites=new();
   readonly float[] columnShares={.29f,.175f,.143f,.19f,.202f};
   static readonly string[] ColumnNames={"Player","Progress","Strokes","Status","Finish time"};
+  RectTransform ceremonyParent;
   bool expanded,aimSummary,pointerInside;double lastRound=double.NaN;int visibleRows;float renderedRowHeight,hoverScale=1;
   public RectTransform BoardRect=>board;
   public float RenderedHeight=>board?board.rect.height*board.localScale.y:0;
@@ -37,7 +39,7 @@ namespace WhatTheFish {
   public string CountdownText=>finalCountdown?FinishTime(finalCountdown.Seconds):"";
   public static void Create(RectTransform page,Font font){var ui=Rect("Golf HUD",page,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero).gameObject.AddComponent<GolfLeaderboardUI>();ui.Build(page,font);page.gameObject.AddComponent<GolfTargetIndicator>().Build(page,font);}
   public static RectTransform Rect(string name,Transform parent,Vector2 anchor,Vector2 position,Vector2 size){var r=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=anchor;r.anchoredPosition=position;r.sizeDelta=size;return r;}
-  public static Text Text(string name,Transform parent,Font font,Vector2 anchor,Vector2 position,Vector2 size,int points){var r=Rect(name,parent,anchor,position,size);var t=r.gameObject.AddComponent<Text>();t.font=font;t.fontSize=points;t.color=Color.white;t.alignment=TextAnchor.MiddleLeft;t.raycastTarget=false;t.supportRichText=false;var shadow=t.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.65f);shadow.effectDistance=new Vector2(1,-1);return t;}
+  public static Text Text(string name,Transform parent,Font font,Vector2 anchor,Vector2 position,Vector2 size,int points){var r=Rect(name,parent,anchor,position,size);var t=r.gameObject.AddComponent<LocalizedText>();t.font=font;t.fontSize=points;t.color=Color.white;t.alignment=TextAnchor.MiddleLeft;t.raycastTarget=false;t.supportRichText=false;var shadow=t.gameObject.AddComponent<Shadow>();shadow.effectColor=new Color(0,0,0,.65f);shadow.effectDistance=new Vector2(1,-1);return t;}
   Sprite Sprite(string name){if(!sprites.TryGetValue(name,out var value))sprites[name]=value=Resources.Load<Sprite>("GolfUI/Leaderboard/"+name);return value;}
   Text Label(string name,Transform parent,int points,TextAnchor alignment=TextAnchor.MiddleCenter,Color? color=null){
    var label=GolfHUDStyle.Text(name,parent,"",Vector2.zero,points,alignment,color);label.font=CoveUI.DisplayFont??fallbackFont;label.fontStyle=FontStyle.Normal;label.horizontalOverflow=HorizontalWrapMode.Overflow;label.verticalOverflow=VerticalWrapMode.Truncate;
@@ -57,8 +59,8 @@ namespace WhatTheFish {
    CharacterIdentityBadges.ReserveHUD(board);
    board.gameObject.AddComponent<GolfRankingHover>().owner=this;
    frame=Rect("Golf leaderboard frame",board,new Vector2(0,1),Vector2.zero,Vector2.zero);frame.pivot=new Vector2(0,1);frameArt=Art(frame,"Frame",true);frameArt.raycastTarget=true;
-   titleArt=Art(Rect("Golf leaderboard title",board,new Vector2(.5f,1),Vector2.zero,Vector2.zero),"Title");titleArt.preserveAspect=true;
-   columnBand=Rect("Golf column band",board,new Vector2(0,1),Vector2.zero,Vector2.zero);columnArt=Art(columnBand,"Columns");
+   titleArt=Art(Rect("Golf leaderboard title",board,new Vector2(.5f,1),Vector2.zero,Vector2.zero),"Title");titleArt.preserveAspect=true;LocalizedArtwork.Add(titleArt,new Rect(.135f,.12f,.77f,.47f),"Leaderboard",32,CoveUI.Hex("12C4E7"),GolfHUDStyle.Gold);
+   columnBand=Rect("Golf column band",board,new Vector2(0,1),Vector2.zero,Vector2.zero);columnArt=Art(columnBand,"Columns");float[] edges={.09f,.30f,.47f,.63f,.80f,.98f};for(int i=0;i<5;i++)headings.Add(LocalizedArtwork.Add(columnArt,new Rect(edges[i],.2f,edges[i+1]-edges[i]-(i==4?.001f:.01f),.60f),ColumnNames[i],23,GolfHUDStyle.Gold,GolfHUDStyle.Ink));
    viewport=Rect("Golf ranking viewport",board,new Vector2(0,1),Vector2.zero,Vector2.zero);viewport.pivot=new Vector2(0,1);var input=viewport.gameObject.AddComponent<Image>();input.color=Color.clear;viewport.gameObject.AddComponent<RectMask2D>();
    content=Rect("Golf ranking content",viewport,new Vector2(0,1),Vector2.zero,Vector2.zero);content.pivot=new Vector2(0,1);
    scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.content=content;scroll.horizontal=false;scroll.vertical=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=32;
@@ -84,30 +86,40 @@ namespace WhatTheFish {
      if(j>0){var cell=Rect("Golf value plate "+j,row.rect,new Vector2(0,.5f),Vector2.zero,Vector2.zero);row.cells[j]=Art(cell,j==3?"Pending":"Cell",true);}
      row.text[j]=Label("Player "+i+" "+ColumnNames[j],row.rect,20,j==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);
     }
-    row.status=row.cells[3];row.rect.gameObject.SetActive(false);rows.Add(row);
+    GameLocalization.UserContent(row.text[0]);row.status=row.cells[3];row.statusCaption=LocalizedArtwork.Add(row.status,new Rect(.13f,.23f,.74f,.52f),"Playing",20,Color.clear,Color.white,row.text[3]);row.rect.gameObject.SetActive(false);rows.Add(row);
    }
   }
+  public void OpenResults(){PostMatchFlow.Instance?.Close();PlayerView.Instance?.CancelGolfAim();aimSummary=false;SetExpanded(true);}
+  public void OpenCeremonyResults(RectTransform parent){
+   if(!parent)return;
+   ceremonyParent=parent;backdrop.transform.SetParent(parent,false);Stretch((RectTransform)backdrop.transform);board.SetParent(parent,false);
+   OpenResults();
+  }
+  public void CloseResults()=>SetExpanded(false);
   void SetExpanded(bool value){
    var match=GolfMatchManager.Instance;
-   if(value&&(aimSummary||!match||!match.Context||match.State.Phase==GolfMatchPhase.Idle))return;expanded=value;if(!value)hoverScale=1;scroll.StopMovement();content.anchoredPosition=Vector2.zero;
+   if(value&&(aimSummary||!match||!match.Context||match.State.Phase==GolfMatchPhase.Idle))return;expanded=value;if(!value){hoverScale=1;
+    if(ceremonyParent){board.SetParent(page,false);backdrop.transform.SetParent(page,false);Stretch((RectTransform)backdrop.transform);ceremonyParent=null;}
+   }scroll.StopMovement();content.anchoredPosition=Vector2.zero;
    if(value){backdrop.transform.SetAsLastSibling();board.SetAsLastSibling();countdownCard.SetAsLastSibling();noticeCard.SetAsLastSibling();}
    backdrop.gameObject.SetActive(value);
   }
   void Layout(int count){
-   float margin=layout.margin;
-   float width=expanded?Mathf.Min(layout.boardExpandedWidth,page.rect.width-margin*2):Mathf.Min(layout.boardWidth,Mathf.Max(480,page.rect.width*.5f-margin-200));
+   var surface=ceremonyParent?ceremonyParent:page;float margin=layout.margin;
+   float width=expanded?Mathf.Min(layout.boardExpandedWidth,surface.rect.width-margin*2):Mathf.Min(layout.boardWidth,Mathf.Max(480,page.rect.width*.5f-margin-200));
    float padding=layout.boardPadding,inner=width-padding*2-(expanded?12:0);
    float titleWidth=expanded?width*layout.boardExpandedTitleFraction:Mathf.Min(layout.boardCompactTitleWidth,width);
    float header=titleWidth*Sprite("Title").rect.height/Sprite("Title").rect.width;
    float columns=inner*Sprite("Columns").rect.height/Sprite("Columns").rect.width;
    float toggleHeight=expanded?layout.boardToggleHeight:0;toggle.gameObject.SetActive(expanded);
-   float maxHeight=page.rect.height*(expanded?layout.boardExpandedHeightFraction:layout.boardCompactHeightFraction);
+   float maxHeight=surface.rect.height*(expanded?layout.boardExpandedHeightFraction:layout.boardCompactHeightFraction);
    renderedRowHeight=expanded?layout.boardFullRowHeight:layout.boardPreviewRowHeight;
    float available=maxHeight-header-columns-toggleHeight-padding*2;
    float body=count==0?36:expanded?Mathf.Min(Mathf.Max(renderedRowHeight,count*renderedRowHeight),available):count*renderedRowHeight;
    float rowTop=header+columns+4,height=rowTop+body+toggleHeight+padding;
    if(aimSummary){width=Mathf.Min(layout.boardWidth,490);inner=width-padding*2;height=layout.boardAimSummaryHeight;}
-   board.anchoredPosition=new Vector2(Mathf.Abs(layout.boardPosition.x),layout.boardPosition.y);board.sizeDelta=new Vector2(width,height);
+   board.anchorMin=board.anchorMax=board.pivot=expanded?new Vector2(.5f,.5f):new Vector2(0,1);
+   board.anchoredPosition=expanded?Vector2.zero:new Vector2(Mathf.Abs(layout.boardPosition.x),layout.boardPosition.y);board.sizeDelta=new Vector2(width,height);
    // Preserve row, badge and header proportions. A crowded preview scales as
    // one card instead of squeezing only its rows/column artwork vertically.
    float hoverTarget=expanded&&pointerInside&&!MenuPreferences.ReducedMotion?layout.boardHoverScale:1;
@@ -153,7 +165,7 @@ namespace WhatTheFish {
    board.SetAsLastSibling();if(countdownCard.gameObject.activeSelf)countdownCard.SetAsLastSibling();if(noticeCard.gameObject.activeSelf)noticeCard.SetAsLastSibling();
    bool aiming=PlayerView.Instance&&PlayerView.Instance.GolfAimRequested;
    bool started=state.Phase!=GolfMatchPhase.Idle;
-   board.gameObject.SetActive(started&&!aiming);
+   board.gameObject.SetActive(started&&!aiming&&(state.Phase!=GolfMatchPhase.Ended||expanded));
    if(lastRound!=state.StartedAt){lastRound=state.StartedAt;SetExpanded(false);}
    aimSummary=aiming;if(aiming&&expanded)SetExpanded(false);
    EnsureRows(ranked.Length);selected.Clear();displayedIds.Clear();
@@ -169,11 +181,11 @@ namespace WhatTheFish {
     row.art.sprite=Sprite(isLocal?"LocalRow":"Row");row.portrait.sprite=Sprite("Avatar"+(isLocal?0:1+(int)(p.PlayerId%3)));
     for(int j=1;j<5;j++)if(j!=3)row.cells[j].sprite=Sprite(isLocal?"LocalCell":"Cell");
     bool namedYou=string.Equals(p.PlayerName,"You",StringComparison.OrdinalIgnoreCase);
-    FitLine(row.text[0],prefix+(isLocal&&namedYou?"You":p.PlayerName)+(isLocal&&!namedYou?" (you)":""),row.text[0].fontSize,17);
+    FitLine(row.text[0],prefix+(isLocal&&namedYou?GameLocalization.Translate("You"):p.PlayerName)+(isLocal&&!namedYou?GameLocalization.Translate(" (you)"):""),row.text[0].fontSize,17);
     row.text[0].color=isLocal?Color.white:GolfHUDStyle.Ink;row.text[0].GetComponent<Outline>().effectColor=isLocal?GolfHUDStyle.Ink:Color.white;row.text[0].GetComponent<Outline>().effectDistance=Vector2.one*(isLocal?1.7f:1.1f);
     row.text[1].text=$"{p.CompletedHoleCount} / 5";row.text[2].text=p.TotalStroke.ToString();row.text[4].text=p.IsFinished?FinishTime(p.FinishTime):"--:--";
     row.text[3].text=p.IsFinished?"Finished":p.IsDNF?"DNF":"Playing";
-    bool baked=!p.IsDNF;row.status.sprite=Sprite(baked?p.IsFinished?"Finished":"Playing":"Pending");row.status.type=Image.Type.Simple;row.status.preserveAspect=true;row.text[3].enabled=!baked;
+    row.status.sprite=Sprite(p.IsFinished?"Finished":p.IsDNF?"Pending":"Playing");row.status.type=Image.Type.Simple;row.status.preserveAspect=true;row.text[3].enabled=p.IsDNF;row.statusCaption.enabled=!p.IsDNF;
     row.text[3].color=Color.white;row.text[3].GetComponent<Outline>().effectColor=new Color(.55f,.29f,.03f);FitLine(row.text[3],row.text[3].text,row.text[3].fontSize,16);
    }
    footer.text=expanded&&!aimSummary?$"Close ranking   ×   {ranked.Length} players":"";
@@ -181,6 +193,15 @@ namespace WhatTheFish {
    bool expired=state.Phase==GolfMatchPhase.Ended&&state.Players.Any(p=>p.IsDNF);
    finalCountdown.Show(countdown||expired,match.Remaining,state.CountdownDeadline,match.Now);
 
+  }
+  void LateUpdate(){
+   if(GameLocalization.English||!columnBand||!columnBand.gameObject.activeInHierarchy)return;
+   columnArt.rectTransform.ForceUpdateRectTransforms();foreach(var heading in headings)heading.LayoutCaption();
+   float height=headings[0].Caption.rectTransform.rect.height;
+   if(Mathf.Approximately(headingWidth,columnBand.rect.width)&&Mathf.Approximately(headingHeight,height)&&headingLanguage==GameLocalization.Code)return;
+   headingWidth=columnBand.rect.width;headingHeight=height;headingLanguage=GameLocalization.Code;int common=int.MaxValue;
+   foreach(var heading in headings){var label=(LocalizedText)heading.Caption;label.FitSingleLine(GameLocalization.Source(label),Mathf.Max(14,Mathf.RoundToInt(label.rectTransform.rect.height*.9f)));common=Mathf.Min(common,label.fontSize);}
+   foreach(var heading in headings){heading.FixedPoints=common;heading.Caption.fontSize=common;heading.Caption.resizeTextForBestFit=false;}
   }
   public bool FitsSafeFrame(){
    if(!board||!page)return false;var corners=new Vector3[4];board.GetWorldCorners(corners);var area=page.rect;

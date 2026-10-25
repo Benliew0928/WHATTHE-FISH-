@@ -2,6 +2,7 @@ import { AuthError } from './auth.mjs';
 import { createPlayerVerifier } from './player-auth.mjs';
 import { Profiles } from './profiles.mjs';
 import { RoomInvites } from './room-invites.mjs';
+import { deletionPending, deleteProfileForAccount } from './account-deletion.mjs';
 const verifiers=new WeakMap();
 const send=(status,data)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
 async function json(request) {
@@ -25,6 +26,13 @@ export async function profileApi(request,env,verifyOverride) {
     if(!limiter)throw new AuthError(503,'profiles_not_configured');
     if(!(await limiter.limit({key:id})).success)throw new AuthError(429,'rate_limited');
     const store=new Profiles(env.PROFILES_DB);
+    if(path==='/v1/account-deletion'&&method==='GET')return send(200,{version:1,profileDeleted:await deletionPending(store,id)});
+    if(path==='/v1/account-deletion'&&method==='DELETE'){
+      const body=await json(request);
+      if(body.confirm!=='delete-game-account')throw new AuthError(400,'confirmation_required');
+      return send(200,await deleteProfileForAccount(store,id));
+    }
+    if(await deletionPending(store,id))throw new AuthError(409,'account_deletion_pending');
     if(path==='/v1/invites'&&method==='GET')return send(200,await new RoomInvites(store).list(id));
     if(path==='/v1/invites'&&method==='POST')return send(200,await new RoomInvites(store).send(id,await json(request)));
     if(path==='/v1/invites/respond'&&method==='POST')return send(200,await new RoomInvites(store).respond(id,await json(request)));

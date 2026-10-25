@@ -189,6 +189,8 @@ namespace WhatTheFish {
    golfFraming=golf?Mathf.MoveTowards(golfFraming,1,4*Time.deltaTime):0;
    int viewMode=golf?1:mode;
    Vector3 focus=target.transform.position+Vector3.up*(viewMode==0?1.57f:Mathf.Lerp(1.35f,1,golfFraming));
+   // Eye level sits toward the face, ahead of the open neck of the local body.
+   if(viewMode==0&&(target.GolfClubMotion&&target.GolfClubMotion.ShowBodyInFirstPerson||target.GetComponent<FishingRodMotion>()&&target.GetComponent<FishingRodMotion>().Equipped))focus+=Quaternion.Euler(0,yaw,0)*Vector3.forward*.28f;
    if(golf){var ball=GolfMatchManager.Instance.Ball(aimOwner);if(ball)focus=Vector3.Lerp(focus,ball.Body.position+Vector3.up*.35f,golfFraming);}
    FishingCameraFocus(ref focus);
    bool fishingWide=mode==2&&FishingGame.Instance&&FishingGame.Instance.Context;var fishingLayout=FishingHUD.Instance?FishingHUD.Instance.Settings:null;

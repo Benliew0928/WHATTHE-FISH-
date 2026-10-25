@@ -10,7 +10,7 @@ using UnityEngine.Scripting;
 
 namespace WhatTheFish {
  // The UGS player ID is the game identity. Provider IDs never enter room connection data.
- public static class PlayerAccount {
+ public static partial class PlayerAccount {
   static Task initialization;
   public static bool Busy {get;private set;}
   public static bool RoomLocked=>AppRoot.Instance&&AppRoot.Instance.rooms&&(AppRoot.Instance.rooms.Connected||AppRoot.Instance.rooms.busy);
@@ -40,6 +40,7 @@ namespace WhatTheFish {
    await UnityServices.InitializeAsync(options);
   }
   public static async Task EnsureOnline() {
+   if(DeletionPending)throw new InvalidOperationException("Account deletion is pending. Open Privacy & data to finish it before going online.");
    if(Busy)throw new InvalidOperationException("Finish signing in before joining a room.");
    await EnsureSession();
   }
@@ -56,6 +57,7 @@ namespace WhatTheFish {
    }
   }
   public static async Task SignIn(AccountProvider provider,bool link) {
+   if(DeletionPending)throw new InvalidOperationException("Finish the pending account deletion from Privacy & data first.");
    if(Busy||RoomLocked)throw new InvalidOperationException("Leave your room before changing accounts.");
    string unavailable=AndroidAccountSignIn.Unavailable(provider);if(unavailable.Length>0)throw new InvalidOperationException(unavailable);
    Busy=true;string token=null,oldAccess=null,oldSession=null,oldPlayerId=null;
@@ -104,6 +106,7 @@ namespace WhatTheFish {
    }
   }
   public static void SignOut() {
+   if(DeletionPending)throw new InvalidOperationException("Finish the pending account deletion from Privacy & data first.");
    if(Busy||RoomLocked)throw new InvalidOperationException("Leave your room before signing out.");
    if(UnityServices.State==ServicesInitializationState.Initialized)AuthenticationService.Instance.SignOut(true);
    AndroidAccountSignIn.SignOutNative();PlayerIdentity.ClearAccount();

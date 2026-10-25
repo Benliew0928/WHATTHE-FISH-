@@ -18,6 +18,12 @@ namespace WhatTheFish {
    }
   }
   public static string AccountId=>PlayerPrefs.GetString(Prefix+"player.accountId","");
+  internal static string DeletionStorageKey=>Prefix+"player.deletion.pending.v1";
+  internal static void ForgetDeletedIdentity(string id,string scope) {
+   if(!string.IsNullOrEmpty(id))PlayerPrefs.DeleteKey(Prefix+"player.account."+id+".name");
+   foreach(SportId sport in Enum.GetValues(typeof(SportId)))PlayerPrefs.DeleteKey(ControlLayouts.Key(scope,sport));
+   PlayerPrefs.Save();
+  }
   public static string NameKey=>AccountId.Length>0?Prefix+"player.account."+AccountId+".name":Prefix+"player.displayName";
   public static string IdKey=>Prefix+"player.guestId";
   public static string LegacyNameKey=>Prefix+"fishing.nickname";

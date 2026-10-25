@@ -163,7 +163,7 @@ namespace WhatTheFish {
    for(int i=1;i<=5;i++)countdownSprites[i-1]=Resources.Load<Sprite>("GolfUI/Countdown_"+i);
    goSprite=Resources.Load<Sprite>("GolfUI/Countdown_GO");
    countdownBanner=Label("Golf starting countdown banner",countdownAnchor,"",new Vector2(600,240),200,GolfHUDStyle.Gold);countdownBanner.horizontalOverflow=HorizontalWrapMode.Overflow;countdownBanner.verticalOverflow=VerticalWrapMode.Overflow;countdownBanner.rectTransform.anchoredPosition=Vector2.zero;
-   var bannerOutline=countdownBanner.gameObject.AddComponent<Outline>();bannerOutline.effectColor=GolfHUDStyle.Ink;bannerOutline.effectDistance=new Vector2(1.5f,-1.5f);countdownBanner.gameObject.SetActive(false);
+   var bannerGradient=countdownBanner.gameObject.AddComponent<ArtworkLetterGradient>();bannerGradient.top=CoveUI.Hex("FFF6B0");bannerGradient.bottom=CoveUI.Hex("FFBD18");var bannerOutline=countdownBanner.gameObject.AddComponent<Outline>();bannerOutline.effectColor=GolfHUDStyle.Ink;bannerOutline.effectDistance=new Vector2(5,-5);countdownBanner.gameObject.SetActive(false);
    countdownAnchor.gameObject.SetActive(false);
 
 
@@ -242,7 +242,7 @@ namespace WhatTheFish {
    swing.label.enabled=false;
    foreach(var item in cartSkins){
     // These approved images already contain their exact icon and lettering.
-    var sprite=ControlDesigns.GolfCartArt(item.cart.label.text);
+    var sprite=ControlDesigns.GolfCartArt(GameLocalization.Source(item.cart.label));
     item.skin.art.sprite=sprite;item.skin.art.preserveAspect=true;
     item.cart.label.enabled=!sprite;
    }
@@ -260,7 +260,7 @@ namespace WhatTheFish {
    if(match&&app&&match.WaitingForTee(app.LocalAthlete))hintText.text="Waiting for a free tee";
 
    hintText.fontSize=aiming?layout.hintFontSize:20;
-   hintCaption.enabled=hintText.text=="Walk near your ball to aim";hintText.enabled=!hintCaption.enabled;
+   hintCaption.enabled=GameLocalization.English&&GameLocalization.Source(hintText)=="Walk near your ball to aim";hintText.enabled=!hintCaption.enabled;
    hint.gameObject.SetActive(false);
    if(countdownAnchor){
     if(match&&match.Starting){
@@ -290,7 +290,7 @@ namespace WhatTheFish {
      lastCountdownSec=-1;
      goDisplayTimer=1f;
      countdownAnimTimer=0;
-     if(goSprite){
+     if(goSprite&&GameLocalization.English){
       countdownImage.sprite=goSprite;
       countdownImage.rectTransform.sizeDelta=new Vector2(316,200);
       countdownImage.gameObject.SetActive(true);

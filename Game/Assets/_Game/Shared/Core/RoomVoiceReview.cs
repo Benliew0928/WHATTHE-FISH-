@@ -43,7 +43,7 @@ namespace WhatTheFish {
    ui.SetVoiceAudience(false);yield return new WaitForSecondsRealtime(.2f);
    Check(!ui.GetComponentsInChildren<Text>().Any(t=>t.text.Contains("every island")||t.text.Contains("SPEAKING LIGHTS UP")||t.text.Contains("starts off")),"decorative subtitles removed");
    yield return new WaitForSecondsRealtime(.2f);Check(ui.GetComponentsInChildren<Text>().Any(t=>t.text=="● Speaking"),"speaking indicator follows live state");
-   yield return Views("lobby");
+   yield return LocalizedPanels();yield return Views("lobby");
    ui.Close();yield return new WaitForSecondsRealtime(.2f);Check(ui.Launchers.GetComponentsInChildren<Button>().Length==2,"launcher contains only chat and mic icons");
    yield return Capture("launcher-muted");yield return Gesture(false,false);Check(voice.MicEnabled&&!ui.VoiceOpen,"short tap unmutes without opening settings");yield return Capture("launcher-live");
    yield return Gesture(false,false);Check(!voice.MicEnabled&&!ui.VoiceOpen,"second short tap mutes without opening settings");
@@ -126,6 +126,21 @@ namespace WhatTheFish {
    Check(Button("Open room voice").IsInteractable(),"voice launcher restores after aim");
   }
   void Check(bool value,string label){checks++;File.AppendAllText(Path.Combine(folder,"results.txt"),(value?"PASS ":"FAIL ")+label+"\n");if(!value)throw new InvalidOperationException(label);}
+  IEnumerator LocalizedPanels(){
+   var language=GameLocalization.Current;
+   foreach(var selected in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
+    GameLocalization.Select(selected,false);yield return new WaitForSecondsRealtime(.25f);Canvas.ForceUpdateCanvases();
+    foreach(string id in new[]{"Connect room voice","Toggle microphone","Toggle voice speakers","Voice players","Voice spectators"}){
+     var text=Button(id).GetComponentInChildren<Text>();var source=GameLocalization.Source(text);
+     Check(selected==GameLanguage.English||GameLocalization.HasTranslation(source),selected+" voice caption translated: "+id);
+     Check(!(text is LocalizedText localized)||localized.HasUnclippedText(),selected+" voice caption fits: "+id);
+    }
+    var self=ui.GetComponentsInChildren<Text>().FirstOrDefault(t=>t.text=="Harbor ("+GameLocalization.Translate("You")+")");
+    Check(self,selected+" voice roster preserves user name and translates self suffix");
+    yield return Capture("localized-"+selected);
+   }
+   GameLocalization.Select(language,false);yield return new WaitForSecondsRealtime(.2f);
+  }
   IEnumerator Views(string context){
    foreach(var size in new[]{new Vector2Int(1600,900),new Vector2Int(1920,864),new Vector2Int(1024,768)}){
     Screen.SetResolution(size.x,size.y,false);yield return new WaitForSecondsRealtime(.6f);if(!ui.VoiceOpen)ui.OpenVoice();yield return new WaitForSecondsRealtime(.2f);

@@ -1,5 +1,410 @@
 # Build size — measured release records
 
+## Publication integration with communication updates — 25 October 2026
+
+Integrated pending local Golf events, localization, results, awards, welcome/privacy and account changes with upstream communication controls (`2ddef7d`) and compact docks (`25efada`). Both sides' measured release records are retained. The voice roster preserves raw player names and translates only the self suffix; eleven missing communication captions/templates were added to the shared catalog.
+
+Official AndroidSubmission: **166,803,592 -> 166,808,788 bytes (+5,196)**; remaining headroom **833,191,212 bytes** under the strict 1,000,000,000-byte cap. SHA-256: **1739DBEF9C24AB8FBD22B4B79C9D5D84C7889149A8EABF38D34D62CEFDAB6CD6**.
+
+The integrated runtime passes **219 voice UI**, **69 chat UI**, **52 voice state** and **48 account service** checks. Golf event/results regression passes **176** checks before the final dock-only update; those Golf sources are unchanged in the final player. The 3,456-entry catalog/font check passes, including new communication translations. All **522 Windows / 368 Android** compiled source documents match the final source snapshot. The complete **337-file** tested Windows player was copied and hash-verified, retaining preview launchers.
+
+APK v2 signature, ZIP CRC, all **1,405 audited entries** and five-scene bundle hash/size pass. Largest compressed entries: `assets/PackagedContent/islands.bundle` **45,361,412 bytes**; `lib/arm64-v8a/libil2cpp.so` **13,215,665 bytes**; `lib/arm64-v8a/libvivox-sdk.so` **10,240,163 bytes**; `lib/arm64-v8a/libunity.so` **9,808,952 bytes**. Entry deltas were reviewed with no unexpected asset growth. No lossy art changes were introduced during integration. Source data/report totals are not APK bytes.
+
+Evidence: `Builds/GitPushQA/`, `Builds/VoiceQA/UI-20261025-225104-770/`, `Builds/RoomChatQA/Run-20261025-225104-7993/`, `Builds/ActivityCinematicsQA/Golf-20261025-224428-717/` and `Builds/SizeAudit/latest/`. Final complete player: `Builds/WindowsFinal/`. Superseded APK/audit: `Legacy/20261025-224625-940-github-integration-android/`; previous and intermediate Windows players: `Legacy/20261025-224636-384-github-integration-windows/` and `Legacy/20261025-225239-745-github-integration-dock-windows/`. Physical phone microphone/touch/FPS and live cloud multiplayer acceptance remain unverified by these local integration checks.
+
+## Golf Rush showcase and compact event captions — 25 October 2026
+
+Measured APK **166,802,236 -> 166,803,592 bytes (+1,356)**. Remaining headroom: **833,196,408 bytes** below the strict 1,000,000,000-byte cap.
+SHA-256: **94F83BF14B4016AC55D9768695CDD57F8FFA03BBF37EE50D0636E6591E97F7CC**.
+
+Malay event captions use closer two-line spacing with measured text/outline fitting. Demonstration balls match the gameplay radius; Tropical Wind bends farther and Bounce Party/Sticky Green drop from 8 metres. Island Rush adds a 3.5-second cart pass, camera reversal and three accelerating runners, reusing existing art/audio and four-wheel terrain support.
+
+Both 1280x720 and 960x720 runs pass **176 Golf assertions** each; Fishing regression passes **1,107**. The catalog/font check passes 3,445 entries. All **520 Windows / 366 Android** compiled source documents match the current source snapshot. The complete 337-file Windows player was copied and hash-verified; preview launchers were retained. APK v2 signature, ZIP CRC, all **1,405 audited entries** and five-scene bundle integrity pass.
+
+Largest compressed entries: island bundle **45,371,793 bytes**, IL2CPP **13,202,129**, Vivox **10,240,163**, Unity **9,808,952**. The main changes are the island bundle (-6,434) and IL2CPP (+7,546); no unexpected large asset growth was found. Serialized asset totals are not APK bytes.
+
+Evidence: `Builds/GolfRushShowcaseQA/`, `Builds/SizeAudit/latest/` and [event documentation](GOLF-EVENT-SHOWCASES.md). Full Windows player: `Builds/WindowsFinal/`. Earlier player, APK/audit and draft films were archived in dated `golf-rush-*` batches under `Legacy/`. Phone rendering, touch, FPS and cloud multiplayer remain unverified. No Git staging, commit or push.
+
+## Awards motion and occlusion correction — 25 October 2026
+
+Task-start APK **166,733,790 -> 166,802,236 bytes (+68,446)**. The immediately
+preceding shared-source release was **166,800,416 bytes** (difference **+1,820**).
+Remaining headroom: **833,197,764 bytes** below the strict 1,000,000,000-byte cap.
+SHA-256: **446C051B9953EDC53422EB7A28D83CBEC410DC2EF435F8D31753FB73A351100D**.
+
+Both sports enter single-file with 1.85-metre spacing and distance-driven foot
+planting. Floating medals are removed, the original title panel restored, and
+podium digits use depth testing. Moving entrance cameras keep all three winners
+or five Crew members clear of UI. The settled shot eases through a left-to-right
+arc; reduced motion remains fixed. The shared-source release retains concurrent
+Golf event demonstrations and prior first-person/results/localization work.
+
+**180 runtime assertions** passed across English, Simplified Chinese and Malay;
+full renders and both 30 simulation-fps entrance/celebration videos were reviewed.
+All **510 Windows** and **365 Android** compiled source documents matched at initial verification. The
+complete **334-file** Windows candidate was copied and hash-verified before
+updated notes and two preview launchers were added. APK v2 signature, ZIP CRC,
+all **1,405 audited entries** and the five-scene bundle integrity pass.
+
+Largest compressed entries: island bundle **45,378,227 bytes**, IL2CPP
+**13,194,583**, Vivox **10,240,163**, Unity **9,808,952**. Awards assets total
+**4,020,866 uncompressed serialized bytes** in 123 packed rows, not their
+compressed APK contribution. The extended Fishing bridge adds 4,590 vertices;
+Golf geometry is unchanged. No unrelated lossy asset change was introduced.
+Physical phone quality/touch/FPS and cloud multiplayer timing remain unverified.
+
+Evidence: `Builds/IslandAwardsMotionQA/`, `Builds/SizeAudit/latest/`, and
+[ISLAND-AWARDS.md](ISLAND-AWARDS.md). Previous complete player:
+`Legacy/20261025-215707-063-awards-motion-windows/`; preceding APK/audit:
+`Legacy/20261025-215311-800-awards-motion-android/`.
+
+Source snapshot limit at final handoff: all awards-specific compiled sources
+still match. Subsequent concurrent edits to ActivityCinematic, GolfEventHUD,
+GolfEventShowcase, GameLocalization and LocalizedArtwork (plus the Windows-only
+ActivityCinematicReview) postdate initial validation. Final comparison found
+6 Windows / 5 Android differences in those files. They are preserved in the
+workspace but are not claimed as tested by this awards delivery.
+
+
+## Golf event viewing demonstrations — 25 October 2026
+
+AndroidSubmission: **166,733,790 -> 166,800,416 bytes (+66,626)**;
+remaining headroom **833,199,584 bytes** below the strict 1,000,000,000-byte cap.
+SHA-256: **3C188F1480D61A931A2DFA6CC2FCB84A4754C265E7029702EB4D0E17DD9518A4**.
+
+Adds Tropical Wind, Bounce Party and Sticky Green example shots to the existing
+3.5-second event camera flow. Render-only balls reuse the original golf mesh,
+materials, trail shader and audio; no new textures, clips or scene edits.
+The shared-source build also includes current concurrent podium-motion updates.
+
+Validation: **125 Golf + 1,107 Fishing runtime assertions** passed. Reviewed
+1280x720 Golf captures and exported six silent 5-second simulation clips;
+these do not measure real-time mobile FPS. All **519 Windows / 365 Android**
+compiled source documents match at verification. The complete **337-file**
+Windows player, including existing awards preview launchers, was hash-verified.
+APK v2 signature, ZIP CRC, all **1,405 audited entries** and five-scene
+bundle hash/size pass. Physical phone rendering/touch/FPS remain unverified.
+
+Largest compressed entries remain island bundle (45376397 bytes),
+IL2CPP, Vivox and Unity. Growth was inspected in `Builds/GolfEventShowcaseQA/apk-growth.json`;
+no unrelated texture/font compression changes were made. Evidence:
+`Builds/GolfEventShowcaseQA/`, `Builds/SizeAudit/latest/` and
+[GOLF-EVENT-SHOWCASES.md](GOLF-EVENT-SHOWCASES.md).
+
+Previous APK/audit: `Legacy/20261025-214406-209-golf-showcases-android/`;
+previous complete Windows: `Legacy/20261025-214716-326-golf-showcases-windows/`;
+promoted duplicate: `Legacy/20261025-214846-323-golf-showcases-promoted/`.
+
+## Fishing/Golf podium ceremonies — 25 October 2026
+
+Task-start APK **165,379,670 bytes**; final AndroidSubmission
+**166,733,790 bytes (+1,354,120)**. The immediately preceding concurrent release
+was **166,747,366 bytes** (final difference **-13,576 bytes**). Remaining headroom:
+**833,266,210 bytes** below the strict 1,000,000,000-byte cap. SHA-256:
+**AC0F52F6B50DBA9192DB8FCFC04FE0ECDA98949861D75C83C7BA9A4ECA5FF45E**.
+
+Includes the two baked 3D podiums, Fishing mist/bridge entrance, Golf parallel
+entrance, fixed celebration cameras and shared-rank badge spacing. Shared-source
+first-person body, manual Golf results, welcome and localization work is also
+included; the task-start delta is not solely podium geometry.
+
+Validation: **117 runtime assertions** across all three languages, reviewed
+1280x720 renders and both complete entrance videos. All **509 Windows** and
+**364 Android** compiled source documents match. Complete Windows player
+promotion verified all **335 candidate files** before delivery notes/preview
+launchers were added. APK v2 signature, ZIP CRC, all **1,404 audited entries**
+and the five-scene bundle hash/size pass. Physical phone quality/FPS are unverified.
+
+Largest compressed entries: island bundle **45,370,609 bytes**, IL2CPP
+**13,185,832**, Vivox **10,240,163**, Unity **9,808,952**. Podium assets total
+**3,818,594 uncompressed serialized bytes** across 124 packed rows; this is not
+their compressed APK contribution. References and videos are not packed into
+the game. No unrelated texture/font compression change was introduced.
+
+Evidence: `Builds/IslandAwardsQA/`, `Builds/SizeAudit/latest/`, and
+[ISLAND-AWARDS.md](ISLAND-AWARDS.md). Previous complete Windows:
+`Legacy/20261025-205129-978-island-awards-windows/`; previous APK/audit:
+`Legacy/20261025-204805-606-island-awards-final-android/`.
+
+## First-person body correction — 25 October 2026
+
+Task baseline **165,379,670 bytes**; measured shared-source AndroidSubmission
+**166,747,366 bytes**; remaining headroom **833,252,634 bytes**. This release
+also includes concurrent awards work; its growth is not attributable solely to
+this fix. SHA-256:
+**DD93AE648CBF765FB0A15EE0D355CD783AC0FE40BC44BAB3136F72A839CB48C9**.
+
+Golf/Fishing first person hides the complete head/hair underside without shrinking
+bones, retains body/hands/full shadows and moves the eye 0.28 units forward at
+its original height. Both LODs preserve hand/finger vertices and grip shapes;
+source FBX/textures are unchanged. No new visible text or texture assets.
+
+**1,976 runtime assertions passed** at 960×540 and 1600×900, covering all ten
+appearances, both LODs, pitch extremes, aiming/cancel and third-person recovery.
+Rendered captures confirm feet/body at the lower edge without hair or an open
+neck blocking the view. Catalog/fonts (3,445 entries) and original artwork pass.
+
+APK hard size gate, v2 signature, ZIP CRC, **1,404** audited entries and five-scene
+bundle hashes pass. Largest compressed entries: island bundle **45,384,189**,
+IL2CPP **13,185,834**, Vivox **10,240,163**, Unity **9,808,952** bytes. Five original
+fonts still total **33,127,106 bytes**. First-person sources match the compiled
+release; a concurrent follow-up to `FishingCeremony.cs` postdates this APK and
+is not validated by it. Physical phone rendering/touch/FPS remain unverified.
+
+Evidence: `Builds/FirstPersonBodyQA/` (captures, mesh/hand checks, source hashes,
+APK verification and signature). Reproduction details:
+[PLAYER-IDENTITY-CAMERAS.md](PLAYER-IDENTITY-CAMERAS.md).
+
+
+## Manual Golf results — 25 October 2026
+
+AndroidSubmission: **165,379,670 -> 166,734,386 bytes (+1,354,716)**;
+headroom **833,265,614 bytes** below 1,000,000,000. SHA-256:
+**73CA5480A37F95B95D01CBC97CEC77DD4037922B7CE5B541ACDDA992B232253C**.
+
+Golf awards remain open until the player chooses an action. Show results opens a
+centered, manually closable ranking over the awards. No automatic ranking popup.
+Fishing's timed ceremony is unchanged. This shared-source build also includes
+concurrent island awards and first-person body updates; the size difference is
+not attributable solely to this UI logic change.
+
+Validation: 96 Golf and 1,107 Fishing runtime assertions passed; final Golf screenshot
+reviewed at 1600x900. All 518 Windows and 364 Android compiled source documents
+matched at verification. Complete 335-file Windows delivery was hash-verified.
+ZIP CRC, all 1,402 audited entries and five-scene bundle integrity passed.
+Largest entries remain the island bundle (45369262 compressed
+bytes), IL2CPP, Vivox and Unity runtime; no unrelated font/texture compression change.
+Physical phone rendering/touch/FPS are unverified.
+
+Evidence: `Builds/GolfResultsQA/`, `Builds/SizeAudit/latest/`, and
+[GOLF-RESULTS.md](GOLF-RESULTS.md). Superseded APK/audit:
+`Legacy/20261025-195003-319-golf-manual-results-android/`; superseded Windows:
+`Legacy/20261025-200220-613-golf-manual-results-windows/`; promoted duplicate:
+`Legacy/20261025-200422-333-golf-manual-results-promoted/`.
+
+## Event/results and multilingual validation — 25 October 2026
+
+This task validated the **same shared-source release** as the welcome loading
+utility task below. AndroidSubmission: **165,380,410 -> 165,379,670 bytes (-740)**;
+headroom **834,620,330 bytes**. SHA-256:
+**1D0F314A2A8C0C577B8E2945A3BF1F9699C4A02E13DDF3156D6CBEE788206C77**.
+
+Includes 3.5-second Golf hazard views with synchronized HUD fades and an opaque,
+clickable Settings gear; seamless camera/HUD for the four excluded events;
+removal of central Golf/Fishing cards; correct results layering and Golf awards
+routing; uniformly fitted translated headings and two-line tee signs. Original
+art/fonts and gameplay physics remain unchanged. The full build also contains
+concurrent welcome-loading/account/localization changes from the shared tree.
+
+The official AndroidSubmission output was reused and independently checked:
+APK size gate, v2 signature, ZIP CRC, 1,282 audited entries and five-scene bundle
+integrity pass. All **362 Android** and **505 Windows** source documents match.
+Largest compressed entries: island bundle **45,383,129** (-4,786), IL2CPP
+**13,182,699** (+3,711), Vivox **10,240,163** and Unity **9,808,952**. Original
+bilingual fonts still total **33,127,106 bytes**; no unexpected asset growth.
+
+Runtime validation: **9,769** localization/layout assertions at 960×540,
+1600×900 and 1200×900, zero recorded layout findings; **87 Golf + 1,107 Fishing**
+activation/results assertions. All 334 runtime/support files of the complete
+335-file WindowsFinal match the tested candidate; its separate delivery notes
+retain both tasks' verification. The current player was verified in place,
+without replacing the newer concurrent delivery. Phone rendering/touch/FPS
+remain unverified.
+
+Evidence: `Builds/EventPresentationQA/`, `Builds/SizeAudit/latest/`,
+[activation rules](PROP-ACTIVATION-FOCUS.md) and [layout checks](LOCALIZATION.md).
+Previous APK/audit: `Legacy/20261025-190803-273-welcome-loading-android/`;
+previous complete Windows: `Legacy/20261025-191307-684-welcome-loading-windows/`.
+Task intermediate candidate: `Legacy/20261025-190723-630-event-presentation-intermediate/`;
+promoted duplicate and superseded hidden-window captures:
+`Legacy/20261025-191525-388-event-presentation-delivered/`.
+
+## Welcome loading utility controls — 25 October 2026
+
+AndroidSubmission: **165,380,410 -> 165,379,670 bytes (-740)**; remaining
+headroom **834,620,330 bytes** below the strict 1,000,000,000-byte limit.
+SHA-256: **1D0F314A2A8C0C577B8E2945A3BF1F9699C4A02E13DDF3156D6CBEE788206C77**.
+Settings and Info now work during welcome loading/error states while account
+entry stays gated; an open panel survives load completion. No artwork changes.
+The integrated build includes existing account, localization and event work.
+The largest entries remain the island bundle (45,383,129 compressed bytes)
+and IL2CPP (13,182,699); no unexpected large asset growth was observed.
+
+The complete WindowsFinal player passed 84 focused pointer-interaction checks
+and 494 startup-flow checks, including all three languages at 1600x900.
+The catalog/font check passed; 505 Windows and 362 Android compiled source
+records match. Huawei-device touch and native provider login remain unverified.
+Evidence: `Builds/WelcomeLoadingQA/` and `Builds/SizeAudit/latest/`.
+Previous Android: `Legacy/20261025-190803-273-welcome-loading-android/`.
+Previous complete Windows: `Legacy/20261025-191307-684-welcome-loading-windows/`.
+
+## Three-language layout corrections — 25 October 2026
+
+Official AndroidSubmission: **165,373,798 -> 165,380,410 bytes (+6,612)**.
+Remaining headroom: **834,619,590 bytes** below the strict 1,000,000,000-byte
+limit. SHA-256:
+**F1CB55F21726F8698C241ACFC5BCA8FBE6E98A3B30FDAEFF214A4AFCF06F5E1E**.
+
+Corrects name selection geometry, duplicate welcome language settings, camera
+card underline, Golf target spacing/tutorial layering and localized event
+illustrations, plus Malay HUD/tutorial/result-sheet layout. Original artwork
+and fonts are unchanged. The island bundle grew by 6,032 compressed bytes;
+IL2CPP grew by 319 and metadata by 251. No unexpected asset growth appeared.
+Largest entries: island bundle **45,387,915**, IL2CPP **13,178,988**, Vivox
+**10,240,163**, Unity **9,808,754**; five bilingual fonts still total
+**33,127,106 compressed bytes**.
+
+Size gate, APK v2 signature, ZIP CRC, **1,282** audited entries and five-scene
+bundle integrity passed. All **361 Android** and **504 Windows** compiled
+source documents match. The complete **335-file WindowsFinal** passed **9,943
+localization/persistence assertions** and **1,652 startup assertions**. Actual
+layout captures at 960×540, 1600×900 and 1200×900 had zero recorded overflow,
+truncation or sibling-label overlap findings; startup coverage extends through
+1920×1080. Physical phone rendering, touch and FPS remain unverified. Cloud
+profile save was unavailable in review; local guest entry/recovery passed.
+
+Evidence: `Builds/LocalizationLayoutQA/`, `Builds/SizeAudit/latest/` and
+[localization verification](LOCALIZATION.md). The build used process-local
+`TEMP`/`TMP` pointing to the resolved `Builds/JdkSockets` directory.
+Previous APK/audit: `Legacy/20261025-173104-113-localization-layout-android/`.
+Previous complete Windows: `Legacy/20261025-173414-151-localization-layout-windows/`.
+Promoted duplicate candidate: `Legacy/20261025-173432-714-localization-layout-candidate/`.
+
+## Settings language and localized UI polish — 25 October 2026
+
+Official AndroidSubmission: **161,335,456 -> 165,373,798 bytes (+4,038,342)**.
+This task began at **160,144,610 bytes**; a concurrent welcome-icon delivery
+added 1,190,846 bytes before this final build. Total growth from task start is
+5,229,188 bytes. Remaining headroom: **834,626,202 bytes** below the strict
+1,000,000,000-byte limit.
+SHA-256: **D266112FD23B70270CAFD4D3A0DB240D2E428CA6713ADDCDA2868B3205902A8A**.
+
+The 16 clean lettering companions plus UV alignment metadata contribute
+**4,028,835 compressed APK bytes**, explaining nearly all growth from the
+immediately preceding release. Original artwork, icons, fonts and map geometry
+are preserved. Masters remain high resolution; Android companions use ASTC 4×4,
+with 256–2048px delivery limits appropriate to their displayed size. Sharper
+text is rasterized at actual canvas/panel scale with 2x edge sampling.
+
+Largest compressed entries: island bundle **45,381,883**, IL2CPP **13,178,669**,
+Vivox **10,240,163**, Unity **9,808,754**; the five unchanged bilingual fonts
+still total **33,127,106 bytes**. No unexpected large growth appeared.
+
+Size gate, APK v2 signature, ZIP CRC, **1,282** audited entries and five-scene
+bundle integrity passed. **361 Android** and **503 Windows** compiled source
+documents match the delivery snapshot. The complete **335-file WindowsFinal**
+passed **4,335 localization/persistence assertions** and **1,684 startup checks**
+across three languages and four screen sizes through 1920×1080. Phone rendering,
+touch and FPS remain unverified; cloud profile save was unavailable in review,
+while local guest entry/recovery passed.
+
+The initial build failed in Java's Windows local-socket connection. The official
+build succeeded with process-local `TEMP`/`TMP` set to `Builds/JdkSockets` under
+the resolved repository root; no global Java, network or firewall settings were
+changed. Earlier failed build logs are retained separately from final validation.
+
+Evidence: `Builds/LocalizationPolishQA/`, `Builds/SizeAudit/latest/`,
+[localization verification](LOCALIZATION.md) and
+[artwork masters/prompt sets](../ArtSource/LocalizationArtwork/README.md).
+Prior APK/audit: `Legacy/20261025-162352-398-localization-polish-android/`.
+Prior complete Windows: `Legacy/20261025-163042-576-localization-polish-windows/`.
+
+## Gameplay welcome icons and UI clarity — 25 October 2026
+
+Official AndroidSubmission: **160,144,610 -> 161,335,456 bytes (+1,190,846)**.
+Headroom below the strict 1,000,000,000-byte limit: **838,664,544 bytes**.
+SHA-256: **037E5497C976C9134B104959DD452F8C35762F4B9BD80FE5647F02E4FDA97A8D**.
+
+Four 1024×1024 transparent renders of the actual game balls/fish replace the
+generic Info icons. Golf/Fishing cards are beige/light blue, Credits is removed,
+and welcome text/rounded edges are sharper. The shared localized-font polish is
+included, with a fix for cross-label mesh contamination during font atlas growth.
+The four icon entries contribute **1,172,710 compressed APK bytes**, accounting
+for most of the increase. No source model or game-map geometry was changed.
+
+Size gate, APK v2 signature, ZIP CRC, 1,265 entry sizes and five-scene bundle
+integrity passed. **361 Android** and **502 Windows** compiled source documents
+matched at verification. The complete **335-file WindowsFinal** passed **1,684
+welcome assertions** in three languages and four actual screen sizes, through
+1920×1080. Physical phone rendering/touch/FPS remain unverified; cloud profile
+save was unavailable in this review, while local guest entry and recovery passed.
+
+Evidence: `Builds/WelcomeIconsQA/`, `Builds/SizeAudit/latest/`,
+[welcome verification](STARTUP-WELCOME.md) and [icon source](../ArtSource/WelcomeSportIcons/README.md).
+Prior APK/audit: `Legacy/20261025-154835-073-welcome-icons-android/`.
+
+## Localization verification — 25 October 2026
+
+The shared release now supports English, Simplified Chinese and Malay throughout
+runtime menus, controls, tutorials, dynamic notices, rankings and world signs.
+The device remembers the language selected on the welcome screen. Names, chat
+and room codes remain user content. The offline catalog contains **3,445 keys**.
+Five bilingual fonts preserve original Latin outlines/metrics and supply all
+**900 Chinese characters** used by the catalog.
+
+The complete current `Builds/WindowsFinal/` was tested directly: **985 checks at
+1600×900**, **986 at 1200×900**, plus a separate-process persistence check
+(**1,972 passing checks**). Representative captures were visually reviewed.
+All **501 Windows** and **360 Android** compiled source documents match the
+workspace. The later duplicate candidate has the same compiled game assembly;
+the newer shared Windows delivery and its welcome/privacy evidence were retained.
+
+The shared-workspace official AndroidSubmission run succeeded after these source
+changes: opening on-disk baseline **115,954,062 bytes**, new APK **160,144,610
+bytes** (+44,190,548); remaining headroom **839,855,390 bytes** below the strict
+1,000,000,000-byte limit. SHA-256:
+`7583A8C83C939255171EBE73C872D4B918D64C836B47761ABE5C7D9539CFF905`.
+APK ZIP CRC and v2 signature verification passed. The baseline was the older
+restored artifact, so this difference also includes other integrated features.
+
+The five delivery fonts contribute **33,127,106 compressed APK bytes**
+(**53,287,890 serialized asset bytes**, a different measurement). Largest
+compressed entries are the island bundle **45,378,025**, IL2CPP **13,164,466**,
+Vivox **10,240,163**, and Unity **9,808,754** bytes. The editable Noto master stays
+outside the Unity project; no master or obsolete candidate was added to Resources.
+No unexpected asset growth was found in this release's largest entries.
+
+Evidence: `Builds/LocalizationQA/Final1600/`, `FinalTablet/`, `FinalPersistence/`,
+`AndroidAudit/`, `apk-verification.json`, and compiled-source comparison JSONs.
+The current Android audit is also in `Builds/SizeAudit/latest/`.
+[Localization implementation and maintenance](LOCALIZATION.md).
+Superseded candidates are recoverable in
+`Legacy/20261025-145148-534-localization-candidates/` and
+`Legacy/20261025-150244-537-localization-duplicate-player/`.
+Physical Android touch, font rendering and FPS remain unverified. Existing
+legacy gameplay-test limits and provider/deployment limits remain as documented
+by their owning tasks; these localization checks do not certify those features.
+
+## Welcome Settings and Info with integrated language/privacy work — 25 October 2026
+
+The official AndroidSubmission build completed successfully. Immediately before
+this build the on-disk APK measured **115,954,062 bytes**; the new APK measures
+**160,144,610 bytes** (+44,190,548), with **839,855,390 bytes** of headroom below
+the strict 1,000,000,000-byte limit. The on-disk baseline was an older restored
+artifact, not the most recent historical record below. SHA-256:
+**7583A8C83C939255171EBE73C872D4B918D64C836B47761ABE5C7D9539CFF905**.
+
+This shared snapshot includes localization fonts/catalog, voice and privacy/account
+work as well as the new welcome panels. The panels reuse native geometry and add
+no raster textures. Five bilingual font payloads account for **33,127,106 compressed
+bytes**; the islands bundle is **45,378,025 bytes**. The increase from the older
+on-disk APK must not be attributed solely to Settings/Info.
+
+Signature v2, ZIP CRC, 1,260 audit entries and the five-scene bundle integrity
+passed. All **360 Android** and **501 Windows** compiled source documents matched
+the workspace at verification. The complete **335-file WindowsFinal** passed
+**962 welcome assertions** across three screen ratios and three languages.
+Phone touch/rendering/FPS and all concurrent feature workflows remain outside
+this task's validation. Details: [welcome delivery](STARTUP-WELCOME.md) and
+[APK audit](APK-SIZE-AUDIT.md). Evidence: `Builds/WelcomePanelsQA/` and
+`Builds/SizeAudit/latest/`. Previous APK recovery:
+`Legacy/20261025-145145-702-welcome-panels-android/`.
+
+AppGallery preparation subsequently rechecked this exact APK's signer/manifest
+and matching account/privacy source records, and passed 26 privacy checks on the
+newer complete WindowsFinal. The APK remains Android-Debug-signed; see
+[AppGallery validation](AppGallery/VALIDATION.md).
+
 ## Compact in-game communication dock — 25 October 2026
 
 Official AndroidSubmission: **126,914,878 -> 126,913,482 bytes

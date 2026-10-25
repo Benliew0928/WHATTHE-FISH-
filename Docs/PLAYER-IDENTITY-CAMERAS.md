@@ -43,6 +43,47 @@ room travel and shared chat history remain unchanged.
 
 ## Reproducing the checks
 
+### First-person body visibility — 25 October 2026
+
+Golf and Fishing keep the equipped body/arms visible in Eye level. The fused
+head and original hair now use an imported rest-pose mask in UV2.w, applied only
+to the local body's forward/depth/normal passes. Shared identity materials stay
+unmasked. Separate hair/scalp attachments become shadow-only while the body is
+visible in first person; the original head still contributes to the shadow.
+The mask includes the grey underside of the source hair, below the old face
+region. The equipped Eye level camera sits 0.28 units toward the gaze direction
+from its existing height, keeping the open neck outside the downward view.
+The former Golf/Fishing head-bone scale collapse is removed, preserving normal
+skinning, grip shapes and the third-person silhouette. Follow, Course/Lagoon
+and Golf aiming restore the complete character. Other sports retain their
+existing first-person body visibility rules.
+
+The source FBX, texture artwork, bone weights and geometry are unchanged. Both
+imported LODs carry the additional mask, and the generated identity library
+dependency record is refreshed by the normal build. No player-facing strings
+are introduced.
+
+Build the focused candidate with `FirstPersonBodyBuild.Build`; then run
+[Test-FirstPersonBody.ps1](../Tools/Build/Test-FirstPersonBody.ps1) with
+`-PlayerPath` pointing to `Builds/FirstPersonBodyQA/Player/WhatTheFish.exe`.
+The opt-in development probe checks both LODs of all ten appearances, unchanged
+head scale/shared materials/grip shapes, unmasked hand/finger vertices, pitch
+extremes, third-person recovery
+and Golf aim/cancel transitions. It captures the old bone-collapse path and the
+corrected body from the same camera. Evidence lives in ignored
+`Builds/FirstPersonBodyQA/`; phone rendering and performance require device QA.
+
+Verification: **1,976 runtime assertions passed** across Golf and Fishing at
+960×540 and 1600×900 (505 Golf + 483 Fishing at each size). Rendered captures
+show feet/body at the bottom edge, no head/hair underside or open neck blocking
+the view, and intact shadows. Both LOD hand/finger regions remain unmasked.
+The 1600×900 checks used the newer complete shared-source Windows candidate,
+including concurrent awards work; all 509 compiled source documents matched.
+Evidence: `Run-20261025-202754-915/`, `Run-20261025-203022-554/`, and
+`mesh-hand-validation.log` under that QA folder.
+
+### Shared player/camera checks
+
 Build the candidate with the Unity editor entry point
 `WhatTheFish.Editor.PlayerIdentityCameraBuild.Build`; use `.Scripts` only after
 a full candidate exists with the same assets. It writes the complete player to

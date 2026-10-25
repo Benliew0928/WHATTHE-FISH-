@@ -1,5 +1,22 @@
 # Identity, player profiles and friends
 
+## Prepared account deletion — 25 October 2026
+
+New source adds authenticated `GET/DELETE /v1/account-deletion`. GET advertises
+contract version 1; DELETE requires `{"confirm":"delete-game-account"}` and
+transactionally records a hashed identity revocation marker and removes the
+profile plus FK-owned social data. Regular profile API access is then rejected;
+profile creation also checks the marker inside its SQL statement to close a
+concurrent-write race. The client deletes Unity Authentication afterward.
+
+This change is **not deployed**: local Wrangler is unauthenticated. Apply only
+`0004_account_deletions.sql` to the existing database before deploying the new
+Worker. Do not blindly run all migrations against the dashboard-created database.
+Until deployment, clients refuse to start deletion when capability is unavailable.
+See [activation, retention and failure limits](../../Docs/AppGallery/TECHNICAL-HANDOFF.md).
+Local suites pass 48 tests, including deletion ownership/confirmation, stale-client
+recreation, idempotency, invitation cleanup and transaction failure behavior.
+
 This service verifies Huawei Account Kit ID tokens and exchanges the verified
 identity through Unity Authentication Custom ID. The Android application contains
 only public configuration; Unity service credentials belong exclusively in the

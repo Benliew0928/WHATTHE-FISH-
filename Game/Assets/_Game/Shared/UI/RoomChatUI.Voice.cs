@@ -100,7 +100,7 @@ namespace WhatTheFish {
    if(voiceRows.Count!=peers.Length||!voiceRows.Select(r=>r.Id).SequenceEqual(peers.Select(p=>p.Id))||renderedVoiceMember!=selectedVoiceMember)BuildVoiceRoster(peers);
    for(int i=0;i<peers.Length;i++){
     var peer=peers[i];var row=voiceRows[i];bool muted=peer.IsSelf?!mic:state.PlaybackMuted(peer.Id);
-    row.Name.text=voice.NameOf(peer)+(peer.IsSelf?" (You)":"");
+    GameLocalization.UserContent(row.Name);row.Name.text=voice.NameOf(peer)+(peer.IsSelf?" ("+GameLocalization.Translate("You")+")":"");
     row.State.text=!peer.Connected?"Not in voice":!muted&&peer.Speaking?"● Speaking":"";row.State.color=Mint;
     row.Icon.Set(peer.IsSelf?RoomCommsSymbol.Microphone:RoomCommsSymbol.Speaker,muted,muted?CoveUI.Coral:Cream);
     row.Mute.interactable=peer.IsSelf?state.Ready:!state.SpectatorsMuted||!peer.Spectator;

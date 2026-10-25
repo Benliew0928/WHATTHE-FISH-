@@ -42,6 +42,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _BumpScale: 0.6
+    - _HideFirstPersonHead: 0
     - _IdentityNumber: 1
     - _Metallic: 1
     - _ShowOriginalHair: 1

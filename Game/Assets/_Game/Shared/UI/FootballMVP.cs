@@ -45,10 +45,10 @@ namespace WhatTheFish {
    priorBlocked=PlayerView.Instance&&PlayerView.Instance.ExplicitInputBlocked;if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=true;}
    stadiumCamera=Camera.main;if(stadiumCamera){savedPosition=stadiumCamera.transform.position;savedRotation=stadiumCamera.transform.rotation;savedFov=stadiumCamera.fieldOfView;savedNear=stadiumCamera.nearClipPlane;savedOrtho=stadiumCamera.orthographic;}
    var s=match.Snapshot;result.text=(s.result==FootballMatchResult.Draw?"DRAW":s.result==FootballMatchResult.TeamA?"BLUE WINS":"RED WINS")+"  "+s.scoreA+" : "+s.scoreB;
-   nameText.text="#"+winner.number+"  "+winner.name+"  /  "+CharacterIdentity.TeamName(winner.team).ToUpperInvariant();
+   GameLocalization.UserContent(nameText);nameText.text="#"+winner.number+"  "+winner.name+"  /  "+GameLocalization.Translate(CharacterIdentity.TeamName(winner.team).ToUpperInvariant());
    goals.text=winner.goals.ToString();assists.text=winner.assists.ToString();passes.text=winner.passes.ToString();interceptions.text=winner.interceptions.ToString();points.text=winner.Points+" MVP POINTS   /   2 PER GOAL + 1 PER ASSIST";
    var records=match.PlayerRecords.OrderByDescending(r=>r.Points).ThenByDescending(r=>r.goals).ThenByDescending(r=>r.passes).ThenBy(r=>r.id).ToArray();
-   for(int i=0;i<10;i++)for(int c=0;c<5;c++){var t=rows[i,c];t.supportRichText=false;t.text=i>=records.Length?"":c==0?"#"+records[i].number+" "+records[i].name:c==1?records[i].goals.ToString():c==2?records[i].assists.ToString():c==3?records[i].passes.ToString():records[i].interceptions.ToString();if(c==0&&i<records.Length)t.color=records[i].team==FootballTeam.A?new Color(.12f,.30f,.65f):new Color(.68f,.20f,.16f);}
+   for(int i=0;i<10;i++)for(int c=0;c<5;c++){var t=rows[i,c];if(c==0)GameLocalization.UserContent(t);t.supportRichText=false;t.text=i>=records.Length?"":c==0?"#"+records[i].number+" "+records[i].name:c==1?records[i].goals.ToString():c==2?records[i].assists.ToString():c==3?records[i].passes.ToString():records[i].interceptions.ToString();if(c==0&&i<records.Length)t.color=records[i].team==FootballTeam.A?new Color(.12f,.30f,.65f):new Color(.68f,.20f,.16f);}
    BeginCelebration(match,winner,records);
   }
   void LateUpdate(){

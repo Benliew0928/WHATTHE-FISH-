@@ -66,7 +66,7 @@ namespace WhatTheFish {
   [Range(30,70)] public float carryRaisedDownAngle=55;
   [Range(.03f,.15f)] public float carryGroundClearance=.06f;
   [Range(0,1)] public float carryWristSway=.18f;
-  Athlete athlete;Transform hips,spine,chest,head;Limb left,right;Vector3 headScale;bool headHidden;
+  Athlete athlete;Transform hips,spine,chest,head;Limb left,right;
   Transform[] bones;Quaternion[] rotations;Vector3[] positions;bool applied;float twoHands;
   Vector3 headOffset,carryLeftGripLocal,carryRightGripLocal,carryClubScale;bool gripMarkersCaptured;static GolfClubModel prefab;
   Transform gripSocket;SkinnedMeshRenderer[] gripSkins;int[] gripShapes;bool gripClosed;
@@ -106,7 +106,7 @@ namespace WhatTheFish {
   public void Receive(GolfClubState value){State=value;}
   public void ResetPose(){Restore();SetGrip(false);SetAddressGripOffset(0);State=new GolfClubState{sequence=State.sequence+1};twoHands=0;TwoHanded=false;if(Club)Club.gameObject.SetActive(false);}
   void SetGrip(bool value){if(gripSkins==null||gripClosed==value)return;gripClosed=value;for(int i=0;i<gripSkins.Length;i++)gripSkins[i].SetBlendShapeWeight(gripShapes[i],value?100:0);}
-  void Restore(){if(headHidden&&head){head.localScale=headScale;headHidden=false;}if(!applied)return;for(int i=0;i<bones.Length;i++)if(bones[i]){bones[i].localPosition=positions[i];bones[i].localRotation=rotations[i];}applied=false;}
+  void Restore(){if(!applied)return;for(int i=0;i<bones.Length;i++)if(bones[i]){bones[i].localPosition=positions[i];bones[i].localRotation=rotations[i];}applied=false;}
   void Update(){Restore();}
   void OnDisable(){ResetPose();}
   bool Available(){var m=GolfMatchManager.Instance;return RigReady&&m&&m.Context&&m.State.Phase!=GolfMatchPhase.Idle&&m.Player(athlete)!=null&&!athlete.inTransit&&!GolfCartWorld.Driving(athlete);}
@@ -307,7 +307,6 @@ namespace WhatTheFish {
    LeftForearmShaftAngle=Vector3.Angle(left.end.position-left.lower.position,shaftAxis);
    RightElbowAngle=Vector3.Angle(right.lower.position-right.upper.position,right.end.position-right.lower.position);
    LeftElbowAngle=Vector3.Angle(left.lower.position-left.upper.position,left.end.position-left.lower.position);
-   if(head&&view&&view.active&&view.target==athlete&&view.mode==0&&!view.GolfAiming){headScale=head.localScale;head.localScale=Vector3.one*.001f;headHidden=true;}
   }
   bool Arm(Limb a,Vector3 palm,Vector3 normal,Vector3 fingers,Vector3 pole,float blend){
    var rotation=HandRotation(a,normal,fingers);

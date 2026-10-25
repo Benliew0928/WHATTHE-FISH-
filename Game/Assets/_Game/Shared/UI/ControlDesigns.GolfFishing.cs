@@ -31,7 +31,8 @@ namespace WhatTheFish {
    if(id=="aim"){
     label.color=Color.white;var outline=label.GetComponent<Outline>()??label.gameObject.AddComponent<Outline>();outline.enabled=true;outline.effectColor=CoveUI.Hex("B34B50");outline.effectDistance=new(1,-1);
    }else{
-    v.Art.sprite=id=="jump"?Resources.Load<Sprite>("GolfUI/Badges/Jump"):id=="start"?Resources.Load<Sprite>("GolfUI/StartButton/StartGame"):GolfCartArt(label.text);v.Art.preserveAspect=true;
+    v.Art.sprite=id=="jump"?Resources.Load<Sprite>("GolfUI/Badges/Jump"):id=="start"?Resources.Load<Sprite>("GolfUI/StartButton/StartGame"):GolfCartArt(GameLocalization.Source(label));v.Art.preserveAspect=true;
+    if(id!="jump")LocalizedArtwork.Add(v.Art,id=="start"?new Rect(.15f,.16f,.78f,.63f):new Rect(.48f,.26f,.42f,.52f),GameLocalization.Source(label),id=="start"?30:27,id=="start"?CoveUI.Hex("FFF2C9"):CoveUI.Hex("FFE78A"),id=="start"?Color.white:GolfHUDStyle.Ink,label);
    }
   }
   public static Sprite GolfCartArt(string caption){

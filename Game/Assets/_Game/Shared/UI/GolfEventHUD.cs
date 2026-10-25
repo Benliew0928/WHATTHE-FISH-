@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace WhatTheFish {
  [DefaultExecutionOrder(-50)] public sealed class GolfEventHUD:MonoBehaviour {
-  sealed class Row {public RectTransform root;public GolfEventBadgeGraphic art;public Text clock;public int previous=-1,index=-1;}
+  sealed class Row {public RectTransform root;public GolfEventBadgeGraphic art;public Text clock;public LocalizedArtwork caption,warningFooter;public int previous=-1,index=-1;}
   RectTransform page,card;Row weather,rushRow;Texture2D sheet,warningSheet,tornadoSheet,crabSheet;
   readonly Vector3[] gearCorners=new Vector3[4];
   RectTransform windArrow,windCompass;GolfWindEdgeGraphic edge;GolfEventKind observed;uint observedRound;bool observedRush;float windAt=-100,weatherAt=-100,rushAt=-100;
@@ -28,6 +28,9 @@ namespace WhatTheFish {
   Row BuildRow(string name){
    var row=new Row();row.root=GolfHUDStyle.Rect(name,card,new Vector2(0,1),Vector2.zero,new Vector2(410,135));row.root.pivot=new Vector2(0,1);
    row.art=row.root.gameObject.AddComponent<GolfEventBadgeGraphic>();row.art.Sheet=sheet;row.art.raycastTarget=false;
+   row.caption=LocalizedArtwork.Add(row.art,new Rect(.39f,.28f,.36f,.52f),"",25,GolfHUDStyle.Teal,Color.white);
+   row.caption.LineSpacing=.72f;row.caption.FitCaptionInk=true;
+   row.warningFooter=LocalizedArtwork.Add(row.art,new Rect(.46f,.08f,.30f,.17f),"Get ready!",18,CoveUI.Hex("16BDEC"),Color.white);row.warningFooter.enabled=false;
    row.clock=GolfHUDStyle.Text("Event seconds",row.root,"",new Vector2(55,34),27,TextAnchor.MiddleCenter,Color.white);row.clock.font=CoveUI.DisplayFont??CoveUI.TextFont;row.clock.horizontalOverflow=HorizontalWrapMode.Overflow;row.clock.verticalOverflow=VerticalWrapMode.Overflow;
    var outline=row.clock.gameObject.AddComponent<Outline>();outline.effectColor=LocalProfile.Hex("123A91");outline.effectDistance=new Vector2(1.6f,-1.6f);
    return row;
@@ -37,15 +40,21 @@ namespace WhatTheFish {
   float ShowRow(Row row,int index,int seconds,float y,float width){
    row.root.gameObject.SetActive(true);row.root.anchoredPosition=new Vector2(0,-y);
    row.art.enabled=true;
+   row.caption.SetArea(index switch{5=>new Rect(.385f,.61f,.46f,.22f),6=>new Rect(.265f,.15f,.465f,.44f),7=>new Rect(.32f,.14f,.40f,.63f),2=>new Rect(.26f,.23f,.46f,.56f),3=>new Rect(.28f,.12f,.42f,.65f),4=>new Rect(.35f,.22f,.41f,.56f),_=>new Rect(.40f,.23f,.32f,.55f)});
+   row.caption.SetCaptionArea(index switch{5=>new Rect(.40f,.61f,.42f,.20f),6=>new Rect(.29f,.21f,.42f,.34f),7=>new Rect(.35f,.24f,.35f,.43f),2=>new Rect(.34f,.28f,.36f,.41f),3=>new Rect(.37f,.26f,.32f,.43f),4=>new Rect(.40f,.28f,.33f,.40f),_=>new Rect(.42f,.29f,.28f,.42f)});
+   row.caption.SetColors(index==5?CoveUI.Hex("FFF2BA"):index==2?CoveUI.Hex("75D20E"):index==6?CoveUI.Hex("087DAD"):index==7?CoveUI.Hex("29963F"):CoveUI.Hex("09B9E4"),index==5?CoveUI.Hex("071A67"):index==6||index==7?CoveUI.Hex("FFBE13"):Color.white);
+   row.warningFooter.enabled=index==5;
+   row.caption.SetCaption(index==5?"EVENT INCOMING":index==4?"ISLAND RUSH":index==3?"BOUNCE PARTY":index==2?"STICKY GREEN":index==6?"TORNADO":index==7?"CRAB CROSSING":"TROPICAL WIND");
    float height=width*GolfEventBadgeGraphic.Crop(index).height/GolfEventBadgeGraphic.Crop(index).width;row.root.sizeDelta=new Vector2(width,height);
    {
-    var crop=GolfEventBadgeGraphic.Crop(index);var box=GolfEventBadgeGraphic.TimeBox(index);float scale=width/crop.width;
+    var crop=GolfEventBadgeGraphic.Crop(index);var box=GolfEventBadgeGraphic.TimeBox(index);if(index==5){box.y+=40;box.height-=40;}float scale=width/crop.width;
     if(row.index!=index){row.index=index;row.previous=-1;row.art.Badge=index;}
-    var r=row.clock.rectTransform;r.anchorMin=r.anchorMax=new Vector2(0,1);r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(box.center.x-crop.x,-(box.center.y-crop.y))*scale;r.sizeDelta=box.size*scale;row.clock.fontSize=Mathf.RoundToInt((index==5?310:index>=6?42:45)*scale);
+    var r=row.clock.rectTransform;r.anchorMin=r.anchorMax=new Vector2(0,1);r.pivot=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(box.center.x-crop.x,-(box.center.y-crop.y))*scale;r.sizeDelta=box.size*scale;int clockPoints=Mathf.RoundToInt((index==5?310:index>=6?42:45)*scale);
     row.art.Sheet=index==5?warningSheet:index==6?tornadoSheet:index==7?crabSheet:sheet;row.clock.enabled=true;row.clock.fontStyle=index==5?FontStyle.Bold:FontStyle.Normal;
     var outline=row.clock.GetComponent<Outline>();outline.effectColor=index==5?Color.white:LocalProfile.Hex("123A91");outline.effectDistance=Vector2.one*(index==5?2.3f:1.6f);
     var gradient=row.clock.GetComponent<GolfWarningGradient>();if(index==5&&!gradient)gradient=row.clock.gameObject.AddComponent<GolfWarningGradient>();if(gradient)gradient.enabled=index==5;
     if(row.previous!=seconds){row.previous=seconds;row.clock.text=(index==5?Mathf.Max(0,seconds).ToString("00"):Mathf.Max(0,seconds).ToString())+"s";}
+    ((LocalizedText)row.clock).FitSingleLine(GameLocalization.Source(row.clock),clockPoints);
    }
    return height;
   }

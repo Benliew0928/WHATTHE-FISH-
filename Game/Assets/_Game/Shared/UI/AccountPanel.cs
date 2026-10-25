@@ -8,7 +8,7 @@ namespace WhatTheFish {
  // Reusable from the welcome screen and profile page. No provider secrets or tokens enter this UI.
  public sealed class AccountPanel:MonoBehaviour {
   static AccountPanel instance;
-  RectTransform design,card;Text detail,feedback;Action completed;bool link=true,working;Button cancelSignIn;
+  RectTransform design,card;Text detail,feedback;Action completed;bool link=true,working;Button cancelSignIn,privacy;
   readonly List<Button> controls=new();
   public static bool Visible=>instance;
   public static void Open(Action onChanged=null) {
@@ -29,6 +29,7 @@ namespace WhatTheFish {
    Provider(preferred,365);Provider(preferred==AccountProvider.Huawei?AccountProvider.Google:AccountProvider.Huawei,455);
    feedback=Label(card,"",45,550,1010,100,24,false,Ink);
    controls.Add(Action(card,"Close account choices","Back",45,675,220,60,Panel,Close,CoveSymbol.None,25));
+   privacy=Action(card,"Privacy and account data","Privacy & data",310,675,400,60,Panel,()=>PrivacyDataPanel.Open(()=>completed?.Invoke()),size:25);controls.Add(privacy);
    if(PlayerIdentity.AccountId.Length>0)
     controls.Add(Action(card,"Sign out account","Sign out",775,675,280,60,Panel,()=>{
      try{PlayerAccount.SignOut();completed?.Invoke();Close();}catch(Exception e){feedback.text=PlayerAccount.Explain(e);}
@@ -56,7 +57,7 @@ namespace WhatTheFish {
    var safe=Screen.safeArea;float scale=Mathf.Min(safe.width/1100,safe.height/760)*.92f;
    design.localScale=Vector3.one*scale;design.anchoredPosition=new Vector2(safe.center.x-550*scale,-(Screen.height-safe.center.y-380*scale));
   }
-  void Update(){Layout();cancelSignIn.gameObject.SetActive(working&&AndroidAccountSignIn.Pending);if(!working&&Input.GetKeyDown(KeyCode.Escape))Close();}
+  void Update(){Layout();privacy.gameObject.SetActive(!working);cancelSignIn.gameObject.SetActive(working&&AndroidAccountSignIn.Pending);if(!working&&!PrivacyDataPanel.Visible&&Input.GetKeyDown(KeyCode.Escape))Close();}
   void Close(){if(working&&PlayerAccount.Busy)return;Destroy(gameObject);}
   void OnDestroy(){if(instance==this)instance=null;}
  }

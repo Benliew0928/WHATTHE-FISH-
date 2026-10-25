@@ -71,3 +71,13 @@ headroom: 886,674,214 bytes. No runtime/multiplayer/device tests were run.
 See the current measured record in [verification](VERIFICATION.md).
 Archives: `Legacy/20261024-005046-827-golf-impact-layout/` (previous player/APK)
 and `Legacy/20261024-005919-401-golf-impact-intermediate/` (intermediate player).
+
+## Event camera and results update — 25 October 2026
+
+Tornado and Crab Crossing viewing windows now last at most 3.5 seconds. The
+screen HUD fades together, except the independently drawn, clickable Settings
+control. Island Rush, Tropical Wind, Sticky Green and Bounce Party preserve
+the current camera and HUD without interruption. Central black announcements
+are removed. See [current activation rules](PROP-ACTIVATION-FOCUS.md) for input
+priority and [localization layouts](LOCALIZATION.md) for uniform leaderboard
+headings, tee signs and the corrected awards-to-leaderboard results action.

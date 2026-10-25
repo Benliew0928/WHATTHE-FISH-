@@ -1,0 +1,242 @@
+[
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Leaderboard/Title.png",
+    "master": "ArtSource/LocalizationArtwork/Title.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Title.png",
+    "sourceSha256": "3b9765dc679bc86244e873a1146720ec2cbb677c95f2120f6d09b0b75190cf3d",
+    "cleanSha256": "9870e838c047d371fee7a1a8b79a28941fdc360afed33e99acd668bdd577c917",
+    "originalSize": [
+      1024,
+      349
+    ],
+    "cleanSize": [
+      2148,
+      732
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Events/BadgeSheet.png",
+    "master": "ArtSource/LocalizationArtwork/BadgeSheet.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/BadgeSheet.png",
+    "sourceSha256": "5729c41270de6c4f5c35bdb4d9e3d20838cd19dbb109d7de2c3736b0e23fc90c",
+    "cleanSha256": "fadb991ee4cfc44d58e872e9481f9414050d7c13c65d1a04ad0d4f8c743919eb",
+    "originalSize": [
+      2171,
+      724
+    ],
+    "cleanSize": [
+      2172,
+      724
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Events/TornadoBadge.png",
+    "master": "ArtSource/LocalizationArtwork/TornadoBadge.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/TornadoBadge.png",
+    "sourceSha256": "e5d46960b96d232b3fe8d4fda8da01b5a370d2f5741ad845780106cea0fc2e9a",
+    "cleanSha256": "492abc720df74a333ebe4e7aaf8af3d594dd4b0a31c11ad0fa39a33187200319",
+    "originalSize": [
+      768,
+      289
+    ],
+    "cleanSize": [
+      2045,
+      769
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Events/CrabBadge.png",
+    "master": "ArtSource/LocalizationArtwork/CrabBadge.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/CrabBadge.png",
+    "sourceSha256": "d5ae4475789dc4615108a49f62c6c8027187523b901f0a2ccf1f67a2475cf19c",
+    "cleanSha256": "7f2472e016e6fd3ad98818d9d3b94364e18b14dc5d00451c5bc0b5f530c99e92",
+    "originalSize": [
+      768,
+      277
+    ],
+    "cleanSize": [
+      2089,
+      753
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Events/WarningSheet.png",
+    "master": "ArtSource/LocalizationArtwork/WarningSheet.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/WarningSheet.png",
+    "sourceSha256": "7dc6b8aae1398cb8b0d65de58caa6a73d0ca77fd631676346329004abb186636",
+    "cleanSha256": "7bffa0ceff9f7a9c3299c8d23232d0e9fd8745a7c60efd39a5e3f26e0ed4eef8",
+    "originalSize": [
+      1983,
+      793
+    ],
+    "cleanSize": [
+      1983,
+      793
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/StartButton/StartGame.png",
+    "master": "ArtSource/LocalizationArtwork/StartGame.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/StartGame.png",
+    "sourceSha256": "05e58e99aac26456fe12fb9f6cc9f49e6b20cabd2b43e8ad98282bb18b31ac73",
+    "cleanSha256": "bf7e31b94a304d54d602fba8760ff4f5b4cadd68a8a0765a2be7b4004533af77",
+    "originalSize": [
+      512,
+      152
+    ],
+    "cleanSize": [
+      2170,
+      725
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/CartButtons/Buggy.png",
+    "master": "ArtSource/LocalizationArtwork/Buggy.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Buggy.png",
+    "sourceSha256": "fcd53215de165f76ff8d784a0c0ec78ea6309820d8766080e88102d13fed47b7",
+    "cleanSha256": "b44638507c45727c0633df7ff188479ff99dd6836a67b68ae24095b7f11889cd",
+    "originalSize": [
+      512,
+      199
+    ],
+    "cleanSize": [
+      2011,
+      782
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/CartButtons/Drive.png",
+    "master": "ArtSource/LocalizationArtwork/Drive.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Drive.png",
+    "sourceSha256": "56568e8c0533a038f5515249930e665373f9783dc7119dfda4fea8fde8dc846d",
+    "cleanSha256": "bdb861521d736c6353b5f0d5589aabd597548be068e4a2033f17745543e0ddff",
+    "originalSize": [
+      512,
+      177
+    ],
+    "cleanSize": [
+      2132,
+      737
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/CartButtons/Recall.png",
+    "master": "ArtSource/LocalizationArtwork/Recall.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Recall.png",
+    "sourceSha256": "f2643a14e6741c21828db0824a26eff7004bdde0408d54a39369c09ee950341d",
+    "cleanSha256": "d9db60c20bc62de5fe5e6fec8f0868bfa65796d1c21d991f1c14aa7fd195a6e0",
+    "originalSize": [
+      512,
+      171
+    ],
+    "cleanSize": [
+      2170,
+      725
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Badges/Exit.png",
+    "master": "ArtSource/LocalizationArtwork/Exit.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Exit.png",
+    "sourceSha256": "48d7dcfd186e931525bd556ab928f68129d4d4129c254ac807a6ee466158e349",
+    "cleanSha256": "312d011a366ce524a6df332d9564260cec74cc149207a8362c69cc66eb9bf951",
+    "originalSize": [
+      512,
+      170
+    ],
+    "cleanSize": [
+      2170,
+      725
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Badges/YourBall.png",
+    "master": "ArtSource/LocalizationArtwork/YourBall.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/YourBall.png",
+    "sourceSha256": "0885ce5c9151143be5a873f72a8bade759e4241b0adfe73c754413bb92e2a475",
+    "cleanSha256": "bb01e30342c6e11e9672fc0af0cebf99c971dc4b519547b94779f2eb8bd5ca85",
+    "originalSize": [
+      512,
+      162
+    ],
+    "cleanSize": [
+      2170,
+      725
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/FinalCountdown/Plate.png",
+    "master": "ArtSource/LocalizationArtwork/Plate.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Plate.png",
+    "sourceSha256": "9b73f3dca52ab27bba0bc8190e7ef01bc6e41803651fe6bfa08c0559e673e5eb",
+    "cleanSha256": "8d6628b4ffcb522bb14b0216a679aaa4d58adc4cdd25a70a5c0dfa7c6b9d8dbe",
+    "originalSize": [
+      1024,
+      436
+    ],
+    "cleanSize": [
+      1921,
+      819
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Leaderboard/Columns.png",
+    "master": "ArtSource/LocalizationArtwork/Columns.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Columns.png",
+    "sourceSha256": "6ecd3b7a855090db5569e41bf5be435e51339e61ebfb7bd3a3b4216d0a749f71",
+    "cleanSha256": "a3c93f016989fce3258f1664402340114440434352367748aa461b966c14f7c9",
+    "originalSize": [
+      1024,
+      101
+    ],
+    "cleanSize": [
+      2170,
+      725
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Leaderboard/Playing.png",
+    "master": "ArtSource/LocalizationArtwork/Playing.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Playing.png",
+    "sourceSha256": "dcec3ecfe8f6186d37fa9792d3807365679080df207dfc7f3c38729a09fab525",
+    "cleanSha256": "22a4ad6bda429fa1b3e890d07ae9bf6ff577185f5fbff788054ca2f5fbf42cd8",
+    "originalSize": [
+      192,
+      94
+    ],
+    "cleanSize": [
+      1792,
+      877
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/GolfUI/Leaderboard/Finished.png",
+    "master": "ArtSource/LocalizationArtwork/Finished.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Finished.png",
+    "sourceSha256": "30ca573364e841544fd541711562404e0b7a539fcbc2dc49cfabb1ba8e74bc10",
+    "cleanSha256": "8c5c4f3c8532b85a34a1f4a24629ad8c15d02ad757eefb11a757a8fc2aa4a3b9",
+    "originalSize": [
+      192,
+      90
+    ],
+    "cleanSize": [
+      1832,
+      858
+    ]
+  },
+  {
+    "source": "Game/Assets/_Game/Resources/StartupWelcome/Background.png",
+    "master": "ArtSource/LocalizationArtwork/Background.png",
+    "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Background.png",
+    "sourceSha256": "a910d785d1099a2a7e271c225d0404d0c101717c7d00b9adcc94c3f990e545a7",
+    "cleanSha256": "78cae5210c044eb865341a1d10437fa56d034d6391eadd9f8a55fd7a92922f86",
+    "originalSize": [
+      1672,
+      941
+    ],
+    "cleanSize": [
+      1672,
+      941
+    ]
+  }
+]

@@ -63,7 +63,7 @@ namespace WhatTheFish {
    for(int i=0;i<views.Length;i++){int view=i;Button(side.transform,i==0?"Preview overview":i==1?"Preview detail":i==2?"Preview accents":"Preview sign",views[i],24+i*(width+16),61,width,51,venueCamera==i?Gold:Color.white,()=>{ReadDraftName();venueCamera=view;Rebuild();},CoveSymbol.None,22);}
    var frame=Plate(side.transform,"Preview frame",24,126,664,294,Sky,10,1);
    venuePreview=Rect(frame.transform,"Live venue preview",3,3,658,288).gameObject.AddComponent<RawImage>();venuePreview.raycastTarget=false;
-   previewTitle=Text(side.transform,draft.title,24,429,664,34,25,true,Ink,TextAnchor.MiddleCenter);
+   previewTitle=Text(side.transform,draft.title,24,429,664,34,25,true,Ink,TextAnchor.MiddleCenter);GameLocalization.UserContent(previewTitle);
    Text(side.transform,island?"Cosmetic only. Your equipment keeps the same performance.":"Preview changes before saving your shared venue.",24,468,664,28,19,false,Muted,TextAnchor.MiddleCenter);
    var reset=ActionButton("Reset venue","Reset look",64,812,244,64,Cream,()=>{draft=LocalProfile.DefaultVenue(venueSport);PreviewDraft();Rebuild();},CoveSymbol.Paint,24);reset.interactable=CanEdit;
    Text(content,CanEdit?app.rooms.Connected?"Save to update the venue for everyone in this room.":"Saved per sport on this device. Used when you host.":"Your host chooses this room's venue look.",338,818,808,52,22,false,Ink,TextAnchor.MiddleCenter);

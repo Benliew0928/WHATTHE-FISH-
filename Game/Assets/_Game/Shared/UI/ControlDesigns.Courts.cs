@@ -17,6 +17,7 @@ namespace WhatTheFish {
     if(id=="shoot"){ActionArt(v,"Basketball","SHOOT",new(69,61),new(0,17),22,new(0,-25),30);v.Hint=Hint(v,"HOLD",new(0,-41),80,9);}
     else if(id=="pass")ActionArt(v,"BasketPass","PASS",new(57,46),new(0,11),18,new(0,-24),24);
     else ActionArt(v,"Jump","JUMP",new(44,37),new(0,9),14,new(0,-19),21);
+    if(v.Label is LocalizedText text)text.Basketball=true;
     return;
    }
    Shell(v,id=="shoot"?"TileGold":id=="dash"?"RoundLime":"TileCyan");

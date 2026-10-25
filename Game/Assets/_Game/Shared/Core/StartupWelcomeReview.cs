@@ -38,17 +38,20 @@ namespace WhatTheFish {
    Check(welcome.Progress==1&&StartupWelcome.Blocking,"loaded game waits on welcome screen for user entry");
    bool expectedWarm=Environment.GetCommandLineArgs().Contains("-expectWarmWelcome");Check(PackagedContentBoot.CacheHit==expectedWarm,expectedWarm?"warm content cache path":"cold content cache path");
    Check(welcome.GuestButton.interactable&&welcome.HuaweiButton.interactable,"entry choices become interactive after load");
+   yield return LoadingUtilities();
+   if(Environment.GetCommandLineArgs().Contains("-welcomeLoadingUtilitiesOnly")){Finish();yield break;}
    Check(!AppRoot.Instance.Menu.Content.GetComponentsInChildren<Button>().Any(b=>b.IsInteractable()),"underlying menu cannot receive keyboard or pointer input");
    yield return new WaitForSecondsRealtime(1);Check(!welcome.LoadingPanel.gameObject.activeSelf,"completed progress clears without changing page");
    LayoutChecks();yield return Capture("ready");
    Check(!welcome.Design.Find("Blank sign during preparation").gameObject.activeSelf,"ready state restores the exact approved sign artwork");
-   foreach(var button in new[]{welcome.HuaweiButton,welcome.LanguageButton,welcome.SettingsButton,welcome.InfoButton}){
-    Click(button,button!=welcome.HuaweiButton);yield return null;Check(welcome.ModalOpen,button.name+" opens its real UI placeholder");
+   foreach(var button in new[]{welcome.HuaweiButton,welcome.LanguageButton}){
+    Click(button,button!=welcome.HuaweiButton);yield return null;Check(welcome.ModalOpen,button.name+" opens its dialog");
     Check(!welcome.GuestButton.interactable&&!welcome.LanguageButton.interactable,"dialog blocks underlying controls");
     welcome.ContinueAsGuest();Check(StartupWelcome.Blocking,"guest cannot bypass an open modal");
     if(button==welcome.HuaweiButton)yield return Capture("huawei-placeholder");
-    var close=welcome.Canvas.GetComponentsInChildren<Button>().First(b=>b.name=="Close welcome dialog");Click(close);yield return null;Check(!welcome.ModalOpen,"dialog closes without signing in");
+    var close=welcome.Canvas.GetComponentsInChildren<Button>().First(b=>b.name==(button==welcome.LanguageButton?"Close language picker":"Close welcome dialog"));Click(close);yield return null;Check(!welcome.ModalOpen,"dialog closes without signing in");
    }
+   yield return UtilityPages();
    // Device cutout simulation affects the production layout, not the art itself.
    welcome.ReviewSafeArea=new Rect(54,18,Screen.width-108,Screen.height-36);welcome.Layout();yield return null;LayoutChecks();yield return Capture("safe-area");welcome.ReviewSafeArea=null;welcome.Layout();yield return null;
    bool returning=PlayerIdentity.HasProfile;
@@ -56,12 +59,12 @@ namespace WhatTheFish {
    Check(!PlayerIdentity.ValidateName("   ",out _,out _)&&!PlayerIdentity.ValidateName("---",out _,out _)&&!PlayerIdentity.ValidateName("<b>Name</b>",out _,out _)&&!PlayerIdentity.ValidateName(new string('A',17),out _,out _),"blank markup punctuation-only and overlength names rejected");
    Check(PlayerIdentity.ValidateName("  Island Buddy  ",out var trimmed,out _)&&trimmed=="Island Buddy"&&PlayerIdentity.ValidateName("A_2-B",out _,out _),"trimmed names and supported punctuation accepted");
    if(!returning){PlayerPrefs.SetString(PlayerIdentity.LegacyNameKey,"Old Angler");Check(PlayerIdentity.SavedName=="Old Angler","existing fishing name is available for migration");PlayerPrefs.DeleteKey(PlayerIdentity.LegacyNameKey);}
-   string priorId=PlayerIdentity.GuestId;
+   string priorId=PlayerIdentity.GuestId;string priorName=PlayerIdentity.SavedName;
    Click(welcome.GuestButton);yield return null;Check(welcome.ModalOpen&&welcome.GuestNameField&&StartupWelcome.Blocking,"guest choice opens name dialog and retains input gate");
-   Check(welcome.GuestNameField.text==(returning?"Island Buddy":""),"returning guest name is prefilled");
+   Check(welcome.GuestNameField.text==priorName,"returning guest name is prefilled");
    welcome.GuestNameField.text="   ";Check(!welcome.GuestContinueButton.interactable,"blank name cannot continue");
    welcome.GuestNameField.text="<b>Name";Check(!welcome.GuestContinueButton.interactable,"markup name cannot continue");
-   welcome.GuestNameField.text="Unsaved";welcome.CloseModal();yield return null;Check(PlayerIdentity.GuestId==priorId&&PlayerIdentity.SavedName==(returning?"Island Buddy":""),"cancel does not create or rename a profile");
+   welcome.GuestNameField.text="Unsaved";welcome.CloseModal();yield return null;Check(PlayerIdentity.GuestId==priorId&&PlayerIdentity.SavedName==priorName,"cancel does not create or rename a profile");
    Click(welcome.GuestButton);yield return null;welcome.GuestNameField.text="Island Buddy";
    LayoutChecks();yield return Capture("guest-name");
    Check(Contains(welcome.SafeArea,Bounds(welcome.GuestNameField.GetComponent<RectTransform>()))&&Contains(welcome.SafeArea,Bounds(welcome.GuestContinueButton.GetComponent<RectTransform>())),"guest name controls fit inside safe area");
@@ -82,8 +85,81 @@ namespace WhatTheFish {
    app.EnterOffline();yield return new WaitForSecondsRealtime(.8f);Check(app.Exploring&&app.view.active&&!app.view.InputBlocked,"normal gameplay input restored after guest entry");
    Finish();
   }
+  IEnumerator LoadingUtilities(){
+   // Re-enter preparation deterministically after the real boot has completed.
+   // Exercise actual pointer raycasts, including completion behind an open panel.
+   foreach(var language in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
+    GameLocalization.Select(language,false);
+    foreach(bool error in new[]{false,true}){
+     welcome.BeginLoading();welcome.SetProgress(.4f,"Preparing your islands...");
+     if(error)welcome.ShowError();
+     foreach(var button in new[]{welcome.SettingsButton,welcome.InfoButton}){
+      Click(button,true);yield return null;
+      Check(welcome.ModalOpen,button.name+" opens during "+(error?"error":"loading")+" "+language);
+      Check(!welcome.GuestButton.IsInteractable()&&!welcome.HuaweiButton.IsInteractable(),"utilities do not enable premature sign-in");
+      yield return Capture("loading-utility-"+language+"-"+error+"-"+button.name);
+      if(!error&&button==welcome.InfoButton){welcome.SetReady();Check(welcome.ModalOpen&&!welcome.GuestButton.IsInteractable(),"load completion preserves open utility and entry gate");}
+      Click(WelcomeButton("Close Welcome "+(button==welcome.SettingsButton?"settings":"info")));
+      yield return null;
+      Check(!welcome.ModalOpen&&welcome.SettingsButton.IsInteractable()&&welcome.InfoButton.IsInteractable(),"closing utility restores header controls");
+     }
+    }
+   }
+   GameLocalization.Select(GameLanguage.English,false);welcome.SetReady();
+  }
+  IEnumerator UtilityPages(){
+   var app=AppRoot.Instance;string identity=PlayerIdentity.ProfileStorageKey;var sport=app.SelectedSport;int camera=app.view.mode;
+   var original=new[]{MenuPreferences.MasterVolume,MenuPreferences.SFXVolume,MenuPreferences.UIVolume,MenuPreferences.AmbienceVolume};bool motion=MenuPreferences.ReducedMotion;
+   Click(welcome.SettingsButton,true);yield return new WaitForSecondsRealtime(.3f);
+   Check(welcome.Visible&&StartupWelcome.Blocking&&welcome.ModalOpen&&!app.Exploring,"settings stays on welcome with gameplay blocked");
+   Check(welcome.Canvas.GetComponentsInChildren<Slider>().Length==4,"exactly four shared audio channels");
+   Check(!welcome.Canvas.GetComponentsInChildren<Button>().Any(b=>b.name.StartsWith("Camera ")||b.name=="Layout"||b.name=="Fishing vibration"),"startup settings excludes in-game camera layout and sport-specific options");
+   string[] names={"Master","Game sounds","Buttons","Ambience"};
+   for(int i=0;i<names.Length;i++){var slider=welcome.Canvas.GetComponentsInChildren<Slider>().First(s=>s.name==names[i]);slider.value=.31f+i*.11f;}
+   Click(WelcomeButton("Welcome reduced motion"));Check(MenuPreferences.ReducedMotion!=motion,"motion switch updates shared preference");
+   yield return new WaitForSecondsRealtime(.2f);PanelChecks("Welcome settings");yield return Capture("welcome-settings");
+   Click(WelcomeButton("Done welcome settings"));yield return new WaitForSecondsRealtime(.3f);MenuPreferences.Load();
+   Check(welcome.Visible&&!welcome.ModalOpen&&StartupWelcome.Blocking,"Done closes settings without leaving welcome");
+   Check(Mathf.Abs(MenuPreferences.MasterVolume-.31f)<.001f&&Mathf.Abs(MenuPreferences.SFXVolume-.42f)<.001f&&Mathf.Abs(MenuPreferences.UIVolume-.53f)<.001f&&Mathf.Abs(MenuPreferences.AmbienceVolume-.64f)<.001f,"four audio preferences persist for in-game use");
+   Click(welcome.SettingsButton);yield return new WaitForSecondsRealtime(.3f);
+   Check(Mathf.Abs(welcome.Canvas.GetComponentsInChildren<Slider>().First(s=>s.name=="Ambience").value-.64f)<.001f,"reopening settings reads saved preferences");
+   Click(WelcomeButton("Close Welcome settings"));yield return new WaitForSecondsRealtime(.3f);
+   var language=GameLocalization.Current;
+   foreach(var selected in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
+    GameLocalization.Select(selected,false);yield return new WaitForSecondsRealtime(.2f);
+    Click(welcome.SettingsButton,true);yield return new WaitForSecondsRealtime(.3f);PanelChecks("Welcome settings");yield return Capture("settings-"+selected);Click(WelcomeButton("Done welcome settings"));yield return new WaitForSecondsRealtime(.2f);
+    Click(welcome.InfoButton,true);yield return new WaitForSecondsRealtime(.3f);
+    Check(welcome.Visible&&welcome.ModalOpen&&StartupWelcome.Blocking&&!TutorialSession.Active&&!app.Exploring,"Info is a read-only welcome dialog "+selected);
+    foreach(var id in new[]{SportId.Fishing,SportId.Basketball,SportId.Football,SportId.Golf})Check(welcome.Canvas.GetComponentsInChildren<WelcomePlate>().Any(p=>p.name=="About "+id&&!p.GetComponent<Button>()),"non-launching sport introduction "+id+" "+selected);
+    Check(welcome.Canvas.GetComponentsInChildren<Text>().Any(t=>t.name=="Game version"&&GameLocalization.Source(t).Contains(Application.version)),"Info uses actual game version "+selected);
+    PanelChecks("Welcome info");yield return Capture("info-"+selected);
+    Check(!welcome.Canvas.GetComponentsInChildren<Button>().Any(b=>b.name=="Welcome credits"),"Info omits Credits "+selected);
+    foreach(var id in new[]{SportId.Football,SportId.Basketball,SportId.Golf,SportId.Fishing}){
+     var tile=welcome.Canvas.GetComponentsInChildren<WelcomePlate>().First(p=>p.name=="About "+id);
+     var image=tile.GetComponentInChildren<RawImage>();
+     Check(image&&image.texture&&image.texture.width==1024&&image.texture.height==1024,"full-resolution gameplay icon "+id+" "+selected);
+     Check(tile.top.r+tile.top.g+tile.top.b>tile.bottom.r+tile.bottom.g+tile.bottom.b,"sport card fades from light top to deeper bottom "+id);
+    }
+    Click(WelcomeButton("Done welcome info"));yield return new WaitForSecondsRealtime(.2f);Check(!welcome.ModalOpen,"Info Done restores welcome "+selected);
+    Click(welcome.InfoButton);yield return new WaitForSecondsRealtime(.2f);
+    Click(WelcomeButton("Close Welcome info"));yield return new WaitForSecondsRealtime(.3f);Check(welcome.Visible&&!welcome.ModalOpen,"Info close restores welcome "+selected);
+   }
+   GameLocalization.Select(language,false);MenuPreferences.SetMaster(original[0]);MenuPreferences.SetSFX(original[1]);MenuPreferences.SetUI(original[2]);MenuPreferences.SetAmbience(original[3]);MenuPreferences.SetMotion(motion);MenuPreferences.Save();
+   Check(PlayerIdentity.ProfileStorageKey==identity&&app.SelectedSport==sport&&app.view.mode==camera&&!app.rooms.Connected&&!TutorialSession.Active,"utilities preserve identity island camera and room state");
+   Check(app.Menu.Page=="home"&&!app.Menu.Content.GetComponentsInChildren<Button>().Any(b=>b.IsInteractable()),"underlying main menu remains gated throughout");
+  }
+  Button WelcomeButton(string name)=>welcome.Canvas.GetComponentsInChildren<Button>().First(b=>b.name==name);
+  void PanelChecks(string name){
+   Canvas.ForceUpdateCanvases();var panel=welcome.Canvas.GetComponentsInChildren<WelcomePlate>().First(p=>p.name==name);
+   Check(Contains(welcome.SafeArea,Bounds(panel.rectTransform)),name+" fits safe area");
+   foreach(var text in panel.GetComponentsInChildren<Text>())if(text.enabled&&text.text.Length>0){
+    Check(text.preferredHeight<=text.rectTransform.rect.height+.2f&&text.cachedTextGenerator.characterCountVisible>0,"panel text fits "+GameLocalization.Code+": "+text.text.Replace('\n',' '));
+    if(!text.GetComponents<BaseMeshEffect>().Any(e=>e.IsActive())){var mesh=text.canvasRenderer.GetMesh();Check(mesh&&mesh.vertexCount==text.cachedTextGenerator.verts.Count,"label mesh contains only its own generated glyphs: "+text.name);}
+   }
+  }
   void LayoutChecks(){
    Canvas.ForceUpdateCanvases();
+   Check(Mathf.Abs(welcome.Canvas.scaleFactor-Mathf.Min(welcome.SafeArea.width/StartupWelcome.Width,welcome.SafeArea.height/StartupWelcome.Height))<.001f&&welcome.Design.localScale==Vector3.one,"canvas pixel density drives font rasterization without descendant scaling");
    foreach(var button in new[]{welcome.GuestButton,welcome.HuaweiButton,welcome.LanguageButton,welcome.SettingsButton,welcome.InfoButton}){
     var bounds=Bounds((RectTransform)button.transform);Check(Contains(welcome.SafeArea,bounds),button.name+" inside safe area");Check(bounds.width>=44&&bounds.height>=44,button.name+" keeps touch target");
    }
@@ -98,7 +174,7 @@ namespace WhatTheFish {
    Canvas.ForceUpdateCanvases();var bounds=Bounds((RectTransform)button.transform);var point=labelArea?new Vector2(bounds.center.x,bounds.yMin+10):bounds.center;
    var pointer=new PointerEventData(EventSystem.current){position=point,button=PointerEventData.InputButton.Left};
    var hits=new List<RaycastResult>();EventSystem.current.RaycastAll(pointer,hits);GameObject target=hits.Count>0?ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject):null;
-   Check(button.IsInteractable()&&target==button.gameObject,"pointer reaches "+button.name+(labelArea?" label":""));if(target!=button.gameObject)return;
+   Check(button.IsInteractable()&&target==button.gameObject,"pointer reaches "+button.name+(labelArea?" label":"")+(target!=button.gameObject?" actual="+(hits.Count>0?hits[0].gameObject.name:"none")+" active="+button.IsActive()+" interactable="+button.IsInteractable():""));if(target!=button.gameObject)return;
    ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerDownHandler);ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerUpHandler);ExecuteEvents.Execute(button.gameObject,pointer,ExecuteEvents.pointerClickHandler);
   }
   IEnumerator Capture(string name){

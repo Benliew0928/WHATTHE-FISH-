@@ -15,7 +15,7 @@ namespace WhatTheFish {
    var cue=root.gameObject.AddComponent<FishingCatchCue>();cue.root=root;cue.group=root.gameObject.AddComponent<CanvasGroup>();cue.group.interactable=cue.group.blocksRaycasts=false;
    cue.badge=GolfLeaderboardUI.Rect("Landed fish badge",root,new Vector2(.5f,.5f),new Vector2(-188,0),new Vector2(98,98));
    var fish=cue.badge.gameObject.AddComponent<FishingStickerGraphic>();fish.kind=FishingStickerGraphic.Kind.Fish;fish.Decorate();fish.raycastTarget=false;
-   Text Label(string name,string value,Vector2 position,Vector2 size,int fontSize,Color color){var node=GolfLeaderboardUI.Rect(name,root,new Vector2(.5f,.5f),position,size);var t=node.gameObject.AddComponent<Text>();t.text=value;t.font=font;t.fontSize=fontSize;t.fontStyle=FontStyle.Normal;t.alignment=TextAnchor.MiddleCenter;t.color=color;t.raycastTarget=false;t.supportRichText=false;return t;}
+   Text Label(string name,string value,Vector2 position,Vector2 size,int fontSize,Color color){var node=GolfLeaderboardUI.Rect(name,root,new Vector2(.5f,.5f),position,size);var t=node.gameObject.AddComponent<LocalizedText>();t.text=value;t.font=font;t.fontSize=fontSize;t.fontStyle=FontStyle.Normal;t.alignment=TextAnchor.MiddleCenter;t.color=color;t.raycastTarget=false;t.supportRichText=false;return t;}
    Label("Catch confirmed","FISH LANDED!",new Vector2(46,49),new Vector2(348,44),25,LocalProfile.Hex("143B50"));
    cue.points=Label("Accepted catch points","+2 POINTS",new Vector2(46,3),new Vector2(348,60),43,LocalProfile.Hex("FFCB53"));
    var outline=cue.points.gameObject.AddComponent<Outline>();outline.effectColor=LocalProfile.Hex("143B50");outline.effectDistance=new Vector2(2,-2);

@@ -4,6 +4,7 @@ Shader "WhatTheFish/CharacterIdentity" {
   _BaseColor("Base",Color)=(1,1,1,1) _JerseyColor("Uniform",Color)=(.1,.4,.8,1) _SkinTint("Skin",Color)=(1,.745,.54,1) _AccentColor("Accent",Color)=(.2,.6,.7,1)
   _HairColor("Brow and fringe",Color)=(.1,.1,.1,1)
   _BumpScale("Normal strength",Float)=.6 _Metallic("Metallic",Float)=1 _Smoothness("Smoothness",Float)=1
+  _HideFirstPersonHead("Local first-person head mask",Float)=0
   _IdentityNumber("Number",Float)=1 _ShowOriginalHair("Original hair",Float)=1 _Team("Team",Float)=0
  }
  SubShader {
@@ -55,7 +56,7 @@ Shader "WhatTheFish/CharacterIdentity" {
    #pragma vertex IdentityVertex
    #pragma fragment DepthFragment
    #include "CharacterIdentityInput.hlsl"
-   half4 DepthFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g,i.uv,i.number.w);return i.positionCS.z;}
+   half4 DepthFragment(IdentityVaryings i):SV_Target{FirstPersonHeadClip(i);IdentityClip(i.regions.g,i.uv,i.number.w);return i.positionCS.z;}
    ENDHLSL
   }
   Pass {
@@ -65,7 +66,7 @@ Shader "WhatTheFish/CharacterIdentity" {
    #pragma vertex IdentityVertex
    #pragma fragment NormalFragment
    #include "CharacterIdentityInput.hlsl"
-   half4 NormalFragment(IdentityVaryings i):SV_Target{IdentityClip(i.regions.g,i.uv,i.number.w);return half4(normalize(i.normalWS),0);}
+   half4 NormalFragment(IdentityVaryings i):SV_Target{FirstPersonHeadClip(i);IdentityClip(i.regions.g,i.uv,i.number.w);return half4(normalize(i.normalWS),0);}
    ENDHLSL
   }
  }

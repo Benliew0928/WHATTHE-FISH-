@@ -19,7 +19,7 @@ namespace WhatTheFish {
   }
   public static void Stretch(RectTransform r) {r.anchorMin=Vector2.zero;r.anchorMax=Vector2.one;r.offsetMin=r.offsetMax=Vector2.zero;}
   public static Text Text(Transform parent,string value,float x,float y,float w,float h,int size=25,bool bold=false,Color? color=null,TextAnchor align=TextAnchor.MiddleLeft) {
-   var t=Rect(parent,value.Length>28?value.Substring(0,28):value,x,y,w,h).gameObject.AddComponent<Text>();
+   var t=Rect(parent,value.Length>28?value.Substring(0,28):value,x,y,w,h).gameObject.AddComponent<LocalizedText>();
    t.font=bold?DisplayFont:TextFont;t.fontSize=size;t.color=color??Ink;t.text=value;t.alignment=align;
    t.supportRichText=false;t.raycastTarget=false;t.horizontalOverflow=HorizontalWrapMode.Wrap;t.verticalOverflow=VerticalWrapMode.Truncate;return t;
   }
@@ -52,7 +52,7 @@ namespace WhatTheFish {
   public static InputField Field(Transform parent,string id,string placeholder,string value,float x,float y,float w,int limit=24) {
    var plate=Plate(parent,id,x,y,w,70,Color.white,18,2);plate.raycastTarget=true;
    var field=plate.gameObject.AddComponent<InputField>();field.targetGraphic=plate;field.transition=Selectable.Transition.None;
-   field.textComponent=Text(plate.transform,"",20,4,w-40,62,28,true);field.textComponent.supportRichText=false;
+   field.textComponent=Text(plate.transform,"",20,4,w-40,62,28,true);field.textComponent.supportRichText=false;GameLocalization.UserContent(field.textComponent);
    field.placeholder=Text(plate.transform,placeholder,20,4,w-40,62,25,false,Muted);
    field.characterLimit=limit;field.lineType=InputField.LineType.SingleLine;field.text=value;
    field.selectionColor=new Color(.2f,.7f,.65f,.25f);field.caretColor=Ink;field.customCaretColor=true;

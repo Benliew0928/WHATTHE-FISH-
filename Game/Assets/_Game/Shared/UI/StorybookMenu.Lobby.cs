@@ -34,7 +34,7 @@ namespace WhatTheFish {
    var invite=Plate(content,"Room invitation",1020,182,521,265,Cream);
    Text(invite.transform,"INVITE YOUR CREW",24,17,470,35,27,true,Gold);
    Text(invite.transform,"ROOM CODE",24,69,275,26,18,true,Muted);
-   Text(invite.transform,app.rooms.Code,24,99,275,56,38,true);
+   GameLocalization.UserContent(Text(invite.transform,app.rooms.Code,24,99,275,56,38,true));
    Button(invite.transform,"Copy invitation","Copy code",24,172,270,60,Raised,()=>StartCoroutine(CoveClipboard.Copy(app.rooms.Code,ok=>Notice(ok?"Room code copied. Share it with your crew.":"Copy isn't available. Share the code shown above."))),CoveSymbol.Copy,23);
    BuildRoomQr(invite.transform);
    var side=Plate(content,"Room departure",1020,465,521,321,Cream);
@@ -78,7 +78,7 @@ namespace WhatTheFish {
    foreach(var cell in seatViews){
     var player=players.FirstOrDefault(n=>n.RoomSeat.Value==cell.seat);bool host=player&&player==NetworkAthlete.HostPlayer;
     var accent=host?Gold:player&&player.Ready.Value?Mint:Muted;
-    cell.label.text=player?player.Nickname.Value.ToString():"Open place";cell.label.color=player?Ink:Muted;
+    GameLocalization.UserContent(cell.label);cell.label.text=player?player.Nickname.Value.ToString():GameLocalization.Translate("Open place");cell.label.color=player?Ink:Muted;
     cell.portrait.SetActive(player);cell.empty.SetActive(!player);if(player)cell.avatar.Set(player.PublicProfile);
     cell.number.text=player&&player.IsOwner?"YOU":(cell.seat%10+1).ToString("00");cell.number.fontSize=player&&player.IsOwner?15:18;cell.number.color=player&&player.IsOwner?Gold:Muted;
     cell.state.text=player?(host?"HOST":player.Ready.Value?"READY":"NOT READY"):RoomSeats.Watching(cell.seat)&&!RoomSeats.Allowed?"CLOSED":"JOIN +";

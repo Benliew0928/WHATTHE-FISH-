@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { AuthError } from './auth.mjs';
 import { validateName, normalize, grams, deletions, rank } from './profile-search.mjs';
+import { deletionHash } from './account-deletion.mjs';
 export const columns='id,code,name,revision,avatar_version AS avatarVersion,avatar,has_photo AS hasPhoto,hidden';
 const bad=(status,code)=>{throw new AuthError(status,code);};
 const now=()=>Math.floor(Date.now()/1000);
@@ -45,8 +46,9 @@ export class Profiles {
     if(body.revision===0) {
       const code=randomBytes(8).toString('hex').toUpperCase();
       result=await this.one(`INSERT INTO profiles(id,code,name,normalized,avatar,pixels,has_photo,avatar_version,terms_json,grams_json,deletes_json,created_at,updated_at)
-        VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO NOTHING RETURNING ${columns}`,
-        id,code,name,normalized,avatar,pixels?Array.from(pixels):null,pixels?1:0,pixels?1:0,terms,g,del,time,time);
+        SELECT ?,?,?,?,?,?,?,?,?,?,?,?,? WHERE NOT EXISTS(SELECT 1 FROM account_deletions WHERE identity_hash=?)
+        ON CONFLICT(id) DO NOTHING RETURNING ${columns}`,
+        id,code,name,normalized,avatar,pixels?Array.from(pixels):null,pixels?1:0,pixels?1:0,terms,g,del,time,time,deletionHash(id));
     } else {
       result=await this.one(`UPDATE profiles SET name=?,normalized=?,avatar=?,has_photo=CASE WHEN ? THEN ? ELSE has_photo END,pixels=CASE WHEN ? THEN ? ELSE pixels END,
         avatar_version=avatar_version+CASE WHEN ? OR avatar<>? THEN 1 ELSE 0 END,

@@ -32,6 +32,8 @@ Docs/VisualDirection/WorldConnections/GameReview/**/*.log
 *.blend2
 *.keystore
 *.jks
+*.p12
+*.pfx
 .env*
 Tools/AccountServer/node_modules/
 Tools/AccountServer/.wrangler/

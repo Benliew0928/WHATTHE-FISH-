@@ -7,10 +7,12 @@ import { Profiles } from './profiles.mjs';
 import { normalize, rank, distance, validateName } from './profile-search.mjs';
 import { verifyPlayerToken } from './player-auth.mjs';
 import { profileApi } from './profile-api.mjs';
+import { deleteProfileForAccount, deletionPending, deletionHash } from './account-deletion.mjs';
 function fixture(){
   const sql=new DatabaseSync(':memory:');sql.exec('PRAGMA foreign_keys=ON');
   sql.exec(readFileSync(new URL('./migrations/0001_profiles.sql',import.meta.url),'utf8'));
   sql.exec(readFileSync(new URL('./migrations/0002_profile_limits.sql',import.meta.url),'utf8'));
+  sql.exec(readFileSync(new URL('./migrations/0004_account_deletions.sql',import.meta.url),'utf8'));
   const db={prepare(text){return {bind(...args){
     const statement=sql.prepare(text),values=args.map(a=>Array.isArray(a)?new Uint8Array(a):a);
     return {async first(){return statement.get(...values)||null;},async all(){return {results:statement.all(...values)};},
@@ -18,6 +20,38 @@ function fixture(){
   }};},async batch(statements){sql.exec('BEGIN');try{const r=statements.map(s=>s._run());sql.exec('COMMIT');return r;}catch(e){sql.exec('ROLLBACK');throw e;}}};
   return {sql,db,store:new Profiles(db)};
 }
+test('account deletion removes owned social records and prevents stale profile recreation',async()=>{
+ const {store:s,sql}=fixture();await create(s,A,'Amber');await create(s,B,'Blue');
+ await s.friend(A,B,'request');await s.report(A,B,'behaviour');
+ await deleteProfileForAccount(s,A);
+ assert.equal(await s.mine(A),null);assert.ok(await s.mine(B));
+ assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM relationships').get().n,0);
+ assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM reports').get().n,0);
+ assert.equal(await deletionPending(s,A),true);
+ await assert.rejects(create(s,A,'Restored'),e=>e.code==='profile_changed');
+ const marker=sql.prepare('SELECT * FROM account_deletions').get();
+ assert.equal(marker.identity_hash,deletionHash(A));assert.ok(!JSON.stringify(marker).includes(A));
+ await deleteProfileForAccount(s,A);assert.equal(sql.prepare('SELECT COUNT(*) AS n FROM account_deletions').get().n,1);
+});
+test('account deletion requires exact confirmation, derives owner from token and blocks stale clients',async()=>{
+ const {store:s,db}=fixture();await create(s,A,'Amber');await create(s,B,'Blue');
+ const env={PROFILES_DB:db,PROFILE_READ_LIMITER:{limit:async()=>({success:true})},PROFILE_WRITE_LIMITER:{limit:async()=>({success:true})}};
+ const call=(path,method='GET',body)=>profileApi(new Request('https://fixture/v1/'+path,{method,headers:{'Content-Type':'application/json'},...(body?{body:JSON.stringify(body)}:{})}),env,async()=>A);
+ assert.equal((await call('account-deletion','DELETE',{confirm:'delete-profile'})).status,400);
+ assert.ok(await s.mine(A));
+ assert.equal((await (await call('account-deletion')).json()).version,1);
+ assert.equal((await call('account-deletion','DELETE',{confirm:'delete-game-account',id:B})).status,200);
+ assert.ok(await s.mine(B));assert.equal(await s.mine(A),null);
+ assert.equal((await call('me','PUT',{name:'Old client',avatar:0,revision:0})).status,409);
+ assert.equal((await call('search')).status,409);
+ assert.equal((await (await call('account-deletion')).json()).profileDeleted,true);
+ assert.equal((await call('account-deletion','DELETE',{confirm:'delete-game-account'})).status,200);
+});
+test('account deletion batch failure preserves the profile and does not claim success',async()=>{
+ const {store:s,db}=fixture();await create(s,A,'Amber');
+ const broken=new Profiles({...db,batch:async()=>{throw new Error('database offline');}});
+ await assert.rejects(deleteProfileForAccount(broken,A));assert.ok(await s.mine(A));assert.equal(await deletionPending(s,A),false);
+});
 const A='player_A_123456789',B='player_B_123456789',C='player_C_123456789';
 const create=(s,id,name)=>s.save(id,{name,revision:0,avatar:0});
 test('all ten character avatars persist; invalid indices cannot replace a saved profile',async()=>{

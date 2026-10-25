@@ -45,7 +45,9 @@ namespace WhatTheFish {
   }
   static void Place(RectTransform node,float x,float y,float width,float height){node.anchorMin=node.anchorMax=new Vector2(0,1);node.pivot=new Vector2(0,1);node.anchoredPosition=new Vector2(x,-y);node.sizeDelta=new Vector2(width,height);}
   static void FitSingleLine(Text label,string value,int maximum){
-   label.text=value;label.horizontalOverflow=HorizontalWrapMode.Overflow;
+   label.text=value;
+   if(label.name.StartsWith("Fishing final status",StringComparison.Ordinal)){((LocalizedText)label).ManualFit=true;label.horizontalOverflow=HorizontalWrapMode.Wrap;label.resizeTextForBestFit=true;label.resizeTextMinSize=12;label.resizeTextMaxSize=maximum;return;}
+   label.horizontalOverflow=HorizontalWrapMode.Overflow;
    var settings=label.GetGenerationSettings(label.rectTransform.rect.size);settings.fontSize=maximum;settings.resizeTextForBestFit=false;
    float available=Mathf.Max(1,label.rectTransform.rect.width-4),preferred=label.cachedTextGeneratorForLayout.GetPreferredWidth(value,settings)/Mathf.Max(.01f,label.pixelsPerUnit);
    label.fontSize=Mathf.Clamp(Mathf.FloorToInt(maximum*available/Mathf.Max(available,preferred)),16,maximum);
@@ -63,7 +65,7 @@ namespace WhatTheFish {
   }
   void Build(){
    reopenButton=MakeButton("Fishing reopen results",transform,"RESULTS",GolfHUDStyle.Cream,Open,out _);reopen=(RectTransform)reopenButton.transform;reopen.gameObject.SetActive(false);
-   modal=Rect("Fishing results modal",transform,Vector2.zero,Vector2.zero);Stretch(modal);var shade=modal.gameObject.AddComponent<Image>();shade.color=new Color(.025f,.11f,.15f,.62f);shade.raycastTarget=true;
+   modal=Rect("Fishing results modal",transform,Vector2.zero,Vector2.zero);Stretch(modal);var modalCanvas=modal.gameObject.AddComponent<Canvas>();modalCanvas.overrideSorting=true;modalCanvas.sortingOrder=300;modal.gameObject.AddComponent<GraphicRaycaster>();var shade=modal.gameObject.AddComponent<Image>();shade.color=new Color(.025f,.11f,.15f,.62f);shade.raycastTarget=true;
    card=Rect("Fishing results card",modal,Vector2.zero,Vector2.zero);MenuDesigns.Dialog(GolfHUDStyle.Panel(card,GolfHUDStyle.Cream)).raycastTarget=true;
    var badge=Rect("Fishing results fish badge",card,Vector2.zero,new Vector2(62,62));var fish=badge.gameObject.AddComponent<FishingStickerGraphic>();fish.kind=FishingStickerGraphic.Kind.Fish;fish.tint=GolfHUDStyle.Teal;fish.raycastTarget=false;fish.Decorate();
    title=Label("Fishing result title",card,"ROUND RESULTS",layout.titleFontSize,TextAnchor.MiddleLeft);
@@ -154,7 +156,7 @@ namespace WhatTheFish {
    bool cup=frozenMatch.mode==FishingMode.Cup;cupHeading.gameObject.SetActive(cup);cupCatchHeading.gameObject.SetActive(cup);
    for(int i=0;i<standings.Length;i++){
     var row=standings[i];bool show=i<frozenPlayers.Length;row.rect.gameObject.SetActive(show);if(!show)continue;var p=frozenPlayers[i];bool mine=p.owner==local;
-    row.panel.Refresh(1,mine?GolfHUDStyle.LocalBlue:LocalProfile.Hex("DFF5F0"));row.name.text=frozenNames[i]+(mine&&!string.Equals(frozenNames[i],"YOU",StringComparison.OrdinalIgnoreCase)?" · YOU":"");
+    row.panel.Refresh(1,mine?GolfHUDStyle.LocalBlue:LocalProfile.Hex("DFF5F0"));GameLocalization.UserContent(row.name);row.name.text=frozenNames[i]+(mine&&!string.Equals(frozenNames[i],"YOU",StringComparison.OrdinalIgnoreCase)?GameLocalization.Translate(" · YOU"):"");
     row.rank.text=frozenMatch.mode==FishingMode.Crew?"":(1+frozenPlayers.Count(q=>frozenMatch.cupFinished?q.cupPoints>p.cupPoints||q.cupPoints==p.cupPoints&&q.cupScore>p.cupScore:q.score>p.score)).ToString();
     row.score.text=p.score.ToString();row.cupPoints.gameObject.SetActive(cup);row.cupCatch.gameObject.SetActive(cup);row.cupPoints.text=p.cupPoints.ToString();row.cupCatch.text=p.cupScore.ToString();row.status.text=!p.connected?"LEFT":frozenMatch.outcome==FishingOutcome.Abandoned?"STOPPED":frozenMatch.mode==FishingMode.Crew?(p.catches>0?"CAUGHT":"NO CATCH"):"FINISHED";
    }
@@ -186,6 +188,7 @@ namespace WhatTheFish {
    if(!page||!card)return;float width=Mathf.Max(400,layout.cardWidth),pad=layout.padding,gap=layout.gap,inner=width-pad*2;
    float titleHeight=LineHeight(title,layout.titleFontSize),subtitleHeight=subtitle.gameObject.activeSelf?LineHeight(subtitle,layout.labelFontSize):0,headerHeight=subtitleHeight>0?Mathf.Max(layout.headerHeight,titleHeight+subtitleHeight):Mathf.Max(66,titleHeight);
    float columnHeight=Mathf.Max(layout.columnHeight,LineHeight(scoreHeading,layout.labelFontSize)),rowHeight=Mathf.Max(layout.rowHeight,LineHeight(standings[0].name,layout.rowFontSize)+5);
+   if(frozenMatch.mode==FishingMode.Cup){var settings=cupCatchHeading.GetGenerationSettings(new Vector2(inner*.14f,1000));settings.fontSize=layout.labelFontSize;settings.resizeTextForBestFit=false;settings.horizontalOverflow=HorizontalWrapMode.Wrap;settings.verticalOverflow=VerticalWrapMode.Overflow;columnHeight=Mathf.Max(columnHeight,cupCatchHeading.cachedTextGeneratorForLayout.GetPreferredHeight(cupCatchHeading.text,settings)/cupCatchHeading.pixelsPerUnit+4);}
    float summaryHeadingHeight=Mathf.Max(38,LineHeight(summaryTitle,layout.rowFontSize)),statHeight=statLabels.Max(t=>LineHeight(t,layout.statFontSize)),summaryHeight=Mathf.Max(layout.summaryHeight,summaryHeadingHeight+4+statHeight*3);
    float notesLineHeight=Mathf.Max(LineHeight(notesLine,layout.labelFontSize),LineHeight(detailLine,layout.labelFontSize)),notesHeight=notes.gameObject.activeSelf?Mathf.Max(layout.notesHeight,notesLineHeight*2):0;
    int count=Math.Max(1,frozenPlayers.Length);float y=pad,height=pad*2+headerHeight+columnHeight+count*rowHeight+summaryHeight+notesHeight+layout.footerHeight+gap*4;

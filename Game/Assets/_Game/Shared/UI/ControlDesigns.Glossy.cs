@@ -9,7 +9,7 @@ namespace WhatTheFish {
    image.sprite=ControlArt.Get(sprite);image.preserveAspect=true;image.raycastTarget=false;return image;
   }
   static Text GlossLabel(Transform parent,string value,Vector2 size,Vector2 position,float points){
-   var text=Center(parent,"Control caption",size*2,position).gameObject.AddComponent<Text>();
+   var text=Center(parent,"Control caption",size*2,position).gameObject.AddComponent<LocalizedText>();
    text.rectTransform.localScale=Vector3.one*.5f;text.font=CoveUI.DisplayFont;text.fontSize=Mathf.RoundToInt(points*2);
    text.fontStyle=FontStyle.Normal;text.color=Color.white;text.alignment=TextAnchor.MiddleCenter;
    text.horizontalOverflow=HorizontalWrapMode.Wrap;text.verticalOverflow=VerticalWrapMode.Truncate;

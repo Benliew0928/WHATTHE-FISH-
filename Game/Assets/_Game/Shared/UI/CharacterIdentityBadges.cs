@@ -101,7 +101,7 @@ namespace WhatTheFish {
    candidates.Sort((a,b)=>{int local=(b.actor==app.LocalAthlete).CompareTo(a.actor==app.LocalAthlete);return local!=0?local:a.identity.Number.CompareTo(b.identity.Number);});
    foreach(var view in candidates){
     bool local=view.actor==app.LocalAthlete;view.team=view.identity.UniformTeam;
-    string fullName=local?"You":PlayerName(view.actor);view.name.fontSize=Mathf.RoundToInt(13*scale);view.name.text=fullName;
+    GameLocalization.UserContent(view.name);string fullName=local?GameLocalization.Translate("You"):PlayerName(view.actor);view.name.fontSize=Mathf.RoundToInt(13*scale);view.name.text=fullName;
     // Truncate on grapheme boundaries, including emoji/surrogate pairs.
     float limit=112*scale;if(view.name.preferredWidth>limit){var starts=StringInfo.ParseCombiningCharacters(fullName);int count=starts.Length;do{count--;view.name.text=fullName.Substring(0,starts[count])+"…";}while(count>0&&view.name.preferredWidth>limit);}
     float nameWidth=Mathf.Ceil(view.name.preferredWidth)+4*scale;

@@ -53,10 +53,10 @@ namespace WhatTheFish {
    priorBlocked=PlayerView.Instance&&PlayerView.Instance.ExplicitInputBlocked;if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=true;}
    stadiumCamera=Camera.main;if(stadiumCamera){savedPosition=stadiumCamera.transform.position;savedRotation=stadiumCamera.transform.rotation;savedFov=stadiumCamera.fieldOfView;savedNear=stadiumCamera.nearClipPlane;savedOrtho=stadiumCamera.orthographic;}
    var s=match.Snapshot;result.text=(s.result==FootballMatchResult.Draw?"DRAW":s.result==FootballMatchResult.TeamA?"BLUE WINS":"RED WINS")+"  "+s.scoreA+" : "+s.scoreB;
-   nameText.text="#"+winner.number+"  "+winner.name+"  /  "+CharacterIdentity.TeamName(winner.team).ToUpperInvariant();
+   GameLocalization.UserContent(nameText);nameText.text="#"+winner.number+"  "+winner.name+"  /  "+GameLocalization.Translate(CharacterIdentity.TeamName(winner.team).ToUpperInvariant());
    scorePoints.text=winner.points.ToString();assists.text=winner.assists.ToString();passes.text=winner.passes.ToString();interceptions.text=winner.interceptions.ToString();rating.text=winner.Rating+" MVP RATING   /   POINTS + ASSISTS";
    var records=BasketballStatistics.Ranked(match.PlayerRecords).ToArray();
-   for(int i=0;i<10;i++)for(int c=0;c<5;c++){var t=rows[i,c];t.supportRichText=false;t.text=i>=records.Length?"":c==0?"#"+records[i].number+" "+records[i].name:c==1?records[i].points.ToString():c==2?records[i].assists.ToString():c==3?records[i].passes.ToString():records[i].interceptions.ToString();if(c==0&&i<records.Length)t.color=records[i].team==FootballTeam.A?new Color(.48f,.77f,1):new Color(1,.58f,.48f);}
+   for(int i=0;i<10;i++)for(int c=0;c<5;c++){var t=rows[i,c];if(c==0)GameLocalization.UserContent(t);t.supportRichText=false;t.text=i>=records.Length?"":c==0?"#"+records[i].number+" "+records[i].name:c==1?records[i].points.ToString():c==2?records[i].assists.ToString():c==3?records[i].passes.ToString():records[i].interceptions.ToString();if(c==0&&i<records.Length)t.color=records[i].team==FootballTeam.A?new Color(.48f,.77f,1):new Color(1,.58f,.48f);}
    BeginCelebration(match,winner,records);
   }
   void LateUpdate(){

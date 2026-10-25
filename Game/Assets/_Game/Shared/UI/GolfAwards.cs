@@ -10,7 +10,7 @@ namespace WhatTheFish {
    if(match.State.Phase!=GolfMatchPhase.Ended||observed&&shown==match.Round)return;
    if(TeleportSequence.Busy||RoomTeleport.Busy)return;
    if(!ceremony)ceremony=gameObject.AddComponent<FishingCeremony>();
-   if(ceremony.BeginGolf(match,()=>PostMatchFlow.Instance?.Open())){shown=match.Round;observed=true;}
+   if(ceremony.BeginGolf(match,null)){shown=match.Round;observed=true;}
   }
   void OnDisable()=>ceremony?.Cancel();
  }

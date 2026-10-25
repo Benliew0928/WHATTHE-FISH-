@@ -86,7 +86,7 @@ namespace WhatTheFish {
     actor.Pose(pose);
    }
    float caption=Ease((age-1.2f)/.5f)*(1-Ease((age-13.9f)/.65f));
-   if(age>=16f){caption=Ease((age-16f)/.7f)*(1-Ease((age-24.3f)/.7f));ceremonyTitle.text="MOST VALUABLE PLAYER";ceremonyDetail.text=nameText.text;}
+   if(age>=16f){caption=Ease((age-16f)/.7f)*(1-Ease((age-24.3f)/.7f));ceremonyTitle.text="MOST VALUABLE PLAYER";GameLocalization.UserContent(ceremonyDetail);ceremonyDetail.text=nameText.text;}
    captionGroup.alpha=skip?caption*(1-card):caption;cardGroup.alpha=card;cardGroup.interactable=cardGroup.blocksRaycasts=card>=.999f;
    content.anchoredPosition+=Vector2.right*((1-card)*28);topBar.color=bottomBar.color=new(.025f,.075f,.08f,.94f*(1-card));
    skipGroup.alpha=Ease((age-1.7f)/.5f)*(1-card);skipGroup.interactable=skipGroup.blocksRaycasts=age>1.7f&&!skip&&card<.01f;

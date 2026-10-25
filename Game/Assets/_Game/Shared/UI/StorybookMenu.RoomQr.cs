@@ -30,7 +30,7 @@ namespace WhatTheFish {
    var card=Plate(overlay.transform,"Room QR card",430,40,740,820,Cream,24,2,true);card.gameObject.AddComponent<CanvasGroup>().ignoreParentGroups=true;
    Text(card.transform,"SCAN TO JOIN",30,22,680,60,36,true,null,TextAnchor.MiddleCenter);
    var qr=Rect(card.transform,"Large room QR",130,100,480,480).gameObject.AddComponent<RawImage>();qr.texture=roomQrTexture;qr.raycastTarget=false;
-   Text(card.transform,renderedRoomCode,30,594,680,55,38,true,null,TextAnchor.MiddleCenter);
+   GameLocalization.UserContent(Text(card.transform,renderedRoomCode,30,594,680,55,38,true,null,TextAnchor.MiddleCenter));
    Text(card.transform,"Open Join a room > Scan QR on another phone.\nYou can also type the code. Internet required.",30,657,680,69,23,false,Muted,TextAnchor.MiddleCenter);
    Button(card.transform,"Close room QR","Done",190,741,360,58,Gold,()=>{Destroy(overlay.gameObject);modalRoot=null;roomQrModal=false;group.interactable=true;},size:25).Select();
   }

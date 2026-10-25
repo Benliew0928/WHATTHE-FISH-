@@ -9,7 +9,7 @@ namespace WhatTheFish {
    var rect=new GameObject(name,typeof(RectTransform)).GetComponent<RectTransform>();rect.SetParent(parent,false);rect.anchorMin=rect.anchorMax=anchor;rect.anchoredPosition=position;rect.sizeDelta=size;return rect;
   }
   public static Text Text(string name,Transform parent,string content,Vector2 size,int points,TextAnchor alignment=TextAnchor.MiddleCenter,Color? color=null){
-   var text=Rect(name,parent,new Vector2(.5f,.5f),Vector2.zero,size).gameObject.AddComponent<Text>();
+   var text=Rect(name,parent,new Vector2(.5f,.5f),Vector2.zero,size).gameObject.AddComponent<LocalizedText>();
    text.font=points<=23?CoveUI.TextFont??CoveUI.DisplayFont:CoveUI.DisplayFont??CoveUI.TextFont;text.fontSize=points;text.fontStyle=FontStyle.Normal;text.text=content;text.color=color??Ink;text.alignment=alignment;text.raycastTarget=false;text.supportRichText=false;text.horizontalOverflow=HorizontalWrapMode.Wrap;text.verticalOverflow=VerticalWrapMode.Truncate;return text;
   }
   public static FishingStickerGraphic Panel(RectTransform rect,Color color,bool solid=false){

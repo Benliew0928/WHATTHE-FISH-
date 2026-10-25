@@ -53,31 +53,28 @@ namespace WhatTheFish {
 
    ballArrow=Arrow("Ball arrow",ballMarker,new Vector2(.5f,.5f),new Vector2(0,-10),new Vector2(48,42),GolfHUDStyle.Gold,"BallArrow");
 
-   ballCard=GolfHUDStyle.Rect("Golf ball caption card",ballMarker,new Vector2(.5f,.5f),new Vector2(103,56),new Vector2(290,74));var ballArt=GolfReferenceUI.Plate(ballCard,"Ball",false);ballArt.sprite=Resources.Load<Sprite>("GolfUI/Badges/YourBall");ballArt.preserveAspect=true;ballCard.sizeDelta=new Vector2(290,290*ballArt.sprite.rect.height/ballArt.sprite.rect.width);
+   ballCard=GolfHUDStyle.Rect("Golf ball caption card",ballMarker,new Vector2(.5f,.5f),new Vector2(103,56),new Vector2(290,74));var ballArt=GolfReferenceUI.Plate(ballCard,"Ball",false);ballArt.sprite=Resources.Load<Sprite>("GolfUI/Badges/YourBall");ballArt.preserveAspect=true;LocalizedArtwork.Add(ballArt,new Rect(.345f,.30f,.54f,.36f),"Your ball",27,GolfHUDStyle.Cream,GolfHUDStyle.Ink);ballCard.sizeDelta=new Vector2(290,290*ballArt.sprite.rect.height/ballArt.sprite.rect.width);
    ballLabel=GolfHUDStyle.Text("Your ball",ballCard,"",new Vector2(192,38),layout.ballFontSize,TextAnchor.MiddleCenter,GolfHUDStyle.Ink);ballLabel.font=CoveUI.DisplayFont??font;ballLabel.rectTransform.anchoredPosition=new Vector2(25,-ballCard.sizeDelta.y*.5f-13);ballLabel.horizontalOverflow=HorizontalWrapMode.Wrap;ballLabel.verticalOverflow=VerticalWrapMode.Truncate;ballLabel.resizeTextForBestFit=false;ballLabel.resizeTextMinSize=11;ballLabel.resizeTextMaxSize=layout.ballFontSize;
 
   }
 
   public string TargetCaption {get;private set;}
-  string lastCaption;Vector3 lastCaptionLayout;
+  string lastCaption,lastLanguage;Vector3 lastCaptionLayout;
   Text Caption(string name){
    var text=GolfHUDStyle.Text(name,targetCard,"",new Vector2(500,54),layout.targetFontSize,TextAnchor.MiddleLeft,GolfHUDStyle.Ink);
-   text.rectTransform.pivot=new Vector2(0,.5f);text.horizontalOverflow=HorizontalWrapMode.Overflow;text.resizeTextForBestFit=false;return text;
+   text.rectTransform.pivot=new Vector2(0,.5f);text.horizontalOverflow=HorizontalWrapMode.Overflow;text.resizeTextForBestFit=false;((LocalizedText)text).ManualFit=true;return text;
   }
   // Measure visible glyph edges so the two gaps remain equal with proportional fonts.
   static Vector2 Ink(Text text){
-   text.cachedTextGenerator.Populate(text.text,text.GetGenerationSettings(new Vector2(500,54)));
-   var vertices=text.cachedTextGenerator.verts;float low=float.PositiveInfinity,high=float.NegativeInfinity;
-   for(int i=0;i+3<vertices.Count;i+=4){float a=vertices[i].position.x,b=vertices[i+2].position.x;if(Mathf.Abs(b-a)<.001f)continue;low=Mathf.Min(low,Mathf.Min(a,b));high=Mathf.Max(high,Mathf.Max(a,b));}
-   return float.IsInfinity(low)?Vector2.zero:new Vector2(low,high)/text.pixelsPerUnit;
+   return ((LocalizedText)text).MeasureInk(text.fontSize);
   }
   internal void SetCaption(int number,float distance){
    string caption=$"HOLE {number}  •  {distance:0} m";var settings=new Vector3(layout.targetSize.x,layout.targetFontSize,layout.targetCaptionGap);
-   TargetCaption=caption;if(lastCaption==caption&&lastCaptionLayout==settings)return;lastCaption=caption;lastCaptionLayout=settings;
+   TargetCaption=caption;if(lastCaption==caption&&lastCaptionLayout==settings&&lastLanguage==GameLocalization.Code)return;lastCaption=caption;lastCaptionLayout=settings;lastLanguage=GameLocalization.Code;
    targetLabel.text=$"HOLE {number}";targetDot.text="•";targetDistance.text=$"{distance:0} m";
    var labels=new[]{targetLabel,targetDot,targetDistance};var bounds=new Vector2[3];
    float available=layout.targetSize.x-layout.targetTextLeftPadding-layout.targetTextRightPadding;
-   for(int size=layout.targetFontSize;size>=19;size--){float width=layout.targetCaptionGap*2;for(int i=0;i<3;i++){labels[i].fontSize=size;bounds[i]=Ink(labels[i]);width+=bounds[i].y-bounds[i].x;}if(width<=available||size==19)break;}
+   for(int size=layout.targetFontSize;size>=10;size--){float width=layout.targetCaptionGap*2;for(int i=0;i<3;i++){labels[i].fontSize=size;bounds[i]=Ink(labels[i]);width+=bounds[i].y-bounds[i].x;}if(width<=available||size==10)break;}
    float x=-layout.targetSize.x*.5f+layout.targetTextLeftPadding;
    for(int i=0;i<3;i++){labels[i].rectTransform.anchoredPosition=new Vector2(x-bounds[i].x,-15);x+=bounds[i].y-bounds[i].x+layout.targetCaptionGap;}
   }

@@ -1,0 +1,57 @@
+{
+  "path_base": "repository root",
+  "images": [
+    {
+      "path": "Game/Assets/_Game/Resources/WelcomeSportIcons/Basketball.png",
+      "sha256": "927000957bd83fa87933e6299f21f251c6aa333dfed773714357d0c95d31971d",
+      "bytes": 538457,
+      "width": 1024,
+      "height": 1024,
+      "alpha_bounds": [
+        138,
+        138,
+        886,
+        886
+      ]
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/WelcomeSportIcons/Fishing.png",
+      "sha256": "9241c13986e7ddd822a25f3917b71c06f411315ec88a8d96fa419ecb26ccde00",
+      "bytes": 218988,
+      "width": 1024,
+      "height": 1024,
+      "alpha_bounds": [
+        90,
+        284,
+        933,
+        739
+      ]
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/WelcomeSportIcons/Football.png",
+      "sha256": "f23ebeebcaf494b414be9a032ec88b5425608e0028371dd36c6cf0654408dfd8",
+      "bytes": 344958,
+      "width": 1024,
+      "height": 1024,
+      "alpha_bounds": [
+        138,
+        138,
+        886,
+        886
+      ]
+    },
+    {
+      "path": "Game/Assets/_Game/Resources/WelcomeSportIcons/Golf.png",
+      "sha256": "a3c6ecc97f05ed34cf980d9dd01a0693620ce36a8916b1129e4f9c3ca6fb9261",
+      "bytes": 428745,
+      "width": 1024,
+      "height": 1024,
+      "alpha_bounds": [
+        138,
+        140,
+        886,
+        886
+      ]
+    }
+  ]
+}

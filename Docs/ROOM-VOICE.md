@@ -265,3 +265,10 @@ desktop simulation cannot certify them.
 - [Echo cancellation](https://docs.unity.com/en-us/vivox-unity/developer-guide/acoustic-echo-cancellation)
 - [Access tokens and channel authorization](https://docs.unity.com/en-us/vivox-unity/access-token-guide/access-token-guide-toc)
 - [Synthetic audio injection and microphone mute behavior](https://docs.unity.com/en-us/vivox-core/developer-guide/channels/audio/core-audio-injection)
+
+
+## Localization integration — 25 October 2026
+
+The pending local feature set was integrated with upstream communication controls (`2ddef7d`) and the compact in-game dock (`25efada`). Player names remain raw user content; only the self suffix is translated. New connect/retry/leave, microphone, volume, spectator mute and empty-chat captions have English, Simplified Chinese and Malay catalog entries.
+
+The integrated candidate passes **219 Golf voice UI assertions**, including all three languages, caption clipping, the compact dock and mute access. Text chat UI passes **69 assertions** and the voice state suite passes **52**; account service tests pass **48**. Evidence: `Builds/VoiceQA/UI-20261025-225104-770/`, `Builds/RoomChatQA/Run-20261025-225104-7993/` and `Builds/GitPushQA/`. These checks use the fake voice transport; real microphone/Bluetooth and phone acceptance remain separate.

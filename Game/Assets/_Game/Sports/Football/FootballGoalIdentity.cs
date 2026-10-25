@@ -44,7 +44,7 @@ namespace WhatTheFish {
     label.text=sign<0?"BLUE GOAL":"RED GOAL";label.fontSize=64;label.characterSize=.105f;label.anchor=TextAnchor.MiddleCenter;label.alignment=TextAlignment.Center;label.color=Color.white;
     label.font=Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");label.GetComponent<MeshRenderer>().sharedMaterial=label.font.material;
     label.transform.SetPositionAndRotation(pitch.TransformPoint(new Vector3(boardX,y+.7f,front+sign*.37f)),pitch.rotation*Quaternion.Euler(0,sign<0?180:0,0));
-    label.GetComponent<MeshRenderer>().shadowCastingMode=ShadowCastingMode.Off;
+    label.GetComponent<MeshRenderer>().shadowCastingMode=ShadowCastingMode.Off;label.gameObject.AddComponent<LocalizedWorldText>();
    }
   }
   void OnDestroy(){foreach(var material in materials)if(material)Destroy(material);}

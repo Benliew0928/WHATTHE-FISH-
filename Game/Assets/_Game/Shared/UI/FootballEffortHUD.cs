@@ -92,7 +92,7 @@ namespace WhatTheFish {
     b.label=Text(r,font,22,new Vector2(210,90));
    }
   }
-  static Text Text(Transform p,Font f,int size,Vector2 bounds){var t=new GameObject("Label",typeof(RectTransform),typeof(Text)).GetComponent<Text>();t.transform.SetParent(p,false);t.rectTransform.sizeDelta=bounds;t.font=f;t.fontSize=size;t.alignment=TextAnchor.MiddleCenter;t.color=new Color(.04f,.16f,.19f);t.raycastTarget=false;return t;}
+  static Text Text(Transform p,Font f,int size,Vector2 bounds){var t=new GameObject("Label",typeof(RectTransform),typeof(LocalizedText)).GetComponent<Text>();t.transform.SetParent(p,false);t.rectTransform.sizeDelta=bounds;t.font=f;t.fontSize=size;t.alignment=TextAnchor.MiddleCenter;t.color=new Color(.04f,.16f,.19f);t.raycastTarget=false;return t;}
   Bar MakeBar(string name,Vector2 size){
    var r=new GameObject(name,typeof(RectTransform),typeof(Image)).GetComponent<RectTransform>();r.SetParent(parent,false);r.sizeDelta=size;
    var bg=r.GetComponent<Image>();bg.color=new Color(.02f,.08f,.12f,.9f);bg.raycastTarget=false;

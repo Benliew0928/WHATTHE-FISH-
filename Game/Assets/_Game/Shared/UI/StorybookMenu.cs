@@ -108,7 +108,9 @@ namespace WhatTheFish {
    if(Page=="venues"&&VenueDirty){DiscardDialog();return;}
    MenuPreferences.Save();GoBack();
   }
-  void GoBack(){if(Page=="sport"){history.Clear();app.Show("home");return;}app.Show(history.Count>0?history.Pop():app.rooms.Connected?"room":"home");}
+  void GoBack(){
+   if(Page=="sport"){history.Clear();app.Show("home");return;}app.Show(history.Count>0?history.Pop():app.rooms.Connected?"room":"home");
+  }
   void Go(string page) {if(app.rooms.busy||leaving||IsTransitioning)return;history.Push(Page);app.Show(page);}
   void Rebuild()=>app.Show(Page);
   void ChooseSport(SportId sport,string page) {if(app.rooms.Connected||app.PendingSelection.HasValue)return;if(page=="sport"){history.Clear();history.Push("home");}app.SelectSport(sport);app.Show(page);}
@@ -233,19 +235,22 @@ namespace WhatTheFish {
    SocialPanel.OpenOwn();
   }
   void Settings() {
-   Heading("SETTINGS","");
+   Heading("SETTINGS","");LanguageSettings.Attach(ActionButton("Language settings","Language",1060,50,270,66,Cream,null,CoveSymbol.None,25),content);
    var p=Plate(content,"Settings controls",97,183,1406,605,Cream,34,2,true);
    Text(p.transform,"Sound",35,25,1280,48,34,true);
-   Volume(p.transform,"Game volume",MenuPreferences.MasterVolume,35,111,630,MenuPreferences.SetMaster);
-   Volume(p.transform,"Menu sounds",MenuPreferences.UIVolume,737,111,630,MenuPreferences.SetUI);
+   Volume(p.transform,"Master",MenuPreferences.MasterVolume,35,111,310,MenuPreferences.SetMaster);
+   Volume(p.transform,"Game sounds",MenuPreferences.SFXVolume,378,111,310,MenuPreferences.SetSFX);
+   Volume(p.transform,"Buttons",MenuPreferences.UIVolume,721,111,310,MenuPreferences.SetUI);
+   Volume(p.transform,"Ambience",MenuPreferences.AmbienceVolume,1064,111,310,MenuPreferences.SetAmbience);
    Text(p.transform,"Default camera",35,253,1280,38,28,true);
    string[] cameras={"First person","Third person","Elevated"};for(int i=0;i<3;i++){int mode=i;Button(p.transform,"Camera "+cameras[i],cameras[i],35+i*449,313,428,66,app.view.mode==i?Gold:Color.white,()=>{app.view.mode=mode;PlayerPrefs.SetInt("camera",mode);MenuPreferences.Save();Rebuild();},CoveSymbol.None,27);}
    Text(p.transform,"Gentler motion",35,421,930,39,29,true);Text(p.transform,"Keeps clear press feedback; reduces bouncing and page movement.",35,469,1006,59,24,false,Muted);
    Button(p.transform,"Reduced motion","Reduced motion: "+(MenuPreferences.ReducedMotion?"On":"Off"),1058,433,312,71,MenuPreferences.ReducedMotion?Mint:Color.white,()=>{MenuPreferences.SetMotion(!MenuPreferences.ReducedMotion);MenuPreferences.Save();Rebuild();},CoveSymbol.None,24);
    Text(p.transform,"Fishing vibration uses phone touch feedback. Reduced motion keeps it off.",35,549,1006,37,23,false,Muted);
    Button(p.transform,"Fishing vibration","Fishing vibration: "+(MenuPreferences.FishingVibration?"On":"Off"),1058,519,312,71,MenuPreferences.FishingVibration?Mint:Color.white,()=>{MenuPreferences.SetFishingVibration(!MenuPreferences.FishingVibration);MenuPreferences.Save();Rebuild();},CoveSymbol.None,23);
-   ActionButton("Reset settings","Reset settings",99,809,269,63,Cream,()=>{MenuPreferences.SetMaster(.8f);MenuPreferences.SetUI(.65f);MenuPreferences.SetMotion(false);MenuPreferences.SetFishingVibration(false);app.view.mode=1;PlayerPrefs.SetInt("camera",1);MenuPreferences.Save();Rebuild();},CoveSymbol.Settings,23);
+   ActionButton("Reset settings","Reset settings",99,809,269,63,Cream,()=>{MenuPreferences.SetMaster(.8f);MenuPreferences.SetUI(.65f);MenuPreferences.SetSFX(.8f);MenuPreferences.SetAmbience(.45f);MenuPreferences.SetMotion(false);MenuPreferences.SetFishingVibration(false);app.view.mode=1;PlayerPrefs.SetInt("camera",1);MenuPreferences.Save();Rebuild();},CoveSymbol.Settings,23);
    ActionButton("Layout","Layout",400,808,260,65,Gold,()=>Go("layouts"),CoveSymbol.Settings,27);
+   ActionButton("Privacy and data","Privacy & data",695,808,330,65,Cream,()=>PrivacyDataPanel.Open(),CoveSymbol.Book,25);
    ActionButton("Done settings","Done",1260,808,242,65,Mint,Back,CoveSymbol.Check,27);
   }
   void Volume(Transform parent,string label,float value,float x,float y,float width,Action<float> save) {
@@ -315,7 +320,7 @@ namespace WhatTheFish {
     else if(app.rooms.busy)message.text=app.rooms.Operation.Length>0?app.rooms.Operation:"Getting the crew moving…";
     else if(!string.IsNullOrEmpty(app.rooms.Error)&&lastError!=app.rooms.Error){lastError=app.rooms.Error;message.text=FriendlyError(lastError);}
     else if(string.IsNullOrEmpty(app.rooms.Error)&&lastError.Length>0){lastError="";message.text="";}
-    else if(lastError==""&&message.text.StartsWith("Connecting"))message.text="";
+    else if(lastError==""&&GameLocalization.Source(message).StartsWith("Connecting"))message.text="";
    }
   }
   static string FriendlyError(string error)=>RoomFeedback.Explain(error);
