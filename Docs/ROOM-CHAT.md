@@ -8,9 +8,12 @@ the eight free stickers: GGWP, Laugh, Cry, Angry, Thanks, Oops, Wow and Let's go
 
 ## Player experience
 
-- Chat and microphone icon buttons sit below the gameplay minimap; Fishing docks
-  them beside its taller scoreboard so Ready and Start remain accessible. The lobby has
-  its own chat button and a larger history panel on the right. There is no dimmed
+- Chat and microphone icon buttons sit below the gameplay minimap or sport
+  leaderboard, including Fishing. Expanded history, stickers and preferences
+  share a shallow area beneath the buttons: at most 560 by 260 canvas units.
+  History scrolls inside it; the centre view and movement joystick stay clear.
+  A phone keyboard moves the group upward to keep the composer reachable.
+  The lobby retains its larger history panel on the right. There is no dimmed
   backdrop and opening history does not pause an online game.
 - Players and Spectators have separate history tabs, with independent unread
   counts. Both roles can read either tab and send to their own role's history.
@@ -54,6 +57,16 @@ preserved. Leaving the room clears local history and mute choices; a new room
 starts empty. This is room-session history, not a cloud archive across app restarts.
 
 ## Artwork and builds
+
+The compact gameplay follow-up passed **708** combined state/UI assertions across
+all four sports and three window sizes, plus **69** text-chat UI assertions.
+Checks cover bounds for every expanded view, joystick clearance, visible button
+raycasts, all eight stickers and scrolling to the last member's volume control.
+Native screenshots were reviewed at 1600x900, 1920x864 and 1024x768.
+Evidence: `Builds/CommsDock/`, `Builds/VoiceQA/UI-20261025-223156-638/`,
+`Builds/VoiceQA/UI-20261025-223156-643/` and
+`Builds/RoomChatQA/Run-20261025-223324-7998/`. Physical phone touch and keyboard
+layout remain unverified. See [room voice validation](ROOM-VOICE.md).
 
 The 25 October redesign passed **226** host/guest/spectator history and transport
 assertions plus **69** UI checks. They verify authoritative message roles,

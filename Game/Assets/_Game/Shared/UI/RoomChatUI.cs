@@ -75,17 +75,18 @@ namespace WhatTheFish {
    if(!root)return;if(input)draft=input.text;
    foreach(Transform child in root){child.gameObject.SetActive(false);Destroy(child.gameObject);}
    input=null;panel=null;optionsPanel=null;quickPanel=null;scroll=null;note=null;title=null;
-   float w=lobby?520:380,h=lobby?600:332;
+   float w=lobby?520:560,h=lobby?600:260;
    launchers=CoveUI.Rect(root,"Chat buttons",0,0,140,64);launcherOpacity=launchers.gameObject.AddComponent<CanvasGroup>();
    var chatButton=IconButton(launchers,"Open room chat",RoomCommsSymbol.Chat,0,0,64,64,CoveUI.Hex("207B91"),()=>SetOpen(!open),out chatIcon);
    unreadText=Label(chatButton.transform,"",40,-3,30,24,13,Cream);unreadText.alignment=TextAnchor.MiddleCenter;
    BuildVoicePanel(w);
    panel=CoveUI.Plate(root,"Room chat history",0,0,w,h,PanelColor,18,1).rectTransform;panel.GetComponent<CovePlate>().borderColor=CoveUI.Hex("52747C");panel.GetComponent<CovePlate>().raycastTarget=true;
-   MenuDesigns.Dialog(panel.GetComponent<CovePlate>());title=Label(panel,"CHAT",16,8,w-136,36,22,Mint);
+   MenuDesigns.Dialog(panel.GetComponent<CovePlate>());title=Label(panel,"CHAT",16,8,lobby?w-136:68,36,22,Mint);
    Button(panel,"Chat options","•••",w-116,7,48,48,PlayerHubStyle.Raised,()=>{options=!options;quick=false;Rebuild();});
    Button(panel,"Close chat","×",w-60,7,48,48,PlayerHubStyle.Raised,Close,28);
-   chatTabs=AudienceTabs(panel,w,60,chatSpectators,SetChatAudience,"Chat");
-   viewport=CoveUI.Rect(panel,"Message viewport",12,116,w-24,h-210);viewport.gameObject.AddComponent<RectMask2D>();
+   chatTabs=AudienceTabs(panel,w,lobby?60:8,chatSpectators,SetChatAudience,"Chat",lobby?12:88,lobby?12:120);
+   float historyTop=lobby?116:62;
+   viewport=CoveUI.Rect(panel,"Message viewport",12,historyTop,w-24,h-historyTop-94);viewport.gameObject.AddComponent<RectMask2D>();
    var hit=viewport.gameObject.AddComponent<Image>();hit.color=Color.clear;hit.raycastTarget=true;
    content=CoveUI.Rect(viewport,"Messages",0,0,w-24,0);scroll=viewport.gameObject.AddComponent<ScrollRect>();scroll.viewport=viewport;scroll.content=content;scroll.horizontal=false;scroll.movementType=ScrollRect.MovementType.Clamped;scroll.scrollSensitivity=40;
    input=PlayerHubStyle.Entry(panel,"Message input","Say something…",draft,12,h-80,w-132,240);
@@ -121,29 +122,30 @@ namespace WhatTheFish {
    }else launchers.gameObject.SetActive(true);
    if(!lobby&&app.SelectedSport==SportId.Fishing){
     if(!fishingBoard&&app.HudFrame)fishingBoard=app.HudFrame.GetComponentsInChildren<RectTransform>().FirstOrDefault(r=>r.name=="Lagoon sticker leaderboard");
-    dock=fishingBoard?Bounds(fishingBoard).xMax+18:404;
-    dock=Mathf.Clamp(dock,38,sw-panel.rect.width-12);
+    if(fishingBoard){var board=Bounds(fishingBoard);dock=Mathf.Max(12,board.xMin);launchTop=sh-board.yMin+12;}
+    else {dock=24;launchTop=264;}
    }
-   float px=lobby?Mathf.Max(12,sw-panel.rect.width-42):dock,py=lobby?Mathf.Min(184,Mathf.Max(12,sh-panel.rect.height-100)):launchTop+73;
-   // The native keyboard supplies the actual occluded pixels. Input remains
-   // reachable even on split-screen devices and phones with a large IME.
    float keyboard=TouchScreenKeyboard.visible?(TouchScreenKeyboard.area.height>0?TouchScreenKeyboard.area.height:Screen.height*.45f)/canvas.scaleFactor:0;
+   if(!lobby){
+    // Every expanded view shares the shallow area beneath the two launchers.
+    // Keep the complete group above a native keyboard when composing on a phone.
+    dock=Mathf.Clamp(dock,12,Mathf.Max(12,sw-panel.rect.width-12));
+    launchTop=Mathf.Min(launchTop,Mathf.Max(12,sh-keyboard-64-10-260-12));
+    launchers.anchoredPosition=new Vector2(dock,-launchTop);
+    var position=new Vector2(dock,-(launchTop+74));
+    panel.anchoredPosition=position;if(quickPanel)quickPanel.anchoredPosition=position;
+    if(optionsPanel)optionsPanel.anchoredPosition=position;if(voicePanel)voicePanel.anchoredPosition=position;
+    return;
+   }
+   float px=Mathf.Max(12,sw-panel.rect.width-42),py=Mathf.Min(184,Mathf.Max(12,sh-panel.rect.height-100));
    py=Mathf.Clamp(py,8,Mathf.Max(8,sh-keyboard-panel.rect.height-8));
    panel.anchoredPosition=new Vector2(px,-py);
-   launchers.anchoredPosition=lobby?new Vector2(Mathf.Min(650,sw-150),-Mathf.Max(8,sh-90-keyboard)):new Vector2(dock,-launchTop);
-   if(quickPanel)quickPanel.anchoredPosition=open?new Vector2(px,-py):lobby?new Vector2(Mathf.Min(650,sw-quickPanel.rect.width-12),-Mathf.Max(8,sh-quickPanel.rect.height-110-keyboard)):new Vector2(dock,-Mathf.Min(launchTop+73,Mathf.Max(12,sh-quickPanel.rect.height-12)));
+   launchers.anchoredPosition=new Vector2(Mathf.Min(650,sw-150),-Mathf.Max(8,sh-90-keyboard));
+   if(quickPanel)quickPanel.anchoredPosition=new Vector2(px,-py);
    if(optionsPanel)optionsPanel.anchoredPosition=new Vector2(px,-py);
-   if(voicePanel){
-    float vx=Mathf.Clamp(px,8,Mathf.Max(8,sw-voicePanel.rect.width-8)),vy=Mathf.Clamp(py,8,Mathf.Max(8,sh-voicePanel.rect.height-8));
-    var buttons=new Rect(launchers.anchoredPosition.x,-launchers.anchoredPosition.y,launchers.rect.width,launchers.rect.height);
-    if(new Rect(vx,vy,voicePanel.rect.width,voicePanel.rect.height).Overlaps(buttons)){
-     float beside=buttons.xMax+12;
-     if(!lobby&&app.SelectedSport==SportId.Golf&&golfBoard&&golfBoard.BoardRect.gameObject.activeInHierarchy)beside=Mathf.Max(beside,Bounds(golfBoard.BoardRect).xMax+12);
-     vx=beside+voicePanel.rect.width<=sw-8?beside:Mathf.Max(8,buttons.xMin-voicePanel.rect.width-12);
-    }
-    voicePanel.anchoredPosition=new Vector2(vx,-vy);
-   }
+   if(voicePanel)voicePanel.anchoredPosition=new Vector2(px,-Mathf.Clamp(py,8,Mathf.Max(8,sh-voicePanel.rect.height-8)));
   }
+
   void RenderHistory(){
    if(!content||!scroll)return;
    float old=scroll.verticalNormalizedPosition;bool atBottom=old<.05f;

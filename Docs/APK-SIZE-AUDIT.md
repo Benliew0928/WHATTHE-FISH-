@@ -1,5 +1,31 @@
 # APK size audit — measured release records
 
+## Compact in-game communication dock — 25 October 2026
+
+Official AndroidSubmission: **126,914,878 -> 126,913,482 bytes
+(-1,396)**. Headroom below the strict 1,000,000,000-byte limit:
+**873,086,518 bytes**. SHA-256:
+**482B3F2D4E21103D2CB2864C43B4B1DFB930686C8C2BD6BF00F60EB272AC7030**.
+The size gate, v2 signature, ZIP CRC, all **1,250** audit entries and five-scene
+bundle integrity passed. All **360 Android** compiled source documents and the
+voice configuration bridge match the tested source.
+
+| Largest compressed entry | Bytes | Change |
+| --- | ---: | ---: |
+| `assets/PackagedContent/islands.bundle` | 45,412,959 | -4,766 |
+| `lib/arm64-v8a/libil2cpp.so` | 13,148,956 | +3,317 |
+| `lib/arm64-v8a/libvivox-sdk.so` | 10,240,163 | +0 |
+| `lib/arm64-v8a/libunity.so` | 9,808,858 | +0 |
+| `assets/bin/Data/Managed/Metadata/global-metadata.dat` | 2,900,831 | +41 |
+
+The small differences are code and rebuilt lossless content. No art assets,
+texture settings or rendering quality changed. Runtime communication types and
+native voice libraries are present; development probes are excluded. Current
+proofs and a retained release copy are in `Builds/CommsDock/AndroidDelivery/`,
+with entry deltas in `Builds/CommsDock/apk-entry-delta.csv`. Phone acceptance
+still requires a connected device. The preceding APK/audit recovery batch is
+`Legacy/20261025-223324-406-comms-dock-android/`.
+
 ## Communication controls and audience tabs — 25 October 2026
 
 Official AndroidSubmission: **126,891,150 -> 126,914,878 bytes (+23,728)**.

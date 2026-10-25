@@ -1,5 +1,32 @@
 # Build size — measured release records
 
+## Compact in-game communication dock — 25 October 2026
+
+Official AndroidSubmission: **126,914,878 -> 126,913,482 bytes
+(-1,396)**. Headroom below the strict 1,000,000,000-byte limit:
+**873,086,518 bytes**. SHA-256:
+**482B3F2D4E21103D2CB2864C43B4B1DFB930686C8C2BD6BF00F60EB272AC7030**.
+The size gate, v2 signature, ZIP CRC, all **1,250** audit entries and five-scene
+bundle integrity passed. All **360 Android** compiled source documents and the
+voice configuration bridge match the tested source.
+
+The in-game history, stickers, preferences and voice settings stay beneath the
+chat/mic launchers in a shallow 560 by 260 canvas-unit area. Voice controls and
+the scrolling roster occupy separate columns; the last member's volume scrolls
+into view. Fishing also docks below its leaderboard. There are no new assets or
+art-quality reductions. Protocol 87 and the one-channel-per-room model remain.
+
+The complete **342-file WindowsFinal** passed **708** combined state/UI assertions
+across four sports and three sizes, plus **69** text-chat UI assertions. All
+**500 Windows** source documents match; **496** match the predecessor unchanged.
+The delivered snapshot includes concurrent scoreboard/venue work outside this
+communication-only commit. Screenshots and source/package proofs are in
+`Builds/CommsDock/`; see [room voice validation](ROOM-VOICE.md). Physical phone
+touch, keyboard, microphone/Bluetooth and FPS remain unverified.
+
+Recovery: `Legacy/20261025-223324-406-comms-dock-android/` and
+`Legacy/20261025-223605-172-comms-dock-windows/`.
+
 ## Communication controls and audience tabs — 25 October 2026
 
 Official AndroidSubmission: **126,891,150 -> 126,914,878 bytes (+23,728)**.

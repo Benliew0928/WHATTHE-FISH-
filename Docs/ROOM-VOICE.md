@@ -49,8 +49,12 @@ the authoritative player/spectator role on each chat message.
 A compact microphone icon remains reachable during travel, Golf aim mode, expanded
 Golf standings or other full-screen overlays when the mic is on. Voice volume affects voice playback independently
 of the game's sound effects.
-When Golf's active standings leave too little space below the launcher, voice
-settings move beside the standings so the two buttons remain reachable.
+During gameplay, the expanded panel stays beneath the launchers in a 560 by 260
+canvas-unit area. Room controls occupy its left column and the member list
+scrolls on the right. Selecting a member scrolls their volume control into view.
+Spectator mute and any permission/error actions stay inside the same panel;
+room controls scroll when additional status content needs space. Fishing's
+launchers also sit beneath its leaderboard. The lobby retains its taller layout.
 
 Travel, settings and result overlays save only the explicit gameplay input lock.
 Voice, chat and tutorial blockers are evaluated live, so dismissing one cannot
@@ -73,7 +77,43 @@ leaves voice and immediately silences capture; returning reconnects with mic off
 Changing audio devices or losing mobile app focus also turns the mic off. Permission
 revocation is checked before continuing capture. No recording feature is enabled.
 
-## UI redesign verification — 25 October 2026
+## Compact in-game communication dock — 25 October 2026
+
+Official AndroidSubmission: **126,914,878 -> 126,913,482 bytes
+(-1,396)**. Headroom below the strict 1,000,000,000-byte limit:
+**873,086,518 bytes**. SHA-256:
+**482B3F2D4E21103D2CB2864C43B4B1DFB930686C8C2BD6BF00F60EB272AC7030**.
+The size gate, v2 signature, ZIP CRC, all **1,250** audit entries and five-scene
+bundle integrity passed. All **360 Android** compiled source documents and the
+voice configuration bridge match the tested source.
+
+The complete **342-file Windows player** is promoted to `Builds/WindowsFinal/`.
+Every delivered file matches the tested candidate. All **500** compiled Windows
+source documents match; **496** remain byte-identical to the preceding combined
+release, preserving its concurrent scoreboard and venue work. The retained
+source ZIP records the complete build snapshot, beyond this task's commit scope.
+
+The four-sport suite passed **708 assertions**: Golf 186, Fishing 176, Football
+173 and Basketball 173. Checks cover every expanded view's bounds, joystick
+clearance, actual UI raycasts, group mute, last-member scrolling/volume and all
+previous gesture/travel/background behaviors. All eight stickers remain inside
+the compact picker. Text-chat UI checks passed **69 assertions**. Representative
+1600x900, 1920x864 and 1024x768 native renders were visually reviewed. Voice-panel
+input isolation is retained; opening text history permits gameplay until typing.
+
+Evidence: `Builds/VoiceQA/UI-20261025-223156-638/`,
+`Builds/VoiceQA/UI-20261025-223156-643/`,
+`Builds/RoomChatQA/Run-20261025-223324-7998/` and `Builds/CommsDock/`.
+Physical phone touch, native keyboard, microphone/headset behavior and FPS remain
+unverified. Native voice transport was unchanged; the earlier two-client audio
+acceptance is recorded below.
+
+Superseded output recovery: `Legacy/20261025-222956-032-comms-dock-candidate/`,
+`Legacy/20261025-223324-406-comms-dock-android/` and
+`Legacy/20261025-223605-172-comms-dock-windows/`. Completed editing drafts were
+archived in `Legacy/20261025-223850-246-comms-dock-drafts/`.
+
+## Earlier two-button redesign verification — 25 October 2026
 
 The complete **342-file Windows player** in `Builds/WindowsFinal/` contains the
 redesign. All **500 Windows** compiled game source documents and the separate

@@ -132,10 +132,43 @@ namespace WhatTheFish {
     var corners=new Vector3[4];ui.VoicePanel.GetWorldCorners(corners);Check(corners.All(p=>p.x>=-1&&p.x<=Screen.width+1&&p.y>=-1&&p.y<=Screen.height+1),context+" panel fits "+size);
     var launcherCorners=new Vector3[4];ui.Launchers.GetWorldCorners(launcherCorners);var panelRect=Rect.MinMaxRect(corners[0].x,corners[0].y,corners[2].x,corners[2].y);var launchRect=Rect.MinMaxRect(launcherCorners[0].x,launcherCorners[0].y,launcherCorners[2].x,launcherCorners[2].y);Check(!panelRect.Overlaps(launchRect),"voice settings do not overlap launcher "+context+size);
     Check(ui.GetComponentsInChildren<Text>().All(t=>!t.supportRichText),"voice names render literally "+context+size);
-    if(context=="gameplay"&&app.SelectedSport==SportId.Fishing){var board=app.HudFrame.GetComponentsInChildren<RectTransform>().First(t=>t.name=="Lagoon sticker leaderboard");var boardCorners=new Vector3[4];board.GetWorldCorners(boardCorners);Check(corners[0].x>=boardCorners[2].x,"Fishing voice clears leaderboard "+size);}
+    if(context=="gameplay"&&app.SelectedSport==SportId.Fishing){var board=app.HudFrame.GetComponentsInChildren<RectTransform>().First(t=>t.name=="Lagoon sticker leaderboard");var boardCorners=new Vector3[4];board.GetWorldCorners(boardCorners);Check(corners[1].y<boardCorners[0].y,"Fishing voice stays beneath leaderboard "+size);}
+    if(context=="gameplay")DockCheck(ui.VoicePanel,"voice players "+size);
     yield return Capture(context+"-"+size.x+"x"+size.y);
+    if(context=="gameplay")yield return DockViews(size);
    }
    Screen.SetResolution(1600,900,false);yield return new WaitForSecondsRealtime(.3f);
+  }
+  Rect ScreenRect(RectTransform rect){var c=new Vector3[4];rect.GetWorldCorners(c);return Rect.MinMaxRect(c[0].x,c[0].y,c[2].x,c[2].y);}
+  void DockCheck(RectTransform panel,string label){
+   var p=ScreenRect(panel);var launcher=ScreenRect(ui.Launchers);float scale=launcher.width/ui.Launchers.rect.width;
+   Check(panel.rect.width<=580.5f&&panel.rect.height<=270.5f&&Mathf.Abs(p.xMin-launcher.xMin)<1&&p.yMax<=launcher.yMin-6*scale&&p.yMin>=launcher.yMin-280*scale,label+" stays in requested shallow dock");
+   if(app.view.stick){var stick=ScreenRect((RectTransform)app.view.stick.transform);Check(!p.Overlaps(stick),label+" clears movement joystick");}
+  }
+  void ClickVisible(string name){
+   var b=Button(name);var rect=ScreenRect((RectTransform)b.transform);
+   var hits=new System.Collections.Generic.List<RaycastResult>();EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=rect.center},hits);
+   Check(hits.Count>0&&(hits[0].gameObject==b.gameObject||hits[0].gameObject.transform.IsChildOf(b.transform)),name+" receives the pointer inside its visible panel");b.onClick.Invoke();
+  }
+  IEnumerator DockViews(Vector2Int size){
+   ui.SetVoiceAudience(true);yield return new WaitForSecondsRealtime(.2f);DockCheck(ui.VoicePanel,"voice spectators "+size);
+   ClickVisible("Mute all spectators");yield return new WaitForSecondsRealtime(.2f);
+   if(size.x==1600)yield return Capture("dock-spectators");ClickVisible("Mute all spectators");
+   var roster=ui.GetComponentsInChildren<ScrollRect>().Single(s=>s.name=="Voice roster viewport");roster.verticalNormalizedPosition=0;yield return null;
+   ClickVisible("Voice member 5");yield return new WaitForSecondsRealtime(.2f);
+   var member=ui.GetComponentsInChildren<Slider>().Single(s=>s.name=="Member volume slider");member.value=.65f;yield return null;
+   var viewport=ScreenRect(roster.viewport);var slider=ScreenRect((RectTransform)member.transform);
+   Check(viewport.Contains(slider.min)&&viewport.Contains(slider.max),"last spectator volume stays reachable inside scrolled roster "+size);
+   if(size.x==1600)yield return Capture("dock-member-volume");
+   ui.SetOpen(true);yield return new WaitForSecondsRealtime(.2f);DockCheck(ui.Panel,"chat history "+size);
+   if(size.x==1600)yield return Capture("dock-chat");
+   ClickVisible("Chat options");yield return null;
+   var preferences=ui.GetComponentsInChildren<RectTransform>().Single(r=>r.name=="Chat preferences");DockCheck(preferences,"chat preferences "+size);ClickVisible("Close preferences");yield return null;
+   ClickVisible("Compose sticker");yield return null;
+   var stickers=ui.GetComponentsInChildren<RectTransform>().Single(r=>r.name=="Choose a sticker");DockCheck(stickers,"sticker picker "+size);
+   Check(RoomChatService.Stickers.All(id=>{var r=ScreenRect((RectTransform)Button("Send "+id).transform);var bounds=ScreenRect(stickers);return bounds.Contains(r.min)&&bounds.Contains(r.max);}),"every sticker stays inside the compact picker "+size);
+   if(size.x==1600)yield return Capture("dock-stickers");
+   ClickVisible("Close stickers");yield return null;ui.OpenVoice();ui.SetVoiceAudience(false);yield return new WaitForSecondsRealtime(.2f);
   }
   IEnumerator Capture(string name){
    yield return null;var camera=app.view.GetComponent<Camera>();var overlays=FindObjectsByType<Canvas>(FindObjectsSortMode.None).Where(c=>c.renderMode==RenderMode.ScreenSpaceOverlay).ToArray();
