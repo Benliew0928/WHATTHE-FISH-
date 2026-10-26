@@ -3,6 +3,7 @@ import { createPlayerVerifier } from './player-auth.mjs';
 import { Profiles } from './profiles.mjs';
 import { RoomInvites } from './room-invites.mjs';
 import { Economy } from './economy.mjs';
+import { submitReport } from './reports.mjs';
 import { deletionPending, deleteProfileForAccount } from './account-deletion.mjs';
 const verifiers=new WeakMap();
 const send=(status,data)=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}});
@@ -75,7 +76,8 @@ export async function profileApi(request,env,verifyOverride) {
     if(path==='/v1/blocks'&&method==='DELETE'){
       const b=await json(request);await store.statement('DELETE FROM blocks WHERE owner=? AND target=?',id,b.target).run();return send(200,{ok:true});
     }
-    if(path==='/v1/reports'&&method==='POST'){const b=await json(request);return send(200,await store.report(id,b.target,b.reason));}
+    if(path==='/v1/reports'&&method==='GET')return send(200,{version:2});
+    if(path==='/v1/reports'&&method==='POST')return send(200,await submitReport(store,id,await json(request)));
     if(path==='/v1/room-proof'&&method==='POST'){const b=await json(request);return send(200,await store.proof(id,b.room,b.challenge));}
     if(path==='/v1/room-proof/verify'&&method==='POST'){const b=await json(request);return send(200,await store.verifyProof(b.room,b.challenge,b.proof));}
     const profile=/^\/v1\/players\/([A-Za-z0-9_-]{16,128})$/.exec(path);

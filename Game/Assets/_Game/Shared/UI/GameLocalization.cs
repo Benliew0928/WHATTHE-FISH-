@@ -170,6 +170,20 @@ namespace WhatTheFish {
   // Measure the displayed translation at the same density as its mesh without
   // overwriting the generator used by InputField/caret or the rendered label.
   public Vector2 MeasureInk(int size){var r=MeasureGlyphBounds(size);return new Vector2(r.xMin,r.xMax);}
+  // Scrollable documents need the same wrapping density used by OnPopulateMesh.
+  // Text.preferredHeight alone uses a different raster scale and can miss a line.
+  public float MeasureWrappedHeight(){
+   ApplyFont();var settings=GetGenerationSettings(new Vector2(rectTransform.rect.width,100000));
+   settings.resizeTextForBestFit=false;settings.scaleFactor=RasterScale();
+   settings.horizontalOverflow=HorizontalWrapMode.Wrap;settings.verticalOverflow=VerticalWrapMode.Overflow;
+   settings.textAnchor=TextAnchor.UpperLeft;settings.pivot=new Vector2(0,1);
+   using(var generator=new TextGenerator()){
+    float height=generator.GetPreferredHeight(text,settings)/settings.scaleFactor;
+    generator.Populate(text,settings);
+    foreach(var vertex in generator.verts)height=Mathf.Max(height,-vertex.position.y/settings.scaleFactor);
+    return Mathf.Max(preferredHeight,height);
+   }
+  }
   Rect MeasureGlyphBounds(int size){
    var settings=GetGenerationSettings(rectTransform.rect.size);settings.fontSize=size;settings.resizeTextForBestFit=false;settings.scaleFactor=RasterScale();settings.horizontalOverflow=HorizontalWrapMode.Overflow;settings.verticalOverflow=VerticalWrapMode.Overflow;
    using(var generator=new TextGenerator()){

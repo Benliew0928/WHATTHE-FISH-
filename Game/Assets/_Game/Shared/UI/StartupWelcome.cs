@@ -73,13 +73,13 @@ namespace WhatTheFish {
    heading.text="Let’s try again";subtitle.text="Your adventure will be here when you’re ready.";subtitle.gameObject.SetActive(true);
    status.text=cause.IndexOf("space",StringComparison.OrdinalIgnoreCase)>=0||cause.IndexOf("disk",StringComparison.OrdinalIgnoreCase)>=0?"Free some storage, then retry.":cause.IndexOf("hash",StringComparison.OrdinalIgnoreCase)>=0||cause.IndexOf("integrity",StringComparison.OrdinalIgnoreCase)>=0?"Content needs repair. Retry loading.":"Could not load islands. Try again.";percentage.gameObject.SetActive(false);RetryButton.gameObject.SetActive(true);LoadingPanel.gameObject.SetActive(true);
   }
-  public void SetReady(){
+  public void SetReady(bool allowBypass=true){
    if(IsReady)return;IsReady=true;HasError=false;Progress=1;
    blankSign.SetActive(false);heading.gameObject.SetActive(false);subtitle.gameObject.SetActive(false);
    actionGroup.alpha=1;actionGroup.interactable=actionGroup.blocksRaycasts=true;
    GuestButton.interactable=HuaweiButton.interactable=true;RetryButton.gameObject.SetActive(false);
    status.text="Ready to play";percentage.text="100%";fill.rectTransform.sizeDelta=new Vector2(258,22);fill.SetVerticesDirty();hideProgressAt=Time.unscaledTime+.8f;
-   SetBaseInteractable(!ModalOpen);if(BypassRequested())Dismiss(false);
+   SetBaseInteractable(!ModalOpen);if(allowBypass&&BypassRequested())Dismiss(false);
   }
   static bool BypassRequested(){
    var args=Environment.GetCommandLineArgs();

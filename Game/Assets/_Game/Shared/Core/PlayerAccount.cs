@@ -108,8 +108,10 @@ namespace WhatTheFish {
   public static void SignOut() {
    if(DeletionPending)throw new InvalidOperationException("Finish the pending account deletion from Privacy & data first.");
    if(Busy||RoomLocked)throw new InvalidOperationException("Leave your room before signing out.");
-   if(UnityServices.State==ServicesInitializationState.Initialized)AuthenticationService.Instance.SignOut(true);
-   AndroidAccountSignIn.SignOutNative();PlayerIdentity.ClearAccount();
+   bool linked=PlayerIdentity.AccountId.Length>0;
+   // Keep an anonymous session recoverable with its device-local guest save.
+   if(UnityServices.State==ServicesInitializationState.Initialized)AuthenticationService.Instance.SignOut(linked);
+   AndroidAccountSignIn.SignOutNative();if(linked)PlayerIdentity.ClearAccount();
   }
   public static string Explain(Exception error) {
    if(error is OperationCanceledException)return "Sign-in cancelled. Your current profile is unchanged.";

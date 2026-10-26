@@ -98,6 +98,11 @@ namespace WhatTheFish {
    if(e is ProfileException p)return p.Code switch {
     "profile_changed"=>"Your profile changed on another device. Reload it, then save your edits again.",
     "invalid_name"=>"Use 1–16 characters: letters, numbers, spaces, - or _.",
+    "offensive_name"=>TextSafety.NameError,
+    "report_limit"=>"Please wait before reporting again. Reports are limited to prevent spam.",
+    "report_details_required"=>"Please describe what happened when choosing Other.",
+    "invalid_report"=>"Check your report reason and details, then try again.",
+    "report_changed"=>"This report changed during submission. Close it and start a new report.",
     "request_cooldown"=>"Please wait 24 hours before sending another request to this player.",
     "friend_limit"=>"One of these players has reached the 150 friends and pending requests limit.",
     "rate_limited"=>"Too many changes at once. Please wait a minute and try again.",

@@ -1,6 +1,26 @@
 {
   "entries": [
     {
+      "en": "Rewards",
+      "zh": "奖励",
+      "ms": "Ganjaran"
+    },
+    {
+      "en": "Daily login",
+      "zh": "每日签到",
+      "ms": "Log masuk harian"
+    },
+    {
+      "en": "Syncing coins...",
+      "zh": "正在同步金币……",
+      "ms": "Menyegerakkan syiling..."
+    },
+    {
+      "en": "Return to the login page? Your saved progress stays on this device.",
+      "zh": "返回登录页面？已保存的进度将保留在此设备上。",
+      "ms": "Kembali ke halaman log masuk? Kemajuan tersimpan kekal pada peranti ini."
+    },
+    {
       "en": "BLUE GOAL",
       "zh": "蓝队球门",
       "ms": "Gol Biru"
@@ -17717,6 +17737,591 @@
       "en": "Venue name",
       "zh": "场地名称",
       "ms": "Nama venue"
+    },
+    {
+      "en": "Choose a name without offensive or sexual wording.",
+      "zh": "请选择不含侮辱或色情用语的名字。",
+      "ms": "Pilih nama tanpa kata kesat atau berunsur seksual."
+    },
+    {
+      "en": "Please remove offensive or sexual wording before sending.",
+      "zh": "请移除侮辱或色情用语后再发送。",
+      "ms": "Sila buang kata kesat atau berunsur seksual sebelum menghantar."
+    },
+    {
+      "en": "Report player",
+      "zh": "举报玩家",
+      "ms": "Laporkan pemain"
+    },
+    {
+      "en": "REPORT PLAYER",
+      "zh": "举报玩家",
+      "ms": "LAPORKAN PEMAIN"
+    },
+    {
+      "en": "Choose one reason",
+      "zh": "请选择一个原因",
+      "ms": "Pilih satu sebab"
+    },
+    {
+      "en": "Inappropriate name",
+      "zh": "不当名字",
+      "ms": "Nama tidak sesuai"
+    },
+    {
+      "en": "Inappropriate picture",
+      "zh": "不当头像",
+      "ms": "Gambar tidak sesuai"
+    },
+    {
+      "en": "Abusive text or harassment",
+      "zh": "辱骂或骚扰",
+      "ms": "Kata kesat atau gangguan"
+    },
+    {
+      "en": "Sexual content",
+      "zh": "色情内容",
+      "ms": "Kandungan seksual"
+    },
+    {
+      "en": "Disruptive behaviour",
+      "zh": "蓄意干扰游戏",
+      "ms": "Sengaja mengganggu permainan"
+    },
+    {
+      "en": "Cheating or exploiting",
+      "zh": "作弊或利用漏洞",
+      "ms": "Menipu atau menyalah guna pepijat"
+    },
+    {
+      "en": "Spam or scams",
+      "zh": "垃圾信息或诈骗",
+      "ms": "Spam atau penipuan"
+    },
+    {
+      "en": "Other",
+      "zh": "其他",
+      "ms": "Lain-lain"
+    },
+    {
+      "en": "Details (optional; required for Other)",
+      "zh": "补充说明（选填；选择其他时必填）",
+      "ms": "Butiran (pilihan; wajib untuk Lain-lain)"
+    },
+    {
+      "en": "Describe what happened…",
+      "zh": "请说明发生了什么……",
+      "ms": "Terangkan apa yang berlaku…"
+    },
+    {
+      "en": "Reports go to the game team for review. The match continues.",
+      "zh": "举报将交由游戏团队审核。比赛会继续进行。",
+      "ms": "Laporan dihantar kepada pasukan permainan untuk semakan. Perlawanan diteruskan."
+    },
+    {
+      "en": "Submit report",
+      "zh": "提交举报",
+      "ms": "Hantar laporan"
+    },
+    {
+      "en": "Match continues while this card is open.",
+      "zh": "打开此卡片时，比赛仍会继续。",
+      "ms": "Perlawanan diteruskan semasa kad ini dibuka."
+    },
+    {
+      "en": "Please wait before reporting again. Reports are limited to prevent spam.",
+      "zh": "请稍后再举报。提交次数有限制，以防滥用。",
+      "ms": "Sila tunggu sebelum melapor lagi. Bilangan laporan dihadkan untuk mencegah spam."
+    },
+    {
+      "en": "Please describe what happened when choosing Other.",
+      "zh": "选择其他时，请说明发生了什么。",
+      "ms": "Sila terangkan apa yang berlaku apabila memilih Lain-lain."
+    },
+    {
+      "en": "Check your report reason and details, then try again.",
+      "zh": "请检查举报原因和说明，然后重试。",
+      "ms": "Semak sebab dan butiran laporan, kemudian cuba lagi."
+    },
+    {
+      "en": "This report changed during submission. Close it and start a new report.",
+      "zh": "此举报在提交时发生了更改。请关闭并重新举报。",
+      "ms": "Laporan berubah semasa dihantar. Tutup dan mulakan laporan baharu."
+    },
+    {
+      "en": "Player reports are temporarily unavailable. Please try again later.",
+      "zh": "举报功能暂时无法使用。请稍后重试。",
+      "ms": "Laporan pemain tidak tersedia buat sementara waktu. Sila cuba lagi nanti."
+    },
+    {
+      "en": "Your report was not confirmed. Please try again.",
+      "zh": "举报尚未确认提交成功。请重试。",
+      "ms": "Laporan anda belum disahkan. Sila cuba lagi."
+    },
+    {
+      "en": "Terms of use",
+      "zh": "使用条款",
+      "ms": "Syarat penggunaan"
+    },
+    {
+      "en": "Support & account deletion",
+      "zh": "支持与账号删除",
+      "ms": "Sokongan & pemadaman akaun"
+    },
+    {
+      "en": "Website",
+      "zh": "网站",
+      "ms": "Laman web"
+    },
+    {
+      "en": "Preparation draft · not yet published",
+      "zh": "准备草稿 · 尚未发布",
+      "ms": "Draf persediaan · belum diterbitkan"
+    },
+    {
+      "en": "These pages are for review while the game is being developed. They are not effective terms or a final privacy notice. Unconfirmed details are identified below.",
+      "zh": "这些页面供游戏开发期间审阅，并非已生效的条款或最终隐私声明。尚待确认的事项已在下方说明。",
+      "ms": "Halaman ini untuk semakan semasa permainan dibangunkan. Ia bukan syarat berkuat kuasa atau notis privasi muktamad. Butiran belum disahkan dinyatakan di bawah."
+    },
+    {
+      "en": "Draft updated",
+      "zh": "草稿更新日期",
+      "ms": "Draf dikemas kini"
+    },
+    {
+      "en": "Skip to content",
+      "zh": "跳至正文",
+      "ms": "Langkau ke kandungan"
+    },
+    {
+      "en": "Main navigation",
+      "zh": "主导航",
+      "ms": "Navigasi utama"
+    },
+    {
+      "en": "YOUR NEXT ISLAND ADVENTURE",
+      "zh": "下一站，运动岛",
+      "ms": "PENGEMBARAAN PULAU ANDA"
+    },
+    {
+      "en": "Four islands.\nOne shared adventure.",
+      "zh": "四座岛屿。\n一起开启冒险。",
+      "ms": "Empat pulau.\nSatu pengembaraan bersama."
+    },
+    {
+      "en": "Bring your crew to WHATTHE FISH? Play football, basketball, golf and fishing, then travel to your next island together.",
+      "zh": "和朋友一起加入 WHATTHE FISH?，体验足球、篮球、高尔夫与钓鱼，再结伴前往下一座岛屿。",
+      "ms": "Bawa rakan anda ke WHATTHE FISH? Main bola sepak, bola keranjang, golf dan memancing, kemudian pergi ke pulau seterusnya bersama."
+    },
+    {
+      "en": "Explore the four sports",
+      "zh": "探索四项运动",
+      "ms": "Terokai empat sukan"
+    },
+    {
+      "en": "Get help",
+      "zh": "获取帮助",
+      "ms": "Dapatkan bantuan"
+    },
+    {
+      "en": "In development · AppGallery release being prepared",
+      "zh": "开发中 · 正在准备 AppGallery 发布",
+      "ms": "Dalam pembangunan · keluaran AppGallery sedang disediakan"
+    },
+    {
+      "en": "Illustrated football, basketball, golf and fishing islands",
+      "zh": "足球、篮球、高尔夫与钓鱼岛插画",
+      "ms": "Ilustrasi pulau bola sepak, bola keranjang, golf dan memancing"
+    },
+    {
+      "en": "Find your kind of play.",
+      "zh": "找到你的运动乐趣。",
+      "ms": "Cari permainan kegemaran anda."
+    },
+    {
+      "en": "One host room, one active game, and a crew that travels together. Explore solo or meet your friends online.",
+      "zh": "一个房主房间，每次进行一场游戏，所有人一起旅行。可以独自探索，也可以在线与朋友相聚。",
+      "ms": "Satu bilik hos, satu permainan aktif dan rakan yang bergerak bersama. Teroka sendiri atau temui rakan dalam talian."
+    },
+    {
+      "en": "Pass, defend and find the next goal together.",
+      "zh": "配合传球、防守，一起争取下一个进球。",
+      "ms": "Hantar, bertahan dan cari gol seterusnya bersama."
+    },
+    {
+      "en": "Move the ball, time your shot and work as a team.",
+      "zh": "转移球权、把握投篮时机，与队友协作。",
+      "ms": "Gerakkan bola, atur masa jaringan dan bekerjasama."
+    },
+    {
+      "en": "Aim for the cup across five tropical holes.",
+      "zh": "挑战五个热带球洞，瞄准球杯挥杆。",
+      "ms": "Bidik ke lubang di lima lubang tropika."
+    },
+    {
+      "en": "Cast, reel and collect points beside the lagoon.",
+      "zh": "在海湾边抛竿收线，钓鱼得分。",
+      "ms": "Lontar, tarik dan kumpulkan mata di tepi lagun."
+    },
+    {
+      "en": "Your crew. Your next stop.",
+      "zh": "和你的伙伴，前往下一站。",
+      "ms": "Rakan anda. Destinasi seterusnya."
+    },
+    {
+      "en": "Share a room code or scan an invitation. Online play needs an internet connection. Camera scanning and room voice are optional; manual code entry stays available.",
+      "zh": "分享房间码或扫描邀请。在线游戏需要网络连接。相机扫码与房间语音均为可选功能，也可以手动输入房间码。",
+      "ms": "Kongsi kod bilik atau imbas jemputan. Permainan dalam talian memerlukan internet. Imbasan kamera dan suara bilik adalah pilihan; kemasukan kod manual tetap tersedia."
+    },
+    {
+      "en": "Free download planned",
+      "zh": "计划免费下载",
+      "ms": "Muat turun percuma dirancang"
+    },
+    {
+      "en": "No advertising",
+      "zh": "无广告",
+      "ms": "Tiada iklan"
+    },
+    {
+      "en": "No real-money purchases",
+      "zh": "无真实货币购买",
+      "ms": "Tiada pembelian wang sebenar"
+    },
+    {
+      "en": "A little help, whenever you need it.",
+      "zh": "需要帮助时，从这里开始。",
+      "ms": "Bantuan apabila anda memerlukannya."
+    },
+    {
+      "en": "Read how the game uses data, learn the rules of play, or contact the publisher about your account.",
+      "zh": "了解游戏如何使用数据、查看行为规则，或联系发布者处理账号问题。",
+      "ms": "Ketahui cara permainan menggunakan data, baca peraturan atau hubungi penerbit tentang akaun anda."
+    },
+    {
+      "en": "Published by",
+      "zh": "发布者",
+      "ms": "Diterbitkan oleh"
+    },
+    {
+      "en": "Support and privacy contact",
+      "zh": "支持与隐私联系邮箱",
+      "ms": "Hubungan sokongan dan privasi"
+    },
+    {
+      "en": "On this page",
+      "zh": "本页内容",
+      "ms": "Pada halaman ini"
+    },
+    {
+      "en": "Back to top",
+      "zh": "返回顶部",
+      "ms": "Kembali ke atas"
+    },
+    {
+      "en": "Read the privacy draft",
+      "zh": "阅读隐私草稿",
+      "ms": "Baca draf privasi"
+    },
+    {
+      "en": "Read the terms draft",
+      "zh": "阅读条款草稿",
+      "ms": "Baca draf syarat"
+    },
+    {
+      "en": "Email the publisher",
+      "zh": "给发布者发邮件",
+      "ms": "E-mel penerbit"
+    },
+    {
+      "en": "A draft guide to accounts, fair play and virtual items in WHATTHE FISH?.",
+      "zh": "WHATTHE FISH? 账号、公平游戏及虚拟物品的条款草稿。",
+      "ms": "Panduan draf tentang akaun, permainan adil dan item maya dalam WHATTHE FISH?."
+    },
+    {
+      "en": "1. The game and its operator",
+      "zh": "1. 游戏与运营者",
+      "ms": "1. Permainan dan pengendalinya"
+    },
+    {
+      "en": "WHATTHE FISH? is developed for an initial Malaysian release by LIEW KAIY BIN. The plan is free download, no advertising and no real-money purchases. This draft has no effective date and does not indicate store approval.",
+      "zh": "WHATTHE FISH? 由 LIEW KAIY BIN 开发，计划首先在马来西亚发布，提供免费下载，无广告，也无真实货币购买。本草稿尚无生效日期，不代表商店已批准发布。",
+      "ms": "WHATTHE FISH? dibangunkan oleh LIEW KAIY BIN untuk keluaran awal di Malaysia. Rancangannya ialah muat turun percuma, tanpa iklan atau pembelian wang sebenar. Draf ini belum mempunyai tarikh kuat kuasa dan tidak menunjukkan kelulusan kedai."
+    },
+    {
+      "en": "2. Accounts and recovery",
+      "zh": "2. 账号与找回",
+      "ms": "2. Akaun dan pemulihan"
+    },
+    {
+      "en": "Guest play is available. Huawei and supported Google sign-in can link or recover a game account. Keep your provider account secure. An unlinked guest may lose access after app data or credentials are lost. Signing out does not delete the game account.",
+      "zh": "游戏提供游客入口。华为登录及受支持的 Google 登录可用于关联或找回游戏账号。请保护好登录服务账号。未关联的游客在应用数据或凭据丢失后可能无法找回。退出登录不会删除游戏账号。",
+      "ms": "Permainan tetamu tersedia. Log masuk Huawei dan Google yang disokong boleh memaut atau memulihkan akaun permainan. Lindungi akaun penyedia anda. Tetamu tanpa pautan mungkin kehilangan akses jika data aplikasi atau kelayakan hilang. Log keluar tidak memadam akaun permainan."
+    },
+    {
+      "en": "3. Respect other players",
+      "zh": "3. 尊重其他玩家",
+      "ms": "3. Hormati pemain lain"
+    },
+    {
+      "en": "Do not harass, threaten or scam players, share sexual or abusive content, impersonate others, exploit bugs or deliberately disrupt matches. Do not upload a photo you do not have permission to use. Poor skill or losing a match is not itself misconduct.",
+      "zh": "请勿骚扰、威胁或欺骗玩家，传播色情或辱骂内容，冒充他人，利用漏洞或故意干扰比赛。请勿上传无权使用的照片。技术欠佳或输掉比赛本身不属于违规行为。",
+      "ms": "Jangan ganggu, ancam atau tipu pemain, kongsi kandungan seksual atau kesat, menyamar, mengeksploitasi pepijat atau sengaja mengganggu perlawanan. Jangan muat naik foto tanpa kebenaran penggunaan. Kemahiran rendah atau kalah bukan salah laku dengan sendirinya."
+    },
+    {
+      "en": "4. Reports and communication",
+      "zh": "4. 举报与交流",
+      "ms": "4. Laporan dan komunikasi"
+    },
+    {
+      "en": "Use Report player to choose a reason and add details. You can also use available block and mute controls. Selected text terms are filtered, but filtering can miss abuse or flag harmless text. Reports are reviewed manually. There is no automatic ban, voice transcription or image classifier, and a report is not proof of wrongdoing.",
+      "zh": "使用“举报玩家”选择原因并补充说明，也可以使用现有的屏蔽与静音功能。游戏会过滤部分词语，但可能漏检或误判。举报由人工审阅，不会自动封禁，也没有语音转写或图片识别。举报本身不构成违规证据。",
+      "ms": "Gunakan Lapor pemain untuk memilih sebab dan menambah butiran. Kawalan sekat dan bisu yang tersedia juga boleh digunakan. Istilah tertentu ditapis, tetapi tapisan boleh terlepas penyalahgunaan atau menandai teks biasa. Laporan disemak secara manual. Tiada sekatan automatik, transkripsi suara atau pengelas imej; laporan bukan bukti salah laku."
+    },
+    {
+      "en": "5. Earned coins and cosmetics",
+      "zh": "5. 游戏金币与外观",
+      "ms": "5. Syiling diperoleh dan kosmetik"
+    },
+    {
+      "en": "Coins are earned through eligible sign-ins and matches and can unlock available cosmetics. They are game-only items, not money; this version has no cash purchase, cash-out or player trading flow. Rewards and ownership depend on confirmed server records. Offline or cancelled play may not earn rewards. Rules and available items may change during development.",
+      "zh": "符合条件的签到与比赛可获得金币，用于解锁可用外观。金币仅用于游戏，不是真实货币；此版本不提供现金购买、提现或玩家交易。奖励及所有权以服务器确认的记录为准。离线游玩或取消的比赛可能没有奖励。开发期间规则与物品可能调整。",
+      "ms": "Syiling diperoleh melalui log masuk dan perlawanan yang layak untuk membuka kosmetik tersedia. Ia item permainan, bukan wang; versi ini tiada pembelian tunai, pengeluaran tunai atau dagangan pemain. Ganjaran dan pemilikan bergantung pada rekod pelayan yang disahkan. Permainan luar talian atau dibatalkan mungkin tidak mendapat ganjaran. Peraturan dan item boleh berubah semasa pembangunan."
+    },
+    {
+      "en": "6. Availability and changes",
+      "zh": "6. 服务可用性与变更",
+      "ms": "6. Ketersediaan dan perubahan"
+    },
+    {
+      "en": "Online rooms, voice, account recovery and cloud items need working networks and service providers. The host must keep the room available, and players need compatible builds. Maintenance, connection loss or development changes can interrupt play. Report problems through the support contact; this draft promises no uninterrupted service or guaranteed response deadline.",
+      "zh": "在线房间、语音、账号找回和云端物品需要正常网络及服务商支持。房主需要保持房间在线，玩家需使用兼容版本。维护、断线或开发变更可能中断游戏。可通过支持邮箱反馈问题；本草稿不承诺服务永不中断或保证回复时限。",
+      "ms": "Bilik dalam talian, suara, pemulihan akaun dan item awan memerlukan rangkaian serta penyedia perkhidmatan yang berfungsi. Hos mesti mengekalkan bilik dan pemain memerlukan versi serasi. Penyelenggaraan, sambungan terputus atau perubahan pembangunan boleh mengganggu permainan. Laporkan masalah melalui hubungan sokongan; draf ini tidak menjanjikan perkhidmatan tanpa gangguan atau tempoh balasan terjamin."
+    },
+    {
+      "en": "7. Audience and final terms",
+      "zh": "7. 受众与最终条款",
+      "ms": "7. Khalayak dan syarat muktamad"
+    },
+    {
+      "en": "The intended audience is all ages, with the same current features for everyone. An official age rating and any required child or guardian arrangements remain under review. No separate child mode is currently implemented. Final terms, regional requirements and notice of changes must be completed before publication.",
+      "zh": "游戏计划面向所有年龄，当前对所有玩家提供相同功能。官方年龄分级及所需的儿童或监护人安排仍待审查，目前未设置单独的儿童模式。发布前仍需完成最终条款、地区要求及变更通知安排。",
+      "ms": "Khalayak yang dimaksudkan ialah semua umur, dengan ciri semasa yang sama untuk semua. Penarafan umur rasmi dan sebarang aturan kanak-kanak atau penjaga yang diperlukan masih disemak. Tiada mod kanak-kanak berasingan dilaksanakan. Syarat akhir, keperluan serantau dan notis perubahan perlu disiapkan sebelum penerbitan."
+    },
+    {
+      "en": "What the current game uses, who receives it, and what still needs confirmation before release.",
+      "zh": "说明当前游戏使用的数据、接收方，以及发布前仍待确认的事项。",
+      "ms": "Data yang digunakan permainan semasa, penerimanya dan perkara yang masih perlu disahkan sebelum keluaran."
+    },
+    {
+      "en": "1. Who to contact",
+      "zh": "1. 联系方式",
+      "ms": "1. Pihak untuk dihubungi"
+    },
+    {
+      "en": "The personal publisher is LIEW KAIY BIN. Send privacy, access, correction or deletion questions to benliew28262826@gmail.com. Malaysia is the intended initial market. Hosting locations, provider settings and the final effective date are still being confirmed.",
+      "zh": "个人发布者为 LIEW KAIY BIN。如需咨询隐私、访问、更正或删除问题，请联系 benliew28262826@gmail.com。计划首先面向马来西亚发布。托管地区、服务商设置与最终生效日期仍在确认中。",
+      "ms": "Penerbit individu ialah LIEW KAIY BIN. Hantar soalan privasi, akses, pembetulan atau pemadaman kepada benliew28262826@gmail.com. Malaysia ialah pasaran awal yang dirancang. Lokasi pengehosan, tetapan penyedia dan tarikh kuat kuasa akhir masih disahkan."
+    },
+    {
+      "en": "2. Accounts and player profiles",
+      "zh": "2. 账号与玩家资料",
+      "ms": "2. Akaun dan profil pemain"
+    },
+    {
+      "en": "Sign-in uses provider tokens and a Unity player ID. The profile service stores your chosen name, public player code, avatar and optional 128×128 profile-photo thumbnail. Friends, blocks and invitations support social play. Other players can see profile details through the game's player-facing features. Huawei or Google, Unity, and Cloudflare Workers/D1 support these functions.",
+      "zh": "登录使用服务商令牌及 Unity 玩家 ID。资料服务保存你选择的名字、公开玩家代码、角色头像，以及可选的 128×128 头像缩略图。好友、屏蔽与邀请数据用于社交功能。其他玩家可以通过游戏中的相关功能查看资料。华为或 Google、Unity 与 Cloudflare Workers/D1 为这些功能提供支持。",
+      "ms": "Log masuk menggunakan token penyedia dan ID pemain Unity. Perkhidmatan profil menyimpan nama pilihan, kod pemain awam, avatar dan lakaran kecil foto profil 128×128 pilihan. Rakan, sekatan dan jemputan menyokong permainan sosial. Pemain lain boleh melihat butiran profil melalui ciri permainan. Huawei atau Google, Unity dan Cloudflare Workers/D1 menyokong fungsi ini."
+    },
+    {
+      "en": "3. Rooms, rewards and cosmetics",
+      "zh": "3. 房间、奖励与外观",
+      "ms": "3. Bilik, ganjaran dan kosmetik"
+    },
+    {
+      "en": "Online play shares room membership and match state with Unity multiplayer services and room participants. Cloud records include coin balance, daily streak, reward and purchase history, cosmetic ownership/equipment, match participants and reward receipts. These records support synchronization, recovery and prevention of duplicate rewards. Purchases here use earned game coins, not real money.",
+      "zh": "在线游戏会与 Unity 多人服务及房间成员共享房间成员信息和比赛状态。云端记录包括金币余额、连续签到、奖励与购买记录、外观所有权及装备、比赛成员和奖励凭据，用于同步、找回和防止重复领奖。这里的购买使用游戏内获得的金币，不涉及真实货币。",
+      "ms": "Permainan dalam talian berkongsi keahlian bilik dan keadaan perlawanan dengan perkhidmatan berbilang pemain Unity serta peserta bilik. Rekod awan merangkumi baki syiling, rentetan harian, sejarah ganjaran dan pembelian, pemilikan/peralatan kosmetik, peserta perlawanan dan resit ganjaran. Rekod ini menyokong penyegerakan, pemulihan dan pencegahan ganjaran berganda. Pembelian menggunakan syiling permainan yang diperoleh, bukan wang sebenar."
+    },
+    {
+      "en": "4. Text and optional voice",
+      "zh": "4. 文字与可选语音",
+      "ms": "4. Teks dan suara pilihan"
+    },
+    {
+      "en": "Room text is held in participants' session memory and may follow room travel or host migration. Leaving clears your local room history, but cannot erase copies already received by others. Report excerpts are stored separately. Optional voice uses Unity Vivox after joining and granting microphone access. The game does not implement voice recording or transcription. Provider metadata and retention settings still need confirmation.",
+      "zh": "房间文字保存在参与者的会话内存中，可随房间旅行或房主迁移继续保留。离开房间会清除本地房间记录，但无法删除其他人已收到的副本。举报中的聊天摘录会单独保存。可选语音在加入并授予麦克风权限后使用 Unity Vivox。游戏未实现语音录制或转写；服务商元数据和保留设置仍待确认。",
+      "ms": "Teks bilik disimpan dalam memori sesi peserta dan boleh mengikuti perjalanan bilik atau pertukaran hos. Keluar mengosongkan sejarah bilik tempatan anda, tetapi tidak boleh memadam salinan yang sudah diterima orang lain. Petikan laporan disimpan berasingan. Suara pilihan menggunakan Unity Vivox selepas menyertai dan memberi akses mikrofon. Permainan tidak melaksanakan rakaman atau transkripsi suara. Metadata penyedia dan tetapan pengekalan masih perlu disahkan."
+    },
+    {
+      "en": "5. Reports and review evidence",
+      "zh": "5. 举报与审阅证据",
+      "ms": "5. Laporan dan bukti semakan"
+    },
+    {
+      "en": "A report stores reporter/target IDs, selected reason, explanation, context and a profile snapshot. Picture reports may include the current thumbnail. Abuse, sexual-content or spam reports may include up to five available messages from the reported player. This is reporter-supplied evidence, not verified proof. It is stored privately for manual review and is not added to public profiles. No report audio is collected by this flow.",
+      "zh": "举报会保存举报人与被举报人的 ID、所选原因、说明、上下文及资料快照。图片举报可能附带当前缩略图。辱骂、色情内容或垃圾信息举报可能附带被举报玩家最多五条可用消息。这些由举报人提供的材料并非已核实的证据，会私下保存供人工审阅，不会加入公开资料。此流程不收集举报音频。",
+      "ms": "Laporan menyimpan ID pelapor/sasaran, sebab dipilih, penerangan, konteks dan salinan profil. Laporan gambar boleh menyertakan lakaran kecil semasa. Laporan penderaan, kandungan seksual atau spam boleh menyertakan sehingga lima mesej tersedia daripada pemain dilaporkan. Ini bukti yang dibekalkan pelapor, bukan bukti disahkan. Ia disimpan secara peribadi untuk semakan manual, bukan dalam profil awam. Aliran ini tidak mengumpul audio laporan."
+    },
+    {
+      "en": "6. Permissions and your choices",
+      "zh": "6. 权限与选择",
+      "ms": "6. Kebenaran dan pilihan anda"
+    },
+    {
+      "en": "Camera permission is used for room QR scanning; a system picker accesses selected QR images. Microphone permission supports optional voice, and Bluetooth permission can support audio routing. Profile image selection creates a thumbnail. Manual room-code entry remains available. You can leave voice, mute, block players or change device permissions. Final device permission behavior must still be tested.",
+      "zh": "相机权限用于扫描房间二维码，系统选择器仅访问所选二维码图片。麦克风权限用于可选语音，蓝牙权限可用于音频路由。选择头像图片会生成缩略图。手动输入房间码始终可用。你可以退出语音、静音、屏蔽玩家或更改设备权限。最终设备上的权限行为仍需测试。",
+      "ms": "Kebenaran kamera digunakan untuk mengimbas QR bilik; pemilih sistem mengakses imej QR dipilih. Kebenaran mikrofon menyokong suara pilihan dan Bluetooth boleh menyokong penghalaan audio. Pemilihan imej profil menghasilkan lakaran kecil. Kemasukan kod bilik manual kekal tersedia. Anda boleh keluar suara, bisukan, sekat pemain atau ubah kebenaran peranti. Tingkah laku kebenaran peranti akhir masih perlu diuji."
+    },
+    {
+      "en": "7. Retention and deletion limits",
+      "zh": "7. 保留与删除限制",
+      "ms": "7. Pengekalan dan had pemadaman"
+    },
+    {
+      "en": "A retention schedule is being proposed; its periods are not yet implemented promises. Profiles, wallets and reports currently have no scheduled expiry. Account deletion removes the profile and related records, then the Unity sign-in account and local caches. Provider records, backups and copies received by others are separate. References inside another host's saved match receipt may remain and need correction before final acceptance. We do not promise instant or complete removal from every service.",
+      "zh": "目前正在拟定数据保留计划，其中期限尚未成为已实现的承诺。资料、钱包和举报当前没有定时到期机制。账号删除会移除资料及关联记录，然后删除 Unity 登录账号与本地缓存。服务商记录、备份及其他人已收到的副本需另行处理。其他房主保存的比赛凭据内可能仍有相关引用，需在最终验收前修正。我们不承诺立即或完整删除所有服务中的数据。",
+      "ms": "Jadual pengekalan sedang dicadangkan; tempohnya belum menjadi janji yang dilaksanakan. Profil, dompet dan laporan kini tiada luput berjadual. Pemadaman akaun membuang profil serta rekod berkaitan, kemudian akaun log masuk Unity dan cache tempatan. Rekod penyedia, sandaran dan salinan diterima pihak lain adalah berasingan. Rujukan dalam resit perlawanan hos lain mungkin kekal dan perlu diperbetulkan sebelum penerimaan akhir. Kami tidak menjanjikan pemadaman segera atau menyeluruh daripada setiap perkhidmatan."
+    },
+    {
+      "en": "8. Children and release review",
+      "zh": "8. 儿童与发布审查",
+      "ms": "8. Kanak-kanak dan semakan keluaran"
+    },
+    {
+      "en": "The owner intends the same features for players of all ages. There is currently no separate child mode or verified guardian-consent flow. Applicable child privacy requirements, provider conditions and the official age rating remain unresolved release checks. Word filtering and a report button do not establish child suitability or replace any required consent.",
+      "zh": "运营者计划向所有年龄的玩家提供相同功能。目前没有独立儿童模式或经验证的监护人同意流程。适用的儿童隐私要求、服务商条件与官方年龄分级仍属于尚待解决的发布检查项。词语过滤和举报按钮不能证明适合儿童，也不能代替必要的同意。",
+      "ms": "Pemilik merancang ciri yang sama untuk pemain semua umur. Kini tiada mod kanak-kanak berasingan atau aliran persetujuan penjaga yang disahkan. Keperluan privasi kanak-kanak, syarat penyedia dan penarafan umur rasmi masih belum selesai. Tapisan perkataan dan butang laporan tidak membuktikan kesesuaian kanak-kanak atau menggantikan persetujuan yang diperlukan."
+    },
+    {
+      "en": "9. Requests and updates",
+      "zh": "9. 请求与更新",
+      "ms": "9. Permintaan dan kemas kini"
+    },
+    {
+      "en": "Use Privacy & data in the game's settings or account menu for deletion, or contact the publisher for access, correction and failed requests. We may need to verify ownership without asking for your password. The operator plans daily review, not guaranteed daily resolution. The final notice will describe confirmed processing locations, retention and any required consent arrangements before publication.",
+      "zh": "可在游戏设置或账号菜单的“隐私与数据”中删除账号，也可联系发布者提出访问、更正或失败请求。我们可能需要核实所有权，但不会索要密码。运营者计划每日审阅，并不保证每日解决所有问题。最终声明将在发布前说明已确认的处理地区、保留规则及必要的同意安排。",
+      "ms": "Gunakan Privasi dan data dalam tetapan atau menu akaun untuk pemadaman, atau hubungi penerbit bagi akses, pembetulan dan permintaan gagal. Pemilikan mungkin perlu disahkan tanpa meminta kata laluan. Pengendali merancang semakan harian, bukan penyelesaian harian terjamin. Notis akhir akan menerangkan lokasi pemprosesan, pengekalan dan aturan persetujuan yang disahkan sebelum penerbitan."
+    },
+    {
+      "en": "Help with your account, a player report or a problem in the game.",
+      "zh": "获取账号、玩家举报或游戏问题方面的帮助。",
+      "ms": "Bantuan tentang akaun, laporan pemain atau masalah permainan."
+    },
+    {
+      "en": "1. Contact the publisher",
+      "zh": "1. 联系发布者",
+      "ms": "1. Hubungi penerbit"
+    },
+    {
+      "en": "Email benliew28262826@gmail.com. Include the game version, device/OS, what happened and the steps to reproduce it. A public player code can help identify your account. Do not send passwords, sign-in tokens or unnecessary identity documents. LIEW KAIY BIN plans to review the inbox and player reports daily; investigation and replies may take longer.",
+      "zh": "请发邮件至 benliew28262826@gmail.com，并说明游戏版本、设备与系统、发生的问题及重现步骤。公开玩家代码可帮助定位账号。请勿发送密码、登录令牌或不必要的身份证件。LIEW KAIY BIN 计划每日查看邮箱与玩家举报，但调查和回复可能需要更长时间。",
+      "ms": "E-mel benliew28262826@gmail.com. Sertakan versi permainan, peranti/OS, masalah dan langkah mengulanginya. Kod pemain awam boleh membantu mengenal pasti akaun. Jangan hantar kata laluan, token log masuk atau dokumen pengenalan yang tidak perlu. LIEW KAIY BIN merancang semakan peti masuk dan laporan setiap hari; siasatan dan balasan mungkin mengambil masa lebih lama."
+    },
+    {
+      "en": "2. Delete a game account",
+      "zh": "2. 删除游戏账号",
+      "ms": "2. Padam akaun permainan"
+    },
+    {
+      "en": "Leave your room. Open Settings or Account & sign-in, choose Privacy & data, then Delete game account. Read the consequences and type DELETE exactly. Linked accounts require verification with the same provider account. This removes the game account, not your Huawei ID or Google account. A purely offline guest is removed only from this device. Read the privacy draft for current deletion limits.",
+      "zh": "先离开房间。打开“设置”或“账号与登录”，选择“隐私与数据”，再选择“删除游戏账号”。阅读后果并准确输入 DELETE。已关联账号需要使用同一服务商账号验证。此操作删除游戏账号，不会删除华为 ID 或 Google 账号。纯离线游客仅从本设备移除。当前删除限制请参阅隐私草稿。",
+      "ms": "Tinggalkan bilik. Buka Tetapan atau Akaun dan log masuk, pilih Privasi dan data, kemudian Padam akaun permainan. Baca kesan dan taip DELETE dengan tepat. Akaun terpaut memerlukan pengesahan akaun penyedia yang sama. Ini memadam akaun permainan, bukan Huawei ID atau akaun Google. Tetamu luar talian sepenuhnya hanya dibuang daripada peranti ini. Baca draf privasi untuk had pemadaman semasa."
+    },
+    {
+      "en": "3. If deletion fails",
+      "zh": "3. 删除失败时",
+      "ms": "3. Jika pemadaman gagal"
+    },
+    {
+      "en": "Keep the installation and retry from Privacy & data. An incomplete deletion can block online play until resolved. Do not assume signing out or uninstalling deletes cloud records. If retry cannot finish, contact support with the error and approximate time, without credentials. Some interrupted provider requests require manual assistance.",
+      "zh": "请保留当前安装，并从“隐私与数据”重试。未完成的删除可能在解决前阻止在线游戏。请勿认为退出登录或卸载会删除云端记录。若重试仍无法完成，请向支持邮箱提供错误信息和大致时间，不要提供凭据。某些中断的服务商请求需要人工协助。",
+      "ms": "Kekalkan pemasangan dan cuba semula daripada Privasi dan data. Pemadaman belum lengkap boleh menyekat permainan dalam talian sehingga selesai. Log keluar atau nyahpasang tidak semestinya memadam rekod awan. Jika cubaan semula gagal, hubungi sokongan dengan ralat dan masa anggaran tanpa kelayakan. Sesetengah permintaan penyedia terganggu memerlukan bantuan manual."
+    },
+    {
+      "en": "4. Report a player",
+      "zh": "4. 举报玩家",
+      "ms": "4. Lapor pemain"
+    },
+    {
+      "en": "Open the player's profile or the report action in supported standings/results. Choose one reason and add useful context; Other requires an explanation. Submit only relevant information. A report may include a profile snapshot and limited text/photo evidence. You can also block or mute while the operator reviews it. A submitted report does not automatically punish the player.",
+      "zh": "打开玩家资料，或在支持的排名及结果页面使用举报入口。选择一项原因并补充有用的背景信息；选择“其他”时需要说明。请只提交相关信息。举报可能包含资料快照及有限的文字或图片证据。在运营者审阅期间，你也可以屏蔽或静音。提交举报不会自动处罚玩家。",
+      "ms": "Buka profil pemain atau tindakan laporan pada kedudukan/keputusan yang disokong. Pilih satu sebab dan tambah konteks berguna; Lain-lain memerlukan penerangan. Hantar maklumat berkaitan sahaja. Laporan boleh menyertakan salinan profil serta bukti teks/foto terhad. Anda juga boleh sekat atau bisukan semasa semakan. Laporan dihantar tidak menghukum pemain secara automatik."
+    },
+    {
+      "en": "5. Before public release",
+      "zh": "5. 正式发布前",
+      "ms": "5. Sebelum keluaran awam"
+    },
+    {
+      "en": "This website is a local preparation draft. There is no public download or live website address configured here yet. The game and documents are still being tested. Final phone testing, child/privacy review, retention operations and release signing remain separate acceptance steps.",
+      "zh": "本网站是本地准备草稿，目前尚未配置公开下载或正式网站地址。游戏与文档仍在测试中。最终真机测试、儿童与隐私审查、保留规则执行及发布签名仍需分别验收。",
+      "ms": "Laman ini ialah draf persediaan tempatan. Tiada muat turun awam atau alamat laman langsung dikonfigurasi di sini. Permainan dan dokumen masih diuji. Ujian telefon akhir, semakan kanak-kanak/privasi, operasi pengekalan dan tandatangan keluaran masih memerlukan penerimaan berasingan."
+    },
+    {
+      "en": "Terms & privacy",
+      "zh": "条款与隐私",
+      "ms": "Syarat & privasi"
+    },
+    {
+      "en": "Game information and useful links.",
+      "zh": "游戏信息与实用链接。",
+      "ms": "Maklumat permainan dan pautan berguna."
+    },
+    {
+      "en": "Accounts, fair play and virtual items.",
+      "zh": "账号、公平游戏与虚拟物品。",
+      "ms": "Akaun, permainan adil dan item maya."
+    },
+    {
+      "en": "Your data, choices and account deletion.",
+      "zh": "你的数据、选择与账号删除。",
+      "ms": "Data, pilihan dan pemadaman akaun anda."
+    },
+    {
+      "en": "Game news, support and full documents.",
+      "zh": "游戏信息、支持与完整文档。",
+      "ms": "Maklumat permainan, sokongan dan dokumen penuh."
+    },
+    {
+      "en": "Public website link is not available yet.",
+      "zh": "公开网站链接尚未开放。",
+      "ms": "Pautan laman awam belum tersedia."
+    },
+    {
+      "en": "Terms and privacy open as offline drafts until publication.",
+      "zh": "正式发布前，条款与隐私将以离线草稿打开。",
+      "ms": "Syarat dan privasi dibuka sebagai draf luar talian sehingga diterbitkan."
+    },
+    {
+      "en": "Back to info",
+      "zh": "返回信息",
+      "ms": "Kembali ke maklumat"
+    },
+    {
+      "en": "Scroll to read the full draft.",
+      "zh": "滚动查看完整草稿。",
+      "ms": "Tatal untuk membaca draf penuh."
+    },
+    {
+      "en": "This document is not available in this build.",
+      "zh": "此版本暂未提供该文档。",
+      "ms": "Dokumen ini tidak tersedia dalam versi ini."
+    },
+    {
+      "en": "10. This website",
+      "zh": "10. 本网站",
+      "ms": "10. Laman web ini"
+    },
+    {
+      "en": "These static draft pages contain no analytics, advertising trackers, account sign-in or submission forms. Email links open your own email app; sending a message shares what you choose to send with the publisher and email providers. A future public host may process connection logs; its provider and settings must be confirmed in the final notice.",
+      "zh": "这些静态草稿页面不含统计分析、广告追踪、账号登录或提交表单。邮件链接会打开你的邮件应用；发送邮件会将你选择发送的内容分享给发布者和邮件服务商。将来的公开网站托管商可能处理连接日志，最终声明需确认其服务商与设置。",
+      "ms": "Halaman draf statik ini tiada analitik, penjejak iklan, log masuk akaun atau borang penghantaran. Pautan e-mel membuka aplikasi e-mel anda; menghantar mesej berkongsi kandungan pilihan anda dengan penerbit dan penyedia e-mel. Hos awam kelak mungkin memproses log sambungan; penyedia dan tetapannya mesti disahkan dalam notis akhir."
+    },
+    {
+      "en": "Links open in your browser.",
+      "zh": "链接将在浏览器中打开。",
+      "ms": "Pautan dibuka dalam pelayar anda."
     }
   ]
 }

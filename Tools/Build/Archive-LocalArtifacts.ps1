@@ -1,7 +1,10 @@
 param(
     [Parameter(Mandatory)][string[]]$RelativePath,
     [Parameter(Mandatory)][string]$Reason,
-    [ValidatePattern('^[a-zA-Z0-9-]+$')][string]$Label = 'task-cleanup'
+    [ValidatePattern('^[a-zA-Z0-9-]+$')][string]$Label = 'task-cleanup',
+    # Explicit opt-in for completed, unregistered project copies under Builds.
+    # This never permits archiving the active project or a Git worktree.
+    [string[]]$CompletedSnapshotRoot = @()
 )
 
 # Only archive an explicit, reviewed list. This script never decides an asset is unused.
@@ -23,6 +26,25 @@ function Assert-NoLink {
     }
 }
 Assert-NoLink $legacyRoot
+$snapshotRoots = [Collections.Generic.HashSet[string]]::new([StringComparer]::OrdinalIgnoreCase)
+foreach ($relative in $CompletedSnapshotRoot) {
+    if ([IO.Path]::IsPathRooted($relative)) { throw 'Snapshot roots must be repository-relative.' }
+    $snapshot = [IO.Path]::GetFullPath((Join-Path $repoRoot $relative))
+    if (-not $snapshot.StartsWith($repoRoot + '\Builds\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Completed snapshots must be under Builds.' }
+    foreach ($required in @('Game/Assets', 'Game/ProjectSettings', 'Game/Packages/manifest.json')) {
+        if (-not (Test-Path -LiteralPath (Join-Path $snapshot $required))) { throw "Incomplete snapshot: $relative" }
+    }
+    Assert-NoLink $snapshot
+    [void]$snapshotRoots.Add($snapshot)
+}
+if ($snapshotRoots.Count) {
+    foreach ($process in @(Get-CimInstance Win32_Process)) {
+        if ($process.Name -notmatch '^(Unity|UnityShaderCompiler|WhatTheFish|blender|ffmpeg)\.exe$' -or -not $process.CommandLine) { continue }
+        foreach ($snapshot in $snapshotRoots) {
+            if ($process.CommandLine.Replace('/', '\').IndexOf($snapshot, [StringComparison]::OrdinalIgnoreCase) -ge 0) { throw 'A process is using a selected snapshot.' }
+        }
+    }
+}
 $sources = [Collections.Generic.List[object]]::new()
 foreach ($relative in ($RelativePath | Sort-Object -Unique)) {
     if ([IO.Path]::IsPathRooted($relative)) { throw "Use a workspace-relative path: $relative" }
@@ -37,22 +59,39 @@ foreach ($relative in ($RelativePath | Sort-Object -Unique)) {
     }
     $destination = [IO.Path]::GetFullPath((Join-Path $batchRoot $normalized))
     if (-not $destination.StartsWith($batchRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Destination escapes archive batch.' }
-    $sources.Add([pscustomobject]@{source=$source;destination=$destination;original=$normalized;directory=$item.PSIsContainer})
+    $sources.Add([pscustomobject]@{source=$source;destination=$destination;original=$normalized;directory=$item.PSIsContainer;snapshot=$snapshotRoots.Contains($source)})
+}
+foreach ($snapshot in $snapshotRoots) {
+    if (-not @($sources | Where-Object { $_.source -eq $snapshot }).Count) { throw 'Each completed snapshot must also be an explicit archive source.' }
 }
 $records = [Collections.Generic.List[object]]::new()
+$sha256 = [Security.Cryptography.SHA256]::Create()
 foreach ($source in $sources) {
-    $entries = if ($source.directory) { @(Get-ChildItem -LiteralPath $source.source -Recurse -Force) } else { @(Get-Item -LiteralPath $source.source -Force) }
-    foreach ($entry in $entries) {
-        Assert-NoLink $entry.FullName
+    Write-Output "Inventory and SHA-256: $($source.original)"
+    $pending = [Collections.Generic.Stack[IO.FileSystemInfo]]::new()
+    $pending.Push((Get-Item -LiteralPath $source.source -Force))
+    while ($pending.Count) {
+        $entry = $pending.Pop()
+        # Check every entry once, without repeatedly walking its ancestors.
+        if ($entry.Attributes -band [IO.FileAttributes]::ReparsePoint) { throw "Links/junctions cannot be archived: $($entry.FullName)" }
         $relative = $entry.FullName.Substring($repoRoot.Length + 1).Replace('\','/')
-        if ($relative -match '(^|/)(\.git|Legacy|Library|Temp|obj|Logs|UserSettings)(/|$)') { throw "Protected nested path: $relative" }
-        if ($entry.PSIsContainer) { continue }
-        $records.Add([pscustomobject]@{original=$relative;bytes=$entry.Length;sha256=(Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash})
+        if ($relative -match '(^|/)\.git(/|$)' -or (-not $source.snapshot -and $relative -match '(^|/)(Legacy|Library|Temp|obj|Logs|UserSettings)(/|$)')) { throw "Protected nested path: $relative" }
+        if ($entry -is [IO.DirectoryInfo]) {
+            foreach ($child in $entry.EnumerateFileSystemInfos()) { $pending.Push($child) }
+            continue
+        }
+        $stream = [IO.File]::OpenRead($entry.FullName)
+        # Directory entries for hard links can retain stale lengths. Read the
+        # authoritative length from the same open handle used for the hash.
+        try { $length = $stream.Length; $hash = [BitConverter]::ToString($sha256.ComputeHash($stream)).Replace('-', '') }
+        finally { $stream.Dispose() }
+        $records.Add([pscustomobject]@{original=$relative;bytes=$length;sha256=$hash})
     }
 }
+$sha256.Dispose()
 # Save the complete recovery inventory before the first move. Existing archives are untouched.
 New-Item -ItemType Directory -Path $batchRoot -Force | Out-Null
-@{createdUtc=[DateTime]::UtcNow.ToString('o');reason=$Reason;workspace=$repoRoot;files=@($records.ToArray())} | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $batchRoot 'archive-manifest.json')
+@{createdUtc=[DateTime]::UtcNow.ToString('o');reason=$Reason;pathBase='repository root';completedSnapshotRoots=@($CompletedSnapshotRoot);files=@($records.ToArray())} | ConvertTo-Json -Depth 6 | Set-Content -LiteralPath (Join-Path $batchRoot 'archive-manifest.json')
 foreach ($source in $sources) {
     New-Item -ItemType Directory -Path (Split-Path $source.destination -Parent) -Force | Out-Null
     Move-Item -LiteralPath $source.source -Destination $source.destination

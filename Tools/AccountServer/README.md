@@ -88,8 +88,17 @@ Public profile responses contain no email, provider ID or credentials.
 - `GET /v1/search?q=...&offset=...`: ranked exact/prefix/typo search, 20/page.
 - `GET /v1/friends`: accepted, incoming and outgoing records. POST accepts
   target plus action `request`, `accept`, `decline`, `cancel` or `remove`.
-- Blocks use GET/POST/DELETE; reports use POST with target and reason
-  `name`, `photo` or `behaviour`. Reports need operator handling.
+- Blocks use GET/POST/DELETE. `GET /v1/reports` advertises version 2;
+  POST accepts target, reason, details, context, evidence and requestId.
+  Reasons are `name`, `photo`, `abuse`, `sexual`, `behaviour`, `cheating`,
+  `spam`, `other`; Other requires details. Details allow 500 UTF-16 units.
+  Reports capture server profile metadata (and thumbnail for picture reports),
+  enforce retry identity and rate limits, and require manual operator review.
+  Apply migration `0007_report_incidents.sql` before deploying this version.
+  See [player safety](../../Docs/PLAYER-SAFETY.md) for the flow and review query.
+- Name saves reject listed offensive terms using the shared EN/ZH/MS vocabulary
+  in `Game/Assets/_Game/Resources/TextSafety.json` (relative to repository root).
+  `node moderation-smoke.mjs` tests the deployed contract with temporary profiles.
 - `GET/POST /v1/invites`: list received room invitations or send one to an
   accepted friend. Invitations expire after 120 seconds, allow one pending
   invitation per pair and enforce a 30-second resend cooldown and 20-entry

@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { AuthError } from './auth.mjs';
 import { validateName, normalize, grams, deletions, rank } from './profile-search.mjs';
 import { deletionHash } from './account-deletion.mjs';
+import { submitReport } from './reports.mjs';
 export const columns='id,code,name,revision,avatar_version AS avatarVersion,avatar,has_photo AS hasPhoto,hidden';
 const bad=(status,code)=>{throw new AuthError(status,code);};
 const now=()=>Math.floor(Date.now()/1000);
@@ -170,14 +171,7 @@ export class Profiles {
     if(!await this.one('SELECT 1 FROM blocks WHERE owner=? AND target=?',id,target))bad(409,'block_limit');
     return {ok:true};
   }
-  async report(id,target,reason) {
-    if(!validId(target)||id===target||!['name','photo','behaviour'].includes(reason))bad(400,'invalid_report');
-    await this.require(target);
-    const count=await this.one('SELECT COUNT(*) AS n FROM reports WHERE reporter=?',id);
-    if(count.n>=200)bad(429,'report_limit');
-    await this.statement('INSERT OR IGNORE INTO reports(reporter,target,reason,created_at) SELECT ?,?,?,? WHERE (SELECT COUNT(*) FROM reports WHERE reporter=?)<200',id,target,reason,now(),id).run();
-    return {ok:true};
-  }
+  async report(id,target,reason) {return submitReport(this,id,{target,reason});}
   async proof(id,room,challenge) {
     await this.require(id);
     if(typeof room!=='string'||room.length>128||!room||!/^[a-f0-9]{32}$/.test(challenge||''))bad(400,'invalid_proof');

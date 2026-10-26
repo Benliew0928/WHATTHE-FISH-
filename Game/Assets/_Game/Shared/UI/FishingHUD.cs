@@ -9,7 +9,7 @@ namespace WhatTheFish {
  public sealed partial class FishingHUD:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler {
   public static FishingHUD Instance {get;private set;}
   sealed class Row {
-   public ulong id;public RectTransform rect,popRect;public FishingStickerGraphic panel,avatar,flame,crown;
+   public ulong id;public RectTransform rect,popRect;public FishingStickerGraphic panel,avatar,flame,crown;public PlayerReportAction playerCard;
    public Text name,points,rank,pop,arrow;public uint award;public int score,order;public float displayed,pulse,popAge=3,milestoneAge=3,cueAge=3;public bool initialized,milestone;
   }
   static readonly Color Ink=LocalProfile.Hex("143B50"),Cream=LocalProfile.Hex("FFF3D7"),Teal=LocalProfile.Hex("4CDED6"),Gold=LocalProfile.Hex("FFCB53"),Coral=LocalProfile.Hex("FF7659"),LocalBlue=LocalProfile.Hex("69C8F4"),CancelRed=LocalProfile.Hex("F7656A");
@@ -155,13 +155,13 @@ namespace WhatTheFish {
    row.arrow=Text(rect,"",new Vector2(152,0),new Vector2(22,35),21);row.arrow.font=font;
    row.flame=Graphic(Rect("Twenty point flame",rect,new Vector2(160,11),new Vector2(29,49)),FishingStickerGraphic.Kind.Flame,Coral);row.flame.transform.SetAsFirstSibling();
    row.crown=Graphic(Rect("Winner crown",rect,new Vector2(-151,24),new Vector2(30,29)),FishingStickerGraphic.Kind.Crown,Gold);
-   rows[id]=row;return row;
+   row.playerCard=PlayerReportAction.CreateCardTarget(rect);row.playerCard.Place(0,0,341,52);rows[id]=row;return row;
   }
   void UpdateRows(FishingGame game,PlayerView view){
    var match=game.State.Match;bool changed=round!=match.round;if(changed){round=match.round;shownProgress=shownTension=0;}
    bool team=match.mode==FishingMode.Crew;var ranked=team?game.State.Players.OrderBy(p=>p.owner).ToArray():game.State.Players.OrderByDescending(p=>match.cupFinished?p.cupPoints:p.score).ThenByDescending(p=>match.cupFinished?p.cupScore:0).ThenBy(p=>p.owner).ToArray();
    for(int i=0;i<ranked.Length;i++){
-    var p=ranked[i];if(!rows.TryGetValue(p.owner,out var row))row=MakeRow(p.owner,i);row.rect.gameObject.SetActive(true);
+    var p=ranked[i];if(!rows.TryGetValue(p.owner,out var row))row=MakeRow(p.owner,i);row.rect.gameObject.SetActive(true);row.playerCard.Bind(p.owner);
     if(changed||!row.initialized){row.displayed=p.score;row.award=p.awardSequence;row.score=p.score;row.popAge=row.milestoneAge=row.cueAge=3;row.pulse=0;row.initialized=true;row.rect.anchoredPosition=new Vector2(182,-87-i*58);row.milestone=p.score>=20;}
     if(row.award!=p.awardSequence){row.award=p.awardSequence;row.pulse=1;row.popAge=0;ScorePulseCount++;if(p.score>=20&&!row.milestone){row.milestone=true;row.milestoneAge=0;}}
     row.cueAge+=Time.unscaledDeltaTime;row.milestoneAge+=Time.unscaledDeltaTime;

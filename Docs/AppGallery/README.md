@@ -14,20 +14,26 @@ release. Current build measurements are in [build size](../BUILD-SIZE.md).
 | Public support and privacy contact | benliew28262826@gmail.com, supplied by owner |
 | Launch countries and intended audience | Malaysia; all ages, including children, as the owner's intended audience. Replaces the earlier 13+ proposal; official content rating and suitability remain unverified |
 | Free/paid, advertising and purchases | Free download, no ads, no real-money in-app purchases confirmed |
-| Public privacy-policy host/domain | Owner has no website/domain; prepare a static page, choose hosting later |
+| Public privacy-policy host/domain | Cloudflare Pages development preview published at <https://whatthefish-game.pages.dev/>; three languages, game Terms/Privacy remain drafts; no custom domain required |
 | Verified Huawei developer account | Owner reports verification completed; intended app ownership and final signing configuration still need checking before release |
 | Existing production keystore and backup | None; helper prepared for private local creation later |
 | Huawei Android device model and availability | No Huawei test phone available; device checks remain pending |
-| Support, reports and deletion exceptions | Owner will handle these; operating procedure and response targets remain to be defined |
-| Data retention periods | Pending service/configuration inventory and owner-approved operational rules |
+| Support, reports and deletion exceptions | Owner handles these and selected daily review; procedure drafted, no guaranteed resolution deadline |
+| Data retention periods | Proposed in the operations document; not yet approved or implemented |
 | Google login | Retain if compatible with AppGallery acceptance; production configuration and physical-device checks remain pending |
 | Preparation language | English discussion and internal documents; retain English, Simplified Chinese and Bahasa Melayu for player-facing content |
 
-Policy hosting and retention rules remain needed for the final policy. They do
-not block offline preparation. A custom paid domain
-is not inherently needed for a public HTTPS policy page; hosting and URL remain
-pending. The supplied email is the intended public contact, not a verified
+Policy acceptance and retention rules remain needed for the final policy. A
+custom paid domain is not inherently needed for a public HTTPS policy page.
+The owner separately authorized website publication on 26 October; see the
+[deployment record](../../Website/DEPLOYMENT.md). The supplied email is the intended public contact, not a verified
 mailbox-deliverability result.
+
+The owner selected the same features for everyone, with no separate child mode
+and no launch deadline. The welcome Info panel now opens Terms, Privacy and
+Website actions. Terms/Privacy have bundled offline drafts; Website is disabled
+until a real HTTPS base URL is configured. See the [website workflow](../../Website/README.md)
+and [retention/operations proposal](OPERATIONS-PROPOSAL.md).
 
 ## Preparation priorities after owner decisions
 
@@ -44,8 +50,8 @@ mailbox-deliverability result.
    checks GMS availability. Verify Huawei/guest access without GMS and Google
    success/cancel/recovery where supported, using the final signing certificate.
 4. Prepare retention, deletion-support, signing, device-test and backend rollout
-   procedures locally. Public hosting, deployment, console changes and app
-   submission are outside this preparation task.
+   procedures locally. Website hosting was separately authorized and completed;
+   further backend/console changes and app submission remain separate work.
 
 References: [Huawei authentication providers](https://developer.huawei.com/consumer/en/doc/AppGallery-connect-Guides/agc-auth-introduction-0000001053732605)
 and [Vivox privacy, including children's privacy](https://docs.unity.com/en-us/vivox/privacy/privacy-overview).
@@ -73,9 +79,11 @@ need review. No child-safety implementation is certified by this document update
 2. **Account deletion:** the additive backend was activated with the account coin
    release on 26 October; see [deployment evidence](../COIN-ECONOMY.md). Native
    linked-account verification and complete device deletion still require a phone.
+   Offline review also found participant IDs retained inside another host's match
+   roster/receipt JSON; correct and test this before complete-deletion acceptance.
 3. **Privacy entry point:** implemented in settings and account choices. Public
-   contact and publisher name are supplied; policy URL and retention remain
-   pending. No placeholder link is advertised.
+   contact and publisher name are supplied; public draft URL now exists. Final
+   policy acceptance, in-game URL configuration and retention remain pending.
 4. **Device acceptance:** real Huawei login/link/recovery and no-GMS behavior,
    camera, microphone/Bluetooth, touch and performance remain to be verified.
 5. **Service readiness:** retain Google conditionally per the owner. OAuth is
@@ -96,9 +104,14 @@ need review. No child-safety implementation is certified by this document update
 - [Privacy facts and policy draft](PRIVACY-DRAFT.md)
 - [Signing and device acceptance plan](RELEASE-CHECKLIST.md)
 - [Implemented technical workflow and activation steps](TECHNICAL-HANDOFF.md)
+- [Website and Info panel](../../Website/README.md)
+- [Public website deployment](../../Website/DEPLOYMENT.md)
+- [Daily operations and proposed retention](OPERATIONS-PROPOSAL.md)
+- [Website and Info validation](WEBSITE-INFO-VALIDATION.md)
 
-No app upload, submission, service deployment, live cloud-account deletion or
-production signing-key creation has been performed. Isolated offline guest data
+This preparation did not upload or submit the app, change backend services,
+delete a live player account or create a production signing key. The subsequent
+website-only deployment is recorded separately above. Isolated offline guest data
 was deleted by a test. A disposable signing-test key was created outside the
 repository, used only on a fixture APK, then removed; it is not a release key.
 See [validation and delivery evidence](VALIDATION.md) for the tested scope.

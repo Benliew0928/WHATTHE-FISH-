@@ -60,7 +60,7 @@ namespace WhatTheFish {
    if(Exploring&&!rooms.Connected&&LocalAthlete&&!LocalAthlete.GetComponent<FootballBot>()&&!LocalAthlete.GetComponent<BasketballBot>()&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling))LocalAthlete.Simulate(view.ReadCommand(),Time.deltaTime);
    if(!Exploring&&LocalAthlete)LocalAthlete.HideHead(false);
    if((rosterTimer-=Time.deltaTime)<0){rosterTimer=.5f;RefreshRoster();if(fps)fps.text=$"{Mathf.RoundToInt(1/Mathf.Max(Time.smoothDeltaTime,.001f))} FPS   •   {(rooms.Connected?"ONLINE":"OFFLINE")}";}
-   if(Input.GetKeyDown(KeyCode.Escape)&&!CoinWalletUI.BlocksBack&&!SocialPanel.BlocksBack&&!AccountPanel.Visible&&!RoomChatUI.BlocksBack&&!ScoreboardDetails.BlocksBack)HandleBack();
+   if(Input.GetKeyDown(KeyCode.Escape)&&!CoinWalletUI.BlocksBack&&!SocialPanel.BlocksBack&&!PlayerReportUI.BlocksBack&&!AccountPanel.Visible&&!RoomChatUI.BlocksBack&&!ScoreboardDetails.BlocksBack)HandleBack();
   }
   public void HandleBack(){if(LanguageSettings.DismissTop())return;if(TutorialSession.Active){TutorialSession.Active.Quit();return;}if(IslandTutorialUI.DismissTop())return;if(ControlLayoutEditor.Active){ControlLayoutEditor.Active.Cancel();return;}if(TeleportSequence.Busy||RoomTeleport.Busy)return;if(FootballMVP.Presenting){if(FootballMVP.Instance.ResultsReady)FootballMVP.Instance.Dismiss();else FootballMVP.Instance.SkipCelebration();return;}if(BasketballMVP.Presenting){if(BasketballMVP.Instance.ResultsReady)BasketballMVP.Instance.Dismiss();else BasketballMVP.Instance.SkipCelebration();return;}if(FishingCeremony.Presenting){FishingCeremony.Instance.Skip();return;}if(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible){PostMatchFlow.Instance.Close();return;}if(FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay)FishingHUD.Instance.CloseOverlay();else if(Exploring&&SelectedSport==SportId.Fishing&&FishingHUD.Instance)FishingHUD.Instance.IslandMenu?.Toggle();else if(Exploring&&SelectedSport==SportId.Basketball&&BasketballHUD.Instance)BasketballHUD.Instance.ToggleSettings();else if(Exploring&&SelectedSport==SportId.Football&&FootballHUD.Instance)FootballHUD.Instance.ToggleSettings();else if(view.GolfAimRequested)view.CancelGolfAim();else if(Exploring&&SelectedSport==SportId.Golf&&GolfHUD.Instance)GolfHUD.Instance.IslandMenu?.Toggle();else if(Exploring)Return();else if(Menu)Menu.Back();else Show(rooms.Connected?"room":"home");}
   void UpdateStatus(){if(status)status.text=rooms.busy?"Connecting…":rooms.Error??"";}
@@ -94,6 +94,15 @@ namespace WhatTheFish {
   IEnumerator StartAI(int teamSize){var sport=SelectedSport;if(!(sport==SportId.Basketball?BasketballBots.Instance.StartSolo(teamSize):FootballBots.Instance.StartSolo(teamSize)))yield break;yield return new WaitForFixedUpdate();if(SelectedSport!=sport||rooms.Connected)yield break;if(sport==SportId.Basketball)BasketballMatch.Instance?.StartMatch();else FootballMatch.Instance?.StartMatch();}
   async void Return(){if(TeleportSequence.Busy||RoomTeleport.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return;if(rooms.Connected){if(rooms.Host)await rooms.SetExploring(false);else {await rooms.Leave();Exploring=false;Show("sport");}}else{Exploring=false;Show("sport");}}
   public void LeaveCourt()=>Return();
+  public void SignOutToLogin(){
+   // SignOut checks room, pending deletion and account operations before mutation.
+   PlayerAccount.SignOut();
+   selectionExitVersion++;selectionVersion++;pendingSelection=null;SelectionError=null;FailedSelection=null;
+   FootballMatch.Instance?.ClearMatch();BasketballMatch.Instance?.Clear();GolfMatchManager.Instance?.ClearMatch();
+   FootballBots.Instance?.Clear();BasketballBots.Instance?.Clear();IslandBots.Instance?.Clear();
+   Exploring=false;lastExploring=false;LocalAthlete=offline;view.active=false;view.InputBlocked=true;
+   MenuPreferences.Save();Show("home");var welcome=StartupWelcome.Ensure(true);welcome.CloseModal();welcome.SetReady(false);
+  }
   void Clear(){PlayerView.LookDelta=Vector2.zero;view.InputBlocked=false;if(page){page.gameObject.SetActive(false);Destroy(page.gameObject);}page=new GameObject("Page",typeof(RectTransform)).GetComponent<RectTransform>();page.SetParent(safe,false);hudLayer=page.gameObject.AddComponent<CanvasGroup>();page.anchorMin=Vector2.zero;page.anchorMax=Vector2.one;page.offsetMin=page.offsetMax=Vector2.zero;roster=null;fps=null;status=null;controlHint=null;}
   public void Show(string which){
    screen=which;

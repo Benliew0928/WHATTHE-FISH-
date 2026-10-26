@@ -154,7 +154,7 @@ namespace WhatTheFish {
   }
  }
 
- public enum CoveSymbol {None,People,Join,Map,Paint,Book,Settings,Back,Next,Check,Copy,Close,Sound,Flag,Boat,Star}
+ public enum CoveSymbol {None,People,Join,Map,Paint,Book,Settings,Back,Next,Check,Copy,Close,Sound,Flag,Boat,Star,Warning,Gift}
  public sealed class CoveIcon : MaskableGraphic {
   public CoveSymbol symbol;
   Vector2 P(float x,float y){var r=rectTransform.rect;return new Vector2(r.xMin+x*r.width,r.yMax-y*r.height);}
@@ -167,6 +167,7 @@ namespace WhatTheFish {
     case CoveSymbol.Next:Line(v,.3f,.15f,.7f,.5f);Line(v,.7f,.5f,.3f,.85f);break;
     case CoveSymbol.Check:Line(v,.12f,.5f,.4f,.78f,.13f);Line(v,.4f,.78f,.88f,.2f,.13f);break;
     case CoveSymbol.Close:Line(v,.2f,.2f,.8f,.8f);Line(v,.2f,.8f,.8f,.2f);break;
+    case CoveSymbol.Gift:Box(v,.12f,.36f,.76f,.18f);Box(v,.19f,.54f,.62f,.36f);Line(v,.5f,.36f,.5f,.9f);Line(v,.5f,.35f,.27f,.28f);Line(v,.27f,.28f,.24f,.12f);Line(v,.24f,.12f,.38f,.13f);Line(v,.38f,.13f,.5f,.35f);Line(v,.5f,.35f,.73f,.28f);Line(v,.73f,.28f,.76f,.12f);Line(v,.76f,.12f,.62f,.13f);Line(v,.62f,.13f,.5f,.35f);break;
     case CoveSymbol.People:Circle(v,.36f,.25f,.18f);Circle(v,.78f,.28f,.14f);Line(v,.13f,.73f,.58f,.73f,.32f);Line(v,.66f,.73f,.9f,.73f,.25f);break;
     case CoveSymbol.Join:Box(v,.45f,.14f,.4f,.72f);Line(v,.05f,.5f,.65f,.5f);Line(v,.43f,.3f,.65f,.5f);Line(v,.43f,.7f,.65f,.5f);break;
     case CoveSymbol.Copy:Box(v,.32f,.25f,.5f,.61f);Line(v,.65f,.12f,.17f,.12f);Line(v,.17f,.12f,.17f,.68f);break;
@@ -175,6 +176,7 @@ namespace WhatTheFish {
     case CoveSymbol.Paint:Line(v,.4f,.63f,.8f,.15f,.21f);Line(v,.17f,.87f,.38f,.62f,.15f);Circle(v,.2f,.81f,.12f);break;
     case CoveSymbol.Settings:for(int i=0;i<8;i++){float a=i*Mathf.PI/4;Line(v,.5f+Mathf.Cos(a)*.29f,.5f+Mathf.Sin(a)*.29f,.5f+Mathf.Cos(a)*.43f,.5f+Mathf.Sin(a)*.43f,.18f);}for(int i=0;i<20;i++){float a=i*Mathf.PI/10,b=(i+1)*Mathf.PI/10;Line(v,.5f+Mathf.Cos(a)*.25f,.5f+Mathf.Sin(a)*.25f,.5f+Mathf.Cos(b)*.25f,.5f+Mathf.Sin(b)*.25f,.13f);}break;
     case CoveSymbol.Flag:Line(v,.27f,.12f,.27f,.9f);Line(v,.3f,.18f,.82f,.31f,.15f);Line(v,.82f,.31f,.3f,.45f,.15f);break;
+    case CoveSymbol.Warning:Line(v,.5f,.08f,.08f,.86f,.075f);Line(v,.08f,.86f,.92f,.86f,.075f);Line(v,.92f,.86f,.5f,.08f,.075f);Line(v,.5f,.34f,.5f,.58f,.085f);Circle(v,.5f,.72f,.048f);break;
     case CoveSymbol.Boat:Box(v,.16f,.33f,.68f,.52f);Line(v,.5f,.1f,.5f,.33f);Line(v,.16f,.56f,.84f,.56f);Line(v,.5f,.33f,.5f,.56f,.04f);break;
     case CoveSymbol.Sound:Box(v,.12f,.35f,.22f,.3f);Line(v,.34f,.35f,.56f,.16f);Line(v,.56f,.16f,.56f,.84f);Line(v,.56f,.84f,.34f,.65f);Line(v,.78f,.3f,.89f,.5f);Line(v,.89f,.5f,.78f,.7f);break;
     case CoveSymbol.Star:for(int i=0;i<10;i++){float a=(-90+i*36)*Mathf.Deg2Rad,b=(-90+(i+1)*36)*Mathf.Deg2Rad;float r=i%2==0?.43f:.2f,rr=i%2==0?.2f:.43f;Line(v,.5f+Mathf.Cos(a)*r,.5f+Mathf.Sin(a)*r,.5f+Mathf.Cos(b)*rr,.5f+Mathf.Sin(b)*rr,.1f);}break;

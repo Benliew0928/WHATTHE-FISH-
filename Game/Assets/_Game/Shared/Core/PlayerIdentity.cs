@@ -57,6 +57,7 @@ namespace WhatTheFish {
    if(name.Length==0){error="Please enter your name.";return false;}
    if(name.Length>NameLimit){error="Use up to 16 characters.";return false;}
    if(!name.All(Allowed)||!name.Any(char.IsLetterOrDigit)){error="Use letters, numbers, spaces, - or _.";return false;}
+   if(TextSafety.Blocked(name)){error=TextSafety.NameError;return false;}
    return true;
   }
   public static bool SaveName(string value,out string error){

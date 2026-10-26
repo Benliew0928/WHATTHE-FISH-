@@ -8,7 +8,7 @@ namespace WhatTheFish {
   public static FootballMVP Instance {get;private set;}
   public static bool Presenting=>Instance&&Instance.Visible;
   public bool Visible=>presenting;
-  RectTransform panel,content;Text nameText,result,goals,assists,passes,interceptions,points;readonly Text[,] rows=new Text[10,5];GameObject hero,stats;uint shown=uint.MaxValue;float opened;bool priorBlocked;
+  RectTransform panel,content;Text nameText,result,goals,assists,passes,interceptions,points;readonly Text[,] rows=new Text[10,5];readonly PlayerReportAction[] reportActions=new PlayerReportAction[10];GameObject hero,stats;uint shown=uint.MaxValue;float opened;bool priorBlocked;
   Camera stadiumCamera;Vector3 savedPosition;Quaternion savedRotation;float savedFov,savedNear;bool savedOrtho;readonly Dictionary<Renderer,bool> hidden=new();
   static readonly Color Gold=new Color32(215,155,41,255),Ink=new Color32(17,63,60,255),Cream=new Color32(255,247,226,255);
   public static FootballMVP Create(){var go=new GameObject("Football match honours",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));var canvas=go.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceOverlay;canvas.sortingOrder=900;var scale=go.GetComponent<CanvasScaler>();scale.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scale.referenceResolution=new Vector2(1600,900);scale.screenMatchMode=CanvasScaler.ScreenMatchMode.Expand;return go.AddComponent<FootballMVP>();}
@@ -27,8 +27,8 @@ namespace WhatTheFish {
    passes=Stat(hero.transform,"COMPLETED PASSES",0,465,350,58);interceptions=Stat(hero.transform,"INTERCEPTIONS",402,465,350,58);
    points=Label(hero.transform,"",0,591,770,30,21,Ink);
    stats=CoveUI.Rect(content,"Everyone's match stats",675,112,770,600).gameObject;Label(stats.transform,"MATCH STATS",0,0,770,60,49);
-   string[] columns={"PLAYER","G","A","PASS","INT"};float[] left={0,388,465,542,655};float[] widths={375,70,70,105,105};
-   for(int c=0;c<5;c++){Label(stats.transform,columns[c],left[c],80,widths[c],33,23,Gold,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);for(int r=0;r<10;r++)rows[r,c]=Label(stats.transform,"",left[c],123+r*43,widths[c],40,24,null,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);}stats.SetActive(false);
+   string[] columns={"PLAYER","G","A","PASS","INT"};float[] left={0,388,465,542,655};float[] widths={327,70,70,105,105};
+   for(int c=0;c<5;c++){Label(stats.transform,columns[c],left[c],80,widths[c],33,23,Gold,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);for(int r=0;r<10;r++)rows[r,c]=Label(stats.transform,"",left[c],123+r*43,widths[c],40,24,null,c==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);}for(int i=0;i<10;i++){reportActions[i]=PlayerReportAction.Create(stats.transform);reportActions[i].Place(333,123+i*43,40,40);}stats.SetActive(false);
    FootballUIStyle.Button(content,"Toggle match stats","Match stats",675,746,350,58,()=>{bool show=!stats.activeSelf;stats.SetActive(show);hero.SetActive(!show);},CoveUI.Mint,24);
    BuildCelebration();panel.gameObject.SetActive(false);
   }
@@ -47,6 +47,7 @@ namespace WhatTheFish {
    GameLocalization.UserContent(nameText);nameText.text="#"+winner.number+"  "+winner.name+"  /  "+GameLocalization.Translate(CharacterIdentity.TeamName(winner.team).ToUpperInvariant());
    goals.text=winner.goals.ToString();assists.text=winner.assists.ToString();passes.text=winner.passes.ToString();interceptions.text=winner.interceptions.ToString();points.text=winner.Points+" MVP POINTS   /   2 PER GOAL + 1 PER ASSIST";
    var records=match.PlayerRecords.OrderByDescending(r=>r.Points).ThenByDescending(r=>r.goals).ThenByDescending(r=>r.passes).ThenBy(r=>r.id).ToArray();
+   for(int i=0;i<10;i++)reportActions[i].Bind(i<records.Length?records[i].id:ulong.MaxValue,i<records.Length);
    for(int i=0;i<10;i++)for(int c=0;c<5;c++){var t=rows[i,c];if(c==0)GameLocalization.UserContent(t);t.supportRichText=false;t.text=i>=records.Length?"":c==0?"#"+records[i].number+" "+records[i].name:c==1?records[i].goals.ToString():c==2?records[i].assists.ToString():c==3?records[i].passes.ToString():records[i].interceptions.ToString();if(c==0&&i<records.Length)t.color=records[i].team==FootballTeam.A?new Color(.12f,.30f,.65f):new Color(.68f,.20f,.16f);}
    BeginCelebration(match,winner,records);
   }

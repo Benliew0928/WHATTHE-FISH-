@@ -32,7 +32,7 @@ namespace WhatTheFish {
    privacy=Action(card,"Privacy and account data","Privacy & data",310,675,400,60,Panel,()=>PrivacyDataPanel.Open(()=>completed?.Invoke()),size:25);controls.Add(privacy);
    if(PlayerIdentity.AccountId.Length>0)
     controls.Add(Action(card,"Sign out account","Sign out",775,675,280,60,Panel,()=>{
-     try{PlayerAccount.SignOut();completed?.Invoke();Close();}catch(Exception e){feedback.text=PlayerAccount.Explain(e);}
+     try{if(AppRoot.Instance)AppRoot.Instance.SignOutToLogin();else PlayerAccount.SignOut();Close();}catch(Exception e){feedback.text=PlayerAccount.Explain(e);}
     },CoveSymbol.None,25));
    cancelSignIn=Action(card,"Cancel account sign-in","Cancel sign-in",310,675,400,60,Raised,AndroidAccountSignIn.Cancel,size:25);cancelSignIn.gameObject.SetActive(false);
    Describe();Layout();

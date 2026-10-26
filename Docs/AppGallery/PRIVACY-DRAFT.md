@@ -1,16 +1,26 @@
-# Privacy preparation — not for publication yet
+# Privacy preparation — internal factual inventory
 
 This working draft records implementation facts and owner decisions. Processing
 regions, retention, child/guardian arrangements and deletion operations remain
 unresolved. Do not upload it as the public privacy
 policy until those facts are completed.
 
+The player-facing three-language draft now lives in
+[Website/content.json](../../Website/content.json), generated into local HTML
+and the game's offline Info documents. A separately authorized website preview
+is now public; its game policy is explicitly a draft and its website-only
+hosting disclosures come from `Website/public-preview.json`. See the
+[deployment record](../../Website/DEPLOYMENT.md). This file remains the internal factual
+inventory. See [operations and proposed retention](OPERATIONS-PROPOSAL.md) for
+the daily-review decision, current storage findings and outstanding deletion gap.
+
 Owner confirmed Malaysia as the initial market, free download, no advertising and
 no real-money in-app purchases. On 26 October 2026 the owner confirmed a personal/individual
 publisher named LIEW KAIY BIN, public support/privacy email
 benliew28262826@gmail.com, an all-ages
 intended audience and personal responsibility for support, reports and deletion
-exceptions. There is no policy website or domain yet. All ages replaces the
+exceptions. A Cloudflare Pages preview now exists; final game-policy acceptance
+and in-game URL configuration remain pending. All ages replaces the
 earlier 13+ proposal; it is not an official
 rating or evidence that current communication/data controls are suitable for
 children. Retain Google login if compatible with AppGallery acceptance.
@@ -30,8 +40,9 @@ children. Retain Google login if compatible with AppGallery acceptance.
 - The owner is the designated operator; handling procedures, response targets,
   escalation and retention periods still need to be documented. Reporting and
   blocking features alone do not prove operational coverage.
-- No age gate, parental-consent flow or communication restriction is added or
-  certified by this documentation-only preparation.
+- The owner selected the same features for everyone. No age gate,
+  parental-consent flow or communication restriction is added or certified by
+  the website/Info-panel preparation.
 
 ## Data inventory
 

@@ -101,6 +101,8 @@ namespace WhatTheFish {
    PlayerPrefs.SetString(TrailKey(slot)+".pending",item);PlayerPrefs.Save();nextSync=0;
   }
   public static void RefreshSoon(){nextSync=0;}
+  public static bool CanClaimDaily(int day)=>day>=1&&day<=7&&Enabled&&Confirmed&&!Busy&&Wallet!=null&&!Wallet.todayClaimed&&Wallet.nextDay==day&&ServerNow<Wallet.nextReset;
+  public static Task ClaimDaily(int day)=>CanClaimDaily(day)?Refresh(true):Task.CompletedTask;
   public static void Tick(){
    if(scope!=Scope){IdentityChanged();if(Owner.Length>0){
     try{var cached=JsonUtility.FromJson<CoinWallet>(PlayerPrefs.GetString("economy.wallet."+Owner,""));if(cached?.playerId==Owner&&cached.storeVersion==2)Wallet=cached;}catch(Exception){}
@@ -108,7 +110,8 @@ namespace WhatTheFish {
     pendingFootball=PlayerPrefs.HasKey(TrailKey("footballTrail")+".pending")?PlayerPrefs.GetString(TrailKey("footballTrail")+".pending"):null;
     pendingBasketball=PlayerPrefs.HasKey(TrailKey("basketballTrail")+".pending")?PlayerPrefs.GetString(TrailKey("basketballTrail")+".pending"):null;
    }}
-   if(!Busy&&Enabled&&Time.realtimeSinceStartup>=nextSync)_=Refresh(Wallet==null||!Confirmed||!Wallet.todayClaimed||ServerNow>=Wallet.nextReset);
+   // Background sync reads the wallet. Only the calendar's current day claims coins.
+   if(!Busy&&Enabled&&(Time.realtimeSinceStartup>=nextSync||Confirmed&&Wallet!=null&&ServerNow>=Wallet.nextReset))_=Refresh();
   }
  }
  public sealed class EconomyRuntime:MonoBehaviour {

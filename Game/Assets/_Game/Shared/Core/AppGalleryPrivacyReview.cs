@@ -21,7 +21,7 @@ namespace WhatTheFish {
    PlayerIdentity.ClearAccount();PlayerIdentity.SaveName("Privacy Fixture",out _);
    AccountPanel.Open();yield return null;Find("Privacy and account data").onClick.Invoke();yield return null;
    Check(PrivacyDataPanel.Visible,"privacy reachable from accounts without sign-in");
-   Check(!Find("Read published privacy policy").interactable,"missing policy URL is not a fake link");
+   Check(Find("Read published privacy policy").interactable&&PublicInfoDocuments.IsHttps(PublicInfoDocuments.UrlFor("privacy")),"privacy opens the configured localized website policy");
    Check(!PlayerAccount.DeletionPending,"opening privacy does not initiate deletion");
    yield return Capture("privacy-overview.png");
    Find("Delete game account").onClick.Invoke();yield return null;

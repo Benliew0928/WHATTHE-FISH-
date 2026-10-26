@@ -47,6 +47,7 @@ try {
  Command host 'nick:Harbor';Command host 'text:Hello from the room';Has host 'Hello from the room'
  Launch guest;[void](Await guest {param($s)$s.ready -and $s.count -eq 1} 'late join receives history' 240)
  Command guest 'nick:Coral';Command guest 'typing';Command guest 'text:<b>GG</b>';Has host '<b>GG</b>'
+ Start-Sleep -Milliseconds 1300;Command guest 'moderation';Has host 'Nice pass, class team!'
  Start-Sleep -Milliseconds 1300;Command guest 'rate';Start-Sleep -Milliseconds 1300;Command guest 'invalid';Command guest 'dedup';Command guest 'mute:Hello from the room'
  foreach($sticker in @('ggwp','laugh','cry','angry','thanks','oops','wow','lets-go')){Start-Sleep -Milliseconds 1300;Command guest "sticker:$sticker";[void](Await host {param($s)@($s.messages | Where-Object sticker -eq $sticker).Count -eq 1} "sticker $sticker replicated")}
  Command host 'burst-history' 70

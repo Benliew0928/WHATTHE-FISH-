@@ -34,7 +34,7 @@ namespace WhatTheFish {
   // Restore only the explicit lock. Transient UI blockers are evaluated live;
   // copying them into this flag would keep movement locked after they close.
   public bool ExplicitInputBlocked=>inputBlocked;
-  public bool InputBlocked {get=>inputBlocked||IslandTutorialUI.ModalOpen||RoomChatUI.BlocksInput||SocialPanel.Visible||AccountPanel.Visible||TutorialSession.Active&&(!TutorialSession.Active.Ready||TutorialSession.Active.Paused||TutorialSession.Active.Finished);set=>inputBlocked=value;}
+  public bool InputBlocked {get=>inputBlocked||IslandTutorialUI.ModalOpen||RoomChatUI.BlocksInput||SocialPanel.Visible||PlayerReportUI.Visible||AccountPanel.Visible||TutorialSession.Active&&(!TutorialSession.Active.Ready||TutorialSession.Active.Paused||TutorialSession.Active.Finished);set=>inputBlocked=value;}
   public void ClearMatchInput(){CancelInput();golfFraming=0;ReturnFromGolfShot();}
   void CancelInput(){ClearTargetPass();if(FootballHUD.Instance)foreach(var swipe in FootballHUD.Instance.GetComponentsInChildren<FootballActionSwipe>())swipe.OnCancel(null);CancelFootballPass();pendingFootballPass=false;CancelFishing();CancelGolfAim();if(PassCharging||pendingPass||pendingPassBegin)pendingPassCancel=true;ClearFootballInput();ClearDefenseInput();CancelShot();CancelPass();pendingShotBegin=pendingPassBegin=false;StealHeld=pendingSteal=false;Charging=GolfCharging=false;HideKickAim();pendingKick=pendingGolf=false;pendingTackle=pendingJump=pendingShoot=pendingPass=false;pendingCart=GolfCartAction.None;}
   void HideKickAim(){if(kickAim)kickAim.enabled=false;}

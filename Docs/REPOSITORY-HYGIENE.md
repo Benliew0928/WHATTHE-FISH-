@@ -4,6 +4,15 @@ The root [AGENTS.md](../AGENTS.md) carries the standing instructions for new age
 
 ## What belongs in Git
 
+### Full folder cleanup — 27 October 2026
+
+The [cleanup report](CLEANUP-2026-10-27.md) records the full-folder space audit
+and **100,194,128,374 verified logical bytes** of reviewed obsolete output moved into
+`Legacy/`, including completed project copies, superseded players and repeated
+test content. Current deliveries, QA evidence, active source and masters remain
+available. This relocation preserves recovery and frees no SSD capacity. The
+owner explicitly requested a single commit and push for this handoff.
+
 ### Verified local compression — 4 October 2026
 
 The disk-space request used standard NTFS lossless compression of reviewed
@@ -72,6 +81,14 @@ Review dependencies and the exact path list first, then archive only confirmed o
 ```
 
 The script validates workspace containment and rejects links/junctions and protected cache/Git paths. It writes an inventory of original paths, lengths and SHA-256 hashes before moving anything, preserves the directory layout and records completed moves. It does not infer whether assets are unused. Include Unity `.meta` files with any asset moves.
+
+Completed isolated project copies under `Builds/` can be archived as whole
+snapshots by passing their exact paths to both `-RelativePath` and
+`-CompletedSnapshotRoot`. This explicit exception requires the copied Unity
+project structure, rejects Git checkout markers and linked entries, and checks
+that no Unity/player/art application is using the selected copy. Its internal
+caches travel with that obsolete copy. The active project's caches and installed
+dependencies stay in place. Recovery manifests use repository-relative paths.
 
 To restore, find the original path in `Legacy/<batch>/archive-manifest.json`, verify the archived hash, and copy it back to its original workspace-relative path. Compare newer destination content first. Restore Unity assets and metadata together. Each batch includes recovery instructions; do not overwrite earlier batches.
 

@@ -48,8 +48,11 @@ namespace WhatTheFish {
   void Home(){
    history.Clear();guideFromHub=false;
    Image(content,"Official logo",Resources.Load<Sprite>("Menu/WhatTheFishLogo"),64,0,205,151);
-   var coins=Button(content,"Coin wallet",CoinWalletUI.Balance,594,48,266,68,Raised,CoinWalletUI.Open,CoveSymbol.Star,25);
-   coins.GetComponentInChildren<Text>().gameObject.AddComponent<CoinBalanceLabel>();
+   var coins=Plate(content,"Coin balance",340,48,224,68,Raised,13,1.5f);
+   Image(coins.transform,"Gold fish coin",CoinWalletUI.Coin,12,8,52,52);
+   Text(coins.transform,CoinWalletUI.Amount,74,2,138,64,27,true,Ink,TextAnchor.MiddleRight).gameObject.AddComponent<CoinBalanceLabel>().AmountOnly=true;
+   var rewards=Button(content,"Rewards","Rewards",584,48,276,68,Raised,CoinWalletUI.Open,CoveSymbol.Gift,25);
+   rewards.gameObject.AddComponent<DailyRewardHint>();
    Button(content,"Player profile","Your profile",1085,48,248,68,Raised,SocialPanel.OpenOwn,CoveSymbol.People,27);
    var friends=Button(content,"Friends icon","Friends",880,48,185,68,Raised,SocialPanel.OpenFriends,CoveSymbol.People,24);
    FriendRequestBadge.Add(friends.transform,153,-12,34);

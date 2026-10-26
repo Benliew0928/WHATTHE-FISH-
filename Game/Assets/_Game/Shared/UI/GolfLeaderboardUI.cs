@@ -10,7 +10,7 @@ namespace WhatTheFish {
  public sealed class GolfLeaderboardUI:MonoBehaviour {
   readonly List<LocalizedArtwork> headings=new();float headingWidth=-1,headingHeight=-1;string headingLanguage;
   sealed class ScoreRow {
-   public LocalizedArtwork statusCaption;public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];
+   public LocalizedArtwork statusCaption;public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];public PlayerReportAction report;
   }
   GolfFinalCountdown finalCountdown;RectTransform finishedCard;Text finishedText;
   Text footer,timer,notice;Image titleArt,frameArt,columnArt;RectTransform page,board,frame,columnBand,viewport,content,countdownCard,noticeCard;
@@ -86,7 +86,7 @@ namespace WhatTheFish {
      if(j>0){var cell=Rect("Golf value plate "+j,row.rect,new Vector2(0,.5f),Vector2.zero,Vector2.zero);row.cells[j]=Art(cell,j==3?"Pending":"Cell",true);}
      row.text[j]=Label("Player "+i+" "+ColumnNames[j],row.rect,20,j==0?TextAnchor.MiddleLeft:TextAnchor.MiddleCenter);
     }
-    GameLocalization.UserContent(row.text[0]);row.status=row.cells[3];row.statusCaption=LocalizedArtwork.Add(row.status,new Rect(.13f,.23f,.74f,.52f),"Playing",20,Color.clear,Color.white,row.text[3]);row.rect.gameObject.SetActive(false);rows.Add(row);
+    row.report=PlayerReportAction.Create(row.rect);GameLocalization.UserContent(row.text[0]);row.status=row.cells[3];row.statusCaption=LocalizedArtwork.Add(row.status,new Rect(.13f,.23f,.74f,.52f),"Playing",20,Color.clear,Color.white,row.text[3]);row.rect.gameObject.SetActive(false);rows.Add(row);
    }
   }
   public void OpenResults(){PostMatchFlow.Instance?.Close();PlayerView.Instance?.CancelGolfAim();aimSummary=false;SetExpanded(true);}
@@ -106,7 +106,8 @@ namespace WhatTheFish {
   }
   void Layout(int count){
    var surface=ceremonyParent?ceremonyParent:page;float margin=layout.margin;
-   float width=expanded?Mathf.Min(layout.boardExpandedWidth,surface.rect.width-margin*2):Mathf.Min(layout.boardWidth,Mathf.Max(480,page.rect.width*.5f-margin-200));
+   // Preserve the name's original reading space when adding its report action.
+   float width=expanded?Mathf.Min(layout.boardExpandedWidth+160,surface.rect.width-margin*2):Mathf.Min(layout.boardWidth,Mathf.Max(480,page.rect.width*.5f-margin-200));
    float padding=layout.boardPadding,inner=width-padding*2-(expanded?12:0);
    float titleWidth=expanded?width*layout.boardExpandedTitleFraction:Mathf.Min(layout.boardCompactTitleWidth,width);
    float header=titleWidth*Sprite("Title").rect.height/Sprite("Title").rect.width;
@@ -141,7 +142,9 @@ namespace WhatTheFish {
      float cell=inner*columnShares[j],left=j==0?avatarSize+15:4;
      var position=new Vector2(offset+left+(cell-left-5)*.5f,0);var cellSize=new Vector2(cell-left-5,renderedRowHeight*(expanded?.64f:.76f));
      if(j>0){Place((RectTransform)row.cells[j].transform.parent,new Vector2(0,.5f),position,cellSize);}
-     Place(row.text[j].rectTransform,new Vector2(0,.5f),position,new Vector2(cell-left-5,renderedRowHeight-5));row.text[j].fontSize=expanded?j==0?25:27:j==0?20:22;offset+=cell;
+     float reportWidth=j==0&&expanded?46:0;
+     Place(row.text[j].rectTransform,new Vector2(0,.5f),position-new Vector2(reportWidth*.5f,0),new Vector2(cell-left-5-reportWidth,renderedRowHeight-5));row.text[j].fontSize=expanded?j==0?25:27:j==0?20:22;
+     if(j==0)row.report.Place(cell-46,(renderedRowHeight-48)*.5f,44,44);offset+=cell;
     }
    }
    Place((RectTransform)toggle.transform,new Vector2(0,1),new Vector2(width*.5f,aimSummary?-height*.5f:-rowTop-body-toggleHeight*.5f),new Vector2(inner,aimSummary?height-10:toggleHeight));
@@ -176,7 +179,7 @@ namespace WhatTheFish {
    visibleRows=selected.Count;Layout(visibleRows);
    for(int i=0;i<rows.Count;i++){
     bool visible=i<visibleRows;var row=rows[i];row.rect.gameObject.SetActive(visible);if(!visible)continue;
-    int orderedIndex=selected[i];var result=ranked[orderedIndex];var p=result.player;bool isLocal=p.PlayerId==local?.PlayerId;displayedIds.Add(p.PlayerId);
+    int orderedIndex=selected[i];var result=ranked[orderedIndex];var p=result.player;bool isLocal=p.PlayerId==local?.PlayerId;displayedIds.Add(p.PlayerId);row.report.Bind(p.PlayerId,expanded);
     string prefix=p.IsFinished?result.rank+(result.tie?"= ":". "):p.IsDNF?"":(orderedIndex+1)+". ";
     row.art.sprite=Sprite(isLocal?"LocalRow":"Row");row.portrait.sprite=Sprite("Avatar"+(isLocal?0:1+(int)(p.PlayerId%3)));
     for(int j=1;j<5;j++)if(j!=3)row.cells[j].sprite=Sprite(isLocal?"LocalCell":"Cell");

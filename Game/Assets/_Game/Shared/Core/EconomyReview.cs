@@ -38,7 +38,8 @@ namespace WhatTheFish {
   IEnumerator Start(){
    DontDestroyOnLoad(gameObject);Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");Application.targetFrameRate=30;
    yield return Wait(()=>DevelopmentProbe.ReadyToReviewSport,"sport initialized");app=AppRoot.Instance;if(!app){Finish();yield break;}
-   PlayerIdentity.SaveName(role,out _);yield return Wait(()=>PlayerEconomy.Confirmed,"wallet confirmed");Check(PlayerEconomy.Wallet?.balance==100,"initial daily reward is 100");
+   PlayerIdentity.SaveName(role,out _);yield return Wait(()=>PlayerEconomy.Confirmed,"wallet confirmed");Check(PlayerEconomy.Wallet?.balance==0,"background sync does not claim daily coins");
+   var firstClaim=PlayerEconomy.ClaimDaily(1);while(!firstClaim.IsCompleted)yield return null;Check(PlayerEconomy.Wallet?.balance==100,"explicit first daily claim is 100");
    yield return new WaitForSecondsRealtime(2);
    if(!app.rooms.Connected){yield return WalletChecks();Finish();yield break;}
    int expected=app.SelectedSport==SportId.Basketball?4:2;
@@ -107,7 +108,7 @@ namespace WhatTheFish {
    foreach(var language in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
     GameLocalization.Select(language,false);CoinWalletUI.Open();yield return new WaitForSecondsRealtime(.6f);Canvas.ForceUpdateCanvases();
     var panel=GameObject.Find("Coin wallet safe area");Check(panel,"wallet is visible "+language);
-    foreach(var t in panel.GetComponentsInChildren<Text>().Where(t=>t.gameObject.activeInHierarchy)){
+    foreach(var t in panel.GetComponentsInChildren<Text>().Where(t=>t.gameObject.activeInHierarchy&&t.text.Length>0)){
      Check(!string.IsNullOrWhiteSpace(t.text),"nonempty label "+language+" "+GameLocalization.Source(t));
      Check(t.preferredHeight<=t.rectTransform.rect.height+5,"label fits height "+language+" "+GameLocalization.Source(t));
      if(t is LocalizedText localized)Check(localized.HasUnclippedText(),"all label glyphs visible "+language+" "+GameLocalization.Source(t));
@@ -123,7 +124,8 @@ namespace WhatTheFish {
     app.LeaveCourt();yield return null;app.Show("home");yield return new WaitForSecondsRealtime(.3f);
     foreach(var language in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
      GameLocalization.Select(language,false);yield return new WaitForSecondsRealtime(.3f);yield return Capture("home-"+GameLocalization.Code);
-     var button=GameObject.Find("Coin wallet").GetComponent<Button>();button.onClick.Invoke();yield return null;Check(CoinWalletUI.Visible,"home coin button opens wallet "+language);
+     Check(!GameObject.Find("Coin balance").GetComponent<Button>(),"home coin balance is read-only "+language);
+     var button=GameObject.Find("Rewards").GetComponent<Button>();button.onClick.Invoke();yield return null;Check(CoinWalletUI.Visible,"home rewards button opens calendar "+language);
      GameObject.Find("Close coin wallet").GetComponent<Button>().onClick.Invoke();
     }
    }

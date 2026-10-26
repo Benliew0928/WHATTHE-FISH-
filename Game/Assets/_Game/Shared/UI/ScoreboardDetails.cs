@@ -30,7 +30,7 @@ namespace WhatTheFish {
   readonly List<ScoreboardPlayerData> players=new();readonly TeamView[] teams=new TeamView[2];
   readonly Vector3[] corners=new Vector3[4];float motion,nextRefresh,width,height,rosterHeight,rowHeight;int context;bool practice;Vector2 previousSize;
   sealed class TeamView {public RectTransform root,viewport,content;public Text label,total,columns;public ScrollRect scroll;public readonly List<Row> rows=new();public Text more;}
-  sealed class Row {public RectTransform root;public Text number,name;public Text[] stats;public BasketballPlate selected;public CoveButton button;public ulong id;}
+  sealed class Row {public RectTransform root;public Text number,name;public Text[] stats;public BasketballPlate selected;public CoveButton button;public ulong id;public PlayerReportAction report;}
   Color Ink=>owner.Sport==SportId.Basketball?SportsScoreboard.Charcoal:SportsScoreboard.Green;
   Color Accent=>owner.Sport==SportId.Basketball?SportsScoreboard.Orange:SportsScoreboard.Lime;
   bool Football=>owner.Sport==SportId.Football;
@@ -98,7 +98,7 @@ namespace WhatTheFish {
   void Update(){
    if(!owner)return;
    if(Expanded&&(owner.Frame.context!=context||owner.Frame.practice!=practice||owner.Frame.phase=="CHOOSE TEAMS"||!owner.Frame.ready||PlayerView.Instance&&PlayerView.Instance.InputBlocked))SetExpanded(false);
-   if(Input.GetKeyDown(KeyCode.Escape)&&Expanded&&!RoomChatUI.BlocksBack){HandleBack();return;}
+   if(Input.GetKeyDown(KeyCode.Escape)&&Expanded&&!RoomChatUI.BlocksBack&&!PlayerReportUI.BlocksBack){HandleBack();return;}
    if(Input.GetKeyDown(KeyCode.Tab)&&owner.Live&&!RoomChatUI.BlocksInput&&AppRoot.Instance&&AppRoot.Instance.Exploring&&PlayerView.Instance&&!PlayerView.Instance.InputBlocked)Toggle();
    motion=MenuPreferences.ReducedMotion?(Expanded?1:0):Mathf.MoveTowards(motion,Expanded?1:0,Time.unscaledDeltaTime/.24f);
    if(Panel){float eased=1-Mathf.Pow(1-motion,3);opacity.alpha=eased;Panel.localScale=new Vector3(1,.965f+.035f*eased,1);if(!Expanded&&motion<=0)Panel.gameObject.SetActive(false);}
@@ -127,10 +127,10 @@ namespace WhatTheFish {
    var row=new Row();row.root=CoveUI.Rect(team.content,"Player",0,0,260,28);row.selected=Plate(row.root,"Player highlight",0,0,260,28,Color.clear,2);
    if(Football){row.selected.raycastTarget=true;row.button=row.selected.gameObject.AddComponent<CoveButton>();row.button.targetGraphic=row.selected;row.button.transition=Selectable.Transition.None;row.button.navigation=new Navigation{mode=Navigation.Mode.None};row.button.onClick.AddListener(()=>SelectPlayer(row.id));}
    row.number=Label(row.root,"Shirt number","",2,0,23,28,11,SportsScoreboard.Ivory);row.name=Label(row.root,"Player name","",29,0,120,28,12,SportsScoreboard.Ivory);GameLocalization.UserContent(row.name);
-   row.stats=new Text[Football?2:4];for(int i=0;i<row.stats.Length;i++)row.stats[i]=Label(row.root,new[]{Football?"Goals":"Points","Assists","Passes","Interceptions"}[i],"0",150+i*27,0,27,28,Football?13:12,SportsScoreboard.Ivory,TextAnchor.MiddleCenter);return row;
+   row.stats=new Text[Football?2:4];for(int i=0;i<row.stats.Length;i++)row.stats[i]=Label(row.root,new[]{Football?"Goals":"Points","Assists","Passes","Interceptions"}[i],"0",150+i*27,0,27,28,Football?13:12,SportsScoreboard.Ivory,TextAnchor.MiddleCenter);row.report=PlayerReportAction.Create(row.root);return row;
   }
   void PresentRow(Row row,ScoreboardPlayerData p){
-   row.id=p.id;row.root.name="Player "+p.id;row.root.gameObject.SetActive(true);row.number.text=p.number.ToString();row.number.color=p.team==FootballTeam.A?SportsScoreboard.Blue:SportsScoreboard.Red;
+   row.id=p.id;row.root.name="Player "+p.id;row.root.gameObject.SetActive(true);row.report.Bind(p.id);row.number.text=p.number.ToString();row.number.color=p.team==FootballTeam.A?SportsScoreboard.Blue:SportsScoreboard.Red;
    var app=AppRoot.Instance;bool own=app&&app.LocalAthlete&&p.id==(Football?FootballBots.Id(app.LocalAthlete):BasketballMatch.PlayerId(app.LocalAthlete));
    row.name.text=ShortName(p.name,own?(Football?12:8):(Football?17:12))+(own?" · "+GameLocalization.Translate("YOU"):"");row.stats[0].text=p.score.ToString();row.stats[1].text=p.assists.ToString();if(!Football){row.stats[2].text=p.passes.ToString();row.stats[3].text=p.interceptions.ToString();}
    row.selected.color=Glass(Accent,Football&&p.id==SelectedPlayer?.16f:own?.08f:0);
@@ -146,7 +146,7 @@ namespace WhatTheFish {
    safe.GetWorldCorners(corners);var lower=r.InverseTransformPoint(corners[0]);var upper=r.InverseTransformPoint(corners[2]);float visibleWidth=upper.x-lower.x,pixelsPerUnit=Screen.safeArea.width/Mathf.Max(1,visibleWidth);
    Top=r.rect.height+8;width=Football?Mathf.Clamp(visibleWidth-394,406,600):Mathf.Clamp(visibleWidth-280,470,600);width=Mathf.Min(width,visibleWidth-24);
    float available=-lower.y-Top-Mathf.Min(100,visibleWidth*.12f);height=Mathf.Clamp(available,180,Football?302:224);
-   rowHeight=Football?Mathf.Max(24,44/Mathf.Max(.5f,pixelsPerUnit)):18;
+   rowHeight=Mathf.Max(26,44/Mathf.Max(.5f,pixelsPerUnit));
    float rosterTop=Football?108:47;rosterHeight=Mathf.Max(35,height-rosterTop-85);if(Football)rosterHeight=Mathf.Max(rowHeight,Mathf.Floor(rosterHeight/rowHeight)*rowHeight);
    var size=new Vector2(width,height);bool resize=size!=previousSize;previousSize=size;
    float x=Football?lower.x+142+Mathf.Max(0,visibleWidth-394-width)*.5f:(r.rect.width-width)*.5f;x=Mathf.Clamp(x,lower.x+12,upper.x-width-12);
@@ -158,12 +158,16 @@ namespace WhatTheFish {
     var team=teams[i];team.root.anchoredPosition=new Vector2(12+i*(column+12),-rosterTop);team.root.sizeDelta=new Vector2(column,46+rosterHeight+14);team.total.rectTransform.anchoredPosition=new Vector2(column-50,4);
     ((RectTransform)team.root.Find("Team identity")).sizeDelta=new Vector2(column,2);team.viewport.sizeDelta=new Vector2(column,rosterHeight);
     int count=0;foreach(var row in team.rows)if(row.root.gameObject.activeSelf){row.root.anchoredPosition=new Vector2(0,-count++*rowHeight);row.root.sizeDelta=new Vector2(column,rowHeight);row.selected.rectTransform.sizeDelta=row.root.sizeDelta;row.number.rectTransform.sizeDelta=new Vector2(46,rowHeight*2);
-     float statsWidth=Football?72:120,nameWidth=column-29-statsWidth;row.name.rectTransform.sizeDelta=new Vector2(nameWidth*2,rowHeight*2);for(int j=0;j<row.stats.Length;j++){float sw=statsWidth/row.stats.Length;row.stats[j].rectTransform.anchoredPosition=new Vector2(column-statsWidth+j*sw,0);row.stats[j].rectTransform.sizeDelta=new Vector2(sw*2,rowHeight*2);}}
+     float actionWidth=Mathf.Max(26,44/Mathf.Max(.5f,pixelsPerUnit)),statsWidth=Football?64:96,nameWidth=column-33-statsWidth-actionWidth;
+     row.report.Place(column-actionWidth,0,actionWidth,rowHeight);row.name.rectTransform.sizeDelta=new Vector2(Mathf.Max(20,nameWidth)*2,rowHeight*2);
+     var record=players.Find(p=>p.id==row.id);bool own=app.LocalAthlete&&row.id==(Football?FootballBots.Id(app.LocalAthlete):BasketballMatch.PlayerId(app.LocalAthlete));string suffix=own?" · "+GameLocalization.Translate("YOU"):"";
+     row.name.text=ShortName(record.name,Mathf.Max(3,Mathf.FloorToInt(nameWidth/6)-suffix.Length))+suffix;
+     for(int j=0;j<row.stats.Length;j++){float sw=statsWidth/row.stats.Length;row.stats[j].rectTransform.anchoredPosition=new Vector2(column-actionWidth-4-statsWidth+j*sw,0);row.stats[j].rectTransform.sizeDelta=new Vector2(sw*2,rowHeight*2);}}
     team.content.sizeDelta=new Vector2(column,count*rowHeight);team.scroll.vertical=count*rowHeight>rosterHeight;
     team.more.text="";
     team.columns.text="PLAYER";team.columns.rectTransform.sizeDelta=new Vector2(column*2,32);
     var headers=team.root.Find("Stat columns");if(!headers){var group=CoveUI.Rect(team.root,"Stat columns",0,27,column,16);foreach(string caption in Football?new[]{"G","AST"}:new[]{"PTS","AST","PASS","INT"})Label(group,caption,caption,0,0,30,16,9,SportsScoreboard.Ivory,TextAnchor.MiddleCenter);headers=group;}
-    float headerWidth=Football?72:120;for(int j=0;j<headers.childCount;j++){var t=(RectTransform)headers.GetChild(j);float sw=headerWidth/headers.childCount;t.anchoredPosition=new Vector2(column-headerWidth+j*sw,0);t.sizeDelta=new Vector2(sw*2,32);}
+    float headerWidth=Football?64:96,reportWidth=Mathf.Max(26,44/Mathf.Max(.5f,pixelsPerUnit));for(int j=0;j<headers.childCount;j++){var t=(RectTransform)headers.GetChild(j);float sw=headerWidth/headers.childCount;t.anchoredPosition=new Vector2(column-reportWidth-4-headerWidth+j*sw+1.5f,0);t.sizeDelta=new Vector2((sw-3)*2,32);t.GetComponent<LocalizedText>().FitSingleLine(t.name,18);}
     if(resize)team.scroll.verticalNormalizedPosition=1;
    }
    if(!practice&&(teams[0].scroll.vertical||teams[1].scroll.vertical))note.text="Match continues · Scroll player lists";

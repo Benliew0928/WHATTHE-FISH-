@@ -1,5 +1,128 @@
 # APK size audit — measured release records
 
+## Gold fish coin and manual daily rewards — 26 October 2026
+
+Official AndroidSubmission: **168,154,644 -> 168,186,270 bytes (+31,626)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,813,730 bytes**.
+SHA-256: **728A629C12E890797EBACD16341571EEC03EDCC3787C50B9B5080E407A1170A5**.
+
+Changes and validation: [coin/rewards UI report](COIN-REWARDS-UI.md).
+The new 256px ASTC 4x4 coin occupies **46,083 compressed bytes**. The high-quality
+1280px RGBA master is retained outside Unity and adds no APK payload. No wording
+is embedded in the coin, gift or tick artwork.
+
+Largest compressed entries: scene bundle **45,956,872 bytes** (-11,184), IL2CPP
+**13,318,038** (-3,578), Vivox **10,240,163** and Unity **9,828,173** (unchanged).
+Remaining growth is small sprite/catalog/resource metadata. No existing art
+quality was reduced and no unexpected large growth was found. The golf-ball
+prefab generation changed local IDs/order only; a format-aware graph comparison
+verified all 14 objects/components and external references before restoring its
+original source representation.
+
+Verified the APK itself: hard size gate, ZIP CRC, **1,410** exact audit entries,
+five-scene bundle hash/length, v2 signature, expected non-debuggable package,
+native voice/scan bridges and development-review exclusion. All **383** compiled
+Android source documents match. **7,236** client calendar/UI and **760**
+wallet/store integration assertions pass; the complete **342-file WindowsFinal**
+was promoted with matching hashes. Localization and artwork checks pass.
+
+Evidence: `Builds/CoinRewardsQA/`, `Builds/SizeAudit/latest/` and
+`Builds/StoreQA/Run-20261026-235341-485/`. Previous APK/audit:
+`Legacy/20261026-235343-587-coin-rewards-android/`. The existing Android Debug
+certificate remains in use. Phone appearance, touch and performance are
+unverified by this Windows-based validation.
+
+## Login sliders, website links and sign-out — 26 October 2026
+
+Official AndroidSubmission: **168,146,796 -> 168,154,644 bytes (+7,848)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,845,356 bytes**.
+SHA-256: **141DA3CA5AC119DEE91EB515631226D1DA95F9914D5FBCB5F33A29D5C172B8AB**.
+
+Changes and validation: [login UI report](LOGIN-UI-UPDATE.md).
+The compressed scene bundle is **45,968,056 bytes** (+3,836); IL2CPP is
+**13,321,616** (+3,447). Vivox **10,240,163** and Unity **9,828,173** are unchanged.
+The remaining growth is small metadata/resource content. No new large textures,
+geometry changes or quality reduction were introduced.
+
+Verified the APK itself: hard size gate, ZIP CRC, **1,409** exact audit entries,
+five-scene bundle hash/length, v2 signature, non-debuggable manifest and expected
+runtime/native voice/scan types. All **383** Android compiled source documents
+match. Evidence: `Builds/LoginUIQA/`, `Builds/SizeAudit/latest/`.
+Previous APK/audit: `Legacy/20261026-205233-115-login-ui-android/`.
+Physical phone quality/performance and browser/provider handoff remain unverified.
+
+## Local website and welcome Info preparation — 26 October 2026
+
+Official AndroidSubmission: **168,114,068 -> 168,146,796 bytes (+32,728)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,853,204 bytes**.
+SHA-256: **96EBADD627A8EA6CB02EFCF452B09D8AB954D6CA674B3F52ACA7BB3185891AFD**.
+
+Adds localized offline Terms/Privacy drafts and replaces welcome Info content
+with Terms, Privacy and Website actions. The public website address remains
+empty. The separate 12-page local website is generated under ignored Builds;
+its image copies are not new game assets. No site or app was published.
+
+Validation: **4,634** welcome/document checks across four screen sizes and all
+three languages; **3,660** catalog entries, five fonts and **16** artwork checks;
+24 website page/viewport combinations. All **383 Android / 533 Windows** compiled
+source documents match. The APK passes the strict size gate, ZIP CRC, **1,409**
+exact audit entries, five-scene bundle length/SHA-256, v2 signature, package and
+non-debuggable manifest checks. Development review types are excluded. The
+complete **342-file WindowsFinal** player was promoted with all hashes verified.
+
+Largest compressed entries: scene bundle **45,964,220 bytes** (+8,951),
+IL2CPP **13,318,169** (+6,528), Vivox **10,240,163** (unchanged), and Unity
+**9,828,173** (unchanged). The largest resource-data increase is 13,091 bytes.
+No quality reduction was applied. The build regenerated golf-ball local IDs;
+format-aware comparison verified all 14 objects/components and external
+references unchanged, then restored the original source representation.
+
+Evidence: `Builds/PublicInfoQA/`, `Builds/SizeAudit/latest/` and
+[website/Info validation](AppGallery/WEBSITE-INFO-VALIDATION.md).
+Previous APK/audit: `Legacy/20261026-184952-869-public-info-android/`;
+previous complete Windows player: `Legacy/20261026-185147-630-public-info-windows/`.
+The APK is signed with **Android Debug**, not a production release certificate.
+Physical Huawei testing, final privacy/child review, retention operations and
+public hosting remain pending.
+
+## Player reporting and text safety — 26 October 2026
+
+Official AndroidSubmission: **168,106,738 -> 168,114,068 bytes (+7,330)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,885,932 bytes**.
+SHA-256: **47915DF3CE129D0653F8900598E2F4593681B18201ED2C2A9EE26A8CBC084116**.
+
+Adds the shared English/Chinese/Malay text vocabulary, client/host/backend
+validation, and one Report player flow with eight reasons and custom details.
+Report actions use a warning triangle containing an exclamation mark in profiles,
+Football/Basketball scoreboards, Golf expanded standings and Fishing player cards
+and results. The deployed service stores private, retry-safe incident records
+for manual review. No automatic bans, voice moderation or image classifier.
+
+Validation: **77 backend tests**, **7 live-service checks**, **2,734 moderation
+client assertions**, **1,029 scoreboard regression assertions**, **541 final
+Malay basketball assertions**, and **234 multiplayer chat assertions**.
+**3,567** localization entries, all five font faces and **16** artwork checks pass.
+The APK passes the hard size gate, v2 signature, ZIP CRC, **1,407** exact audit
+entries, and five-scene bundle hash/length verification. All **381 Android /
+531 Windows** compiled source documents match. Development review helpers are
+excluded from Android. Network protocol remains **88**. The complete **342-file
+WindowsFinal** player was promoted with hashes checked.
+
+Largest compressed entries remain the scene bundle **45,955,269 bytes**,
+IL2CPP **13,311,641**, Vivox **10,240,163**, and Unity **9,828,173**. IL2CPP grew
+8,953 bytes; scene-bundle compression changed by -5,696 bytes. No art quality
+reduction or new raster asset was introduced. The build regenerated golf ball
+local IDs; graph comparison verified identical objects, transforms, components
+and external references, and the unchanged source representation was retained.
+
+Evidence: `Builds/ModerationQA/`, `Builds/SizeAudit/latest/` and
+[player safety implementation notes](PLAYER-SAFETY.md). Previous APK/audit:
+`Legacy/20261026-122155-601-moderation-android/`; previous Windows player:
+`Legacy/20261026-180039-677-moderation-windows/`. Other reviewed candidate archives
+are listed in the implementation notes. No physical Android device was connected;
+phone touch, keyboard behavior and performance remain unverified. The APK retains
+the project's development signing configuration.
+
 ## Cosmetic store with remote integration — 26 October 2026
 
 Official AndroidSubmission: **166,942,348 -> 168,106,738 bytes (+1,164,390)**.

@@ -50,7 +50,7 @@ namespace WhatTheFish {
    if(launcherOpacity){launcherOpacity.alpha=app.Exploring&&app.SelectedSport==SportId.Golf&&GolfHUD.Instance?GolfHUD.Instance.AuxiliaryOpacity:1;launcherOpacity.interactable=launcherOpacity.blocksRaycasts=!golfAim;}
    bool isFocused=input&&input.isFocused;
    if(isFocused&&!focused){app.view.ClearMatchInput();PlayerView.LookDelta=Vector2.zero;}focused=isFocused;
-   if(Input.GetKeyDown(KeyCode.Escape)&&(open||quick||voiceOpen)){Close();return;}
+   if(Input.GetKeyDown(KeyCode.Escape)&&!PlayerReportUI.BlocksBack&&(open||quick||voiceOpen)){Close();return;}
    if(!golfAim&&!isFocused&&!open&&!quick&&!voiceOpen&&Input.GetKeyDown(KeyCode.Return)){SetOpen(true);input.ActivateInputField();}
    else if(isFocused&&(Input.GetKeyDown(KeyCode.Return)||Input.GetKeyDown(KeyCode.KeypadEnter))&&string.IsNullOrEmpty(UnityEngine.Input.compositionString))SendText();
    if(open&&dirty&&Time.unscaledTime>=nextRebuild){dirty=false;nextRebuild=Time.unscaledTime+.1f;RenderHistory();}

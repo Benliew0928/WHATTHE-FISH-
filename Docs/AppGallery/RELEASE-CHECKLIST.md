@@ -11,13 +11,21 @@ All unchecked items are pending, not implied to pass by successful compilation.
       reverified in the console by this task.
 - [x] Malaysia, free download, no advertising and no real-money in-app purchases confirmed.
 - [x] All-ages intended audience selected; this is not an official rating.
+- [x] Same features for everyone, daily owner review, no launch deadline.
+- [x] Local three-language website and offline Terms/Privacy drafts prepared.
+- [x] Owner separately authorized website publication; Cloudflare Pages development
+      preview is live. See [deployment evidence](../../Website/DEPLOYMENT.md).
+- [x] Welcome Info replaces the previous content with Terms, Privacy and Website.
 - [x] Retain Google login conditionally on AppGallery acceptance and compatibility.
 - [ ] Complete the children's privacy, communication and guardian-control review.
 - [ ] Define support/report procedures, retention periods and deletion escalation.
+- [ ] Review and adopt [proposed periods and daily procedure](OPERATIONS-PROPOSAL.md),
+      then implement cleanup and verify restores/deletion against them.
+- [ ] Scrub deleted participants from another host's stored match roster/receipt JSON.
 - [ ] Confirm intended app/account ownership and matching publisher details.
 
-These decisions authorize preparation only; they do not authorize deployment,
-public policy hosting, production signing or store submission.
+The later website-publication request authorized the static preview deployment.
+It does not authorize further backend changes, production signing or store submission.
 
 ## Signing handoff
 

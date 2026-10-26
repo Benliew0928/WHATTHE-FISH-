@@ -16,7 +16,10 @@ An unlinked anonymous identity cannot be recovered after its credentials are los
 | Football/basketball loss or draw | 30 per eligible player |
 | Golf/fishing first, second, third | 200, 100, 50 |
 
-The first online session claims the daily reward automatically. A day resets at
+Players claim daily coins manually from Rewards by tapping the yellow calendar
+day. Startup, reconnects, opening Rewards and retrying sync only read the wallet.
+The Rewards button shows a plain red dot while a reward is unclaimed; it clears
+after a confirmed claim. A day resets at
 00:00 Malaysia time (UTC+8), using server time. Missing a calendar day restarts
 at day 1 without removing coins. The day after day 7 starts a new seven-day
 cycle. A complete cycle awards 3,100 coins; this is a rolling streak rather than
@@ -33,9 +36,12 @@ cup points then cup score. Exact ties share competition rank (1, 1, 3).
 
 ## Wallet and customization
 
-The home menu coin button opens the wallet. Results provide a second entry and
-show the confirmed award. The wallet displays the seven-day schedule, reset
-countdown, recent transactions, connection state and account-linking shortcut.
+The home menu gold fish coin displays the balance without accepting clicks.
+The adjacent Rewards button uses a gift icon and opens a seven-day calendar.
+Every day shows its number and coin value: the claimable day is yellow, all
+others are white, and claimed days show ticks. There are no received/next
+subtitles. Connection failures show a retry action without granting coins.
+Results show the confirmed match award as read-only text.
 All player-facing additions use English, Simplified Chinese and Bahasa Melayu.
 
 The [cosmetic store](COSMETIC-STORE.md) now provides two free choices per category

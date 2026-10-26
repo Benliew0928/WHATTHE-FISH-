@@ -1,9 +1,11 @@
 import { AuthError } from './auth.mjs';
+import { blockedText } from './text-safety.mjs';
 export function validateName(value) {
   if(typeof value!=='string')throw new AuthError(400,'invalid_name');
   const name=value.normalize('NFC').trim();
   if(!name || name.length>16 || !/^[\p{L}\p{N}\p{M} _-]+$/u.test(name) || !/[\p{L}\p{N}]/u.test(name))
     throw new AuthError(400,'invalid_name');
+  if(blockedText(name))throw new AuthError(400,'offensive_name');
   return name;
 }
 export function normalize(value) {

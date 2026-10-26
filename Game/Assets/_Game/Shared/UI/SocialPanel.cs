@@ -196,7 +196,11 @@ namespace WhatTheFish {
   async Task ViewPlayer(string id,int version){
    feedback.text="Loading player…";
    try{
-    var p=await PlayerProfiles.Get(id);if(!this||generation!=version)return;
+    var p=await PlayerProfiles.Get(id);if(!this||generation!=version)return;PresentPlayer(p);
+   }catch(Exception e){if(this&&generation==version)feedback.text=PlayerProfiles.Explain(e);}
+  }
+  void PresentPlayer(PublicProfile p){
+    string id=p.id;
     var hero=Card(body,"Player character card",0,0,330,630);Label(hero.transform,"PLAYER CARD",20,14,290,34,22,true,Cyan,TextAnchor.MiddleCenter);
     ProfileAvatar.Add(hero.transform,p,20,48,290,true);
     Label(hero.transform,p.hasPhoto>0?"CUSTOM PICTURE":"CHARACTER "+(p.avatar+1).ToString("00"),20,536,290,40,23,true,Muted,TextAnchor.MiddleCenter);
@@ -216,13 +220,10 @@ namespace WhatTheFish {
      Action(body,"Player friendship action","Remove friend",848,427,368,68,Raised,()=>FriendAction(id,"remove"),CoveSymbol.People,26);
     }else Action(body,"Player friendship action",p.relationship=="outgoing"?"Cancel request":"Add friend",388,427,828,68,p.relationship=="outgoing"?Raised:Lime,()=>FriendAction(id,p.relationship=="outgoing"?"cancel":"request"),CoveSymbol.People,28);
     Action(body,"Block player","Block player",388,545,260,56,Background,()=>ConfirmBlock(id),size:23);
-    Action(body,"Report player name","Report name",670,545,260,56,Background,()=>Report(id,"name"),size:23);
-    Action(body,"Report player photo","Report picture",952,545,264,56,Background,()=>Report(id,"photo"),size:23);
+    Action(body,"Report player","Report player",670,545,546,56,Background,()=>PlayerReportUI.Open(p),CoveSymbol.Warning,23);
     feedback.text="A player code stays the same, even when a name changes.";
-   }catch(Exception e){if(this&&generation==version)feedback.text=PlayerProfiles.Explain(e);}
   }
   void FriendAction(string id,string action)=>Run(action=="request"?"Sending friend request…":"Updating friendship…",async()=>{await PlayerProfiles.Friend(id,action);ShowAfter("player",id);});
-  void Report(string id,string reason)=>Run("Sending your report…",async()=>{await PlayerProfiles.Report(id,reason);feedback.text="Report saved for the game team to review. You can also block this player.";});
   void ConfirmBlock(string id){
    feedback.text="Block this player? This removes friendship and hides each profile from the other.";
    if(body.Find("Confirm block player"))return;
@@ -239,7 +240,7 @@ namespace WhatTheFish {
   static string LiveKey(string id){var p=RoomTeleport.Players().FirstOrDefault(n=>n.ProfileId.Value.ToString()==id);return p?p.Nickname.Value+":"+p.ProfileAvatarVersion.Value:"";}
   static string RoomKey()=>string.Join("|",RoomTeleport.Players().OrderBy(p=>p.OwnerClientId).Select(p=>p.ProfileId.Value+":"+p.Nickname.Value+":"+p.ProfileAvatarVersion.Value));
   void Update(){
-   Layout();if(AccountPanel.Visible)return;
+   Layout();if(AccountPanel.Visible||PlayerReportUI.BlocksBack)return;
    if(Input.GetKeyDown(KeyCode.Escape)&&!InvitationBack()&&!working)Close();
    if(searching&&Time.unscaledTime>=searchAt)StartSearch(0);
    if(!working&&page=="player"&&Time.unscaledTime>=liveAt){liveAt=Time.unscaledTime+.4f;if(liveKey!=LiveKey(selectedId))Show("player",selectedId);}

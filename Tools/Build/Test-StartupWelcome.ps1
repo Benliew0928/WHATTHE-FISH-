@@ -1,6 +1,7 @@
 param(
     [string]$PlayerPath='Builds/StartupWelcomeQA/Player/WhatTheFish.exe',
-    [string]$OutputPath=''
+    [string]$OutputPath='',
+    [switch]$InfoOnly
 )
 $ErrorActionPreference='Stop'
 $startupRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
@@ -23,6 +24,7 @@ foreach($startupCase in $startupCases){
     New-Item -ItemType Directory -Path $startupFolder | Out-Null
     $startupLog=Join-Path $startupFolder 'player.log'
     $startupArgs=@('-batchmode','-force-d3d11','-screen-width',$startupCase.Width,'-screen-height',$startupCase.Height,'-screen-fullscreen','0','-job-worker-count','2','-language','en','-localizationProfile',$startupProfile,'-guestProfile',$startupProfile,'-startupWelcomeReview',('"'+$startupFolder+'"'),'-contentCache',('"'+$startupCache+'"'),'-logFile',('"'+$startupLog+'"'))+$startupCase.Extra
+    if($InfoOnly){$startupArgs+='-welcomeInfoOnly'}
     $startupProcess=Start-Process -FilePath $startupPlayer -ArgumentList $startupArgs -WorkingDirectory $env:TEMP -WindowStyle Hidden -PassThru
     try {
         if(!$startupProcess.WaitForExit(240000)){throw "Startup review timed out: $startupFolder"}

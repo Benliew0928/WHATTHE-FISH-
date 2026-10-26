@@ -49,36 +49,12 @@ namespace WhatTheFish {
    var touch=Rect(row.transform,id,310,9,350,62);var hit=touch.gameObject.AddComponent<Image>();hit.color=Color.clear;
    var track=Plate(touch,"Recessed track",0,17,350,28,"CDDFD0","E1E7D3","AEC6B5",14,false);
    var slider=touch.gameObject.AddComponent<Slider>();slider.direction=Slider.Direction.LeftToRight;
-   var fillArea=Rect(touch,"Fill area",16,22,318,18);var fill=Plate(fillArea,"Teal fill",0,0,318,18,"76E6D3","37BCAF","31988F",9,false);CoveUI.Stretch(fill.rectTransform);slider.fillRect=fill.rectTransform;
+   // Fill the rail up to its inner border; only the thumb needs travel padding.
+   var fillArea=Rect(touch,"Fill area",2,19,346,24);var fill=Plate(fillArea,"Teal fill",0,0,346,24,"76E6D3","37BCAF","31988F",12,false);CoveUI.Stretch(fill.rectTransform);slider.fillRect=fill.rectTransform;
    var handleArea=Rect(touch,"Handle area",16,31,318,0);var handle=Plate(handleArea,"Thumb",0,0,44,44,"FFFFFF","FFF0BD","4EAB9B",22,true);handle.rectTransform.pivot=Vector2.one*.5f;
    slider.handleRect=handle.rectTransform;slider.targetGraphic=handle;slider.navigation=new Navigation{mode=Navigation.Mode.Automatic};
    slider.SetValueWithoutNotify(value);amount.text=Mathf.RoundToInt(value*100)+"%";
    slider.onValueChanged.AddListener(v=>{save(v);amount.text=Mathf.RoundToInt(v*100)+"%";});
-  }
-
-  void OpenWelcomeInfo(){
-   var card=UtilityPanel("Welcome info",WelcomeCopy("Your island getaway","欢迎来到运动岛","Percutian pulau anda"),WelcomeCopy("Four islands. One shared adventure.","四座岛屿，一起开启冒险。","Empat pulau. Satu pengembaraan bersama."),InfoButton,1040,760,WelcomeSymbol.Info);
-   if(!card)return;
-   InfoSport(card,SportId.Football,32,154,"D9F1CA",WelcomeCopy("Pass, tackle and score goals with your team.","传球、抢断，和队友一起进球。","Hantar, takel dan jaringkan gol bersama pasukan."));
-   InfoSport(card,SportId.Basketball,536,154,"FFE4C6",WelcomeCopy("Pass, defend and shoot your way to victory.","配合传球、防守投篮，争取胜利。","Hantar, bertahan dan menjaring untuk menang."));
-   InfoSport(card,SportId.Golf,32,320,"F0DFBA",WelcomeCopy("Aim, swing and finish five holes in fewer strokes.","瞄准挥杆，用更少杆数完成五个球洞。","Bidik, hayun dan tamatkan lima lubang dengan kurang pukulan."));
-   InfoSport(card,SportId.Fishing,536,320,"BFDDF4",WelcomeCopy("Cast your line, reel in fish and collect points.","抛竿收线，钓起鱼儿赢取积分。","Lontar pancing, tarik ikan dan kumpulkan mata."));
-   var together=Plate(card,"Play together overview",32,490,976,116,"DCF5E8","CBEADB","A8CDB9",24,false);
-   CoveUI.Icon(together.transform,CoveSymbol.People,23,25,48,Ink);
-   Label(together.transform,WelcomeCopy("Play solo or bring your crew","独自游玩，或约上朋友","Main sendiri atau bersama rakan"),92,5,858,44,28,true,Ink);
-   Label(together.transform,WelcomeCopy("Create a room or join with a code. Travel together and enjoy one mini game at a time.","创建房间或输入房间码加入。大家一起前往岛屿，每次进行一个小游戏。","Cipta bilik atau sertai dengan kod. Pergi bersama dan main satu permainan mini pada satu masa."),92,49,858,61,22,false,Ink);
-   Label(card,WelcomeCopy("Step-by-step tutorials await in the main menu after sign-in.","登录后，可在主菜单查看分步骤教程。","Tutorial langkah demi langkah tersedia di menu utama selepas log masuk."),36,623,968,50,22,false,Ink,TextAnchor.MiddleCenter);
-   var version=Label(card,"Version "+Application.version,34,695,398,30,20,false,Ink);version.name="Game version";
-   ActionButton(card,"Done welcome info","Done",810,684,198,52,"C9FFF0","82DDC4","57A996",CloseModal,WelcomeSymbol.None,26);
-  }
-
-  void InfoSport(Transform parent,SportId sport,float x,float y,string tint,string description){
-   var tile=Plate(parent,"About "+sport,x,y,472,148,"FFFFFF",tint,"BDD5C4",24,false);
-   var badge=Plate(tile.transform,"Sport badge",14,28,90,90,"FFFFFF",tint,"C2D6C6",27,false);
-   var icon=Rect(badge.transform,"Sport icon",3,3,84,84).gameObject.AddComponent<RawImage>();
-   icon.texture=Resources.Load<Texture2D>("WelcomeSportIcons/"+sport);icon.raycastTarget=false;
-   Label(tile.transform,sport.ToString(),117,8,333,46,30,true,Ink);
-   Label(tile.transform,description,117,62,333,72,23,false,Ink);
   }
 
  }

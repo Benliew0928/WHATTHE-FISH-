@@ -9,7 +9,7 @@ namespace WhatTheFish {
  // opening this card never awards or persists a score.
  public sealed class FishingResultsUI:MonoBehaviour {
   sealed class Standing {
-   public RectTransform rect;public FishingStickerGraphic panel;public Text rank,name,score,cupPoints,cupCatch,status;
+   public RectTransform rect;public FishingStickerGraphic panel;public Text rank,name,score,cupPoints,cupCatch,status;public PlayerReportAction report;
   }
   RectTransform page,modal,card,reopen,crewStrip,summary,notes,footer;
   FishingResultsLayout layout;Font fallback;
@@ -86,7 +86,7 @@ namespace WhatTheFish {
     row.score=Label("Fishing final score "+i,row.rect,"",layout.rowFontSize);
     row.cupPoints=Label("Fishing final cup points "+i,row.rect,"",layout.rowFontSize);
     row.cupCatch=Label("Fishing final cup catch "+i,row.rect,"",layout.rowFontSize);
-    row.status=Label("Fishing final status "+i,row.rect,"",layout.labelFontSize);standings[i]=row;
+    row.status=Label("Fishing final status "+i,row.rect,"",layout.labelFontSize);row.report=PlayerReportAction.Create(row.rect);standings[i]=row;
    }
    summary=Rect("Fishing local round summary",card,Vector2.zero,Vector2.zero);GolfHUDStyle.Panel(summary,LocalProfile.Hex("D2F2E5"),true).cornerRadius=18;
    summaryTitle=Label("Fishing local round heading",summary,"YOUR ROUND",layout.rowFontSize,TextAnchor.MiddleLeft);
@@ -157,7 +157,7 @@ namespace WhatTheFish {
    subtitle.gameObject.SetActive(!string.IsNullOrEmpty(subtitle.text));
    bool cup=frozenMatch.mode==FishingMode.Cup;cupHeading.gameObject.SetActive(cup);cupCatchHeading.gameObject.SetActive(cup);
    for(int i=0;i<standings.Length;i++){
-    var row=standings[i];bool show=i<frozenPlayers.Length;row.rect.gameObject.SetActive(show);if(!show)continue;var p=frozenPlayers[i];bool mine=p.owner==local;
+    var row=standings[i];bool show=i<frozenPlayers.Length;row.rect.gameObject.SetActive(show);if(!show)continue;var p=frozenPlayers[i];bool mine=p.owner==local;row.report.Bind(p.owner);
     row.panel.Refresh(1,mine?GolfHUDStyle.LocalBlue:LocalProfile.Hex("DFF5F0"));GameLocalization.UserContent(row.name);row.name.text=frozenNames[i]+(mine&&!string.Equals(frozenNames[i],"YOU",StringComparison.OrdinalIgnoreCase)?GameLocalization.Translate(" · YOU"):"");
     row.rank.text=frozenMatch.mode==FishingMode.Crew?"":(1+frozenPlayers.Count(q=>frozenMatch.cupFinished?q.cupPoints>p.cupPoints||q.cupPoints==p.cupPoints&&q.cupScore>p.cupScore:q.score>p.score)).ToString();
     row.score.text=p.score.ToString();row.cupPoints.gameObject.SetActive(cup);row.cupCatch.gameObject.SetActive(cup);row.cupPoints.text=p.cupPoints.ToString();row.cupCatch.text=p.cupScore.ToString();row.status.text=!p.connected?"LEFT":frozenMatch.outcome==FishingOutcome.Abandoned?"STOPPED":frozenMatch.mode==FishingMode.Crew?(p.catches>0?"CAUGHT":"NO CATCH"):"FINISHED";
@@ -200,7 +200,7 @@ namespace WhatTheFish {
    bool cup=frozenMatch.mode==FishingMode.Cup;float nameX=inner*.067f,nameWidth=inner*(cup?.30f:.47f),scoreX=inner*(cup?.39f:.58f),scoreWidth=inner*(cup?.14f:.17f),statusX=inner*.84f,statusWidth=inner*.16f;
    Place(card.Find("Fishing results name heading") as RectTransform,pad+nameX,y,nameWidth,columnHeight);Place(scoreHeading.rectTransform,pad+scoreX,y,scoreWidth,columnHeight);Place(cupHeading.rectTransform,pad+inner*.54f,y,inner*.14f,columnHeight);Place(cupCatchHeading.rectTransform,pad+inner*.69f,y,inner*.14f,columnHeight);Place(card.Find("Fishing results status heading") as RectTransform,pad+statusX,y,statusWidth,columnHeight);y+=columnHeight;
    for(int i=0;i<standings.Length;i++){
-    var row=standings[i];Place(row.rect,pad,y+i*rowHeight,inner,rowHeight-5);Place(row.rank.rectTransform,4,0,inner*.06f,rowHeight-5);Place(row.name.rectTransform,nameX,0,nameWidth,rowHeight-5);Place(row.score.rectTransform,scoreX,0,scoreWidth,rowHeight-5);Place(row.cupPoints.rectTransform,inner*.54f,0,inner*.14f,rowHeight-5);Place(row.cupCatch.rectTransform,inner*.69f,0,inner*.14f,rowHeight-5);Place(row.status.rectTransform,statusX,0,statusWidth,rowHeight-5);FitSingleLine(row.name,row.name.text,layout.rowFontSize);FitSingleLine(row.status,row.status.text,layout.labelFontSize);
+    var row=standings[i];Place(row.rect,pad,y+i*rowHeight,inner,rowHeight-5);Place(row.rank.rectTransform,4,0,inner*.06f,rowHeight-5);Place(row.name.rectTransform,nameX,0,nameWidth-48,rowHeight-5);row.report.Place(nameX+nameWidth-46,(rowHeight-49)*.5f,44,44);Place(row.score.rectTransform,scoreX,0,scoreWidth,rowHeight-5);Place(row.cupPoints.rectTransform,inner*.54f,0,inner*.14f,rowHeight-5);Place(row.cupCatch.rectTransform,inner*.69f,0,inner*.14f,rowHeight-5);Place(row.status.rectTransform,statusX,0,statusWidth,rowHeight-5);FitSingleLine(row.name,row.name.text,layout.rowFontSize);FitSingleLine(row.status,row.status.text,layout.labelFontSize);
    }
    y+=count*rowHeight+gap;Place(summary,pad,y,inner,summaryHeight);Place(summaryTitle.rectTransform,16,0,inner-32,summaryHeadingHeight);
    float cell=(inner-32)/3,line=(summaryHeight-summaryHeadingHeight-4)/3;

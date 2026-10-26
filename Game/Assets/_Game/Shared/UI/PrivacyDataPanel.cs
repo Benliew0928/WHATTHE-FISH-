@@ -29,8 +29,7 @@ namespace WhatTheFish {
    Overview();Layout();
   }
   string PolicyUrl {
-   get{var file=Resources.Load<TextAsset>("AppGallery/PrivacyPolicyUrl");string value=file?file.text.Trim():"";
-    return Uri.TryCreate(value,UriKind.Absolute,out var uri)&&uri.Scheme=="https"&&uri.UserInfo.Length==0?value:"";}
+   get=>PublicInfoDocuments.UrlFor("privacy");
   }
   void Overview(){
    body.rectTransform.sizeDelta=new Vector2(1010,365);body.fontSize=23;

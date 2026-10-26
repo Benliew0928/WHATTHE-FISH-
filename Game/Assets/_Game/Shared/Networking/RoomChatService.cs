@@ -86,7 +86,7 @@ namespace WhatTheFish {
    int end=0,bytes=0;for(int i=0;i<Math.Min(indices.Length,TextLimit);i++){int next=i+1<indices.Length?indices[i+1]:result.Length;int count=Encoding.UTF8.GetByteCount(result.Substring(indices[i],next-indices[i]));if(bytes+count>480)break;bytes+=count;end=next;}
    return result.Substring(0,end);
   }
-  public bool SendText(string text)=>SubmitLocal(CleanText(text),"");
+  public bool SendText(string text){string clean=CleanText(text);if(TextSafety.Blocked(clean)){Status=TextSafety.ChatError;Changed?.Invoke();return false;}return SubmitLocal(clean,"");}
   public bool SendSticker(string sticker)=>Array.IndexOf(Stickers,sticker)>=0&&SubmitLocal("",sticker);
   bool SubmitLocal(string text,string sticker){
    if(!Ready){Status="Wait for the room to reconnect.";Changed?.Invoke();return false;}
@@ -106,6 +106,7 @@ namespace WhatTheFish {
    float now=Time.realtimeSinceStartup;
    if(lastSend.TryGetValue(sender,out var last)&&now-last<SendInterval-.03f){Reply(sender,new Packet{request=p.request,error="Please wait…"});return;}
    string text=CleanText(p.text),sticker=p.sticker??"";
+   if(TextSafety.Blocked(text)){lastSend[sender]=now;Reply(sender,new Packet{request=p.request,error=TextSafety.ChatError});return;}
    if(sticker.Length>0&&(Array.IndexOf(Stickers,sticker)<0||text.Length>0)||sticker.Length==0&&text.Length==0){Reply(sender,new Packet{request=p.request,error="Choose a sticker or type a message."});return;}
    lastSend[sender]=now;
    var host=NetworkAthlete.HostPlayer;

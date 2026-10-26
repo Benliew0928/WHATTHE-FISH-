@@ -50,6 +50,12 @@ namespace WhatTheFish {
     int before=chat.History.Count;Check(chat.SendText("rate-first"),"first send accepted");Check(!chat.SendText("rate-second"),"local cooldown rejects immediate second send");yield return new WaitForSecondsRealtime(.5f);
     Raw("{\"request\":\""+Guid.NewGuid().ToString("N")+"\",\"text\":\"rate-forged\"}");yield return new WaitForSecondsRealtime(.4f);Check(chat.History.Count==before+1,"server enforces cooldown against raw client");
    }
+   else if(action=="moderation"){
+    while(chat.Cooldown>0)yield return null;int before=chat.History.Count;
+    Check(!chat.SendText("f.u.c.k")&&chat.Status==TextSafety.ChatError,"sender rejects evasive profanity");
+    foreach(var word in new[]{"sh1t","pukimak","傻逼"}){Raw("{\"request\":\""+Guid.NewGuid().ToString("N")+"\",\"text\":\""+word+"\"}");yield return new WaitForSecondsRealtime(1.3f);Check(chat.History.Count==before&&chat.Status==TextSafety.ChatError,"host rejects raw profanity "+word);}
+    Check(chat.SendText("Nice pass, class team!"),"benign chat still sends after rejection");yield return new WaitForSecondsRealtime(.5f);Check(chat.History.Count==before+1,"only benign message enters history");
+   }
    else if(action=="invalid"){
     int before=chat.History.Count;Check(!chat.SendSticker("unknown"),"unknown sticker rejected locally");Check(!chat.SendText(" \n\t"),"empty text rejected locally");
     Raw("{\"request\":\""+Guid.NewGuid().ToString("N")+"\",\"sticker\":\"evil/path\"}");yield return new WaitForSecondsRealtime(.3f);Raw("{invalid json");yield return new WaitForSecondsRealtime(.3f);Raw("{}",int.MaxValue);yield return new WaitForSecondsRealtime(.3f);

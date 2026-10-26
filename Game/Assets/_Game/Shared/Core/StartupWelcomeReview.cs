@@ -52,6 +52,7 @@ namespace WhatTheFish {
     var close=welcome.Canvas.GetComponentsInChildren<Button>().First(b=>b.name==(button==welcome.LanguageButton?"Close language picker":"Close welcome dialog"));Click(close);yield return null;Check(!welcome.ModalOpen,"dialog closes without signing in");
    }
    yield return UtilityPages();
+   if(Environment.GetCommandLineArgs().Contains("-welcomeInfoOnly")){Finish();yield break;}
    // Device cutout simulation affects the production layout, not the art itself.
    welcome.ReviewSafeArea=new Rect(54,18,Screen.width-108,Screen.height-36);welcome.Layout();yield return null;LayoutChecks();yield return Capture("safe-area");welcome.ReviewSafeArea=null;welcome.Layout();yield return null;
    bool returning=PlayerIdentity.HasProfile;
@@ -83,7 +84,29 @@ namespace WhatTheFish {
    Check(PlayerIdentity.GuestId==File.ReadAllText(Path.Combine(folder,"guest-id.txt")),"profile editor preserves guest ID");yield return Capture("profile");
    Click(hub.GetComponentsInChildren<Button>().First(b=>b.name=="Close social panel"));yield return new WaitForSecondsRealtime(.4f);
    app.EnterOffline();yield return new WaitForSecondsRealtime(.8f);Check(app.Exploring&&app.view.active&&!app.view.InputBlocked,"normal gameplay input restored after guest entry");
+   yield return LogoutPages();
    Finish();
+  }
+  IEnumerator LogoutPages(){
+   var app=AppRoot.Instance;app.LeaveCourt();yield return new WaitForSecondsRealtime(.4f);
+   string guest=PlayerIdentity.GuestId,name=PlayerIdentity.SavedName;
+   foreach(var language in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
+    GameLocalization.Select(language,false);app.Show("settings");yield return new WaitForSecondsRealtime(.4f);
+    var signout=app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Sign out to login");
+    Check(signout.IsInteractable(),"settings exposes sign out "+language);Canvas.ForceUpdateCanvases();
+    foreach(var text in app.Menu.Content.GetComponentsInChildren<Text>())if(text.text.Length>0)Check(text.preferredHeight<=text.rectTransform.rect.height+2,"settings text fits "+language+" "+text.name);
+    yield return Capture("logout-settings-"+language);
+    Click(signout);yield return new WaitForSecondsRealtime(.3f);Click(app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Keep playing"));yield return new WaitForSecondsRealtime(.3f);
+    Check(!StartupWelcome.Blocking,"cancelling sign out keeps the game open "+language);
+    Click(signout);yield return new WaitForSecondsRealtime(.2f);Canvas.ForceUpdateCanvases();
+    foreach(var text in app.Menu.Content.Find("Confirmation").GetComponentsInChildren<Text>())Check(text.preferredHeight<=text.rectTransform.rect.height+2,"logout confirmation text fits "+language);
+    yield return Capture("logout-confirm-"+language);
+    Click(app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Sign out"));yield return null;
+    welcome=StartupWelcome.Instance;Check(welcome&&welcome.IsReady&&StartupWelcome.Blocking&&!app.Exploring&&!app.view.active,"sign out restores ready login and blocks gameplay "+language);
+    Check(PlayerIdentity.AccountId.Length==0&&PlayerIdentity.GuestId==guest&&PlayerIdentity.SavedName==name,"sign out preserves guest save and clears linked identity "+language);
+    yield return Capture("logout-login-"+language);Click(welcome.GuestButton);yield return new WaitForSecondsRealtime(.3f);Click(welcome.GuestContinueButton);yield return new WaitForSecondsRealtime(.4f);
+    Check(!StartupWelcome.Blocking&&app.Menu.Page=="home","guest can enter again after sign out "+language);
+   }
   }
   IEnumerator LoadingUtilities(){
    // Re-enter preparation deterministically after the real boot has completed.
@@ -115,7 +138,14 @@ namespace WhatTheFish {
    Check(welcome.Canvas.GetComponentsInChildren<Slider>().Length==4,"exactly four shared audio channels");
    Check(!welcome.Canvas.GetComponentsInChildren<Button>().Any(b=>b.name.StartsWith("Camera ")||b.name=="Layout"||b.name=="Fishing vibration"),"startup settings excludes in-game camera layout and sport-specific options");
    string[] names={"Master","Game sounds","Buttons","Ambience"};
-   for(int i=0;i<names.Length;i++){var slider=welcome.Canvas.GetComponentsInChildren<Slider>().First(s=>s.name==names[i]);slider.value=.31f+i*.11f;}
+   for(int i=0;i<names.Length;i++){
+    var slider=welcome.Canvas.GetComponentsInChildren<Slider>().First(s=>s.name==names[i]);
+    foreach(float value in new[]{0f,.5f,1f}){slider.value=value;Canvas.ForceUpdateCanvases();var rail=slider.transform.Find("Recessed track") as RectTransform;var area=slider.fillRect.parent as RectTransform;
+     Check(Mathf.Abs(area.anchoredPosition.x-2)<.01f&&Mathf.Abs(area.rect.width-(rail.rect.width-4))<.01f,"audio fill covers inner rail from left border "+names[i]+" "+value);
+     Check(Mathf.Abs(slider.fillRect.anchorMax.x-value)<.001f,"audio fill follows volume "+names[i]+" "+value);
+    }
+    slider.value=.31f+i*.11f;
+   }
    Click(WelcomeButton("Welcome reduced motion"));Check(MenuPreferences.ReducedMotion!=motion,"motion switch updates shared preference");
    yield return new WaitForSecondsRealtime(.2f);PanelChecks("Welcome settings");yield return Capture("welcome-settings");
    Click(WelcomeButton("Done welcome settings"));yield return new WaitForSecondsRealtime(.3f);MenuPreferences.Load();
@@ -127,23 +157,46 @@ namespace WhatTheFish {
    var language=GameLocalization.Current;
    foreach(var selected in new[]{GameLanguage.English,GameLanguage.SimplifiedChinese,GameLanguage.Malay}){
     GameLocalization.Select(selected,false);yield return new WaitForSecondsRealtime(.2f);
-    Click(welcome.SettingsButton,true);yield return new WaitForSecondsRealtime(.3f);PanelChecks("Welcome settings");yield return Capture("settings-"+selected);Click(WelcomeButton("Done welcome settings"));yield return new WaitForSecondsRealtime(.2f);
+    Click(welcome.SettingsButton,true);yield return new WaitForSecondsRealtime(.3f);PanelChecks("Welcome settings");yield return Capture("settings-"+selected);
+    var sliders=welcome.Canvas.GetComponentsInChildren<Slider>();var values=sliders.Select(s=>s.value).ToArray();
+    foreach(var slider in sliders)slider.value=1;yield return Capture("settings-full-"+selected);
+    for(int i=0;i<sliders.Length;i++)sliders[i].value=values[i];
+    Click(WelcomeButton("Done welcome settings"));yield return new WaitForSecondsRealtime(.2f);
     Click(welcome.InfoButton,true);yield return new WaitForSecondsRealtime(.3f);
     Check(welcome.Visible&&welcome.ModalOpen&&StartupWelcome.Blocking&&!TutorialSession.Active&&!app.Exploring,"Info is a read-only welcome dialog "+selected);
-    foreach(var id in new[]{SportId.Fishing,SportId.Basketball,SportId.Football,SportId.Golf})Check(welcome.Canvas.GetComponentsInChildren<WelcomePlate>().Any(p=>p.name=="About "+id&&!p.GetComponent<Button>()),"non-launching sport introduction "+id+" "+selected);
+    Check(!welcome.Canvas.GetComponentsInChildren<WelcomePlate>().Any(p=>p.name.StartsWith("About ")),"previous sport introductions removed "+selected);
+    Check(WelcomeButton("Welcome link terms").IsInteractable()&&WelcomeButton("Welcome link privacy").IsInteractable(),"bundled drafts available offline "+selected);
+    Check(WelcomeButton("Welcome link website").IsInteractable()&&PublicInfoDocuments.UrlFor("website").StartsWith("https://whatthefish-game.pages.dev/"),"published website enabled "+selected);
     Check(welcome.Canvas.GetComponentsInChildren<Text>().Any(t=>t.name=="Game version"&&GameLocalization.Source(t).Contains(Application.version)),"Info uses actual game version "+selected);
     PanelChecks("Welcome info");yield return Capture("info-"+selected);
     Check(!welcome.Canvas.GetComponentsInChildren<Button>().Any(b=>b.name=="Welcome credits"),"Info omits Credits "+selected);
-    foreach(var id in new[]{SportId.Football,SportId.Basketball,SportId.Golf,SportId.Fishing}){
-     var tile=welcome.Canvas.GetComponentsInChildren<WelcomePlate>().First(p=>p.name=="About "+id);
-     var image=tile.GetComponentInChildren<RawImage>();
-     Check(image&&image.texture&&image.texture.width==1024&&image.texture.height==1024,"full-resolution gameplay icon "+id+" "+selected);
-     Check(tile.top.r+tile.top.g+tile.top.b>tile.bottom.r+tile.bottom.g+tile.bottom.b,"sport card fades from light top to deeper bottom "+id);
+    foreach(var id in new[]{"terms","privacy"}){
+     string locale=selected==GameLanguage.SimplifiedChinese?"zh/":selected==GameLanguage.Malay?"ms/":"";
+     Check(PublicInfoDocuments.UrlFor(id)=="https://whatthefish-game.pages.dev/"+locale+id+".html","published localized document destination "+id+" "+selected);
+     if(PublicInfoDocuments.UrlFor(id).Length>0)continue;
+     Click(WelcomeButton("Welcome link "+id));yield return new WaitForSecondsRealtime(.3f);
+     Check(welcome.ModalOpen&&StartupWelcome.Blocking&&!app.Exploring,"document retains welcome input gate "+id+" "+selected);
+     var scroll=welcome.Canvas.GetComponentInChildren<ScrollRect>();
+     Check(scroll&&scroll.content.rect.height>scroll.viewport.rect.height,"full draft has scrollable content "+id+" "+selected);
+     PanelChecks("Welcome document");yield return Capture(id+"-top-"+selected);
+     // Exercise the actual scroll input and scrollbar rather than merely changing a transform.
+     scroll.OnScroll(new PointerEventData(EventSystem.current){scrollDelta=new Vector2(0,-200)});
+     yield return new WaitForSecondsRealtime(.2f);
+     Check(scroll.verticalNormalizedPosition<.99f,"wheel/touchpad reaches later content "+id+" "+selected);
+     scroll.verticalScrollbar.value=0;yield return new WaitForSecondsRealtime(.2f);
+     Check(scroll.verticalNormalizedPosition<.001f,"scrollbar reaches end of draft "+id+" "+selected);
+     PanelChecks("Welcome document");yield return Capture(id+"-end-"+selected);
+     Click(WelcomeButton("Back to welcome info"));yield return new WaitForSecondsRealtime(.2f);
+     Check(welcome.ModalOpen&&WelcomeButton("Welcome link terms").IsInteractable(),"Back restores info links "+id+" "+selected);
     }
     Click(WelcomeButton("Done welcome info"));yield return new WaitForSecondsRealtime(.2f);Check(!welcome.ModalOpen,"Info Done restores welcome "+selected);
     Click(welcome.InfoButton);yield return new WaitForSecondsRealtime(.2f);
     Click(WelcomeButton("Close Welcome info"));yield return new WaitForSecondsRealtime(.3f);Check(welcome.Visible&&!welcome.ModalOpen,"Info close restores welcome "+selected);
    }
+   Check(PublicInfoDocuments.BuildUrl("https://example.com/game/","terms","zh-Hans")=="https://example.com/game/zh/terms.html","website links preserve hosting subdirectory and Chinese locale");
+   Check(PublicInfoDocuments.BuildUrl("https://example.com/game","privacy","ms")=="https://example.com/game/ms/privacy.html","Malay policy link is localized");
+   Check(PublicInfoDocuments.BuildUrl("https://example.com","website","en")=="https://example.com/index.html","English homepage link");
+   foreach(var root in new[]{"","http://example.com","file:document","javascript:alert(1)","https://user:pass@example.com","https://example.com/?q=x","https://example.com/#x"})Check(PublicInfoDocuments.BuildUrl(root,"terms","en")=="","invalid website configuration remains unavailable: "+root);
    GameLocalization.Select(language,false);MenuPreferences.SetMaster(original[0]);MenuPreferences.SetSFX(original[1]);MenuPreferences.SetUI(original[2]);MenuPreferences.SetAmbience(original[3]);MenuPreferences.SetMotion(motion);MenuPreferences.Save();
    Check(PlayerIdentity.ProfileStorageKey==identity&&app.SelectedSport==sport&&app.view.mode==camera&&!app.rooms.Connected&&!TutorialSession.Active,"utilities preserve identity island camera and room state");
    Check(app.Menu.Page=="home"&&!app.Menu.Content.GetComponentsInChildren<Button>().Any(b=>b.IsInteractable()),"underlying main menu remains gated throughout");
@@ -153,8 +206,16 @@ namespace WhatTheFish {
    Canvas.ForceUpdateCanvases();var panel=welcome.Canvas.GetComponentsInChildren<WelcomePlate>().First(p=>p.name==name);
    Check(Contains(welcome.SafeArea,Bounds(panel.rectTransform)),name+" fits safe area");
    foreach(var text in panel.GetComponentsInChildren<Text>())if(text.enabled&&text.text.Length>0){
-    Check(text.preferredHeight<=text.rectTransform.rect.height+.2f&&text.cachedTextGenerator.characterCountVisible>0,"panel text fits "+GameLocalization.Code+": "+text.text.Replace('\n',' '));
-    if(!text.GetComponents<BaseMeshEffect>().Any(e=>e.IsActive())){var mesh=text.canvasRenderer.GetMesh();Check(mesh&&mesh.vertexCount==text.cachedTextGenerator.verts.Count,"label mesh contains only its own generated glyphs: "+text.name);}
+    Check(text.preferredHeight<=text.rectTransform.rect.height+.2f,"panel text fits "+GameLocalization.Code+": "+text.text.Replace('\n',' '));
+    // RectMask2D intentionally culls paragraphs outside a scroll viewport. Check
+    // every paragraph's layout, then only demand a rendered mesh for visible text.
+    var scroll=text.GetComponentInParent<ScrollRect>();
+    if(scroll&&!Bounds(text.rectTransform).Overlaps(Bounds(scroll.viewport)))continue;
+    Check(text.cachedTextGenerator.characterCountVisible>0,"visible panel text renders: "+text.name);
+    if(!text.GetComponents<BaseMeshEffect>().Any(e=>e.IsActive())){
+     var mesh=text.canvasRenderer.GetMesh();Check(mesh&&mesh.vertexCount==text.cachedTextGenerator.verts.Count,"label mesh contains only its own generated glyphs: "+text.name);
+     if(scroll&&mesh&&mesh.vertexCount>0)Check(mesh.bounds.min.y>=text.rectTransform.rect.yMin-4&&mesh.bounds.max.y<=text.rectTransform.rect.yMax+4,"rendered document glyphs stay inside their paragraph: "+text.name);
+    }
    }
   }
   void LayoutChecks(){
@@ -184,8 +245,8 @@ namespace WhatTheFish {
    foreach(var c in canvases){c.renderMode=RenderMode.ScreenSpaceCamera;c.worldCamera=camera;c.planeDistance=1;}
    Canvas.ForceUpdateCanvases();var rt=RenderTexture.GetTemporary(Screen.width,Screen.height,24);var old=RenderTexture.active;var original=camera.targetTexture;
    var image=new Texture2D(Screen.width,Screen.height,TextureFormat.RGB24,false);
-   // A prime stride avoids repeatedly sampling the same six columns at 1200px.
-   try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;image.ReadPixels(new Rect(0,0,Screen.width,Screen.height),0,0);image.Apply();Check(image.GetPixels32().Where((pixel,index)=>index%997==0).Select(pixel=>pixel.r+pixel.g*256+pixel.b*65536).Distinct().Count()>30,"capture contains rendered colour: "+name);File.WriteAllBytes(Path.Combine(folder,name+".png"),image.EncodeToPNG());}
+   // A dense prime stride also samples text on the flat in-game settings background.
+   try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;image.ReadPixels(new Rect(0,0,Screen.width,Screen.height),0,0);image.Apply();Check(image.GetPixels32().Where((pixel,index)=>index%101==0).Select(pixel=>pixel.r+pixel.g*256+pixel.b*65536).Distinct().Count()>30,"capture contains rendered colour: "+name);File.WriteAllBytes(Path.Combine(folder,name+".png"),image.EncodeToPNG());}
    finally{Destroy(image);camera.targetTexture=original;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);foreach(var c in canvases){c.renderMode=RenderMode.ScreenSpaceOverlay;c.worldCamera=null;}Canvas.ForceUpdateCanvases();if(temporary)Destroy(temporary);}
   }
   void Finish(){File.AppendAllText(Path.Combine(folder,"results.txt"),"STARTUP_WELCOME_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}

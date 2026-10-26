@@ -1,0 +1,113 @@
+{
+  "documents": [
+    {
+      "id": "terms",
+      "title": "Terms of use",
+      "intro": "A draft guide to accounts, fair play and virtual items in WHATTHE FISH?.",
+      "sections": [
+        {
+          "heading": "1. The game and its operator",
+          "body": "WHATTHE FISH? is developed for an initial Malaysian release by LIEW KAIY BIN. The plan is free download, no advertising and no real-money purchases. This draft has no effective date and does not indicate store approval."
+        },
+        {
+          "heading": "2. Accounts and recovery",
+          "body": "Guest play is available. Huawei and supported Google sign-in can link or recover a game account. Keep your provider account secure. An unlinked guest may lose access after app data or credentials are lost. Signing out does not delete the game account."
+        },
+        {
+          "heading": "3. Respect other players",
+          "body": "Do not harass, threaten or scam players, share sexual or abusive content, impersonate others, exploit bugs or deliberately disrupt matches. Do not upload a photo you do not have permission to use. Poor skill or losing a match is not itself misconduct."
+        },
+        {
+          "heading": "4. Reports and communication",
+          "body": "Use Report player to choose a reason and add details. You can also use available block and mute controls. Selected text terms are filtered, but filtering can miss abuse or flag harmless text. Reports are reviewed manually. There is no automatic ban, voice transcription or image classifier, and a report is not proof of wrongdoing."
+        },
+        {
+          "heading": "5. Earned coins and cosmetics",
+          "body": "Coins are earned through eligible sign-ins and matches and can unlock available cosmetics. They are game-only items, not money; this version has no cash purchase, cash-out or player trading flow. Rewards and ownership depend on confirmed server records. Offline or cancelled play may not earn rewards. Rules and available items may change during development."
+        },
+        {
+          "heading": "6. Availability and changes",
+          "body": "Online rooms, voice, account recovery and cloud items need working networks and service providers. The host must keep the room available, and players need compatible builds. Maintenance, connection loss or development changes can interrupt play. Report problems through the support contact; this draft promises no uninterrupted service or guaranteed response deadline."
+        },
+        {
+          "heading": "7. Audience and final terms",
+          "body": "The intended audience is all ages, with the same current features for everyone. An official age rating and any required child or guardian arrangements remain under review. No separate child mode is currently implemented. Final terms, regional requirements and notice of changes must be completed before publication."
+        }
+      ]
+    },
+    {
+      "id": "privacy",
+      "title": "Privacy policy",
+      "intro": "What the current game uses, who receives it, and what still needs confirmation before release.",
+      "sections": [
+        {
+          "heading": "1. Who to contact",
+          "body": "The personal publisher is LIEW KAIY BIN. Send privacy, access, correction or deletion questions to benliew28262826@gmail.com. Malaysia is the intended initial market. Hosting locations, provider settings and the final effective date are still being confirmed."
+        },
+        {
+          "heading": "2. Accounts and player profiles",
+          "body": "Sign-in uses provider tokens and a Unity player ID. The profile service stores your chosen name, public player code, avatar and optional 128×128 profile-photo thumbnail. Friends, blocks and invitations support social play. Other players can see profile details through the game's player-facing features. Huawei or Google, Unity, and Cloudflare Workers/D1 support these functions."
+        },
+        {
+          "heading": "3. Rooms, rewards and cosmetics",
+          "body": "Online play shares room membership and match state with Unity multiplayer services and room participants. Cloud records include coin balance, daily streak, reward and purchase history, cosmetic ownership/equipment, match participants and reward receipts. These records support synchronization, recovery and prevention of duplicate rewards. Purchases here use earned game coins, not real money."
+        },
+        {
+          "heading": "4. Text and optional voice",
+          "body": "Room text is held in participants' session memory and may follow room travel or host migration. Leaving clears your local room history, but cannot erase copies already received by others. Report excerpts are stored separately. Optional voice uses Unity Vivox after joining and granting microphone access. The game does not implement voice recording or transcription. Provider metadata and retention settings still need confirmation."
+        },
+        {
+          "heading": "5. Reports and review evidence",
+          "body": "A report stores reporter/target IDs, selected reason, explanation, context and a profile snapshot. Picture reports may include the current thumbnail. Abuse, sexual-content or spam reports may include up to five available messages from the reported player. This is reporter-supplied evidence, not verified proof. It is stored privately for manual review and is not added to public profiles. No report audio is collected by this flow."
+        },
+        {
+          "heading": "6. Permissions and your choices",
+          "body": "Camera permission is used for room QR scanning; a system picker accesses selected QR images. Microphone permission supports optional voice, and Bluetooth permission can support audio routing. Profile image selection creates a thumbnail. Manual room-code entry remains available. You can leave voice, mute, block players or change device permissions. Final device permission behavior must still be tested."
+        },
+        {
+          "heading": "7. Retention and deletion limits",
+          "body": "A retention schedule is being proposed; its periods are not yet implemented promises. Profiles, wallets and reports currently have no scheduled expiry. Account deletion removes the profile and related records, then the Unity sign-in account and local caches. Provider records, backups and copies received by others are separate. References inside another host's saved match receipt may remain and need correction before final acceptance. We do not promise instant or complete removal from every service."
+        },
+        {
+          "heading": "8. Children and release review",
+          "body": "The owner intends the same features for players of all ages. There is currently no separate child mode or verified guardian-consent flow. Applicable child privacy requirements, provider conditions and the official age rating remain unresolved release checks. Word filtering and a report button do not establish child suitability or replace any required consent."
+        },
+        {
+          "heading": "9. Requests and updates",
+          "body": "Use Privacy & data in the game's settings or account menu for deletion, or contact the publisher for access, correction and failed requests. We may need to verify ownership without asking for your password. The operator plans daily review, not guaranteed daily resolution. The final notice will describe confirmed processing locations, retention and any required consent arrangements before publication."
+        },
+        {
+          "heading": "10. This website",
+          "body": "These static draft pages contain no analytics, advertising trackers, account sign-in or submission forms. Email links open your own email app; sending a message shares what you choose to send with the publisher and email providers. A future public host may process connection logs; its provider and settings must be confirmed in the final notice."
+        }
+      ]
+    },
+    {
+      "id": "support",
+      "title": "Support & account deletion",
+      "intro": "Help with your account, a player report or a problem in the game.",
+      "sections": [
+        {
+          "heading": "1. Contact the publisher",
+          "body": "Email benliew28262826@gmail.com. Include the game version, device/OS, what happened and the steps to reproduce it. A public player code can help identify your account. Do not send passwords, sign-in tokens or unnecessary identity documents. LIEW KAIY BIN plans to review the inbox and player reports daily; investigation and replies may take longer."
+        },
+        {
+          "heading": "2. Delete a game account",
+          "body": "Leave your room. Open Settings or Account & sign-in, choose Privacy & data, then Delete game account. Read the consequences and type DELETE exactly. Linked accounts require verification with the same provider account. This removes the game account, not your Huawei ID or Google account. A purely offline guest is removed only from this device. Read the privacy draft for current deletion limits."
+        },
+        {
+          "heading": "3. If deletion fails",
+          "body": "Keep the installation and retry from Privacy & data. An incomplete deletion can block online play until resolved. Do not assume signing out or uninstalling deletes cloud records. If retry cannot finish, contact support with the error and approximate time, without credentials. Some interrupted provider requests require manual assistance."
+        },
+        {
+          "heading": "4. Report a player",
+          "body": "Open the player's profile or the report action in supported standings/results. Choose one reason and add useful context; Other requires an explanation. Submit only relevant information. A report may include a profile snapshot and limited text/photo evidence. You can also block or mute while the operator reviews it. A submitted report does not automatically punish the player."
+        },
+        {
+          "heading": "5. Before public release",
+          "body": "This website is a local preparation draft. There is no public download or live website address configured here yet. The game and documents are still being tested. Final phone testing, child/privacy review, retention operations and release signing remain separate acceptance steps."
+        }
+      ]
+    }
+  ]
+}

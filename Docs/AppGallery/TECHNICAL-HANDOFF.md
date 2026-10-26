@@ -1,5 +1,39 @@
 # Technical preparation and remaining owner steps
 
+## Public website preview — 26 October 2026
+
+After the local work below, the owner separately authorized publication through
+Cloudflare. The development preview is live at <https://whatthefish-game.pages.dev/>.
+See [deployment and validation](../../Website/DEPLOYMENT.md). The generator's
+`--public-preview` mode adds translated hosting disclosures without writing game
+resources. No game URL configuration, new player build, signing or store
+submission was included in this website-only deployment.
+
+## Local website and welcome Info preparation — 26 October 2026
+
+`Website/content.json` supplies the English, Simplified Chinese and Bahasa Melayu
+drafts. `Tools/Build/Prepare-PublicInfo.py` generates 12 static pages under ignored
+`Builds/PublicInfoQA/Site/`, refreshes the shared localization catalog and writes
+`Resources/AppGallery/Documents.json`. `--check` validates current outputs and
+relative page links. `Tools/Build/Preview-PublicInfo.ps1` serves only on loopback.
+See [website authoring and preview instructions](../../Website/README.md).
+
+The welcome Info button now offers Terms, Privacy and Website instead of sport
+introductions. Terms/Privacy open bundled, scrollable preparation drafts while
+the public URL is absent. Website stays disabled with explanatory text. The
+Settings/account Privacy entry uses the same configured website policy URL,
+with the older standalone policy URL supported for compatibility.
+
+`Resources/AppGallery/Links.json` intentionally has an empty `baseUrl`. Later,
+after separate publication authorization and policy acceptance, a real HTTPS
+base directory resolves localized pages. No placeholder domain is shipped.
+No hosting registration, upload, deployment or production setting was changed
+by that earlier local preparation; the later website deployment is recorded above.
+
+Owner decisions and current storage/deletion gaps are recorded in
+[the operations proposal](OPERATIONS-PROPOSAL.md). Proposed retention periods
+must not become public promises until implemented and tested.
+
 ## Implemented locally
 
 - Settings and account choices expose **Privacy & data** without requiring a
@@ -97,7 +131,7 @@ Production key creation/signing remains pending private owner password entry.
 
 ## Still dependent on owner or external access
 
-- Policy hosting, retention periods and operational support/report/deletion
+- Final policy acceptance, retention periods and operational support/report/deletion
   procedures. Personal publisher LIEW KAIY BIN supplied public support/privacy
   email benliew28262826@gmail.com and will handle these requests.
 - All-ages audience suitability, child/guardian controls and official rating;
