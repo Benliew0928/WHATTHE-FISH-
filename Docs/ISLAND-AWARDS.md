@@ -21,36 +21,26 @@ avatar for three sample placements.
 ## Sequence
 
 Fishing uses a common stage at the lagoon's actual centre and water height,
-oriented toward pier 0 for every viewer. A moving wide pool shot introduces soft
-grey mist; the stage rises under it and the mist disperses. From 4.8 seconds,
-winners enter the extended central wooden bridge in sequence. Golf uses the
-same single-file entrance from 1.5 seconds, with ground height sampled along
-the grass approach. First place leads, followed by the remaining finishers.
+oriented toward pier 0. The podium rises without mist. At 4.8 seconds a short
+dissolve introduces the bridge entrance. Golf first establishes the podium and then introduces its central approach at
+2.5 seconds. The complete cast is prepared outside that shot, spaced before
+visibility is enabled together. Characters enter through the frame edge instead
+of being activated one by one at a visible point. First place leads.
 
-Both entrances move at 0.82 metres/second with 1.85 metres between players
-(approximately 2.26 seconds between entrances). The 0.92-metre gait cycle is
-calculated from travelled distance; stance feet cancel root motion rather than
-sliding to an independent animation clock. A tracking shot follows the line,
-then a brief dissolve skips the remaining walk/climb. Three winners reach their
-platforms at 12 seconds in Fishing and 8.7 seconds in Golf. Five-member Crew
-extends its entrance until about 15 seconds so everyone is seen on the bridge.
+Both queues walk at 1.4 metres/second with 1.85 metres between players. Golf's
+path follows the podium's centre line toward its middle stairs and samples the
+existing ground height. Fishing follows the existing bridge. A 1.15-metre gait cycle is
+sampled from distance; planted feet cancel root movement. Arms hang straight and
+swing from the shoulders, with wrists following their forearms. The camera advances
+slightly and keeps all three players above the bottom controls before the
+podium dissolve. Narrower landscape screens widen the entrance field of view.
 
-Once seated, the camera travels through a 36-degree left-to-right arc over
-8 seconds, gently approaching the podium. Quintic easing has zero velocity and
-acceleration at both ends: slow departure, faster middle, gradual arrival. The
-camera then holds its final composition. Fishing lasts approximately 21 seconds;
-Golf remains open until Next adventure. Show results opens the existing ranking
-over Golf's podium without ending the ceremony.
+Three winners settle at 12 seconds in Fishing and 9.7 seconds in Golf. A
+five-member Crew receives extra approach time (about 14.1 seconds to settle).
+The short dissolve hides the final approach/climb; celebration camera movement,
+shared ranks, result controls, cancellation and Reduced Motion remain unchanged.
 
-The top-centre title panel uses its original 1100 x 124 layout and vertical
-position. The podium's physical numerals use a depth-tested font shader, so
-characters in front correctly hide them. Localization font/atlas changes retain
-that depth behavior. The original floating badge artwork is retained as a source
-asset but is not shown by these ceremonies.
-
-Reduced motion skips the walk, smoke and camera cuts, directly presenting the
-fixed podium composition (Fishing approximately 8 seconds; Golf retains its manual results/exit flow). Existing Show results
-and Golf Next adventure controls remain available.
+Latest implementation and verification: [natural entrances and event consistency](NATURAL-ENTRANCES.md).
 
 ## Local preview and reproduction
 

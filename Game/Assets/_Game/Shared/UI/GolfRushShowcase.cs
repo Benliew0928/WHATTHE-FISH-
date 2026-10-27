@@ -53,7 +53,7 @@ namespace WhatTheFish {
    for(int i=0;i<prefab.wheelPivots.Length;i++){wheels.Add(map[prefab.wheelPivots[i]]);radii.Add(prefab.wheelRadii[i]);}
    seat=prefab.transform.InverseTransformPoint(prefab.seat.position);
    var sources=Athlete.Active.Where(a=>a&&a.visual&&!a.IsSpectator).ToArray();
-   driver=Actor(owner,1,cart);driver.Root.localPosition=seat-Vector3.up*.75f;
+   driver=Actor(owner,1,cart);driver.Root.localPosition=seat-Vector3.up*.52f;
    for(int i=0;i<3;i++){var runner=Actor(sources.Length>i?sources[i]:owner,(byte)(i+2),root);if(!runner.HasRunningClip)throw new InvalidOperationException("Rush preview requires the gameplay Running clip.");runner.Root.name="Rush chasing runner "+(i+1);runners.Add(runner);var trail=runner.Root.gameObject.AddComponent<GolfRushTrail>();trail.BeginDemonstration();trails.Add(trail);}
    for(int i=0;i<3;i++){
     var go=new GameObject("Rush acceleration ribbon "+i);go.transform.SetParent(root,false);go.layer=2;

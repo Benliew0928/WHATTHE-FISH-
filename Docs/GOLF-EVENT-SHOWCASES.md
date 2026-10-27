@@ -1,10 +1,12 @@
 # Golf event viewing demonstrations
 
+Latest update: [natural entrances and event consistency](NATURAL-ENTRANCES.md).
+
 Tropical Wind, Bounce Party and Sticky Green now join Tornado and Crab Crossing in the existing 3.5-second viewing-camera flow. Island Rush now uses the same viewing flow with a cart pass and three chasing runners. The HUD fades out/in with the camera; Settings remains accessible.
 
-- Tropical Wind: an oblique view of a moving golf ball with a visibly bending airborne path and wind streaks. The bend uses the accepted event wind direction, with lateral displacement increased from 3 to 6 metres.
-- Bounce Party: a following oblique view of a ball falling from 8 metres (previously 4), two diminishing rebounds, orange contact ripples and existing turf impact audio.
-- Sticky Green: a ball falling from 8 metres (previously 4) stops at first contact; a contracting green ring and short clinging strands show the sticky surface, with one turf impact.
+- Tropical Wind: a fixed oblique view compares the pale dashed no-wind trajectory and target with the golden actual trail. Flight runs from 0.5 to 2 seconds, bending 6 metres in the accepted wind direction, followed by gameplay turf rebounds and rolling. Three shared-style wind streaks replace the dense camera-centred streaks during the demonstration.
+- Bounce Party: a following oblique view of a ball falling from 8 metres (previously 4), two diminishing rebounds without deforming the spherical ball, orange contact ripples and existing turf impact audio.
+- Sticky Green: a ball falling from 8 metres stops at first contact, with the same green outline, expanding impact ring and brief squash used in gameplay; the old demonstration-only clinging strands are removed.
 
 `GolfEventShowcase.cs` samples the presentation path by event age and clones only the original golf ball mesh/materials. The example ball uses the real gameplay radius (0.0645 metres); the camera moves closer for legibility and has no GolfBall component, Rigidbody, collider or network identity. It never changes a real shot, player position, score, event duration or map. The temporary stage is selected on nearby clear ground; an obstructed location skips the camera rather than placing the example in geometry. Render objects are cleaned up when the presentation ends or is interrupted.
 

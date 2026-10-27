@@ -13,6 +13,7 @@ namespace WhatTheFish {
   public uint SeenStrike {get;private set;}
   GolfBall ball;Vector3 lastPosition;float lastMovement;
   MaterialPropertyBlock properties;
+  bool demonstration;
   GolfEventKind tintKind;
   public void EventTint(GolfEventKind kind){
    if(!Ribbon||kind==tintKind)return;tintKind=kind;var config=GolfPresentationSettings.Current;
@@ -42,8 +43,10 @@ namespace WhatTheFish {
   }
   internal void Clear(){Active=false;Ribbon.emitting=false;Ribbon.enabled=false;Ribbon.Clear();SetFade(0);}
   void SetFade(float alpha){properties.SetFloat(Fade,alpha);Ribbon.SetPropertyBlock(properties);}
+  public void BeginDemonstration(GolfEventKind kind){demonstration=true;Begin(1);EventTint(kind);}
+  public void PresentDemonstration(bool moving,float opacity){Ribbon.emitting=moving;SetFade(opacity);}
   void LateUpdate(){
-   if(!Active)return;
+   if(demonstration||!Active)return;
    if(!ball||!ball.Live){Clear();return;}
    bool moved=(transform.position-lastPosition).sqrMagnitude>.000001f;
    if(moved){lastPosition=transform.position;lastMovement=Time.time;}

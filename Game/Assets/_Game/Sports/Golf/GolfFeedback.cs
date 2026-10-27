@@ -131,6 +131,13 @@ namespace WhatTheFish {
    if(e.cue==GolfFeedbackCue.Cup&&e.owner==LocalOwner)GolfFishingAudio.Golf?.Play("golf-hole",e.point,.7f,true);
    if((e.cue==GolfFeedbackCue.Cup||e.cue==GolfFeedbackCue.Finish)&&e.owner==LocalOwner){EnsureUI();successAt=Time.unscaledTime;if(success)success.text=e.cue==GolfFeedbackCue.Finish?"ALL 5 HOLES COMPLETE!":"HOLE COMPLETE!";}
   }
+  // Render-only event teaching shot: reuse the real landing particles/audio,
+  // without touching feedback counters, shot conditions, scores or the network.
+  public void DemonstrationLanding(Vector3 point,Vector3 normal,float strength){
+   if(!Context)return;
+   var e=new GolfFeedbackEvent{cue=GolfFeedbackCue.Turf,point=point,normal=normal,strength=Mathf.Clamp01(strength)};
+   Burst(e);if(Audible)Play(e.cue,point,Settings.landingVolume*Mathf.Lerp(.15f,1,e.strength));
+  }
   void Play(GolfFeedbackCue cue,Vector3 point,float gain,bool flat=false){
    int index=voiceIndex++%voices.Length;voiceGains[index]=gain;var source=voices[index];source.Stop();source.transform.position=point;source.spatialBlend=flat?0:.65f;source.clip=sounds.Choose(cue);source.volume=gain*MenuPreferences.SFXVolume;source.pitch=cue==GolfFeedbackCue.CartPlayer?.8f:1;source.Play();
   }

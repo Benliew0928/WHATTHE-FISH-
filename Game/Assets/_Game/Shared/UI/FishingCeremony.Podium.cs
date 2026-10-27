@@ -5,12 +5,12 @@ using UnityEngine;
 namespace WhatTheFish {
  public sealed partial class FishingCeremony {
   readonly List<int> castRanks=new();Transform podium;
-  const float WalkSpeed=.82f,QueueGap=1.85f,StrideLength=.92f;
+  const float WalkSpeed=1.4f,QueueGap=1.85f,StrideLength=1.15f;
   const float EntryDelay=QueueGap/WalkSpeed;
   readonly Dictionary<Font,Material> numberMaterials=new();
   TextMesh[] podiumNumbers;Renderer[] numberRenderers;
-  float WalkAt=>rankedGolf?1.5f:4.8f;
-  float SettleAt=>MenuPreferences.ReducedMotion?.65f:WalkAt+Mathf.Max(7.2f,EntryDelay*(cast.Count-1)+1.2f);
+  float WalkAt=>rankedGolf?2.5f:4.8f;
+  float SettleAt=>MenuPreferences.ReducedMotion?.65f:WalkAt+Mathf.Max(7.2f,EntryDelay*(cast.Count-1)+4f);
   public bool PodiumSettled {get;private set;}
   public Vector3 PodiumCenter=>stage?stage.position:Vector3.zero;
   public int[] PresentedRanks=>castRanks.ToArray();
@@ -54,14 +54,19 @@ namespace WhatTheFish {
    PodiumSettled=age>=settleAt;podium.gameObject.SetActive(rankedGolf||reduced||age>=1.7f);
    podium.localPosition=rankedGolf||reduced?Vector3.zero:Vector3.down*(2.7f*(1-Mathf.SmoothStep(0,1,(age-1.7f)/2.1f)));
    for(int i=0;i<cast.Count;i++){
-    var actor=cast[i];bool show=PodiumSettled||age>=walkAt+i*EntryDelay;actor.Root.gameObject.SetActive(show);if(!show)continue;
+    var actor=cast[i];
+    // Prepare the complete spaced queue before revealing the entrance shot.
+    // Enable everyone together outside the frustum, never at an in-frame spawn.
+    actor.Root.gameObject.SetActive(true);
+    foreach(var renderer in actor.Root.GetComponentsInChildren<Renderer>())renderer.forceRenderingOff=!PodiumSettled&&age<walkAt;
     var seat=ActorSeat(i);
     if(PodiumSettled){actor.Root.localPosition=seat;actor.Root.localRotation=Quaternion.identity;var take=takes[i%3];actor.Pose(take.Sample((age-settleAt+i*.4f)/take.duration));}
     else{
-     float travelled=Mathf.Max(0,age-walkAt-i*EntryDelay)*WalkSpeed;
-     var at=new Vector3(0,.38f,(rankedGolf?11.8f:13.1f)-travelled);
+     float travelled=Mathf.Max(0,age-walkAt)*WalkSpeed;
+     var direction=Vector3.back;
+     var at=new Vector3(0,.38f,20)+direction*(travelled-i*QueueGap);
      if(rankedGolf){var world=stage.TransformPoint(at);if(Physics.Raycast(world+Vector3.up*10,Vector3.down,out var ground,20,1<<8,QueryTriggerInteraction.Ignore))at.y=stage.InverseTransformPoint(ground.point).y+.015f;else at.y=0;}
-     actor.Root.localPosition=at;actor.Root.localRotation=Quaternion.Euler(0,180,0);actor.Pose(WalkPose(travelled));
+     actor.Root.localPosition=at;actor.Root.localRotation=Quaternion.LookRotation(direction);actor.Walk(WalkPose(travelled-i*QueueGap),(travelled-i*QueueGap)/StrideLength);
     }
    }
    Vector3 position,focus;
@@ -75,31 +80,21 @@ namespace WhatTheFish {
     position=new Vector3(Mathf.Sin(angle)*radius,5.8f,Mathf.Cos(angle)*radius);focus=new Vector3(0,2.05f,.3f);
    }else if(age<walkAt){
     float approach=Ease5(age/walkAt);position=Vector3.Lerp(new Vector3(0,8.2f,21),new Vector3(1.4f,7.5f,18.5f),approach);focus=new Vector3(0,1.1f,1);
-    if(rankedGolf){focus=new Vector3(0,1.3f,5.8f);var end=FrameEntrance(new Vector3(7.2f,4.9f,15.8f),focus);position=end+(end-focus).normalized*(2.2f+1.2f*(1-approach));}
+    // Establish the podium first, then dissolve into the offscreen queue shot.
+    float cut=Mathf.Max(0,1-Mathf.Abs(age-walkAt)/.3f);if(cut>curtain.color.a)curtain.color=new Color(.025f,.07f,.11f,cut);
    }else{
-    float progress=Ease5((age-walkAt)/(settleAt-walkAt));
-    // Fix the complete entrance envelope before the shot starts. The camera
-    // travels only forward; new arrivals never force a reactive pullback.
-    focus=new Vector3(0,1.3f,5.8f);
-    var end=FrameEntrance(new Vector3(7.2f,4.9f,15.8f),focus);
-    position=end+(end-focus).normalized*(2.2f*(1-progress));
+    EntranceCamera(Ease5((age-walkAt)/(settleAt-walkAt)),out position,out focus);
+    float cut=Mathf.Max(0,1-Mathf.Abs(age-walkAt)/.3f);if(cut>curtain.color.a)curtain.color=new Color(.025f,.07f,.11f,cut);
    }
-   position=stage.TransformPoint(position);focus=stage.TransformPoint(focus);camera.transform.SetPositionAndRotation(position,Quaternion.LookRotation(focus-position));camera.fieldOfView=42;camera.nearClipPlane=.12f;
+   position=stage.TransformPoint(position);focus=stage.TransformPoint(focus);camera.transform.SetPositionAndRotation(position,Quaternion.LookRotation(focus-position));camera.fieldOfView=PodiumSettled||age<walkAt?42:2*Mathf.Atan(Mathf.Tan(21*Mathf.Deg2Rad)*Mathf.Max(1,1.777778f/Mathf.Max(.65f,camera.aspect)))*Mathf.Rad2Deg;camera.nearClipPlane=.12f;
    // A brief dissolve hides the time ellipsis; no full bridge traversal required.
    if(!reduced){float cut=Mathf.Max(0,1-Mathf.Abs(age-settleAt)/.3f);if(cut>curtain.color.a)curtain.color=new Color(.025f,.07f,.11f,cut);}
   }
-  Vector3 FrameEntrance(Vector3 position,Vector3 focus){
-   // Fit the whole queue above the result buttons and below the title. Include
-   // waiting actors at their spawn so each entrance cannot pop the camera back.
-   var rotation=Quaternion.LookRotation(focus-position);var inverse=Quaternion.Inverse(rotation);float back=0;
-   float vertical=Mathf.Tan(21*Mathf.Deg2Rad),horizontal=vertical*Mathf.Max(.65f,camera.aspect);
-   void Include(Vector3 point){var p=inverse*(point-position);back=Mathf.Max(back,Mathf.Abs(p.x)/(horizontal*.88f)-p.z,Mathf.Abs(p.y)/(vertical*.55f)-p.z);}
-   foreach(int side in new[]{-1,1}){Include(new Vector3(side*5,.2f,0));Include(new Vector3(side*1.7f,2.5f,-2));}
-   float spawn=rankedGolf?11.8f:13.1f;
-   foreach(float z in new[]{spawn,spawn-(SettleAt-WalkAt)*WalkSpeed}){
-    Include(new Vector3(-.4f,0,z));Include(new Vector3(.4f,2.1f,z));
-   }
-   return position-rotation*Vector3.forward*Mathf.Max(0,back);
+  void EntranceCamera(float progress,out Vector3 position,out Vector3 focus){
+   // The bridge / side path crosses the right edge. Do not fit unseen waiting
+   // actors: doing so reveals the entrance point and causes visible spawning.
+   focus=new Vector3(0,rankedGolf?.1f:1,12);position=new Vector3(7,5,18);
+   var advance=(focus-position).normalized*(progress*.6f);position+=advance;focus+=advance;
   }
   static float Ease5(float value){float t=Mathf.Clamp01(value);return t*t*t*(t*(t*6-15)+10);}
   static Vector3 WalkingFoot(float phase){
@@ -117,6 +112,7 @@ namespace WhatTheFish {
    pose.leftHand=new Vector3(-.24f,.66f,.07f-c*.12f);pose.rightHand=new Vector3(.24f,.66f,.07f+c*.12f);return pose;
   }
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
+  public float ReviewSettleAt=>SettleAt;
   float? reviewAge;
   public void ReviewTime(float seconds){reviewAge=seconds;skipAt=-1;}
   public bool BeginFishingPreview(FishingGame source,bool crew=false,bool tied=false){

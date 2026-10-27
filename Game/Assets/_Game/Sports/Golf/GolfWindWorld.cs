@@ -40,15 +40,20 @@ namespace WhatTheFish {
    if(strength<.01f){if(dust&&dust.particleCount==0)dust.Stop();return;}if(!dust)BuildDust();if(!dust.isPlaying)dust.Play();EmitSand();
   }
   void WindStreaks(){
-   VisibleStreaks=0;var camera=Camera.main;bool visible=strength>.01f&&camera&&!MenuPreferences.ReducedMotion;
+   VisibleStreaks=0;var camera=Camera.main;bool visible=strength>.01f&&camera&&!MenuPreferences.ReducedMotion&&!(ActivityCinematic.Instance&&ActivityCinematic.Instance.DemonstrationVisible);
    if(!visible){if(streaks!=null)foreach(var s in streaks){s.line.enabled=false;s.born=-100;}return;}
    var config=GolfPresentationSettings.Current;
    if(streaks==null){streaks=new Streak[config.windStreakCount];for(int i=0;i<streaks.Length;i++){var node=new GameObject("Tropical wind streak");node.transform.SetParent(transform,false);var line=node.AddComponent<LineRenderer>();line.sharedMaterial=Resources.Load<Material>("GolfBallTrail");line.positionCount=3;line.useWorldSpace=true;line.widthMultiplier=.09f;line.numCapVertices=2;line.shadowCastingMode=ShadowCastingMode.Off;line.receiveShadows=false;streaks[i]=new Streak{line=line};}}
    for(int i=0;i<streaks.Length;i++){var s=streaks[i];float age=Time.time-s.born;
     if(age>s.lifetime){s.lifetime=Random.Range(.65f,1.15f);s.born=Time.time+Random.Range(0,.12f);s.origin=camera.transform.position+camera.transform.forward*Random.Range(5,14)+camera.transform.right*Random.Range(.8f,6f)*(i%2==0?1:-1)+camera.transform.up*Random.Range(-2,3);age=Time.time-s.born;}
-    float phase=Mathf.Clamp01(age/s.lifetime);var tint=config.windColor;tint.a=Mathf.Sin(phase*Mathf.PI)*strength*config.windStreakOpacity;s.line.startColor=s.line.endColor=tint;s.line.enabled=age>=0&&tint.a>.01f;
-    var point=s.origin+Direction*age*9;var length=Direction*Mathf.Lerp(2.4f,4.2f,(i%5)/4f);s.line.SetPosition(0,point-length);s.line.SetPosition(1,point-length*.5f+Vector3.up*.1f);s.line.SetPosition(2,point);if(s.line.enabled)VisibleStreaks++;
+    float phase=Mathf.Clamp01(age/s.lifetime);s.line.enabled=age>=0;DrawStreak(s.line,s.origin+Direction*age*9,Direction,i,Mathf.Sin(phase*Mathf.PI)*strength);if(s.line.enabled)VisibleStreaks++;
+
    }
+  }
+  public static void DrawStreak(LineRenderer line,Vector3 point,Vector3 direction,int index,float opacity){
+   var config=GolfPresentationSettings.Current;var tint=config.windColor;tint.a=opacity*config.windStreakOpacity;line.enabled=tint.a>.01f;
+   line.widthMultiplier=.09f;line.numCapVertices=2;line.startColor=line.endColor=tint;
+   var length=direction*Mathf.Lerp(2.4f,4.2f,(index%5)/4f);line.SetPosition(0,point-length);line.SetPosition(1,point-length*.5f+Vector3.up*.1f);line.SetPosition(2,point);
   }
   void EmitSand(){
    var camera=Camera.main;if(!camera||sand.Count==0)return;

@@ -25,7 +25,7 @@ namespace WhatTheFish {
    Finish();
   }
   IEnumerator Clip(string name,Action activate,Action activeCheck=null,Action endedCheck=null){
-   string dir=Path.Combine(folder,name);if(film)Directory.CreateDirectory(dir);var start=camera.transform.rotation;float heading=view.yaw,clock=Time.time;bool moved=false,fadeOut=false,fadeIn=false;Vector3 stickyAt=default;Quaternion stickyRotation=default;Vector3 rushLook=default;Transform runningLeg=null;Quaternion earlierLeg=default;
+   string dir=Path.Combine(folder,name);if(film)Directory.CreateDirectory(dir);var start=camera.transform.rotation;float heading=view.yaw,clock=Time.time;bool moved=false,fadeOut=false,fadeIn=false;Vector3 stickyAt=default;Quaternion stickyRotation=default;Vector3 rushLook=default,windCamera=default;Quaternion windRotation=default;Transform runningLeg=null;Quaternion earlierLeg=default;
    for(int i=0;i<150;i++){
     if(i==24)activate();
     yield return new WaitForEndOfFrame();
@@ -33,6 +33,12 @@ namespace WhatTheFish {
     if(i==40){Check(!GameObject.Find("Activity announcement"),name+" has no black announcement card");activeCheck?.Invoke();Check(Time.timeScale==1&&!view.InputBlocked,name+" gameplay remains available");Check(Mathf.Abs(Mathf.DeltaAngle(heading,view.yaw))<.01f,name+" gameplay heading unchanged");}
     if(name.StartsWith("Golf-")&&i>=24){float alpha=view.GetComponent<GolfCinematicHUD>().Opacity;bool partial=alpha>0&&alpha<1;fadeOut|=partial&&ActivityCinematic.Instance.CameraActive;fadeIn|=partial&&!ActivityCinematic.Instance.CameraActive;if(i==30||i==136)Capture(Path.Combine(folder,name+(i==30?"-fade-out.jpg":"-fade-in.jpg")));}
     if(name=="Golf-StickyGreen"&&(i==75||i==100)){var example=GameObject.Find("Demonstration golf ball");Check(example,"sticky example remains visible during hold");if(example){if(i==75){stickyAt=example.transform.position;stickyRotation=example.transform.rotation;}else Check(Vector3.Distance(stickyAt,example.transform.position)<.0001f&&Quaternion.Angle(stickyRotation,example.transform.rotation)<.001f,"sticky ball holds both position and rotation after landing");}}
+    if(name=="Golf-TropicalWind"&&i==54){windCamera=camera.transform.position;windRotation=camera.transform.rotation;}
+    if(name=="Golf-TropicalWind"&&i==70)Check(Vector3.Distance(windCamera,camera.transform.position)<.001f&&Quaternion.Angle(windRotation,camera.transform.rotation)<.01f,"wind reference camera remains fixed as ball drifts");
+    if(name=="Golf-BounceParty"&&(i==60||i==62||i==93||i==95||i==114||i==116)){
+     var ball=GameObject.Find("Demonstration golf ball");var scale=ball.transform.localScale;
+     Check(Mathf.Abs(scale.x-scale.y)<.000001f&&Mathf.Abs(scale.y-scale.z)<.000001f,"bounce demonstration keeps spherical scale through impact "+i);
+    }
     if(i==108&&name.StartsWith("Golf-"))Check(ActivityCinematic.Instance.CameraActive,"golf camera remains active beyond old 2.6 second limit");
     if(name=="Golf-FinalRush"&&i==48){
      rushLook=camera.transform.forward;var demo=GameObject.Find("Rush demonstration cart");
@@ -90,7 +96,7 @@ namespace WhatTheFish {
    Check(Mathf.Approximately(GolfEventShowcase.Radius,GolfBall.Radius),"event example radius matches gameplay ball");
    float landing=GolfEventShowcase.WindLanding;var physics=Resources.Load<GolfBallPhysicsSettings>("GolfBallPhysics");
    Check(Mathf.Abs(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing).y-GolfBall.Radius)<.0001f&&GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing+.3f).y>GolfBall.Radius+.4f,"wind ball contacts turf and rebounds naturally");
-   float bounceTime=(landing-.4f)*physics.turfRestitution;
+   float bounceTime=(landing-.5f)*physics.turfRestitution;
    Check(Mathf.Abs(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing+bounceTime).y-GolfBall.Radius)<.001f,"wind rebound duration uses gameplay turf restitution");
    var incoming=(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing)-GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing-.001f))/.001f;
    var outgoing=(GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing+.001f)-GolfEventShowcase.Sample(GolfEventKind.TropicalWind,landing))/.001f;
@@ -105,7 +111,12 @@ namespace WhatTheFish {
    foreach(var kind in GolfEventSchedule.RandomKinds){
     game.Events.Clear();game.Ball(actor).Place(hole.tee.position+Vector3.up*.05f,true);view.SkipGolfReplay();yield return new WaitForSeconds(.7f);double deadline=0;
     yield return Clip("Golf-"+kind,()=>{game.ReviewEvent(kind);deadline=game.Events.Snapshot.end;},()=>{Check(ActivityCinematic.Instance.Visible&&ActivityCinematic.Instance.Title==GolfEventHUD.Name(kind),kind+" named event animation");bool watching=ActivityCinematic.WatchesGolfEvent(kind);Check(ActivityCinematic.Instance.CameraActive==watching,kind+" correct camera opt-in");Check(Mathf.Abs(view.GetComponent<GolfCinematicHUD>().Opacity-(watching?0:1))<.01f,kind+" synchronized HUD fade policy");if(watching)Check(GearHit(),"settings remains visible and pointer-reachable during hidden HUD");Check(game.Events.Snapshot.end==deadline,kind+" event deadline unchanged");
-    if(GolfEventShowcase.Supports(kind)){var demo=GameObject.Find("Golf event demonstration (visual only)");Check(ActivityCinematic.Instance.DemonstrationVisible&&demo,kind+" has a visible example ball");Check(demo&&demo.GetComponentsInChildren<Collider>().Length==0&&demo.GetComponentsInChildren<Rigidbody>().Length==0&&demo.GetComponentsInChildren<GolfBall>().Length==0,kind+" demonstration cannot affect match physics");}},()=>Check(!ActivityCinematic.Instance.Visible&&!ActivityCinematic.Instance.CameraActive,kind+" presentation ends while event remains"));
+    if(GolfEventShowcase.Supports(kind)){var demo=GameObject.Find("Golf event demonstration (visual only)");Check(ActivityCinematic.Instance.DemonstrationVisible&&demo,kind+" has a visible example ball");Check(demo&&demo.GetComponentsInChildren<Collider>().Length==0&&demo.GetComponentsInChildren<Rigidbody>().Length==0&&demo.GetComponentsInChildren<GolfBall>().Length==0,kind+" demonstration cannot affect match physics");if(demo){
+     var visual=demo.transform.Find("Demonstration golf ball");var filters=visual.GetComponentsInChildren<MeshFilter>();var size=new Bounds();bool first=true;
+     foreach(var f in filters){var matrix=Matrix4x4.Scale(visual.lossyScale)*visual.worldToLocalMatrix*f.transform.localToWorldMatrix;var b=f.sharedMesh.bounds;for(int k=0;k<8;k++){var q=matrix.MultiplyPoint3x4(b.center+Vector3.Scale(b.extents,new Vector3((k&1)==0?-1:1,(k&2)==0?-1:1,(k&4)==0?-1:1)));if(first){size=new Bounds(q,Vector3.zero);first=false;}else size.Encapsulate(q);}}
+     Check(Mathf.Abs(Mathf.Max(size.size.x,Mathf.Max(size.size.y,size.size.z))-GolfBall.Radius*2)<.002f,kind+" rendered mesh diameter equals actual gameplay ball");
+     var trail=visual.GetComponent<GolfBallTrail>();Check(trail&&Mathf.Approximately(trail.Ribbon.time,GolfBallTrail.Lifetime)&&Mathf.Approximately(trail.Ribbon.widthMultiplier,game.Ball(actor).Trail.width),kind+" reuses gameplay trail lifetime and width");
+    }}},()=>Check(!ActivityCinematic.Instance.Visible&&!ActivityCinematic.Instance.CameraActive,kind+" presentation ends while event remains"));
     Check(game.Events.Active(game.Now)==kind,kind+" effect persists after announcement");Check(!ActivityCinematic.Instance.DemonstrationVisible,kind+" demonstration cleaned up after return");
    }
    game.Events.Clear();yield return new WaitForSeconds(.2f);

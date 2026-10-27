@@ -6,10 +6,13 @@ namespace WhatTheFish {
  // Local, render-only teaching shot. No GolfBall, collider, Rigidbody or RPC.
  public sealed class GolfEventShowcase:IDisposable {
   public const float Radius=GolfBall.Radius;
-  Transform root,ball;TrailRenderer trail;LineRenderer ring;
-  readonly LineRenderer[] accents=new LineRenderer[8];
+  Transform root,ball;GolfBallTrail trail;LineRenderer ring,aura,target;
+  readonly LineRenderer[] reference=new LineRenderer[16];
+
+  readonly LineRenderer[] accents=new LineRenderer[3];
   Vector3 ground,normal,along,wind;float scale;int contact;bool launched;GolfEventKind kind;
   static GolfBallPhysicsSettings turf;
+  Color outlineColor;float outlineClock;
   public const float WindLanding=2f;
   public bool Visible=>root&&root.gameObject.activeSelf;
   public Vector3 BallPosition=>ball?ball.position:Vector3.zero;
@@ -24,8 +27,8 @@ namespace WhatTheFish {
    float v=Mathf.InverseLerp(2.25f,2.95f,age);return new Vector3(.7f+.45f*v,Radius+2.8f*v*(1-v),0);
   }
   static Vector3 WindSample(float age,out int contacts,out float lastImpact){
-   contacts=0;lastImpact=WindLanding;float gravity=Mathf.Abs(Physics.gravity.y),flight=WindLanding-.4f;
-   float t=Mathf.Clamp(age-.4f,0,flight),u=t/flight;
+   contacts=0;lastImpact=WindLanding;float gravity=Mathf.Abs(Physics.gravity.y),flight=WindLanding-.5f;
+   float t=Mathf.Clamp(age-.5f,0,flight),u=t/flight;
    if(age<WindLanding)return new Vector3(-3+6*u,Radius+gravity*t*(flight-t)*.5f,6*u*u);
    if(!turf)turf=Resources.Load<GolfBallPhysicsSettings>("GolfBallPhysics");
    var point=new Vector3(3,Radius,6);var velocity=new Vector3(6/flight,-gravity*flight*.5f,12/flight);float remaining=age-WindLanding;
@@ -73,49 +76,70 @@ namespace WhatTheFish {
     if(first){bounds=source.bounds;first=false;}else bounds.Encapsulate(source.bounds);
    }
    if(first){Dispose();return false;}
-   scale=Radius*2/Mathf.Max(.001f,Mathf.Max(bounds.size.x,Mathf.Max(bounds.size.y,bounds.size.z)));ball.localScale=Vector3.one*scale;
-   trail=ball.gameObject.AddComponent<TrailRenderer>();trail.sharedMaterial=Resources.Load<Material>("GolfBallTrail");trail.time=value==GolfEventKind.TropicalWind?1.1f:.72f;trail.minVertexDistance=.025f;trail.widthMultiplier=.065f;
-   trail.widthCurve=AnimationCurve.Linear(0,1,1,0);trail.numCornerVertices=4;trail.shadowCastingMode=ShadowCastingMode.Off;trail.receiveShadows=false;trail.emitting=false;
-   ring=Line("Event landing ripple",48,true);for(int i=0;i<accents.Length;i++)accents[i]=Line("Event motion accent",20);
-   contact=0;launched=false;return true;
+   // Measure the copied local geometry, not a rotated source world AABB.
+   var localBounds=new Bounds();bool measured=false;
+   foreach(var filter in ball.GetComponentsInChildren<MeshFilter>()){
+    var matrix=ball.worldToLocalMatrix*filter.transform.localToWorldMatrix;var box=filter.sharedMesh.bounds;
+    for(int i=0;i<8;i++){var corner=box.center+Vector3.Scale(box.extents,new Vector3((i&1)==0?-1:1,(i&2)==0?-1:1,(i&4)==0?-1:1));var point=matrix.MultiplyPoint3x4(corner);if(!measured){localBounds=new Bounds(point,Vector3.zero);measured=true;}else localBounds.Encapsulate(point);}
+   }
+   scale=Radius*2/Mathf.Max(.001f,Mathf.Max(localBounds.size.x,Mathf.Max(localBounds.size.y,localBounds.size.z)));ball.localScale=Vector3.one*scale;
+   trail=ball.gameObject.AddComponent<GolfBallTrail>();trail.BeginDemonstration(value);
+   ring=Line("Event landing ripple",40,true);aura=Line("Golf event ball outline",32,true);
+   for(int i=0;i<accents.Length;i++)accents[i]=Line("Event motion accent",3);
+   if(value==GolfEventKind.TropicalWind){
+    target=Line("Normal flight target",40,true);
+    for(int i=0;i<reference.Length;i++)reference[i]=Line("Normal flight reference dash",2);
+   }
+   RenderPipelineManager.beginCameraRendering+=FaceOutline;contact=0;launched=false;return true;
   }
   Vector3 World(Vector3 point)=>ground+along*point.x+normal*point.y+wind*point.z;
   public bool Present(GolfEventKind value,float age,Athlete owner,GolfMatchManager match){
    if(!Visible&&!Create(value,owner,match))return false;
    var p=Sample(value,age);ball.position=World(p);float spinAge=Mathf.Min(age,value==GolfEventKind.StickyGreen?1.35f:value==GolfEventKind.TropicalWind?3.5f:2.95f);ball.rotation=Quaternion.AngleAxis(spinAge*240,wind);
-   if(value==GolfEventKind.TropicalWind&&age>=.4f&&!launched){launched=true;GolfFishingAudio.Current?.Play("golf-swish",ball.position,.7f,true);}
+   if(value==GolfEventKind.TropicalWind&&age>=.5f&&!launched){launched=true;GolfFishingAudio.Current?.Play("golf-swish",ball.position,.7f,true);}
    float fade=1-Mathf.SmoothStep(0,1,Mathf.InverseLerp(2.95f,3.5f,age));
    var config=GolfPresentationSettings.Current;Color color=value==GolfEventKind.TropicalWind?config.windColor:value==GolfEventKind.BounceParty?config.bounceColor:config.stickyColor;
-   trail.emitting=age>.4f&&age<2.95f&&(value!=GolfEventKind.StickyGreen||age<1.35f);trail.startColor=new Color(color.r,color.g,color.b,fade);trail.endColor=new Color(color.r,color.g,color.b,0);
+   trail.PresentDemonstration(age>.5f&&age<2.95f&&(value!=GolfEventKind.StickyGreen||age<1.35f),fade);
    float impact=value==GolfEventKind.StickyGreen?1.35f:value==GolfEventKind.BounceParty?(age>=2.95f?2.95f:age>=2.25f?2.25f:1.15f):2.8f;
    float since=age-impact;int next=value==GolfEventKind.StickyGreen?(since>=0?1:0):value==GolfEventKind.BounceParty?(age>=2.95f?3:age>=2.25f?2:age>=1.15f?1:0):0;
    if(value==GolfEventKind.TropicalWind){WindSample(age,out next,out impact);since=age-impact;}
-   if(next>contact){contact=next;GolfFishingAudio.Current?.Play("golf-turf",ball.position,value==GolfEventKind.StickyGreen?.55f:.8f,true);}
-   ball.localScale=Vector3.one*scale;
-   ring.enabled=since>=0;float radius=value==GolfEventKind.StickyGreen?Mathf.Lerp(.85f,.28f,Mathf.Clamp01(since/.4f)):.25f+Mathf.Clamp01(since/.6f)*1.1f;
-   float alpha=fade*(value==GolfEventKind.StickyGreen?.85f:1-Mathf.Clamp01(since/.65f));ring.startColor=ring.endColor=new Color(color.r,color.g,color.b,alpha);
-   var centre=World(Sample(value,impact));centre-=normal*Radius;centre+=normal*.035f;
-   for(int i=0;i<48;i++){float a=i*Mathf.PI*2/48;ring.SetPosition(i,centre+(along*Mathf.Cos(a)+wind*Mathf.Sin(a))*radius);}
+   if(next>contact){contact=next;GolfFeedback.Instance?.DemonstrationLanding(ball.position-normal*Radius,normal,value==GolfEventKind.StickyGreen?.55f:.8f);}
+   float squash=value==GolfEventKind.StickyGreen?GolfBallEventFX.Squash(since):0;
+   ball.localScale=Vector3.Scale(Vector3.one*scale,new Vector3(1+squash*.5f,1-squash,1+squash*.5f));
+   var centre=World(Sample(value,impact))-normal*Radius+normal*.012f;
+   if(value==GolfEventKind.TropicalWind)ring.enabled=false;
+   else GolfBallEventFX.DrawContact(ring,centre,normal,color,since,fade);
+   aura.enabled=value!=GolfEventKind.TropicalWind;var auraColor=color;auraColor.a*=fade;
+   outlineColor=auraColor;outlineClock=age;
    for(int i=0;i<accents.Length;i++){
-    var line=accents[i];line.enabled=value==GolfEventKind.TropicalWind||value==GolfEventKind.StickyGreen&&since>=0;
-    line.startColor=new Color(color.r,color.g,color.b,fade*.5f);line.endColor=new Color(color.r,color.g,color.b,0);
-    for(int j=0;j<20;j++){
-     float u=j/19f;Vector3 point;
-     if(value==GolfEventKind.TropicalWind){float phase=Mathf.Repeat(age*.65f+i*.137f,1);point=ground+along*((i%4-1.5f)*1.7f)+normal*(.6f+(i/4)*1.4f+Mathf.Sin(u*Mathf.PI)*.18f)+wind*((phase-.5f)*10-u*1.7f);}
-     else {float a=i*Mathf.PI/4+u*.7f;point=centre+(along*Mathf.Cos(a)+wind*Mathf.Sin(a))*Mathf.Lerp(.65f,.19f,u)+normal*(Mathf.Sin(u*Mathf.PI)*.18f);}
-     line.SetPosition(j,point);
+    var line=accents[i];line.enabled=value==GolfEventKind.TropicalWind;
+    if(!line.enabled)continue;
+    float phase=Mathf.Repeat(age*.9f+i*.37f,1);
+    var point=ground+along*(-2+i*2.5f)+normal*(.5f+i*.6f)+wind*(-1+phase*11);
+    GolfWindWorld.DrawStreak(line,point,wind,i,Mathf.Sin(phase*Mathf.PI)*fade*Mathf.SmoothStep(0,1,(age-.5f)/.5f));
+   }
+   if(value==GolfEventKind.TropicalWind){
+    for(int i=0;i<reference.Length;i++){
+     var line=reference[i];line.widthMultiplier=.025f;line.startColor=line.endColor=new Color(.88f,.93f,1,.38f*fade);
+     for(int j=0;j<2;j++){float u=(i+j*.55f)/reference.Length;float t=u*(WindLanding-.5f);line.SetPosition(j,World(new Vector3(-3+6*u,Radius+Mathf.Abs(Physics.gravity.y)*t*(WindLanding-.5f-t)*.5f,0)));}
     }
+    target.widthMultiplier=.035f;target.startColor=target.endColor=new Color(.88f,.93f,1,.55f*fade);
+    for(int i=0;i<40;i++){float a=i*Mathf.PI/20;target.SetPosition(i,World(new Vector3(3+Mathf.Cos(a)*.35f,.025f,Mathf.Sin(a)*.35f)));}
+    GolfFishingAudio.Current?.Loop("wind-demo","air",age>.5f,ball.position,fade*Mathf.Lerp(.15f,.65f,Mathf.Clamp01((age-.5f)/1.2f)),1,true);
    }
    return true;
   }
   public void Camera(float age,out Vector3 focus,out Vector3 position){
    if(kind==GolfEventKind.TropicalWind){
-    var centre=ground+normal*1.8f+wind*2.5f;focus=Vector3.Lerp(centre,ball.position,.7f);
-    position=focus-along*1.7f-wind*3.8f+normal*1.05f;
+    focus=ground+along*1.5f+normal*1.5f+wind*4.5f;
+    position=focus-along*9-wind*9+normal*7;
    }else{
     focus=ball.position+normal*.08f;position=focus-along*1.35f-wind*2.5f+normal*.7f;
    }
   }
-  public void Dispose(){if(root){root.gameObject.SetActive(false);UnityEngine.Object.Destroy(root.gameObject);}root=ball=null;}
+  void FaceOutline(ScriptableRenderContext context,Camera camera){
+   if(ball&&aura&&aura.enabled&&camera==UnityEngine.Camera.main)GolfBallEventFX.DrawAura(aura,ball.position,camera,outlineColor,outlineClock);
+  }
+  public void Dispose(){RenderPipelineManager.beginCameraRendering-=FaceOutline;GolfFishingAudio.Current?.StopLoop("wind-demo");if(root){root.gameObject.SetActive(false);UnityEngine.Object.Destroy(root.gameObject);}root=ball=null;}
  }
 }

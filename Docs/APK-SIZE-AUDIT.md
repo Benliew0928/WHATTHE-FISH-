@@ -199,6 +199,91 @@ The complete **342-file WindowsFinal** was promoted and hash-verified.
 See [coin validation and limits](COIN-ECONOMY.md), `Builds/CoinQA/` and
 `Builds/SizeAudit/latest/`. Physical-phone quality and FPS are unverified.
 
+
+## Awards branch validation scope — 27 October 2026
+
+The following awards records were measured on the pre-integration source snapshot.
+They do not validate the combined rewards/moderation/awards source published on
+27 October. The retained local Windows player and APK still represent that awards
+snapshot; no new combined binary is delivered by this source-publishing task.
+
+## Awards opening duration and hand orientation — 26 October 2026
+
+Golf's opening podium view now lasts 2.5 seconds. Fishing/Golf entrance walking
+reverses the outward arm roll at shoulder and elbow together, retaining the
+reference wrist relation and straight swinging arms. The simplified rig has
+Hand/Middle4 landmarks, not separate index/pinky bones. Celebration poses are unchanged.
+
+AndroidSubmission: **168,030,424 -> 168,037,240 bytes (+6,816)**;
+headroom **831,962,760 bytes**. SHA-256:
+**BDCB2DE441C8567028D06CC0DD1F7694C8F13DCA66B7CE9C666660A54B58C935**. APK v2 signature, ZIP CRC, all 1,405 audit entries
+and five-scene bundle integrity pass. Largest compressed entries: island bundle
+45,946,749; IL2CPP 13,256,662; Vivox 10,240,163; Unity 9,828,173 bytes.
+The small bundle/compiled-code changes introduce no new art or quality reduction.
+
+231 awards assertions across English, Simplified Chinese and Malay pass, with
+16:9 and 4:3 captures reviewed; 3,489 localization entries pass. All 530 Windows
+and 373 Android source hashes match. The complete 337-file Windows candidate was
+copied and hash-verified. Evidence: `Builds/AwardsPalmQA/`.
+Phone rendering/touch/FPS and live cloud multiplayer remain unverified.
+
+## Podium opening, straight-arm walk and spherical Bounce demo — 26 October 2026
+
+Golf again opens on the podium before the entrance cut. Both queues walk on the
+central axis toward the stairs, with straight arms swinging from the shoulders.
+Bounce Party's demonstration retains uniform spherical scale at every landing;
+actual gameplay physics and celebration gestures are unchanged.
+
+AndroidSubmission: **168,029,336 -> 168,030,424 bytes (+1,088)**;
+headroom **831,969,576 bytes**. SHA-256:
+**3FD05F6805269962448160AD9E371DA45B8A69BC6FACAB7A6742D494E3180B80**.
+APK v2 signature, ZIP CRC, all 1,405 audit entries and five-scene bundle integrity
+pass. Largest compressed entries: island bundle **45,940,329**, IL2CPP
+**13,256,273**, Vivox **10,240,163**, Unity **9,828,173** bytes. Entry deltas were
+reviewed; no new texture or quality reduction is involved.
+
+**225 three-language awards checks** (including 4:3), **194 Golf cinematic
+checks**, and 3,489 localization entries pass. All **530 Windows / 373 Android**
+source hashes match. The full 335-file candidate copy is hash-verified; retained
+preview launchers bring WindowsFinal to 337 files. Evidence and silent preview
+videos: `Builds/AwardsWalkRefineQA/`; final events:
+`Builds/ActivityCinematicsQA/Golf-20261026-220115-946/`.
+See [presentation maintenance and archive record](NATURAL-ENTRANCES.md).
+Physical-phone rendering/touch/FPS and live cloud multiplayer remain unverified.
+
+## Natural awards entrances and shared Golf event effects — 26 October 2026
+
+AndroidSubmission: **168,036,092 -> 168,029,336 bytes (-6,756)**.
+Remaining headroom: **831,970,664 bytes** below 1,000,000,000.
+SHA-256: **C2582EDC0B205729DB9908A05400C355203C01841947EE9DF8A3C30621AD6D75**. APK v2 signature, ZIP CRC,
+1,405 audited entries and the five-scene bundle hash/size pass.
+
+Fishing/Golf now prepare the whole queue outside the entrance shot; Golf takes
+a side approach. Wind has a fixed comparison view. The three ball examples use
+the actual ball diameter and shared gameplay trails, outlines, impact effects
+and wind strokes. Rush's driver is raised 0.23 m. No new textures or scene-layout
+changes are introduced. Regenerated ball prefab changes are local-ID remapping
+only, verified against the previous graph.
+
+Checks: 188 Golf cinematic assertions, 216 awards assertions across three
+languages (including 4:3 layouts), 160 Golf audio/feedback assertions and the
+3,489-entry localization/font check pass. All **530 Windows / 373 Android**
+source documents match. The complete **335-file** tested candidate copy was
+hash-verified; two retained launchers bring WindowsFinal to 337 files.
+
+Largest compressed entries: island bundle **45,938,848**, IL2CPP **13,256,658**,
+Vivox **10,240,163**, Unity **9,828,173** bytes. Entry deltas were reviewed; no
+unexpected texture growth or lossy quality changes. Source sizes are not APK
+sizes. The supplemental old cup review fails its slow-ball sinking assertion
+on both the pre-change player and this player; actual Sticky/Bounce landing
+checks before that assertion pass. It is not counted as a passing suite.
+
+Evidence: `Builds/NaturalEntranceQA/`,
+`Builds/ActivityCinematicsQA/Golf-20261026-212655-965/`,
+`Builds/GolfFishingAudioQA/Golf-20261026-212940-139/`, and `Builds/SizeAudit/latest/`.
+See [implementation, limits and archive record](NATURAL-ENTRANCES.md).
+Physical-phone rendering/touch/FPS and live cloud multiplayer are unverified.
+
 ## Venue and scoreboard publication merge — 26 October 2026
 
 Merged collision/awards/event commit `a15d4ff` with scoreboard/venue-preview

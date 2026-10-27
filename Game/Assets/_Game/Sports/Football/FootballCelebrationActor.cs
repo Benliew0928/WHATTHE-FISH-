@@ -59,7 +59,8 @@ namespace WhatTheFish {
     var u=l.lower.position-l.upper.position;var d=l.end.position-l.lower.position;var n=Vector3.Cross(u,d).normalized;if(n.sqrMagnitude<.01f)n=Root.right;
     l.a=u.magnitude;l.b=d.magnitude;l.upperBasis=Quaternion.Inverse(Quaternion.LookRotation(u,n))*l.upper.rotation;l.lowerBasis=Quaternion.Inverse(Quaternion.LookRotation(d,n))*l.lower.rotation;
     l.wrist=Quaternion.Inverse(l.lower.rotation)*l.end.rotation;l.foot=Quaternion.Inverse(Root.rotation)*l.end.rotation;l.ankle=Root.InverseTransformPoint(l.end.position);
-    if(arm){var middle=Bone(side+"HandMiddle3");var index=Bone(side+"HandIndex1");var pinky=Bone(side+"HandPinky1");if(middle&&index&&pinky){var direction=(middle.position-l.end.position).normalized;var normal=Vector3.Cross(direction,index.position-pinky.position).normalized*(side=="Left"?1:-1);l.palmBasis=Quaternion.Inverse(Quaternion.LookRotation(direction,normal))*l.end.rotation;}else l.palmBasis=Quaternion.identity;}return l;
+    if(arm){var middle=Bone(side+"HandMiddle3");var index=Bone(side+"HandIndex1");var pinky=Bone(side+"HandPinky1");if(middle&&index&&pinky){var direction=(middle.position-l.end.position).normalized;var normal=Vector3.Cross(direction,index.position-pinky.position).normalized*(side=="Left"?1:-1);l.palmBasis=Quaternion.Inverse(Quaternion.LookRotation(direction,normal))*l.end.rotation;}else l.palmBasis=Quaternion.identity;
+    }return l;
    }
    legs=new[]{Make("Left",false),Make("Right",false)};arms=new[]{Make("Left",true),Make("Right",true)};
    Ready=source.FootballMotion.RigReady&&hips&&spine&&chest&&head&&legs.All(l=>l.end)&&arms.All(l=>l.end);
@@ -94,6 +95,23 @@ namespace WhatTheFish {
     arm.end.rotation=Quaternion.Slerp(arm.lower.rotation*arm.wrist,Quaternion.LookRotation(fingers,palm)*arm.palmBasis,Mathf.Max(high,applause));
    }
    for(int i=0;i<4;i++){var l=i<2?legs[i]:arms[i-2];BoneError=Mathf.Max(BoneError,Mathf.Abs(Vector3.Distance(l.upper.position,l.lower.position)-l.a),Mathf.Abs(Vector3.Distance(l.lower.position,l.end.position)-l.b));}
+  }
+  // Awards-only locomotion: hanging arms swing from the shoulder without the
+  // bent-elbow celebration IK target. Keep wrists aligned with the forearms.
+  public void Walk(FootballPose pose,float stridePhase){
+   Pose(pose);if(!Ready)return;
+   float swing=Mathf.Cos(stridePhase*Mathf.PI*2)*20*Mathf.Deg2Rad;
+   for(int i=0;i<2;i++){
+    var arm=arms[i];float sign=i==0?-1:1,angle=swing*sign;
+    var axis=Root.TransformDirection(new Vector3(sign*.08f,-Mathf.Cos(angle),Mathf.Sin(angle))).normalized;
+    var normal=Vector3.ProjectOnPlane(-Root.right,axis).normalized;
+    arm.upper.rotation=Quaternion.LookRotation(axis,normal)*arm.upperBasis;
+    arm.lower.rotation=Quaternion.LookRotation(axis,normal)*arm.lowerBasis;
+    arm.end.rotation=arm.lower.rotation*arm.wrist;
+    // Reverse the former outward roll at the shoulder and elbow together.
+    // Preserve the reference wrist relation: this simplified rig has only
+    // Hand/Middle4 bones, so finger-bone palm calibration is unavailable.
+   }
   }
   void Rotate(Transform bone,Vector3 angle){bone.rotation=Root.rotation*Quaternion.Euler(angle)*Quaternion.Inverse(Root.rotation)*bone.rotation;}
   void Solve(Limb l,Vector3 target,Vector3 guide){

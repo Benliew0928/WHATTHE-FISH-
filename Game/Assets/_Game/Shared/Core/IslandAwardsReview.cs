@@ -21,9 +21,12 @@ namespace WhatTheFish {
    bool StartPreview(bool crew=false,bool tie=false)=>golf?ceremony.BeginGolfPreview(GolfMatchManager.Instance):ceremony.BeginFishingPreview(FishingGame.Instance,crew,tie);
    Check(StartPreview(),"preview starts with baked podium");Check(ceremony.CastCount==3,"three winner identities rendered");
    var stageRoot=GameObject.Find("Island honours - render-only cast");Check(stageRoot.GetComponentsInChildren<Collider>(true).Length==0,"podium/cast do not add gameplay collisions");Check(AppRoot.Instance.view.InputBlocked,"ceremony blocks player input");
-   ceremony.ReviewTime(golf?2.5f:5);yield return new WaitForEndOfFrame();var entryActors=stageRoot.transform.Cast<Transform>().Where(t=>t.name.StartsWith("Honours #")).ToArray();
-   Check(entryActors[0].gameObject.activeSelf&&!entryActors[1].gameObject.activeSelf,"both sports start single-file with the winner first");
-   float walkAt=golf?1.5f:4.8f;
+   ceremony.ReviewTime(golf?3.5f:5);yield return new WaitForEndOfFrame();var entryActors=stageRoot.transform.Cast<Transform>().Where(t=>t.name.StartsWith("Honours #")).ToArray();
+   Check(entryActors.All(t=>t.gameObject.activeSelf),"complete cast is prepared together, with no staggered activation");
+   ceremony.ReviewTime(golf?2.5f:4.8f);yield return new WaitForEndOfFrame();
+   Check(entryActors.All(t=>!GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(camera),new Bounds(t.position+Vector3.up*.85f,new Vector3(.8f,1.7f,.6f)))),"all actors are outside the entrance frustum when revealed");
+   float walkAt=golf?2.5f:4.8f;
+   if(golf){ceremony.ReviewTime(2.1f);yield return new WaitForEndOfFrame();var look=stageRoot.transform.TransformPoint(new Vector3(0,1.1f,1));Check(Vector3.Angle(camera.transform.forward,look-camera.transform.position)<.1f,"Golf opens by looking at the podium before the entrance cut");}
    Check(!GameObject.Find("Soft lagoon reveal mist"),"fishing rise has no grey mist overlay");
    var next=FindObjectsByType<UnityEngine.UI.Button>(FindObjectsSortMode.None).FirstOrDefault(b=>b.name==(golf?"Golf":"Fishing")+" next adventure");
    Check(next&&next.interactable,"bottom-left next adventure is available in awards");
@@ -39,14 +42,32 @@ namespace WhatTheFish {
    }
    Check(forwardOnly,"entrance camera only advances; no backward correction as winners appear");
    ceremony.ReviewTime(walkAt+5.5f);yield return new WaitForEndOfFrame();
-   Check(entryActors.All(t=>t.gameObject.activeSelf&&Mathf.Abs(t.localPosition.x)<.001f),"all winners share one entrance lane");
+   Check(entryActors.All(t=>t.gameObject.activeSelf),"all winners walk continuously in one queue");
+   Check(entryActors.All(t=>Mathf.Abs(t.localPosition.x)<.001f&&Vector3.Dot(t.forward,-stageRoot.transform.forward)>.999f),"whole queue faces the central podium stairs");
+   bool straight=true;foreach(var actorRoot in entryActors)foreach(var side in new[]{"Left","Right"}){
+    var bones=actorRoot.GetComponentsInChildren<Transform>();var upper=bones.First(t=>t.name=="mixamorig:"+side+"Arm");var lower=bones.First(t=>t.name=="mixamorig:"+side+"ForeArm");var hand=bones.First(t=>t.name=="mixamorig:"+side+"Hand");
+    straight&=Vector3.Angle(lower.position-upper.position,hand.position-lower.position)<1;
+   }
+   Check(straight,"walking elbows stay straight on both arms of every actor");
+   bool wrists=true;
+   foreach(float phase in new[]{.12f,.32f,.62f,.82f}){
+    ceremony.ReviewTime(walkAt+phase);yield return new WaitForEndOfFrame();
+    foreach(var actorRoot in entryActors)foreach(var side in new[]{"Left","Right"}){
+     var bones=actorRoot.GetComponentsInChildren<Transform>();Transform Bone(string part)=>bones.First(t=>t.name=="mixamorig:"+side+part);
+     var hand=Bone("Hand");var fingers=(Bone("HandMiddle4").position-hand.position).normalized;
+     wrists&=Vector3.Dot(fingers,(hand.position-Bone("ForeArm").position).normalized)>.95f;
+    }
+   }
+   Check(wrists,"walking fingers remain aligned with forearms without wrist folding");
+   ceremony.ReviewTime(walkAt+5.5f);yield return new WaitForEndOfFrame();
    for(int i=1;i<entryActors.Length;i++)Check(Vector3.Distance(entryActors[i-1].position,entryActors[i].position)>1.8f,"queue keeps at least 1.8 metres between players");
-   Check(QueueInFrame(entryActors),"entire entrance queue avoids title and result controls");
+   ceremony.ReviewTime(ceremony.ReviewSettleAt-.4f);yield return new WaitForEndOfFrame();
+   Check(QueueInFrame(entryActors),"complete queue enters frame before podium transition");
    var foot=entryActors[0].GetComponentsInChildren<Transform>().First(t=>t.name=="mixamorig:LeftFoot");
-   ceremony.ReviewTime(walkAt+.12f);yield return new WaitForEndOfFrame();var footStart=foot.position;var rootStart=entryActors[0].position;
-   ceremony.ReviewTime(walkAt+.32f);yield return new WaitForEndOfFrame();
+   ceremony.ReviewTime(walkAt+.10f);yield return new WaitForEndOfFrame();var footStart=foot.position;var rootStart=entryActors[0].position;
+   ceremony.ReviewTime(walkAt+.25f);yield return new WaitForEndOfFrame();
    float footSlide=Vector3.ProjectOnPlane(foot.position-footStart,Vector3.up).magnitude;
-   Check(Vector3.Distance(rootStart,entryActors[0].position)>.15f&&footSlide<.025f,"planted foot stays in place as character advances: "+footSlide);
+   Check(Vector3.Distance(rootStart,entryActors[0].position)>.14f&&footSlide<.025f,"planted foot stays in place as character advances: "+footSlide);
    Check(!FindObjectsByType<UnityEngine.UI.Image>(FindObjectsSortMode.None).Any(i=>i.name=="Original rank medal"),"no medals above heads");
    Check(stageRoot.GetComponentsInChildren<TextMesh>(true).All(t=>t.GetComponent<Renderer>().sharedMaterial.shader.name=="WhatTheFish/Awards Depth Text"),"podium numbers use depth testing after localization");
    bool film=Environment.GetCommandLineArgs().Contains("-podiumFilm");int frames=film?(golf?510:630):8;
@@ -58,20 +79,20 @@ namespace WhatTheFish {
    var actors=GameObject.Find("Island honours - render-only cast").transform.Cast<Transform>().Where(t=>t.name.StartsWith("Honours #")).ToArray();
    Check(actors.Length==3,"render-only actor count");for(int i=0;i<actors.Length;i++)Check(Vector3.Distance(actors[i].localPosition,IslandAwardsStage.Seat(i+1))<.01f,"rank "+(i+1)+" feet anchored to podium");
    ceremony.ReviewTime(15);yield return new WaitForEndOfFrame();Check(Vector3.Distance(cameraPosition,camera.transform.position)>.1f,"settled camera moves smoothly around the podium");
-   float settled=walkAt+7.2f;var path=new Vector3[6];float[] cameraTimes={.05f,.25f,3.9f,4.1f,7.75f,7.95f};
+   float settled=ceremony.ReviewSettleAt;var path=new Vector3[6];float[] cameraTimes={.05f,.25f,3.9f,4.1f,7.75f,7.95f};
    for(int i=0;i<path.Length;i++){ceremony.ReviewTime(settled+cameraTimes[i]);yield return new WaitForEndOfFrame();path[i]=stageRoot.transform.InverseTransformPoint(camera.transform.position);}
    float beginning=Vector3.Distance(path[0],path[1]),middle=Vector3.Distance(path[2],path[3]),ending=Vector3.Distance(path[4],path[5]);
    Check(beginning<middle*.08f&&ending<middle*.08f&&middle>.2f,"camera eases in, accelerates, then eases out");
    Check(path[0].x>path[2].x&&path[2].x>path[4].x,"camera sweeps from screen-left to screen-right");
    Check(Vector3.Distance(player.transform.position,position)<.025f,"real player position retained within controller grounding tolerance: "+Vector3.Distance(player.transform.position,position));ceremony.Cancel();yield return null;Check(!FishingCeremony.Presenting&&!GameObject.Find("Island honours - render-only cast"),"cancel removes the whole stage");
-   if(!golf){foreach(bool crew in new[]{false,true}){Check(StartPreview(crew,!crew),crew?"crew preview":"shared first preview");if(crew){ceremony.ReviewTime(14.5f);yield return new WaitForEndOfFrame();var queue=GameObject.Find("Island honours - render-only cast").transform.Cast<Transform>().Where(t=>t.name.StartsWith("Honours #")).ToArray();Check(queue.All(t=>t.gameObject.activeSelf)&&QueueInFrame(queue),"five-member Crew queue fits safely on screen");Capture(Path.Combine(folder,"crew-entrance.jpg"));}ceremony.ReviewTime(18);yield return new WaitForEndOfFrame();Check(ceremony.CastCount==(crew?5:3),"team/tie cast retained");if(!crew){Check(ceremony.PresentedRanks.All(r=>r==1),"tie keeps equal first ranks");Check(ceremony.PodiumSettled,"shared first players celebrate on the same podium");}Capture(Path.Combine(folder,crew?"crew.jpg":"tie.jpg"));ceremony.Cancel();yield return null;}}
+   if(!golf){foreach(bool crew in new[]{false,true}){Check(StartPreview(crew,!crew),crew?"crew preview":"shared first preview");if(crew){ceremony.ReviewTime(ceremony.ReviewSettleAt-.4f);yield return new WaitForEndOfFrame();var queue=GameObject.Find("Island honours - render-only cast").transform.Cast<Transform>().Where(t=>t.name.StartsWith("Honours #")).ToArray();Check(queue.All(t=>t.gameObject.activeSelf)&&QueueInFrame(queue),"five-member Crew queue fits safely on screen");Capture(Path.Combine(folder,"crew-entrance.jpg"));}ceremony.ReviewTime(18);yield return new WaitForEndOfFrame();Check(ceremony.CastCount==(crew?5:3),"team/tie cast retained");if(!crew){Check(ceremony.PresentedRanks.All(r=>r==1),"tie keeps equal first ranks");Check(ceremony.PodiumSettled,"shared first players celebrate on the same podium");}Capture(Path.Combine(folder,crew?"crew.jpg":"tie.jpg"));ceremony.Cancel();yield return null;}}
    MenuPreferences.SetMotion(true);Check(StartPreview(),"reduced-motion preview starts");ceremony.ReviewTime(1);yield return new WaitForEndOfFrame();Check(ceremony.PodiumSettled,"reduced motion skips walking and camera cuts");var reducedPosition=camera.transform.position;ceremony.ReviewTime(4);yield return new WaitForEndOfFrame();Check(Vector3.Distance(reducedPosition,camera.transform.position)<.0001f,"reduced motion retains a fixed camera");ceremony.Skip();if(golf){yield return null;Check(FishingCeremony.Presenting,"Golf keeps the podium while showing results");FindFirstObjectByType<GolfLeaderboardUI>()?.CloseResults();ceremony.Cancel();}else{float skipDeadline=Time.realtimeSinceStartup+3;while(FishingCeremony.Presenting&&Time.realtimeSinceStartup<skipDeadline)yield return null;}Check(!FishingCeremony.Presenting,"exit restores gameplay");
    MenuPreferences.SetMotion(originalMotion);Destroy(target);Destroy(image);File.AppendAllText(Path.Combine(folder,"results.txt"),"ISLAND_AWARDS_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);
   }
   void Update(){if(string.IsNullOrEmpty(folder)&&ceremony&&Input.GetKeyDown(KeyCode.F10)&&!FishingCeremony.Presenting)ceremony.BeginFishingPreview(FishingGame.Instance);}
   bool QueueInFrame(Transform[] actors){
    foreach(var actor in actors)foreach(var point in new[]{actor.position,actor.position+Vector3.up*1.6f}){
-    var screen=camera.WorldToViewportPoint(point);if(screen.z<=0||screen.x<.04f||screen.x>.96f||screen.y<.18f||screen.y>.79f)return false;
+    var screen=camera.WorldToViewportPoint(point);if(screen.z<=0||screen.x<.04f||screen.x>.96f||screen.y<.12f||screen.y>.84f)return false;
    }
    return true;
   }

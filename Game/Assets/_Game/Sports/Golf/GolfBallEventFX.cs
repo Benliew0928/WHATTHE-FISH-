@@ -36,16 +36,26 @@ namespace WhatTheFish {
    var config=GolfPresentationSettings.Current;var color=lastKind==GolfEventKind.StickyGreen?config.stickyColor:config.bounceColor;
    ball.Trail.EventTint(affected?lastKind:GolfEventKind.None);
    if(affected&&!aura)aura=Line("Golf event ball outline",32,true);
-   if(aura){aura.enabled=affected&&!ball.Sinking;if(aura.enabled){var camera=Camera.main;if(camera){float radius=GolfBall.Radius*(MenuPreferences.ReducedMotion?2.2f:2.2f+.18f*Mathf.Sin(Time.time*4));for(int i=0;i<32;i++){float a=i*Mathf.PI/16;aura.SetPosition(i,transform.position+(camera.transform.right*Mathf.Cos(a)+camera.transform.up*Mathf.Sin(a))*radius);}aura.widthMultiplier=.035f;aura.startColor=aura.endColor=color;}}}
-   float squash=MenuPreferences.ReducedMotion?0:Mathf.Sin(Mathf.Clamp01((Time.time-impactAt)/.28f)*Mathf.PI)*config.bounceSquash;
+   if(aura){aura.enabled=affected&&!ball.Sinking;if(aura.enabled)DrawAura(aura,transform.position,Camera.main,color,Time.time);}
+   float squash=Squash(Time.time-impactAt);
    if(visual){visual.localScale=Vector3.Scale(homeScale,new Vector3(1+squash*.5f,1-squash,1+squash*.5f));if(squash>0)visual.rotation=Quaternion.FromToRotation(Vector3.up,impactNormal)*homeRotation;else visual.localRotation=homeRotation;}
-   foreach(var ring in rings){if(ring==null)continue;float age=(Time.time-ring.born)/config.impactSeconds;bool active=age<1&&age>=0;ring.line.enabled=active;if(!active)continue;
-    float radius=MenuPreferences.ReducedMotion?config.impactRadius*.6f:Mathf.Lerp(.06f,config.impactRadius,1-(1-age)*(1-age));
-    var right=Vector3.Cross(ring.normal,Vector3.forward).normalized;if(right.sqrMagnitude<.1f)right=Vector3.right;var forward=Vector3.Cross(right,ring.normal);
-    for(int i=0;i<40;i++){float a=i*Mathf.PI/20;ring.line.SetPosition(i,ring.point+(right*Mathf.Cos(a)+forward*Mathf.Sin(a))*radius);}
-    var tint=ring.tint;tint.a=1-Mathf.SmoothStep(.25f,1,age);ring.line.startColor=ring.line.endColor=tint;ring.line.widthMultiplier=.08f*(1-age*.45f);
-   }
+   foreach(var ring in rings)if(ring!=null)DrawContact(ring.line,ring.point,ring.normal,ring.tint,Time.time-ring.born);
   }
+  // The teaching shot uses these same contact/outline shapes and timing.
+  public static float Squash(float age)=>MenuPreferences.ReducedMotion?0:Mathf.Sin(Mathf.Clamp01(age/.28f)*Mathf.PI)*GolfPresentationSettings.Current.bounceSquash;
+  public static void DrawContact(LineRenderer line,Vector3 point,Vector3 normal,Color tint,float seconds,float opacity=1){
+   var config=GolfPresentationSettings.Current;float age=seconds/config.impactSeconds;line.enabled=age>=0&&age<1;if(!line.enabled)return;
+   float radius=MenuPreferences.ReducedMotion?config.impactRadius*.6f:Mathf.Lerp(.06f,config.impactRadius,1-(1-age)*(1-age));
+   var right=Vector3.Cross(normal,Vector3.forward).normalized;if(right.sqrMagnitude<.1f)right=Vector3.right;var forward=Vector3.Cross(right,normal);
+   line.positionCount=40;for(int i=0;i<40;i++){float a=i*Mathf.PI/20;line.SetPosition(i,point+(right*Mathf.Cos(a)+forward*Mathf.Sin(a))*radius);}
+   tint.a=(1-Mathf.SmoothStep(.25f,1,age))*opacity;line.startColor=line.endColor=tint;line.widthMultiplier=.08f*(1-age*.45f);
+  }
+  public static void DrawAura(LineRenderer line,Vector3 point,Camera camera,Color color,float clock){
+   if(!camera)return;float radius=GolfBall.Radius*(MenuPreferences.ReducedMotion?2.2f:2.2f+.18f*Mathf.Sin(clock*4));line.positionCount=32;
+   for(int i=0;i<32;i++){float a=i*Mathf.PI/16;line.SetPosition(i,point+(camera.transform.right*Mathf.Cos(a)+camera.transform.up*Mathf.Sin(a))*radius);}
+   line.widthMultiplier=.035f;line.startColor=line.endColor=color;
+  }
+
   void Clear(){if(aura)aura.enabled=false;foreach(var r in rings)if(r!=null){r.line.enabled=false;r.born=-100;}impactAt=-100;if(visual){visual.localScale=homeScale;visual.localRotation=homeRotation;}if(ball&&ball.Trail)ball.Trail.EventTint(GolfEventKind.None);}
   void OnDisable()=>Clear();
   void OnDestroy(){if(aura)Destroy(aura.gameObject);foreach(var r in rings)if(r!=null&&r.line)Destroy(r.line.gameObject);}
