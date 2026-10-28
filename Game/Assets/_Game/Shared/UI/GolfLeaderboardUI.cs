@@ -10,7 +10,7 @@ namespace WhatTheFish {
  public sealed class GolfLeaderboardUI:MonoBehaviour {
   readonly List<LocalizedArtwork> headings=new();float headingWidth=-1,headingHeight=-1;string headingLanguage;
   sealed class ScoreRow {
-   public LocalizedArtwork statusCaption;public RectTransform rect,avatar;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];public PlayerReportAction report;
+   public LocalizedArtwork statusCaption;public RectTransform rect,avatar,localMark;public Outline localOutline;public Image art,portrait,status;public Image[] cells=new Image[5];public Text[] text=new Text[5];public PlayerReportAction report;
   }
   GolfFinalCountdown finalCountdown;RectTransform finishedCard;Text finishedText;
   Text footer,timer,notice;Image titleArt,frameArt,columnArt;RectTransform page,board,frame,columnBand,viewport,content,countdownCard,noticeCard;
@@ -20,7 +20,7 @@ namespace WhatTheFish {
   readonly float[] columnShares={.29f,.175f,.143f,.19f,.202f};
   static readonly string[] ColumnNames={"Player","Progress","Strokes","Status","Finish time"};
   RectTransform ceremonyParent;
-  bool expanded,aimSummary,pointerInside;double lastRound=double.NaN;int visibleRows;float renderedRowHeight,hoverScale=1;
+  bool expanded,aimSummary,pointerInside,focusLocalPending;double lastRound=double.NaN;int visibleRows;float renderedRowHeight,hoverScale=1;
   public RectTransform BoardRect=>board;
   public float RenderedHeight=>board?board.rect.height*board.localScale.y:0;
   public RectTransform CountdownRect=>finalCountdown?finalCountdown.Card:countdownCard;
@@ -81,6 +81,8 @@ namespace WhatTheFish {
   }
   void EnsureRows(int count){
    while(rows.Count<count){int i=rows.Count;var row=new ScoreRow();row.rect=Rect("Golf score row "+i,content,new Vector2(0,1),Vector2.zero,Vector2.zero);row.art=Art(row.rect,"Row",true);
+    row.localOutline=row.art.gameObject.AddComponent<Outline>();row.localOutline.effectColor=GolfHUDStyle.Gold;row.localOutline.effectDistance=new Vector2(1.6f,-1.6f);row.localOutline.enabled=false;
+    row.localMark=Rect("Local player marker",row.rect,new Vector2(0,.5f),new Vector2(6,0),new Vector2(4,24));var mark=row.localMark.gameObject.AddComponent<Image>();mark.color=GolfHUDStyle.Gold;mark.raycastTarget=false;row.localMark.gameObject.SetActive(false);
     row.avatar=Rect("Golf player avatar "+i,row.rect,new Vector2(0,.5f),Vector2.zero,Vector2.one*36);row.portrait=Art(row.avatar,"Avatar0");row.portrait.preserveAspect=true;
     for(int j=0;j<5;j++){
      if(j>0){var cell=Rect("Golf value plate "+j,row.rect,new Vector2(0,.5f),Vector2.zero,Vector2.zero);row.cells[j]=Art(cell,j==3?"Pending":"Cell",true);}
@@ -98,7 +100,7 @@ namespace WhatTheFish {
   public void CloseResults()=>SetExpanded(false);
   void SetExpanded(bool value){
    var match=GolfMatchManager.Instance;
-   if(value&&(aimSummary||!match||!match.Context||match.State.Phase==GolfMatchPhase.Idle))return;expanded=value;if(!value){hoverScale=1;
+   if(value&&(aimSummary||!match||!match.Context||match.State.Phase==GolfMatchPhase.Idle))return;focusLocalPending=value&&!expanded;expanded=value;if(!value){hoverScale=1;
     if(ceremonyParent){board.SetParent(page,false);backdrop.transform.SetParent(page,false);Stretch((RectTransform)backdrop.transform);ceremonyParent=null;}
    }scroll.StopMovement();content.anchoredPosition=Vector2.zero;
    if(value){backdrop.transform.SetAsLastSibling();board.SetAsLastSibling();countdownCard.SetAsLastSibling();noticeCard.SetAsLastSibling();}
@@ -137,12 +139,13 @@ namespace WhatTheFish {
    Place(scrollTrack,new Vector2(0,1),new Vector2(width-padding-3,-rowTop-body*.5f),new Vector2(7,body-6));scrollTrack.gameObject.SetActive(scroll.vertical&&!aimSummary);
    for(int i=0;i<rows.Count;i++){
     var row=rows[i];Place(row.rect,new Vector2(0,1),new Vector2(inner*.5f,-renderedRowHeight*(i+.5f)),new Vector2(inner,renderedRowHeight-4));
+    row.localMark.sizeDelta=new Vector2(4,renderedRowHeight*.55f);
     float avatarSize=renderedRowHeight-9;Place(row.avatar,new Vector2(0,.5f),new Vector2(avatarSize*.5f+7,0),Vector2.one*avatarSize);
     float offset=0;for(int j=0;j<5;j++){
      float cell=inner*columnShares[j],left=j==0?avatarSize+15:4;
      var position=new Vector2(offset+left+(cell-left-5)*.5f,0);var cellSize=new Vector2(cell-left-5,renderedRowHeight*(expanded?.64f:.76f));
      if(j>0){Place((RectTransform)row.cells[j].transform.parent,new Vector2(0,.5f),position,cellSize);}
-     float reportWidth=j==0&&expanded?46:0;
+     float reportWidth=j==0&&expanded&&row.report.gameObject.activeSelf?46:0;
      Place(row.text[j].rectTransform,new Vector2(0,.5f),position-new Vector2(reportWidth*.5f,0),new Vector2(cell-left-5-reportWidth,renderedRowHeight-5));row.text[j].fontSize=expanded?j==0?25:27:j==0?20:22;
      if(j==0)row.report.Place(cell-46,(renderedRowHeight-48)*.5f,44,44);offset+=cell;
     }
@@ -176,20 +179,30 @@ namespace WhatTheFish {
    if(!started&&expanded)SetExpanded(false);
    if(!expanded&&localIndex<0)board.gameObject.SetActive(false);
    if(started&&!aimSummary){if(expanded){for(int i=0;i<ranked.Length;i++)selected.Add(i);}else if(localIndex>=0)selected.Add(localIndex);}
-   visibleRows=selected.Count;Layout(visibleRows);
+   visibleRows=selected.Count;
+   for(int i=0;i<visibleRows;i++)rows[i].report.Bind(ranked[selected[i]].player.PlayerId,expanded);
+   Layout(visibleRows);
    for(int i=0;i<rows.Count;i++){
     bool visible=i<visibleRows;var row=rows[i];row.rect.gameObject.SetActive(visible);if(!visible)continue;
     int orderedIndex=selected[i];var result=ranked[orderedIndex];var p=result.player;bool isLocal=p.PlayerId==local?.PlayerId;displayedIds.Add(p.PlayerId);row.report.Bind(p.PlayerId,expanded);
     string prefix=p.IsFinished?result.rank+(result.tie?"= ":". "):p.IsDNF?"":(orderedIndex+1)+". ";
     row.art.sprite=Sprite(isLocal?"LocalRow":"Row");row.portrait.sprite=Sprite("Avatar"+(isLocal?0:1+(int)(p.PlayerId%3)));
+    row.localMark.gameObject.SetActive(isLocal);row.localOutline.enabled=isLocal;
     for(int j=1;j<5;j++)if(j!=3)row.cells[j].sprite=Sprite(isLocal?"LocalCell":"Cell");
     bool namedYou=string.Equals(p.PlayerName,"You",StringComparison.OrdinalIgnoreCase);
-    FitLine(row.text[0],prefix+(isLocal&&namedYou?GameLocalization.Translate("You"):p.PlayerName)+(isLocal&&!namedYou?GameLocalization.Translate(" (you)"):""),row.text[0].fontSize,17);
-    row.text[0].color=isLocal?Color.white:GolfHUDStyle.Ink;row.text[0].GetComponent<Outline>().effectColor=isLocal?GolfHUDStyle.Ink:Color.white;row.text[0].GetComponent<Outline>().effectDistance=Vector2.one*(isLocal?1.7f:1.1f);
+    IslandResultName.Fit(row.text[0],isLocal&&namedYou?GameLocalization.Translate("You"):p.PlayerName,prefix,isLocal&&!namedYou?GameLocalization.Translate(" (you)"):"",row.text[0].fontSize,17);
+    row.text[0].color=GolfHUDStyle.Ink;row.text[0].GetComponent<Outline>().effectColor=Color.white;row.text[0].GetComponent<Outline>().effectDistance=Vector2.one*(isLocal?.75f:1.1f);
     row.text[1].text=$"{p.CompletedHoleCount} / 5";row.text[2].text=p.TotalStroke.ToString();row.text[4].text=p.IsFinished?FinishTime(p.FinishTime):"--:--";
     row.text[3].text=p.IsFinished?"Finished":p.IsDNF?"DNF":"Playing";
     row.status.sprite=Sprite(p.IsFinished?"Finished":p.IsDNF?"Pending":"Playing");row.status.type=Image.Type.Simple;row.status.preserveAspect=true;row.text[3].enabled=p.IsDNF;row.statusCaption.enabled=!p.IsDNF;
     row.text[3].color=Color.white;row.text[3].GetComponent<Outline>().effectColor=new Color(.55f,.29f,.03f);FitLine(row.text[3],row.text[3].text,row.text[3].fontSize,16);
+   }
+   if(focusLocalPending&&expanded){
+    // One reveal per opening. Live updates and manual scrolling retain position.
+    focusLocalPending=false;scroll.StopMovement();Canvas.ForceUpdateCanvases();
+    float overflow=Mathf.Max(0,content.rect.height-viewport.rect.height);
+    float offset=localIndex<0?0:Mathf.Clamp((localIndex+.5f)*renderedRowHeight-viewport.rect.height*.5f,0,overflow);
+    content.anchoredPosition=new Vector2(0,offset);
    }
    footer.text=expanded&&!aimSummary?$"Close ranking   ×   {ranked.Length} players":"";
    bool countdown=state.CountdownStarted&&state.Phase==GolfMatchPhase.FinalCountdown;

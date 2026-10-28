@@ -87,7 +87,7 @@ namespace WhatTheFish {
    Loop("air","air",true,point,.28f,1,true);Loop("shore","shore-waves",true,point,fishing ? .32f : .12f,1,true);
    if(golf)GolfState(first,actor);else FishingStateSounds(first,actor);
    Movement(actor,first);
-   if(resultAt>=0&&Time.unscaledTimeAsDouble>=resultAt){Play(resultCue,point,.8f,true);resultAt=-1;}
+   if(resultAt>=0&&Time.unscaledTimeAsDouble>=resultAt){if(!FishingCeremony.Presenting)Play(resultCue,point,.8f,true);resultAt=-1;}
    foreach(var v in voices)if(v.source.isPlaying)v.source.volume=Gain(v);
    foreach(var v in loops.Values){if(v.frame<Time.frameCount-1)v.source.Stop();else if(v.source.isPlaying)v.source.volume=Gain(v);}
    if(Time.unscaledTime>=buttonsAt){buttonsAt=Time.unscaledTime+.5f;foreach(var button in Resources.FindObjectsOfTypeAll<Button>())if(button&&button.gameObject.scene.IsValid()&&!button.GetComponent<GolfFishingButtonSound>())button.gameObject.AddComponent<GolfFishingButtonSound>();}

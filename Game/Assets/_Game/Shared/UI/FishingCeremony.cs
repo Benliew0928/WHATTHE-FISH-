@@ -14,7 +14,7 @@ namespace WhatTheFish {
   Camera camera;Vector3 savedPosition;Quaternion savedRotation;float savedFov,savedNear,opened,skipAt=-1;bool running,blockedBefore;
   Transform stage;RectTransform screen,content;Image curtain;Text title;FootballTake[] takes;Func<bool> valid;Action complete;
   readonly List<(CanvasGroup group,float alpha,bool raycasts,bool interactable)> hiddenUI=new();bool revealed;
-  bool rankedGolf;
+  bool rankedGolf;IslandAwardsAudio awardsAudio;
   public int CastCount=>cast.Count;
   public bool Begin(FishingGame source,FishingPlayerRecord[] records,Action onComplete){
    if(running||Presenting||!source||records.Length==0||source.State.Match.outcome==FishingOutcome.Abandoned||TeleportSequence.Busy||RoomTeleport.Busy)return false;
@@ -84,6 +84,7 @@ namespace WhatTheFish {
     castRanks.Add(Mathf.Clamp(rank,1,3));visual.Root.gameObject.SetActive(false);cast.Add(visual);
    }
    if(cast.Count==0){End(false);return false;}
+   awardsAudio=IslandAwardsAudio.Create(source,cast.Select(a=>a.Root),rankedGolf,camera);
    revealed=false;opened=Time.unscaledTime;skipAt=-1;
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
    reviewAge=null;
@@ -114,12 +115,13 @@ namespace WhatTheFish {
    curtain.color=new Color(.025f,.07f,.11f,Mathf.Max(age<.45f?fadeIn:1-Mathf.SmoothStep(0,1,(age-.45f)/.45f),fadeOut));
    if(revealed){
     PresentPodium(age);
+    if(awardsAudio)awardsAudio.Present(age,SettleAt);
    }
    if(skipAt>=0&&Time.unscaledTime-skipAt>=.45f)End(true);
   }
   public void Cancel()=>End(false);
   void End(bool showResults){
-   if(!running)return;if(rankedGolf)FindFirstObjectByType<GolfLeaderboardUI>()?.CloseResults();running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();ReleasePodiumMaterials();
+   if(!running)return;if(awardsAudio){awardsAudio.Complete(showResults);awardsAudio=null;}if(rankedGolf)FindFirstObjectByType<GolfLeaderboardUI>()?.CloseResults();running=false;foreach(var pair in hidden)if(pair.Key)pair.Key.forceRenderingOff=pair.Value;hidden.Clear();cast.Clear();ReleasePodiumMaterials();
    if(stage){stage.gameObject.SetActive(false);Destroy(stage.gameObject);}if(screen){screen.gameObject.SetActive(false);Destroy(screen.gameObject);}
    if(camera){camera.transform.SetPositionAndRotation(savedPosition,savedRotation);camera.fieldOfView=savedFov;camera.nearClipPlane=savedNear;}
    foreach(var entry in hiddenUI)if(entry.group){entry.group.alpha=entry.alpha;entry.group.blocksRaycasts=entry.raycasts;entry.group.interactable=entry.interactable;}hiddenUI.Clear();if(PlayerView.Instance){PlayerView.Instance.ClearMatchInput();PlayerView.Instance.InputBlocked=blockedBefore;}

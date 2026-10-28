@@ -59,15 +59,16 @@ namespace WhatTheFish {
     // Enable everyone together outside the frustum, never at an in-frame spawn.
     actor.Root.gameObject.SetActive(true);
     foreach(var renderer in actor.Root.GetComponentsInChildren<Renderer>())renderer.forceRenderingOff=!PodiumSettled&&age<walkAt;
-    var seat=ActorSeat(i);
+    var seat=ActorSeat(i);float phase=(Mathf.Max(0,age-walkAt)*WalkSpeed-i*QueueGap)/StrideLength;
     if(PodiumSettled){actor.Root.localPosition=seat;actor.Root.localRotation=Quaternion.identity;var take=takes[i%3];actor.Pose(take.Sample((age-settleAt+i*.4f)/take.duration));}
     else{
      float travelled=Mathf.Max(0,age-walkAt)*WalkSpeed;
      var direction=Vector3.back;
      var at=new Vector3(0,.38f,20)+direction*(travelled-i*QueueGap);
      if(rankedGolf){var world=stage.TransformPoint(at);if(Physics.Raycast(world+Vector3.up*10,Vector3.down,out var ground,20,1<<8,QueryTriggerInteraction.Ignore))at.y=stage.InverseTransformPoint(ground.point).y+.015f;else at.y=0;}
-     actor.Root.localPosition=at;actor.Root.localRotation=Quaternion.LookRotation(direction);actor.Walk(WalkPose(travelled-i*QueueGap),(travelled-i*QueueGap)/StrideLength);
+     actor.Root.localPosition=at;actor.Root.localRotation=Quaternion.LookRotation(direction);actor.Walk(WalkPose(phase*StrideLength),phase);
     }
+    if(awardsAudio)awardsAudio.ObserveWalk(i,phase,age,!reduced&&age>=walkAt&&age<settleAt-.22f);
    }
    Vector3 position,focus;
    if(PodiumSettled||reduced){
