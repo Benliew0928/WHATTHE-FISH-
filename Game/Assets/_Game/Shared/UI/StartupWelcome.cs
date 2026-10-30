@@ -30,10 +30,11 @@ namespace WhatTheFish {
   public bool ArtworkLoaded {get;private set;}
   public Rect SafeArea {get;private set;}
   public const float Width=1672,Height=941;
-  RectTransform cover,actions,modal;CanvasGroup actionGroup;GameObject blankSign;
+  RectTransform cover,actions,modal,signCard,utilityRow,mascot,brand;CanvasGroup actionGroup;GameObject blankSign;
+  Text readyTitle;Texture2D sceneTexture;
   Text heading,subtitle,status,percentage;WelcomePlate fill;
   GameObject modalRoot;Button returnFocus;Action retry;
-  bool driven,leaving;float hideProgressAt=-1;
+  bool driven,leaving;float hideProgressAt=-1;int progressPercent=-1;
   static readonly Color Ink=LocalProfile.Hex("064B55"),Cream=LocalProfile.Hex("FFF7E3");
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   public Rect? ReviewSafeArea;
@@ -55,30 +56,32 @@ namespace WhatTheFish {
    SetBaseInteractable(!ModalOpen);
    actionGroup.alpha=0;actionGroup.interactable=actionGroup.blocksRaycasts=false;
    GuestButton.interactable=HuaweiButton.interactable=false;RetryButton.gameObject.SetActive(false);
-   blankSign.SetActive(true);heading.gameObject.SetActive(true);
+   blankSign.SetActive(true);heading.gameObject.SetActive(true);readyTitle.gameObject.SetActive(false);
    heading.text="Welcome aboard!";subtitle.text="Your island adventure is getting ready.";subtitle.gameObject.SetActive(true);
    LoadingPanel.gameObject.SetActive(true);percentage.gameObject.SetActive(true);SetProgress(0,"Preparing your islands...");
   }
   public void SetProgress(float value,string label){
    if(IsReady||HasError)return;
-   Progress=Mathf.Clamp(value,0,.99f);status.text=label;percentage.text=Mathf.FloorToInt(Progress*100)+"%";
-   fill.rectTransform.sizeDelta=new Vector2(258*Progress,22);fill.SetVerticesDirty();
+   float next=Mathf.Clamp(value,0,.99f);status.text=label;
+   int percent=Mathf.FloorToInt(next*100);if(percent!=progressPercent){progressPercent=percent;percentage.text=percent+"%";}
+   if(Progress!=next||fill.rectTransform.sizeDelta.x!=258*next){fill.rectTransform.sizeDelta=new Vector2(258*next,22);fill.SetVerticesDirty();}
+   Progress=next;
   }
   public void ShowError(string cause=""){
    HasError=true;IsReady=false;hideProgressAt=-1;
    SetBaseInteractable(!ModalOpen);
    actionGroup.alpha=0;actionGroup.interactable=actionGroup.blocksRaycasts=false;
    GuestButton.interactable=HuaweiButton.interactable=false;
-   blankSign.SetActive(true);heading.gameObject.SetActive(true);
+   blankSign.SetActive(true);heading.gameObject.SetActive(true);readyTitle.gameObject.SetActive(false);
    heading.text="Let’s try again";subtitle.text="Your adventure will be here when you’re ready.";subtitle.gameObject.SetActive(true);
    status.text=cause.IndexOf("space",StringComparison.OrdinalIgnoreCase)>=0||cause.IndexOf("disk",StringComparison.OrdinalIgnoreCase)>=0?"Free some storage, then retry.":cause.IndexOf("hash",StringComparison.OrdinalIgnoreCase)>=0||cause.IndexOf("integrity",StringComparison.OrdinalIgnoreCase)>=0?"Content needs repair. Retry loading.":"Could not load islands. Try again.";percentage.gameObject.SetActive(false);RetryButton.gameObject.SetActive(true);LoadingPanel.gameObject.SetActive(true);
   }
   public void SetReady(bool allowBypass=true){
    if(IsReady)return;IsReady=true;HasError=false;Progress=1;
-   blankSign.SetActive(false);heading.gameObject.SetActive(false);subtitle.gameObject.SetActive(false);
+   blankSign.SetActive(false);heading.gameObject.SetActive(false);subtitle.gameObject.SetActive(false);readyTitle.gameObject.SetActive(true);
    actionGroup.alpha=1;actionGroup.interactable=actionGroup.blocksRaycasts=true;
    GuestButton.interactable=HuaweiButton.interactable=true;RetryButton.gameObject.SetActive(false);
-   status.text="Ready to play";percentage.text="100%";fill.rectTransform.sizeDelta=new Vector2(258,22);fill.SetVerticesDirty();hideProgressAt=Time.unscaledTime+.8f;
+   status.text="Ready to play";progressPercent=100;percentage.text="100%";fill.rectTransform.sizeDelta=new Vector2(258,22);fill.SetVerticesDirty();LoadingPanel.gameObject.SetActive(false);hideProgressAt=-1;
    SetBaseInteractable(!ModalOpen);if(allowBypass&&BypassRequested())Dismiss(false);
   }
   static bool BypassRequested(){
@@ -112,7 +115,7 @@ namespace WhatTheFish {
   void Dismiss(bool goHome){
    if(leaving)return;leaving=true;Visible=false;
    if(EventSystem.current)EventSystem.current.SetSelectedGameObject(null);
-   if(AppRoot.Instance){AppRoot.Instance.view.InputBlocked=false;if(goHome)AppRoot.Instance.Show("home");}
+   if(AppRoot.Instance){AppRoot.Instance.view.InputBlocked=false;if(goHome){AppRoot.Instance.Show("home");AppRoot.Instance.Menu.BeginFirstVisitGuide();}}
    Canvas.gameObject.SetActive(false);Destroy(gameObject);
   }
   void Update(){
@@ -122,62 +125,6 @@ namespace WhatTheFish {
    if(Input.GetKeyDown(KeyCode.Tab)&&EventSystem.current&&!EventSystem.current.currentSelectedGameObject)(IsReady?GuestButton:LanguageButton).Select();
   }
   void OnDestroy(){GameLocalization.Changed-=RefreshLanguageArtwork;if(Instance==this)Instance=null;}
-  void Create(){
-   Canvas=new GameObject("Welcome canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster)).GetComponent<Canvas>();
-   Canvas.transform.SetParent(transform,false);Canvas.renderMode=RenderMode.ScreenSpaceOverlay;Canvas.sortingOrder=30000;
-   // Pixel-space layout keeps every overlay locked to the approved 16:9 artwork.
-   Canvas.GetComponent<CanvasScaler>().uiScaleMode=CanvasScaler.ScaleMode.ConstantPixelSize;
-   var texture=Resources.Load<Texture2D>("StartupWelcome/Background");
-   var signTexture=Resources.Load<Texture2D>("StartupWelcome/BlankSign");ArtworkLoaded=texture&&signTexture;
-   cover=Rect(Canvas.transform,"Safe frame backdrop",0,0,Width,Height);var backdrop=cover.gameObject.AddComponent<WelcomePlate>();backdrop.top=LocalProfile.Hex("236C86");backdrop.bottom=LocalProfile.Hex("103F50");backdrop.edge=backdrop.bottom;backdrop.radius=0;backdrop.sheen=false;backdrop.raycastTarget=true;
-   Design=Rect(Canvas.transform,"Approved artwork frame",0,0,Width,Height);
-   var art=Rect(Design,"Cable-car welcome artwork",0,0,Width,Height).gameObject.AddComponent<RawImage>();art.texture=texture;art.raycastTarget=true;
-   // Keep the approved scene byte-for-byte. Only this small sign interior uses
-   // the blank companion plate; generated changes elsewhere are never shown.
-   var sign=Rect(Design,"Blank sign during preparation",1138,340,484,320).gameObject.AddComponent<WelcomeSignPatch>();
-   sign.texture=signTexture;sign.source=new UnityEngine.Rect(1138/Width,1-660/Height,484/Width,320/Height);sign.raycastTarget=false;blankSign=sign.gameObject;
-   heading=Label(Design,"Welcome aboard!",1162,337,436,72,38,true,Ink,TextAnchor.MiddleCenter);
-   subtitle=Label(Design,"Your island adventure is getting ready.",1170,455,416,104,26,false,Ink,TextAnchor.MiddleCenter);
-   actions=Rect(Design,"Sign-in choices",1153,444,457,212);actionGroup=actions.gameObject.AddComponent<CanvasGroup>();
-   HuaweiButton=ArtworkButton(actions,"Huawei sign-in",0,0,457,100,new UnityEngine.Rect(2,1,453,90),45,()=>{
-    if(!AndroidAccountSignIn.Supported)ShowPlaceholder("Account sign-in","Huawei and Google sign-in use the Android phone's account screen.\nGuest play is available here.",HuaweiButton);
-    else AccountPanel.Open(()=>{CloseModal();ContinueAsGuest();});
-   });
-   if(AndroidAccountSignIn.Supported&&AndroidAccountSignIn.Capabilities.Preferred==AccountProvider.Google){
-    Plate(HuaweiButton.transform,"Google sign-in plate",2,1,453,90,"FFFFFF","FFF7E3","76AA9C",45,false);
-    Label(HuaweiButton.transform,"Sign in with Google",22,1,413,90,28,true,Ink,TextAnchor.MiddleCenter);
-   }
-   GuestButton=ArtworkButton(actions,"Continue as guest",0,112,457,100,new UnityEngine.Rect(2,1,453,90),45,ContinueAsGuest);
-   LanguageButton=Utility("English",1258,OpenLanguagePicker);
-   SettingsButton=Utility("Settings",1398,OpenWelcomeSettings);
-   InfoButton=Utility("Info",1533,OpenWelcomeInfo);
-   // Immediately right of the character's shins, above the boardwalk edge.
-   LoadingPanel=Rect(Design,"Loading beside character",750,708,350,118);
-   var plate=LoadingPanel.gameObject.AddComponent<WelcomePlate>();plate.top=Cream;plate.bottom=LocalProfile.Hex("F9ECCE");plate.edge=LocalProfile.Hex("8AAEA0");plate.radius=23;plate.raycastTarget=false;
-   status=Label(LoadingPanel,"Preparing your islands...",20,12,312,50,22,true,Ink);
-   Plate(LoadingPanel,"Progress track",20,69,258,22,"CAD5D0","E0E4D8","C5CFC7",11,false);
-   fill=Plate(LoadingPanel,"Actual load progress",20,69,0,22,"4BD9FC","0CA7E2","178FB7",11,false);
-   percentage=Label(LoadingPanel,"0%",283,61,59,38,24,true,Ink,TextAnchor.MiddleCenter);percentage.resizeTextForBestFit=true;percentage.resizeTextMinSize=14;percentage.resizeTextMaxSize=24;
-   RetryButton=ActionButton(Design,"Retry content loading","Try again",1216,570,320,88,"C9FFF0","82DDC4","57A996",()=>{if(HasError){BeginLoading();retry?.Invoke();}},WelcomeSymbol.None,30);
-   if(!EventSystem.current)new GameObject("Welcome input",typeof(EventSystem),typeof(StandaloneInputModule));
-   BeginLoading();Layout();
-  }
-  public void Layout(){
-   SafeArea=Screen.safeArea;
-#if UNITY_EDITOR || DEVELOPMENT_BUILD
-   if(ReviewSafeArea.HasValue)SafeArea=ReviewSafeArea.Value;
-#endif
-   if(SafeArea.width<=0||SafeArea.height<=0)SafeArea=new Rect(0,0,Screen.width,Screen.height);
-   float scale=Mathf.Min(SafeArea.width/Width,SafeArea.height/Height);
-   // Scale the canvas, not a descendant transform, so dynamic fonts rasterize
-   // at the actual display pixel density (including high-resolution monitors).
-   Canvas.GetComponent<CanvasScaler>().scaleFactor=scale;Canvas.scaleFactor=scale;
-   Design.localScale=Vector3.one;Design.anchoredPosition=new Vector2(SafeArea.center.x-Width*scale/2,-(Screen.height-SafeArea.center.y-Height*scale/2))/scale;
-   float coverScale=Mathf.Max(Screen.width/Width,Screen.height/Height);
-   cover.localScale=Vector3.one*(coverScale/scale);cover.anchoredPosition=new Vector2((Screen.width-Width*coverScale)/2,-(Screen.height-Height*coverScale)/2)/scale;
-  }
-  // Both the circle and its illustrated label belong to the touch target.
-  Button Utility(string label,float x,Action click)=>ArtworkButton(Design,label,x,34,114,124,new UnityEngine.Rect(20,6,74,74),37,click);
   static Button ArtworkButton(Transform parent,string name,float x,float y,float w,float h,UnityEngine.Rect visual,float radius,Action click){
    var feedback=Rect(parent,name,x,y,w,h).gameObject.AddComponent<WelcomeArtworkFeedback>();feedback.visual=visual;feedback.radius=radius;
    var button=feedback.gameObject.AddComponent<WelcomeButton>();button.targetGraphic=feedback;button.transition=Selectable.Transition.None;
@@ -192,8 +139,9 @@ namespace WhatTheFish {
    SetBaseInteractable(false);close.Select();
   }
   void CreateModal(){
-   modalRoot=new GameObject("Welcome dialog",typeof(RectTransform));modal=modalRoot.GetComponent<RectTransform>();modal.SetParent(Design,false);modal.anchorMin=modal.anchorMax=modal.pivot=new Vector2(0,1);modal.sizeDelta=new Vector2(Width,Height);
-   var shade=modal.gameObject.AddComponent<Image>();shade.color=new Color(.015f,.10f,.12f,.68f);shade.raycastTarget=true;
+   modalRoot=Rect(Canvas.transform,"Welcome dialog",0,0,Width,Height).gameObject;CoveUI.Stretch((RectTransform)modalRoot.transform);
+   var shade=modalRoot.AddComponent<Image>();shade.color=new Color(.015f,.10f,.12f,.68f);shade.raycastTarget=true;
+   modal=Rect(modalRoot.transform,"Dialog design",0,0,Width,Height);LayoutDialog();
   }
   void SetBaseInteractable(bool enabled){
    LanguageButton.interactable=enabled;

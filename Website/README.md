@@ -24,6 +24,11 @@ Upload the contents of that directory (or a ZIP with `index.html` at its root)
 through Cloudflare Pages, project `whatthefish-game`, only when publication is
 authorized. Direct Upload does not connect or push the repository.
 
+The current public preview includes documented rod/club attribution and updated
+retention draft facts in all three languages. These website-only overrides do
+not rewrite the signed game's offline draft bundle. Final policy acceptance
+must reconcile both surfaces in a future tested game delivery.
+
 The generator reuses the approved logo, islands and sport-card artwork without
 modifying their pixels and copies the existing Barlow font with its OFL licence.
 It synchronizes new English/Chinese/Malay keys into the shared game catalog and

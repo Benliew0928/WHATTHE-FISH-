@@ -8,19 +8,7 @@
       "height": 941
     },
     {
-      "path": "Game/Assets/_Game/Resources/StartupWelcome/Background.png",
-      "sha256": "A910D785D1099A2A7E271C225D0404D0C101717C7D00B9ADCC94C3F990E545A7",
-      "width": 1672,
-      "height": 941
-    },
-    {
       "path": "ArtSource/StartupWelcome/cable-car-welcome-blank-sign.png",
-      "sha256": "03E852B7427FCD8FDA37241BBC2FE8D9E06420E386BAAD56DFFB33A9273FE9FB",
-      "width": 1671,
-      "height": 941
-    },
-    {
-      "path": "Game/Assets/_Game/Resources/StartupWelcome/BlankSign.png",
       "sha256": "03E852B7427FCD8FDA37241BBC2FE8D9E06420E386BAAD56DFFB33A9273FE9FB",
       "width": 1671,
       "height": 941

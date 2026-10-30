@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readFileSync,readdirSync } from 'node:fs';
 import { generateKeyPairSync, sign } from 'node:crypto';
 import { Profiles } from './profiles.mjs';
 import { normalize, rank, distance, validateName } from './profile-search.mjs';
@@ -10,10 +10,8 @@ import { profileApi } from './profile-api.mjs';
 import { deleteProfileForAccount, deletionPending, deletionHash } from './account-deletion.mjs';
 function fixture(){
   const sql=new DatabaseSync(':memory:');sql.exec('PRAGMA foreign_keys=ON');
-  sql.exec(readFileSync(new URL('./migrations/0001_profiles.sql',import.meta.url),'utf8'));
-  sql.exec(readFileSync(new URL('./migrations/0002_profile_limits.sql',import.meta.url),'utf8'));
-  sql.exec(readFileSync(new URL('./migrations/0004_account_deletions.sql',import.meta.url),'utf8'));
-  sql.exec(readFileSync(new URL('./migrations/0007_report_incidents.sql',import.meta.url),'utf8'));
+  for(const file of readdirSync(new URL('./migrations/',import.meta.url)).filter(f=>f.endsWith('.sql')).sort())
+    sql.exec(readFileSync(new URL('./migrations/'+file,import.meta.url),'utf8'));
   const db={prepare(text){return {bind(...args){
     const statement=sql.prepare(text),values=args.map(a=>Array.isArray(a)?new Uint8Array(a):a);
     return {async first(){return statement.get(...values)||null;},async all(){return {results:statement.all(...values)};},

@@ -7,7 +7,9 @@ namespace WhatTheFish {
   readonly Dictionary<ulong,FootballTeam> choices=new();
   public int Capacity {get;private set;}
   public bool Locked {get;private set;}
-  public int Count(FootballTeam team)=>choices.Values.Count(value=>value==team);
+  // Snapshots are queried by movement, abilities and both sports' HUDs. A
+  // captured LINQ predicate here allocated on every nested state query.
+  public int Count(FootballTeam team){int count=0;foreach(var value in choices.Values)if(value==team)count++;return count;}
   public FootballTeam TeamOf(ulong player)=>choices.TryGetValue(player,out var team)?team:FootballTeam.None;
   public bool Contains(ulong player)=>choices.ContainsKey(player);
   public void Restore(IEnumerable<(ulong id,FootballTeam team)> roster,int capacity,bool locked){Clear();Capacity=capacity;Locked=locked;foreach(var p in roster)choices[p.id]=p.team;}

@@ -27,10 +27,13 @@ namespace WhatTheFish {
   bool HasBallEffects=>app.SelectedSport==SportId.Football||app.SelectedSport==SportId.Basketball;
   public bool CanEdit=>!app.rooms.Connected||app.rooms.Host;
   public void Initialize(AppRoot root,RectTransform parent) {
-   app=root;MenuPreferences.Load();shell=Rect(parent,"Storybook Cove",0,0,1600,900);Stretch(shell);
+   app=root;MenuPreferences.Load();shell=Rect(parent.GetComponentInParent<Canvas>().transform,"Storybook Cove",0,0,1600,900);Stretch(shell);
    entryGate=shell.gameObject.AddComponent<CanvasGroup>();entryGate.interactable=entryGate.blocksRaycasts=!StartupWelcome.Blocking;
    var sea=Rect(shell,"Sports background",0,0,1600,900).gameObject.AddComponent<SportsMenuBackground>();Stretch(sea.rectTransform);sea.raycastTarget=true;
+   // Small overscan also covers fractional canvas/camera rounding at outer pixels.
+   sea.rectTransform.offsetMin=Vector2.one*-2;sea.rectTransform.offsetMax=Vector2.one*2;
    design=Rect(shell,"Safe design canvas",0,0,1600,900);design.anchorMin=design.anchorMax=design.pivot=new Vector2(.5f,.5f);design.anchoredPosition=Vector2.zero;
+   LayoutScreen();
   }
   public void Show(string page) {
    if(page=="sports")page="home";
@@ -48,7 +51,7 @@ namespace WhatTheFish {
    if(old){old.name="Retiring page";oldGroup.interactable=oldGroup.blocksRaycasts=false;}
    busyButtons.Clear();seatViews.Clear();spectatorPermission=null;spectatorPermissionLabel=null;message=readyLabel=startHint=roomCount=headingCaption=null;roomCode=venueName=null;
    readyButton=startButton=joinButton=null;loadingTitle=loadingStage=null;loadingRetry=loadingBack=null;venuePreview=null;lastError="";
-   content=Rect(design,"Page - "+page,0,0,1600,900);group=content.gameObject.AddComponent<CanvasGroup>();
+   LayoutScreen();content=Rect(design,"Page - "+page,0,0,layoutWidth,layoutHeight);group=content.gameObject.AddComponent<CanvasGroup>();
    switch(page){
     case "sport":SportHome();break;case "venues":VenueHub();break;case "guides":GuideHub();break;case "tutorials":TutorialHub();break;
     case "create":CreateRoom();break;case "join":JoinRoom();break;case "room":Lobby();break;
@@ -57,7 +60,8 @@ namespace WhatTheFish {
     case "help":Help();break;case "profile":GuestProfile();break;case "character":AthleteCard();break;case "loading":Loading();break;
     default:Home();break;
    }
-   var toastPlate=Plate(content,"Notice",470,814,660,56,Ink,20,0);toastPlate.gameObject.SetActive(false);
+   RememberLayout();ApplyPageLayout();
+   var toastPlate=Plate(content,"Notice",(layoutWidth-660)/2,layoutHeight-86,660,56,Ink,20,0);toastPlate.gameObject.SetActive(false);
    toast=Text(toastPlate.transform,"",16,0,628,56,22,true,Cream,TextAnchor.MiddleCenter);toastUntil=0;
    EventSystem.current?.SetSelectedGameObject(null);
    group.alpha=MenuPreferences.ReducedMotion?1:0;group.interactable=group.blocksRaycasts=false;
@@ -76,6 +80,7 @@ namespace WhatTheFish {
   public void Hide() {
    if(transition!=null)StopCoroutine(transition);transition=null;IsTransitioning=false;
    if(hasDraft){app.stadium?.Apply(SavedVenue);hasDraft=false;}ReleasePreview();
+   firstVisitNarration?.Stop();if(firstVisitRoot)Destroy(firstVisitRoot);firstVisitRoot=null;firstVisitDesign=null;
    shell.gameObject.SetActive(false);history.Clear();MenuPreferences.Save();
   }
   public void ArriveInWorld(RectTransform parent) {
@@ -90,9 +95,9 @@ namespace WhatTheFish {
   void OnDestroy(){ResetRoomQr();ReleasePreview();if(shell)Destroy(shell.gameObject);}
   void Update() {
    if(entryGate)entryGate.interactable=entryGate.blocksRaycasts=!StartupWelcome.Blocking&&!AccountPanel.Visible&&!SocialPanel.Visible;
-   if(StartupWelcome.Blocking||AccountPanel.Visible||SocialPanel.Visible)return;
    if(!shell||!shell.gameObject.activeSelf)return;
-   float scale=Mathf.Min(shell.rect.width/1600,shell.rect.height/900);design.localScale=Vector3.one*Mathf.Max(.1f,scale);
+   LayoutScreen();ApplyPageLayout();
+   if(StartupWelcome.Blocking||AccountPanel.Visible||SocialPanel.Visible)return;
    if(Time.unscaledTime>=refreshAt){refreshAt=Time.unscaledTime+.15f;Refresh();}
    if(toast&&toast.transform.parent.gameObject.activeSelf&&Time.unscaledTime>toastUntil)toast.transform.parent.gameObject.SetActive(false);
    if(EventSystem.current&&!EventSystem.current.currentSelectedGameObject&&(Input.GetKeyDown(KeyCode.Tab)||Input.GetKeyDown(KeyCode.DownArrow))){
@@ -100,7 +105,7 @@ namespace WhatTheFish {
    }
   }
   public void Back() {
-   if(app.rooms.busy||leaving)return;
+   if(app.rooms.busy||leaving||firstVisitRoot)return;
    if(Page=="loading"){if(!app.rooms.Connected)app.CancelSelection();return;}
    if(modalRoot){Destroy(modalRoot);modalRoot=null;group.interactable=true;return;}
    if(Page=="venues")ReadDraftName();

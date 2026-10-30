@@ -23,6 +23,7 @@ def main():
     root = Path(__file__).resolve().parents[2]
     parser = argparse.ArgumentParser(__doc__)
     parser.add_argument('--player', type=Path, default=root / 'Builds/ResponsivenessQA/Player/WhatTheFish.exe')
+    parser.add_argument('--content-cache', type=Path, default=root / 'Builds/SharedContentCache', help='Shared hash-keyed local content cache; relative overrides resolve from the repository')
     parser.add_argument('--players', type=int, choices=range(2, 21), default=3)
     parser.add_argument('--delay-ms', type=float, default=60)
     parser.add_argument('--jitter-ms', type=float, default=8)
@@ -31,6 +32,8 @@ def main():
     parser.add_argument('--baseline', action='store_true')
     parser.add_argument('--port', type=int, default=8030)
     args = parser.parse_args()
+    args.player = (root / args.player).resolve()
+    args.content_cache = (root / args.content_cache).resolve()
     if not (0 <= args.loss <= .15 and 0 <= args.jitter_ms <= args.delay_ms <= 500):
         parser.error('Use nonnegative delay/jitter <=500 ms and loss <=0.15')
     run = root / 'Builds/ResponsivenessQA' / (datetime.now().strftime('%Y%m%d-%H%M%S') + ('-baseline' if args.baseline else '-fixed') + f'-{args.players}peers')
@@ -91,6 +94,7 @@ def main():
             folder = run / str(i)
             folder.mkdir()
             cmd = [str(args.player.resolve()), '-batchmode', '-force-d3d11', '-screen-fullscreen', '0', '-screen-width', '640', '-screen-height', '360', '-job-worker-count', '1', '-probe', '-sport', 'Football', '-responsivenessReview', str(folder), '-localHost' if i == 0 else '-localClient', '-port', str(args.port + i), '-expected', str(args.players), '-startAt', '15', '-returnAt', '200', '-exitAfter', '210', '-report', str(folder / 'probe.txt'), '-logFile', str(folder / 'player.log')]
+            cmd += ['-contentCache', str(args.content_cache)]
             if args.baseline:
                 cmd += ['-latencyBaseline']
             if args.players > 3:

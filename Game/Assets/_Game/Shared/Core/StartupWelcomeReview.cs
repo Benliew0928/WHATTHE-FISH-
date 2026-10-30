@@ -10,11 +10,12 @@ using UnityEngine.UI;
 
 namespace WhatTheFish {
  public sealed class StartupWelcomeReview:MonoBehaviour {
-  string folder;bool failed;StartupWelcome welcome;
+  string folder;bool failed,hadIntroductionPreference;int introductionPreference;StartupWelcome welcome;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Init(){var args=Environment.GetCommandLineArgs();int index=Array.IndexOf(args,"-startupWelcomeReview");if(index>=0&&index+1<args.Length)new GameObject("Startup welcome review").AddComponent<StartupWelcomeReview>().folder=args[index+1];}
   void Check(bool ok,string label){failed|=!ok;File.AppendAllText(Path.Combine(folder,"results.txt"),(ok?"PASS ":"FAIL ")+label+"\n");}
   IEnumerator Until(Func<bool> condition,string label,float timeout=120){double end=Time.realtimeSinceStartupAsDouble+timeout;while(!condition()&&Time.realtimeSinceStartupAsDouble<end)yield return null;Check(condition(),label);}
   IEnumerator Start(){
+   hadIntroductionPreference=PlayerPrefs.HasKey("menu.firstVisitGuide.v1");introductionPreference=PlayerPrefs.GetInt("menu.firstVisitGuide.v1");
    Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");
    yield return Until(()=>StartupWelcome.Instance,"startup view created before game content");welcome=StartupWelcome.Instance;if(!welcome){Finish();yield break;}
    Check(welcome.ArtworkLoaded,"approved artwork available without scene bundle");
@@ -43,7 +44,7 @@ namespace WhatTheFish {
    Check(!AppRoot.Instance.Menu.Content.GetComponentsInChildren<Button>().Any(b=>b.IsInteractable()),"underlying menu cannot receive keyboard or pointer input");
    yield return new WaitForSecondsRealtime(1);Check(!welcome.LoadingPanel.gameObject.activeSelf,"completed progress clears without changing page");
    LayoutChecks();yield return Capture("ready");
-   Check(!welcome.Design.Find("Blank sign during preparation").gameObject.activeSelf,"ready state restores the exact approved sign artwork");
+   Check(!welcome.SignCard.Find("Blank sign during preparation").gameObject.activeSelf,"ready state reveals native sign-in controls");
    foreach(var button in new[]{welcome.HuaweiButton,welcome.LanguageButton}){
     Click(button,button!=welcome.HuaweiButton);yield return null;Check(welcome.ModalOpen,button.name+" opens its dialog");
     Check(!welcome.GuestButton.interactable&&!welcome.LanguageButton.interactable,"dialog blocks underlying controls");
@@ -74,6 +75,10 @@ namespace WhatTheFish {
    File.WriteAllText(Path.Combine(folder,"guest-id.txt"),PlayerIdentity.GuestId);
    var app=AppRoot.Instance;Check(app&&app.Menu&&app.Menu.Page=="home"&&!app.Exploring,"guest opens the existing home menu");
    Check(app&&!app.rooms.Connected,"guest creation works without an online session");yield return new WaitForSecondsRealtime(.6f);yield return Capture("main-menu");
+   // First login now opens an introduction before the normal menu is reachable.
+   // Exercise its real Skip button before continuing the older profile regression.
+   var introduction=FindObjectsByType<Button>(FindObjectsSortMode.None).FirstOrDefault(b=>b.name=="Skip introduction"&&b.gameObject.activeInHierarchy);
+   if(introduction){Click(introduction);yield return null;Check(!GameObject.Find("First visit guide"),"introduction skip restores normal menu input");}
    Click(app.Menu.Content.GetComponentsInChildren<Button>().First(b=>b.name=="Player profile"));yield return new WaitForSecondsRealtime(.4f);
    var hub=FindFirstObjectByType<SocialPanel>();Check(hub&&SocialPanel.Visible,"profile action opens current player hub");
    var profileName=hub.GetComponentsInChildren<InputField>().First(f=>f.name=="Profile name");profileName.text="  Crew Buddy  ";
@@ -220,12 +225,12 @@ namespace WhatTheFish {
   }
   void LayoutChecks(){
    Canvas.ForceUpdateCanvases();
-   Check(Mathf.Abs(welcome.Canvas.scaleFactor-Mathf.Min(welcome.SafeArea.width/StartupWelcome.Width,welcome.SafeArea.height/StartupWelcome.Height))<.001f&&welcome.Design.localScale==Vector3.one,"canvas pixel density drives font rasterization without descendant scaling");
+   Check(welcome.Design.localScale==Vector3.one&&Contains(welcome.SafeArea,Bounds(welcome.Design)),"adaptive native composition stays inside safe area at canvas pixel density");
+   Check(Contains(welcome.SafeArea,Bounds(welcome.Mascot))&&Contains(welcome.SafeArea,Bounds(welcome.Brand))&&Contains(welcome.SafeArea,Bounds(welcome.SignCard)),"complete mascot, logo and native card remain safe");
    foreach(var button in new[]{welcome.GuestButton,welcome.HuaweiButton,welcome.LanguageButton,welcome.SettingsButton,welcome.InfoButton}){
     var bounds=Bounds((RectTransform)button.transform);Check(Contains(welcome.SafeArea,bounds),button.name+" inside safe area");Check(bounds.width>=44&&bounds.height>=44,button.name+" keeps touch target");
    }
-   var progress=welcome.LoadingPanel;var p=progress.anchoredPosition;var artLegs=new Rect(385,570,340,230);var local=new Rect(p.x,-p.y,progress.rect.width,progress.rect.height);
-   Check(local.xMin>artLegs.xMax&&local.yMin>HeightFraction(.7f)&&!local.Overlaps(artLegs),"progress is low beside the character legs without covering them");
+   Check(Contains(Bounds(welcome.SignCard),Bounds(welcome.LoadingPanel))&&!Bounds(welcome.LoadingPanel).Overlaps(Bounds((RectTransform)welcome.RetryButton.transform)),"progress and retry fit inside native sign without overlap");
    foreach(var t in welcome.Canvas.GetComponentsInChildren<Text>())if(t.isActiveAndEnabled&&t.text.Length>0){Check(t.preferredHeight<=t.rectTransform.rect.height+2,"text fits: "+t.text.Replace('\n',' '));Check(t.cachedTextGenerator.characterCountVisible>0,"text renders: "+t.text.Replace('\n',' '));}
   }
   static float HeightFraction(float fraction)=>StartupWelcome.Height*fraction;
@@ -249,7 +254,7 @@ namespace WhatTheFish {
    try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;image.ReadPixels(new Rect(0,0,Screen.width,Screen.height),0,0);image.Apply();Check(image.GetPixels32().Where((pixel,index)=>index%101==0).Select(pixel=>pixel.r+pixel.g*256+pixel.b*65536).Distinct().Count()>30,"capture contains rendered colour: "+name);File.WriteAllBytes(Path.Combine(folder,name+".png"),image.EncodeToPNG());}
    finally{Destroy(image);camera.targetTexture=original;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);foreach(var c in canvases){c.renderMode=RenderMode.ScreenSpaceOverlay;c.worldCamera=null;}Canvas.ForceUpdateCanvases();if(temporary)Destroy(temporary);}
   }
-  void Finish(){File.AppendAllText(Path.Combine(folder,"results.txt"),"STARTUP_WELCOME_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}
+  void Finish(){if(hadIntroductionPreference)PlayerPrefs.SetInt("menu.firstVisitGuide.v1",introductionPreference);else PlayerPrefs.DeleteKey("menu.firstVisitGuide.v1");PlayerPrefs.Save();File.AppendAllText(Path.Combine(folder,"results.txt"),"STARTUP_WELCOME_COMPLETE success="+!failed+"\n");Application.Quit(failed?1:0);}
  }
 }
 #endif

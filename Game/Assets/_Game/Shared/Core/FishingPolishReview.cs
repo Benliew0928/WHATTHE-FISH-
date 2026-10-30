@@ -11,6 +11,8 @@ namespace WhatTheFish {
   string report;int checks;AppRoot app;FishingGame game;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Boot(){if(Environment.GetCommandLineArgs().Contains("-fishingPolishAudit"))new GameObject("Fishing polish review").AddComponent<FishingPolishReview>();}
   void Check(bool value,string name){File.AppendAllText(report,(value?"PASS ":"FAIL ")+name+Environment.NewLine);if(!value)throw new Exception(name);checks++;}
+  static Vector3 Eye(Athlete actor,PlayerView view)=>actor.transform.position+Vector3.up*1.57f+Quaternion.Euler(0,view.yaw,0)*Vector3.forward*.28f;
+  static bool HeadMasked(Athlete actor){var skins=actor.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true);var block=new MaterialPropertyBlock();int mask=Shader.PropertyToID("_HideFirstPersonHead");foreach(var skin in skins){skin.GetPropertyBlock(block);if(!skin.enabled||block.GetFloat(mask)<.99f)return false;}return skins.Length>0;}
   IEnumerator Start(){
    var args=Environment.GetCommandLineArgs();int index=Array.IndexOf(args,"-report");report=index>=0&&index+1<args.Length?args[index+1]:Path.Combine(Application.persistentDataPath,"fishing-polish.txt");
    DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
@@ -109,16 +111,17 @@ namespace WhatTheFish {
     p.tension=.5f;game.State.Players[0]=p;yield return null;yield return null;Check(!labels.Any(t=>t.gameObject.activeInHierarchy&&(t.text.Contains("CLICK")||t.text.Contains("Keyboard")||t.text.Contains(" / F")))&&FishingTutorialUI.Copy.All(c=>!c.Contains("Keyboard")),"MOBILE_HUD_AND_SHARED_TUTORIAL_HAVE_NO_KEYBOARD_GUIDES");
     var guide=ui.GetComponentInParent<Canvas>().GetComponentInChildren<FishingFightGuide>();float marker=guide.MarkerPosition;yield return new WaitForSeconds(.12f);Check(Mathf.Abs(marker-guide.MarkerPosition)>.005f,"FISH_MARKER_FOLLOWS_CURRENT_SWAY");
     foreach(int turnBeat in new[]{2,5}){p.phaseAt=game.Now-FishingState.TimingPeriod*(turnBeat+.05);game.State.Players[0]=p;yield return new WaitForSeconds(.8f);Check(ui.CounterControlsVisible&&Mathf.Sign(view.FishingFightSide)==FishingState.CounterSide(p,game.Now)&&Mathf.Abs(view.FishingFightSide)>.6f,"CAMERA_SHOULDER_FOLLOWS_OPPOSING_PULL_"+turnBeat);}
-    foreach(int chosenMode in new[]{0,1,2}){
+    foreach(int chosenMode in Environment.GetCommandLineArgs().Contains("-fishingDefaultViews")?new[]{0,1}:new[]{0,1,2}){
      view.mode=chosenMode;yield return new WaitForSeconds(.8f);
      if(chosenMode==0){
-      var eye=actor.transform.position+Vector3.up*1.57f;
+     // The approved first-person body camera sits ahead of the open neck.
+     var eye=Eye(actor,view);
       Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,eye)<.08f&&Mathf.Abs(view.FishingCamera.nearClipPlane-.06f)<.001f,"EYE_LEVEL_REELING_STAYS_AT_PLAYER_EYES");
       PlayerView.LookDelta=new Vector2(24,6);yield return null;yield return null;
       Check(Mathf.Abs(view.yaw-yaw)>1&&!view.FishingFightCameraActive,"EYE_LEVEL_REELING_PRESERVES_MANUAL_LOOK");view.yaw=yaw;view.pitch=pitch;
       foreach(int side in new[]{-1,1}){
        Check(view.BeginCountersteer(side,780+side),"EYE_LEVEL_ACCEPTS_DIRECTIONAL_PRESS_"+side);var held=view.ReadCommand();game.Execute(actor,held.fishingAction,held.fishingRound,held.fishingSequence,held.fishingFish,held.fishingPressedAt);yield return new WaitForSeconds(.15f);
-       Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,actor.transform.position+Vector3.up*1.57f)<.08f,"EYE_LEVEL_DIRECTIONAL_PRESS_NEVER_MOVES_TO_THIRD_PERSON_"+side);view.EndFishing(780+side);view.ReadCommand();
+       Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,Eye(actor,view))<.08f,"EYE_LEVEL_DIRECTIONAL_PRESS_NEVER_MOVES_TO_THIRD_PERSON_"+side);view.EndFishing(780+side);view.ReadCommand();
       }
       var strain=ui.GetComponentInParent<Canvas>().GetComponentInChildren<FishingTensionVisual>(true);
       foreach(float value in new[]{.2f,.6f,.9f}){
@@ -127,7 +130,7 @@ namespace WhatTheFish {
        // pose rather than manually rendering between Update and LateUpdate.
        yield return new WaitForEndOfFrame();
        var head=actor.visual.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="mixamorig:Head");
-       Check(head&&head.localScale.sqrMagnitude<.0001f,"EYE_LEVEL_HEAD_HIDDEN_AFTER_FISHING_POSE_"+value);
+       Check(head&&head.localScale.sqrMagnitude>.0001f&&HeadMasked(actor),"EYE_LEVEL_HEAD_HIDDEN_AFTER_FISHING_POSE_"+value);
        Check(strain&&strain.Visible&&!strain.raycastTarget&&strain.FitsSafeFrame()&&strain.GetComponentsInChildren<UnityEngine.UI.Text>().Length==0,"ROPE_STRAIN_CUE_CLEAR_TOUCH_THROUGH_AND_BOUNDED_"+value);
        FishingResultsChecks.Capture(report,"eye-level-strain-"+Mathf.RoundToInt(value*100),0);
       }
@@ -138,7 +141,7 @@ namespace WhatTheFish {
      Check(!view.FishingFightCameraActive&&view.mode==chosenMode&&Mathf.Abs(view.yaw-yaw)<.01f&&Mathf.Abs(view.pitch-pitch)<.01f,"CANCEL_RETURNS_PREFERRED_CAMERA_WITHOUT_CHANGING_ANGLE_"+chosenMode);
      p.phase=FishingPhase.Reeling;p.phaseAt=game.Now;p.result=FishingResult.None;game.State.Players[0]=p;yield return null;
     }
-    view.mode=0;yield return null;yield return null;Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,actor.transform.position+Vector3.up*1.57f)<.08f,"SWITCHING_TO_EYE_LEVEL_CANCELS_PENDING_FIGHT_RETURN");
+    view.mode=0;yield return null;yield return null;Check(!view.FishingFightCameraActive&&Vector3.Distance(view.transform.position,Eye(actor,view))<.08f,"SWITCHING_TO_EYE_LEVEL_CANCELS_PENDING_FIGHT_RETURN");
     MenuPreferences.SetMotion(true);yield return null;yield return null;Check(!view.FishingFightCameraActive,"REDUCED_MOTION_KEEPS_PREFERRED_CAMERA_DURING_FIGHT");
     p.phase=FishingPhase.Caught;p.result=FishingResult.Landed;p.phaseAt=game.Now;p.awardSequence++;p.lastAward=5;p.lastBonus=3;game.State.Players[0]=p;yield return null;yield return null;
     Check(ui.CatchCue.Visible&&ui.CatchCue.PointsText=="+5 POINTS"&&ui.CatchCue.Starts==starts+1,"CATCH_CARD_USES_ACCEPTED_TOTAL_INCLUDING_WANTED");

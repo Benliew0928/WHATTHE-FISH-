@@ -1,5 +1,30 @@
 # Build size — measured release records
 
+## Final optimization and combined delivery — 30 October 2026
+
+AndroidSubmission: **172,446,376 -> 168,026,291 bytes (-4,420,085; 2.56%)**.
+Remaining headroom below the strict 1,000,000,000-byte limit:
+**831,973,709 bytes**.
+SHA-256: **D5B87B329DC447F87DC84A33CA300476E752F53F01C34F85EB26A983B13FF92D**.
+
+The mandatory AndroidSubmission build completed. ZIP CRC, all **1,538** exact
+audit entries, five-scene bundle integrity, ARM64, v2 signature and 16 KiB
+alignment pass. The APK is a non-development **Android Debug test-signed** build;
+the separate production-signed AppGallery delivery and release key are preserved.
+
+Savings come from three proven-unused Resources background copies and optional
+font glyph-name metadata. Current layered artwork, all rendering font tables,
+masters, meshes, animation, audio and mobile quality settings are preserved.
+Largest compressed entries: islands **45,955,307**, IL2CPP **13,345,403**,
+Vivox **10,240,163**, Unity **9,828,173** bytes. The combined source also includes
+the pending localized onboarding, narration and incoming awards work.
+
+All **390** Android compiled project-source hashes match. Windows and localization
+regressions, cleanup, complete player/ZIP evidence and explicit device/testing
+limits are recorded in [the final optimization report](FINAL-OPTIMIZATION-2026-10-30.md).
+Current evidence: `Builds/FinalOptimizationQA/`; APK inventory:
+`Builds/SizeAudit/latest/`. Phone quality, touch and FPS remain unverified.
+
 ## Reference-style awards crowd celebration - 28 October 2026
 
 Fishing and Golf now share a 4.65-second celebration derived from the user-supplied
@@ -84,6 +109,138 @@ All **546 Windows / 385 Android** compiled source documents match. The complete
 bring WindowsFinal to 337 files. Evidence: `Builds/AwardsSoundQA/`.
 Phone rendering/touch/FPS, physical speaker balance and live WAN remain unverified.
 Details and archives: [awards sound and results](AWARDS-SOUND-AND-RESULTS.md).
+## AppGallery production candidate — 28 October 2026
+
+AndroidSubmission: **171,975,759 -> 172,446,376 bytes (+470,617)**.
+After production signing/alignment, the delivery APK is **172,597,919 bytes**,
+leaving **827,402,081 bytes** below the strict 1,000,000,000-byte limit.
+Delivery SHA-256:
+**48F52571E7F92602FBCC03E423B4D8CEB2087F53EDCA4E0E728AB83D29C47146**.
+
+Refreshes the combined current game source and replaces the default Unity Android
+launcher icon with adaptive, round and legacy icons derived from the unchanged
+game logo. The build generates a matching 512px store icon. High-quality masters,
+gameplay art and compression settings are preserved. The production certificate
+was privately created/backed up by the owner and registered with Huawei.
+
+All **388 Android / 541 Windows** compiled project-source documents match current
+runtime source. The complete **342-file WindowsFinal** player passed **3,496**
+first-visit checks across four screen sizes and all three languages; representative
+renders reviewed. Android-only launcher settings do not change Windows gameplay.
+The final APK passes signature, alignment, non-debuggable/package/SDK/ARM64 checks,
+ZIP CRC, **1,523** exact build-audit entries and the five-scene bundle hash/length.
+Every non-signature ZIP entry retains its CRC/length after production signing.
+
+Largest compressed entries: scene bundle **45,959,042**, IL2CPP **13,337,545**,
+Vivox **10,240,163** and Unity **9,828,173** bytes. Growth is consistent with the
+launcher resources; no unexpected large asset growth was found.
+
+Evidence: `Builds/AppGalleryReleaseQA/` and `Builds/SizeAudit/latest/`. Pre-task
+rollbacks: `Legacy/20261028-121424-559-appgallery-final-android/` and
+`Legacy/20261028-122533-710-appgallery-final-windows/`. The package is uploaded
+to a Huawei draft, not submitted or approved. Physical-phone acceptance,
+children's protections and final policy/store checks remain pending. See
+[release status](AppGallery/PRE-SUBMISSION-STATUS.md).
+
+## Localized first-visit voice and click audio — 27 October 2026
+
+AndroidSubmission: **170,877,702 -> 171,975,759 bytes (+1,098,057)**.
+Headroom below the strict 1,000,000,000-byte limit: **828,024,241 bytes**.
+SHA-256: **393027355EB0B262F582C4DF4C4B3B855D149BFA992C91495AD5A05E2B54BDF8**.
+
+Adds fifteen locally packaged Ballad narration clips per language (45 total),
+the existing shared click sound on guide advance, UI-volume control and immediate
+speech cancellation. The translated AI-voice label fits the guide in all three
+languages. High-quality WAV masters remain outside Unity; no existing art or
+world quality was reduced. See [voice delivery report](FIRST-VISIT-AUDIO.md).
+
+Validation: **3,496** Windows playback, click, lifecycle, language, volume, text
+and layout checks at four screen sizes; all **45 masters / 45 Ogg derivatives**
+pass integrity and signal checks. All **541 Windows / 388 Android** compiled
+project-source documents match. The complete **342-file WindowsFinal** player
+was promoted with matching hashes. The APK passes its hard size gate, ZIP CRC,
+**1,502** exact audit entries, five-scene bundle hash/length, v2 signature and
+expected non-debuggable package checks. Development review helpers are excluded.
+
+Largest compressed entries: scene bundle **45,962,228 bytes** (-147), IL2CPP
+**13,336,570** (+1,432), Vivox **10,240,163** and Unity **9,828,173** (unchanged).
+The 45 narration assets total **1,077,884 uncompressed serialized bytes**;
+this is distinct from APK growth and source Ogg sizes. Growth is consistent with
+the added speech; no unexpected large asset growth was found.
+
+Evidence: `Builds/FirstVisitAudioQA/` and `Builds/SizeAudit/latest/`. Rollbacks:
+`Legacy/20261027-202155-263-first-visit-narration-android/` and
+`Legacy/20261027-202324-184-first-visit-narration-windows/`. Physical-phone
+speaker quality, touch, appearance and performance remain unverified.
+
+
+## Sharp layered welcome — 27 October 2026
+
+AndroidSubmission: **168,214,402 -> 170,877,702 bytes (+2,663,300)**.
+Headroom below the strict 1,000,000,000-byte limit: **829,122,298 bytes**.
+SHA-256: **CD63695743BE4A14F8E36E0FB1449C5C6B7D0540DCF4EB3F9280BA8048DA8577**.
+
+Full-resolution scenery and a transparent mascot replace the welcome's blurred
+side fill. Native localized controls and the existing official logo reflow
+independently. Two new PNG masters are preserved; Android derives ASTC 4-by-4
+textures without reducing existing art quality. Both new resource layers are
+present in the actual build audit (1,579,384 and 1,572,984 serialized bytes;
+these are not compressed APK measurements).
+
+Largest compressed entries: scene bundle **45,962,375 bytes** (-2,139), IL2CPP
+**13,335,138** (+3,160), Vivox **10,240,163** (unchanged), Unity **9,828,173** (+216).
+Growth is consistent with the two new sharp layers; no unexpected large growth.
+Size gate, CRC, **1,412** exact ZIP audit entries, five-scene bundle hash/length,
+v2 signature and non-debuggable package checks pass. Review helpers are excluded.
+All **549 Windows / 387 Android** compiled source documents match the tested
+snapshot. Later concurrent narration changes are preserved and excluded from
+this delivery; the two exact prior source files are retained with PDB checksums.
+
+**29,215** current checks pass across 19 window/inset scenarios and four startup
+regression sizes in all three languages. The complete **342-file WindowsFinal**
+player was promoted with every hash verified. Evidence and visual reviews:
+`Builds/SharpWelcomeQA/`; current size audit: `Builds/SizeAudit/latest/`.
+See [layout and limitations](RESPONSIVE-ANDROID-LAYOUT.md) and
+[preserved art/prompts](../ArtSource/StartupWelcome/Responsive/README.md).
+No physical Android device was connected. Portrait previews exercise resizable
+windows; Android gameplay remains landscape. Existing Android Debug signing is retained.
+
+## Adaptive Android window and menu layouts — 27 October 2026
+
+AndroidSubmission: **168,199,714 -> 168,214,402 bytes (+14,688)**.
+Headroom below the strict 1,000,000,000-byte limit: **831,785,598 bytes**.
+SHA-256: **A93F6F886A1707FF1C399A8789C21A3DE9F5A1F99A5A021871D8A1EB4FAC9276**.
+
+Full-display menu backgrounds, balanced safe-area margins, live window resizing,
+four/two/one-column home layouts, adaptive sport selection and guide highlights.
+Welcome keeps its approved artwork with a soft full-display scene backdrop.
+No authored image, master, compression setting or gameplay/world model changed.
+
+Validation: **29,496** layout, pointer, introduction and welcome assertions over
+18 window/inset scenarios, plus the welcome and introduction regression sizes,
+in all three languages. Large Windows cases preserve the requested aspect ratio
+and proportional insets within the monitor limit; actual dimensions are recorded.
+All **548 Windows / 386 Android** compiled source documents match. The APK passes
+the size gate, ZIP CRC, all **1,410** exact audit entries, five-scene bundle hash,
+v2 signature, expected non-debuggable package and review-helper exclusion checks.
+Largest compressed entries: scene bundle **45,964,514 bytes** (+1,722), IL2CPP
+**13,331,978** (+10,121), Vivox **10,240,163** (unchanged), Unity **9,827,957** (-216).
+No unexpected large growth or art quality reduction was found.
+
+Evidence: `Builds/ResponsiveLayoutQA/` and `Builds/SizeAudit/latest/`.
+See [implementation and review notes](RESPONSIVE-ANDROID-LAYOUT.md).
+The existing Android Debug signing certificate remains in use. No physical
+Android device was connected; phone touch, rendering and FPS are unverified.
+Android gameplay remains landscape; vertical review captures use resizable windows.
+
+## First-visit home introduction — 27 October 2026
+
+AndroidSubmission: **168,186,270 -> 168,199,714 bytes (+13,444)**; headroom below the strict 1,000,000,000-byte limit: **831,800,286 bytes**. SHA-256: **0C47A3680C91F7726C612C761559AAB68D9616FD250A3A4CB6C65B2D90E8F6C3**.
+
+A locally remembered 15-step character guide follows login, highlights home destinations and supports tap-to-advance and Skip. It reuses existing portrait art. All three languages passed **2,380** pointer, persistence, text and layout checks across four screen sizes; representative renders were reviewed. The complete **342-file WindowsFinal** player was promoted with matching hashes. AndroidSubmission passed the size gate, ZIP CRC, 1,410 entry audit and v2 signature checks. No physical-phone or native provider sign-in test was performed. The review exercised the guide directly. See [first-visit report](FIRST-VISIT-GUIDE.md).
+
+Largest APK entries: scene bundle **45,962,792 bytes** (+5,920), IL2CPP **13,321,857** (+3,819), Vivox **10,240,163** and Unity **9,828,173** (unchanged). No new image assets or quality reductions. Current evidence: `Builds/FirstVisitQA/` and `Builds/SizeAudit/latest/`. Previous APK: `Legacy/20261027-144532-407-first-visit-android/`; previous Windows player: `Legacy/20261027-150052-432-first-visit-windows/`.
+
 
 ## Gold fish coin and manual daily rewards — 26 October 2026
 

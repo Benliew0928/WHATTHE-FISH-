@@ -5,6 +5,9 @@ Run examples from the repository root. Scripts resolve the project from their ow
 | Task | Entry point |
 | --- | --- |
 | Complete Windows player | `./Tools/Build/Build.ps1 -Target Windows` |
+| Optimization regression, layouts, gameplay and awards | `./Tools/Build/Test-FinalOptimization.ps1 -Suite Core` (also `Presentation`, `Gameplay`, `Awards`); accepts `-PlayerPath`, `-OutputPath` and a shared `-ContentCache` |
+| Compiled source freshness | `./Tools/Build/Check-CompiledSources.ps1 -PdbPath <player-pdb> -OutputPath Builds/<evidence>/sources.json` |
+| Lossless bilingual font metadata cleanup | `python Tools/Build/Optimize-LocalizationFonts.py`, then `python Tools/Build/Check-Localization.py` |
 | Football end colours and guest input latency | Unity method `ResponsivenessBuild.Build`, then `python Tools/Build/test_responsiveness.py`; add `--baseline`, `--loss 0.02`, or `--players 12`; [design, diagnosis and evidence](../../Docs/FOOTBALL-DIRECTION-AND-LATENCY.md) |
 | Travel guards, match-start spectator arrivals and Fishing piers | Unity method `TravelMatchBuild.Build`, then `./Tools/Build/Test-TravelMatches.ps1`; three real local clients; [teammate testing](../../Docs/TEAMMATE-TESTING.md) |
 | Reject an older multiplayer build in both host/guest directions | `./Tools/Build/Test-BuildCompatibility.ps1 -PreviousPlayerPath <older-player-executable> -PlayerPath Builds/WindowsFinal/WhatTheFish.exe`; two local connections, protocol rejection and current-client guidance |

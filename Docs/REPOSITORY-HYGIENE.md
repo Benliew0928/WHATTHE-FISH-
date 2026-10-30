@@ -1,8 +1,30 @@
 # APK budget and commit handoff
 
-The root [AGENTS.md](../AGENTS.md) carries the standing instructions for new agent tasks: use the **1,000,000,000-byte APK limit**, preserve visual quality and leave publishing to the user. The former 100 MB limit, 75 MB development target and routine size-audit requirements were retired on 15 October 2026. Codex discovers repository instructions through [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). Other agent tools must also be configured to read that file if they do not support it automatically.
+The root [AGENTS.md](../AGENTS.md) carries the standing instructions for new agent tasks: use the **1,000,000,000-byte APK limit**, preserve visual quality and leave publishing to the user unless explicitly requested. The former 100 MB limit and 75 MB development target are retired. Game deliveries require AndroidSubmission, inspection of the measured size audit and a complete validated Windows player. Codex discovers repository instructions through [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md). Other agent tools must also be configured to read that file if they do not support it automatically.
 
 ## What belongs in Git
+
+### Final optimization and cleanup — 30 October 2026
+
+The [final optimization report](FINAL-OPTIMIZATION-2026-10-30.md) records the full
+source/delivery inventory, proven-unused background removal, measured APK,
+regression scope and generated-output cleanup. Current source, masters, Unity
+metadata, complete Windows delivery and compact validation evidence remain.
+Previous deliveries are designated rollbacks in the report's archive batches.
+Existing caches, installed tools and archives are preserved. Archival does not
+free SSD capacity. The owner explicitly requested commit and push for this task.
+
+### AppGallery folder cleanup — 28 October 2026
+
+The [current cleanup report](CLEANUP-2026-10-28.md) records **9,445 files /
+7,233,284,247 logical bytes** of reviewed obsolete output moved into
+`Legacy/20261028-114246-642-appgallery-folder-cleanup/`. Current deliveries,
+final validation evidence, all source/masters and installed dependencies remain
+in place. Every archived payload and the retained delivery/source baselines
+were hash-verified. This is local recovery storage, not an SSD-space saving.
+See the [current pre-submission status](AppGallery/PRE-SUBMISSION-STATUS.md)
+for the debug certificate, source freshness and remaining release checks.
+No Git staging, commit, push or app submission was requested or performed.
 
 ### Full folder cleanup — 27 October 2026
 
@@ -30,7 +52,7 @@ free disk space independently of these verified per-file savings.
 
 Keep runtime/editor code, active scenes and prefabs, Unity asset metadata, project settings, package locks, mobile delivery assets, source masters, generators, fixtures, current documentation and useful design references. Large source models and curated image/video references use the existing Git LFS rules. They are not the same as APK contents.
 
-Build packages, caches, downloaded installers, raw logs, temporary scripts, obsolete build checkpoints, unused drafts and Blender backup versions do not belong in a normal commit. Current output stays in ignored `Builds/`; confirmed superseded files go to an ignored dated batch under `Legacy/`. Unity caches stay in place and stay ignored. Do not move an active dependency merely because it is generated or absent from one build report.
+Build packages, caches, downloaded installers, raw logs, temporary scripts, obsolete build checkpoints, unused drafts and Blender backup versions do not belong in a normal commit. Current output stays in ignored `Builds/`. Follow [the generated-output rules](../AGENTS.md#prevent-generated-output-growth): reuse compatible builds/caches, avoid full project copies, keep compact evidence and remove reviewed reproducible temporary output created by the current task after validation. Archive obsolete authored/non-regenerable material and the designated superseded delivery in ignored dated `Legacy/` batches. Existing archives, main Unity caches and installed dependencies retain their preservation rules. Do not move an active dependency merely because it is generated or absent from one build report.
 
 Moving files into `Legacy/` preserves local recovery, but does not free disk space, shrink existing Git history, or provide a remote backup. Keep important original source files versioned with LFS. A tracked file moved to Legacy appears as a deletion in the next commit; that is intentional for a confirmed discarded file. Existing tracked files are not excluded simply by adding an ignore rule.
 

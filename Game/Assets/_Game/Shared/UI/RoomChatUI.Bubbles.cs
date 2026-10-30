@@ -9,6 +9,7 @@ namespace WhatTheFish {
   readonly Dictionary<string,Bubble> bubbles=new();
   readonly List<Rect> occupied=new();
   readonly List<string> expired=new();
+  readonly Vector3[] bubbleBoundsCorners=new Vector3[4];
   RectTransform bubbleRoot;
   Selectable[] protectedControls=System.Array.Empty<Selectable>();float nextControlScan;
   public int VisibleBubbleCount=>bubbles.Values.Count(b=>b.rect.gameObject.activeSelf);
@@ -29,7 +30,7 @@ namespace WhatTheFish {
    rect.gameObject.SetActive(false);bubbles[message.member]=new Bubble{message=message,rect=rect,group=group,until=Time.unscaledTime+(sticker?3:4)};
   }
   void LateUpdate(){
-   if(!bubbleRoot||!app)return;
+   if(!bubbleRoot||!app||bubbles.Count==0)return;
    bool show=Visible&&app.Exploring&&!chat.HideBubbles&&!(SkySailWorld.Instance&&SkySailWorld.Instance.Travelling);
    var camera=Camera.main;occupied.Clear();expired.Clear();int count=0;
    float w=safe.rect.width,h=safe.rect.height;
@@ -72,6 +73,6 @@ namespace WhatTheFish {
    foreach(string member in expired){Destroy(bubbles[member].rect.gameObject);bubbles.Remove(member);}
   }
   Vector2 Local(Vector2 screen){RectTransformUtility.ScreenPointToLocalPointInRectangle(safe,screen,null,out var point);return point-safe.rect.min;}
-  Rect Bounds(RectTransform rect){var corners=new Vector3[4];rect.GetWorldCorners(corners);Vector2 min=Local(RectTransformUtility.WorldToScreenPoint(null,corners[0])),max=Local(RectTransformUtility.WorldToScreenPoint(null,corners[2]));return Rect.MinMaxRect(min.x,min.y,max.x,max.y);}
+  Rect Bounds(RectTransform rect){rect.GetWorldCorners(bubbleBoundsCorners);Vector2 min=Local(RectTransformUtility.WorldToScreenPoint(null,bubbleBoundsCorners[0])),max=Local(RectTransformUtility.WorldToScreenPoint(null,bubbleBoundsCorners[2]));return Rect.MinMaxRect(min.x,min.y,max.x,max.y);}
  }
 }

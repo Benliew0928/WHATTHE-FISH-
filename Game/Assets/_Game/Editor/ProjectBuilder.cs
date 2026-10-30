@@ -258,6 +258,7 @@ public static partial class ProjectBuilder {
   GolfTeeBuilder.Prepare();
   Directory.CreateDirectory(Path.GetDirectoryName(path));
   if(EditorUserBuildSettings.activeBuildTarget!=target&&!EditorUserBuildSettings.SwitchActiveBuildTarget(BuildPipeline.GetBuildTargetGroup(target),target))throw new Exception("Could not activate build target: "+target);
+  if(target==BuildTarget.Android)PrepareAndroidBranding();
   // URP can retain the previous platform's pipeline after a build in this editor.
   // Recompute build resources so Android does not inherit desktop SSAO textures.
   UnityEditor.Rendering.CoreBuildData.instance.Dispose();

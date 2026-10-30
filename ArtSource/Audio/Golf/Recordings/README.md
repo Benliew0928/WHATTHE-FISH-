@@ -6,6 +6,13 @@ AAC audio. Source recording names and SHA-256 hashes are in `provenance.json`;
 all paths there are relative to this directory. Video frames are not required
 to regenerate audio, so no video copy is shipped.
 
+Public-release review, 29 October 2026: the owner does not know the recordings'
+original sources. Historical approval to integrate them is not evidence of
+public redistribution rights. The GO cue and all three walkway steps remain
+active and packed in the current candidate. The owner subsequently explicitly
+chose to retain the current effects on 29 October; replacement work is cancelled.
+See [the asset-source review](../../../../Docs/AppGallery/ASSET-SOURCE-REVIEW.md).
+
 Run `python Tools/Audio/prepare_golf_recordings.py` from the repository root,
 or invoke that script from any working directory. Requires NumPy and SciPy.
 It verifies masters, crops the selected ranges, downmixes, removes DC, applies

@@ -1,5 +1,12 @@
 {
   "base": "Paths relative to this manifest",
+  "publicReleaseReview": {
+    "date": "2026-10-29",
+    "ownerClarification": "Owner is unsure whether the GO cue exists and does not know the walkway recording's original source.",
+    "sourceTrace": "GO and all three walkway derivatives are active in the runtime source and current release packing report.",
+    "publicDistributionPermission": "Unconfirmed; historical integration approval does not establish original authorship or redistribution rights.",
+    "replacementStatus": "Owner explicitly chose to keep the current effects on 2026-10-29. Replacement work cancelled; current recordings and game files retained."
+  },
   "recordings": [
     {
       "master": "go-master.wav",

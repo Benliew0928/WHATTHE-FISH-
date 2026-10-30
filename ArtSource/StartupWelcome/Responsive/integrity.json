@@ -1,0 +1,32 @@
+{
+  "pathBase": "repository root",
+  "reference": "ArtSource/StartupWelcome/cable-car-welcome-master.png",
+  "method": "Built-in image generation: environment-only panorama and transparent mascot extraction; no text embedded in new art; unchanged existing logo reused. Runtime and master pixels identical; Unity derives platform compression.",
+  "files": [
+    {
+      "master": "ArtSource/StartupWelcome/Responsive/Scene.png",
+      "delivery": "Game/Assets/_Game/Resources/StartupWelcome/Scene.png",
+      "sha256": "ca0aa7b26b33aa84009b62dbe82df331306806b725ecefb5454962cef487c7a9",
+      "deliveryMatchesMaster": true,
+      "width": 1983,
+      "height": 793,
+      "mode": "RGB",
+      "alphaBounds": null
+    },
+    {
+      "master": "ArtSource/StartupWelcome/Responsive/Mascot.png",
+      "delivery": "Game/Assets/_Game/Resources/StartupWelcome/Mascot.png",
+      "sha256": "5458f2c60eef211e087f311339e7814c8e34c99751385541ddec06631a0aa667",
+      "deliveryMatchesMaster": true,
+      "width": 1024,
+      "height": 1536,
+      "mode": "RGBA",
+      "alphaBounds": [
+        0,
+        13,
+        1024,
+        1536
+      ]
+    }
+  ]
+}

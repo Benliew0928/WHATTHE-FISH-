@@ -39,11 +39,15 @@ namespace WhatTheFish {
    Check(service.StartPreview(SportId.Basketball,TeleportDestination.Game,new[]{app.LocalAthlete}),"shared teleport starts");
    yield return Until(()=>service.Phase==TeleportPhase.Arriving,"teleport reaches committed arrival");
    if(quit){Check(app.LocalAthlete.inTransit&&app.view.InputBlocked,"quit during active teleport");yield break;}
-   service.enabled=false;yield return null;Check(!TeleportSequence.Busy&&app.SelectedSport==original,"live service disable still rolls back island");Check(!app.LocalAthlete.inTransit&&app.LocalAthlete.capsule.enabled&&!app.view.InputBlocked&&Vector3.Distance(position,app.LocalAthlete.transform.position)<.08f,"live cancellation restores player and controls");service.enabled=true;
+   // Cancel restores synchronously. Check that pose before the next movement
+   // frame: an actor still settling onto its source ground may legitimately
+   // descend afterwards, independently of teleport restoration.
+   service.enabled=false;Check(!TeleportSequence.Busy&&app.SelectedSport==original,"live service disable still rolls back island");Check(!app.LocalAthlete.inTransit&&app.LocalAthlete.capsule.enabled&&!app.view.InputBlocked&&Vector3.Distance(position,app.LocalAthlete.transform.position)<.08f,"live cancellation restores player and controls (transit="+app.LocalAthlete.inTransit+", capsule="+app.LocalAthlete.capsule.enabled+", blocked="+app.view.InputBlocked+", displacement="+Vector3.Distance(position,app.LocalAthlete.transform.position)+")");
+   yield return null;Check(!app.LocalAthlete.inTransit&&app.LocalAthlete.capsule.enabled&&!app.view.InputBlocked,"restored controls remain available next frame");service.enabled=true;
    yield return Until(()=>!streaming.Busy,"cancellation releases streaming");
   }
   IEnumerator Start(){
-   Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");yield return Until(()=>DevelopmentProbe.ReadyToReviewSport,"initial island ready",100);
+   Directory.CreateDirectory(folder);File.WriteAllText(Path.Combine(folder,"results.txt"),"");yield return Until(()=>DevelopmentProbe.ReadyToReviewSport&&!AppRoot.Instance.PendingSelection.HasValue&&!AppRoot.Instance.environments.GetComponent<SkySailStreaming>().Busy,"initial island ready",100);
    app=AppRoot.Instance;if(!app){Finish();yield break;}streaming=app.environments.GetComponent<SkySailStreaming>();Check(streaming&&streaming.enabledForWorld,"production island streaming enabled");DevelopmentProbe.Driving=false;DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
    if(mode=="Tour"){
     yield return Select(SportId.Fishing);yield return Fishing();yield return Select(SportId.Golf);yield return Golf();yield return Select(SportId.Basketball);yield return Basketball();yield return Select(SportId.Football);yield return Teleport(false);

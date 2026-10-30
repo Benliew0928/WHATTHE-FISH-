@@ -5,6 +5,12 @@ built-in imagegen edit tool on 25 October 2026. Original approved artwork is
 unchanged. [integrity.json](integrity.json) records repository-relative source,
 master and delivery paths, SHA-256 hashes and dimensions.
 
+The former complete welcome `Background.png` companion is retained here as a
+master with a `retired` provenance record. The layered welcome no longer samples
+it; its unused Resources copy is archived. The checker verifies both retained
+master hashes and the absence of that obsolete delivery, alongside the fifteen
+active companions.
+
 The game **does not substitute these complete images for the original art**.
 `LocalizedArtworkSurface` samples a companion only inside reviewed lettering
 regions. Original pixels supply the rest of the button, its icons and frame.

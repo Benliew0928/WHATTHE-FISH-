@@ -1,8 +1,23 @@
 # Identity, player profiles and friends
 
+## Retention and shared-match deletion — deployed 28 October 2026
+
+The owner adopted 30-day match/evidence and 90-day closed-case/support-email
+periods. Local retention and shared-match account-deletion changes pass the
+complete **85-test** backend suite and Worker dry-run bundling. Worker version
+`f1d264ca-32c7-4bae-a3f5-6c7fcf887a6c` is live with both retention indexes verified.
+`ENABLE_RETENTION_CLEANUP=true`, with daily cleanup configured at **03:17 Malaysia
+time / 19:17 UTC**. The first scheduled invocation remains unverified.
+Health/auth-boundary checks passed; authenticated live
+deletion and a provider restore rehearsal remain unverified. Support mailbox
+cleanup is manual. See
+[rollout/restore procedure](../../Docs/AppGallery/RETENTION-ROLLOUT.md) before
+activation. The pre-launch cloud account reset is complete; do not run live
+smoke scripts that create new identities as routine local validation.
+
 ## Account coins and deployment — 26 October 2026
 
-Worker `13c03113-5f15-43ea-8df5-01f2774eda13` now serves the account wallet,
+Historical Worker `13c03113-5f15-43ea-8df5-01f2774eda13` introduced the account wallet,
 daily streak, match settlement and cosmetic purchase/ownership APIs. Apply all six
 migrations in order only to a new database. On the existing database, migrations
 0004–0006 were applied after confirming 0001–0003 already existed. Its

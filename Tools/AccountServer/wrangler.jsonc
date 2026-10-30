@@ -8,6 +8,7 @@
   "preview_urls": false,
   "send_metrics": false,
   "observability": { "enabled": false },
+  "triggers": { "crons": ["17 19 * * *"] },
   "d1_databases": [{
     "binding": "PROFILES_DB",
     "database_name": "whatthefish-profiles",
@@ -15,6 +16,7 @@
     "migrations_dir": "migrations"
   }],
   "vars": {
+    "ENABLE_RETENTION_CLEANUP": "true",
     "HUAWEI_APP_ID": "119406947",
     "UNITY_PROJECT_ID": "633e314c-46d1-4b48-bbbc-2dc5f6fb653c",
     "UNITY_ENVIRONMENT_ID": "19215999-e921-4fb8-b162-6e2561b1b864",

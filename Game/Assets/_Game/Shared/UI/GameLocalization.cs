@@ -100,7 +100,9 @@ namespace WhatTheFish {
    else if(label){var binding=label.GetComponent<LocalizedSceneText>()??label.gameObject.AddComponent<LocalizedSceneText>();binding.UserContent=raw;}
   }
   public static Font FontFor(Font original,string value){
-   if(string.IsNullOrEmpty(value)||!value.Any(c=>c>=0x2e80&&c<=0xffef))return original;
+   if(string.IsNullOrEmpty(value))return original;
+   bool needsFallback=false;for(int i=0;i<value.Length;i++)if(value[i]>=0x2e80&&value[i]<=0xffef){needsFallback=true;break;}
+   if(!needsFallback)return original;
    string name=original?original.name:"",role=name.Contains("Barlow")||name.Contains("MenuHeading")?"MenuHeading":name.Contains("Sport")||name=="Display"||name=="Text"?(name.Contains("Display")?"SportDisplay":"SportText"):(name.Contains("Display")?"MenuDisplay":"MenuText");
    if(!fonts.TryGetValue(role,out var font))fonts[role]=font=Resources.Load<Font>("Localization/Fonts/"+role);
    return font?font:original;
@@ -154,7 +156,9 @@ namespace WhatTheFish {
   bool userContent;Font originalFont,appliedFont;
   bool fitting,oldFit;int oldMin,oldMax;
   public bool UserContent {get=>userContent;set{userContent=value;Refresh();}}
-  public override string text {get=>base.text;set{if(value==base.text&&Source!=value)return;Source=value??"";Refresh();}}
+  // An unchanged source still needs immediate font reassignment, and this
+  // legacy caption derives its translation from the currently selected sport.
+  public override string text {get=>base.text;set{if(value==base.text&&Source!=value||value==Source&&font==appliedFont&&value!="Aim and shoot")return;Source=value??"";Refresh();}}
   protected override void OnEnable(){inputField=GetComponentInParent<InputField>();base.OnEnable();GameLocalization.Changed+=Refresh;Refresh();}
   protected override void OnDisable(){GameLocalization.Changed-=Refresh;base.OnDisable();}
   void LateUpdate(){

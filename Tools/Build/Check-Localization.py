@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 from fontTools.ttLib import TTFont
-from fontTools.pens.recordingPen import RecordingPen
+from fontTools.pens.recordingPen import DecomposingRecordingPen
 
 ROOT = Path(__file__).resolve().parents[2]
 RES = ROOT / 'Game/Assets/_Game/Resources'
@@ -29,7 +29,9 @@ for role, original in faces:
     ga, gb = base.getGlyphSet(), localized.getGlyphSet()
     for codepoint, name in a.items():
         assert base['hmtx'][name] == localized['hmtx'][b[codepoint]], (role, codepoint, 'metrics')
-        before, after = RecordingPen(), RecordingPen()
+        # Optional post glyph names can differ while glyph indices, component
+        # geometry and hinting remain identical. Compare actual outlines.
+        before, after = DecomposingRecordingPen(ga), DecomposingRecordingPen(gb)
         ga[name].draw(before)
         gb[b[codepoint]].draw(after)
         assert before.value == after.value, (role, codepoint, 'outline')

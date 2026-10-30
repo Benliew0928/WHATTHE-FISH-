@@ -28,6 +28,9 @@ namespace WhatTheFish {
   static string contentHash;
 
   void Awake(){
+   // Apply the normal game's cap before Bootstrap exists. Cold preparation
+   // should not compete with an unlimited desktop loading-screen render loop.
+   Application.targetFrameRate=Application.isMobilePlatform?30:60;
    Ready=false;CacheHit=false;Error=null;
    loadingCamera=new GameObject("Loading camera").AddComponent<Camera>();loadingCamera.clearFlags=CameraClearFlags.SolidColor;loadingCamera.backgroundColor=new Color(.05f,.16f,.14f);loadingCamera.cullingMask=0;
    welcome=StartupWelcome.Ensure(true);welcome.SetRetry(()=>{if(!busy)StartCoroutine(Boot());});

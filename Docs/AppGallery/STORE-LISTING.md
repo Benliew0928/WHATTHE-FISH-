@@ -1,5 +1,10 @@
 # Store listing draft — owner review required
 
+The current three-language console copy is maintained in
+[STORE-LOCALIZATIONS.json](STORE-LOCALIZATIONS.json). English, Simplified Chinese
+and Malay text was saved in the Huawei draft on 28 October 2026. The older
+English-only preparation below is historical; use the JSON for current uploads.
+
 ## Name
 
 WHATTHE FISH?
@@ -34,11 +39,12 @@ until verified on the signed candidate.
 
 - Publisher type: personal/individual, confirmed 26 October 2026. Publisher name:
   LIEW KAIY BIN, supplied by the owner to match the Huawei developer account.
-- Support/privacy email: benliew28262826@gmail.com. Website: pending.
+- Support/privacy email: benliew28262826@gmail.com. Website:
+  <https://whatthefish-game.pages.dev/> (policy documents remain drafts).
 - Support, reports and deletion exceptions: handled by the owner; procedures pending.
 - Huawei developer verification: owner reports completed; app ownership and final
   delivery certificate still need confirmation before release.
-- Privacy policy URL: pending.
+- Privacy policy URL: <https://whatthefish-game.pages.dev/privacy>.
 - Distribution countries: Malaysia, confirmed by owner. Prepare listing content
   in English, Simplified Chinese and Bahasa Melayu; console availability and
   localized text/screenshots remain to be checked. English is the preparation

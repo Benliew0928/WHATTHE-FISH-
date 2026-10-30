@@ -225,7 +225,7 @@
     ]
   },
   {
-    "source": "Game/Assets/_Game/Resources/StartupWelcome/Background.png",
+    "source": "ArtSource/StartupWelcome/cable-car-welcome-master.png",
     "master": "ArtSource/LocalizationArtwork/Background.png",
     "delivery": "Game/Assets/_Game/Resources/Localization/Artwork/Background.png",
     "sourceSha256": "a910d785d1099a2a7e271c225d0404d0c101717c7d00b9adcc94c3f990e545a7",
@@ -237,6 +237,7 @@
     "cleanSize": [
       1672,
       941
-    ]
+    ],
+    "retired": true
   }
 ]

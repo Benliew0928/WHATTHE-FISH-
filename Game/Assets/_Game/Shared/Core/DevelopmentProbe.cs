@@ -14,6 +14,7 @@ namespace WhatTheFish {
   public static bool ReadyToReviewSport {
    get {
     var app=AppRoot.Instance;if(!app||!app.Exploring||!app.LocalAthlete||app.LocalAthlete.inTransit||RoomTeleport.Busy||TeleportSequence.Busy||SkySailWorld.Instance&&SkySailWorld.Instance.Travelling)return false;
+    if(app.PendingSelection.HasValue||app.environments.GetComponent<SkySailStreaming>().Busy)return false;
     var args=Environment.GetCommandLineArgs();bool online=args.Contains("-localHost")||args.Contains("-localClient")||args.Contains("-cloudHost")||args.Contains("-cloudCode");
     if(!online)return true;var player=app.LocalAthlete.GetComponent<NetworkAthlete>();var host=NetworkAthlete.HostPlayer;
     return app.rooms.Connected&&player&&player.IsSpawned&&player.IsOwner&&player.IsPlayerObject&&host&&host.Exploring.Value&&host.WorldSport.Value==app.SelectedSport;

@@ -3,5 +3,12 @@
   "sha256": "49BDB7EE0E654E40CB58EE94DE37FBAE1CA16ADD839CD27809CF81EF80BFE3F8",
   "providedBy": "project user",
   "generator": "Meshy AI Golf Cart",
-  "scope": "User-provided model; no external account or generation action performed."
+  "scope": "Source ZIP supplied by the project user; no external generation was performed while importing/preparing it.",
+  "ownerClarification": {
+    "date": "2026-10-29",
+    "reportedCreator": "The project owner's teammate",
+    "generationPlanAndLicense": "Not recorded",
+    "permissionForPublicGameDistribution": "Not independently documented",
+    "ownerDecision": "Retain the current cart and proceed with release preparation; no replacement requested."
+  }
 }

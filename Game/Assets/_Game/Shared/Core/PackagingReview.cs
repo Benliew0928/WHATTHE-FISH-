@@ -73,9 +73,11 @@ namespace WhatTheFish {
    Check(!PackagedContentBoot.Ready&&!AppRoot.Instance,"Failed preparation never starts a partial world");
    var welcome=StartupWelcome.Instance;
    var button=welcome?welcome.RetryButton:null;
-   bool storageGuidance=welcome&&welcome.HasError&&welcome.LoadingPanel.GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.gameObject.activeInHierarchy&&t.text.Contains("storage"));
+   // A file blocking the cache directory is not a disk-full error. The current
+   // welcome gives retry guidance without falsely diagnosing storage capacity.
+   bool retryGuidance=welcome&&welcome.HasError&&welcome.LoadingPanel.GetComponentsInChildren<UnityEngine.UI.Text>().Any(t=>t.gameObject.activeInHierarchy&&(t.text.Contains("Try again")||t.text.Contains("retry")));
    Check(button&&button.gameObject.activeInHierarchy&&button.interactable,"Retry remains visible and usable");
-   Check(storageGuidance,"Failure explains storage recovery in the loading screen");
+   Check(retryGuidance,"Failure explains retry recovery in the loading screen");
    string cache=ReviewCachePath();
    bool owned=cache.StartsWith(Path.GetFullPath(folder)+Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase)&&File.Exists(cache)&&new FileInfo(cache).Length==1;
    Check(owned,"Recovery fixture is confined to the explicit review output");

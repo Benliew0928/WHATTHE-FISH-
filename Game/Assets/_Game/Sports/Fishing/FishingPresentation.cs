@@ -83,7 +83,7 @@ namespace WhatTheFish {
      for(int j=0;j<ring.positionCount;j++){float angle=j*Mathf.PI*2/ring.positionCount;ring.SetPosition(j,centre+new Vector3(Mathf.Cos(angle)*radius,0,Mathf.Sin(angle)*radius));}
     }else if(halos[i])halos[i].enabled=false;
    }
-   foreach(var actor in Athlete.Active.ToArray()){
+   foreach(var actor in Athlete.Active){
     if(!actor||!actor.isActiveAndEnabled)continue;var p=game.Player(actor);if(!p.HasValue||!p.Value.connected)continue;
     ulong id=FishingGame.Key(actor);if(!rods.TryGetValue(id,out var motion)||!motion){motion=actor.GetComponent<FishingRodMotion>()??actor.gameObject.AddComponent<FishingRodMotion>();motion.Bind(actor,this);rods[id]=motion;}
    }

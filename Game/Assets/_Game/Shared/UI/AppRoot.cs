@@ -42,7 +42,7 @@ namespace WhatTheFish {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
   async void StartOnlineProbe(){var args=Environment.GetCommandLineArgs();if(args.Contains("-onlineHost"))await rooms.Create(SelectedSport);int i=Array.IndexOf(args,"-onlineJoin");if(i>=0&&i+1<args.Length)await rooms.Join(args[i+1]);}
 #endif
-  void ApplySafeArea(){var a=Screen.safeArea;safe.anchorMin=new Vector2(a.x/Screen.width,a.y/Screen.height);safe.anchorMax=new Vector2(a.xMax/Screen.width,a.yMax/Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;}
+  void ApplySafeArea(){var a=ResponsiveScreen.SafeArea;safe.anchorMin=new Vector2(a.x/Screen.width,a.y/Screen.height);safe.anchorMax=new Vector2(a.xMax/Screen.width,a.yMax/Screen.height);safe.offsetMin=safe.offsetMax=Vector2.zero;}
   void OnRoomChanged(){if(!rooms.Connected){appliedWorld="";stadium?.Apply(CurrentAppearance);}if(rooms.Connected){offline.gameObject.SetActive(false);if(screen=="home"||screen=="sport"||screen=="sports"||screen=="create"||screen=="join")Show("room");}else if(screen=="room"||screen=="stadium"&&lastExploring){Exploring=false;lastExploring=false;LocalAthlete=offline;Show("sport");}UpdateStatus();}
   void Update(){
    if(StartupWelcome.Blocking){if(view){view.active=false;view.InputBlocked=true;}return;}

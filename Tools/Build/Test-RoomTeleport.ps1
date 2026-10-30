@@ -1,8 +1,11 @@
-param([string]$PlayerPath,[int]$Port=7796)
+param([string]$PlayerPath,[int]$Port=7796,[string]$ContentCache='',[string]$OutputPath='')
 $ErrorActionPreference='Stop'
 $taskRoot=(Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
-$player=if($PlayerPath){(Resolve-Path -LiteralPath $PlayerPath).Path}else{Join-Path $taskRoot 'Builds/RoomTeleportQA/Player/WhatTheFish.exe'}
-$run=Join-Path $taskRoot ('Builds/RoomTeleportQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
+function Resolve-TeleportReviewPath([string]$Value){if([IO.Path]::IsPathRooted($Value)){return [IO.Path]::GetFullPath($Value)};return [IO.Path]::GetFullPath((Join-Path $taskRoot $Value))}
+$player=if($PlayerPath){Resolve-TeleportReviewPath $PlayerPath}else{Join-Path $taskRoot 'Builds/RoomTeleportQA/Player/WhatTheFish.exe'}
+$run=if($OutputPath){Resolve-TeleportReviewPath $OutputPath}else{Join-Path $taskRoot ('Builds/RoomTeleportQA/Run-'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))}
+if(Test-Path -LiteralPath $run){throw 'Choose a new evidence folder.'}
+$cache=if($ContentCache){Resolve-TeleportReviewPath $ContentCache}else{Join-Path $run 'ContentCache'}
 $processes=@()
 try {
  foreach($role in @('Host','Guest')) {
@@ -11,7 +14,8 @@ try {
   $arguments=@('-batchmode','-force-d3d11','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2',('-local'+$(if($role -eq 'Host'){'Host'}else{'Client'})),'-port',"$Port",'-roomTeleportReview',('"'+$folder+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'))
   # Parallel reviews of different player versions must not prune each other's
   # packaged-content cache while scenes are still streaming from those files.
-  $arguments+=@('-contentCache',('"'+(Join-Path $run 'ContentCache')+'"'))
+  # A shared override is appropriate when both reviews use the same catalog.
+  $arguments+=@('-contentCache',('"'+$cache+'"'))
   $processes+=Start-Process -FilePath $player -ArgumentList $arguments -WindowStyle Hidden -PassThru
   if($role -eq 'Host'){Start-Sleep -Seconds 2}
  }

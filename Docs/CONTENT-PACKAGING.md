@@ -8,9 +8,9 @@ Java minification; the existing rendering and mobile import settings are retaine
 
 ## Build and inspect
 
-Run `Tools/Build/Build.ps1 -Target AndroidSubmission`. The build still enforces
-the strict 100,000,000-byte ceiling; keep the development target at 75,000,000
-bytes or less. Measure the APK itself, not the source folder or serialized report.
+Run `Tools/Build/Build.ps1 -Target AndroidSubmission`. The APK must be strictly
+below 1,000,000,000 bytes. The former 75 MB development target and 100 MB cap
+are retired. Measure the APK itself, not the source folder or serialized report.
 
 `PackagedContentBuild` regenerates ignored scene copies under
 `Game/Assets/_Game/GeneratedPackaging/`. It applies the existing platform-specific

@@ -22,21 +22,24 @@ namespace WhatTheFish {
   // A tiny visibility graph around the two legal walls. Edges use the same
   // expanded-box sweep as the ball rules; the character controller owns travel.
   public static Vector3 Waypoint(FootballBall ball,Vector3 from,Vector3 destination){
-   var walls=new[]{ball.Props.wallA,ball.Props.wallB};
+   var wallA=ball.Props.wallA;var wallB=ball.Props.wallB;
+   // Match state and its fixed clock cannot advance within this synchronous
+   // query. Resolve liveness once instead of rebuilding snapshots per edge.
+   bool activeA=ball.WallActive(wallA),activeB=ball.WallActive(wallB);
    bool Clear(Vector3 a,Vector3 b){
-    foreach(var wall in walls)if(ball.WallActive(wall)&&FootballPropRules.Sweep(wall,a+Vector3.up*.6f,b+Vector3.up*.6f,.5f,out float t,out var normal)){
+    for(int i=0;i<2;i++){var wall=i==0?wallA:wallB;if((i==0?activeA:activeB)&&FootballPropRules.Sweep(wall,a+Vector3.up*.6f,b+Vector3.up*.6f,.5f,out float t,out var normal)){
      if(t>0||Vector3.Dot(b-a,normal)<=0)return false;
-    }
+    }}
     return true;
    }
    if(Clear(from,destination))return destination;
-   var nodes=new Vector3[10];nodes[0]=from;nodes[1]=destination;int count=2;
-   foreach(var wall in walls)if(ball.WallActive(wall))for(int i=0;i<4;i++){
+   System.Span<Vector3> nodes=stackalloc Vector3[10];nodes[0]=from;nodes[1]=destination;int count=2;
+   for(int wallIndex=0;wallIndex<2;wallIndex++){var wall=wallIndex==0?wallA:wallB;if(wallIndex==0?activeA:activeB)for(int i=0;i<4;i++){
     var p=wall.position+wall.Rotation*new Vector3(((i&1)==0?-1:1)*(FootballPropRules.WallWidth*.5f+.85f),0,((i&2)==0?-1:1)*(FootballPropRules.WallThickness*.5f+.85f));p.y=from.y;
     if((Clamp(ball,p,.5f)-p).sqrMagnitude<.001f)nodes[count++]=p;
-   }
-   var cost=new float[count];var previous=new int[count];var visited=new bool[count];
-   for(int i=0;i<count;i++){cost[i]=float.PositiveInfinity;previous[i]=-1;}cost[0]=0;
+   }}
+   System.Span<float> cost=stackalloc float[10];System.Span<int> previous=stackalloc int[10];System.Span<bool> visited=stackalloc bool[10];
+   for(int i=0;i<count;i++){cost[i]=float.PositiveInfinity;previous[i]=-1;visited[i]=false;}cost[0]=0;
    for(int step=0;step<count;step++){
     int current=-1;for(int i=0;i<count;i++)if(!visited[i]&&(current<0||cost[i]<cost[current]))current=i;
     if(current<0||float.IsPositiveInfinity(cost[current]))break;

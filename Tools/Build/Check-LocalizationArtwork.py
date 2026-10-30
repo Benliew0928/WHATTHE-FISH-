@@ -21,6 +21,11 @@ for record in records:
     source, master, delivery = (ROOT / record[key] for key in ('source', 'master', 'delivery'))
     assert hashlib.sha256(source.read_bytes()).hexdigest() == record['sourceSha256'], source
     assert hashlib.sha256(master.read_bytes()).hexdigest() == record['cleanSha256'], master
+    if record.get('retired', False):
+        # A replaced welcome screen keeps its masters and provenance outside
+        # Resources; its unused delivery must no longer enter the player.
+        assert not delivery.exists(), delivery
+        continue
     assert delivery.read_bytes() == master.read_bytes(), delivery
     with Image.open(source) as image:
         original = alpha_bounds(image.convert('RGBA'))

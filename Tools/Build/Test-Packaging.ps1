@@ -27,7 +27,9 @@ $modes=if($Baseline){@('baseline')}elseif($RetryReview){@('retry')}else{@('cold'
 foreach($mode in $modes){
  $folder=Join-Path $output $mode;New-Item -ItemType Directory -Force $folder | Out-Null
  $reviewFolder=if($RetryReview){$output}else{$folder}
- $arguments=@('-batchmode','-force-d3d11','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2','-packagingReview',('"'+$reviewFolder+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'))
+ # The recovery fixture asserts the authored English recovery guidance. Do not
+ # inherit a language preference left by a previous localization review.
+ $arguments=@('-batchmode','-force-d3d11','-screen-width','1280','-screen-height','720','-screen-fullscreen','0','-job-worker-count','2','-language','en','-localizationProfile','packaging-review','-packagingReview',('"'+$reviewFolder+'"'),'-logFile',('"'+(Join-Path $folder 'player.log')+'"'))
  if(!$UseDefaultCache){$arguments+=@('-contentCache',('"'+$CachePath+'"'))}
  if($CopySource){$arguments+='-contentCopySource'}
  if($RetryReview){$arguments+='-packagingRetryReview'}

@@ -51,7 +51,7 @@ namespace WhatTheFish {
     Check(app.SelectedSport==source&&RoomTeleport.Players().Select((n,i)=>Vector3.Distance(n.transform.position,before[i])<.35f).All(x=>x),"cancel restores every source position "+phase);Check(Restored(),"cancel restores renderers, controls and network transforms "+phase);
    }
    yield return Idle();yield return Sync("disconnect");
-   if(app.rooms.Host){Check(RoomTeleport.Instance.Request(SportId.Golf,TeleportDestination.Game),"disconnect fixture starts");yield return Until(()=>RoomTeleport.Instance.State.phase==RoomTeleportPhase.Cancelled&&!TeleportSequence.Busy,"departure cancels shared teleport",95);Check(app.rooms.Connected&&RoomTeleport.Players().Length==1&&Restored(),"remaining host stays in room and visible");}
+   if(app.rooms.Host){Check(RoomTeleport.Instance.Request(SportId.Golf,TeleportDestination.Game),"disconnect fixture starts");yield return Until(()=>RoomTeleport.Instance.State.phase==RoomTeleportPhase.Cancelled&&!TeleportSequence.Busy,"departure cancels shared teleport",95);yield return Until(()=>app.rooms.Connected&&RoomTeleport.Players().Length==1&&Restored(),"remaining host stays in room and visible");}
    else{yield return Until(()=>RoomTeleport.Busy,"guest sees disconnect fixture");var task=app.rooms.Leave();while(!task.IsCompleted)yield return null;yield return Until(()=>!TeleportSequence.Busy,"disconnected guest releases teleport state");}
    Finish();
   }
@@ -85,7 +85,7 @@ namespace WhatTheFish {
     switch(sport){
      case SportId.Football:var f=FootballMatch.Instance;Check(f.StartMatch(),"start football fixture");f.State.TeamsConfirmed(f.Now);f.State.Advance(f.Now+10);f.State.Advance(f.Now+10000);Publish(f);break;
      case SportId.Basketball:var b=BasketballMatch.Instance;Check(BasketballBots.Instance.FillRoom(2),"fill basketball room to four");Check(b.StartMatch(),"start basketball fixture");b.State.Confirm(b.Now,0);b.State.Advance(b.Now);b.State.Advance(b.Now+10000);b.State.Advance(b.Now+20000);Publish(b,"Synchronize");break;
-     case SportId.Golf:var g=GolfMatchManager.Instance;Check(g.StartMatch(),"start golf fixture");foreach(var p in g.State.Players)for(int hole=1;hole<=5;hole++){g.State.RecordSwing(p.PlayerId,g.Now);g.State.EnterHole(p.PlayerId,hole,g.Now);}Publish(g);break;
+     case SportId.Golf:var g=GolfMatchManager.Instance;Check(g.StartMatch(),"start golf fixture");double finishAt=Math.Max(g.Now,g.State.StartedAt)+1;foreach(var p in g.State.Players)for(int completed=0;completed<GolfPlayerState.HoleCount;completed++){g.State.RecordSwing(p.PlayerId,finishAt);g.State.EnterHole(p.PlayerId,p.CurrentHole,finishAt);}Check(g.State.Phase==GolfMatchPhase.Ended,"golf fixture completes the current shuffled route after countdown");Publish(g);break;
      case SportId.Fishing:var fish=FishingGame.Instance;foreach(var n in RoomTeleport.Players()){var a=n.GetComponent<Athlete>();var p=fish.Player(a).Value;fish.Execute(a,FishingAction.Ready,fish.State.Match.round,p.sequence);}Check(fish.StartMatch(),"start fishing fixture");fish.State.Advance(fish.State.Match.draftUntil+1,0);fish.State.Advance(fish.State.Match.deadline+1,0);Check(fish.State.Match.phase==FishingRoundPhase.Ended,"fishing fixture completes draft, countdown and round");Publish(fish);break;
     }
    }
@@ -93,7 +93,8 @@ namespace WhatTheFish {
    if(!app.rooms.Host){Check(!PostMatchFlow.Instance.Visible&&!app.view.InputBlocked,"guest waits without blocking exploration");yield return Capture(sport+"-guest-waiting");Click("Open next adventure");Check(PostMatchFlow.Instance.Visible,"guest can expand waiting details");}Check(app.rooms.Connected&&app.Exploring,"results keep player in shared world");yield return Capture(sport+"-postmatch");
    if(sport==SportId.Football){Screen.SetResolution(960,540,false);yield return new WaitForSeconds(.7f);yield return Capture("postmatch-compact");Screen.SetResolution(1280,720,false);yield return new WaitForSeconds(.7f);}
    Click("Keep exploring");Check(!PostMatchFlow.Instance.Visible&&!app.view.InputBlocked,"keep exploring closes only panel");yield return null;Click("Open next adventure");Check(PostMatchFlow.Instance.Visible,"next adventure can reopen");
-   if(!app.rooms.Host&&sport==SportId.Fishing)Click("Ready for fishing");yield return Sync(sport+"-rematch");yield return new WaitForSeconds(.5f);
+   // Fishing's current host-start flow has no guest Ready button.
+   yield return Sync(sport+"-rematch");yield return new WaitForSeconds(.5f);
    if(app.rooms.Host)Click("Play again");yield return Until(()=>PostMatchFlow.MatchActive,sport+" rematch starts");Check(!PostMatchFlow.Instance.Visible,"new match dismisses choices");if(app.rooms.Host)Check(!RoomTeleport.Instance.CanRequest(sport,TeleportDestination.Station,out _),"active match blocks travel");yield return Sync(sport+"-clear");
    if(app.rooms.Host){switch(sport){case SportId.Football:FootballMatch.Instance.ClearMatch();break;case SportId.Basketball:BasketballMatch.Instance.Clear();break;case SportId.Golf:GolfMatchManager.Instance.ClearMatch();break;case SportId.Fishing:FishingGame.Instance.State.Abandon(FishingGame.Instance.Now);FishingGame.Instance.ReturnToPractice();break;}}
    yield return Until(()=>!PostMatchFlow.MatchActive,"fixture cleanup");yield return new WaitForSeconds(.5f);PostMatchFlow.CloseResults();PostMatchFlow.Instance.Close();

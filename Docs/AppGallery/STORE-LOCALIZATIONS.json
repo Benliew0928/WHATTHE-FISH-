@@ -1,0 +1,24 @@
+{
+  "status": "Draft listing copy; physical-device acceptance and final policy remain pending",
+  "en": {
+    "consoleLanguage": "English (US)",
+    "name": "WHATTHE FISH?",
+    "brief": "Explore four tropical islands and play sports with friends.",
+    "full": "Welcome to WHATTHE FISH?, a tropical sports adventure.\n\nPlay fishing, basketball, football and golf across four islands. Create a room, invite friends and travel together between island stations in a shared cabin. One room plays one sport together.\n\nExplore on your own or play supported bot modes. Customize your player profile, add friends and share room invitations. Join an online room by entering its code or using the optional Android QR scanner.\n\nOptional room text and voice chat help players communicate. Camera access is requested for camera-based QR scanning, and microphone access is requested for voice chat. Manual room-code entry remains available. Online multiplayer and voice require an internet connection.\n\nPlay in English, Simplified Chinese or Bahasa Melayu. Free to download, with no advertising or real-money in-app purchases.",
+    "newFeatures": "Initial AppGallery release with four sports islands, shared travel, player profiles and optional room communication."
+  },
+  "zh-Hans": {
+    "consoleLanguage": "Chinese (PRC)",
+    "name": "WHATTHE FISH?",
+    "brief": "探索四座热带岛屿，与好友一起享受运动乐趣。",
+    "full": "欢迎来到 WHATTHE FISH?，开启热带运动冒险。\n\n在四座岛屿上体验钓鱼、篮球、足球和高尔夫。创建房间、邀请好友，乘坐共享缆车在岛屿站点之间共同旅行。同一房间的玩家一起进行同一项运动。\n\n独自探索，或体验支持电脑对手的模式。自定义玩家资料、添加好友并发送房间邀请。输入房间代码即可加入在线房间，也可选用 Android 二维码扫描功能。\n\n可选的房间文字和语音聊天方便玩家交流。使用相机扫描二维码时会请求相机权限，使用语音聊天时会请求麦克风权限。始终可以手动输入房间代码。在线多人游戏和语音功能需要互联网连接。\n\n支持英语、简体中文和马来语。免费下载，无广告，无真实货币应用内购买。",
+    "newFeatures": "首次在 AppGallery 发布，包含四座运动岛屿、共同旅行、玩家资料及可选的房间交流功能。"
+  },
+  "ms": {
+    "consoleLanguage": "Malay",
+    "name": "WHATTHE FISH?",
+    "brief": "Terokai empat pulau tropika dan bersukan bersama rakan.",
+    "full": "Selamat datang ke WHATTHE FISH?, pengembaraan sukan tropika.\n\nMain memancing, bola keranjang, bola sepak dan golf di empat pulau. Cipta bilik, jemput rakan dan bergerak bersama antara stesen pulau dalam kabin yang dikongsi. Semua pemain dalam satu bilik bermain sukan yang sama bersama-sama.\n\nTerokai sendiri atau main mod yang menyokong bot. Sesuaikan profil pemain, tambah rakan dan kongsi jemputan bilik. Sertai bilik dalam talian dengan memasukkan kodnya atau menggunakan pengimbas QR Android pilihan.\n\nSembang teks dan suara bilik adalah pilihan untuk komunikasi pemain. Kebenaran kamera diminta untuk mengimbas QR dengan kamera, manakala kebenaran mikrofon diminta untuk sembang suara. Kod bilik tetap boleh dimasukkan secara manual. Permainan berbilang pemain dalam talian dan suara memerlukan sambungan internet.\n\nMain dalam bahasa Inggeris, Cina Ringkas atau Bahasa Melayu. Percuma untuk dimuat turun, tanpa iklan atau pembelian dalam aplikasi menggunakan wang sebenar.",
+    "newFeatures": "Keluaran AppGallery pertama dengan empat pulau sukan, perjalanan bersama, profil pemain dan komunikasi bilik pilihan."
+  }
+}

@@ -55,6 +55,9 @@ def main():
             for platform,enc,lang in [(3,1,0x409),(1,0,0)]:
                 for ident,value in [(1,family),(2,'Regular'),(3,family+' 1.0'),(4,family),(6,family.replace(' ',''))]:
                     merged['name'].setName(value,ident,platform,enc,lang)
+            # Glyph names are optional metadata; Unicode, outlines, metrics and
+            # OpenType shaping continue to use the unchanged glyph indices.
+            merged['post'].formatType=3.0
             target=out/(role+'.ttf');merged.save(target)
             verified=TTFont(target);base=TTFont(RES/original)
             assert all(verified['hmtx'][verified.getBestCmap()[cp]]==base['hmtx'][glyph] for cp,glyph in base.getBestCmap().items())

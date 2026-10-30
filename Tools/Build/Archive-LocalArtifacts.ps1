@@ -51,7 +51,10 @@ foreach ($relative in ($RelativePath | Sort-Object -Unique)) {
     $source = [IO.Path]::GetFullPath((Join-Path $repoRoot $relative))
     if (-not $source.StartsWith($repoRoot + '\', [StringComparison]::OrdinalIgnoreCase)) { throw "Source escapes workspace: $relative" }
     $normalized = $source.Substring($repoRoot.Length + 1).Replace('\','/')
-    if ($normalized -match '(^|/)(\.git|Legacy|Library|Temp|obj|Logs|UserSettings)(/|$)' -or $normalized -notmatch '^(Builds|Tools|Docs|ArtSource|Game/Assets)/') { throw "Protected or invalid source: $relative" }
+    # Root-level authored document duplicates can be reviewed explicitly too.
+    # This permits individual documents, never a repository/root directory move.
+    $rootDocument = (Split-Path $source -Parent) -eq $repoRoot -and [IO.Path]::GetExtension($source) -in @('.pptx','.pdf','.docx','.xlsx')
+    if ($normalized -match '(^|/)(\.git|Legacy|Library|Temp|obj|Logs|UserSettings)(/|$)' -or ($normalized -notmatch '^(Builds|Tools|Docs|ArtSource|Game/Assets)/' -and -not $rootDocument)) { throw "Protected or invalid source: $relative" }
     Assert-NoLink $source
     $item = Get-Item -LiteralPath $source -Force
     foreach ($entry in $sources) {

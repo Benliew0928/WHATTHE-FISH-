@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -14,6 +15,9 @@ namespace WhatTheFish {
  // A pinned diamond cord mesh, shared with the authored hoop material. Local
  // damped impulses make both nets responsive without shipping a cloth package.
  public sealed class BasketballHoop:MonoBehaviour {
+  // The active island owns these components. Register lifecycle changes instead
+  // of walking the complete stadium hierarchy for every actor's aim query.
+  internal static readonly List<BasketballHoop> Active=new(2);
   public const float RimHeight=3.048f,InnerRadius=.2286f,NetTop=3.024f,NetBottom=2.564f;
   const int Around=16,Rows=5,Sides=4,Edges=144;
   readonly Vector3[] rest=new Vector3[Around*Rows],nodes=new Vector3[Around*Rows];
@@ -24,6 +28,7 @@ namespace WhatTheFish {
   public float Displacement {get;private set;}
   public float AnchorDisplacement {get;private set;}
   void Awake(){
+   Active.Add(this);
    foreach(var r in GetComponentsInChildren<MeshRenderer>(true))if(r.name=="Hoop__Net"){authored=r;break;}
    if(!authored)return;
    var go=new GameObject("Responsive net");go.transform.SetParent(transform,false);
@@ -128,6 +133,6 @@ namespace WhatTheFish {
    }
    mesh.vertices=vertices;mesh.normals=normals;mesh.bounds=new Bounds(new Vector3(0,2.8f,0),new Vector3(1.2f,1.3f,1.2f));
   }
-  void OnDestroy(){if(mesh)Destroy(mesh);if(authored)authored.enabled=true;}
+  void OnDestroy(){Active.Remove(this);if(mesh)Destroy(mesh);if(authored)authored.enabled=true;}
  }
 }

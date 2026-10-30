@@ -1,6 +1,96 @@
 {
   "entries": [
     {
+      "en": "AI-generated voice",
+      "zh": "AI 生成语音",
+      "ms": "Suara janaan AI"
+    },
+    {
+      "en": "Fishing takes you to the lagoon to catch fish. Choose offline exploration or play against bots.",
+      "zh": "钓鱼带你前往泻湖捕鱼。选择离线探索或与电脑对战。",
+      "ms": "Memancing membawa anda ke lagun untuk menangkap ikan. Pilih penerokaan luar talian atau lawan bot."
+    },
+    {
+      "en": "Basketball takes you to the court. Explore offline or challenge bots.",
+      "zh": "篮球带你前往球场。离线探索或挑战电脑。",
+      "ms": "Bola Keranjang membawa anda ke gelanggang. Terokai luar talian atau cabar bot."
+    },
+    {
+      "en": "Football takes you to the pitch. Explore offline or challenge bots.",
+      "zh": "足球带你前往球场。离线探索或挑战电脑。",
+      "ms": "Bola Sepak membawa anda ke padang. Terokai luar talian atau cabar bot."
+    },
+    {
+      "en": "Golf takes you to the course. Explore offline or challenge bots.",
+      "zh": "高尔夫带你前往球场。离线探索或挑战电脑。",
+      "ms": "Golf membawa anda ke padang golf. Terokai luar talian atau cabar bot."
+    },
+    {
+      "en": "Welcome aboard! I'll show you around. Tap anywhere to continue.",
+      "zh": "欢迎登船！我来带你熟悉一下。点击屏幕任意位置继续。",
+      "ms": "Selamat datang! Biar saya tunjukkan sekeliling. Ketik di mana-mana untuk teruskan."
+    },
+    {
+      "en": "Create a room to host friends. Choose a starting sport and share your room code.",
+      "zh": "创建房间，邀请朋友一起玩。选择起始运动并分享房间代码。",
+      "ms": "Cipta bilik untuk bermain dengan rakan. Pilih sukan permulaan dan kongsi kod bilik."
+    },
+    {
+      "en": "Join a room with your host's code or scan their QR invitation.",
+      "zh": "输入房主的代码或扫描邀请二维码，即可加入房间。",
+      "ms": "Sertai bilik dengan kod hos atau imbas jemputan QR mereka."
+    },
+    {
+      "en": "Pick Fishing, Basketball, Football or Golf to explore offline or play against bots.",
+      "zh": "选择钓鱼、篮球、足球或高尔夫，离线探索或与电脑对战。",
+      "ms": "Pilih Memancing, Bola Keranjang, Bola Sepak atau Golf untuk meneroka luar talian atau melawan bot."
+    },
+    {
+      "en": "In one room, your crew can travel together between all four islands.",
+      "zh": "在同一个房间里，大家可以一起前往四座岛屿。",
+      "ms": "Dalam satu bilik, semua pemain boleh mengembara bersama ke empat-empat pulau."
+    },
+    {
+      "en": "Rewards opens your daily calendar. Tap the available day to claim coins.",
+      "zh": "奖励按钮会打开每日日历。点击可领取的日期来领取金币。",
+      "ms": "Ganjaran membuka kalendar harian. Ketik hari yang tersedia untuk menuntut syiling."
+    },
+    {
+      "en": "This balance shows your coins. You can use them for available customization items.",
+      "zh": "这里显示你的金币余额。你可以用金币购买可用的自定义物品。",
+      "ms": "Baki ini menunjukkan syiling anda. Gunakannya untuk item penyesuaian yang tersedia."
+    },
+    {
+      "en": "Friends lets you find players, manage requests and see your friends.",
+      "zh": "在好友页面查找玩家、管理好友请求并查看好友。",
+      "ms": "Rakan membolehkan anda mencari pemain, mengurus permintaan dan melihat rakan."
+    },
+    {
+      "en": "Your profile is where you can edit your player details and picture.",
+      "zh": "在个人资料中编辑你的玩家信息和头像。",
+      "ms": "Dalam profil anda, ubah maklumat pemain dan gambar anda."
+    },
+    {
+      "en": "Settings lets you adjust language, sound and other preferences.",
+      "zh": "在设置中调整语言、声音和其他偏好。",
+      "ms": "Dalam Tetapan, laraskan bahasa, bunyi dan pilihan lain."
+    },
+    {
+      "en": "Customize venue lets you choose a sport and make its venue your own.",
+      "zh": "自定义场地让你选择运动并打造专属场地。",
+      "ms": "Sesuaikan venue membolehkan anda memilih sukan dan menghias venuenya."
+    },
+    {
+      "en": "Tutorials teaches the controls and rules for each sport. Have fun!",
+      "zh": "教程会教你每项运动的操作和规则。祝你玩得开心！",
+      "ms": "Tutorial mengajar kawalan dan peraturan setiap sukan. Selamat bermain!"
+    },
+    {
+      "en": "Tap anywhere to continue",
+      "zh": "点击任意位置继续",
+      "ms": "Ketik di mana-mana untuk teruskan"
+    },
+    {
       "en": "Rewards",
       "zh": "奖励",
       "ms": "Ganjaran"

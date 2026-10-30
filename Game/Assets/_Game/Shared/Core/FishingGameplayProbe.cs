@@ -12,6 +12,7 @@ namespace WhatTheFish {
   string[] args;string report;int checks;AppRoot app;FishingGame game;
   [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]static void Boot(){var a=Environment.GetCommandLineArgs();if(a.Contains("-fishingGameplayAudit")||a.Contains("-networkFishingAudit"))new GameObject("Fishing gameplay review").AddComponent<FishingGameplayProbe>();}
   string Value(string key,string fallback){int i=Array.IndexOf(args,key);return i>=0&&i+1<args.Length?args[i+1]:fallback;}
+  int[] CameraModes=>args.Contains("-fishingDefaultViews")?new[]{0,1}:new[]{0,1,2};
   void Check(bool pass,string name){File.AppendAllText(report,(pass?"PASS ":"FAIL ")+name+"\n");if(!pass){Diagnose(name);throw new Exception(name);}checks++;}
   void Diagnose(string name){
    var record=game&&app?game.Player(app.LocalAthlete):null;var ui=FishingHUD.Instance;var view=app?app.view:null;
@@ -263,12 +264,15 @@ namespace WhatTheFish {
    for(int i=0;i<FishingState.FishCount;i++){float maxDistance=0,minDistance=100,span=0;var start=game.FishPosition(i,0);for(int sample=0;sample<120;sample++){var p=game.FishPosition(i,sample*.1);float distance=Vector3.Distance(p,game.Pier(FishingState.PierForFish(i)));maxDistance=Mathf.Max(maxDistance,distance);minDistance=Mathf.Min(minDistance,distance);span=Mathf.Max(span,Vector3.Distance(p,start));}Check(maxDistance<FishingState.MaxCastDistance&&minDistance>3.5f&&span>3,"PUBLIC_POOL_MIGRATION_STAYS_CASTABLE_"+i);}
    Check(Mathf.Abs(game.WaterHeight(game.Pier(0))-game.WaterY)<.037f,"FLOAT_FOLLOWS_BOUNDED_SURFACE_RIPPLES");
    var hud=FindFirstObjectByType<FishingHUD>();Check(hud.TypographyClean(),"HUD_NATIVE_FONT_NO_SYNTHETIC_BOLD_OR_STACKED_SHADOWS");yield return PoseFrame();HudRefinement(hud,"practice");Capture("crisp-practice");yield return TutorialInterface(hud);hud=FishingHUD.Instance;yield return SharedLagoonInterface(hud);yield return GearInterface(hud);
-   for(int pier=0;pier<FishingState.PierCount;pier++){
+    // A scoped regression can exercise normal Eye-level/Follow aiming while
+    // retaining the full legacy Island View matrix as an explicit diagnostic.
+    var aimModes=CameraModes;
+    for(int pier=0;pier<FishingState.PierCount;pier++){
     Place(actor,pier);yield return new WaitForSeconds(.12f);
-    for(int mode=0;mode<3;mode++)for(int slot=0;slot<FishingState.FishPerPier;slot++){int fish=pier*FishingState.FishPerPier+slot;yield return AimFish(fish,mode);Check(app.view.SelectedFishingFish==fish,"AIM_SIX_TARGETS_PIER_"+pier+"_CAMERA_"+mode+"_SLOT_"+slot);}
+     foreach(int mode in aimModes)for(int slot=0;slot<FishingState.FishPerPier;slot++){int fish=pier*FishingState.FishPerPier+slot;yield return AimFish(fish,mode);Check(app.view.SelectedFishingFish==fish,"AIM_SIX_TARGETS_PIER_"+pier+"_CAMERA_"+mode+"_SLOT_"+slot);}
    }
    Place(actor,0);yield return new WaitForSeconds(.15f);hud.ReviewFrameInsets(new Vector2(96,40),new Vector2(24,16));yield return null;yield return null;
-   for(int mode=0;mode<3;mode++){yield return AimFish(4,mode);yield return PoseFrame();Check(hud.AimLocked&&app.view.SelectedFishingFish==4&&Vector2.Distance(hud.AimScreenPoint,app.view.FishingCamera.pixelRect.center)>20,"RETICLE_TARGETS_WITH_ASYMMETRIC_SAFE_AREA_"+mode);Capture("aim-safe-insets-"+mode);}
+    foreach(int mode in aimModes){yield return AimFish(4,mode);yield return PoseFrame();Check(hud.AimLocked&&app.view.SelectedFishingFish==4&&Vector2.Distance(hud.AimScreenPoint,app.view.FishingCamera.pixelRect.center)>20,"RETICLE_TARGETS_WITH_ASYMMETRIC_SAFE_AREA_"+mode);Capture("aim-safe-insets-"+mode);}
    hud.ReviewFrameInsets(Vector2.zero,Vector2.zero);yield return null;yield return AimFish(1,1);uint castSequence=game.Player(actor).Value.sequence;
    PlayerView.LookDelta=new Vector2(90,15);yield return null;yield return null;Check(game.Player(actor).Value.sequence==castSequence&&game.Player(actor).Value.phase==FishingPhase.Ready,"AIM_DRAG_NEVER_CASTS");
    var claimed=game.State.Fish[1];game.ReviewSnapshot=true;game.State.Fish[1]=new FishingFishRecord{id=1,claimed=true,owner=0};yield return null;yield return null;Check(app.view.SelectedFishingFish!=1,"RETICLE_REJECTS_CLAIMED_FISH");game.State.Fish[1]=new FishingFishRecord{id=1,respawnAt=game.Now+7};yield return null;yield return null;Check(app.view.SelectedFishingFish!=1,"RETICLE_REJECTS_RESPAWNING_FISH");game.State.Fish[1]=claimed;game.ReviewSnapshot=false;
@@ -286,7 +290,7 @@ namespace WhatTheFish {
    yield return CatchWithInput(false);Check(game.Player(actor).Value.score==5,"KEYBOARD_CATCH_WANTED_BONUS");Check(FindFirstObjectByType<FishingHUD>().WantedText.Contains("SMALL")&&FindFirstObjectByType<FishingHUD>().WantedBonusText=="OK","WANTED_BADGE_CONFIRMS_LOCAL_BONUS_CLAIM");
    yield return new WaitForSeconds(2.1f);yield return AimFish(1,1);Check(app.view.BeginFishing(),"EXPLICIT_SECOND_CAST_QUEUED");yield return new WaitForSeconds(.2f);app.view.CancelFishing();yield return new WaitForSeconds(.2f);Check(!game.Busy(actor)&&game.Player(actor).Value.score==5,"CANCEL_INPUT_KEEPS_SCORE_AND_RELEASES_LINE");
    yield return new WaitForSeconds(2.1f);
-   for(int mode=0;mode<3;mode++){yield return AimFish(1,mode);yield return PoseFrame();Check(float.IsFinite(app.view.transform.position.x)&&float.IsFinite(app.view.transform.position.y),"CAMERA_FINITE_"+mode);Check(app.view.SelectedFishingFish==1,"FISH_SELECTABLE_CAMERA_"+mode);Capture("camera-"+mode);}
+   foreach(int mode in CameraModes){yield return AimFish(1,mode);yield return PoseFrame();Check(float.IsFinite(app.view.transform.position.x)&&float.IsFinite(app.view.transform.position.y),"CAMERA_FINITE_"+mode);Check(app.view.SelectedFishingFish==1,"FISH_SELECTABLE_CAMERA_"+mode);Capture("camera-"+mode);}
    if(args.Contains("-fishingCapture")){
     yield return new WaitForSeconds(.5f);Check(FindFirstObjectByType<LagoonReflection>().Ready,"ENVIRONMENT_REFLECTION_CAPTURE_READY");Check(FindObjectsByType<Light>(FindObjectsSortMode.None).Any(l=>l.enabled&&l.type==LightType.Directional),"DIRECTIONAL_LIGHT_ACTIVE");
     string[] assets={"Flame","FishBadge","FisherBadge","ClockBadge","ReelButton","SteerIdle","SteerLit","CounterFrame","GearIcons","TutorialPanels"};int[] limits={64,128,128,128,192,192,192,512,512,512};
@@ -305,6 +309,7 @@ namespace WhatTheFish {
   }
   IEnumerator GripSportTransition(){
    var actor=app.LocalAthlete;var departing=game.State;var motion=actor.GetComponent<FishingRodMotion>();var streaming=app.environments.GetComponent<SkySailStreaming>();var fishingHUD=FindFirstObjectByType<FishingHUD>();
+   var originalHead=actor.visual.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mixamorig:Head");var originalHeadScale=originalHead.localScale;
    yield return streaming.Prepare(SportId.Golf);yield return AimFish(1,1);Check(app.view.BeginFishing(),"CONTEXT_EXIT_CAST_CONFIRMS_TARGET");float biteEnd=Time.time+6;
    while(game.Player(actor).Value.phase!=FishingPhase.Bite&&Time.time<biteEnd)yield return null;
    yield return PoseFrame();Check(game.Player(actor).Value.phase==FishingPhase.Bite&&fishingHUD.HookCue.Visible,"CONTEXT_EXIT_STARTS_FROM_VISIBLE_BITE_CUE");app.SelectSport(SportId.Golf);yield return new WaitForSeconds(.2f);
@@ -313,7 +318,10 @@ namespace WhatTheFish {
    var golf=GolfMatchManager.Instance;Check(golf&&golf.StartMatch(),"GOLF_AFTER_FISHING_CAN_START");app.view.mode=0;yield return new WaitForSeconds(.3f);yield return PoseFrame();
    var skins=actor.visual.GetComponentsInChildren<SkinnedMeshRenderer>(true).Where(s=>s.sharedMesh&&s.sharedMesh.GetBlendShapeIndex("GolfRightGrip")>=0).ToArray();
    Check(actor.GolfClubMotion.Equipped&&skins.Length>0&&skins.All(s=>s.GetBlendShapeWeight(s.sharedMesh.GetBlendShapeIndex("GolfRightGrip"))>99),"FISHING_STOW_PRESERVES_GOLF_HAND_GRIP");
-   if(SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null){var head=actor.visual.GetComponentsInChildren<Transform>(true).First(t=>t.name=="mixamorig:Head");Check(head.localScale.magnitude<.01f&&skins.All(s=>s.enabled),"GOLF_FIRST_PERSON_HANDOFF_KEEPS_BODY_AND_HIDES_HEAD");}
+   if(SystemInfo.graphicsDeviceType!=UnityEngine.Rendering.GraphicsDeviceType.Null){
+    var block=new MaterialPropertyBlock();int mask=Shader.PropertyToID("_HideFirstPersonHead");bool masked=true;foreach(var skin in skins){skin.GetPropertyBlock(block);masked&=block.GetFloat(mask)>.99f;}
+    Check(Vector3.Distance(originalHead.localScale,originalHeadScale)<.0001f&&masked&&skins.All(s=>s.enabled),"GOLF_FIRST_PERSON_HANDOFF_KEEPS_BODY_AND_HIDES_HEAD");
+   }
    yield return streaming.Prepare(SportId.Fishing);app.SelectSport(SportId.Fishing);app.view.mode=1;yield return new WaitForSeconds(.3f);yield return PoseFrame();game=FishingGame.Instance;
    Check(game&&game.State.Match.phase==FishingRoundPhase.Practice&&motion.Equipped&&skins.All(s=>s.GetBlendShapeWeight(s.sharedMesh.GetBlendShapeIndex("GolfRightGrip"))>99),"RETURN_TO_FISHING_REEQUIPS_ROD");
   }
@@ -361,7 +369,7 @@ namespace WhatTheFish {
    Check(ui.HookCue.Visible&&maxScale-minScale>.005f&&originalArea.Zip(repeatedArea,(a,b)=>Vector3.Distance(a,b)).All(d=>d<.05f),"HOOK_ART_PULSES_WITHOUT_MOVING_PRIMARY_HIT_AREA");
    Check(ui.HookCue.CueStarts==repeatedStarts&&ui.HookCue.Remaining01<originalRemaining,"REPEATED_BITE_SNAPSHOT_CANNOT_REPLAY_OR_EXTEND_CUE");Capture("bite-alert-pulse");
    ui.HookCue.Tick(pulsePlayer,game.State.Match.round,pulsePlayer.hookUntil-.18,true,app.view.FishingCamera,game.Presentation.HookPoint(pulsePlayer));Check(ui.HookCue.Visible&&ui.HookCue.Remaining01<=.2f,"HOOK_ALERT_COUNTDOWN_REACHES_REAL_DEADLINE");Capture("bite-alert-deadline");
-   for(int mode=0;mode<3;mode++){
+    foreach(int mode in CameraModes){
     var ready=game.State.Players[0];ready.phase=FishingPhase.Ready;ready.fish=-1;game.State.Players[0]=ready;game.State.Fish[0]=new FishingFishRecord{id=0};yield return AimFish(0,mode);ReviewBite(0);yield return PoseFrame();
     Check(ui.HookCue.Visible&&ui.HookCue.WorldCueVisible&&ui.HookCue.FitsSafeFrame()&&ui.HookCue.DecorationsIgnoreRaycast,"BITE_ALERT_FITS_AND_MARKS_FISH_CAMERA_"+mode);Capture("bite-camera-"+mode);
    }

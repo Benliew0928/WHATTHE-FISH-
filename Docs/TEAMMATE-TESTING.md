@@ -21,8 +21,8 @@ the project's Unity online services. The `Explore-*.cmd` launchers are offline
 practice shortcuts. Local automated-test flags use loopback and cannot connect
 two separate computers.
 
-The waiting room shows **Network build 73**. This combined Fishing, responsiveness, audio and QR/menu integration uses
-protocol 73, so earlier protocol-69, protocol-70, protocol-71 and protocol-72 players are rejected during connection
+The waiting room shows **Network build 88**. The current combined game uses
+protocol 88; use the same delivered player on every computer. Earlier protocols are rejected during connection
 before entering gameplay. The generic join-failure message also asks clients to
 check their code, connection and matching build; a missing network response
 cannot uniquely identify a version mismatch. The protocol is a compatibility
@@ -49,7 +49,7 @@ Do not assume an independently rebuilt player is the already-tested ZIP.
 
 ## Manual checks with your teammate
 
-1. In the waiting room, confirm both see network build 71. Enter as players,
+1. In the waiting room, confirm both see network build 88. Enter as players,
    ready up, and travel together. For Basketball, fill to 2v2 with bots.
 2. Finish a round, then use Next adventure to teleport everyone to a Skyrail
    station. Start another match while a participant remains near the cabin.

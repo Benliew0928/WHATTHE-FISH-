@@ -1,8 +1,17 @@
-# Support, reporting and retention proposal
+# Support, reporting and retention plan
 
-Prepared 26 October 2026 for owner review. **Proposed periods below are not
-implemented deletion schedules or promises to players.** No production data,
-service settings or scheduled jobs were changed by this preparation.
+Prepared 26 October; retention periods adopted by the owner on 28 October 2026:
+match details 30 days after expiry, closed report metadata 90 days, report
+evidence 30 days after closure and support email 90 days after resolution.
+The owner retained all ages and requested resolving child protections first;
+submission remains pending. A later real cloud P40 check covers startup, guest
+entry and one Golf shot; full device acceptance remains open. Other rows below remain
+operating proposals unless separately confirmed.
+
+**The deletion fix and retention handler are deployed, with both indexes
+verified. Daily cleanup is configured at 03:17 Malaysia time; first scheduled
+execution remains unverified. Final public policies remain drafts.**
+See [retention rollout and restore procedure](RETENTION-ROLLOUT.md).
 
 LIEW KAIY BIN handles support, privacy and player reports through
 benliew28262826@gmail.com and the private report records. The owner selected
@@ -14,10 +23,10 @@ no launch deadline. No separate child mode was requested or implemented.
 | Record | Proposed rule | Work required before adopting it |
 | --- | --- | --- |
 | Profile, friendships, blocks, wallet and owned cosmetics | Keep while the account is maintained; remove associated personal records on verified account deletion. Do not silently expire paid-for effort or balances because an account is inactive. | Verify deletion across every store and provider; settle any justified minimum anti-abuse records separately. |
-| Detailed match rosters and results | Remove identifying match detail 30 days after completion/cancellation. Keep only the minimum account-linked award ledger needed to prevent duplicate rewards while the account exists. | Add a bounded cleanup job; remove a deleted participant from other hosts' stored roster/receipt JSON without breaking legitimate awards. |
+| Detailed match rosters and results | Remove identifying match detail 30 days after fixed expiry, as adopted. Keep only the minimum account-linked award ledger needed to prevent duplicate rewards while the account exists. | Handler and daily schedule deployed; shared-roster/receipt deletion fix deployed. Complete authenticated live acceptance and verify the first scheduled run. |
 | Invitations and transient join proofs | Delete expired/resolved records within 24 hours; consumed proofs as soon as no longer needed. | Current 120-second invite and four-hour match expiry are logical states, not physical deletion. Implement cleanup and verify retries. |
 | Closed report case metadata | Delete 90 days after closure. Reassess open cases at least every 30 days. | Record closure/review dates and an explicit, minimal investigation hold when justified; prevent indefinite unattended cases. |
-| Report photos and chat excerpts | Delete 30 days after closure unless a documented active investigation requires them longer. | Separate evidence expiry from case metadata; restrict private access. Current cases have no timed purge. |
+| Report photos and chat excerpts | Delete 30 days after closure; open cases remain subject to daily review. A future hold exception needs explicit design/disclosure. | Handler separates evidence expiry from metadata; daily schedule enabled, first run unverified. Restrict private access. |
 | Support email | Delete identifiable correspondence and attachments 90 days after resolution; retain anonymous bug notes separately when useful. | Owner performs mailbox cleanup and records any justified hold. Do not copy credentials or unnecessary identity documents into a case log. |
 | Ordinary room text | Session memory only; clear local history on leaving/new room. Reported excerpts follow report rules. | Current implementation follows room travel/host migration; it cannot remotely erase copies other players already received. |
 | Voice | No application recording/transcription. Confirm provider metadata retention and request handling. | Verify actual Vivox project settings and any consent obligations before claiming suitability for children. |
@@ -46,18 +55,22 @@ no launch deadline. No separate child mode was requested or implemented.
 
 ## Concrete gaps found in the current implementation
 
-- `economy_matches` is owned by its host. Deleting another participant cascades
-  their normalized participant rows but can leave their ID in the host's
-  `roster` and `receipt` JSON. The offline schema review reproduced this.
-  Fix and test cross-host scrubbing before accepting complete deletion.
-- Reports have no scheduled purge. Deleting either report party's profile
-  currently cascades the report and its evidence; any future investigation hold
-  must be intentionally designed and disclosed, not assumed to exist.
+- The deployed deletion fix removes a deleted participant from another host's
+  roster/receipt while preserving the host's replay-prevention key and wallet.
+  A changed active match is cancelled for rewards. Transaction failure and a
+  controlled restore/reapply scenario pass locally. Authenticated live deletion
+  and provider restore acceptance remain unverified.
+- The deployed scheduled handler clears closed-case evidence at 30 days and
+  metadata at 90 days, and deletes match records 30 days after expiry. It is
+  enabled by the deployment flag and has no public HTTP trigger. Open/undated cases remain
+  for operator review. A future investigation-hold exception needs an explicit
+  design and disclosure; the code contains no hidden hold bypass.
 - No verified guardian-consent flow or age-aware initialization was found.
   The owner's all-ages intention does not establish an official rating or
   satisfy provider/child-privacy requirements. Resolve this before public release.
 - Processing regions, backup plan, provider logs, request handling and real
-  Huawei device behavior still need verification. No live settings were changed.
+  Huawei device behavior still need verification. The daily retention schedule
+  is configured; provider consent settings were not changed by that activation.
 
 ## Provider references checked during preparation
 

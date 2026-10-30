@@ -1,5 +1,7 @@
 import { AuthError, createAuthenticator } from './auth.mjs';
 import { profileApi } from './profile-api.mjs';
+import { Profiles } from './profiles.mjs';
+import { runRetentionCleanup } from './retention.mjs';
 
 const authenticators = new WeakMap();
 const send = (status, data) => Response.json(data, { status, headers: {
@@ -35,6 +37,12 @@ async function readJson(request) {
 // Dependency injection exercises the actual HTTP boundary without real provider credentials.
 export function createWorker(factory = createAuthenticator) {
   return {
+    async scheduled(controller,env) {
+      // No public cleanup endpoint; disabled until the reviewed rollout enables it.
+      if(env.ENABLE_RETENTION_CLEANUP!=='true')return;
+      if(!env.PROFILES_DB)throw new Error('Retention database is not configured');
+      return runRetentionCleanup(new Profiles(env.PROFILES_DB));
+    },
     async fetch(request, env) {
       try {
         const url = new URL(request.url);

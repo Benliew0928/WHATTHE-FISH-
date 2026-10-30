@@ -53,7 +53,7 @@ namespace WhatTheFish {
   }
   IEnumerator Start(){
    var args=Environment.GetCommandLineArgs();report=args[Array.IndexOf(args,"-report")+1];DevelopmentProbe.TurnCommandActive=true;DevelopmentProbe.TurnCommand=default;
-   float until=Time.time+60;while((!AppRoot.Instance||!AppRoot.Instance.Exploring||!GolfMatchManager.Instance)&&Time.time<until)yield return null;
+   float until=Time.time+60;while((!DevelopmentProbe.ReadyToReviewSport||!GolfMatchManager.Instance)&&Time.time<until)yield return null;
    app=AppRoot.Instance;match=GolfMatchManager.Instance;actor=app.LocalAthlete;GolfFeedback.Instance.ReviewFocus(true);Check(match&&match.StartMatch(),"MATCH_STARTED");ball=match.Ball(actor);ui=FindFirstObjectByType<GolfSwingButton>();
    Check(!GameObject.Find("Golf shot readout"),"NO_PHYSICS_READOUT_PANEL");
    if(args.Contains("-golfFeedbackOnly")){Time.timeScale=1;yield return Interactions();File.AppendAllText(report,"GOLF_SHOT_COMPLETE feedback_only checks="+checks+"\n");Application.Quit();yield break;}

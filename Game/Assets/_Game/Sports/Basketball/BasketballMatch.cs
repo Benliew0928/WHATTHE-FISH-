@@ -93,7 +93,8 @@ namespace WhatTheFish {
   public Transform Hoop(FootballTeam attack){
    if(attack==FootballTeam.None)return null;float sign=attack==FootballTeam.A?1:-1;
    Transform best=null;float distance=0;
-   foreach(var h in ball.transform.parent.GetComponentsInChildren<BasketballHoop>()){float z=ball.transform.parent.InverseTransformPoint(h.transform.position).z*sign;if(z>distance){distance=z;best=h.transform;}}
+   var arena=ball.transform.parent;
+   foreach(var h in BasketballHoop.Active)if(h&&h.gameObject.activeInHierarchy&&h.transform.IsChildOf(arena)){float z=arena.InverseTransformPoint(h.transform.position).z*sign;if(z>distance){distance=z;best=h.transform;}}
    return best;
   }
   public void Touch(Athlete actor){if(!Authority||(!State.Running&&State.Phase!=BasketballMatchPhase.Buzzer)||!Contains(actor))return;lastTouch=TeamOf(actor);Statistics.Touch(PlayerId(actor),Now,false);}
