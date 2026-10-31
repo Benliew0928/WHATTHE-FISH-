@@ -15,12 +15,18 @@ public static partial class ProjectBuilder {
   var logo=new Texture2D(2,2,TextureFormat.RGBA32,false);
   if(!logo.LoadImage(File.ReadAllBytes(DiskPath("Assets/_Game/Resources/Menu/WhatTheFishLogo.png"))))
    throw new InvalidOperationException("Game logo could not be read for Android branding.");
-  var background=new Color32(8,31,44,255);
+  var sky=new Texture2D(2,2,TextureFormat.RGBA32,false);
+  if(!sky.LoadImage(File.ReadAllBytes(DiskPath("Assets/_Game/Resources/StartupWelcome/Scene.png"))))
+   throw new InvalidOperationException("Login sky artwork could not be read.");
+  // Square crop of the actual login sky: blue above, a few clouds below.
+  // Unity UVs start at the bottom. Preserve cloud proportions and the source art.
+  const float skyHeight=.32f;
+  var skyCrop=new Rect(.60f,1-skyHeight,skyHeight*sky.height/sky.width,skyHeight);
   try{
    WriteIcon("Background",1,false);
    WriteIcon("Foreground",.72f,true);
    WriteIcon("StoreIcon",.94f,false);
-  }finally{UnityEngine.Object.DestroyImmediate(logo);}
+  }finally{UnityEngine.Object.DestroyImmediate(logo);UnityEngine.Object.DestroyImmediate(sky);}
   AssetDatabase.Refresh();
   Texture2D Load(string name){
    string path=folder+"/"+name+".png";
@@ -48,7 +54,7 @@ public static partial class ProjectBuilder {
    try{
     var pixels=new Color32[size*size];
     for(int y=0;y<size;y++)for(int x=0;x<size;x++){
-     Color color=transparent?Color.clear:background;
+     Color color=transparent?Color.clear:sky.GetPixelBilinear(skyCrop.x+(x+.5f)/size*skyCrop.width,skyCrop.y+(y+.5f)/size*skyCrop.height);color.a=transparent?0:1;
      if(name!="Background"){
       float u=((x+.5f)/size-.5f)/scale+.5f,v=((y+.5f)/size-.5f)/scale+.5f;
       if(u>=0&&u<=1&&v>=0&&v<=1){

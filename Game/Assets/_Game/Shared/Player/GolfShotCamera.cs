@@ -11,13 +11,42 @@ namespace WhatTheFish {
   public bool GolfShotCameraActive=>golfCameraPhase!=GolfCameraPhase.None;
   public bool GolfFollowingBall=>golfCameraPhase==GolfCameraPhase.Flight;
   uint observedHazardLaunch,observedHazardRound;GolfBall observedHazardBall;
-  Vector2 replayPress;float replayPressedAt=-1;
+  Vector2 replayPress;float replayPressedAt=-1;int replayPointer=int.MinValue;
   public bool SkipGolfReplay(){if(!GolfFollowingBall||Time.time-golfCameraAt<.45f)return false;ReturnFromGolfShot();return true;}
   bool UpdateGolfReplayInput(){
-   if(!GolfFollowingBall){replayPressedAt=-1;return false;}
-   if(Input.GetMouseButtonDown(0)){replayPress=Input.mousePosition;replayPressedAt=Time.unscaledTime;}
-   if(Input.GetMouseButtonUp(0)&&replayPressedAt>=0){bool tap=Time.unscaledTime-replayPressedAt<.4f&&Vector2.Distance(replayPress,Input.mousePosition)<24;replayPressedAt=-1;if(tap)return SkipGolfReplay();}
-   for(int i=0;i<Input.touchCount;i++){var touch=Input.GetTouch(i);if(touch.phase==TouchPhase.Began){replayPress=touch.position;replayPressedAt=Time.unscaledTime;}else if(touch.phase==TouchPhase.Ended&&replayPressedAt>=0){bool tap=Time.unscaledTime-replayPressedAt<.4f&&Vector2.Distance(replayPress,touch.position)<24;replayPressedAt=-1;if(tap)return SkipGolfReplay();}}
+   if(!GolfFollowingBall||InputBlocked){ResetReplayPress();return false;}
+   int count=Input.touchCount;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(ReviewMouseLookInput)count=ReviewMouseLookInput.touchCount;
+#endif
+   if(count>0){
+    // Never mix emulated mouse taps with touch, and never let another finger
+    // replace the owner or release its replay tap.
+    if(replayPointer==-1)ResetReplayPress();
+    for(int i=0;i<count;i++){
+     Touch touch;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+     if(ReviewMouseLookInput)touch=ReviewMouseLookInput.GetTouch(i);else
+#endif
+     touch=Input.GetTouch(i);
+     if(ReplayTouch(touch))return true;
+    }
+    return false;
+   }
+   if(replayPointer>=0)ResetReplayPress();
+   if(Input.GetMouseButtonDown(0)&&replayPointer==int.MinValue){replayPointer=-1;replayPress=Input.mousePosition;replayPressedAt=Time.unscaledTime;}
+   if(Input.GetMouseButtonUp(0)&&replayPointer==-1){bool tap=ReplayTap(Input.mousePosition);ResetReplayPress();if(tap)return SkipGolfReplay();}
+   return false;
+  }
+  bool ReplayTap(Vector2 at)=>replayPressedAt>=0&&Time.unscaledTime-replayPressedAt<.4f&&Vector2.Distance(replayPress,at)<24;
+  void ResetReplayPress(){replayPointer=int.MinValue;replayPressedAt=-1;}
+  bool ReplayTouch(Touch touch){
+   if(touch.phase==TouchPhase.Began&&replayPointer==int.MinValue){replayPointer=touch.fingerId;replayPress=touch.position;replayPressedAt=Time.unscaledTime;}
+   else if(touch.fingerId==replayPointer){
+    if(touch.phase==TouchPhase.Moved&&Vector2.Distance(replayPress,touch.position)>=24)replayPressedAt=-1;
+    if(touch.phase==TouchPhase.Canceled){ResetReplayPress();return false;}
+    if(touch.phase==TouchPhase.Ended){bool tap=ReplayTap(touch.position);ResetReplayPress();if(tap)return SkipGolfReplay();}
+   }
    return false;
   }
   void ObserveGolfHazard(){
@@ -38,10 +67,11 @@ namespace WhatTheFish {
    golfCameraPhase=GolfCameraPhase.Contact;golfCameraAt=Time.time;golfCameraStill=0;
    golfCameraFrom=transform.position;golfCameraRotation=transform.rotation;
   }
-  void ResetGolfShotCamera(){golfCameraPhase=GolfCameraPhase.None;followedGolfBall=null;golfCameraActor=null;}
+  void ResetGolfShotCamera(){golfCameraPhase=GolfCameraPhase.None;followedGolfBall=null;golfCameraActor=null;ResetReplayPress();}
   void ReturnFromGolfShot(){
    if(golfCameraPhase==GolfCameraPhase.None||golfCameraPhase==GolfCameraPhase.Return)return;
    golfCameraPhase=GolfCameraPhase.Return;golfCameraAt=Time.time;
+   ResetReplayPress();
    golfCameraFrom=transform.position;golfCameraRotation=transform.rotation;followedGolfBall=null;
   }
   static float GolfCameraEase(float t){t=Mathf.Clamp01(t);return t*t*t*(t*(t*6-15)+10);}

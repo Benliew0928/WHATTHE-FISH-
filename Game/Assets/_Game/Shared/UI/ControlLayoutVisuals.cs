@@ -29,7 +29,14 @@ namespace WhatTheFish {
     JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(sourceGraphic),graphic);
     graphic.color=sourceGraphic.color;graphic.material=sourceGraphic.material;graphic.raycastTarget=false;graphic.enabled=sourceGraphic.enabled;
     if(sourceGraphic is Image a&&graphic is Image b){b.sprite=a.sprite;b.overrideSprite=a.overrideSprite;b.type=a.type;b.preserveAspect=a.preserveAspect;b.fillAmount=a.fillAmount;b.fillCenter=a.fillCenter;b.fillMethod=a.fillMethod;b.fillOrigin=a.fillOrigin;b.fillClockwise=a.fillClockwise;b.pixelsPerUnitMultiplier=a.pixelsPerUnitMultiplier;}
-    if(sourceGraphic is Text t&&graphic is Text u){u.font=t.font;u.text=t.text;u.fontSize=t.fontSize;u.fontStyle=t.fontStyle;u.alignment=t.alignment;u.lineSpacing=t.lineSpacing;u.supportRichText=t.supportRichText;u.resizeTextForBestFit=t.resizeTextForBestFit;u.resizeTextMinSize=t.resizeTextMinSize;u.resizeTextMaxSize=t.resizeTextMaxSize;u.horizontalOverflow=t.horizontalOverflow;u.verticalOverflow=t.verticalOverflow;}
+    if(sourceGraphic is Text t&&graphic is Text u){
+     u.font=t.font;
+     // JsonUtility copies Text's rendered value, but not LocalizedText's source
+     // property. Restore that source before a hidden control is reactivated.
+     if(t is LocalizedText from&&u is LocalizedText to){to.UserContent=from.UserContent;to.Artwork=from.Artwork;to.Basketball=from.Basketball;to.ManualFit=from.ManualFit;to.text=from.Source;}
+     else u.text=t.text;
+     u.fontSize=t.fontSize;u.fontStyle=t.fontStyle;u.alignment=t.alignment;u.lineSpacing=t.lineSpacing;u.supportRichText=t.supportRichText;u.resizeTextForBestFit=t.resizeTextForBestFit;u.resizeTextMinSize=t.resizeTextMinSize;u.resizeTextMaxSize=t.resizeTextMaxSize;u.horizontalOverflow=t.horizontalOverflow;u.verticalOverflow=t.verticalOverflow;
+    }
     result.Graphics.Add((sourceGraphic,graphic));
    }
    foreach(var effect in source.GetComponents<Shadow>()){

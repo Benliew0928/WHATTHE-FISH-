@@ -70,7 +70,7 @@ namespace WhatTheFish {
    ((LocalizedText)label).FitSingleLine(value,maxSize);
   }
   Button Button(RectTransform node,string value,Color tint,out Text label){
-   var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.UseSolidPanel();g.raycastTarget=true;var b=node.gameObject.AddComponent<Button>();b.targetGraphic=g;
+   var g=Graphic(node,FishingStickerGraphic.Kind.Panel,tint);g.UseSolidPanel();g.raycastTarget=true;var b=node.gameObject.AddComponent<TouchButton>();b.targetGraphic=g;
    b.transition=Selectable.Transition.None;label=Text(node,value,Vector2.zero,node.sizeDelta-new Vector2(16,6),25);
    node.gameObject.AddComponent<BasketballButtonFeedback>();node.gameObject.AddComponent<GolfFishingButtonSound>();MenuDesigns.Apply(b);return b;
   }

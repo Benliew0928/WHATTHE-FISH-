@@ -219,7 +219,7 @@ namespace WhatTheFish {
    foreach(float sign in new[]{-1f,1f}){var p=c+new Vector2(5,-5)*sign;BasketballUIMesh.Line(mesh,p,p+new Vector2(-4*sign,0),color,1.5f);BasketballUIMesh.Line(mesh,p,p+new Vector2(0,4*sign),color,1.5f);}
   }
  }
- public sealed class ControlLayoutDrag:MonoBehaviour,IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler,IPointerUpHandler {
+ public sealed class ControlLayoutDrag:MonoBehaviour,IPointerDownHandler,IBeginDragHandler,IDragHandler,IEndDragHandler,IPointerUpHandler,ICancelHandler {
   public ControlLayoutEditor owner;public int index;public bool resize;
   int pointer=int.MinValue;Vector2 start,center,extent;float scale;
   public void OnPointerDown(PointerEventData e){
@@ -236,6 +236,9 @@ namespace WhatTheFish {
   public void OnEndDrag(PointerEventData e)=>OnPointerUp(e);
   public void OnPointerUp(PointerEventData e){if(e.pointerId==pointer)Release();}
   public void Release()=>pointer=int.MinValue;
+  public void OnCancel(BaseEventData e)=>Release();
   void OnDisable()=>Release();
+  void OnApplicationFocus(bool focused){if(!focused)Release();}
+  void OnApplicationPause(bool paused){if(paused)Release();}
  }
 }

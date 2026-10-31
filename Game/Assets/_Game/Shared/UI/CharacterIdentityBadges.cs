@@ -48,7 +48,7 @@ namespace WhatTheFish {
    var prop=CoveUI.Rect(root,"Held prop",0,1,23,23).gameObject.AddComponent<Image>();prop.preserveAspect=true;prop.raycastTarget=false;prop.gameObject.SetActive(false);
    var propShadow=prop.gameObject.AddComponent<Shadow>();propShadow.effectColor=new Color(.01f,.03f,.06f,.9f);propShadow.effectDistance=new Vector2(1,-1);
    var view=new Badge{actor=actor,identity=identity,root=root,hit=hit,leader=leader,chip=chip,number=number,name=name,prop=prop};
-   view.button=root.gameObject.AddComponent<Button>();view.button.targetGraphic=hit;view.button.transition=Selectable.Transition.None;view.button.navigation=new Navigation{mode=Navigation.Mode.None};
+   view.button=root.gameObject.AddComponent<TouchButton>();view.button.targetGraphic=hit;view.button.transition=Selectable.Transition.None;view.button.navigation=new Navigation{mode=Navigation.Mode.None};
    view.button.onClick.AddListener(()=>{if(!string.IsNullOrEmpty(view.profileId))SocialPanel.OpenPlayer(view.profileId);});
    views.Add(actor,view);return view;
   }

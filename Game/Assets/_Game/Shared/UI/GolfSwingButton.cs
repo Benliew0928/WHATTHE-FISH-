@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace WhatTheFish {
  // Single-pointer drag/release input. The existing match authority validates each shot.
- public sealed class GolfSwingButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,IDragHandler,IInitializePotentialDragHandler {
+ public sealed class GolfSwingButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,IDragHandler,IInitializePotentialDragHandler,ICancelHandler,IEndDragHandler {
   public Button button,startButton,aimButton;public Text label,startLabel,aimLabel;
   bool holding;int pointer;float grabOffset,power;RectTransform knob;Image rail;Graphic[] hints;
   public bool Dragging=>holding;
@@ -46,11 +46,13 @@ namespace WhatTheFish {
    power=Mathf.InverseLerp(Top,Bottom,at.y-grabOffset);PlayerView.Instance?.SetGolfPower(pointer,power);
    knob.anchoredPosition=new Vector2(0,Mathf.Lerp(Top,Bottom,power));
   }
-  public void OnPointerUp(PointerEventData e){if(!holding||e.pointerId!=pointer)return;OnDrag(e);PlayerView.Instance?.EndGolfSwing(pointer);holding=false;ResetSlider();}
+  public void OnPointerUp(PointerEventData e){if(!holding||e.pointerId!=pointer)return;if(TouchGesture.Canceled(pointer)){Cancel();return;}OnDrag(e);PlayerView.Instance?.EndGolfSwing(pointer);holding=false;ResetSlider();}
   // Pointer capture continues outside the rail, as with a native slider.
   public void OnPointerExit(PointerEventData e){}
   void ResetSlider(){power=0;if(knob)knob.anchoredPosition=new Vector2(0,Top);}
   public void CancelGesture()=>Cancel();
+  public void OnCancel(BaseEventData e)=>Cancel();
+  public void OnEndDrag(PointerEventData e){if(holding&&e.pointerId==pointer)Cancel();}
   void Cancel(){if(holding)PlayerView.Instance?.CancelGolfSwing(pointer);holding=false;ResetSlider();}
   void OnDisable(){Cancel();}
   void OnApplicationFocus(bool focused){if(!focused)Cancel();}

@@ -168,7 +168,7 @@ namespace WhatTheFish {
   }
  }
 
- public sealed class WelcomeButton:Button {
+ public sealed class WelcomeButton:TouchButton {
   protected override void DoStateTransition(SelectionState state,bool instant){
    if(targetGraphic is WelcomePlate p){p.pressed=state==SelectionState.Pressed;p.focused=state==SelectionState.Selected;p.dimmed=state==SelectionState.Disabled;p.SetVerticesDirty();}
    if(targetGraphic is WelcomeArtworkFeedback art){art.pressed=state==SelectionState.Pressed;art.focused=state==SelectionState.Selected;art.highlighted=state==SelectionState.Highlighted;art.SetVerticesDirty();}

@@ -83,31 +83,17 @@ namespace WhatTheFish {
  }
 
  // Button owns click eligibility. Visual feedback never repeats or invokes actions.
- public sealed class CoveButton : Button {
-  int pointer=int.MinValue;bool armed,released;float lastSubmit=-10;
+ public sealed class CoveButton : TouchButton {
+  float lastSubmit=-10;
   public int Activations {get;private set;}
   protected override void Awake(){base.Awake();onClick.AddListener(()=>{Activations++;CoveSound.Play();});}
   public override void OnPointerDown(PointerEventData e) {
-   if(e.button!=PointerEventData.InputButton.Left||pointer!=int.MinValue||!IsInteractable())return;
-   CoveUI.KeyboardNavigation=false;pointer=e.pointerId;armed=true;released=false;base.OnPointerDown(e);
-  }
-  public override void OnPointerUp(PointerEventData e) {
-   if(e.pointerId!=pointer)return;
-   released=armed&&IsInteractable()&&RectTransformUtility.RectangleContainsScreenPoint((RectTransform)transform,e.position,e.pressEventCamera);
-   armed=false;pointer=int.MinValue;base.OnPointerUp(e);
-  }
-  public override void OnPointerExit(PointerEventData e){if(e.pointerId==pointer)armed=false;base.OnPointerExit(e);}
-  public override void OnPointerClick(PointerEventData e) {
-   if(!released||!IsInteractable())return;released=false;base.OnPointerClick(e);
+   CoveUI.KeyboardNavigation=false;base.OnPointerDown(e);
   }
   public override void OnSubmit(BaseEventData e) {
    if(!IsInteractable()||Time.unscaledTime-lastSubmit<.22f)return;lastSubmit=Time.unscaledTime;
    CoveUI.KeyboardNavigation=true;GetComponent<CoveFeedback>()?.Pulse();onClick.Invoke();
   }
-  public void CancelPress(){armed=released=false;pointer=int.MinValue;}
-  protected override void OnDisable(){CancelPress();base.OnDisable();}
-  void OnApplicationFocus(bool focused){if(!focused)CancelPress();}
-  void OnApplicationPause(bool paused){if(paused)CancelPress();}
  }
 
  public sealed class CoveFeedback : MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerEnterHandler,IPointerExitHandler,ISelectHandler,IDeselectHandler,ICancelHandler {

@@ -29,6 +29,19 @@ namespace WhatTheFish {
    yield return Aim();Check(app.view.GolfMode==GolfShotMode.Swing,"SWING_MODE_RETAINED");yield return new WaitForEndOfFrame();
    Check(ui.Power==0&&ui.Knob.anchoredPosition.y>100,"ZERO_POWER_BALL_AT_GREEN_TOP");Check(GolfHUD.Instance.FitsSafeFrame()&&GolfHUD.Instance.RegionsSeparate(),"SLIDER_LAYOUT_FITS_AND_SEPARATES");Check(app.view.GolfPreview&&app.view.GolfPreview.Visible,"EXISTING_PREVIEW_PRESENT");Check(Vector3.Distance(app.view.GolfPreview.LaunchVelocity,ball.PhysicsSettings.SwingVelocity(Quaternion.Euler(0,app.view.yaw,0)*Vector3.forward,.3f,app.view.GolfMode))<.002f,"IDLE_SWING_PREVIEW_THIRTY_PERCENT");Capture("swing-idle-thirty");
    int strokes=match.Player(actor).TotalStroke;
+   var module=EventSystem.current.GetComponent<StandaloneInputModule>();var oldInput=module.inputOverride;var touch=EventSystem.current.gameObject.AddComponent<TouchCameraReviewInput>();
+   for(int cancel=0;cancel<6;cancel++){
+    int id=101+cancel;ui.OnPointerDown(Pointer(id,0));ui.OnDrag(Pointer(id,.75f));Check(ui.Dragging&&app.view.GolfCharging,"CANCEL_FIXTURE_CHARGES_"+cancel);
+    if(cancel==0){module.inputOverride=touch;touch.Set(id,Pointer(id,.75f).position,TouchPhase.Canceled);ui.OnPointerUp(Pointer(id,.75f));module.inputOverride=oldInput;touch.Settle();}
+    else if(cancel==1)ui.OnCancel(null);
+    else if(cancel==2)ui.OnEndDrag(Pointer(id,.75f));
+    else if(cancel==3)ui.SendMessage("OnApplicationFocus",false);
+    else if(cancel==4)ui.SendMessage("OnApplicationPause",true);
+    else {ui.enabled=false;ui.enabled=true;}
+    ui.OnPointerUp(Pointer(id,.75f));yield return new WaitForSeconds(.1f);
+    Check(!ui.Dragging&&!app.view.GolfCharging&&ui.Power==0&&match.Player(actor).TotalStroke==strokes,"SYSTEM_CANCEL_NEVER_FIRES_AND_REACQUIRES_"+cancel);
+   }
+   Destroy(touch);
    ui.OnPointerDown(Pointer(10,0));yield return new WaitForSeconds(.7f);Check(ui.Dragging&&app.view.GolfCharge==0,"HOLDING_WITHOUT_DRAG_NEVER_CHARGES");Check(Vector3.Distance(app.view.GolfPreview.LaunchVelocity,ball.PhysicsSettings.SwingVelocity(Quaternion.Euler(0,app.view.yaw,0)*Vector3.forward,.3f,app.view.GolfMode))<.002f,"TOUCH_WITHOUT_DRAG_KEEPS_THIRTY_PREVIEW");ui.OnPointerUp(Pointer(10,0));yield return new WaitForSeconds(.2f);Check(match.Player(actor).TotalStroke==strokes,"TAP_WITHOUT_PULL_NEVER_FIRES");Check(Vector3.Distance(app.view.GolfPreview.LaunchVelocity,ball.PhysicsSettings.SwingVelocity(Quaternion.Euler(0,app.view.yaw,0)*Vector3.forward,.3f,app.view.GolfMode))<.002f,"TAP_RETURNS_TO_THIRTY_PREVIEW");
    ui.OnPointerDown(Pointer(11,0));ui.OnDrag(Pointer(11,.6f));yield return new WaitForEndOfFrame();Check(Mathf.Abs(app.view.GolfCharge-.6f)<.002f,"DRAG_POSITION_SETS_POWER");
    yield return new WaitForSeconds(1.2f);Check(Mathf.Abs(app.view.GolfCharge-.6f)<.002f,"POWER_DOES_NOT_CYCLE_OVER_TIME");

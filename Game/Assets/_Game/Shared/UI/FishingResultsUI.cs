@@ -61,7 +61,7 @@ namespace WhatTheFish {
   }
   Button MakeButton(string name,Transform parent,string value,Color color,Action clicked,out Text caption){
    var rect=Rect(name,parent,Vector2.zero,layout.readySize);var plate=GolfHUDStyle.Panel(rect,color,true);plate.raycastTarget=true;plate.cornerRadius=28;
-   var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=plate;button.transition=Selectable.Transition.None;caption=Label(name+" label",rect,value,layout.rowFontSize);Stretch(caption.rectTransform);caption.rectTransform.offsetMin=new Vector2(12,4);caption.rectTransform.offsetMax=new Vector2(-12,-4);
+   var button=rect.gameObject.AddComponent<TouchButton>();button.targetGraphic=plate;button.transition=Selectable.Transition.None;caption=Label(name+" label",rect,value,layout.rowFontSize);Stretch(caption.rectTransform);caption.rectTransform.offsetMin=new Vector2(12,4);caption.rectTransform.offsetMax=new Vector2(-12,-4);
    button.onClick.AddListener(()=>clicked());button.gameObject.AddComponent<GolfFishingButtonSound>();MenuDesigns.Apply(button);return button;
   }
   void Build(){

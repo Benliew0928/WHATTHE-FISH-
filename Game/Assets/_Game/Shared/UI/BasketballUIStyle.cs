@@ -18,7 +18,7 @@ namespace WhatTheFish {
   public static RectTransform Center(Transform p,string name,Vector2 size,Vector2 point,Vector2 anchor){var r=CoveUI.Rect(p,name,0,0,size.x,size.y);r.anchorMin=r.anchorMax=anchor;r.pivot=Vector2.one*.5f;r.anchoredPosition=point;return r;}
   public static BasketballPlate Plate(Transform p,string name,float x,float y,float w,float h,Color color,float radius=16,float border=2,bool shadow=false){var r=CoveUI.Rect(p,name,x,y,w,h);var g=r.gameObject.AddComponent<BasketballPlate>();g.color=color;g.radius=Vector2.one*radius;g.border=border;g.shadow=shadow?3:0;g.raycastTarget=false;return g;}
   public static Button Button(Transform p,string name,string caption,float x,float y,float w,float h,Action action,Color? fill=null,int size=14){
-   var g=Plate(p,name,x,y,w,h,fill??CoveUI.Cream,13,2,true);g.raycastTarget=true;var b=g.gameObject.AddComponent<Button>();b.targetGraphic=g;b.transition=Selectable.Transition.None;b.navigation=new Navigation{mode=Navigation.Mode.None};b.onClick.AddListener(()=>{if(!BasketballButtonFeedback.UsesPressSound(g.gameObject))BasketballAudio.PlayMenu(BasketballAudio.ButtonCue(name));action?.Invoke();});
+   var g=Plate(p,name,x,y,w,h,fill??CoveUI.Cream,13,2,true);g.raycastTarget=true;var b=g.gameObject.AddComponent<TouchButton>();b.targetGraphic=g;b.transition=Selectable.Transition.None;b.navigation=new Navigation{mode=Navigation.Mode.None};b.onClick.AddListener(()=>{if(!BasketballButtonFeedback.UsesPressSound(g.gameObject))BasketballAudio.PlayMenu(BasketballAudio.ButtonCue(name));action?.Invoke();});
    Text(g.transform,caption,8,0,w-16,h,size,true,TextAnchor.MiddleCenter);b.gameObject.AddComponent<BasketballButtonFeedback>();MenuDesigns.Apply(b,h>=75?MenuSurface.Card:MenuSurface.Button);return b;
   }
  }

@@ -22,7 +22,7 @@ namespace WhatTheFish {
   public static Image Art(Transform p,FootballIcon icon,float x,float y,float w,float h)=>CoveUI.Image(p,icon.ToString(),Icon(icon),x,y,w,h);
   public static Button Button(Transform p,string name,string caption,float x,float y,float w,float h,Action action,Color? fill=null,int size=14){
    var g=BasketballUIStyle.Plate(p,name,x,y,w,h,fill??CoveUI.Cream,13,1.5f,true);g.raycastTarget=true;
-   var b=g.gameObject.AddComponent<Button>();b.targetGraphic=g;b.transition=Selectable.Transition.None;b.navigation=new Navigation{mode=Navigation.Mode.None};b.onClick.AddListener(()=>{if(!BasketballButtonFeedback.UsesPressSound(b.gameObject))FootballAudio.PlayMenu(FootballAudio.ButtonCue(name));action?.Invoke();});
+   var b=g.gameObject.AddComponent<TouchButton>();b.targetGraphic=g;b.transition=Selectable.Transition.None;b.navigation=new Navigation{mode=Navigation.Mode.None};b.onClick.AddListener(()=>{if(!BasketballButtonFeedback.UsesPressSound(b.gameObject))FootballAudio.PlayMenu(FootballAudio.ButtonCue(name));action?.Invoke();});
    BasketballUIStyle.Text(g.transform,caption,8,0,w-16,h,size,true,TextAnchor.MiddleCenter);b.gameObject.AddComponent<BasketballButtonFeedback>();MenuDesigns.Apply(b,h>=75?MenuSurface.Card:MenuSurface.Button);return b;
   }
  }

@@ -87,6 +87,12 @@ namespace WhatTheFish {
    Check(Top(point).GetComponentInParent<ControlLayoutDrag>()==drag,"MOVE_PROXY_RAYCAST");
    drag.OnPointerDown(data);data.position+=new Vector2(90,75);drag.OnDrag(data);drag.OnPointerUp(data);
    Check(Vector2.Distance(defaultPosition,layout.NormalizedCenter(0))>.04f,"POINTER_DRAG_CHANGES_POSITION");
+   for(int interruption=0;interruption<3;interruption++){
+    var anchored=layout.NormalizedCenter(0);var press=ScreenPoint(layout.Controls[0].proxy);var stale=new PointerEventData(EventSystem.current){pointerId=81+interruption,button=PointerEventData.InputButton.Left,position=press};drag.OnPointerDown(stale);
+    if(interruption==0)drag.OnCancel(null);else if(interruption==1)drag.SendMessage("OnApplicationFocus",false);else drag.SendMessage("OnApplicationPause",true);
+    stale.position+=Vector2.one*40;drag.OnDrag(stale);Check(Vector2.Distance(anchored,layout.NormalizedCenter(0))<.001f,"LAYOUT_INTERRUPTION_REJECTS_STALE_DRAG_"+interruption);
+    stale.pointerId+=10;stale.position=press;drag.OnPointerDown(stale);stale.position+=Vector2.one*40;drag.OnDrag(stale);drag.OnPointerUp(stale);Check(Vector2.Distance(anchored,layout.NormalizedCenter(0))>.01f,"LAYOUT_INTERRUPTION_ACCEPTS_FRESH_FINGER_"+interruption);layout.MoveSelected(anchored);
+   }
    layout.ResizeSelected(1.4f);yield return null;Check(Mathf.Abs(layout.Size(0)-1.4f)<.001f,"SIZE_SLIDER_MODEL");VerifyArtworkGeometry(layout);
    var corner=layout.Controls[0].proxy.GetComponentsInChildren<ControlLayoutDrag>().First(d=>d.resize);
    var cornerPoint=ScreenPoint((RectTransform)corner.transform);Check(Top(cornerPoint)==corner.gameObject,"RESIZE_CORNER_RAYCAST");
@@ -166,7 +172,8 @@ namespace WhatTheFish {
     // the opening appearance, but must retain the same shared sprite assets.
     Check(c.Artwork.Graphics.All(pair=>pair.source is not Image a||pair.copy is Image b&&a.sprite==b.sprite),"SHARED_SPRITES_REACH_LAYOUT_"+editor.Sport+"_"+c.id);
     Check(c.Artwork.Root.GetComponentsInChildren<Selectable>(true).Length==0&&c.Artwork.Root.GetComponentsInChildren<TouchPad>(true).Length==0,"ART_HAS_NO_GAMEPLAY_INPUT_"+editor.Sport+"_"+c.id);
-    Check(c.Artwork.Graphics.All(pair=>pair.source is not Text a||pair.copy is Text b&&a.font==b.font&&a.fontSize==b.fontSize&&a.alignment==b.alignment&&a.text==b.text),"ORIGINAL_TYPOGRAPHY_"+editor.Sport+"_"+c.id);
+    foreach(var pair in c.Artwork.Graphics)if(pair.source is Text a&&pair.copy is Text b&&(GameLocalization.FontFor(a.font,a.text)!=b.font||a.fontSize!=b.fontSize||a.alignment!=b.alignment||a.text!=b.text))File.AppendAllText(Path.Combine(folder,"results.txt"),"TYPOGRAPHY source="+a.name+" text="+a.text+" copy="+b.text+" font="+a.font.name+"/"+b.font.name+" size="+a.fontSize+"/"+b.fontSize+" alignment="+a.alignment+"/"+b.alignment+"\n");
+    Check(c.Artwork.Graphics.All(pair=>pair.source is not Text a||pair.copy is Text b&&GameLocalization.FontFor(a.font,a.text)==b.font&&a.fontSize==b.fontSize&&a.alignment==b.alignment&&a.text==b.text),"ORIGINAL_TYPOGRAPHY_"+editor.Sport+"_"+c.id);
     Check(c.proxy.GetComponentsInChildren<Text>(true).Length==c.target.GetComponentsInChildren<Text>(true).Length,"NO_ADDED_BUTTON_CAPTIONS_"+editor.Sport+"_"+c.id);
    }
    Check(editor.Dock.rect.height<=88&&editor.Dock.rect.width<=490,"COMPACT_EDITING_BAR_"+editor.Sport);

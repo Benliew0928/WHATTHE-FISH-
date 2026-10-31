@@ -132,28 +132,28 @@ namespace WhatTheFish {
    var bg=Panel(page,new Vector2(190,178),ControlDesigns.Size(SelectedSport,"move"),Color.clear);var stickDesign=ControlDesigns.Build(bg,SelectedSport,"move");stickDesign.Face.raycastTarget=true;var pad=bg.gameObject.AddComponent<TouchPad>();pad.knob=stickDesign.Thumb;view.stick=pad;
    cameraControl=Button("Camera",SelectedSport==SportId.Fishing?Vector2.zero:new Vector2(1470,70),view.Switch,mint,SelectedSport==SportId.Fishing?new Vector2(148,66):new Vector2(160,60));var returnButton=Button(rooms.Host?"Return to room":SelectedSport switch{SportId.Basketball=>"Leave court",SportId.Golf=>"Leave island",SportId.Fishing=>"Leave lagoon",_=>"Leave pitch"},SelectedSport==SportId.Fishing?Vector2.zero:new Vector2(SelectedSport==SportId.Golf?1210:1418,SelectedSport==SportId.Golf?55:818),Return,cream,new Vector2(250,62));
    var jumpRect=Panel(page,SelectedSport==SportId.Fishing?Vector2.zero:new Vector2(1470,405),SelectedSport==SportId.Fishing?new Vector2(172,72):new Vector2(132,132),mint);jumpRect.name="Jump button";
-   var jump=jumpRect.gameObject.AddComponent<JumpButton>();jump.button=jumpRect.gameObject.AddComponent<Button>();
+   var jump=jumpRect.gameObject.AddComponent<JumpButton>();jump.button=jumpRect.gameObject.AddComponent<TouchButton>();
     jump.label=Label(jumpRect,SelectedSport==SportId.Fishing?"JUMP":"Jump",0,Vector2.zero,SelectedSport==SportId.Fishing?new Vector2(160,62):new Vector2(210,90),23,ink);
    jump.label.alignment=TextAnchor.MiddleCenter;jump.label.rectTransform.anchorMin=jump.label.rectTransform.anchorMax=jump.label.rectTransform.pivot=new Vector2(.5f,.5f);
    if(SelectedSport==SportId.Fishing)FishingHUD.Create(page,font,bg,look,(RectTransform)cameraControl.transform,jumpRect,(RectTransform)returnButton.transform);
    if(SelectedSport==SportId.Golf){
     GolfLeaderboardUI.Create(page,font);
     var swingRect=Panel(page,new Vector2(1470,225),new Vector2(160,160),mint);swingRect.name="Golf swing button";
-    var swing=swingRect.gameObject.AddComponent<GolfSwingButton>();swing.button=swingRect.gameObject.AddComponent<Button>();
+    var swing=swingRect.gameObject.AddComponent<GolfSwingButton>();swing.button=swingRect.gameObject.AddComponent<TouchButton>();
     swing.label=Label(swingRect,"Swing",0,Vector2.zero,new Vector2(210,90),23,ink);
     swing.label.alignment=TextAnchor.MiddleCenter;swing.label.rectTransform.anchorMin=swing.label.rectTransform.anchorMax=swing.label.rectTransform.pivot=new Vector2(.5f,.5f);
     var aimRect=Panel(page,new Vector2(1130,225),new Vector2(132,132),mint);aimRect.name="Golf aim button";
-    swing.aimButton=aimRect.gameObject.AddComponent<Button>();swing.aimButton.onClick.AddListener(view.ToggleGolfAim);
+    swing.aimButton=aimRect.gameObject.AddComponent<TouchButton>();swing.aimButton.onClick.AddListener(view.ToggleGolfAim);
     swing.aimLabel=Label(aimRect,"Aim",0,Vector2.zero,new Vector2(210,80),23,ink);
     swing.aimLabel.alignment=TextAnchor.MiddleCenter;swing.aimLabel.rectTransform.anchorMin=swing.aimLabel.rectTransform.anchorMax=swing.aimLabel.rectTransform.pivot=new Vector2(.5f,.5f);
     var startRect=Panel(page,new Vector2(800,813),new Vector2(265,64),mint);startRect.name="Start golf match";
-    swing.startButton=startRect.gameObject.AddComponent<Button>();swing.startButton.onClick.AddListener(()=>GolfMatchManager.Instance?.StartMatch());
+    swing.startButton=startRect.gameObject.AddComponent<TouchButton>();swing.startButton.onClick.AddListener(()=>GolfMatchManager.Instance?.StartMatch());
     swing.startLabel=Label(startRect,"Start golf match",0,Vector2.zero,new Vector2(250,60),23,ink);
     swing.startLabel.alignment=TextAnchor.MiddleCenter;swing.startLabel.rectTransform.anchorMin=swing.startLabel.rectTransform.anchorMax=swing.startLabel.rectTransform.pivot=new Vector2(.5f,.5f);
     var cartControls=new System.Collections.Generic.List<GolfCartButton>();
     foreach(bool summon in new[]{true,false}){
      var rect=Panel(page,new Vector2(1300,summon?340:165),new Vector2(138,138),summon?mint:LocalProfile.Hex("F0B956"));rect.name=summon?"Golf cart summon button":"Golf cart drive button";
-     var control=rect.gameObject.AddComponent<GolfCartButton>();control.summon=summon;control.button=rect.gameObject.AddComponent<Button>();
+     var control=rect.gameObject.AddComponent<GolfCartButton>();control.summon=summon;control.button=rect.gameObject.AddComponent<TouchButton>();
      cartControls.Add(control);
      control.label=Label(rect,summon?"Buggy":"Drive",0,Vector2.zero,new Vector2(210,90),27,ink);control.label.font=CoveUI.DisplayFont??font;
      control.label.alignment=TextAnchor.MiddleCenter;control.label.rectTransform.anchorMin=control.label.rectTransform.anchorMax=control.label.rectTransform.pivot=new Vector2(.5f,.5f);
@@ -190,7 +190,7 @@ namespace WhatTheFish {
    rect.anchorMin=rect.anchorMax=anchor;rect.anchoredPosition=point;
   }
   public Text Label(Transform parent,string text,int unused,Vector2 p,Vector2 size,int points,Color c){var o=new GameObject("Text",typeof(RectTransform),typeof(LocalizedText));var t=o.GetComponent<Text>();t.transform.SetParent(parent,false);var r=t.rectTransform;r.anchorMin=r.anchorMax=Vector2.zero;r.pivot=new Vector2(0,.5f);r.anchoredPosition=p;r.sizeDelta=size;t.font=font;t.fontSize=points;t.color=c;t.text=text;t.supportRichText=false;t.raycastTarget=false;t.verticalOverflow=VerticalWrapMode.Overflow;AnchorHud(r,p);return t;}
-  Button Button(string text,Vector2 p,Action action,Color c,Vector2 size=default){if(size==default)size=new Vector2(495,80);var r=Panel(page,p,size,c);var b=r.gameObject.AddComponent<Button>();b.interactable=action!=null;b.onClick.AddListener(()=>{if(!rooms.busy)action?.Invoke();});var t=Label(r,text,0,Vector2.zero,size-new Vector2(18,0),25,ink);t.alignment=TextAnchor.MiddleCenter;t.rectTransform.anchorMin=t.rectTransform.anchorMax=new Vector2(.5f,.5f);t.rectTransform.pivot=new Vector2(.5f,.5f);return b;}
+  Button Button(string text,Vector2 p,Action action,Color c,Vector2 size=default){if(size==default)size=new Vector2(495,80);var r=Panel(page,p,size,c);var b=r.gameObject.AddComponent<TouchButton>();b.interactable=action!=null;b.onClick.AddListener(()=>{if(!rooms.busy)action?.Invoke();});var t=Label(r,text,0,Vector2.zero,size-new Vector2(18,0),25,ink);t.alignment=TextAnchor.MiddleCenter;t.rectTransform.anchorMin=t.rectTransform.anchorMax=new Vector2(.5f,.5f);t.rectTransform.pivot=new Vector2(.5f,.5f);return b;}
   InputField Field(string placeholder,Vector2 p,Vector2 size,string value,int limit){var r=Panel(page,p,size,Color.white);var input=r.gameObject.AddComponent<InputField>();var t=Label(r,value,0,Vector2.zero,size-new Vector2(32,0),24,ink);t.rectTransform.anchorMin=t.rectTransform.anchorMax=new Vector2(.5f,.5f);t.rectTransform.pivot=new Vector2(.5f,.5f);input.textComponent=t;input.text=value;input.characterLimit=limit;var ph=Label(r,placeholder,0,Vector2.zero,size-new Vector2(32,0),23,new Color(.35f,.45f,.4f));ph.rectTransform.anchorMin=ph.rectTransform.anchorMax=new Vector2(.5f,.5f);ph.rectTransform.pivot=new Vector2(.5f,.5f);input.placeholder=ph;t.alignment=TextAnchor.MiddleLeft;ph.alignment=TextAnchor.MiddleLeft;ph.gameObject.SetActive(string.IsNullOrEmpty(value));return input;}
   internal static Sprite MakeCircle(){var t=new Texture2D(64,64,TextureFormat.RGBA32,false);for(int y=0;y<64;y++)for(int x=0;x<64;x++)t.SetPixel(x,y,new Color(1,1,1,Mathf.Clamp01(32-Vector2.Distance(new Vector2(x,y),new Vector2(31.5f,31.5f)))));t.Apply();return Sprite.Create(t,new Rect(0,0,64,64),new Vector2(.5f,.5f));}
   static Sprite MakeRound(){var t=new Texture2D(64,64,TextureFormat.RGBA32,false);for(int y=0;y<64;y++)for(int x=0;x<64;x++){float dx=Mathf.Max(18-x,x-45),dy=Mathf.Max(18-y,y-45);float d=new Vector2(Mathf.Max(0,dx),Mathf.Max(0,dy)).magnitude;t.SetPixel(x,y,new Color(1,1,1,Mathf.Clamp01(19-d)));}t.Apply();return Sprite.Create(t,new Rect(0,0,64,64),new Vector2(.5f,.5f),100,0,SpriteMeshType.FullRect,new Vector4(20,20,20,20));}

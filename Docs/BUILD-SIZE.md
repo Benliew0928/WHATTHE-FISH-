@@ -1,5 +1,58 @@
 # Build size — measured release records
 
+## Multitouch camera input fix - 31 October 2026
+
+AndroidSubmission: **168,015,003 -> 168,007,727 bytes (-7,276)**;
+remaining headroom **831,992,273 bytes** below 1,000,000,000.
+SHA-256: **3BB37EBDACE02CDF535C14127CBD5464CCCB8A137C45F148E12FD94BAB1B9A25**.
+ZIP CRC, all 1,538 exact audit entries, five-scene bundle integrity, ARM64,
+v2 signature and 16 KiB alignment pass. Largest compressed entries: islands
+45,934,627; IL2CPP 13,346,193; Vivox 10,240,163; Unity 9,828,173 bytes.
+Entry deltas were reviewed; no asset quality settings were reduced.
+
+The shared camera now rejects touch-emulated mouse look and re-anchors new
+mouse holds. Finger drags keep their owner and derive travel from positions,
+with clean cancellation/focus/pause resets. Existing touch-to-mouse simulation
+remains available to other controls. No player-visible text or art was added.
+
+**504 runtime assertions** pass across four sports and all three languages,
+using real StandaloneInputModule pointer routing plus a simulated legacy mouse
+channel. The 12 final HUD captures were visually reviewed. All 3,682 localization
+entries pass. All **546 Windows / 390 Android** compiled source hashes match.
+The complete **335-file Windows candidate** was promoted and hash-verified,
+with two retained awards launchers. The redundant candidate and initial capture
+runs were removed after validation. No new project snapshot was created.
+
+Evidence: `Builds/TouchCameraQA/`; [cause and validation details](MULTITOUCH-CAMERA-FIX.md).
+The checks simulate mobile input on Windows; physical phone touch, quality and
+FPS remain unverified. Source is `9e6ec1c` plus this fix. No commit/push was made.
+
+## Local test APK refresh - 31 October 2026
+
+Rebuilt the current pulled source `9e6ec1c` with the required AndroidSubmission
+entry point. The actual preceding local APK was from 28 October.
+**168,656,095 -> 168,015,003 bytes (-641,092)**; remaining headroom below
+1,000,000,000 is **831,984,997 bytes**.
+SHA-256: **26C6C59D57542423462DE1607C5C4ECD3BD13FECEC3C78559186EC2DC99F631A**.
+
+ZIP CRC, all **1,538** exact audit entries, the complete five-scene bundle,
+ARM64, v2 signature and 16 KiB alignment pass. All **390** Android compiled
+project-source documents match. All **3,682** localization entries and font
+coverage checks pass. Package `com.umpsa.whatthefish`, version `0.3.0` / `1`,
+minimum SDK 26 and target SDK 36 retain the preceding test APK's certificate.
+This supports replacing that earlier test installation. The production-signed
+store package uses its separate certificate.
+
+This task only refreshes the Android test package from existing code. Functional
+checks for that source remain recorded in [the optimization report](FINAL-OPTIMIZATION-2026-10-30.md);
+they were not rerun or relabelled as phone tests. No phone installation, touch,
+FPS, battery or physical speaker test was performed. No gameplay/assets were
+changed and no new Windows player was generated.
+
+Evidence: `Builds/ApkRefresh20261031QA/`; current inventory:
+`Builds/SizeAudit/latest/`. The preceding local APK/audit remain the designated
+rollback in `Legacy/20261031-213619-160-apk-refresh-20261031/`.
+
 ## Final optimization and combined delivery — 30 October 2026
 
 AndroidSubmission: **172,446,376 -> 168,026,291 bytes (-4,420,085; 2.56%)**.

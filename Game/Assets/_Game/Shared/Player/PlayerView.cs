@@ -5,6 +5,21 @@ namespace WhatTheFish {
  [DefaultExecutionOrder(-100)]
  public sealed partial class PlayerView:MonoBehaviour,IPlayerCommandSource {
   public static Vector2 LookDelta; public static PlayerView Instance; public Athlete target; public TouchPad stick; public int mode; public float yaw=0,pitch=16; public bool active; Camera cam;bool pendingTackle,pendingJump,pendingShoot,pendingPass;
+  bool mouseLookHeld;
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+  internal BaseInput ReviewMouseLookInput;
+#endif
+  Vector2 ReadMouseLook(bool allowed){
+   int touches=Input.touchCount;bool held=Input.GetMouseButton(1);
+   var axes=new Vector2(Input.GetAxis("Mouse X"),Input.GetAxis("Mouse Y"));
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+   if(ReviewMouseLookInput){touches=ReviewMouseLookInput.touchCount;held=ReviewMouseLookInput.GetMouseButton(1);axes=new Vector2(ReviewMouseLookInput.GetAxisRaw("Mouse X"),ReviewMouseLookInput.GetAxisRaw("Mouse Y"));}
+#endif
+   // Legacy Input maps a second touch to right mouse. Never add that synthetic
+   // channel to the finger-owned UI drag. Re-anchor on mouse press / touch exit.
+   bool next=allowed&&touches==0&&held;bool continuing=mouseLookHeld&&next;mouseLookHeld=next;
+   return continuing?axes*14:Vector2.zero;
+  }
   void Awake(){Instance=this;cam=GetComponent<Camera>();mode=Mathf.Clamp(PlayerPrefs.GetInt("camera",1),0,2);gameObject.AddComponent<StadiumCameraPresenter>();gameObject.AddComponent<ActivityCinematic>();}
   public void RequestTackle(){if(!InputBlocked&&active&&target&&target.TackleReady&&!SportsPossession.Attacking(target,SportId.Football))pendingTackle=true;}
   bool pendingKick;float pendingCharge,chargeStarted;int chargeSource;
@@ -68,10 +83,10 @@ namespace WhatTheFish {
    kickAim.transform.localScale=new Vector3(Mathf.Lerp(.85f,1.25f,charge),1,Mathf.Lerp(2.2f,4.4f,charge));
    kickAim.enabled=true;
   }
-  void OnDisable(){RestoreActivityLens();RestorePropLens();ResetPropCamera();ClearMatchInput();ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();ResetActivityStadiumCamera();if(Instance==this)Instance=null;}
+  void OnDisable(){mouseLookHeld=false;LookDelta=Vector2.zero;RestoreActivityLens();RestorePropLens();ResetPropCamera();ClearMatchInput();ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();ResetActivityStadiumCamera();if(Instance==this)Instance=null;}
   void OnEnable(){Instance=this;}
-  void OnApplicationFocus(bool focus){if(!focus)CancelInput();}
-  void OnApplicationPause(bool paused){if(paused)CancelInput();}
+  void OnApplicationFocus(bool focus){if(!focus){mouseLookHeld=false;LookDelta=Vector2.zero;CancelInput();}}
+  void OnApplicationPause(bool paused){if(paused){mouseLookHeld=false;LookDelta=Vector2.zero;CancelInput();}}
   public void RequestJump(){if(!TutorialSession.Allows("jump"))return;if(BasketballRole==WhatTheFish.BasketballRole.Defense){RequestBlock(true);return;}if(active&&!GolfAimRequested&&target&&target.CanRequestJump){ReturnFromGolfShot();pendingJump=true;}}
   bool pendingShotBegin,pendingShotCancel;int shotSource;double shotPhase,shotSampled,pendingShotReleasedAt;Transform shotHoop;
   public bool ShotCharging {get;private set;}
@@ -166,14 +181,14 @@ namespace WhatTheFish {
   void LateUpdate(){
    RestoreActivityLens();RestorePropLens();
    ObserveFishingArrival();
-   if(TeleportSequence.OwnsCamera){LookDelta=Vector2.zero;HideKickAim();return;}
-   if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingCeremony.Presenting){LookDelta=Vector2.zero;HideKickAim();return;}
+   if(TeleportSequence.OwnsCamera){mouseLookHeld=false;LookDelta=Vector2.zero;HideKickAim();return;}
+   if(FootballReplay.Presenting||FootballMVP.Presenting||BasketballMVP.Presenting||FishingCeremony.Presenting){mouseLookHeld=false;LookDelta=Vector2.zero;HideKickAim();return;}
    UpdateGolfAim();
    if(!InputBlocked&&!GolfAimRequested&&((stick&&stick.value.sqrMagnitude>.0064f)||Mathf.Abs(Input.GetAxisRaw("Horizontal"))>.08f||Mathf.Abs(Input.GetAxisRaw("Vertical"))>.08f))ReturnFromGolfShot();
-   if(!active||!target){ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();ResetActivityStadiumCamera();HideKickAim();return;}
+   if(!active||!target){mouseLookHeld=false;LookDelta=Vector2.zero;ResetGolfShotCamera();ResetFishingFightCamera();ResetStadiumCamera();ResetActivityStadiumCamera();HideKickAim();return;}
    bool fishingModal=FishingHUD.Instance&&FishingHUD.Instance.BlocksGameplay;
    if(!InputBlocked&&!fishingModal&&Input.GetKeyDown(KeyCode.C))Switch();
-   if(!InputBlocked&&!fishingModal&&Input.GetMouseButton(1)){LookDelta+=new Vector2(Input.GetAxis("Mouse X")*14,Input.GetAxis("Mouse Y")*14);}
+   LookDelta+=ReadMouseLook(!InputBlocked&&!fishingModal);
    if(!PropForcesLook&&LookDelta.sqrMagnitude>.0001f)ReleasePropLook();
    if(fishingModal||FishingFightLocksLook||mode==2&&FishingGame.Instance&&FishingGame.Instance.Busy(target)||!TutorialSession.Allows("look"))LookDelta=Vector2.zero;
    yaw+=LookDelta.x*.13f;

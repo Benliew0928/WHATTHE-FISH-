@@ -1,6 +1,7 @@
 param(
  [string]$PlayerPath,
  [ValidateSet('Basketball','Football','Golf','Fishing','All')][string]$Sport='All',
+ [ValidateSet('en','zh-Hans','ms')][string]$Language='en',
  [switch]$DesignMutation
 )
 $ErrorActionPreference='Stop'
@@ -15,7 +16,7 @@ foreach($taskSport in $taskSports){
  foreach($taskPhase in @('Edit','Restart')){
   $taskFolder=Join-Path $taskOutput "$taskSport-$taskPhase"
   New-Item -ItemType Directory -Path $taskFolder -Force | Out-Null
-  $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -offline -sport $taskSport -probe -startAt 10000 -returnAt 10000 -exitAfter 240 -guestProfile $taskProfile -layoutReview `"$taskFolder`" -report `"$taskFolder/probe.txt`" -logFile `"$taskFolder/player.log`""
+  $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -offline -sport $taskSport -language $Language -localizationProfile $taskProfile -probe -startAt 10000 -returnAt 10000 -exitAfter 240 -guestProfile $taskProfile -layoutReview `"$taskFolder`" -report `"$taskFolder/probe.txt`" -logFile `"$taskFolder/player.log`""
   if($taskPhase -eq 'Restart'){$taskArgs+=' -layoutRestart'}
   if($DesignMutation){$taskArgs+=' -layoutDesignMutation'}
   $taskProcess=Start-Process -FilePath $PlayerPath -ArgumentList $taskArgs -WorkingDirectory $env:TEMP -WindowStyle Hidden -PassThru

@@ -48,7 +48,7 @@ namespace WhatTheFish {
   static void Place(RectTransform rect,Vector2 anchor,Vector2 position,Vector2 size){rect.anchorMin=rect.anchorMax=anchor;rect.anchoredPosition=position;rect.sizeDelta=size;}
   static void Stretch(RectTransform rect){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;}
   Image Art(RectTransform parent,string name,bool sliced=false){var rect=Rect("Leaderboard art "+name,parent,new Vector2(.5f,.5f),Vector2.zero,Vector2.zero);Stretch(rect);var image=rect.gameObject.AddComponent<Image>();image.sprite=Sprite(name);image.type=sliced?Image.Type.Sliced:Image.Type.Simple;image.raycastTarget=false;return image;}
-  Button Touch(RectTransform rect){var image=rect.gameObject.AddComponent<Image>();image.color=Color.clear;var button=rect.gameObject.AddComponent<Button>();button.targetGraphic=image;button.transition=Selectable.Transition.None;rect.gameObject.AddComponent<CoveFeedback>().enabled=false;rect.gameObject.AddComponent<GolfFishingButtonSound>();return button;}
+  Button Touch(RectTransform rect){var image=rect.gameObject.AddComponent<Image>();image.color=Color.clear;var button=rect.gameObject.AddComponent<TouchButton>();button.targetGraphic=image;button.transition=Selectable.Transition.None;rect.gameObject.AddComponent<CoveFeedback>().enabled=false;rect.gameObject.AddComponent<GolfFishingButtonSound>();return button;}
   void Build(RectTransform parent,Font font){
    page=parent;fallbackFont=font;
    finishedCard=CoveUI.Rect(page,"Golf finished waiting",0,0,620,88);finishedCard.anchorMin=finishedCard.anchorMax=new Vector2(.5f,0);finishedCard.pivot=new Vector2(.5f,0);finishedCard.anchoredPosition=new Vector2(0,118);

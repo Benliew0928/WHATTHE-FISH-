@@ -21,7 +21,7 @@ namespace WhatTheFish {
    var hits=new List<RaycastResult>();EventSystem.current.RaycastAll(data,hits);
    if(!button.IsInteractable()||hits.Count==0||hits[0].gameObject.GetComponentInParent<Button>()!=button){File.AppendAllText(report,"HITS "+tag+" target="+button.name+" position="+data.position+" hits="+string.Join(",",hits.Take(8).Select(h=>h.gameObject.name))+"\n");Capture("failed-"+tag);}
    Check(button.IsInteractable()&&hits.Count>0&&hits[0].gameObject.GetComponentInParent<Button>()==button,"RAYCAST_"+tag);
-   ExecuteEvents.Execute(button.gameObject,data,ExecuteEvents.pointerClickHandler);
+   ExecuteEvents.Execute(button.gameObject,data,ExecuteEvents.pointerDownHandler);ExecuteEvents.Execute(button.gameObject,data,ExecuteEvents.pointerUpHandler);ExecuteEvents.Execute(button.gameObject,data,ExecuteEvents.pointerClickHandler);
   }
   bool HasText(string text)=>menu.GetComponentsInChildren<Text>().Any(t=>t.text.Contains(text));
   bool Reachable(Button button){var hits=new List<RaycastResult>();EventSystem.current.RaycastAll(new PointerEventData(EventSystem.current){position=RectTransformUtility.WorldToScreenPoint(null,button.transform.TransformPoint(((RectTransform)button.transform).rect.center))},hits);return hits.Count>0&&hits[0].gameObject.GetComponentInParent<Button>()==button;}
@@ -64,14 +64,14 @@ namespace WhatTheFish {
    Check(HasText(online?"Room play continues":"Play continues"),"HONEST_MODE_SPECIFIC_PLAY_NOTE");Capture("settings");
    menu.OpenLeave();Check(menu.LeaveVisible&&HasText(online?(app.rooms.Host?"Everyone returns":"You leave the room"):"practice score will reset"),"ROLE_SPECIFIC_LEAVE_WARNING");
    Check(Button("Confirm leave island").GetComponentInChildren<Text>().text==(online?(app.rooms.Host?"Return to room":"Leave room"):"Leave island"),"ROLE_SPECIFIC_CONFIRM_ACTION");Capture("leave");app.HandleBack();Check(menu.Visible&&!menu.LeaveVisible&&view.InputBlocked,"BACK_FROM_CONFIRM_STAYS_IN_SETTINGS");
-   yield return null;Click(Button(fishing?"Fishing guide":"Golf guide"),"GUIDE");Check(fishing?FishingHUD.Instance.Tutorial.Visible&&!menu.Visible:menu.Visible&&HasText("Aim & shoot"),"SPORT_SPECIFIC_GUIDE");Capture("guide");app.HandleBack();
-   if(fishing)app.HandleBack();Check(menu.Visible,"GUIDE_BACK_PATH_REACHES_SETTINGS");
+   yield return null;Click(Button(fishing?"Fishing guide":"Golf guide"),"GUIDE");Check((fishing?FishingHUD.Instance.Tutorial.Visible:SportTutorialUI.Find(SportId.Golf).Visible)&&!menu.Visible,"SPORT_SPECIFIC_GUIDE");Capture("guide");app.HandleBack();
+   Check(!IslandTutorialUI.ModalOpen&&!view.InputBlocked,"GUIDE_CLOSE_RETURNS_CONTROL");app.HandleBack();Check(menu.Visible,"GUIDE_BACK_PATH_REACHES_SETTINGS");
    app.HandleBack();Check(!menu.Visible&&!view.InputBlocked,"ESCAPE_CLOSES_SETTINGS_WITHOUT_LEAVING_ISLAND");
    menu.Open();Check(sliders.Select((s,i)=>Mathf.Abs(s.value-(.35f+i*.1f))<.001f).All(v=>v),"REOPEN_RETAINS_AUDIO_VALUES");
    var frame=(RectTransform)menu.transform.parent;var oldMin=frame.offsetMin;var oldMax=frame.offsetMax;frame.offsetMin=new Vector2(116,30);frame.offsetMax=new Vector2(-90,-24);yield return null;Canvas.ForceUpdateCanvases();Check(menu.FitsSafeFrame(),"NOTCHED_SAFE_FRAME_FITS_MENU_AND_GEAR");Capture("safe-insets");frame.offsetMin=oldMin;frame.offsetMax=oldMax;yield return null;menu.Close();
    if(!online){
     foreach(var size in new[]{new Vector2Int(1280,720),new Vector2Int(1920,900),new Vector2Int(1024,768)}){
-     Screen.SetResolution(size.x,size.y,false);yield return new WaitForSecondsRealtime(.35f);menu.Open();yield return null;Canvas.ForceUpdateCanvases();Check(menu.FitsSafeFrame(),"RESPONSIVE_MENU_"+size.x+"x"+size.y);Click(Button("Close Island settings"),"CLOSE_"+size.x);Check(!menu.Visible&&!view.InputBlocked,"CLOSE_RESTORES_INPUT_"+size.x);
+     Screen.SetResolution(size.x,size.y,false);yield return new WaitForSecondsRealtime(.35f);menu.Open();yield return new WaitForEndOfFrame();Canvas.ForceUpdateCanvases();Check(menu.FitsSafeFrame(),"RESPONSIVE_MENU_"+size.x+"x"+size.y);Click(Button("Close Island settings"),"CLOSE_"+size.x);Check(!menu.Visible&&!view.InputBlocked,"CLOSE_RESTORES_INPUT_"+size.x);
     }
     Screen.SetResolution(1600,900,false);yield return new WaitForSecondsRealtime(.35f);
    }
@@ -90,8 +90,11 @@ namespace WhatTheFish {
     uint round=match.Round;double now=match.Now;yield return new WaitForSeconds(.5f);Check(menu.Visible&&match.State.Running&&match.Round==round&&match.Now>now+.2,"GOLF_CONTINUES_WITH_SETTINGS_OPEN");Capture("live-match");Click(Button("Close Island settings"),"CLOSE_ABOVE_LIVE_RANKING");
     var table=FindFirstObjectByType<GolfLeaderboardUI>();yield return null;Click(table.ToggleButton,"EXPAND_RANKING");yield return null;Check(table.Expanded,"RANKING_EXPANDED_BEFORE_SETTINGS");menu.Open();yield return null;Click(Button("Follow"),"CAMERA_ABOVE_EXPANDED_RANKING");Check(menu.Visible&&view.InputBlocked,"EXPANDED_RANKING_CANNOT_STEAL_MODAL_INPUT");menu.Close();
     if(!online){
-     menu.Open();ulong owner=match.Player(app.LocalAthlete).PlayerId;for(int hole=1;hole<=GolfPlayerState.HoleCount;hole++)match.State.EnterHole(owner,hole,match.Now);
-     yield return null;Check(menu.Visible&&!PostMatchFlow.Instance.Visible,"NEXT_ADVENTURE_WAITS_FOR_EXISTING_SETTINGS");menu.Close();yield return Until(()=>PostMatchFlow.Instance.Visible,"FINISHED_GAME_OPENS_NEXT_ADVENTURE");Check(!menu.Visible&&view.InputBlocked,"RESULTS_TAKE_INPUT_AFTER_CLOSING_SETTINGS");PostMatchFlow.Instance.Close();Check(!view.InputBlocked,"CLOSING_RESULTS_RESTORES_ORIGINAL_INPUT_BLOCK");
+     table.CloseResults();menu.Open();foreach(var participant in match.State.Players.ToArray())for(int hole=0;hole<GolfPlayerState.HoleCount;hole++)match.State.EnterHole(participant.PlayerId,participant.CurrentHole,match.Now);
+     Check(match.State.Phase==GolfMatchPhase.Ended,"CURRENT_SHUFFLED_ROUTE_FINISHES_ALL_PARTICIPANTS");
+     yield return null;Check(menu.Visible&&!PostMatchFlow.Instance.Visible&&!FishingCeremony.Presenting,"AWARDS_AND_NEXT_ADVENTURE_WAIT_FOR_EXISTING_SETTINGS");menu.Close();yield return Until(()=>FishingCeremony.Presenting,"FINISHED_GAME_PRESENTS_AWARDS_BEFORE_NEXT_ADVENTURE");
+     if(FishingCeremony.Presenting){Check(!PostMatchFlow.Instance.Visible&&view.InputBlocked,"AWARDS_OWN_INPUT_BEFORE_NEXT_ADVENTURE");FishingCeremony.Instance.Cancel();}
+     yield return Until(()=>PostMatchFlow.Instance.Visible,"FINISHED_GAME_OPENS_NEXT_ADVENTURE");Check(!menu.Visible&&view.InputBlocked,"RESULTS_TAKE_INPUT_AFTER_CLOSING_SETTINGS");PostMatchFlow.Instance.Close();Check(!view.InputBlocked,"CLOSING_RESULTS_RESTORES_ORIGINAL_INPUT_BLOCK");
     }
    }else{
     var game=FishingGame.Instance;

@@ -30,8 +30,16 @@ namespace WhatTheFish {
   }
   void Place(Athlete actor,Vector3 position,float yaw=0){actor.capsule.enabled=false;actor.transform.SetPositionAndRotation(position,Quaternion.Euler(0,yaw,0));actor.ResetLocomotion();var net=actor.GetComponent<NetworkTransform>();if(net&&net.IsServer)net.Teleport(position,actor.transform.rotation,Vector3.one);actor.capsule.enabled=GolfCartWorld.Authority;Physics.SyncTransforms();}
   Vector3 SafeSite(Athlete actor){
-   foreach(var site in new[]{new Vector3(-40,0,-100),new Vector3(-45,0,-80),new Vector3(60,0,-80),new Vector3(45,0,70),new Vector3(-70,0,20),Vector3.zero})
-    if(GolfCartMotor.Surface(site,0,out var supported,out var rotation)&&GolfCartMotor.Clear(supported,rotation,null,actor))return supported+Vector3.up*.08f;
+   // The course now has border stones on several former test lanes. Verify a
+   // clear driving strip before timing acceleration; never disable collisions.
+   foreach(var centre in new[]{new Vector3(-40,0,-100),new Vector3(-45,0,-80),new Vector3(60,0,-80),new Vector3(45,0,70),new Vector3(-70,0,20),Vector3.zero})
+   for(int x=-24;x<=24;x+=12)for(int z=-24;z<=24;z+=12){
+    var site=centre+new Vector3(x,0,z);bool clear=true;
+    for(int ahead=-8;ahead<=38&&clear;ahead+=3)for(int side=-8;side<=8&&clear;side+=4){
+     var test=site+new Vector3(side,0,ahead);clear=GolfCartMotor.Surface(test,0,out var floor,out var turn)&&Vector3.Dot(turn*Vector3.up,Vector3.up)>.94f&&GolfCartMotor.Clear(floor,turn,null,actor);
+    }
+    if(clear&&GolfCartMotor.Surface(site,0,out var supported,out _))return supported+Vector3.up*.08f;
+   }
    return app.environments.Current.Spawn(0);
   }
   Vector3 Beside(GolfCart cart){var at=cart.transform.position+cart.transform.right*2.35f;return GolfCartMotor.Floor(at,out var floor)?floor.point+Vector3.up*.08f:at;}
@@ -230,12 +238,22 @@ namespace WhatTheFish {
      progress=Vector3.Dot(state.position-floor,direction);lowest=Mathf.Min(lowest,state.position.y);
      supported&=GolfCartMotor.Surface(state.position,yaw,out _,out _);
     }
-    Check(progress>path.magnitude-.7f&&supported,"CART_BUNKER_ENTER_AND_EXIT_"+name+" progress="+progress+" required="+path.magnitude+" lowest="+lowest);
+    bool solidBlocked=false;
     if(progress<path.magnitude-.7f){
      var facing=Quaternion.Euler(0,yaw,0);
      foreach(var hit in Physics.BoxCastAll(state.position+facing*new Vector3(0,.66f,0),GolfCartMotor.HalfBody,direction,facing,.5f,GolfCartMotor.Obstacles,QueryTriggerInteraction.Ignore))
-      if(!hit.collider.transform.IsChildOf(fixture.transform))Record("BLOCK "+name+" collider="+hit.collider.name+" distance="+hit.distance+" normal="+hit.normal);
+      if(!hit.collider.transform.IsChildOf(fixture.transform)){
+       Record("BLOCK "+name+" collider="+hit.collider.name+" distance="+hit.distance+" normal="+hit.normal);
+       solidBlocked|=hit.distance<.2f&&hit.normal.y<=.55f&&!GolfCartMotor.Terrain(hit.collider)&&!GolfCartMotor.Walkway(hit.collider)&&!GolfCartMotor.PondBank(hit.collider);
+      }
+     // On a slope the supported body tilts before its centre advances. Check
+     // the next supported pose too, using the motor's actual overlap box.
+     if(GolfCartMotor.Surface(state.position+direction*.02f,yaw,out var next,out var nextRotation)){
+      foreach(var collider in Physics.OverlapBox(next+nextRotation*new Vector3(0,.66f,0),GolfCartMotor.HalfBody,nextRotation,GolfCartMotor.Obstacles,QueryTriggerInteraction.Ignore))
+       if(!collider.transform.IsChildOf(fixture.transform)&&!GolfCartMotor.Terrain(collider)&&!GolfCartMotor.Walkway(collider)&&!GolfCartMotor.PondBank(collider)){solidBlocked=true;Record("SUPPORTED_POSE_BLOCK "+name+" collider="+collider.name);}
+     }
     }
+    Check(supported&&(solidBlocked?Mathf.Abs(state.speed)<.01f:progress>path.magnitude-.7f),(solidBlocked?"CART_SOLID_OBSTACLE_BLOCKS_":"CART_BUNKER_ENTER_AND_EXIT_")+name+" progress="+progress+" required="+path.magnitude+" lowest="+lowest);
     Destroy(fixture.gameObject);yield return null;
    }
   }

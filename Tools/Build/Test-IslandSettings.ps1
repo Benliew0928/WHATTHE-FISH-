@@ -18,7 +18,7 @@ $taskProcesses=[Collections.Generic.List[Diagnostics.Process]]::new()
 function Start-SettingsPlayer([string]$folder,[string]$role,[string]$mode,[string]$sportName,[string]$exitName,[string]$networkArgs){
  New-Item -ItemType Directory -Path (Join-Path $folder $role) -Force | Out-Null
  $taskPeer=Join-Path $folder $role
- $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -sport $sportName -probe -expected 2 -startAt 8 -returnAt 10000 -exitAfter 180 -islandSettingsAudit -settingsExit $exitName -settingsFishingMode $FishingMode -settingsSync `"$folder`" -settingsReport `"$taskPeer/settings.txt`" -report `"$taskPeer/probe.txt`" -logFile `"$taskPeer/player.log`" $networkArgs"
+ $taskArgs="-batchmode -force-d3d11 -screen-width 1600 -screen-height 900 -screen-fullscreen 0 -job-worker-count 2 -sport $sportName -language en -guestProfile settings-$sportName-$mode-$role -localizationProfile settings-$sportName-$mode-$role -probe -expected 2 -startAt 8 -returnAt 10000 -exitAfter 180 -islandSettingsAudit -settingsExit $exitName -settingsFishingMode $FishingMode -settingsSync `"$folder`" -settingsReport `"$taskPeer/settings.txt`" -report `"$taskPeer/probe.txt`" -logFile `"$taskPeer/player.log`" $networkArgs"
  $taskProcess=Start-Process -FilePath $PlayerPath -ArgumentList $taskArgs -WorkingDirectory $env:TEMP -WindowStyle Hidden -PassThru
  $taskProcesses.Add($taskProcess)
  return $taskProcess

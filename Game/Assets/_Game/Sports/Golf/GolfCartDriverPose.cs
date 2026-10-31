@@ -27,8 +27,8 @@ namespace WhatTheFish {
    SeatLeg(leftThigh,leftShin,leftFoot,forward,up);
    SeatLeg(rightThigh,rightShin,rightFoot,forward,up);
    // Pitch the feet naturally downward from the straight leg for a relaxed seated pose.
-   if(leftFoot&&leftShin)leftFoot.rotation=Quaternion.AngleAxis(-22,right)*leftShin.rotation;
-   if(rightFoot&&rightShin)rightFoot.rotation=Quaternion.AngleAxis(-22,right)*rightShin.rotation;
+   var toes=forward*Mathf.Cos(22*Mathf.Deg2Rad)-up*Mathf.Sin(22*Mathf.Deg2Rad);
+   FaceFoot(leftFoot,toes);FaceFoot(rightFoot,toes);
    var wheel=cart.seat.position+forward*.53f+up*.20f;
    Solve(leftArm,leftForearm,leftHand,wheel-right*.12f,-right-up*.4f);
    Solve(rightArm,rightForearm,rightHand,wheel+right*.12f,right-up*.4f);

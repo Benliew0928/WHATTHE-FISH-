@@ -9,6 +9,10 @@ namespace WhatTheFish {
    if(!match||!match.Context){ceremony?.Cancel();return;}
    if(match.State.Phase!=GolfMatchPhase.Ended||observed&&shown==match.Round)return;
    if(TeleportSequence.Busy||RoomTeleport.Busy)return;
+   // A settings/layout dialog must release its original input block before
+   // awards capture ownership. The next-adventure card is closed by BeginGolf.
+   var view=PlayerView.Instance;
+   if(view&&view.InputBlocked&&!(PostMatchFlow.Instance&&PostMatchFlow.Instance.Visible))return;
    if(!ceremony)ceremony=gameObject.AddComponent<FishingCeremony>();
    if(ceremony.BeginGolf(match,null)){shown=match.Round;observed=true;}
   }

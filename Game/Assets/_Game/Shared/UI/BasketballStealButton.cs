@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace WhatTheFish {
- public sealed class BasketballStealButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler {
+ public sealed class BasketballStealButton:MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IPointerExitHandler,ICancelHandler {
   public Button button;public Text label;public bool illustrated;int pointer=int.MinValue;bool pressed;
   CanvasGroup group;
   void Awake(){group=GetComponent<CanvasGroup>()??gameObject.AddComponent<CanvasGroup>();}
@@ -17,9 +17,12 @@ namespace WhatTheFish {
    label.text=view&&view.target&&view.target.BasketballFreeRoam?"Free roam":motion&&motion.Action==BasketballAction.Stripped?"Recovering":motion&&motion.Action==BasketballAction.Steal?"Swiping…":GameButtonStyle.Caption("Steal");
   }
   public void OnPointerDown(PointerEventData data){if(data.button!=PointerEventData.InputButton.Left||pressed||!button.interactable)return;if(PlayerView.Instance.BeginSteal(data.pointerId)){pointer=data.pointerId;pressed=true;}}
-  public void OnPointerUp(PointerEventData data){if(pressed&&data.pointerId==pointer)Release(false);}
+  public void OnPointerUp(PointerEventData data){if(pressed&&data.pointerId==pointer)Release(TouchGesture.Canceled(pointer));}
   public void OnPointerExit(PointerEventData data){if(pressed&&data.pointerId==pointer)Release(true);}
   void Release(bool cancel){if(PlayerView.Instance)PlayerView.Instance.EndSteal(pointer,cancel);pressed=false;}
   void OnDisable(){Release(true);}
+  public void OnCancel(BaseEventData data)=>Release(true);
+  void OnApplicationFocus(bool focused){if(!focused)Release(true);}
+  void OnApplicationPause(bool paused){if(paused)Release(true);}
  }
 }

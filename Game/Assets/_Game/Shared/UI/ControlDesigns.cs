@@ -54,7 +54,7 @@ namespace WhatTheFish {
   // All geometry/typography lives here or in the sport partials. Input setup
   // uses this helper only after Build; it is never called for menu samples.
   public static Button BindButton(View view,bool feedback=true,RectTransform inputRoot=null){
-   var root=inputRoot?inputRoot:view.Root;var button=root.GetComponent<Button>()??root.gameObject.AddComponent<Button>();
+   var root=inputRoot?inputRoot:view.Root;var button=root.GetComponent<Button>()??root.gameObject.AddComponent<TouchButton>();
    if(view.Glossy){var hit=root.GetComponent<Image>()??root.gameObject.AddComponent<Image>();hit.enabled=true;hit.sprite=circle?circle:circle=AppRoot.MakeCircle();hit.color=Color.clear;hit.raycastTarget=true;view.Face.raycastTarget=false;}
    else view.Face.raycastTarget=true;
    button.targetGraphic=view.Face;button.transition=Selectable.Transition.None;button.navigation=new Navigation{mode=Navigation.Mode.None};

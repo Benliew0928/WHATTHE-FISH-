@@ -88,7 +88,7 @@ namespace WhatTheFish {
    hud.local=hud.MakeBar("Your football stamina",new Vector2(210,12));hud.local.state.rectTransform.sizeDelta=new Vector2(370,22);hud.local.root.anchorMin=hud.local.root.anchorMax=new Vector2(.5f,0);hud.local.root.anchoredPosition=new Vector2(0,161);
    foreach(bool pressure in new[]{false}){
     var r=app.Panel(page,new Vector2(1300,340),new Vector2(138,138),pressure?new Color(.94f,.73f,.34f):new Color(.33f,.84f,.77f));r.name=pressure?"Football pressure button":"Football dash button";
-    var b=r.gameObject.AddComponent<FootballEffortButton>();b.pressure=pressure;b.button=r.gameObject.AddComponent<Button>();
+    var b=r.gameObject.AddComponent<FootballEffortButton>();b.pressure=pressure;b.button=r.gameObject.AddComponent<TouchButton>();
     b.label=Text(r,font,22,new Vector2(210,90));
    }
   }
